@@ -161,7 +161,7 @@
 	__weak typeof(self) weakSelf = self;
 	
 	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
-	[self addSubview:_heroImageHolderView];
+	[self.contentView addSubview:_heroImageHolderView];
 	
 //	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
 //	[_heroImageHolderView addSubview:imageLoadingView];
@@ -182,7 +182,7 @@
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = _heroImageHolderView.frame;
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:detailsButton];
+	[self.contentView addSubview:detailsButton];
 	
 	
 //	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 5.0, 270.0, 28.0)];
@@ -190,14 +190,14 @@
 //	subjectLabel.textColor = [UIColor whiteColor];
 //	subjectLabel.backgroundColor = [UIColor clearColor];
 //	subjectLabel.text = _challengeVO.subjectName;
-//	[self addSubview:subjectLabel];
+//	[self.contentView addSubview:subjectLabel];
 //	
 //	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 35.0, 150.0, 19.0)];
 //	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 //	creatorNameLabel.textColor = [UIColor whiteColor];
 //	creatorNameLabel.backgroundColor = [UIColor clearColor];
 //	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
-//	[self addSubview:creatorNameLabel];
+//	[self.contentView addSubview:creatorNameLabel];
 
 //	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(148.0, 68.0, 160.0, 16.0)];
 //	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
@@ -205,12 +205,12 @@
 //	timeLabel.backgroundColor = [UIColor clearColor];
 //	timeLabel.textAlignment = NSTextAlignmentRight;
 //	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-//	[self addSubview:timeLabel];
+//	[self.contentView addSubview:timeLabel];
 	
 	/*
 	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(1.0 + _lHolderView.frame.origin.x + kSnapLargeDim, 0.0, kSnapMediumDim, kSnapLargeDim)];
 	_rHolderView.clipsToBounds = YES;
-	[self addSubview:_rHolderView];
+	[self.contentView addSubview:_rHolderView];
 	
 	_opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -245,7 +245,7 @@
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 216.0);
-	[self addSubview:gradientImageView];
+	[self.contentView addSubview:gradientImageView];
 	
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -253,11 +253,11 @@
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:joinButton];
+	[self.contentView addSubview:joinButton];
 	
 	
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 322.0, 320.0, 44.0)];
-	[self addSubview:footerHolderView];
+	[self.contentView addSubview:footerHolderView];
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
@@ -333,7 +333,7 @@
 - (void)_goDetails {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	[self addSubview:tappedOverlayView];
+	[self.contentView addSubview:tappedOverlayView];
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		tappedOverlayView.alpha = 0.0;
@@ -400,7 +400,7 @@
 - (void)showTapOverlay {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	[self addSubview:tappedOverlayView];
+	[self.contentView addSubview:tappedOverlayView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		tappedOverlayView.alpha = 0.0;

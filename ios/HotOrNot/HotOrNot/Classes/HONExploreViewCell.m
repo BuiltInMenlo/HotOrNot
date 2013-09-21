@@ -52,7 +52,7 @@
 	
 	_leftHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftHolderView.clipsToBounds = YES;
-	[self addSubview:_leftHolderView];
+	[self.contentView addSubview:_leftHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)];
 	[_leftHolderView addSubview:imageLoadingView];
@@ -72,7 +72,7 @@
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 6.0);
-	[self addSubview:gradientImageView];
+	[self.contentView addSubview:gradientImageView];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 125.0, 140.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
@@ -81,13 +81,13 @@
 	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _lChallengeVO.subjectName;
-	[self addSubview:subjectLabel];
+	[self.contentView addSubview:subjectLabel];
 		
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectButton.frame = _leftHolderView.frame;
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:selectButton];
+	[self.contentView addSubview:selectButton];
 }
 
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
@@ -101,8 +101,8 @@
 	
 	_rightHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
 //	_rightHolderView.clipsToBounds = YES;
-	[self addSubview:_rightHolderView];
-		
+	[self.contentView addSubview:_rightHolderView];
+	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)];
 	[_rightHolderView addSubview:imageLoadingView];
 
@@ -121,7 +121,7 @@
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 160.0, 6.0);
-	[self addSubview:gradientImageView];
+	[self.contentView addSubview:gradientImageView];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(169.0, 125.0, 140.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
@@ -130,13 +130,13 @@
 	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _rChallengeVO.subjectName;
-	[self addSubview:subjectLabel];
+	[self.contentView addSubview:subjectLabel];
 		
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectButton.frame = _rightHolderView.frame;
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:selectButton];
+	[self.contentView addSubview:selectButton];
 }
 
 
@@ -144,7 +144,7 @@
 - (void)_goSelectLeft {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	[self addSubview:overlayView];
+	[self.contentView addSubview:overlayView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		overlayView.alpha = 0.0;
@@ -158,7 +158,7 @@
 - (void)_goSelectRight {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	[self addSubview:overlayView];
+	[self.contentView addSubview:overlayView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		overlayView.alpha = 0.0;

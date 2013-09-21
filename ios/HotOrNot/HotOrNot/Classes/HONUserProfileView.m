@@ -34,9 +34,10 @@
 	if ((self = [super initWithFrame:frame])) {
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
 		
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBlurBackground"]]];
+		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBlurBackground"]]];
 		
 		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 68.0, 320.0, 387.0)];
+		holderView.backgroundColor = [UIColor blackColor];
 		[self addSubview:holderView];
 		
 		CALayer *maskLayer = [CALayer layer];
@@ -181,7 +182,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			[HONAppDelegate writeUserInfo:userResult];
 			

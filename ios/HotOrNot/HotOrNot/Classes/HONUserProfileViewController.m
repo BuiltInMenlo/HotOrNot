@@ -517,7 +517,7 @@
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 		imageView.userInteractionEnabled = YES;
-		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
+		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
 		[imageHolderView addSubview:imageView];
 		
 		_challengeCounter++;

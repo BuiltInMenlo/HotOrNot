@@ -49,6 +49,7 @@
 @property (nonatomic, strong) HONUserProfileView *userProfileView;
 @property (nonatomic, strong) UIView *profileOverlayView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
 @implementation HONExploreViewController
@@ -112,26 +113,21 @@
 			
 			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
-			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
-			_flowLayout.minimumLineSpacing = 0.0;
+			[_collectionView reloadData];
+			[_refreshControl endRefreshing];
 			
-			_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:_flowLayout];
-			[_collectionView setDataSource:self];
-			[_collectionView setDelegate:self];
-			_collectionView.alpha = 0.0;
-			[_collectionView registerClass:[HONExploreViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-//			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
-			[_collectionHolderView addSubview:_collectionView];
+//			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
+//			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
+//			_flowLayout.minimumLineSpacing = 0.0;
 			
-			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-			_refreshTableHeaderView.delegate = self;
-			[_collectionView addSubview:_refreshTableHeaderView];
-			[_refreshTableHeaderView refreshLastUpdatedDate];
+//			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+//			_refreshTableHeaderView.delegate = self;
+//			[_collectionView addSubview:_refreshTableHeaderView];
+//			[_refreshTableHeaderView refreshLastUpdatedDate];
 			
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				_collectionView.alpha = 1.0;
-			}];
+//			[UIView animateWithDuration:0.5 animations:^(void) {
+//				_collectionView.alpha = 1.0;
+//			}];
 			
 			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
@@ -190,6 +186,20 @@
 	
 	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_collectionHolderView];
+	
+	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+	flowLayout.minimumLineSpacing = 0.0;
+	
+	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
+	[_collectionView setDataSource:self];
+	[_collectionView setDelegate:self];
+	[_collectionView registerClass:[HONExploreViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+	[_collectionHolderView addSubview:_collectionView];
+	
+	_refreshControl = [[UIRefreshControl alloc] init];
+	_refreshControl.tintColor = [UIColor whiteColor];
+	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
+	[_collectionView addSubview:_refreshControl];
 	
 	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	

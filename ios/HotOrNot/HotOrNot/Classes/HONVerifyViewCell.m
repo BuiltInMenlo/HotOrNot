@@ -93,7 +93,7 @@
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 44.0);
-	[self.contentView addSubview:gradientImageView];
+//	[self.contentView addSubview:gradientImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(134.0, 13.0, 90.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
@@ -101,7 +101,7 @@
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-	[self.contentView addSubview:timeLabel];
+//	[self.contentView addSubview:timeLabel];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 144.0, 150.0, 22.0)];
 	usernameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
@@ -110,13 +110,13 @@
 	usernameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = _challengeVO.creatorVO.username;
-	[self.contentView addSubview:usernameLabel];
+//	[self.contentView addSubview:usernameLabel];
 	
 	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	usernameButton.frame = CGRectMake(10.0, 144.0, 150.0, 44.0);
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[usernameButton setTag:_challengeVO.creatorVO.userID];
-	[self.contentView addSubview:usernameButton];
+//	[self.contentView addSubview:usernameButton];
 	
 	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 165.0, 260.0, 22.0)];
 	ageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
@@ -125,7 +125,7 @@
 	ageLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	ageLabel.backgroundColor = [UIColor clearColor];
 	ageLabel.text = ([_challengeVO.creatorVO.birthday timeIntervalSince1970] == 0.0) ? @"hasn't set a birthday yet" : @"does this user look 13 to 19?";
-	[self.contentView addSubview:ageLabel];
+//	[self.contentView addSubview:ageLabel];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;
@@ -133,21 +133,21 @@
 	
 	UIView *buttonBGView = [[UIView alloc] initWithFrame:CGRectMake(247.0, 0.0, 73.0, 198.0)];
 	buttonBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
-	[self.contentView addSubview:buttonBGView];
+//	[self.contentView addSubview:buttonBGView];
 	
 	UIButton *yayButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	yayButton.frame = CGRectMake(262.0, 45.0, 44.0, 44.0);
 	[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_nonActive"] forState:UIControlStateNormal];
 	[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_Active"] forState:UIControlStateHighlighted];
 	[yayButton addTarget:self action:@selector(_goYay) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:yayButton];
+//	[self.contentView addSubview:yayButton];
 	
 	UIButton *nayButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nayButton.frame = CGRectMake(262.0, 106.0, 44.0, 44.0);
 	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_nonActive"] forState:UIControlStateNormal];
 	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_Active"] forState:UIControlStateHighlighted];
 	[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:nayButton];
+//	[self.contentView addSubview:nayButton];
 }
 
 - (void)showTapOverlay {

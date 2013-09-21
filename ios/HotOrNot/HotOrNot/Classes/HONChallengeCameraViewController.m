@@ -153,11 +153,15 @@
 		// preview - full size
 		UIImage *oImage = _rawImage;
 		
-		// timeline - rectangle
-		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 57.0, 640.0, 740.0)];
 		
-		// explore - square
-		UIImage *mImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 267.0, 640.0, 320.0)];
+		UIImage *scaledImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+		
+		
+		// timeline - rectangle
+		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 853.0)] toRect:CGRectMake(0.0, 57.0, 640.0, 740.0)];
+		
+		// explore / grid - rectangle
+		UIImage *mImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 853.0)] toRect:CGRectMake(0.0, 267.0, 320.0, 320.0)];
 		
 		// grid - square
 		UIImage *tImage = [HONImagingDepictor scaleImage:_squaredImage toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
@@ -190,7 +194,13 @@
 		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
 		[s3 putObject:por4];
 		
-		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, nil];
+		S3PutObjectRequest *por5 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_s.jpg", _filename] inBucket:@"hotornot-challenges"];
+		por5.delegate = self;
+		por5.contentType = @"image/jpeg";
+		por5.data = UIImageJPEGRepresentation(scaledImage, kSnapJPEGCompress);
+		[s3 putObject:por5];
+		
+		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, por5, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];

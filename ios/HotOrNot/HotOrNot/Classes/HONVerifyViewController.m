@@ -190,8 +190,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				}
 				
 				count++;
-				
-				if (count >= 50)
+				if (count >= 10)
 					break;
 			}
 
@@ -199,29 +198,20 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			_emptyImageView.hidden = [_challenges count] > 0;
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
 			
-//			[_collectionView reloadData];
+			[_collectionView reloadData];
 			[_refreshControl endRefreshing];
 			
-			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-			_flowLayout.minimumLineSpacing = 0.0;
+//			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
+//			_flowLayout.minimumLineSpacing = 0.0;
 			
-			_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:_flowLayout];
-			[_collectionView setDataSource:self];
-			[_collectionView setDelegate:self];
-			_collectionView.alpha = 0.0;
-//			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
-			_collectionView.alwaysBounceVertical = YES;
-			[_collectionView registerClass:[HONVerifyViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-			[_collectionHolderView addSubview:_collectionView];
+//			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+//			_refreshTableHeaderView.delegate = self;
+//			[_collectionView addSubview:_refreshTableHeaderView];
+//			[_refreshTableHeaderView refreshLastUpdatedDate];
 			
-			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-			_refreshTableHeaderView.delegate = self;
-			[_collectionView addSubview:_refreshTableHeaderView];
-			[_refreshTableHeaderView refreshLastUpdatedDate];
-			
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				_collectionView.alpha = 1.0;
-			}];
+//			[UIView animateWithDuration:0.5 animations:^(void) {
+//				_collectionView.alpha = 1.0;
+//			}];
 
 			
 			_isRefreshing = NO;
@@ -372,12 +362,21 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_collectionHolderView];
 	
-	_refreshControl = [[UIRefreshControl alloc] init];
-//	_refreshControl.tintColor = [UIColor whiteColor];
-//	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-//	[_collectionView addSubview:_refreshControl];
-
+	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+	flowLayout.minimumLineSpacing = 0.0;
 	
+	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
+	[_collectionView setDataSource:self];
+	[_collectionView setDelegate:self];
+	_collectionView.alwaysBounceVertical = YES;
+	[_collectionView registerClass:[HONVerifyViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+	[_collectionHolderView addSubview:_collectionView];
+	
+	_refreshControl = [[UIRefreshControl alloc] init];
+	_refreshControl.tintColor = [UIColor whiteColor];
+	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
+	[_collectionView addSubview:_refreshControl];
+
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 	_profileOverlayView.hidden = YES;
@@ -704,11 +703,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
@@ -719,7 +718,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONVerifyViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-//    cell.backgroundColor = (indexPath.row % 2 == 0) ? [UIColor greenColor] : [UIColor redColor];
+	
+//	if (indexPath.row % 3 == 0) {
+//		cell.backgroundColor = [UIColor greenColor];
+//	} else if (indexPath.row % 2 == 0) {
+//		cell.backgroundColor = [UIColor redColor];
+//	} else if (indexPath.row % 5 == 0) {
+//		cell.backgroundColor = [UIColor blueColor];
+//	} else
+//		cell.backgroundColor = [UIColor whiteColor];
+	
 	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
 	cell.delegate = self;
 	

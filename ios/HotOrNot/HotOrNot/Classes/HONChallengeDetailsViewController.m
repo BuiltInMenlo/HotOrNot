@@ -51,7 +51,7 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
-		//NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+//		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 		_challengeVO = vo;
 		_bgImageView = imageView;
 		
@@ -348,7 +348,7 @@
 	
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 560.0 + (kSnapMediumDim * (respondedOpponents / 5))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina5] * 170.0) + 560.0 + (kSnapMediumDim * (respondedOpponents / 5))));
 	//_scrollView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, -64.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
@@ -408,25 +408,16 @@
 	for (HONOpponentVO *opponentVO in _challengeVO.challengers) {
 		if ([opponentVO.imagePrefix length] > 0) {
 			
-			HONOpponentVO *vo;
-			if ([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix])
-				vo = _challengeVO.creatorVO;//[HONOpponentVO opponentWithDictionary:_challengeVO.creatorVO.dictionary];
-			
-			else
-				vo = opponentVO;//[HONOpponentVO opponentWithDictionary:opponentVO.dictionary];
-			
-			
-			if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
-				isOpponent = YES;
+			HONOpponentVO *vo = ([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix]) ? _challengeVO.creatorVO : opponentVO;
+			isOpponent = (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 			
 			CGPoint pos = CGPointMake(kSnapMediumDim * (_opponentCounter % 4), kSnapMediumDim * (_opponentCounter / 4));
-			
 			UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 			[_gridHolderView addSubview:opponentHolderView];
 			
 			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 			opponentImageView.userInteractionEnabled = YES;
-			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", vo.imagePrefix]] placeholderImage:nil];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.imagePrefix]] placeholderImage:nil];
 			[opponentHolderView addSubview:opponentImageView];
 			
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];

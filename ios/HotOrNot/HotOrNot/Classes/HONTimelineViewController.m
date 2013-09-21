@@ -66,6 +66,7 @@
 @property (nonatomic, strong) UIView *profileOverlayView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic) int userID;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
 @implementation HONTimelineViewController
@@ -191,6 +192,7 @@
 			
 			_challenges = [NSMutableArray array];
 			
+			int count = 0;
 			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
@@ -198,30 +200,28 @@
 					if (vo.expireSeconds != 0)
 						[_challenges addObject:vo];
 				}
+				
+				count++;
+				if (count >= 10)
+					break;
 			}
 			
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
+			[_refreshControl endRefreshing];
+			[_collectionView reloadData];
 			
-			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
-			_flowLayout.minimumLineSpacing = 0.0;
+//			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
+//			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
+//			_flowLayout.minimumLineSpacing = 0.0;
 			
-			_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:_flowLayout];
-			[_collectionView setDataSource:self];
-			[_collectionView setDelegate:self];
-			_collectionView.alpha = 0.0;
-			[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-//			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
-			[_collectionHolderView addSubview:_collectionView];
+//			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+//			_refreshTableHeaderView.delegate = self;
+//			[_collectionView addSubview:_refreshTableHeaderView];
+//			[_refreshTableHeaderView refreshLastUpdatedDate];
 			
-			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-			_refreshTableHeaderView.delegate = self;
-			[_collectionView addSubview:_refreshTableHeaderView];
-			[_refreshTableHeaderView refreshLastUpdatedDate];
-			
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				_collectionView.alpha = 1.0;
-			}];
+//			[UIView animateWithDuration:0.33 animations:^(void) {
+//				_collectionView.alpha = 1.0;
+//			}];
 		}
 		
 		if (_progressHUD != nil) {
@@ -460,6 +460,20 @@
 	
 	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_collectionHolderView];
+	
+	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+	flowLayout.minimumLineSpacing = 0.0;
+	
+	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
+	[_collectionView setDataSource:self];
+	[_collectionView setDelegate:self];
+	[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+	[_collectionHolderView addSubview:_collectionView];
+	
+	_refreshControl = [[UIRefreshControl alloc] init];
+	_refreshControl.tintColor = [UIColor whiteColor];
+	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
+	[_collectionView addSubview:_refreshControl];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -945,11 +959,11 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
