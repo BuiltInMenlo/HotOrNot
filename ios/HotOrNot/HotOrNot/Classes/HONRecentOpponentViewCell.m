@@ -30,7 +30,7 @@
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(206.0, 9.0, 104.0, 44.0);
+		_checkButton.frame = CGRectMake(198.0, 10.0, 104.0, 44.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
@@ -38,7 +38,7 @@
 		[self addSubview:_checkButton];
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_followButton.frame = CGRectMake(256.0 - ((int)(isInvite) * 50.0), 9.0, 44.0 + ((int)(isInvite) * 60.0), 44.0);
+		_followButton.frame = CGRectMake(248.0 - ((int)(isInvite) * 50.0), 10.0, 44.0 + ((int)(isInvite) * 60.0), 44.0);
 		[_followButton setBackgroundImage:[UIImage imageNamed:(isInvite) ? @"subscribe_nonActive" : @"addFriendPlus_nonActive"] forState:UIControlStateNormal];
 		[_followButton setBackgroundImage:[UIImage imageNamed:(isInvite) ? @"subscribe_Active" : @"addFriendPlus_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
@@ -75,12 +75,12 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 24.0, 200.0, 20.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 200.0, 22.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:17];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];

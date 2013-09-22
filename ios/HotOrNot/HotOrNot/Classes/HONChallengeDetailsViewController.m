@@ -51,7 +51,7 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
-//		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 		_challengeVO = vo;
 		_bgImageView = imageView;
 		
@@ -242,23 +242,6 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-			_blurredImageView.alpha = 0.0;
-			[self.view addSubview:_blurredImageView];
-			
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_blurredImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-			}];
-			
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-			userPofileViewController.userVO = userVO;
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -305,7 +288,7 @@
 	
 	NSLog(@"RELOADING:[%@]", [NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]);
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 370.0, 370.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 370.0, 370.0)];
 	_heroImageView.alpha = 0.0;
 	[_heroImageHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
@@ -376,21 +359,21 @@
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	__weak typeof(self) weakSelf = self;
-	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 355.0)];
+	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
 	_heroImageHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_heroImageHolderView];
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroImageHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _heroOpponentVO.imagePrefix]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 										  weakSelf.heroImageView.image = image;
 										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
 									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-										  [weakSelf _reloadHeroImage];
+//										  [weakSelf _reloadHeroImage];
 									  }];
 	
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -400,7 +383,7 @@
 	[_scrollView addSubview:leftButton];
 	
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 355.0, 320.0, kSnapMediumDim)];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 370.0, 320.0, kSnapMediumDim)];
 	[_scrollView addSubview:_gridHolderView];
 	
 	BOOL isOpponent = NO;
@@ -417,7 +400,7 @@
 			
 			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 			opponentImageView.userInteractionEnabled = YES;
-			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.imagePrefix]] placeholderImage:nil];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.imagePrefix]] placeholderImage:nil];
 			[opponentHolderView addSubview:opponentImageView];
 			
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -431,9 +414,9 @@
 		}
 	}
 	
-	_gridHolderView.frame = CGRectMake(0.0, 355.0, 320.0, kSnapMediumDim + (kSnapMediumDim * (respondedOpponents / 4)));
+	_gridHolderView.frame = CGRectMake(0.0, 370.0, 320.0, kSnapMediumDim + (kSnapMediumDim * (respondedOpponents / 4)));
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 302.0, 320.0, 44.0)];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 322.0, 320.0, 44.0)];
 	[_scrollView addSubview:footerHolderView];
 	
 //	NSString *opponents = @"";
@@ -469,8 +452,8 @@
 	[footerHolderView addSubview:creatorButton];
 	
 	//CGSize size = [creatorNameLabel.text sizeWithFont:creatorNameLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 21.0, 270.0, 19.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 17.0, 270.0, 27.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
@@ -479,36 +462,36 @@
 	[footerHolderView addSubview:subjectLabel];
 	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(215.0, 20.0, 24.0, 24.0);
+	likesButton.frame = CGRectMake(280.0, 15.0, 24.0, 24.0);
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
 	[footerHolderView addSubview:likesButton];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(232.0, 21.0, 40.0, 19.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(230.0, 17.0, 40.0, 19.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	_likesLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.textAlignment = NSTextAlignmentCenter;
+	_likesLabel.textAlignment = NSTextAlignmentRight;
 	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 	[footerHolderView addSubview:_likesLabel];
 	
-	UIButton *challengersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	challengersButton.frame = CGRectMake(266.0, 19.0, 24.0, 24.0);
-	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateNormal];
-	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateHighlighted];
-	[footerHolderView addSubview:challengersButton];
-	
-	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(282.0, 20.0, 40.0, 22.0)];
-	challengersLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-	challengersLabel.textColor = [UIColor whiteColor];
-	challengersLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-	challengersLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	challengersLabel.backgroundColor = [UIColor clearColor];
-	challengersLabel.textAlignment = NSTextAlignmentCenter;
-	challengersLabel.text = (_opponentCounter > 99) ? @"99+" : [NSString stringWithFormat:@"%d", _opponentCounter];
-	[footerHolderView addSubview:challengersLabel];
+//	UIButton *challengersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	challengersButton.frame = CGRectMake(266.0, 19.0, 24.0, 24.0);
+//	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateNormal];
+//	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateHighlighted];
+//	[footerHolderView addSubview:challengersButton];
+//	
+//	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(282.0, 20.0, 40.0, 22.0)];
+//	challengersLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
+//	challengersLabel.textColor = [UIColor whiteColor];
+//	challengersLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+//	challengersLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+//	challengersLabel.backgroundColor = [UIColor clearColor];
+//	challengersLabel.textAlignment = NSTextAlignmentCenter;
+//	challengersLabel.text = (_opponentCounter > 99) ? @"99+" : [NSString stringWithFormat:@"%d", _opponentCounter];
+//	[footerHolderView addSubview:challengersLabel];
 		
 //	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(149.0, 29.0, 160.0, 16.0)];
 //	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
@@ -520,7 +503,7 @@
 	
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(234.0, 145.0, 78.0, 78.0);
+	joinButton.frame = CGRectMake(6.0, 158.0, 78.0, 78.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -659,7 +642,20 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _heroOpponentVO.userID, _heroOpponentVO.username], @"opponent", nil]];
 	
-	[self _retrieveUserForProfile:_challengeVO.creatorVO.userID];
+	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+	_blurredImageView.alpha = 0.0;
+	[self.view addSubview:_blurredImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = _challengeVO.creatorVO.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goUserProfile:(id)sender {

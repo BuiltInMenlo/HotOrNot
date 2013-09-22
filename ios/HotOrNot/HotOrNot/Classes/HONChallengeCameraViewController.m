@@ -42,6 +42,7 @@
 @property (nonatomic, strong) UIImageView *submitImageView;
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isMainCamera;
+@property (nonatomic) BOOL isFirstCamera;
 @end
 
 
@@ -154,37 +155,26 @@
 		UIImage *oImage = _rawImage;
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
-		UIImage *gridImage = [HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(160.0, 160.0)];
-		
-		// timeline - rectangle
-		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 853.0)] toRect:CGRectMake(0.0, 57.0, 640.0, 740.0)];
-		
-		// explore / grid - rectangle
-		UIImage *mImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 853.0)] toRect:CGRectMake(0.0, 267.0, 320.0, 320.0)];
-		
-		// grid - square
-		UIImage *tImage = [HONImagingDepictor scaleImage:_squaredImage toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
-		
-		
+		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Small_160x160.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.delegate = self;
 		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(tImage, kSnapJPEGCompress);
+		por1.data = UIImageJPEGRepresentation(gridImage, kSnapJPEGCompress);
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Medium_320x320.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.delegate = self;
 		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
+		por2.data = UIImageJPEGRepresentation(exploreImage, kSnapJPEGCompress);
 		[s3 putObject:por2];
 		
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.delegate = self;
 		por3.contentType = @"image/jpeg";
-		por3.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por3.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		[s3 putObject:por3];
 		
 		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
@@ -193,13 +183,7 @@
 		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
 		[s3 putObject:por4];
 		
-		S3PutObjectRequest *por5 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_s.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por5.delegate = self;
-		por5.contentType = @"image/jpeg";
-		por5.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
-		[s3 putObject:por5];
-		
-		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, por5, nil];
+		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -303,7 +287,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	//self.view.backgroundColor = [UIColor greenColor];
 }
 
 - (void)viewDidLoad {
@@ -400,25 +383,25 @@
 }
 
 - (void)_showOverlay {
-	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
+	int camera_total = 0;
+//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
+//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
+//	
+//	else {
+//		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+//	}
 	
-	[_cameraOverlayView intro];
+	_isFirstCamera = (camera_total == 0);
+	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
+	[_cameraOverlayView introWithTutorial:_isFirstCamera];
 	
 	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
 		[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
 	
 	} else
 		[self _retrieveUser];
-}
-
-- (void)_takePhoto {
-//	if (_progressTimer != nil) {
-//		[_progressTimer invalidate];
-//		_progressTimer = nil;
-//	}
-//	
-//	[_cameraOverlayView takePhoto];
-//	[self.imagePickerController takePicture];
 }
 
 
@@ -652,6 +635,7 @@
 		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
 	
 	_previewView.delegate = self;
+	_previewView.isFirstCamera = _isFirstCamera;
 	[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
 	[_previewView showKeyboard];
 	

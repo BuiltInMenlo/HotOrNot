@@ -28,15 +28,15 @@
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(206.0, 9.0, 104.0, 44.0);
+		_checkButton.frame = CGRectMake(198.0, 11.0, 104.0, 44.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self addSubview:_checkButton];
 		
 		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteButton.frame = CGRectMake(206.0, 9.0, 104.0, 44.0);
+		_inviteButton.frame = CGRectMake(198.0, 11.0, 104.0, 44.0);
 		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
 		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
@@ -49,14 +49,14 @@
 - (void)setUserVO:(HONContactUserVO *)userVO {
 	_userVO = userVO;
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 15.0, 180.0, 20.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 14.0, 180.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.fullName;
 	[self addSubview:nameLabel];
 	
-	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 31.0, 180.0, 18.0)];
+	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 30.0, 180.0, 18.0)];
 	contactLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	contactLabel.textColor = [HONAppDelegate honGrey455Color];
 	contactLabel.backgroundColor = [UIColor clearColor];

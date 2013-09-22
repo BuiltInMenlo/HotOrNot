@@ -61,7 +61,7 @@
 		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"]];
 		_infoHolderImageView.frame = [UIScreen mainScreen].bounds;
 		_infoHolderImageView.userInteractionEnabled = YES;
-		[self addSubview:_infoHolderImageView];
+//		[self addSubview:_infoHolderImageView];
 		
 		UIButton *okInfoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		okInfoButton.frame = _infoHolderImageView.frame;

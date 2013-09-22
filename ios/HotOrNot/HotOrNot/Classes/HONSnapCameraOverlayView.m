@@ -21,9 +21,11 @@
 @property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIView *whiteMatteView;
-@property (nonatomic, strong) UILabel *actionLabel;
+@property (nonatomic, strong) UIImageView *headerBGImageView;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *flipButton;
+@property (nonatomic, strong) UIButton *takePhotoButton;
+@property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
 @end
 
 @implementation HONSnapCameraOverlayView
@@ -37,46 +39,37 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
-		[self addSubview:headerBGImageView];
+		_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+		_headerBGImageView.frame = CGRectOffset(_headerBGImageView.frame, 0.0, -20.0);
+		[self addSubview:_headerBGImageView];
 		
-		UIImageView *opponentsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smallPersonIcon"]];
-		opponentsImageView.frame = CGRectOffset(opponentsImageView.frame, 30.0, 12.0);
-		[self addSubview:opponentsImageView];
-		
-		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 34.0, 100.0, 20.0)];
-		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-		_actionLabel.textColor = [UIColor whiteColor];
-		_actionLabel.backgroundColor = [UIColor clearColor];
-		[self addSubview:_actionLabel];
+		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_flipButton.frame = CGRectMake(8.0, 0.0, 44.0, 44.0);
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_flipButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(252.0, 20.0, 64.0, 44.0);
+		_cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_cancelButton];
 		
-		UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flashButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
-		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_nonActive"] forState:UIControlStateNormal];
-		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_Active"] forState:UIControlStateHighlighted];
+//		UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		flashButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
+//		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_nonActive"] forState:UIControlStateNormal];
+//		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_Active"] forState:UIControlStateHighlighted];
 //		[flashButton addTarget:self action:@selector(_goToggleFlash) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:flashButton];
+//		[self addSubview:flashButton];
 		
-		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 114.0, 94.0, 94.0);
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
-		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:takePhotoButton];
-		
-		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_flipButton.frame = CGRectMake(270.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_flipButton];
+		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_takePhotoButton.frame = CGRectMake(118.0, [UIScreen mainScreen].bounds.size.height - 133.0, 84.0, 84.0);
+		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_takePhotoButton];
 		
 		_whiteMatteView = [[UIImageView alloc] initWithFrame:self.frame];
 		_whiteMatteView.backgroundColor = [UIColor whiteColor];
@@ -89,7 +82,7 @@
 
 
 #pragma mark - Public API
-- (void)intro {
+- (void)introWithTutorial:(BOOL)isTutorial {
 	_blackMatteView.hidden = NO;
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		_blackMatteView.alpha = 0.0;
@@ -97,26 +90,26 @@
 		_blackMatteView.hidden = YES;
 		_blackMatteView.alpha = 1.0;
 	}];
-}
-
-- (void)toggleInfoOverlay:(BOOL)isIntro {
-	if (isIntro) {
+	
+	if (isTutorial) {
 		_infoImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
 		[self addSubview:_infoImageView];
 		
-	} else {
-		[_infoImageView removeFromSuperview];
-		_infoImageView = nil;
+		UIButton *tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		tutorialButton.frame = _infoImageView.frame;
+		[tutorialButton addTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:tutorialButton];
+		
+		_headerBGImageView.hidden = YES;
+		_flipButton.hidden = YES;
+		_cancelButton.hidden = YES;
+		_takePhotoButton.hidden = YES;
 	}
-	
-	_cancelButton.hidden = isIntro;
-	_actionLabel.hidden = isIntro;
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
-	NSLog(@"updateChallengers:[%@]", challengers);
-	_actionLabel.text = [NSString stringWithFormat:@"%d", [challengers count]];
+	//NSLog(@"updateChallengers:[%@]", challengers);
 }
 
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
@@ -125,6 +118,36 @@
 
 
 #pragma mark - Navigation
+- (void)_goCloseTutorial:(id)sender {
+	[[Mixpanel sharedInstance] track:@"Create Volley - Close Overlay"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIButton *button = (UIButton *)sender;
+	[button removeFromSuperview];
+	button = nil;
+	
+	[_infoImageView removeFromSuperview];
+	_infoImageView = nil;
+	
+	_headerBGImageView.hidden = NO;
+	_flipButton.hidden = NO;
+	_cancelButton.hidden = NO;
+	_takePhotoButton.hidden = NO;
+	
+	_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep2"]];
+	_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
+	_tutorialBubbleImageView.alpha = 0.0;
+	
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_tutorialBubbleImageView.alpha = 1.0;
+		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -35.0);
+	}];
+	
+	
+	[self addSubview:_tutorialBubbleImageView];
+}
+
 - (void)_goFlipCamera {
 	[self.delegate cameraOverlayViewChangeCamera:self];
 }
@@ -144,6 +167,9 @@
 	} completion:^(BOOL finished) {
 		_blackMatteView.hidden = YES;
 	}];
+	
+	[_tutorialBubbleImageView removeFromSuperview];
+	_tutorialBubbleImageView = nil;
 	
 	[self.delegate cameraOverlayViewTakePhoto:self];
 }

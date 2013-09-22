@@ -13,7 +13,7 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 0
+#define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 

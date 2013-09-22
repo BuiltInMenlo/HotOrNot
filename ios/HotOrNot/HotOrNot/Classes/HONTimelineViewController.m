@@ -124,7 +124,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"SELECTED_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showProfile:) name:@"SHOW_PROFILE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
 }
@@ -357,23 +357,6 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-			_blurredImageView.alpha = 0.0;
-			[self.view addSubview:_blurredImageView];
-			
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_blurredImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-			}];
-			
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-			userPofileViewController.userVO = userVO;
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-			[navigationController setNavigationBarHidden:YES];
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -712,11 +695,14 @@
 
 
 #pragma mark - Notifications
-- (void)_showPopularUsers:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
-	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+- (void)_showInvite:(NSNotification *)notification {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite Friends"
+														message:@"Do you want to invite friends?"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	
+	[alertView show];
 }
 
 - (void)_showProfile:(NSNotification *)notification {
@@ -822,7 +808,22 @@
 									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	[self _retrieveUserForProfile:userID];
+//	[self _retrieveUserForProfile:userID];
+	
+	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+	_blurredImageView.alpha = 0.0;
+	[self.view addSubview:_blurredImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO {
@@ -851,7 +852,17 @@
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];
 	
-	[self performSelector:@selector(_goChallengeDetails) withObject:Nil afterDelay:0.25];
+	//[self performSelector:@selector(_goChallengeDetails) withObject:Nil afterDelay:0.25];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		//.modalTransitionStyle
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO {
@@ -1106,6 +1117,16 @@
 				[self presentViewController:navigationController animated:YES completion:nil];
 				break;}
 		}
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 

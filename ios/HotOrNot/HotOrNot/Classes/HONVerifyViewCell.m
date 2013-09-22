@@ -73,7 +73,7 @@
 	
 //	[_imageHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)]];
 	
-	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -14.0, 320.0, 427.0)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
+	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -115.0, 320.0, 427.0)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_challengeImageView];
@@ -87,20 +87,20 @@
 									weakSelf.challengeImageView.image = image;
 									[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-									[weakSelf _imageLoadFallback];
+//									[weakSelf _imageLoadFallback];
 								}];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 44.0);
 	[self.contentView addSubview:gradientImageView];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(134.0, 13.0, 90.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
-	timeLabel.textColor = [UIColor whiteColor];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-	[self.contentView addSubview:timeLabel];
+//	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(134.0, 13.0, 90.0, 16.0)];
+//	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
+//	timeLabel.textColor = [UIColor whiteColor];
+//	timeLabel.backgroundColor = [UIColor clearColor];
+//	timeLabel.textAlignment = NSTextAlignmentRight;
+//	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
+//	[self.contentView addSubview:timeLabel];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 144.0, 150.0, 22.0)];
 	usernameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];

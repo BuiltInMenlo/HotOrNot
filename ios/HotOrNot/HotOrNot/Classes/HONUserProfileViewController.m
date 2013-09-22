@@ -17,9 +17,11 @@
 #import "HONOpponentVO.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONHeaderView.h"
+#import "HONUserVO.h"
 
 
 @interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate>
+@property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -42,7 +44,8 @@
 
 
 @implementation HONUserProfileViewController
-@synthesize userVO = _userVO;
+
+@synthesize userID = _userID;
 
 - (id)initWithBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
@@ -67,13 +70,13 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser {
+- (void)_retrieveUser:(BOOL)isRefresh {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 5], @"action",
-							[NSString stringWithFormat:@"%d", _userVO.userID], @"userID",
+							[NSString stringWithFormat:@"%d", _userID], @"userID",
 							nil];
 	
-	//NSLog(@"USER BY ID PARAMS:[%@]", params);
+	NSLog(@"USER BY ID PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -91,10 +94,15 @@
 			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
-			[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-			_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-			_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
-			_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+			
+			if (isRefresh) {
+				[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+				_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+				_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+				_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+			
+			} else
+				[self _makeUI];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -222,6 +230,12 @@
 }
 
 
+#pragma mark - Public APIs
+- (void)setUserID:(int)userID {
+	_userID = userID;
+	[self _retrieveUser:NO];
+}
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -240,10 +254,10 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
-//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
-//	_refreshTableHeaderView.delegate = self;
-//	[_scrollView addSubview:_refreshTableHeaderView];
-//	[_refreshTableHeaderView refreshLastUpdatedDate];
+	//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	//	_refreshTableHeaderView.delegate = self;
+	//	[_scrollView addSubview:_refreshTableHeaderView];
+	//	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -273,9 +287,9 @@
 	_footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
 	[_footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
 	[_footerToolbar setItems:[NSArray arrayWithObjects:
-							 [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
-							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-							 [[UIBarButtonItem alloc] initWithCustomView:_flagButton], nil]];
+							  [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
+							  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+							  [[UIBarButtonItem alloc] initWithCustomView:_flagButton], nil]];
 	[self.view addSubview:_footerToolbar];
 }
 
@@ -305,85 +319,6 @@
 }
 
 
-#pragma mark - Public APIs
-- (void)setUserVO:(HONUserVO *)userVO {
-	_userVO = userVO;
-	
-	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	
-	BOOL isFriend = NO;
-	if (!isUser) {
-		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-			if (vo.userID == _userVO.userID) {
-				isFriend = YES;
-				break;
-			}
-		}
-	}
-	
-	[_headerView setTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
-	
-	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
-	[_scrollView addSubview:_avatarHolderView];
-	
-	NSMutableString *avatarURL = [_userVO.imageURL mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_l.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_l.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	
-	__weak typeof(self) weakSelf = self;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
-	_avatarImageView.alpha = 0.0;
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
-															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-								weakSelf.avatarImageView.image = image;
-								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
-							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								NSLog(@"FALLBACK");
-								[weakSelf _reloadCreatorImage];
-							}];
-	[_avatarHolderView addSubview:_avatarImageView];
-	
-	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 7.0, 7.0);
-	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
-	[_headerView addButton:verifiedImageView];
-	
-	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 260.0, 260.0, 30.0)];
-	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
-	_subscribersLabel.textColor = [UIColor whiteColor];
-	_subscribersLabel.backgroundColor = [UIColor clearColor];
-	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-	[_scrollView addSubview:_subscribersLabel];
-	
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 312.0, 260.0, 30.0)];
-	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
-	_volleysLabel.textColor = [UIColor whiteColor];
-	_volleysLabel.backgroundColor = [UIColor clearColor];
-	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
-	[_scrollView addSubview:_volleysLabel];
-	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 364.0, 260.0, 30.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
-	_likesLabel.textColor = [UIColor whiteColor];
-	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
-	[_scrollView addSubview:_likesLabel];
-	
-	_footerToolbar.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	
-	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
-	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-	_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 95.0 : 73.0, 44.0);
-
-	
-	[self _retrieveChallenges];
-}
-
-
 #pragma mark - Navigation
 - (void)_goDone {
 	[self dismissViewControllerAnimated:YES completion:^(void) {
@@ -392,7 +327,7 @@
 }
 
 - (void)_goRefresh {
-	[self _retrieveUser];
+	[self _retrieveUser:YES];
 	
 	for (UIImageView *imageView in _gridHolderView.subviews)
 		[imageView removeFromSuperview];
@@ -503,6 +438,82 @@
 	}
 }
 
+- (void)_makeUI {
+	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	
+	BOOL isFriend = NO;
+	if (!isUser) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+	}
+	
+	[_headerView setTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
+	
+	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 224.0)];
+	_avatarHolderView.clipsToBounds = YES;
+	[_scrollView addSubview:_avatarHolderView];
+	
+	NSMutableString *avatarURL = [_userVO.imageURL mutableCopy];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	
+	__weak typeof(self) weakSelf = self;
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -101.0, 320.0, 427.0)];
+	_avatarImageView.alpha = 0.0;
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
+															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								weakSelf.avatarImageView.image = image;
+								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
+							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+								NSLog(@"FALLBACK");
+								[weakSelf _reloadCreatorImage];
+							}];
+	[_avatarHolderView addSubview:_avatarImageView];
+	
+	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
+	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
+	[_headerView addButton:verifiedImageView];
+	
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 260.0, 260.0, 30.0)];
+	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_subscribersLabel.textColor = [UIColor whiteColor];
+	_subscribersLabel.backgroundColor = [UIColor clearColor];
+	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+	[_scrollView addSubview:_subscribersLabel];
+	
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 312.0, 260.0, 30.0)];
+	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_volleysLabel.textColor = [UIColor whiteColor];
+	_volleysLabel.backgroundColor = [UIColor clearColor];
+	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+	[_scrollView addSubview:_volleysLabel];
+	
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 364.0, 260.0, 30.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_likesLabel.textColor = [UIColor whiteColor];
+	_likesLabel.backgroundColor = [UIColor clearColor];
+	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+	[_scrollView addSubview:_likesLabel];
+	
+	_footerToolbar.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	
+	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
+	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+	_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 95.0 : 73.0, 44.0);
+	
+	
+	[self _retrieveChallenges];
+}
+
 - (void)_makeGrid {
 	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
@@ -517,7 +528,7 @@
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 		imageView.userInteractionEnabled = YES;
-		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
+		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
 		[imageHolderView addSubview:imageView];
 		
 		_challengeCounter++;
@@ -603,6 +614,7 @@
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
 			[_subscribeButton setTitle:@"Unsubscribe" forState:UIControlStateNormal];
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 		
@@ -615,6 +627,7 @@
 		if (buttonIndex == 1) {
 			[self _removeFriend:_userVO.userID];
 			[_subscribeButton setTitle:@"Subscribe" forState:UIControlStateNormal];
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, 73.0, 44.0);
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 	}

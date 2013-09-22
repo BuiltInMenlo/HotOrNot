@@ -164,9 +164,14 @@
 	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-20 00:00:00"]];
 	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 11595 && diff > 0);
 	
-	float ratio = 0.56338028169014;//([HONAppDelegate isRetina5]) ? 0.56338028169014 : 0.75;
-	NSString *imageURL = (isOriginalImageAvailable) ? _opponentVO.imagePrefix : _opponentVO.avatarURL;
-	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * ratio) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * ratio), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	
+//	float ratio = 0.56338028169014;//([HONAppDelegate isRetina5]) ? 0.56338028169014 : 0.75;
+//	NSString *imageURL = (isOriginalImageAvailable) ? _opponentVO.imagePrefix : _opponentVO.avatarURL;
+	NSMutableString *imageURL = [_opponentVO.imagePrefix mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	//CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * ratio) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * ratio), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, 0.0, imageSize.width, imageSize.height);
 	
 	_imageView = [[UIImageView alloc] initWithFrame:frame];
 	_imageView.alpha = 0.0;
@@ -363,7 +368,6 @@
 	
 	//NSLog(@"VERSION:[%d][%@]", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]);
 	
-	//if (_challengeVO != nil)
 	if (_isVerify)
 		_opponentVO = _challengeVO.creatorVO;
 	
@@ -471,7 +475,7 @@
 								weakSelf.avatarImageView.image = image;
 								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								[weakSelf _reloadProfileImage];
+								//[weakSelf _reloadProfileImage];
 							}];
 	[_avatarHolderView addSubview:_avatarImageView];
 	
@@ -700,20 +704,20 @@
 }
 
 - (void)_makeGrid {
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, (kSnapMediumDim) * (([_challenges count] / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	
 	_challengeCounter = 0;
 	for (HONChallengeVO *vo in _challenges) {
-		CGPoint pos = CGPointMake((kSnapMediumDim) * (_challengeCounter % 4), (kSnapMediumDim) * (_challengeCounter / 4));
+		CGPoint pos = CGPointMake(kSnapMediumDim * (_challengeCounter % 4), kSnapMediumDim * (_challengeCounter / 4));
 		
 		UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 		[_gridHolderView addSubview:imageHolderView];
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 		imageView.userInteractionEnabled = YES;
-		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
+		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
 		[imageHolderView addSubview:imageView];
 		
 		_challengeCounter++;

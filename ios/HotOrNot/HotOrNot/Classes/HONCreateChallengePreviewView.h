@@ -18,7 +18,8 @@
 - (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw;
 - (void)showKeyboard;
 
-@property(nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;
+@property (nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;
+@property (nonatomic) BOOL isFirstCamera;
 @end
 
 @protocol HONCreateChallengePreviewViewDelegate

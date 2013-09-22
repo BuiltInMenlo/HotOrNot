@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONAddContactsViewController : UIViewController
+@interface HONAddContactsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
 @end

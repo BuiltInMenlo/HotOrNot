@@ -7,6 +7,8 @@
 //
 
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import <CoreImage/CoreImage.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -87,33 +89,29 @@
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	@try {
-		float avatarSize = kSnapLargeDim;
-		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
+//		float avatarSize = kSnapLargeDim;
+//		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
 		
 		UIImage *oImage = image;
-		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 202.0, 640.0, 450.0)];
-		UIImage *tImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
-		tImage = [HONImagingDepictor cropImage:tImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+		
+//		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 202.0, 640.0, 450.0)];
+//		UIImage *tImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
+//		tImage = [HONImagingDepictor cropImage:tImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@.jpg", _filename] inBucket:@"hotornot-avatars"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg.jpg", _filename] inBucket:@"hotornot-avatars"];
 		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(tImage, kSnapJPEGCompress);
+		por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		por1.delegate = self;
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-avatars"];
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
 		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por2.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
 		por2.delegate = self;
 		[s3 putObject:por2];
-		
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
-		por3.contentType = @"image/jpeg";
-		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-		por3.delegate = self;
-		[s3 putObject:por3];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -264,7 +262,7 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 				}];
 				
 				
@@ -305,17 +303,15 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
-	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -20.0);
+	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -13.0);
 	_headerView.backgroundColor = [UIColor blackColor];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
-	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 48.0, 200.0, 24.0)];
+	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
 	headerTitleLabel.backgroundColor = [UIColor clearColor];
-	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	headerTitleLabel.textColor = [UIColor whiteColor];
 	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
 	headerTitleLabel.text = @"Register for Volley";
@@ -325,19 +321,19 @@
 	[self.view addSubview:_usernameHolderView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_usernameButton.frame = CGRectMake(0.0, 44.0, 320.0, 64.0);
+	_usernameButton.frame = CGRectMake(0.0, 64.0, 320.0, 64.0);
 	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
-	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 65.0, 308.0, 26.0)];
+	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
 	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameLabel.textColor = [HONAppDelegate honGrey710Color];
 	_usernameLabel.backgroundColor = [UIColor clearColor];
 	_usernameLabel.text = @"Enter username";
 	[self.view addSubview:_usernameLabel];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 65.0, 308.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -354,16 +350,16 @@
 	[self.view addSubview:_usernameTextField];
 	
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 108.0);
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 128.0);
 	[self.view addSubview:divider1ImageView];
 	
 	_emailButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_emailButton.frame = CGRectMake(0.0, 109.0, 320.0, 64.0);
+	_emailButton.frame = CGRectMake(0.0, 129.0, 320.0, 64.0);
 	[_emailButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
 	[_emailButton addTarget:self action:@selector(_goEmail) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_emailButton];
 	
-	_emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 131.0, 230.0, 30.0)];
+	_emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 147.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_emailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_emailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -381,10 +377,10 @@
 	[self.view addSubview:_emailTextField];
 	
 	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 173.0);
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 193.0);
 	[self.view addSubview:divider2ImageView];
 	
-	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 191.0, 296.0, 30.0)];
+	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
 	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_birthdayLabel.textColor = [HONAppDelegate honGrey710Color];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
@@ -392,13 +388,13 @@
 	[self.view addSubview:_birthdayLabel];
 	
 	_birthdayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_birthdayButton.frame = CGRectMake(0.0, 174.0, 320.0, 64.0);
+	_birthdayButton.frame = CGRectMake(0.0, 194.0, 320.0, 64.0);
 	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
 	[_birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_birthdayButton];
 	
 	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 238.0);
+	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 258.0);
 	[self.view addSubview:divider3ImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -450,8 +446,13 @@
 			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 			
 			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
+			
+			UIImageView *overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+			overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			[_cameraOverlayView addSubview:overlayImageView];
+			
 			UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			signupButton.frame = CGRectMake(53.0, [UIScreen mainScreen].bounds.size.height - 129.0, 214.0, 49.0);
+			signupButton.frame = CGRectMake(42.0, [UIScreen mainScreen].bounds.size.height - 179.0, 237.0, 67.0);
 			[signupButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
 			[signupButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 			[signupButton addTarget:self action:@selector(_goProfileCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -469,14 +470,13 @@
 			[self presentViewController:self.previewPicker animated:NO completion:nil];
 		
 		} else {
-			UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialHolderView.frame.size.height)];
-			page1ImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fue_dynamicImage_A-568h@2x" : @"fue_dynamicImage_A"];
-			page1ImageView.userInteractionEnabled = YES;
-			page1ImageView.backgroundColor = [UIColor whiteColor];
-			[_tutorialHolderView addSubview:page1ImageView];
+			UIImageView *overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+			overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			overlayImageView.userInteractionEnabled = YES;
+			[_tutorialHolderView addSubview:overlayImageView];
 			
 			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			closeTutorialButton.frame = CGRectMake(53.0, 371.0, 214.0, 49.0);
+			closeTutorialButton.frame = CGRectMake(42.0, [UIScreen mainScreen].bounds.size.height - 179.0, 237.0, 67.0);
 			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
 			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
@@ -616,10 +616,30 @@
 	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo");
 	
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
-	[self _uploadPhoto:image];
 	
-	[self dismissViewControllerAnimated:YES completion:^(void) {
-	}];
+//	UIImageView *previewImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//	previewImageView.image = image;
+//	[_cameraOverlayView addSubview:previewImageView];
+	
+	CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
+	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+	NSArray *features = [detctor featuresInImage:ciImage];
+//	NSLog(@"FEATURES:[%@]", features);
+	
+	if ([features count] > 0) {
+		[self _uploadPhoto:image];
+		[self dismissViewControllerAnimated:YES completion:^(void) {}];
+	
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"No selfie Detected!"
+									message:@"Retake your photo"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		
+//		[previewImageView removeFromSuperview];
+//		previewImageView = nil;
+	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -636,7 +656,7 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 		}];
 	}];
 }
@@ -706,7 +726,7 @@
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	if (_uploadCounter == 3) {
+	if (_uploadCounter == 2) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}

@@ -8,10 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONUserVO.h"
-
 @interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate>
-@property (nonatomic, strong) HONUserVO *userVO;
-
 - (id)initWithBackground:(UIImageView *)imageView;
+@property (nonatomic) int userID;
 @end

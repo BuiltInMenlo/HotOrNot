@@ -14,8 +14,7 @@
 @protocol HONSnapCameraOverlayViewDelegate;
 @interface HONSnapCameraOverlayView : UIView
 - (id)initWithFrame:(CGRect)frame;
-- (void)intro;
-- (void)toggleInfoOverlay:(BOOL)isIntro;
+- (void)introWithTutorial:(BOOL)isTutorial;
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining;
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView;
 @property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;

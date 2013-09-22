@@ -105,10 +105,10 @@
 //	bgView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 //	[_tabHolderView addSubview:bgView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
-	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
-	bgImageView.userInteractionEnabled = YES;
-	[_tabHolderView addSubview:bgImageView];
+//	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
+//	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
+//	bgImageView.userInteractionEnabled = YES;
+//	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_timelineButton.frame = CGRectMake(20.0, 0.0, kTabSize.width, kTabSize.height);

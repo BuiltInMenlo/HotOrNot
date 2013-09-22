@@ -847,6 +847,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	[alertView show];
 }
 
+- (void)_showUI {
+	self.tabBarController.view.hidden = NO;
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -879,8 +883,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
 	[[UITabBar appearance] setTintColor:[UIColor blackColor]];
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
+	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
+	[[UIToolbar appearance] setBarTintColor:[UIColor blackColor]];
+	[[UIToolbar appearance] setTintColor:[UIColor blackColor]];
 	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
+	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
@@ -989,9 +999,10 @@ NSString * const kTwilioSMS = @"6475577873";
 		//self.tabBarController.view.frame = CGRectOffset(self.tabBarController.view.frame, 0.0, 20.0);
 		self.tabBarController.delegate = self;
 		
-//		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-//		_bgImageView.frame = CGRectMake(0.0, [[UIApplication sharedApplication] statusBarFrame].size.height, 320.0, [UIScreen mainScreen].bounds.size.height);
-//		[self.tabBarController.view addSubview:_bgImageView];
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
+			self.tabBarController.view.hidden = YES;
+			[self performSelector:@selector(_showUI) withObject:nil afterDelay:3.0];
+		}
 		
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -1338,8 +1349,8 @@ NSString * const kTwilioSMS = @"6475577873";
 				}
 			}
 			
-//			[self _retreiveSubscribees];
-			[self _initTabs];
+			[self _retreiveSubscribees];
+//			[self _initTabs];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

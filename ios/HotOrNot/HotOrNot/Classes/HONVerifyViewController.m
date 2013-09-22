@@ -123,25 +123,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				}
 				
 			} else {
-				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-				
-				HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-				_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-				_blurredImageView.alpha = 0.0;
-				[self.view addSubview:_blurredImageView];
-				
-				[UIView animateWithDuration:0.25 animations:^(void) {
-					_blurredImageView.alpha = 1.0;
-				} completion:^(BOOL finished) {
-				}];
-				
-				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-				userPofileViewController.userVO = userVO;
-				
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+//				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//				//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//				
+//				HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -586,7 +571,21 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	[self _retrieveUser:challengeVO.creatorVO.userID];
+	
+	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+	_blurredImageView.alpha = 0.0;
+	[self.view addSubview:_blurredImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = challengeVO.creatorVO.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)verifyViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
@@ -805,59 +804,22 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	[self _retrieveUser:challengeVO.creatorVO.userID];
+	
+	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+	_blurredImageView.alpha = 0.0;
+	[self.view addSubview:_blurredImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = challengeVO.creatorVO.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
-
-
-/*
-#pragma mark - CollectionView DataSource Delegates
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return ([_challenges count]);
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONVerifyViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-	
-//	if (indexPath.row % 3 == 0) {
-//		cell.backgroundColor = [UIColor greenColor];
-//	} else if (indexPath.row % 2 == 0) {
-//		cell.backgroundColor = [UIColor redColor];
-//	} else if (indexPath.row % 5 == 0) {
-//		cell.backgroundColor = [UIColor blueColor];
-//	} else
-//		cell.backgroundColor = [UIColor whiteColor];
-	
-	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
-	cell.delegate = self;
-	
-	[_cells addObject:cell];
-    return (cell);
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (CGSizeMake(320.0, (indexPath.row == [_challenges count] - 1) ? 245.0 : 198.0)); //47
-}
-
-
-#pragma mark - CollectionView Delegates
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (YES);
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.row];
-	[cell showTapOverlay];
-	
-	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	
-	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	[self _retrieveUser:challengeVO.creatorVO.userID];
-}*/
 
 
 #pragma mark - ActionSheet Delegates

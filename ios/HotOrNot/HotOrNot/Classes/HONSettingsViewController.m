@@ -77,27 +77,16 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-	[self.view addSubview:bgImageView];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)];
-	[_headerView hideRefreshing];
-	[self.view addSubview:_headerView];
-	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:closeButton];
 	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	//[_headerView addSubview:createChallengeButton];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:NSLocalizedString(@"header_settings", nil)];
+	[_headerView hideRefreshing];
+	[_headerView addButton:closeButton];
+	[self.view addSubview:_headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavBarHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -124,17 +113,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Settings - Create Snap"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
 - (void)_goClose {
 	[[Mixpanel sharedInstance] track:@"Settings - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:

@@ -17,7 +17,7 @@ typedef enum {
 } HONTimelineType;
 
 
-@interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
+@interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 - (id)initWithFriends;
 - (id)initWithSubject:(NSString *)subjectName;

@@ -22,7 +22,7 @@
 #import "HONAddContactViewCell.h"
 
 
-@interface HONAddContactsViewController ()<UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONRecentOpponentViewCellDelegate, HONAddContactViewCellDelegate>
+@interface HONAddContactsViewController ()<HONRecentOpponentViewCellDelegate, HONAddContactViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
@@ -246,11 +246,9 @@
 			}
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			
 			if ([_selectedNonAppContacts count] == 0) {
 				[self dismissViewControllerAnimated:YES completion:^(void){
-					//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
 				}];
 			}
 		}
@@ -511,24 +509,34 @@
 	_selectedNonAppContacts = [NSMutableArray array];
 	_selectedInAppContacts = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite Friends"];
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	headerView.backgroundColor = [UIColor blackColor];
+	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:closeButton];
+	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
+	headerTitleLabel.backgroundColor = [UIColor clearColor];
+	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	headerTitleLabel.textColor = [UIColor whiteColor];
+	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
+	headerTitleLabel.text = @"Friends";
+	[headerView addSubview:headerTitleLabel];
 	
-	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteAllButton.frame = CGRectMake(230.0, 5.0, 84.0, 34.0);
-	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
-	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
-	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:inviteAllButton];
+//	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	inviteAllButton.frame = CGRectMake(0.0, 25.0, 84.0, 34.0);
+//	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
+//	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
+//	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:inviteAllButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 65.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -604,19 +612,13 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if ([_selectedInAppContacts count] > 0)
-		[self _sendFriendRequests];
-	
-	if ([_selectedNonAppContacts count] > 0)
-		[self _sendInvites];
-	
-	if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:^(void){
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
-		}];
-	}
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite All"
+														message:@"Do you wish to select all of your contacts?"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:1];
+	[alertView show];
 }
 
 - (void)_goSelectAllToggle {
@@ -664,7 +666,6 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:^(void){
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
 		}];
 	}
 }
@@ -748,7 +749,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Subscribe to friends who Volley" : @"Invite friends to Volley";
+	label.text = (section == 0) ? @"Friends on Volley" : @"Invite contacts";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);
@@ -825,6 +826,12 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
 		switch(buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Add Contacts - Close Confirm"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+				
 			case 1:
 				[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -844,6 +851,18 @@
 				_selectedInAppContacts = [NSMutableArray arrayWithArray:_inAppContacts];
 				
 				break;
+		}
+		
+		if ([_selectedInAppContacts count] > 0)
+			[self _sendFriendRequests];
+		
+		if ([_selectedNonAppContacts count] > 0)
+			[self _sendInvites];
+		
+		if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
+			[self dismissViewControllerAnimated:YES completion:^(void){
+			}];
 		}
 	}
 }
