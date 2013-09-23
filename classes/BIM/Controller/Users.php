@@ -32,18 +32,20 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public function firstRunComplete(){
         $input = (object) ($_POST ? $_POST : $_GET);
+    	$user = (object) array('result' => "fail");
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) && !empty( $input->age ) && !empty( $input->password ) ){
-            if( BIM_Utils::ageOK( $input->age ) ){
+    	    $existingUser = BIM_Model_User::getByUsername( $input->username );
+            $userId = $this->resolveUserId( $input->userID );
+    	    if ( !$existingUser || !$existingUser->isExtant() || $existingUser->id == $userId ) {
                 $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
-                $userId = $this->resolveUserId( $input->userID );
                 $users = new BIM_App_Users();
                 self::friendTeamVolley($userId);
                 BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
-			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
+			    $user = $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
             }
 		}
-		return false;
+		return $user;
     }
     
     public static function friendTeamVolley( $userId ){

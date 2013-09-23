@@ -205,7 +205,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function submitChallengeWithUsernames(){
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
-        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->usernames)){
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && property_exists($input, 'usernames') ){
             $input->imgURL = $this->normalizeVolleyImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
             $usernames = explode('|', $input->usernames );
@@ -220,7 +220,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function submitChallengeWithUsername(){
         $input = (object) ($_POST ? $_POST : $_GET);
         $uv = null;
-        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->username)){
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && property_exists($input, 'username') ){
             $input->imgURL = $this->normalizeVolleyImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
             $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;

@@ -587,4 +587,58 @@ class BIM_Model_User{
         $ids = $dao->getPendingSuspendees( $limit );
         return self::getMulti($ids);
     }
+    
+    public static function processProfileImages( $userIds ){
+        $conf = BIM_Config::aws();
+        S3::setAuth($conf->access_key, $conf->secret_key);
+        while( $userIds ){
+            $ids = array_splice($userIds, 0, 250);
+            $users = BIM_Model_User::getMulti($ids);
+            foreach( $users as $user ){
+                if( !empty( $user->img_url ) && !preg_match( '@facebook.com@', $user->img_url ) ){
+                    $imgPrefix = preg_replace('@\.jpg@','', $user->img_url );
+                    self::processImage( $imgPrefix );
+                    echo "processed user $user->id\n\n";
+                }
+            }
+            print count( $userIds )." remaining\n\n====\n\n";
+        }
+    }
+    
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-avatars' ){
+        echo "converting $imgPrefix\n";
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $convertedImages = BIM_Utils::finalizeImages($image);
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+                echo "put {$imgPrefix}{$suffix}.jpg\n";
+            }
+        }
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+            $imgUrl = "{$imgPrefix}.jpg";
+            try{
+                $image = new Imagick( $imgUrl );
+            } catch( Exception $e ){
+                $msg = $e->getMessage()." - $imgUrl";
+                error_log( $msg );
+                $image = null;
+            }
+        }
+        echo "\n";
+        return $image;
+    }
 }
