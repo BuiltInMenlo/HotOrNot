@@ -431,6 +431,7 @@
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_closeButton.frame = self.view.frame;
+//	_closeButton.backgroundColor = [UIColor greenColor];
 	_closeButton.hidden = YES;
 	[_closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchDown];
 	[_scrollView addSubview:_closeButton];

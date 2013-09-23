@@ -686,14 +686,17 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																									[HONAppDelegate instagramShareComment], @"caption",
-																									[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
-		}
 		
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+			if (buttonIndex == 1) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
+																	object:[NSDictionary dictionaryWithObjectsAndKeys:
+																			[HONAppDelegate instagramShareComment], @"caption",
+																			[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+																										avatarImage:[HONAppDelegate avatarImage]
+																										   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
+			}
 		}];
 		
 	} else if (alertView.tag == 2) {

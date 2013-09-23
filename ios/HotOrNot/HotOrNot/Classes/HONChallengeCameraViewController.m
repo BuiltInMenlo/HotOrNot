@@ -43,6 +43,7 @@
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isMainCamera;
 @property (nonatomic) BOOL isFirstCamera;
+@property (nonatomic) int selfieAttempts;
 @end
 
 
@@ -56,6 +57,7 @@
 		_subscribers = [NSMutableArray array];
 		_subscriberIDs = [NSMutableArray array];
 		_subjectName = @"";
+		_selfieAttempts = 0;
 	}
 	
 	return (self);
@@ -70,6 +72,7 @@
 		_subscriberIDs = [NSMutableArray array];
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
+		_selfieAttempts = 0;
 	}
 	
 	return (self);
@@ -154,8 +157,8 @@
 		// preview - full size
 		UIImage *oImage = (_rawImage.size.width >= 1936) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:oImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
-		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
-		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
+//		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
+//		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		
@@ -648,35 +651,91 @@
 	} else
 		_squaredImage = workingImage;
 	
+	CIImage *ciImage = [CIImage imageWithCGImage:workingImage.CGImage];
+	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+	NSArray *features = [detctor featuresInImage:ciImage];
 	
-	_usernames = [NSMutableArray array];
-	for (HONUserVO *vo in _subscribers)
-		[_usernames addObject:vo.username];
-	
-	if (_isMainCamera)
-		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
-	else
-		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
-	
-	_previewView.delegate = self;
-	_previewView.isFirstCamera = _isFirstCamera;
-	[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
-	[_previewView showKeyboard];
-	
-	[_cameraOverlayView submitStep:_previewView];
-	
-	[self _uploadPhotos];
+	NSLog(@"FEATURES:[%d]", [features count]);
 	
 	
-	int friend_total = 0;
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+	if ([features count] > 0) {
+		_usernames = [NSMutableArray array];
+		for (HONUserVO *vo in _subscribers)
+			[_usernames addObject:vo.username];
 		
+		if (_isMainCamera)
+			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
+		else
+			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
+		
+		_previewView.delegate = self;
+		_previewView.isFirstCamera = _isFirstCamera;
+		[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
+		[_previewView showKeyboard];
+		
+		[_cameraOverlayView submitStep:_previewView];
+		
+		[self _uploadPhotos];
+		
+		
+		int friend_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+		} else {
+			friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
+	
 	} else {
-		friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		_selfieAttempts++;
+		
+		if (_selfieAttempts < 3) {
+			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+										message:@"Please retake your photo"
+									   delegate:self
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+										message:@"You may get flagged by the community."
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			
+			_usernames = [NSMutableArray array];
+			for (HONUserVO *vo in _subscribers)
+				[_usernames addObject:vo.username];
+			
+			if (_isMainCamera)
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
+			else
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
+			
+			_previewView.delegate = self;
+			_previewView.isFirstCamera = _isFirstCamera;
+			[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
+			[_previewView showKeyboard];
+			
+			[_cameraOverlayView submitStep:_previewView];
+			
+			[self _uploadPhotos];
+			
+			
+			int friend_total = 0;
+			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+			} else {
+				friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}
+		}
 	}
 }
 
@@ -705,18 +764,21 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		[self performSelector:@selector(_sendToInstagram) withObject:Nil afterDelay:2.5];
-		
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-		}];
 	}
+	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+	}];
 }
 
 - (void)_sendToInstagram {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																							[HONAppDelegate instagramShareComment], @"caption",
-																							[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
+														object:[NSDictionary dictionaryWithObjectsAndKeys:
+																[HONAppDelegate instagramShareComment], @"caption",
+																[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+																							avatarImage:[HONAppDelegate avatarImage]
+																							   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
 }
 
 
