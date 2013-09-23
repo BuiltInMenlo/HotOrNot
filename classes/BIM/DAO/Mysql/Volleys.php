@@ -811,10 +811,10 @@ WHERE is_verify != 1
 			SELECT id 
 			FROM `hotornot-dev`.`tblChallenges` 
 			WHERE `is_private` != "Y" 
-				AND (`status_id` = 1 OR `status_id` = 4)
+				AND `status_id` IN (1,4)
 				AND is_verify != 1
 			ORDER BY `updated` 
-			DESC LIMIT 250;'; 
+			DESC LIMIT 100;'; 
         $stmt = $this->prepareAndExecute( $query );
         $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
         foreach( $ids as &$id ){
@@ -878,7 +878,7 @@ WHERE is_verify != 1
         $startDate = new DateTime( "@$startDate" );
         $startDate = $startDate->format('Y-m-d H:i:s');
         $query = '
-        	SELECT id , subject_id, sum(votes) as votes
+        	SELECT id, subject_id, sum(votes) as votes
         	FROM `hotornot-dev`.tblChallenges as c
         		join `hotornot-dev`.tblChallengeParticipants as p
         		on c.id = p.challenge_id
@@ -913,9 +913,39 @@ WHERE is_verify != 1
         	union all
         	select sum(flag) as count from `hotornot-dev`.tblFlaggedUserApprovals where challenge_id = ? and flag > 0
         ";
-        $params = array( $volleyId, $volleyId );        
+        $params = array( $volleyId, $volleyId );
         $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         return $data;
+    }
+    
+    public function updateExploreIds( $volleyData ){
+        if( !empty( $volleyData ) ){
+            $sql = "delete from `hotornot-dev`.explore_ids";
+            $stmt = $this->prepareAndExecute( $sql );
+            
+            $params = array();
+            $valueSql = array();
+            foreach( $volleyData as $volley ){
+                $valueSql[] = " ( ?,? ) ";
+                $params[] = $volley->id;
+                $params[] = $volley->updated;
+            }
+            $valueSql = join(',', $valueSql );
+            $sql = "
+            	INSERT IGNORE INTO `hotornot-dev`.explore_ids
+            	(id,updated)
+            	VALUES $valueSql
+            ";
+            
+            $stmt = $this->prepareAndExecute( $sql, $params );
+        }
+        return $volleyData;
+    }
+    
+    public function getExploreIds(){
+        $sql = "select id from `hotornot-dev`.explore_ids order by updated desc";
+        $stmt = $this->prepareAndExecute( $sql );
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
 }

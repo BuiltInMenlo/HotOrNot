@@ -16,6 +16,21 @@ class BIM_Controller_Admin{
      */
     
     public static function manageExplore(){
+        $input = (object)( $_POST? $_POST : $_GET);
+        $volleyIds = array();
+        if( !empty($input->volleyIds) ){
+            $volleyIds = $input->volleyIds;
+            $volleyData = array();
+            foreach( $volleyIds as $volleyId ){
+                $volley = BIM_Model_Volley::get( $volleyId );
+                if( $volley->isExtant() ){
+                    $volleyData[] = $volley;
+                }
+            }
+            BIM_Model_Volley::updateExploreIds( $volleyData );
+        } else {
+            $volleyIds = BIM_Model_Volley::getExploreIds();
+        }
         echo("
         <html>
         <head>
@@ -23,31 +38,41 @@ class BIM_Controller_Admin{
         <body>
         ");
         
-        $users = BIM_Model_User::getSuspendees();
-        echo "<hr>Suspended - ".count( $users )."<hr>\n";
+        $volleys = BIM_Model_Volley::getTopVolleysByVotes();
+        echo "<hr>Top Volleys By Likes - ".count( $volleys )."<hr>\n";
         
         echo("
+        <form method='POST'>
+        <input type='submit'>
         <table border=1 cellpadding=10>
         <tr>
+        <th>Volley Id</th>
         <th>Image</th>
-        <th>Username</th>
-        <th>Flags</th>
-        <th>Approvals</th>
-        <th>Abuse Count</th>
+        <th>Creator</th>
+        <th>Hash Tag</th>
+        <th>Challengers</th>
+        <th>Creation Date</th>
+        <th>Last Updated</th>
+        <th>Display</th>
         </tr>
         ");
         // now get the flag counts for each user
-        foreach( $users as $user ){
-            $vv = BIM_Model_Volley::getVerifyVolley($user->id);
-            if( $vv->isExtant() ){
-                $flagCounts = $vv->getFlagCounts();
+        foreach( $volleys as $volley ){
+            $creator = $volley->creator;
+            $totalChallengers = count($volley->challengers);
+            $img = $volley->getCreatorImage();
+            $checked = in_array( $volley->id, $volleyIds ) ? ' checked ' : '';
+            if( $volley->isExtant() ){
                 echo "
                 <tr>
-                <td><img src='$user->avatar_url'></td>
-                <td>$user->username</td>
-                <td>$flagCounts->flags</td>
-                <td>$flagCounts->approves</td>
-                <td>$user->abuse_ct</td>
+                <td>$volley->id</td>
+                <td><img src='$img'></td>
+                <td>$creator->username</td>
+                <td>$volley->subject</td>
+                <td>$totalChallengers</td>
+                <td>$volley->added</td>
+                <td>$volley->updated</td>
+                <td><input type='checkbox' $checked name='volleyIds[]' value='$volley->id'></td>
                 </tr>
                 ";
             }
@@ -56,31 +81,40 @@ class BIM_Controller_Admin{
         </table>
         ");
         
-        $users = BIM_Model_User::getPendingSuspendees();
-        echo "<hr>Pending - ".count( $users )."<hr>\n";
+        $v = new BIM_App_Votes();
+        $volleys = $v->getChallengesByDate();
+        echo "<hr>Most Recent Volleys - ".count( $volleys )."<hr>\n";
         
         echo("
         <table border=1 cellpadding=10>
         <tr>
+        <th>Volley Id</th>
         <th>Image</th>
-        <th>Username</th>
-        <th>Flags</th>
-        <th>Approvals</th>
-        <th>Abuse Count</th>
+        <th>Creator</th>
+        <th>Hash Tag</th>
+        <th>Challengers</th>
+        <th>Creation Date</th>
+        <th>Last Updated</th>
+        <th>Display</th>
         </tr>
         ");
         // now get the flag counts for each user
-        foreach( $users as $user ){
-            $vv = BIM_Model_Volley::getVerifyVolley($user->id);
-            if( $vv->isExtant() ){
-                $flagCounts = $vv->getFlagCounts();
+        foreach( $volleys as $volley ){
+            $creator = $volley->creator;
+            $totalChallengers = count($volley->challengers);
+            $img = $volley->getCreatorImage();
+            $checked = in_array( $volley->id, $volleyIds ) ? ' checked ' : '';
+            if( $volley->isExtant() ){
                 echo "
                 <tr>
-                <td><img src='$user->avatar_url'></td>
-                <td>$user->username</td>
-                <td>$flagCounts->flags</td>
-                <td>$flagCounts->approves</td>
-                <td>$user->abuse_ct</td>
+                <td>$volley->id</td>
+                <td><img src='$img'></td>
+                <td>$creator->username</td>
+                <td>$volley->subject</td>
+                <td>$totalChallengers</td>
+                <td>$volley->added</td>
+                <td>$volley->updated</td>
+                <td><input type='checkbox' $checked name='volleyIds[]' value='$volley->id'></td>
                 </tr>
                 ";
             }
@@ -88,11 +122,13 @@ class BIM_Controller_Admin{
         echo("
         </table>
         ");
-        
-        echo("
+         echo("
+        <input type='submit'>
+        </form>
         </body>
         </html>
         ");
+        exit;
     }
     
 }

@@ -149,6 +149,10 @@ class BIM_Model_Volley{
         return BIM_Model_Comments::getForVolley( $this->id );
     }
     
+    public function getCreatorImage(){
+        return $this->creator->img.'Small_160x160.jpg';
+    }
+    
     public function isExpired(){
         $expires = -1;
         if( !empty( $this->expires ) && $this->expires > -1 ){
@@ -567,6 +571,11 @@ class BIM_Model_Volley{
         return self::getMulti($ids);
     }
     
+    public static function getManagedVolleys( ){
+        $ids = self::getExploreIds();
+        return self::getMulti($ids);
+    }
+    
     public static function autoVolley( $userId ){
 		// starting users & snaps
         $snap_arr = array(
@@ -743,5 +752,15 @@ class BIM_Model_Volley{
         }
         echo "\n";
         return $image;
+    }
+    
+    public static function updateExploreIds( $volleyData ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		return $dao->updateExploreIds( $volleyData );
+    }
+    
+    public static function getExploreIds( ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		return $dao->getExploreIds( );
     }
 }
