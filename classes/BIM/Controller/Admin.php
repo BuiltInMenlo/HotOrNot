@@ -1,10 +1,21 @@
 <?php 
-
-class BIM_Report{
-    // get the top 50 users that have been suspended
-    // and get the top 50 that are about to be suspended
+class BIM_Controller_Admin{
     
-    public static function carlosDanger(){
+    /**
+     * We present a formn with the top 100 voleys by date 
+     * 
+     * There will be a drop down that alows for changing the 
+     * view using sorted by top votes
+     * 
+     * There will be a check box next to each volley description
+     * submitting the form will cause the volley ids to go into a table
+     * 
+     * The discover code will select all of the ids from this table
+     * and get 16 random ones and retunr the volleys like normal
+     * 
+     */
+    
+    public static function manageExplore(){
         echo("
         <html>
         <head>
@@ -83,4 +94,5 @@ class BIM_Report{
         </html>
         ");
     }
+    
 }
