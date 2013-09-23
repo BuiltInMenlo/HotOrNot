@@ -858,6 +858,8 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 //	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+//	NSLog(@"ADID:[%@]\nVENDOR:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
+	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -889,6 +891,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UIToolbar appearance] setTintColor:[UIColor blackColor]];
 	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
@@ -922,7 +925,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
@@ -1310,6 +1313,8 @@ NSString * const kTwilioSMS = @"6475577873";
 							[NSString stringWithFormat:@"%d", 1], @"action",
 							[HONAppDelegate deviceToken], @"token",
 							nil];
+	
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	
@@ -1341,7 +1346,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				
 				[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 				[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-				[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
+				[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) {
 					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];

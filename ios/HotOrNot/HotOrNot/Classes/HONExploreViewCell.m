@@ -48,7 +48,7 @@
 		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
 	
 	__weak typeof(self) weakSelf = self;
-	//NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [_lChallengeVO.dictionary objectForKey:@"challengers"]);
+//	NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_leftHeroOpponentVO.imagePrefix]);
 	
 	_leftHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftHolderView.clipsToBounds = YES;
@@ -59,7 +59,7 @@
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftImageView.alpha = 0.0;
 	[_leftHolderView addSubview:_leftImageView];
-	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Medium320x320.jpg",_leftHeroOpponentVO.imagePrefix]]
+	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Medium_320x320.jpg",_leftHeroOpponentVO.imagePrefix]]
 															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								 weakSelf.leftImageView.image = image;
@@ -95,6 +95,8 @@
 	_rightHeroOpponentVO = _rChallengeVO.creatorVO;
 	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]))
 		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
+	
+//	NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_rightHeroOpponentVO.imagePrefix]);
 	
 	__weak typeof(self) weakSelf = self;
 	

@@ -494,8 +494,7 @@
 		[_cameraOverlayView animateAccept];
 		
 		NSString *avatarURL = [NSString stringWithFormat:@"%@/%@_o.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename];
-		[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
-		//[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+		[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 	}
 }
 

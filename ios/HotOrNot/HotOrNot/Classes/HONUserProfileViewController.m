@@ -14,8 +14,12 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewController.h"
-#import "HONOpponentVO.h"
+#import "HONChangeAvatarViewController.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONAddContactsViewController.h"
+#import "HONSettingsViewController.h"
+#import "HONImagingDepictor.h"
+#import "HONOpponentVO.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 
@@ -270,26 +274,7 @@
 	[_headerView addButton:doneButton];
 	[self.view addSubview:_headerView];
 	
-	_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
-	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
-	[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-	
-	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-	[_flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateNormal];
-	[_flagButton setTitleColor:[UIColor colorWithRed:0.325 green:0.169 blue:0.174 alpha:1.0] forState:UIControlStateHighlighted];
-	[_flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-	[_flagButton setTitle:@"Flag" forState:UIControlStateNormal];
-	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-	
 	_footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
-	[_footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
-	[_footerToolbar setItems:[NSArray arrayWithObjects:
-							  [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
-							  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-							  [[UIBarButtonItem alloc] initWithCustomView:_flagButton], nil]];
 	[self.view addSubview:_footerToolbar];
 }
 
@@ -321,9 +306,31 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[self dismissViewControllerAnimated:YES completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-	}];
+	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley?"
+															message:@"Would you like to share Volley on Instagram?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		
+		[alertView setTag:1];
+		[alertView show];
+	
+	} else {
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		}];
+	}
+}
+
+- (void)_goChangeAvatar {
+	[[Mixpanel sharedInstance] track:@"User Profile - Take New Avatar"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRefresh {
@@ -384,15 +391,43 @@
 	[alertView show];
 }
 
+- (void)_goInviteFriends {
+	[[Mixpanel sharedInstance] track:@"User Profile - Find Friends"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSettings {
+	[[Mixpanel sharedInstance] track:@"Profile - Settings"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - UI Presentation
-- (void)_reloadCreatorImage {
+- (void)_reloadAvatarImage {
 	__weak typeof(self) weakSelf = self;
 	
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -185.0, imageSize.width, imageSize.height);
+	
+	NSLog(@"PROFILE RELOADING:[%@]", imageURL);
+	
 	_avatarHolderView.clipsToBounds = YES;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 320.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
 	_avatarImageView.alpha = 0.0;
 	[_avatarHolderView addSubview:_avatarImageView];
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
 															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								 weakSelf.avatarImageView.image = image;
@@ -453,32 +488,40 @@
 	
 	[_headerView setTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
 	
+	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
+	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
+	[_headerView addButton:verifiedImageView];
+	
 	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 224.0)];
 	_avatarHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_avatarHolderView];
 	
-	NSMutableString *avatarURL = [_userVO.imageURL mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
 	
 	__weak typeof(self) weakSelf = self;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -101.0, 320.0, 427.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
 	_avatarImageView.alpha = 0.0;
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
 															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								weakSelf.avatarImageView.image = image;
 								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								NSLog(@"FALLBACK");
-								[weakSelf _reloadCreatorImage];
+								[weakSelf _reloadAvatarImage];
 							}];
 	[_avatarHolderView addSubview:_avatarImageView];
 	
-	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
-	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
-	[_headerView addButton:verifiedImageView];
+	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profilePicButton.frame = CGRectMake(270.0, 178.0, 44.0, 44.0);
+	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
+	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
+	[profilePicButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
+	profilePicButton.hidden = YES;//([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	[_scrollView addSubview:profilePicButton];
+	
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -504,7 +547,50 @@
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_likesLabel];
 	
-	_footerToolbar.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = CGRectMake(0.0, 0.0, 92.0, 44.0);
+		[inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[inviteButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[inviteButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[inviteButton setTitle:@"Invite friends" forState:UIControlStateNormal];
+		[inviteButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+		
+		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
+		[settingsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[settingsButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
+		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+		
+		[_footerToolbar setItems:[NSArray arrayWithObjects:
+								  [[UIBarButtonItem alloc] initWithCustomView:inviteButton],
+								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+								  [[UIBarButtonItem alloc] initWithCustomView:settingsButton], nil]];
+	
+	} else {
+		_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
+		[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		
+		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
+		[flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateNormal];
+		[flagButton setTitleColor:[UIColor colorWithRed:0.325 green:0.169 blue:0.174 alpha:1.0] forState:UIControlStateHighlighted];
+		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
+		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+		
+		[_footerToolbar setItems:[NSArray arrayWithObjects:
+								  [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
+								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+								  [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
+	}
+	
+//	_footerToolbar.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	
 	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
 	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -596,6 +682,20 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																									[HONAppDelegate instagramShareComment], @"caption",
+																									[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
+		}
+		
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		}];
+		
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

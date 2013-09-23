@@ -16,6 +16,7 @@
 #define kStatsColor [UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]
 
 @interface HONUserProfileView()
+@property (nonatomic, strong) UIView *avatarHolderView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameAgeLabel;
 @property (nonatomic, strong) UILabel *subscribersValLabel;
@@ -38,21 +39,29 @@
 		holderView.backgroundColor = [UIColor blackColor];
 		[self addSubview:holderView];
 		
-		UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 204.0)];
-		avatarHolderView.clipsToBounds = YES;
-		[holderView addSubview:avatarHolderView];
+		_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 204.0)];
+		_avatarHolderView.clipsToBounds = YES;
+		[holderView addSubview:_avatarHolderView];
+		
+		NSMutableString *imageURL = [[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] mutableCopy];
+		[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+		CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
+		
+		NSLog(@"AVATAR:[%@]", imageURL);
 		
 		__weak typeof(self) weakSelf = self;
-		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+		_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
 		_avatarImageView.userInteractionEnabled = YES;
 		//_avatarImageView.alpha = 0.0;
 		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.avatarImageView.image = image;
 									//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
-								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+									[weakSelf _reloadAvatarImage];
+								}];
 		
-		[avatarHolderView addSubview:_avatarImageView];
+		[_avatarHolderView addSubview:_avatarImageView];
 		
 		UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		profilePicButton.frame = CGRectMake(271.0, 159.0, 44.0, 44.0);
@@ -185,12 +194,21 @@
 			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 			
 			__weak typeof(self) weakSelf = self;
+			
+			NSMutableString *imageURL = [[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] mutableCopy];
+			[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+//			CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
+			
+			NSLog(@"_retrieveUser:[%@]", imageURL);
+			
 			//_avatarImageView.alpha = 0.0;
-			[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+			[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 										weakSelf.avatarImageView.image = image;
 										//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
-									} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+									} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+										[weakSelf _reloadAvatarImage];
+									}];
 			
 			_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]]];
 			_subscribersValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate friendsList] count]]]];
@@ -201,6 +219,28 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
+}
+
+- (void)_reloadAvatarImage {
+	__weak typeof(self) weakSelf = self;
+	
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	NSMutableString *imageURL = [[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -114.0, imageSize.width, imageSize.height);
+	
+	NSLog(@"AVATAR RELOADING:[%@]", imageURL);
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
+//	_avatarImageView.alpha = 0.0;
+	[_avatarHolderView addSubview:_avatarImageView];
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
+															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								weakSelf.avatarImageView.image = image;
+//								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
+							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+							}];
 }
 
 
@@ -240,10 +280,6 @@
 
 - (void)_goMore {
 	[self.delegate userProfileViewSettings:self];
-}
-
-- (void)_goTimeline {
-	[self.delegate userProfileViewTimeline:self];
 }
 
 

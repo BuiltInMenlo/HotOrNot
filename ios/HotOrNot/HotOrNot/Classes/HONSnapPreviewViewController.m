@@ -102,7 +102,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
 			
@@ -120,14 +120,21 @@
 }
 
 - (void)_reloadVerifyImage {
-	NSLog(@"VERIFY RELOADING:[%@]", _opponentVO.avatarURL);
 	[_imageView removeFromSuperview];
 	_imageView = nil;
 	
 	__weak typeof(self) weakSelf = self;
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0)];//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim)];
+	
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, 0.0, imageSize.width, imageSize.height);
+	
+	NSLog(@"VERIFY RELOADING:[%@]", imageURL);
+	
+	_imageView = [[UIImageView alloc] initWithFrame:frame];
 	_imageView.alpha = 0.0;
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_opponentVO.avatarURL]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
 														cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 						  [weakSelf.uploadingImageView stopAnimating];
@@ -138,14 +145,19 @@
 }
 
 - (void)_reloadChallengeImage {
-	NSLog(@"RELOADING:[%@]", [NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]);
 	[_imageView removeFromSuperview];
 	_imageView = nil;
 	
+	NSString *imageURL = [NSString stringWithFormat:@"%@_o.jpg", _opponentVO.imagePrefix];
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, 0.0, imageSize.width, imageSize.height);
+	
+	NSLog(@"CHALLENGE RELOADING:[%@]", imageURL);
+	
 	__weak typeof(self) weakSelf = self;
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0)];//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim)];
+	_imageView = [[UIImageView alloc] initWithFrame:frame];
 	_imageView.alpha = 0.0;
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
 														cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 						  [weakSelf.uploadingImageView stopAnimating];
@@ -161,17 +173,17 @@
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-20 00:00:00"]];
-	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 11595 && diff > 0);
-	
-	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
-	
-//	float ratio = 0.56338028169014;//([HONAppDelegate isRetina5]) ? 0.56338028169014 : 0.75;
+//	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-20 00:00:00"]];
+//	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 11595 && diff > 0);
 //	NSString *imageURL = (isOriginalImageAvailable) ? _opponentVO.imagePrefix : _opponentVO.avatarURL;
-	NSMutableString *imageURL = [_opponentVO.imagePrefix mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	//CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * ratio) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * ratio), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
-	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, 0.0, imageSize.width, imageSize.height);
+//	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * ratio) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * ratio), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
+	
+	
+	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake(0.0, (568.0 - self.view.frame.size.height) * -0.5, 320.0, 568.0);
+	
+	NSLog(@"VERIFY LOADING:[%@]", imageURL);
 	
 	_imageView = [[UIImageView alloc] initWithFrame:frame];
 	_imageView.alpha = 0.0;
@@ -185,7 +197,7 @@
 					  }];
 	[_imageHolderView addSubview:_imageView];
 	
-	NSLog(@"VERIFY -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
+//	NSLog(@"VERIFY -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
 }
 
 - (void)_loadForChallenge {
@@ -194,11 +206,15 @@
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	NSTimeInterval diff = [_opponentVO.joinedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
-	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
+//	NSTimeInterval diff = [_opponentVO.joinedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
+//	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
+//	NSString *imageURL = [NSString stringWithFormat:@"%@_%@.jpg", _opponentVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
+//	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * 0.75) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * 0.75), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
+
+	NSString *imageURL = [NSString stringWithFormat:@"%@Large_640x1136.jpg", _opponentVO.imagePrefix];
+	CGRect frame = CGRectMake(0.0, (568.0 - self.view.frame.size.height) * -0.5, 320.0, 568.0);
 	
-	NSString *imageURL = [NSString stringWithFormat:@"%@_%@.jpg", _opponentVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
-	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * 0.75) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * 0.75), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
+	NSLog(@"CHALLENGE LOADING:[%@]", imageURL);
 	
 	_imageView = [[UIImageView alloc] initWithFrame:frame];
 	_imageView.alpha = 0.0;
@@ -212,7 +228,7 @@
 					  }];
 	[_imageHolderView addSubview:_imageView];
 	
-	NSLog(@"CHALLENGE -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
+//	NSLog(@"CHALLENGE -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
 }
 
 
@@ -290,6 +306,7 @@
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 							[NSString stringWithFormat:@"%d", userID], @"challengerID",
+							_opponentVO.imagePrefix, @"imgURL",
 							nil];
 	
 	NSLog(@"PARAMS:[%@]", params);
@@ -371,7 +388,7 @@
 	if (_isVerify)
 		_opponentVO = _challengeVO.creatorVO;
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, ([UIScreen mainScreen].bounds.size.height - 45.0), 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, ([UIScreen mainScreen].bounds.size.height - 22.0), 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -383,7 +400,6 @@
 	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imageHolderView];
 	
-	//if (_challengeVO == nil)
 	if (_isVerify)
 		[self _loadForVerify];
 	
@@ -430,26 +446,18 @@
 	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	[_buttonHolderView addSubview:upvoteButton];
 	
-	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profileButton.frame = CGRectMake(121.0, 0.0, 74.0, 74.0);
-	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
-	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateHighlighted];
-	profileButton.alpha = 0.33;
-	[_buttonHolderView addSubview:profileButton];
+	UIButton *profileSubscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profileSubscribeButton.frame = CGRectMake(121.0, 0.0, 74.0, 74.0);
+	[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateNormal];
+	[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateHighlighted];
+	profileSubscribeButton.alpha = 0.33;
+	[_buttonHolderView addSubview:profileSubscribeButton];
 	
 	if (_isRoot) {
-		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
-		profileButton.alpha = 1.0;
+		[profileSubscribeButton addTarget:self action:@selector(_goSubscribeProfile) forControlEvents:UIControlEventTouchUpInside];
+		[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_Active"] forState:UIControlStateHighlighted];
+		profileSubscribeButton.alpha = 1.0;
 	}
-	
-	UIButton *subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	subscribeButton.frame = CGRectMake(121.0, 85.0, 74.0, 74.0);
-	[subscribeButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-	[subscribeButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-	[subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-	[_buttonHolderView addSubview:subscribeButton];
-	
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(222.0, 0.0, 74.0, 74.0);
@@ -462,20 +470,22 @@
 	_avatarHolderView.clipsToBounds = YES;
 	[_profileHolderView addSubview:_avatarHolderView];
 	
-	NSMutableString *avatarURL = [_opponentVO.avatarURL mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
+	
+	NSLog(@"PROFILE LOADING:[%@]", imageURL);
 	
 	__weak typeof(self) weakSelf = self;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -171.0, 320.0, 568.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
 	_avatarImageView.alpha = 0.0;
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
 															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								weakSelf.avatarImageView.image = image;
 								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								//[weakSelf _reloadProfileImage];
+								[weakSelf _reloadProfileImage];
 							}];
 	[_avatarHolderView addSubview:_avatarImageView];
 	
@@ -560,8 +570,47 @@
 	[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
 }
 
+- (void)_goSubscribeProfile {
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Subscribe / Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+
+	BOOL isFriend = NO;
+	if (!isUser) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+	}
+
+	UIActionSheet *actionSheet;
+	if (isUser) {
+		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+												  delegate:self
+										 cancelButtonTitle:@"Cancel"
+									destructiveButtonTitle:nil
+										 otherButtonTitles:@"Profile", nil];
+		
+	} else {
+		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+												  delegate:self
+										 cancelButtonTitle:@"Cancel"
+									destructiveButtonTitle:nil
+										 otherButtonTitles:@"Profile", (isFriend) ? @"Unsubscribe" : @"Subscribe", nil];
+	}
+		
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet showInView:self.view];
+}
+
 - (void)_goProfile {
-	NSLog(@"USER:[%@]", _userVO.dictionary);
+//	NSLog(@"USER:[%@]", _userVO.dictionary);
 	
 	[[Mixpanel sharedInstance] track:@"Volley Preview - User Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -580,7 +629,7 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"%@, %d", _opponentVO.username, [HONAppDelegate ageForDate:_opponentVO.birthday]]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
 	[headerView addButton:verifiedImageView];
 	[headerView addButton:doneButton];
 	headerView.alpha = 0.0;
@@ -690,16 +739,22 @@
 - (void)_reloadProfileImage {
 	__weak typeof(self) weakSelf = self;
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -54.0, 320.0, 320.0)];
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -114.0, imageSize.width, imageSize.height);
+	
+	NSLog(@"PROFILE RELOADING:[%@]", imageURL);
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
 	_avatarImageView.alpha = 0.0;
 	[_avatarHolderView addSubview:_avatarImageView];
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_opponentVO.avatarURL]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
 															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								weakSelf.avatarImageView.image = image;
 								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								NSLog(@"%@", weakSelf.userVO.imageURL);
 							}];
 }
 
@@ -868,5 +923,42 @@
 		}
 	}
 }
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	
+	BOOL isFriend = NO;
+	if (!isUser) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+	}
+	
+	if (buttonIndex == 0) {
+		[self _goProfile];
+	
+	} else if (buttonIndex == 1) {
+		if (!isUser) {
+			if (isFriend)
+				[self _goUnsubscribe];
+			
+			else
+				[self _goSubscribe];
+		}
+	
+	} else {
+		[[Mixpanel sharedInstance] track:@"Volley Preview - Subscribe / Profile Cancel"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	}
+}
+
 
 @end

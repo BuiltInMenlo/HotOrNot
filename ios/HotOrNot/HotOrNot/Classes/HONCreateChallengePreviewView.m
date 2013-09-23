@@ -30,6 +30,7 @@
 //@property (nonatomic, strong) UIImageView *progressBarImageView;
 @property (nonatomic, strong) HONCameraPreviewSubscribersView *subscribersView;
 @property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
+@property (nonatomic, strong) UIImageView *headerBGImageView;
 @end
 
 @implementation HONCreateChallengePreviewView
@@ -117,11 +118,11 @@
 	_previewBackButton.frame = self.frame;
 	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
-	UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
-	headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
-	[self addSubview:headerBGImageView];
+	_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+	_headerBGImageView.frame = CGRectOffset(_headerBGImageView.frame, 0.0, -20.0);
+	[self addSubview:_headerBGImageView];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 14.0, 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -137,7 +138,7 @@
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[self addSubview:_backButton];
 	
-	_subjectHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 35.0, 320.0, 53.0)];
+	_subjectHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - (35.0 + ([HONAppDelegate isRetina5] * 44.0)), 320.0, 53.0)];
 	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	_subjectHolderView.alpha = 0.0;
 	[self addSubview:_subjectHolderView];
@@ -162,27 +163,27 @@
 	_subjectTextField.delegate = self;
 	[_subjectHolderView addSubview:_subjectTextField];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 50.0, 320.0, 50.0)];
 	_buttonHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	_buttonHolderView.alpha = 0.0;
 	[self addSubview:_buttonHolderView];
 	
 	UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	retakeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	retakeButton.frame = CGRectMake(10.0, 3.0, 64.0, 44.0);
 	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_nonActive"] forState:UIControlStateNormal];
 	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_Active"] forState:UIControlStateHighlighted];
 	[retakeButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:retakeButton];
 	
 	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	previewButton.frame = CGRectMake(80.0, 0.0, 64.0, 44.0);
+	previewButton.frame = CGRectMake(91.0, 3.0, 64.0, 44.0);
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
 	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 44.0);
+	_submitButton.frame = CGRectMake(256.0, 3.0, 64.0, 44.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
@@ -344,7 +345,7 @@
 	if (_isFirstCamera) {
 		_isFirstCamera = NO;
 		_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep3"]];
-		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 121.0);
+		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - (121.0 + ([HONAppDelegate isRetina5] * 44.0)));
 		_tutorialBubbleImageView.alpha = 0.0;
 		[self addSubview:_tutorialBubbleImageView];
 	}
@@ -355,6 +356,7 @@
 			_tutorialBubbleImageView.alpha = 1.0;
 		}
 		
+		_headerBGImageView.alpha = 1.0;
 		_blackMatteView.alpha = 0.0;
 //		_actionLabel.alpha = 1.0;
 		_uploadingImageView.alpha = 1.0;
@@ -376,6 +378,7 @@
 			_tutorialBubbleImageView.alpha = 0.0;
 		}
 		
+		_headerBGImageView.alpha = 0.0;
 		_blackMatteView.alpha = 0.0;
 //		_actionLabel.alpha = 0.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);

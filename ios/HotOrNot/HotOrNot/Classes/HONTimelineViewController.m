@@ -338,42 +338,6 @@
 	}];
 }
 
-- (void)_retrieveUserForProfile:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 5], @"action",
-							[NSString stringWithFormat:@"%d", userID], @"userID",
-							nil];
-	
-	//NSLog(@"USER BY ID PARAMS:[%@]", params);
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
 - (void)_addFriend:(int)userID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -553,43 +517,56 @@
 }
 
 - (void)_goProfile {
-	if (_userProfileView.isOpen) {
-		[_userProfileView hide];
-		[_profileHeaderButtonView toggleSelected:NO];
-		
-		[UIView animateWithDuration:kProfileTime animations:^(void) {
-			_profileOverlayView.alpha = 0.0;
-			_blurredImageView.alpha = 0.0;
-			_userProfileView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			_profileOverlayView.hidden = YES;
-			_userProfileView.hidden = YES;
-			
-			[_blurredImageView removeFromSuperview];
-			_blurredImageView = nil;
-		}];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	} else {
-		[_userProfileView show];
-		[_profileHeaderButtonView toggleSelected:YES];
-		
-//		_blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyBlurWithRadius:2.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]];
-//		_blurredImageView.alpha = 0.0;
-//		[self.view addSubview:_blurredImageView];
-		
-		_profileOverlayView.hidden = NO;
-		_userProfileView.hidden = NO;
-		[UIView animateWithDuration:kProfileTime animations:^(void) {
-			_profileOverlayView.alpha = 1.0;
-			_blurredImageView.alpha = 1.0;
-			_userProfileView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	}
+	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+	_blurredImageView.alpha = 0.0;
+	[self.view addSubview:_blurredImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	
+	
+//	if (_userProfileView.isOpen) {
+//		[_userProfileView hide];
+//		[_profileHeaderButtonView toggleSelected:NO];
+//		
+//		[UIView animateWithDuration:kProfileTime animations:^(void) {
+//			_profileOverlayView.alpha = 0.0;
+//			_blurredImageView.alpha = 0.0;
+//		} completion:^(BOOL finished) {
+//			_profileOverlayView.hidden = YES;
+//			_userProfileView.hidden = YES;
+//			
+//			[_blurredImageView removeFromSuperview];
+//			_blurredImageView = nil;
+//		}];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+//	
+//	} else {
+//		[_userProfileView show];
+//		[_profileHeaderButtonView toggleSelected:YES];
+//		
+//		_profileOverlayView.hidden = NO;
+//		_userProfileView.hidden = NO;
+//		[UIView animateWithDuration:kProfileTime animations:^(void) {
+//			_profileOverlayView.alpha = 1.0;
+//			_blurredImageView.alpha = 1.0;
+//			_userProfileView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//		}];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+//	}
 }
 
 - (void)_goRefresh {
@@ -670,18 +647,6 @@
 		_emptyTimelineView.delegate = self;
 		[self.view addSubview:_emptyTimelineView];
 	}
-}
-
-- (void)_goChallengeDetails {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-		//.modalTransitionStyle
-	}];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -788,14 +753,6 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)userProfileViewTimeline:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Timeline"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-}
-
 
 #pragma mark - TimelineItemCell Delegates
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO {
@@ -808,7 +765,6 @@
 									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//	[self _retrieveUserForProfile:userID];
 	
 	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
 	_blurredImageView.alpha = 0.0;
@@ -834,6 +790,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
+	[cell showTapOverlay];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -852,14 +809,13 @@
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];
 	
-	//[self performSelector:@selector(_goChallengeDetails) withObject:Nil afterDelay:0.25];
-	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_blurredImageView.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		//.modalTransitionStyle
 	}];
 	
+	[cell showTapOverlay];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];

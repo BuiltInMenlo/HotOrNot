@@ -47,13 +47,20 @@
 	[_challengeImageView removeFromSuperview];
 	_challengeImageView = nil;
 	
+	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	NSMutableString *imageURL = [_challengeVO.creatorVO.avatarURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -185.0, imageSize.width, imageSize.height);
+	
+//	NSLog(@"VERIFY RELOADING:[%@]", imageURL);
+	
 	__weak typeof(self) weakSelf = self;
-	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 320.0)];
+	_challengeImageView = [[UIImageView alloc] initWithFrame:frame];
 	_challengeImageView.userInteractionEnabled = YES;
-	_challengeImageView.alpha = [_challengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]]];
+	_challengeImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_challengeImageView];
 	
-	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							   placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								   weakSelf.challengeImageView.image = image;
 								   [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
@@ -71,23 +78,25 @@
 	_imageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_imageHolderView];
 	
-//	[_imageHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)]];
-	
-	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -115.0, 320.0, 427.0)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
+//	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -115.0, 320.0, 427.0)];
+	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -185.0, 320.0, 568.0)];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_challengeImageView];
 	
 	NSMutableString *avatarURL = [challengeVO.creatorVO.avatarURL mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+//	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+//	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	
+//	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.challengeImageView.image = image;
 									[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-//									[weakSelf _imageLoadFallback];
+									[weakSelf _imageLoadFallback];
 								}];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
@@ -134,19 +143,12 @@
 //	buttonBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 //	[self.contentView addSubview:buttonBGView];
 	
-	UIButton *yayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	yayButton.frame = CGRectMake(262.0, 77.0, 44.0, 44.0);
-	[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_nonActive"] forState:UIControlStateNormal];
-	[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_Active"] forState:UIControlStateHighlighted];
-	[yayButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:yayButton];
-	
-//	UIButton *nayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	nayButton.frame = CGRectMake(262.0, 106.0, 44.0, 44.0);
-//	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_nonActive"] forState:UIControlStateNormal];
-//	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_Active"] forState:UIControlStateHighlighted];
-//	[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
-//	[self.contentView addSubview:nayButton];
+	UIButton *actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	actionButton.frame = CGRectMake(262.0, 77.0, 44.0, 44.0);
+	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_nonActive"] forState:UIControlStateNormal];
+	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_Active"] forState:UIControlStateHighlighted];
+	[actionButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:actionButton];
 }
 
 - (void)showTapOverlay {
@@ -166,14 +168,6 @@
 #pragma mark - Navigation
 - (void)_goVerify {
 	[self.delegate verifyViewCellTakeAction:self forChallenge:_challengeVO];
-}
-
-- (void)_goYay {
-	[self.delegate verifyViewCell:self approveUser:YES forChallenge:_challengeVO];
-}
-
-- (void)_goNay {
-	[self.delegate verifyViewCell:self approveUser:NO forChallenge:_challengeVO];
 }
 
 - (void)_goUserProfile {

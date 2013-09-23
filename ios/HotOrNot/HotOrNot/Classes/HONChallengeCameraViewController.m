@@ -150,26 +150,26 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	@try {
-		
+				
 		// preview - full size
-		UIImage *oImage = _rawImage;
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+		UIImage *oImage = (_rawImage.size.width >= 1936) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:oImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
 		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Small_160x160.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por1.delegate = self;
-		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(gridImage, kSnapJPEGCompress);
-		[s3 putObject:por1];
-		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Medium_320x320.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por2.delegate = self;
-		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(exploreImage, kSnapJPEGCompress);
-		[s3 putObject:por2];
+//		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Small_160x160.jpg", _filename] inBucket:@"hotornot-challenges"];
+//		por1.delegate = self;
+//		por1.contentType = @"image/jpeg";
+//		por1.data = UIImageJPEGRepresentation(gridImage, kSnapJPEGCompress);
+//		[s3 putObject:por1];
+//		
+//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Medium_320x320.jpg", _filename] inBucket:@"hotornot-challenges"];
+//		por2.delegate = self;
+//		por2.contentType = @"image/jpeg";
+//		por2.data = UIImageJPEGRepresentation(exploreImage, kSnapJPEGCompress);
+//		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.delegate = self;
@@ -183,7 +183,7 @@
 		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
 		[s3 putObject:por4];
 		
-		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, nil];
+		_s3Uploads = [NSArray arrayWithObjects:por3, por4, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -260,10 +260,20 @@
 			} else {
 				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-					}];
+					if (_isFirstCamera) {
+						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
+																			message:@"Do you want to share your Volley on Instagram?"
+																		   delegate:self
+																  cancelButtonTitle:@"No"
+																  otherButtonTitles:@"Yes", nil];
+						[alertView show];
+						
+					} else {
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+						}];
+					}
 				}
 			}
 		}
@@ -384,14 +394,14 @@
 
 - (void)_showOverlay {
 	int camera_total = 0;
-//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
-//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
-//	
-//	else {
-//		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
-//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
-//	}
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
+	
+	else {
+		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 	
 	_isFirstCamera = (camera_total == 0);
 	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
@@ -417,6 +427,9 @@
 									  (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
+	
+	if (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceRear)
+		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 }
 
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -574,9 +587,20 @@
 		
 		[_previewView uploadComplete];
 		if (_hasSubmitted) {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-			}];
+			if (_isFirstCamera) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
+																	message:@"Do you want to share your Volley on Instagram?"
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"Yes", nil];
+				[alertView show];
+			
+			} else {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				}];
+			}
 		}
 	}
 }
@@ -668,6 +692,31 @@
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		}];
 	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		
+		[[Mixpanel sharedInstance] track:@"Create Volley - Promote Instagram"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[self performSelector:@selector(_sendToInstagram) withObject:Nil afterDelay:2.5];
+		
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		}];
+	}
+}
+
+- (void)_sendToInstagram {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																							[HONAppDelegate instagramShareComment], @"caption",
+																							[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
 }
 
 

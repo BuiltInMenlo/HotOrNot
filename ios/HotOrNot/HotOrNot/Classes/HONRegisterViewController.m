@@ -45,7 +45,10 @@
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) NSTimer *clockTimer;
 @property (nonatomic, strong) UIView *cameraOverlayView;
+@property (nonatomic, strong) UIImageView *overlayImageView;
+@property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
 
+@property (nonatomic) int selfieAttempts;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) BOOL isFirstAppearance;
 @end
@@ -62,6 +65,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		_isFirstAppearance = YES;
+		_selfieAttempts = 0;
 	}
 	
 	return (self);
@@ -101,7 +105,7 @@
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg.jpg", _filename] inBucket:@"hotornot-avatars"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-avatars"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		por1.delegate = self;
@@ -221,8 +225,8 @@
 	//NSLog(@"PARAMS:[%@]", params);
 	NSMutableString *avatarURL = [_filename mutableCopy];
 	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
+//	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -262,9 +266,12 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
+					NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+					[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+					
+					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 				}];
-				
 				
 			} else {
 				if (_progressHUD == nil)
@@ -422,6 +429,7 @@
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_tutorialHolderView.backgroundColor = [UIColor blackColor];
+	_tutorialHolderView.alpha = 0.0;
 	[self.view addSubview:_tutorialHolderView];
 }
 
@@ -446,41 +454,47 @@
 			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 			
 			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
+			_cameraOverlayView.alpha = 0.0;
 			
-			UIImageView *overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
-			[_cameraOverlayView addSubview:overlayImageView];
+			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			_overlayImageView.userInteractionEnabled = YES;
+			[_cameraOverlayView addSubview:_overlayImageView];
 			
 			UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			signupButton.frame = CGRectMake(42.0, [UIScreen mainScreen].bounds.size.height - 179.0, 237.0, 67.0);
-			[signupButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
-			[signupButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+			signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
+			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 			[signupButton addTarget:self action:@selector(_goProfileCamera) forControlEvents:UIControlEventTouchUpInside];
-			[_cameraOverlayView addSubview:signupButton];
+			[_overlayImageView addSubview:signupButton];
 			
-			UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			takePhotoButton.frame = CGRectMake(113.0, ([UIScreen mainScreen].bounds.size.height * 2.0) - 114.0, 94.0, 94.0);
-			[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-			[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
-			[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
-			[_cameraOverlayView addSubview:takePhotoButton];
 			imagePickerController.cameraOverlayView = _cameraOverlayView;
+			
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_cameraOverlayView.alpha = 1.0;
+			}];
 		
 			self.previewPicker = imagePickerController;
 			[self presentViewController:self.previewPicker animated:NO completion:nil];
 		
 		} else {
-			UIImageView *overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
-			overlayImageView.userInteractionEnabled = YES;
-			[_tutorialHolderView addSubview:overlayImageView];
+			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			_overlayImageView.userInteractionEnabled = YES;
+			_overlayImageView.alpha = 0.0;
+			[_tutorialHolderView addSubview:_overlayImageView];
 			
 			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			closeTutorialButton.frame = CGRectMake(42.0, [UIScreen mainScreen].bounds.size.height - 179.0, 237.0, 67.0);
-			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
-			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+			closeTutorialButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
+			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
 			[_tutorialHolderView addSubview:closeTutorialButton];
+			
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_overlayImageView.alpha = 1.0;
+				_tutorialHolderView.alpha = 1.0;
+			}];
 		}
 	}
 }
@@ -489,22 +503,66 @@
 #pragma mark - Navigation
 - (void)_goProfileCamera {
 	[UIView animateWithDuration:0.33 animations:^(void) {
-		_cameraOverlayView.frame = CGRectOffset(_cameraOverlayView.frame, 0.0, -self.view.frame.size.height);
+		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height);
+		_overlayImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep2"]];
+		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
+		_tutorialBubbleImageView.alpha = 0.0;
+		[_cameraOverlayView addSubview:_tutorialBubbleImageView];
+		
+		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+		headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
+		[_cameraOverlayView addSubview:headerBGImageView];
+		
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+		[_cameraOverlayView addSubview:skipButton];
+		
+		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		takePhotoButton.frame = CGRectMake(118.0, [UIScreen mainScreen].bounds.size.height - 133.0, 84.0, 84.0);
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		[takePhotoButton addTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
+		takePhotoButton.alpha = 0.0;
+		[_cameraOverlayView addSubview:takePhotoButton];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			takePhotoButton.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_tutorialBubbleImageView.alpha = 1.0;
+				_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -35.0);
+			}];
+		}];
 	}];
 }
 
-- (void)_goTakePhoto {
+- (void)_goSkip {
+	[[[UIAlertView alloc] initWithTitle:@""
+								message:@"Sorry! at this time we require all members of Volley to have a selfie. It keeps things safe."
+							   delegate:nil
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
+}
+
+- (void)_goTakePhoto:(id)sender {
+//	UIButton *button = (UIButton *)sender;
+//	[button removeTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
+//	button.alpha = 0.5;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tutorialBubbleImageView.alpha = 0.0;
+		_cameraOverlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_tutorialBubbleImageView removeFromSuperview];
+		_tutorialBubbleImageView = nil;
+	}];
+	
 	[self.previewPicker takePicture];
-	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	
-	[_usernameTextField becomeFirstResponder];
-	[_usernameButton setSelected:YES];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	[UIView setAnimationDelay:0.33];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
 }
 
 - (void)_goCloseTutorial {
@@ -569,7 +627,7 @@
 	} else {
 		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20) {
 			[[[UIAlertView alloc] initWithTitle:@""
-										message:@"Volley is intended for young adults 13-19, you may get flagged by the userbase."
+										message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -624,21 +682,45 @@
 	CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
 	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 	NSArray *features = [detctor featuresInImage:ciImage];
-//	NSLog(@"FEATURES:[%@]", features);
 	
 	if ([features count] > 0) {
 		[self _uploadPhoto:image];
 		[self dismissViewControllerAnimated:YES completion:^(void) {}];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle:@"No selfie Detected!"
-									message:@"Retake your photo"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+		_selfieAttempts++;
 		
-//		[previewImageView removeFromSuperview];
-//		previewImageView = nil;
+		if (_selfieAttempts < 3) {
+			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+										message:@"Please retake your photo"
+									   delegate:self
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		
+//			[previewImageView removeFromSuperview];
+//			previewImageView = nil;
+			
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+										message:@"You may get flagged by the community."
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			
+			[self _uploadPhoto:image];
+			[self dismissViewControllerAnimated:YES completion:^(void) {}];
+			
+			_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+			
+			[_usernameTextField becomeFirstResponder];
+			[_usernameButton setSelected:YES];
+			
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:0.5];
+			[UIView setAnimationDelay:0.33];
+			_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+			[UIView commitAnimations];
+		}
 	}
 }
 
@@ -656,7 +738,11 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
+			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+			
+			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 		}];
 	}];
 }
@@ -720,6 +806,11 @@
 - (void)_onTextEditingDidEndOnExit:(id)sender {
 }
 
+
+#pragma mark - AlertView Deleagtes
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	_cameraOverlayView.alpha = 1.0;
+}
 
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
