@@ -11,5 +11,7 @@ if( preg_match( '/dev/', $conf ) ){
     $type = '123';
 } else if( preg_match( '/124/', $conf ) ){
     $type = '124';
+} else if( preg_match( '/130/', $conf ) ){
+    $type = '130';
 }
 echo BIM_App_Config::getBootConf( array('type' => $type ) );

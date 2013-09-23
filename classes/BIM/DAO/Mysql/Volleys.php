@@ -920,10 +920,9 @@ WHERE is_verify != 1
     }
     
     public function updateExploreIds( $volleyData ){
+        $sql = "delete from `hotornot-dev`.explore_ids";
+        $stmt = $this->prepareAndExecute( $sql );
         if( !empty( $volleyData ) ){
-            $sql = "delete from `hotornot-dev`.explore_ids";
-            $stmt = $this->prepareAndExecute( $sql );
-            
             $params = array();
             $valueSql = array();
             foreach( $volleyData as $volley ){

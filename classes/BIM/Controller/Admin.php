@@ -18,8 +18,8 @@ class BIM_Controller_Admin{
     public static function manageExplore(){
         $input = (object)( $_POST? $_POST : $_GET);
         $volleyIds = array();
-        if( !empty($input->volleyIds) ){
-            $volleyIds = $input->volleyIds;
+        if( property_exists($input, 'volleyIds') || (!empty( $_SERVER['REQUEST_METHOD'] ) && strtolower( $_SERVER['REQUEST_METHOD'] ) == 'post' ) ){
+            $volleyIds = !empty($input->volleyIds) ? $input->volleyIds : array();
             $volleyData = array();
             foreach( $volleyIds as $volleyId ){
                 $volley = BIM_Model_Volley::get( $volleyId );
@@ -34,12 +34,26 @@ class BIM_Controller_Admin{
         echo("
         <html>
         <head>
+		<script src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+        <script type='text/javascript'>
+        	function clearAll(){
+        		$('[name=\"volleyIds[]\"]').each(function(index,el){ $(el).prop('checked',false);} )
+        	}
+        </script>
         </head>
         <body>
         ");
         
         $volleys = BIM_Model_Volley::getTopVolleysByVotes();
-        echo "<hr>Top Volleys By Likes - ".count( $volleys )."<hr>\n";
+        $rem = array();
+        $volleyArr = $volleys;
+        foreach( $volleyArr as $idx => $volley ){
+            if( in_array( $volley->id, $volleyIds ) ){
+                unset( $volleys[ $volley->id ] );
+            }
+        }
+        // $volleys = array_diff( $volleys, $volleyIds );
+        echo "<hr>Top Volleys By Likes - ".count( $volleys )."&nbsp;&nbsp;<a href='#recent'>Most Recent</a><hr>\n";
         
         echo("
         <form method='POST'>
@@ -53,7 +67,7 @@ class BIM_Controller_Admin{
         <th>Challengers</th>
         <th>Creation Date</th>
         <th>Last Updated</th>
-        <th>Display</th>
+        <th>Display <input type='button' value='clear' onClick='clearAll();'></th>
         </tr>
         ");
         // now get the flag counts for each user
@@ -83,7 +97,7 @@ class BIM_Controller_Admin{
         
         $v = new BIM_App_Votes();
         $volleys = $v->getChallengesByDate();
-        echo "<hr>Most Recent Volleys - ".count( $volleys )."<hr>\n";
+        echo "<hr><a id='recent'>Most Recent Volleys - ".count( $volleys )."</a><hr>\n";
         
         echo("
         <table border=1 cellpadding=10>
