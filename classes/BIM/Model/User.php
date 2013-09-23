@@ -588,62 +588,57 @@ class BIM_Model_User{
         return self::getMulti($ids);
     }
     
-    /**
-     * we need to get all the user ids into 2 arrays
-     * the arrays will be subcribees and subscribers
-     * 
-     * for each subscriber
-     * we get their current list of subscribers
-     * and we then subscribe to 5 users
-     */
-    public static function introduceUsersToEachOther(){
-        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
-        $sql = "select id from `hotornot-dev`.tblUsers where added > '2013-07-08'";
-        $stmt = $dao->prepareAndExecute($sql);
-        $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-        $allSubscribees = array();
-        foreach( $userIds as $userId ){
-            $params = (object) array(
-                'userID' => $userId
-            );
-            // $subscribers[$userId] = BIM_App_Social::getFollowed($params);
-            $allSubscribees[ $userId ] = 0;
-        }
-        
-        foreach( $userIds as $userId ){
-            print_r( array( $userId,self::introduce( $userId, $allSubscribees ) ) );
+    public static function processProfileImages( $userIds ){
+        $conf = BIM_Config::aws();
+        S3::setAuth($conf->access_key, $conf->secret_key);
+        while( $userIds ){
+            $ids = array_splice($userIds, 0, 250);
+            $users = BIM_Model_User::getMulti($ids);
+            foreach( $users as $user ){
+                if( !empty( $user->img_url ) && !preg_match( '@facebook.com@', $user->img_url ) ){
+                    $imgPrefix = preg_replace('@\.jpg@','', $user->img_url );
+                    self::processImage( $imgPrefix );
+                    echo "processed user $user->id\n\n";
+                }
+            }
+            print count( $userIds )." remaining\n\n====\n\n";
         }
     }
     
-    protected static function introduce( $userId, &$allSubscribees ){
-        $maxSubcribes = 5;
-        // get 5 random ids and subscribe to those
-        $subscribeeIndexes = array_rand($allSubscribees, $maxSubcribes);
-        $user = self::get( $userId );
-        $pushTime = time();
-        foreach( $subscribeeIndexes as $targetId ){
-            $target = self::get( $targetId );
-
-            $params = (object) array(
-                'userID' => $userId,
-                'target' => $targetId,
-            );
-            BIM_App_Social::addFriend($params, false);
-            $msg = "$user->username has subscribed to you";
-            $push = array(
-                "device_tokens" =>  array( $target->device_token ),
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            BIM_Push_UrbanAirship_Iphone::createTimedPush($push, $pushTime);
-            $allSubscribees[ $targetId ]++;
-            if( $allSubscribees[ $targetId ] >= $maxSubcribes ){
-                unset($allSubscribees[ $targetId ]);
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-avatars' ){
+        echo "converting $imgPrefix\n";
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $convertedImages = BIM_Utils::finalizeImages($image);
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+                echo "put {$imgPrefix}{$suffix}.jpg\n";
             }
-            $pushTime += mt_rand( 1800, 2700 );
         }
-        return $subscribeeIndexes;        
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+            $imgUrl = "{$imgPrefix}.jpg";
+            try{
+                $image = new Imagick( $imgUrl );
+            } catch( Exception $e ){
+                $msg = $e->getMessage()." - $imgUrl";
+                error_log( $msg );
+                $image = null;
+            }
+        }
+        echo "\n";
+        return $image;
     }
 }

@@ -5,7 +5,7 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
     public function getFriends( $params ){
         $userId = isset( $params->id ) ? $params->id : 0;
         $from = isset( $params->from ) ? $params->from : 0;
-        $size = isset( $params->size ) ? $params->size : 100;
+        $size = isset( $params->size ) ? $params->size : 256;
         
         $should = array(
             array(

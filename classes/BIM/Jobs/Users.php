@@ -153,4 +153,20 @@ class BIM_Jobs_Users extends BIM_Jobs{
         $user = BIM_Model_User::get( $workload->input->userID );
         $user->purgeVolleys();
     }
+    
+    /*
+     * PROCESS PROFILE IMAGES
+     */
+    public static function queueProcessProfileImages( $userId ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Users',
+        	'method' => 'processProfileImages',
+        	'data' => array( 'user_id' => $userId ),
+        );
+        return self::queueBackground( $job, 'process_profile_images' );
+    }
+	
+    public function processProfileImages( $workload ){
+        BIM_Model_User::processProfileImages( array( $workload->data->user_id ) );
+    }
 }

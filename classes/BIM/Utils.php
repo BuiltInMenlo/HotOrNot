@@ -206,4 +206,39 @@ class BIM_Utils{
             file_put_contents('/tmp/es_profile', print_r(BIM_DAO_ElasticSearch::$profile ,1) );
         }
 	}
+	
+    public static function finalizeImages( $image ){
+        $convertedImages = array();
+        
+        self::resize($image, 320, 568);
+        self::cropY($image, 320, 320);
+        $mediumImage = clone $image;
+        $convertedImages['Medium_320x320'] = $mediumImage;
+        
+        self::resize($image, 160, 160);
+        $smallImage = clone $image;
+        $convertedImages['Small_160x160'] = $smallImage;
+        
+        return $convertedImages;
+    }
+    
+    public static function resize( $image, $width, $height ){
+        $image->setImagePage(0,0,0,0);
+        $image->setImageResolution( $width, $height );
+        $image->resizeImage($width, $height,imagick::FILTER_LANCZOS,0);
+    }
+    
+    public static function cropX( $image, $width, $height ){
+        $x = (int) ($image->getImageWidth() - $width)/2;
+        $image->setImagePage(0,0,0,0);
+        $image->setImageResolution($width,$height);
+        $image->cropImage($width, $height, $x, 0);
+    }
+    
+    public static function cropY( $image, $width, $height ){
+        $y = (int) ($image->getImageHeight() - $height)/2;
+        $image->setImagePage(0,0,0,0);
+        $image->setImageResolution($width,$height);
+        $image->cropImage($width, $height, 0, $y);
+    }
 }

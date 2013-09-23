@@ -544,7 +544,7 @@ class BIM_Model_Volley{
     }
     
     public static function getVolleysWithFriends( $userId ){
-        $friends = BIM_App_Social::getFollowed( (object) array('userID' => $userId ) );
+        $friends = BIM_App_Social::getFollowed( (object) array('userID' => $userId, 'size' => 100 ) );
         $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
         // we add our own id here so we will include our challenges as well, not just our friends
         $friendIds[] = $userId;
@@ -695,5 +695,53 @@ class BIM_Model_Volley{
             }
             print count( $volleyIds )." remaining\n";
         }
+    }
+    
+    public static function processVolleyImages( $volleyIds ){
+        $conf = BIM_Config::aws();
+        S3::setAuth($conf->access_key, $conf->secret_key);
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = BIM_Model_Volley::getMulti($ids);
+            foreach( $volleys as $volley ){
+                self::processImage( $volley->creator->img );
+                foreach( $volley->challengers as $challenger ){
+                    if( !empty( $challenger->img ) ){
+                        self::processImage( $challenger->img );
+                    }
+                }
+                echo "processed volley $volley->id\n\n";
+            }
+            print count( $volleyIds )." remaining\n\n====\n\n";
+        }
+    }
+    
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-challenges' ){
+        echo "converting $imgPrefix\n";
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $convertedImages = BIM_Utils::finalizeImages($image);
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+                echo "put {$imgPrefix}{$suffix}.jpg\n";
+            }
+        }
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+        }
+        echo "\n";
+        return $image;
     }
 }
