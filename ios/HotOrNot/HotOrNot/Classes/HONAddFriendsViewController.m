@@ -188,10 +188,6 @@
 	_selectedContacts = [NSMutableArray array];
 	_selectedFollowing = [NSMutableArray array];
 	
-//	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
-//	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
-//	[self.view addSubview:promoteImageView];
-	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Find friends"];
 	[self.view addSubview:headerView];
 	

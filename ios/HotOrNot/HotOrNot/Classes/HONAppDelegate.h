@@ -88,8 +88,6 @@ extern NSString * const kTwilioSMS;
 + (NSString *)customerServiceURL;
 + (NSDictionary *)s3Credentials;
 + (NSString *)twilioSMS;
-+ (BOOL)isInviteCodeValid:(NSString *)code;
-+ (BOOL)isLocaleEnabled;
 
 + (NSString *)s3BucketForType:(NSString *)bucketType;
 
@@ -97,18 +95,14 @@ extern NSString * const kTwilioSMS;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
 
-+ (NSString *)promoteInviteImageForType:(int)type;
-
 + (NSString *)bannerForSection:(int)section;
-
-+ (NSString *)timelineBannerType;
-+ (NSString *)timelineBannerURL;
 
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;
 + (NSString *)instagramShareComment;
 
 + (NSString *)rndDefaultSubject;
++ (NSArray *)defaultSubjects;
 
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
@@ -130,9 +124,6 @@ extern NSString * const kTwilioSMS;
 + (NSArray *)subscribeeList;
 + (void)addSubscribeeToList:(NSDictionary *)subscribee;
 + (void)writeSubscribeeList:(NSArray *)subscribees;
-
-+ (void)setAllowsFBPosting:(BOOL)canPost;
-+ (BOOL)allowsFBPosting;
 
 + (int)hasVoted:(int)challengeID;
 + (void)setVote:(int)challengeID forCreator:(BOOL)isCreator;
@@ -169,19 +160,19 @@ extern NSString * const kTwilioSMS;
 
 + (UIColor *)honGrey710Color;
 + (UIColor *)honGrey635Color;
++ (UIColor *)honGrey608Color;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
-+ (UIColor *)honGrey365Color;
-+ (UIColor *)honGrey245Color;
++ (UIColor *)honGrey318Color;
 
 + (UIColor *)honBlueTextColor;
 + (UIColor *)honGreenTextColor;
 + (UIColor *)honGreyTimeColor;
 + (UIColor *)honProfileStatsColor;
 
-+(UIColor *)honDebugRedColor;
-+(UIColor *)honDebugGreenColor;
-+(UIColor *)honDebugBlueColor;
++ (UIColor *)honDebugRedColor;
++ (UIColor *)honDebugGreenColor;
++ (UIColor *)honDebugBlueColor;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

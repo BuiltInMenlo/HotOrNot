@@ -45,8 +45,8 @@ NSString * const kConfigJSON = @"boot.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
-NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
-NSString * const kConfigJSON = @"boot_130.json";
+NSString * const kConfigURL = @"http://stage.letsvolley.com/hotornot";//@"http://config.letsvolley.com/hotornot";
+NSString * const kConfigJSON = @"boot.json";//@"boot_130.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #endif
@@ -194,25 +194,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
 }
 
-+ (BOOL)isInviteCodeValid:(NSString *)code {
-	
-	for (NSString *validCode in [[NSUserDefaults standardUserDefaults] objectForKey:@"invite_codes"]) {
-		if ([code isEqualToString:validCode])
-			return (YES);
-	}
-	
-	return (NO);
++ (NSString *)smsInviteFormat {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
 }
 
-+ (NSString *)smsInviteFormat {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"] objectForKey:[HONAppDelegate deviceLocale]]);
-}
 + (NSString *)emailInviteFormat {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"] objectForKey:[HONAppDelegate deviceLocale]]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"]);
 }
 
 + (NSString *)instagramShareComment {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"insta_profile"] objectForKey:[HONAppDelegate deviceLocale]]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"insta_profile"]);
 }
 
 + (int)createPointMultiplier {
@@ -225,10 +216,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
 }
 
-+ (NSString *)promoteInviteImageForType:(int)type {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"promote_images"] objectAtIndex:type]);
-}
-
 + (NSString *)s3BucketForType:(NSString *)bucketType {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:bucketType]);
 }
@@ -237,22 +224,13 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"section_banners"] objectAtIndex:section]);
 }
 
-+ (NSString *)timelineBannerType {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"type"]);
-}
-
-+ (NSString *)timelineBannerURL {
-	if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"type"] lowercaseString] isEqualToString:@"none"])
-		return (@"");
-	
-	else
-		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"url"]);
-}
-
-
 + (NSString *)rndDefaultSubject {
 	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
+}
+
++ (NSArray *)defaultSubjects {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"]);
 }
 
 + (void)offsetSubviewsForIOS7:(UIView *)view {
@@ -262,21 +240,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		for (UIView *subview in [view subviews])
 			subview.frame = CGRectOffset(subview.frame, 0.0, 0.0);
 	}
-}
-
-+ (BOOL)isLocaleEnabled {
-	//return (NO);
-	
-	if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"enabled_locales"] objectAtIndex:0] isEqualToString:@""])
-		return (YES);
-	
-	for (NSString *locale in [[NSUserDefaults standardUserDefaults] objectForKey:@"enabled_locales"]) {
-		if ([[[NSLocale preferredLanguages] objectAtIndex:0] isEqualToString:locale]) {
-			return (YES);
-		}
-	}
-	
-	return (NO);
 }
 
 + (NSArray *)searchSubjects {
@@ -402,15 +365,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-
-+ (void)setAllowsFBPosting:(BOOL)canPost {
-	[[NSUserDefaults standardUserDefaults] setObject:(canPost) ? @"YES" : @"NO" forKey:@"fb_posting"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (BOOL)allowsFBPosting {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"] isEqualToString:@"YES"]);
-}
 
 + (int)hasVoted:(int)challengeID {
 	NSArray *voteArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"votes"];
@@ -641,6 +595,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([UIColor colorWithWhite:0.635 alpha:1.0]);
 }
 
++ (UIColor *)honGrey608Color {
+	return ([UIColor colorWithWhite:0.608 alpha:1.0]); //9b9b9b
+}
+
 + (UIColor *)honGrey518Color {
 	return ([UIColor colorWithWhite:0.518 alpha:1.0]);
 }
@@ -649,12 +607,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
 }
 
-+ (UIColor *)honGrey365Color {
-	return ([UIColor colorWithWhite:0.365 alpha:1.0]);
-}
-
-+ (UIColor *)honGrey245Color {
-	return ([UIColor colorWithWhite:0.245 alpha:1.0]);
++ (UIColor *)honGrey318Color {
+	return ([UIColor colorWithWhite:0.318 alpha:1.0]); //515151
 }
 
 + (UIColor *)honBlueTextColor {
@@ -998,11 +952,6 @@ NSString * const kTwilioSMS = @"6475577873";
 //			[alertView show];
 //		}
 		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
-			[HONAppDelegate setAllowsFBPosting:NO];
-		
-		//[self _retrieveConfigJSON];
-		
 		[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 		[[Mixpanel sharedInstance] track:@"App Boot"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1188,21 +1137,9 @@ NSString * const kTwilioSMS = @"6475577873";
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			NSMutableArray *locales = [NSMutableArray array];
-			for (NSString *locale in [result objectForKey:@"enabled_locales"])
-				[locales addObject:locale];
-			
-			NSMutableArray *inviteCodes = [NSMutableArray array];
-			for (NSString *code in [result objectForKey:@"invite_codes"])
-				[inviteCodes addObject:code];
-			
 			NSMutableArray *sectionBanners = [NSMutableArray array];
 			for (NSString *sectionBanner in [result objectForKey:@"section_banners"])
 				[sectionBanners addObject:sectionBanner];
-			
-			NSMutableArray *promoteImages = [NSMutableArray array];
-			for (NSString *promoteImage in [result objectForKey:@"promote_images"])
-				[promoteImages addObject:promoteImage];
 			
 			NSMutableArray *hashtags = [NSMutableArray array];
 			for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
@@ -1228,6 +1165,12 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"insta_profile"] forKey:@"insta_profile"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+															  [[result objectForKey:@"sharing_switches"] objectForKey:@"instagram"],
+															  [[result objectForKey:@"sharing_switches"] objectForKey:@"twitter"], nil] forKey:@"sharing_switches"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
@@ -1235,31 +1178,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 															  [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"], @"challenges",
 															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars", nil] forKey:@"s3_buckets"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
-															  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
-															  [[result objectForKey:@"invite_sms"] objectForKey:@"ko"], @"ko",
-															  [[result objectForKey:@"invite_sms"] objectForKey:@"jp"], @"jp",
-															  [[result objectForKey:@"invite_sms"] objectForKey:@"vi"], @"vi",
-															  [[result objectForKey:@"invite_sms"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_sms"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"invite_email"] objectForKey:@"en"], @"en",
-															  [[result objectForKey:@"invite_email"] objectForKey:@"id"], @"id",
-															  [[result objectForKey:@"invite_email"] objectForKey:@"ko"], @"ko",
-															  [[result objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
-															  [[result objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
-															  [[result objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"insta_profile"] objectForKey:@"en"], @"en",
-															  [[result objectForKey:@"insta_profile"] objectForKey:@"id"], @"id",
-															  [[result objectForKey:@"insta_profile"] objectForKey:@"ko"], @"ko",
-															  [[result objectForKey:@"insta_profile"] objectForKey:@"jp"], @"jp",
-															  [[result objectForKey:@"insta_profile"] objectForKey:@"vi"], @"vi",
-															  [[result objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
-			[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
-			[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
 			[[NSUserDefaults standardUserDefaults] setObject:[sectionBanners copy] forKey:@"section_banners"];
-			[[NSUserDefaults standardUserDefaults] setObject:[promoteImages copy] forKey:@"promote_images"];
 			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];

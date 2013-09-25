@@ -6,31 +6,30 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCreateChallengePreviewView.h"
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 #import "HONUserVO.h"
-#import "HONCameraPreviewSubscribersView.h"
+#import "HONCameraSubjectsView.h"
 
-@interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate, HONCameraPreviewSubscribersViewDelegate>
+@interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate, HONCameraSubjectsViewDelegate>
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIImage *previewImage;
+@property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) UIView *subjectHolderView;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
-@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *subscribersBackButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
-//@property (nonatomic, strong) UIImageView *progressBarImageView;
-@property (nonatomic, strong) HONCameraPreviewSubscribersView *subscribersView;
+@property (nonatomic, strong) HONCameraSubjectsView *subjectsView;
 @property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
-@property (nonatomic, strong) UIImageView *headerBGImageView;
+@property (nonatomic, strong) UIView *headerBGView;
 @end
 
 @implementation HONCreateChallengePreviewView
@@ -42,16 +41,19 @@
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
 		
-		_previewImage = image;
 		_subjectName = subject;
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83333f];
 		NSLog(@"NORMAL -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-//		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-26.0 + (-26.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-46.0 + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5)) + (-26.0 * [HONAppDelegate isRetina5]));
 		[self addSubview:previewImageView];
+		
+		_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
+		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-46.0 + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5)) + (-26.0 * [HONAppDelegate isRetina5]));
+		_blurredImageView.alpha = 0.0;
+		[self addSubview:_blurredImageView];
 
 		[self _makeUI];
 	}
@@ -63,17 +65,21 @@
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];;
 		
-		_previewImage = image;
 		_subjectName = subject;
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83333f];
 		NSLog(@"MIRRORED -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-//		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-26.0 + (-26.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-46.0 + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5)) + (-26.0 * [HONAppDelegate isRetina5]));
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
+		
+		_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
+		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-46.0 + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5)) + (-26.0 * [HONAppDelegate isRetina5]));
+		_blurredImageView.transform = CGAffineTransformScale(_blurredImageView.transform, -1.0f, 1.0f);
+		_blurredImageView.alpha = 0.0;
+		[self addSubview:_blurredImageView];
 		
 		[self _makeUI];
 	}
@@ -95,7 +101,6 @@
 }
 
 - (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw {
-	_subscribersView.opponents = [users mutableCopy];
 //	_actionLabel.text = [NSString stringWithFormat:@"%d", [users count]];//(isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];
 }
 
@@ -118,9 +123,9 @@
 	_previewBackButton.frame = self.frame;
 	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
-	_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
-	_headerBGImageView.frame = CGRectOffset(_headerBGImageView.frame, 0.0, -20.0);
-	[self addSubview:_headerBGImageView];
+	_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+	_headerBGView.backgroundColor = [UIColor blackColor];
+	[self addSubview:_headerBGView];
 	
 	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 14.0, 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
@@ -130,38 +135,38 @@
 	_uploadingImageView.animationRepeatCount = 0;
 	_uploadingImageView.alpha = 0.0;
 	[_uploadingImageView startAnimating];
-	[self addSubview:_uploadingImageView];
+//	[self addSubview:_uploadingImageView];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_backButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[self addSubview:_backButton];
+	[_headerBGView addSubview:_backButton];
 	
-	_subjectHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - (35.0 + ([HONAppDelegate isRetina5] * 44.0)), 320.0, 53.0)];
-	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	_subjectHolderView.alpha = 0.0;
-	[self addSubview:_subjectHolderView];
-	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 9.0, 320.0, 30.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -3.0, 180.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
+	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_placeholderLabel.textColor = [UIColor whiteColor];
-	_placeholderLabel.text = ([_subjectName length] == 0) ? @"#whatsHappening?" : @"";
-	[_subjectHolderView addSubview:_placeholderLabel];
+	_placeholderLabel.text = ([_subjectName length] == 0) ? @"how are you feeling?" : @"";
+	[_headerBGView addSubview:_placeholderLabel];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 9.0, 268.0, 30.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, -2.0, 180.0, 50.0)];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[UIColor whiteColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
+	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = _subjectName;
 	_subjectTextField.delegate = self;
-	[_subjectHolderView addSubview:_subjectTextField];
+	[_headerBGView addSubview:_subjectTextField];
+	
+	_subjectsView = [[HONCameraSubjectsView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina5] * 88.0))];
+	_subjectsView.hidden = YES;
+	_subjectsView.delegate = self;
+	[self addSubview:_subjectsView];
 	
 	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 50.0, 320.0, 50.0)];
 	_buttonHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
@@ -182,18 +187,12 @@
 	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(256.0, 3.0, 64.0, 44.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
-	[_buttonHolderView addSubview:_submitButton];
-	
-	_subscribersView = [[HONCameraPreviewSubscribersView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, [UIScreen mainScreen].bounds.size.height + 50.0)];
-	_subscribersView.hidden = YES;
-	_subscribersView.alpha = 0.0;
-	_subscribersView.delegate = self;
-	[self addSubview:_subscribersView];
+	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	submitButton.frame = CGRectMake(256.0, 3.0, 64.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
+	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
+	[_buttonHolderView addSubview:submitButton];
 	
 	_subscribersBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_subscribersBackButton.frame = CGRectMake(9.0, 14.0, 44.0, 44.0);
@@ -223,24 +222,18 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_subscribersView.hidden = NO;
+	_subjectsView.hidden = NO;
 	
 	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_blackMatteView.alpha = 0.65;
 		
-//		_opponentsImageView.frame = CGRectOffset(_opponentsImageView.frame, 48.0, 0.0);
-//		_actionLabel.frame = CGRectOffset(_actionLabel.frame, 48.0, 0.0);
-//		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, 48.0, 0.0);
-//		_subscribersButton.alpha = 0.5;
-		
-		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, 100);
-		_subjectHolderView.alpha = 0.0;
-		_backButton.alpha = 0.0;
+//		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, 100);
+//		_subjectHolderView.alpha = 0.0;
 		_uploadingImageView.alpha = 0.0;
 		
-		_subscribersView.alpha = 1.0;
-		_subscribersView.frame = CGRectOffset(_subscribersView.frame, 0.0, -100.0);
+		_subjectsView.alpha = 1.0;
+		_subjectsView.frame = CGRectOffset(_subjectsView.frame, 0.0, -100.0);
 		
 		_buttonHolderView.alpha = 0.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
@@ -256,25 +249,19 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_subscribersView.hidden = NO;
+	_subjectsView.hidden = NO;
 	
 	[_subjectTextField becomeFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_blackMatteView.alpha = 0.0;
 		_subscribersBackButton.alpha = 0.0;
-//		_opponentsImageView.frame = CGRectOffset(_opponentsImageView.frame, -48.0, 0.0);
-//		
-//		_actionLabel.frame = CGRectOffset(_actionLabel.frame, -48.0, 0.0);
-//		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, -48.0, 0.0);
-//		_subscribersButton.alpha = 1.0;
 		
-		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, -100);
-		_subjectHolderView.alpha = 1.0;
-		_backButton.alpha = 1.0;
+//		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, -100);
+//		_subjectHolderView.alpha = 1.0;
 		_uploadingImageView.alpha = 1.0;
 		
-		_subscribersView.alpha = 0.0;
-		_subscribersView.frame = CGRectOffset(_subscribersView.frame, 0.0, 100.0);
+		_subjectsView.alpha = 0.0;
+		_subjectsView.frame = CGRectOffset(_subjectsView.frame, 0.0, 100.0);
 		
 		_buttonHolderView.alpha = 1.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
@@ -298,7 +285,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self _dropKeyboardAndRemove:NO];
-	if ([_subjectTextField.text length] > 0) {
+	if ([_subjectTextField.text length] > 0 && ![_subjectTextField.text isEqualToString:@"how are you feeling?"]) {
 		_subjectName = _subjectTextField.text;
 		
 		int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
@@ -306,7 +293,6 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 //		[self _dropKeyboardAndRemove:YES];
-		[self.delegate previewView:self changeSubject:_subjectName];
 		[self.delegate previewViewSubmit:self];
 		
 		[_subjectTextField resignFirstResponder];
@@ -342,12 +328,13 @@
 	[_subjectTextField becomeFirstResponder];
 	[_previewBackButton removeFromSuperview];
 	
+	_subjectsView.hidden = NO;
 	if (_isFirstCamera) {
 		_isFirstCamera = NO;
 		_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep3"]];
 		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - (121.0 + ([HONAppDelegate isRetina5] * 44.0)));
 		_tutorialBubbleImageView.alpha = 0.0;
-		[self addSubview:_tutorialBubbleImageView];
+//		[self addSubview:_tutorialBubbleImageView];
 	}
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -356,38 +343,36 @@
 			_tutorialBubbleImageView.alpha = 1.0;
 		}
 		
-		_headerBGImageView.alpha = 1.0;
+		_blurredImageView.alpha = 1.0;
+		_headerBGView.alpha = 1.0;
 		_blackMatteView.alpha = 0.0;
-//		_actionLabel.alpha = 1.0;
 		_uploadingImageView.alpha = 1.0;
+		_subjectsView.alpha = 1.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
 		_buttonHolderView.alpha = 1.0;
-		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, -58.0);
-		_subjectHolderView.alpha = 1.0;
 		_backButton.alpha = 1.0;
-//		_subscribersButton.alpha = 1.0;
 	}completion:^(BOOL finished) {
 	}];
 }
 
 - (void)_dropKeyboardAndRemove:(BOOL)isRemoved {
 	[_subjectTextField resignFirstResponder];
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialBubbleImageView != nil) {
 			_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, 58.0);
 			_tutorialBubbleImageView.alpha = 0.0;
 		}
 		
-		_headerBGImageView.alpha = 0.0;
+		_blurredImageView.alpha = 0.0;
+		_headerBGView.alpha = 0.0;
 		_blackMatteView.alpha = 0.0;
-//		_actionLabel.alpha = 0.0;
+		_subjectsView.alpha = 0.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
 		_uploadingImageView.alpha = 0.0;
-		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, 58.0);
-		_subjectHolderView.alpha = 0.0;
-		_backButton.alpha = 0.0;
-//		_subscribersButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
+		_subjectsView.hidden = YES;
+		
 		if (isRemoved) {
 			[self removeFromSuperview];
 			
@@ -404,13 +389,17 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"#whatsHappening?" : @"";
-	
+	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
 }
 
-#pragma mark - SubscriberView Delegates
-- (void)subscriberView:(HONCameraPreviewSubscribersView *)cameraPreviewSubscribersView removeOpponent:(HONUserVO *)userVO {
-	[self.delegate previewView:self removeChallenger:userVO];
+
+#pragma mark - SubjectsView Delegates
+- (void)subjectsView:(HONCameraSubjectsView *)cameraSubjectsView selectSubject:(NSString *)subject {
+	_subjectName = subject;
+	_subjectTextField.text = _subjectName;
+	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+	
+	[self.delegate previewView:self changeSubject:_subjectName];
 }
 
 

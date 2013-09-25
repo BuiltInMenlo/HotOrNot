@@ -136,10 +136,6 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
-//	UIView *buttonBGView = [[UIView alloc] initWithFrame:CGRectMake(247.0, 0.0, 73.0, 198.0)];
-//	buttonBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
-//	[self.contentView addSubview:buttonBGView];
-	
 	UIButton *actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	actionButton.frame = CGRectMake(246.0, 108.0, 64.0, 64.0);
 	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_nonActive"] forState:UIControlStateNormal];

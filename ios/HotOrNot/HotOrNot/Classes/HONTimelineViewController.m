@@ -612,20 +612,6 @@
 	}];
 }
 
-- (void)_goLocaleRestriction {
-	//[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
-	//[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Locale Restricted"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedLocaleViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:^(void) {
-//	}];
-}
-
 - (void)_goRegistration {
 	[[Mixpanel sharedInstance] track:@"Register User"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:

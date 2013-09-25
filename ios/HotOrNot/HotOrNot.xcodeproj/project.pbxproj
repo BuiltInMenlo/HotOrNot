@@ -52,7 +52,7 @@
 		4C0C414C162C9744007F0DA3 /* icon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4149162C9743007F0DA3 /* icon_512x512.png */; };
 		4C0C414E162C9761007F0DA3 /* icon_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414D162C9761007F0DA3 /* icon_57x57.png */; };
 		4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414F162C9769007F0DA3 /* icon_114x114.png */; };
-		4C0F5EE317C9508000894551 /* HONCameraPreviewSubscriberViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE217C9508000894551 /* HONCameraPreviewSubscriberViewCell.m */; };
+		4C0F5EE317C9508000894551 /* HONCameraSubjectViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE217C9508000894551 /* HONCameraSubjectViewCell.m */; };
 		4C0F5EE717C9A3E000894551 /* cameraDivider.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE517C9A3E000894551 /* cameraDivider.png */; };
 		4C0F5EE817C9A3E000894551 /* cameraDivider@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE617C9A3E000894551 /* cameraDivider@2x.png */; };
 		4C0F5EEB17C9A45700894551 /* subscriberCloseButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE917C9A45700894551 /* subscriberCloseButton.png */; };
@@ -205,7 +205,7 @@
 		4C5C714A1773803D00FA6F51 /* searchToggleA@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71461773803D00FA6F51 /* searchToggleA@2x.png */; };
 		4C5C714B1773803D00FA6F51 /* searchToggleB.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71471773803D00FA6F51 /* searchToggleB.png */; };
 		4C5C714C1773803D00FA6F51 /* searchToggleB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71481773803D00FA6F51 /* searchToggleB@2x.png */; };
-		4C60AF6B17CCFEF800609792 /* HONCameraPreviewSubscribersView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C60AF6A17CCFEF800609792 /* HONCameraPreviewSubscribersView.m */; };
+		4C60AF6B17CCFEF800609792 /* HONCameraSubjectsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C60AF6A17CCFEF800609792 /* HONCameraSubjectsView.m */; };
 		4C60AF7017CD20A600609792 /* previewButttonCamera_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C60AF6C17CD20A500609792 /* previewButttonCamera_Active.png */; };
 		4C60AF7117CD20A600609792 /* previewButttonCamera_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C60AF6D17CD20A500609792 /* previewButttonCamera_Active@2x.png */; };
 		4C60AF7217CD20A600609792 /* previewButttonCamera_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C60AF6E17CD20A600609792 /* previewButttonCamera_nonActive.png */; };
@@ -252,7 +252,6 @@
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
 		4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */; };
 		4C6893691719EF88005F8D0A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C68936B1719EF88005F8D0A /* Localizable.strings */; };
-		4C68937B171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */; };
 		4C6A3E1517669ADC00B6CD4D /* HONAddFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */; };
 		4C6A3E1817669D7400B6CD4D /* HONRecentOpponentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1717669D7400B6CD4D /* HONRecentOpponentViewCell.m */; };
 		4C6A3E1B1766AD3600B6CD4D /* HONAddContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1A1766AD3500B6CD4D /* HONAddContactViewCell.m */; };
@@ -584,8 +583,8 @@
 		4C0C4149162C9743007F0DA3 /* icon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_512x512.png; sourceTree = "<group>"; };
 		4C0C414D162C9761007F0DA3 /* icon_57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_57x57.png; sourceTree = "<group>"; };
 		4C0C414F162C9769007F0DA3 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
-		4C0F5EE117C9508000894551 /* HONCameraPreviewSubscriberViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraPreviewSubscriberViewCell.h; sourceTree = "<group>"; };
-		4C0F5EE217C9508000894551 /* HONCameraPreviewSubscriberViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraPreviewSubscriberViewCell.m; sourceTree = "<group>"; };
+		4C0F5EE117C9508000894551 /* HONCameraSubjectViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraSubjectViewCell.h; sourceTree = "<group>"; };
+		4C0F5EE217C9508000894551 /* HONCameraSubjectViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraSubjectViewCell.m; sourceTree = "<group>"; };
 		4C0F5EE517C9A3E000894551 /* cameraDivider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraDivider.png; sourceTree = "<group>"; };
 		4C0F5EE617C9A3E000894551 /* cameraDivider@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraDivider@2x.png"; sourceTree = "<group>"; };
 		4C0F5EE917C9A45700894551 /* subscriberCloseButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = subscriberCloseButton.png; sourceTree = "<group>"; };
@@ -778,8 +777,8 @@
 		4C5C71461773803D00FA6F51 /* searchToggleA@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggleA@2x.png"; sourceTree = "<group>"; };
 		4C5C71471773803D00FA6F51 /* searchToggleB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchToggleB.png; sourceTree = "<group>"; };
 		4C5C71481773803D00FA6F51 /* searchToggleB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggleB@2x.png"; sourceTree = "<group>"; };
-		4C60AF6917CCFEF800609792 /* HONCameraPreviewSubscribersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraPreviewSubscribersView.h; sourceTree = "<group>"; };
-		4C60AF6A17CCFEF800609792 /* HONCameraPreviewSubscribersView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraPreviewSubscribersView.m; sourceTree = "<group>"; };
+		4C60AF6917CCFEF800609792 /* HONCameraSubjectsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCameraSubjectsView.h; sourceTree = "<group>"; };
+		4C60AF6A17CCFEF800609792 /* HONCameraSubjectsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCameraSubjectsView.m; sourceTree = "<group>"; };
 		4C60AF6C17CD20A500609792 /* previewButttonCamera_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previewButttonCamera_Active.png; sourceTree = "<group>"; };
 		4C60AF6D17CD20A500609792 /* previewButttonCamera_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "previewButttonCamera_Active@2x.png"; sourceTree = "<group>"; };
 		4C60AF6E17CD20A600609792 /* previewButttonCamera_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previewButttonCamera_nonActive.png; sourceTree = "<group>"; };
@@ -919,8 +918,6 @@
 		4C687DC116D9445C001A1B22 /* HONAlertPopOverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertPopOverView.h; sourceTree = "<group>"; };
 		4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlertPopOverView.m; sourceTree = "<group>"; };
 		4C68936A1719EF88005F8D0A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRestrictedLocaleViewController.h; sourceTree = "<group>"; };
-		4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRestrictedLocaleViewController.m; sourceTree = "<group>"; };
 		4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAddFriendsViewController.h; sourceTree = "<group>"; };
 		4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAddFriendsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C6A3E1617669D7400B6CD4D /* HONRecentOpponentViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRecentOpponentViewCell.h; sourceTree = "<group>"; };
@@ -1385,8 +1382,6 @@
 			children = (
 				4C08036217A4ACC0001FF5DE /* HONUserBirthdayViewController.h */,
 				4C08036317A4ACC0001FF5DE /* HONUserBirthdayViewController.m */,
-				4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */,
-				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
 				4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */,
 				4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */,
 				4C08036517A4ACE6001FF5DE /* HONProfileRangeViewController.h */,
@@ -1509,10 +1504,10 @@
 				4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */,
 				4CEC303B17DA5E270016AAE1 /* HONChallengeCameraViewController.h */,
 				4CEC303C17DA5E270016AAE1 /* HONChallengeCameraViewController.m */,
-				4C0F5EE117C9508000894551 /* HONCameraPreviewSubscriberViewCell.h */,
-				4C0F5EE217C9508000894551 /* HONCameraPreviewSubscriberViewCell.m */,
-				4C60AF6917CCFEF800609792 /* HONCameraPreviewSubscribersView.h */,
-				4C60AF6A17CCFEF800609792 /* HONCameraPreviewSubscribersView.m */,
+				4C0F5EE117C9508000894551 /* HONCameraSubjectViewCell.h */,
+				4C0F5EE217C9508000894551 /* HONCameraSubjectViewCell.m */,
+				4C60AF6917CCFEF800609792 /* HONCameraSubjectsView.h */,
+				4C60AF6A17CCFEF800609792 /* HONCameraSubjectsView.m */,
 			);
 			name = "Create Challenge";
 			sourceTree = "<group>";
@@ -3356,7 +3351,6 @@
 				4C3886D416F6BAEA00267D5A /* HONSearchUserViewCell.m in Sources */,
 				4C351CEC16F7B88000BD9498 /* HONSearchToggleHeaderView.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
-				4C68937B171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m in Sources */,
 				4CED1C1A177D46C100A32F2B /* NBPhoneMetaData.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
@@ -3386,8 +3380,8 @@
 				4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */,
 				4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */,
 				4CAA456517BF046A002670A6 /* HONChallengeOverlayView.m in Sources */,
-				4C0F5EE317C9508000894551 /* HONCameraPreviewSubscriberViewCell.m in Sources */,
-				4C60AF6B17CCFEF800609792 /* HONCameraPreviewSubscribersView.m in Sources */,
+				4C0F5EE317C9508000894551 /* HONCameraSubjectViewCell.m in Sources */,
+				4C60AF6B17CCFEF800609792 /* HONCameraSubjectsView.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONProfileHeaderButtonView.m in Sources */,
 				4C1435D017D3CCC200ACBF41 /* HONUserProfileView.m in Sources */,
 			);
@@ -3484,7 +3478,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7642E415-A51C-4B5B-9433-C9374E98671C";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7FA8C4FA-33BB-4D1D-B047-9E1E48C9A9FD";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
