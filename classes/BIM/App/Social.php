@@ -2,13 +2,13 @@
 
 class BIM_App_Social extends BIM_App_Base{
 
-    public static function addFriend( $params ){
+    public static function addFriend( $params, $doNotification = true ){
         $added = false;
         $targets = explode('|',$params->target);
         foreach( $targets as $target ){
             $params->target = $target;
             $added = self::_addFriend($params);
-            if( $added ){
+            if( $added && $doNotification ){
                 BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
             }
         }

@@ -8,6 +8,10 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
 		    BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
+		    if( $input->approves > 0 ){
+		        $input->target = $input->targetId;
+		        BIM_App_Social::addFriend($input);
+		    }
     		return array(
     			'id' => $input->userID,
     			'mail' => true
