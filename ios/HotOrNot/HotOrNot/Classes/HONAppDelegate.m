@@ -46,7 +46,7 @@ NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
-NSString * const kConfigJSON = @"boot_124.json";
+NSString * const kConfigJSON = @"boot_130.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #endif
@@ -933,6 +933,17 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"modal_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"camera_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"profile_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+
+	
 #if __ALWAYS_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1344,7 +1355,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				NSMutableString *avatarURL = [[userResult objectForKey:@"avatar_url"] mutableCopy];
 				NSLog(@"IMG:[%@]", avatarURL);
 				
-				[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+				[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 				[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 				[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 				

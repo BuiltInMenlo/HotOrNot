@@ -101,17 +101,18 @@
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
+			_currChallenges = [NSMutableArray array];
 			_allChallenges = [NSMutableDictionary dictionary];
-			NSMutableArray *retrievedChallenges = [NSMutableArray array];
+//			NSMutableArray *retrievedChallenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:serverList];
-				[retrievedChallenges addObject:[NSNumber numberWithInt:challengeVO.challengeID]];
-				[_allChallenges setObject:challengeVO forKey:[NSString stringWithFormat:@"c_%d", challengeVO.challengeID]];
+				[_currChallenges addObject:challengeVO];
+//				[retrievedChallenges addObject:[NSNumber numberWithInt:challengeVO.challengeID]];
+//				[_allChallenges setObject:challengeVO forKey:[NSString stringWithFormat:@"c_%d", challengeVO.challengeID]];
 			}
 			
-			_currChallenges = [NSMutableArray array];
-			for (NSNumber *cID in [HONAppDelegate fillDiscoverChallenges:retrievedChallenges])
-				[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
+//			for (NSNumber *cID in [HONAppDelegate fillDiscoverChallenges:retrievedChallenges])
+//				[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
 			
 			
 			
@@ -132,7 +133,7 @@
 //				_collectionView.alpha = 1.0;
 //			}];
 			
-			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
+//			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
 		
 		[_refreshButtonView toggleRefresh:NO];
@@ -313,15 +314,17 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_isRefreshing = YES;
-	NSLog(@"refresh:[%d]", [_allChallenges count]);
-	_currChallenges = [NSMutableArray array];
+	[self _retrieveChallenges];
 	
-	if ([_allChallenges count] > 0) {
-		for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
-			[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
-		
-		[self performSelector:@selector(_doneRefreshing) withObject:nil afterDelay:0.125];
-	}
+//	NSLog(@"refresh:[%d]", [_allChallenges count]);
+//	_currChallenges = [NSMutableArray array];
+//	
+//	if ([_allChallenges count] > 0) {
+//		for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
+//			[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
+//		
+//		[self performSelector:@selector(_doneRefreshing) withObject:nil afterDelay:0.125];
+//	}
 }
 
 - (void)_goCreateChallenge {

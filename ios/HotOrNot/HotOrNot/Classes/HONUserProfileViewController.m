@@ -317,9 +317,38 @@
 		[alertView show];
 	
 	} else {
-		[self dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-		}];
+		BOOL isFriend = NO;
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+		
+		int profile_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"]) {
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:profile_total] forKey:@"profile_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
+		profile_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
+		
+		if (!isFriend  && profile_total < 3) {
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++profile_total] forKey:@"profile_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"Yes", nil];
+			[alertView setTag:0];
+			[alertView show];
+		
+		} else {
+			[self dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+			}];
+		}
 	}
 }
 
@@ -419,7 +448,8 @@
 	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -185.0, imageSize.width, imageSize.height);
+	[imageURL replaceOccurrencesOfString:@"Large_640x1136_o.jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -114.0, imageSize.width, imageSize.height);
 	
 	NSLog(@"PROFILE RELOADING:[%@]", imageURL);
 	
@@ -499,7 +529,10 @@
 	
 	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
+	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake(0.0, -114.0, 320.0, 568.0);
+	
+	NSLog(@"PROFILE LOADING:[%@]", imageURL);
 	
 	__weak typeof(self) weakSelf = self;
 	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
@@ -654,7 +687,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -681,7 +714,20 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 1) {
+	if (alertView.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Close Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 1)
+			[self _addFriend:_userVO.userID];
+		
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		}];
+		
+	} else if (alertView.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

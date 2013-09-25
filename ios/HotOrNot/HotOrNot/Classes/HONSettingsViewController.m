@@ -84,6 +84,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:NSLocalizedString(@"header_settings", nil)];
+	_headerView.backgroundColor = [UIColor blackColor];
 	[_headerView hideRefreshing];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];

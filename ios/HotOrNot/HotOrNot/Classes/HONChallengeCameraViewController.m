@@ -205,10 +205,10 @@
 }
 
 - (void)_submitChallenge {
-	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
-	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
-										[UIImage imageNamed:@"overlayLoader002"],
-										[UIImage imageNamed:@"overlayLoader003"], nil];
+	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, ([UIScreen mainScreen].bounds.size.height - 14.0) * 0.5, 54.0, 14.0)];
+	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
+										[UIImage imageNamed:@"cameraUpload_002"],
+										[UIImage imageNamed:@"cameraUpload_003"], nil];
 	_submitImageView.animationDuration = 0.5f;
 	_submitImageView.animationRepeatCount = 0;
 	_submitImageView.alpha = 0.0;
@@ -265,7 +265,7 @@
 				if (_uploadCounter == [_s3Uploads count]) {
 					if (_isFirstCamera) {
 						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-																			message:@"Do you want to share your Volley on Instagram?"
+																			message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
 																		   delegate:self
 																  cancelButtonTitle:@"No"
 																  otherButtonTitles:@"Yes", nil];
@@ -592,7 +592,7 @@
 		if (_hasSubmitted) {
 			if (_isFirstCamera) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-																	message:@"Do you want to share your Volley on Instagram?"
+																	message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
 																   delegate:self
 														  cancelButtonTitle:@"No"
 														  otherButtonTitles:@"Yes", nil];
@@ -622,11 +622,6 @@
 	
 	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(_rawImage.size));
 	
-//	CIImage *image = [CIImage imageWithCGImage:_rawImage.CGImage];
-//	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-//	NSArray *features = [detctor featuresInImage:image];
-//	NSLog(@"FEATURES:[%d]", [features count]);
-	
 	UIImage *workingImage = _rawImage;
 	
 	// image is wider than tall (800x600)
@@ -651,14 +646,13 @@
 	} else
 		_squaredImage = workingImage;
 	
-	CIImage *ciImage = [CIImage imageWithCGImage:workingImage.CGImage];
-	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-	NSArray *features = [detctor featuresInImage:ciImage];
+//	CIImage *ciImage = [CIImage imageWithCGImage:workingImage.CGImage];
+//	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+//	NSArray *features = [detctor featuresInImage:ciImage];
+//	
+//	NSLog(@"FEATURES:[%d]", [features count]);
 	
-	NSLog(@"FEATURES:[%d]", [features count]);
-	
-	
-	if ([features count] > 0) {
+//	if ([features count] > 0) {
 		_usernames = [NSMutableArray array];
 		for (HONUserVO *vo in _subscribers)
 			[_usernames addObject:vo.username];
@@ -689,54 +683,54 @@
 			[[NSUserDefaults standardUserDefaults] synchronize];
 		}
 	
-	} else {
-		_selfieAttempts++;
-		
-		if (_selfieAttempts < 3) {
-			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-										message:@"Please retake your photo"
-									   delegate:self
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-										message:@"You may get flagged by the community."
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
-			_usernames = [NSMutableArray array];
-			for (HONUserVO *vo in _subscribers)
-				[_usernames addObject:vo.username];
-			
-			if (_isMainCamera)
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
-			else
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
-			
-			_previewView.delegate = self;
-			_previewView.isFirstCamera = _isFirstCamera;
-			[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
-			[_previewView showKeyboard];
-			
-			[_cameraOverlayView submitStep:_previewView];
-			
-			[self _uploadPhotos];
-			
-			
-			int friend_total = 0;
-			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
-				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-			} else {
-				friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}
-		}
-	}
+//	} else {
+//		_selfieAttempts++;
+//		
+//		if (_selfieAttempts < 3) {
+//			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+//										message:@"Please retake your photo"
+//									   delegate:self
+//							  cancelButtonTitle:@"OK"
+//							  otherButtonTitles:nil] show];
+//			
+//		} else {
+//			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+//										message:@"You may get flagged by the community."
+//									   delegate:nil
+//							  cancelButtonTitle:@"OK"
+//							  otherButtonTitles:nil] show];
+//			
+//			_usernames = [NSMutableArray array];
+//			for (HONUserVO *vo in _subscribers)
+//				[_usernames addObject:vo.username];
+//			
+//			if (_isMainCamera)
+//				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
+//			else
+//				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
+//			
+//			_previewView.delegate = self;
+//			_previewView.isFirstCamera = _isFirstCamera;
+//			[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
+//			[_previewView showKeyboard];
+//			
+//			[_cameraOverlayView submitStep:_previewView];
+//			
+//			[self _uploadPhotos];
+//			
+//			
+//			int friend_total = 0;
+//			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
+//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
+//				
+//			} else {
+//				friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
+//			}
+//		}
+//	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -763,7 +757,7 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		[self performSelector:@selector(_sendToInstagram) withObject:Nil afterDelay:2.5];
+		[self performSelector:@selector(_sendToInstagram) withObject:Nil afterDelay:2.0];
 	}
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {

@@ -44,7 +44,7 @@
 		[self addSubview:_headerBGImageView];
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_flipButton.frame = CGRectMake(1.0, 0.0, 44.0, 44.0);
+		_flipButton.frame = CGRectMake(-2.0, 0.0, 44.0, 44.0);
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -139,6 +139,11 @@
 	_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
 	_tutorialBubbleImageView.alpha = 0.0;
 	
+	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeTutorialButton.frame = self.frame;
+	[closeTutorialButton addTarget:self action:@selector(_goCloseBubble:) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:closeTutorialButton];
+	
 	[UIView animateWithDuration:0.33 animations:^(void) {
 		_tutorialBubbleImageView.alpha = 1.0;
 		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -35.0);
@@ -146,6 +151,20 @@
 	
 	
 	[self addSubview:_tutorialBubbleImageView];
+}
+
+- (void)_goCloseBubble:(id)sender {
+	UIButton *button = (UIButton *)sender;
+	[button removeTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
+	[button removeFromSuperview];
+	button = nil;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tutorialBubbleImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_tutorialBubbleImageView removeFromSuperview];
+		_tutorialBubbleImageView = nil;
+	}];
 }
 
 - (void)_goFlipCamera {

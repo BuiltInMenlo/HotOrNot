@@ -44,8 +44,8 @@
 	_lChallengeVO = lChallengeVO;
 	
 	_leftHeroOpponentVO = _lChallengeVO.creatorVO;
-	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_leftHeroOpponentVO.joinedDate timeIntervalSinceNow]))
-		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
+//	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_leftHeroOpponentVO.joinedDate timeIntervalSinceNow]))
+//		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
 	
 	__weak typeof(self) weakSelf = self;
 //	NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_leftHeroOpponentVO.imagePrefix]);
@@ -53,8 +53,6 @@
 	_leftHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_leftHolderView];
-	
-//	[_leftHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)]];
 	
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftImageView.alpha = 0.0;
@@ -93,8 +91,8 @@
 	_rChallengeVO = rChallengeVO;
 	
 	_rightHeroOpponentVO = _rChallengeVO.creatorVO;
-	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]))
-		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
+//	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]))
+//		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
 	
 //	NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_rightHeroOpponentVO.imagePrefix]);
 	
@@ -103,8 +101,6 @@
 	_rightHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
 //	_rightHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_rightHolderView];
-	
-//	[_rightHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)]];
 
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_rightImageView.alpha = 0.0;
@@ -115,7 +111,6 @@
 							  weakSelf.rightImageView.image = image;
 							  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rightImageView.alpha = 1.0; } completion:nil];
 						  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-							  NSLog(@"Reloading");
 							  //[weakSelf _reloadRightImage];
 						  }];
 	

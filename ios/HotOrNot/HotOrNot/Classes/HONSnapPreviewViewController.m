@@ -44,6 +44,7 @@
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic) BOOL isRoot;
+@property (nonatomic) BOOL hasVisitedProfile;
 @end
 
 
@@ -56,6 +57,7 @@
 		_challengeVO = vo;
 		_isVerify = YES;
 		_isRoot = isFirst;
+		_hasVisitedProfile = NO;
 	}
 	
 	return (self);
@@ -67,6 +69,7 @@
 		_challengeVO = challengeVO;
 		_isVerify = NO;
 		_isRoot = isFirst;
+		_hasVisitedProfile = NO;
 	}
 	
 	return (self);
@@ -179,7 +182,8 @@
 //	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * ratio) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * ratio), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
 	
 	
-	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
+	NSMutableString *imageURL = [_opponentVO.imagePrefix mutableCopy];
+	[imageURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake(0.0, (568.0 - self.view.frame.size.height) * -0.5, 320.0, 568.0);
 	
@@ -388,7 +392,7 @@
 	if (_isVerify)
 		_opponentVO = _challengeVO.creatorVO;
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, ([UIScreen mainScreen].bounds.size.height - 22.0), 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 23.0), 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -431,12 +435,11 @@
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_closeButton.frame = self.view.frame;
-//	_closeButton.backgroundColor = [UIColor greenColor];
 	_closeButton.hidden = YES;
 	[_closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchDown];
 	[_scrollView addSubview:_closeButton];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 23.0, 320.0, 164.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 23.0, 320.0, 74.0)];
 	_buttonHolderView.alpha = 0.0;
 	[_scrollView addSubview:_buttonHolderView];
 	
@@ -448,7 +451,7 @@
 	[_buttonHolderView addSubview:upvoteButton];
 	
 	UIButton *profileSubscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profileSubscribeButton.frame = CGRectMake(121.0, 0.0, 74.0, 74.0);
+	profileSubscribeButton.frame = CGRectMake(118.0, -5.0, 84.0, 84.0);
 	[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateNormal];
 	[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateHighlighted];
 	profileSubscribeButton.alpha = 0.33;
@@ -473,7 +476,8 @@
 	
 	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
+	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	CGRect frame = CGRectMake(0.0, -114.0, 320.0, 568.0);
 	
 	NSLog(@"PROFILE LOADING:[%@]", imageURL);
 	
@@ -557,7 +561,43 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[self.delegate snapPreviewViewControllerClose:self];
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Close"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+	
+	BOOL isFriend = NO;
+	
+	if (![[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+	} else {
+		int profile_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"]) {
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:profile_total] forKey:@"profile_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
+		profile_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
+		
+		if (!isFriend && _hasVisitedProfile && profile_total < 3) {
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++profile_total] forKey:@"profile_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"Yes", nil];
+			[alertView setTag:3];
+			[alertView show];
+			
+		} else
+			[self.delegate snapPreviewViewControllerClose:self];
+	}
 }
 
 - (void)_goUpvote {
@@ -603,7 +643,7 @@
 												  delegate:self
 										 cancelButtonTitle:@"Cancel"
 									destructiveButtonTitle:nil
-										 otherButtonTitles:@"Profile", (isFriend) ? @"Unsubscribe" : @"Subscribe", nil];
+										 otherButtonTitles:@"View profile", (isFriend) ? @"Unsubscribe from user updates" : @"Subscribe to user updates", nil];
 	}
 		
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
@@ -619,6 +659,8 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	[_closeButton removeFromSuperview];
+	
+	_hasVisitedProfile = YES;
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 7.0, 7.0);
@@ -743,6 +785,7 @@
 	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	[imageURL replaceOccurrencesOfString:@"Large_640x1136_o.jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -114.0, imageSize.width, imageSize.height);
 	
 	NSLog(@"PROFILE RELOADING:[%@]", imageURL);
@@ -849,7 +892,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -922,6 +965,19 @@
 			[_subscribeButton setTitle:@"Subscribe" forState:UIControlStateNormal];
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
+	
+	} else if (alertView.tag == 3) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Close Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+		if (buttonIndex == 1) {
+			[self _addFriend:_userVO.userID];
+			[_subscribeButton setTitle:@"Unsubscribe" forState:UIControlStateNormal];
+			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+		}
+		
+		[self.delegate snapPreviewViewControllerClose:self];
 	}
 }
 

@@ -46,6 +46,7 @@
 @property (nonatomic, strong) NSTimer *clockTimer;
 @property (nonatomic, strong) UIView *cameraOverlayView;
 @property (nonatomic, strong) UIImageView *overlayImageView;
+@property (nonatomic, strong) UIView *splashTintView;
 @property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
 
 @property (nonatomic) int selfieAttempts;
@@ -133,86 +134,11 @@
 	}
 }
 
-/*
-- (void)_submitUsername {
-	if ([[_username substringToIndex:1] isEqualToString:@"@"])
-		_username = [_username substringFromIndex:1];
-	
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 7], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									_username, @"username",
-									nil];
-	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_checkUsername", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-				
-				[HONAppDelegate writeUserInfo:userResult];
-				[self _presentCamera];
-				
-			} else {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-				
-				[_usernameTextField becomeFirstResponder];
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description],[HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}*/
-
 - (void)_finalizeUser {
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
 	
-	_filename = ([[[HONAppDelegate infoForUser] objectForKey:@"token"] isEqualToString:@"0000000000000000000000000000000000000000000000000000000000000000"]) ? @"https://graph.facebook.com/1149169958/picture?type=square" : [NSString stringWithFormat:@"%@/%@.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename];
+	_filename = ([[[HONAppDelegate infoForUser] objectForKey:@"token"] isEqualToString:@"0000000000000000000000000000000000000000000000000000000000000000"]) ? @"https://graph.facebook.com/1149169958/picture?type=square" : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -222,9 +148,9 @@
 							_filename, @"imgURL",
 							nil];
 	
-	//NSLog(@"PARAMS:[%@]", params);
+	NSLog(@"PARAMS:[%@]", params);
 	NSMutableString *avatarURL = [_filename mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 //	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 	
@@ -270,6 +196,7 @@
 					[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 					
 					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 				}];
 				
@@ -419,13 +346,13 @@
 	[dateFormat2 setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	_datePicker.date = [dateFormat2 dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]];
+	_datePicker.date = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [dateFormat dateFromString:@"1970-01-01"] : [dateFormat2 dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]];//[dateFormat2 dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
 	_datePicker.minimumDate = [dateFormat dateFromString:@"1970-01-01"];
 	_datePicker.maximumDate = [NSDate date];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
-	_birthday = [[HONAppDelegate infoForUser] objectForKey:@"age"];
+	_birthday = [dateFormat2 stringFromDate:_datePicker.date];//[[HONAppDelegate infoForUser] objectForKey:@"age"];
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_tutorialHolderView.backgroundColor = [UIColor blackColor];
@@ -456,6 +383,10 @@
 			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
 			_cameraOverlayView.alpha = 0.0;
 			
+			_splashTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+			_splashTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+			[_cameraOverlayView addSubview:_splashTintView];
+			
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
 			_overlayImageView.userInteractionEnabled = YES;
@@ -484,12 +415,12 @@
 			_overlayImageView.alpha = 0.0;
 			[_tutorialHolderView addSubview:_overlayImageView];
 			
-			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			closeTutorialButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
-			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
-			[_tutorialHolderView addSubview:closeTutorialButton];
+			UIButton *closeSplashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			closeSplashButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
+			[closeSplashButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+			[closeSplashButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+			[closeSplashButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+			[_tutorialHolderView addSubview:closeSplashButton];
 			
 			[UIView animateWithDuration:0.33 animations:^(void) {
 				_overlayImageView.alpha = 1.0;
@@ -502,14 +433,28 @@
 
 #pragma mark - Navigation
 - (void)_goProfileCamera {
-	[UIView animateWithDuration:0.33 animations:^(void) {
+	[UIView animateWithDuration:0.5 animations:^(void) {
 		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height);
 		_overlayImageView.alpha = 0.0;
+		_splashTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep2"]];
 		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
 		_tutorialBubbleImageView.alpha = 0.0;
 		[_cameraOverlayView addSubview:_tutorialBubbleImageView];
+		
+		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		takePhotoButton.frame = CGRectMake(118.0, [UIScreen mainScreen].bounds.size.height - 133.0, 84.0, 84.0);
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		[takePhotoButton addTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
+		takePhotoButton.alpha = 0.0;
+		[_cameraOverlayView addSubview:takePhotoButton];
+		
+		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeTutorialButton.frame = _cameraOverlayView.frame;
+		[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
+		[_cameraOverlayView addSubview:closeTutorialButton];
 		
 		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
 		headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
@@ -522,14 +467,6 @@
 		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 		[_cameraOverlayView addSubview:skipButton];
 		
-		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		takePhotoButton.frame = CGRectMake(118.0, [UIScreen mainScreen].bounds.size.height - 133.0, 84.0, 84.0);
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
-		[takePhotoButton addTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
-		takePhotoButton.alpha = 0.0;
-		[_cameraOverlayView addSubview:takePhotoButton];
-		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			takePhotoButton.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -538,6 +475,20 @@
 				_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -35.0);
 			}];
 		}];
+	}];
+}
+
+- (void)_goCloseTutorial:(id)sender {
+	UIButton *button = (UIButton *)sender;
+	[button removeTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
+	[button removeFromSuperview];
+	button = nil;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tutorialBubbleImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_tutorialBubbleImageView removeFromSuperview];
+		_tutorialBubbleImageView = nil;
 	}];
 }
 
@@ -554,6 +505,12 @@
 //	[button removeTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
 //	button.alpha = 0.5;
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Verifying Selfie…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tutorialBubbleImageView.alpha = 0.0;
 		_cameraOverlayView.alpha = 0.0;
@@ -565,7 +522,7 @@
 	[self.previewPicker takePicture];
 }
 
-- (void)_goCloseTutorial {
+- (void)_goCloseSplash {
 	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -636,8 +593,8 @@
 		
 		} else {
 			if ([_emailTextField.text length] == 0) {
-				[[[UIAlertView alloc] initWithTitle:@"No Password!"
-											message:@"You need to enter a password to start snapping"
+				[[[UIAlertView alloc] initWithTitle:@"No email!"
+											message:@"You need to enter an email address to use Volley"
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
@@ -683,14 +640,28 @@
 	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 	NSArray *features = [detctor featuresInImage:ciImage];
 	
+	[_progressHUD hide:YES];
+	_progressHUD = nil;
+	
 	if ([features count] > 0) {
 		[self _uploadPhoto:image];
 		[self dismissViewControllerAnimated:YES completion:^(void) {}];
+		
+		_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+		
+		[_usernameTextField becomeFirstResponder];
+		[_usernameButton setSelected:YES];
+		
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.5];
+		[UIView setAnimationDelay:0.33];
+		_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+		[UIView commitAnimations];
 	
 	} else {
 		_selfieAttempts++;
 		
-		if (_selfieAttempts < 3) {
+		if (_selfieAttempts < 2) {
 			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
 										message:@"Please retake your photo"
 									   delegate:self
@@ -741,7 +712,7 @@
 			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 			
-			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
+			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:_birthday]] < 19)
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 		}];
 	}];

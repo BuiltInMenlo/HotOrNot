@@ -47,8 +47,6 @@
 		[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 		CGRect frame = CGRectMake(0.0, -185.0, 320.0, 568.0);
 		
-		NSLog(@"AVATAR:[%@]", imageURL);
-		
 		__weak typeof(self) weakSelf = self;
 		_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
 		_avatarImageView.userInteractionEnabled = YES;

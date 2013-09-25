@@ -73,22 +73,19 @@
 	
 	__weak typeof(self) weakSelf = self;
 	
-	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 198.0)];
+	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 282.0)];
 	_imageHolderView.clipsToBounds = YES;
 	_imageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_imageHolderView];
 	
-//	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -115.0, 320.0, 427.0)];
-	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -185.0, 320.0, 568.0)];
+	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -100.0, 320.0, 568.0)];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_challengeImageView];
 	
-	NSMutableString *avatarURL = [challengeVO.creatorVO.avatarURL mutableCopy];
+	NSMutableString *avatarURL = [challengeVO.creatorVO.imagePrefix mutableCopy];
+	[avatarURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-//	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-//	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	
 //	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -100,7 +97,7 @@
 								}];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 44.0);
+	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 128.0);
 	[self.contentView addSubview:gradientImageView];
 	
 //	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(134.0, 13.0, 90.0, 16.0)];
@@ -111,7 +108,7 @@
 //	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 //	[self.contentView addSubview:timeLabel];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 144.0, 150.0, 22.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 233.0, 150.0, 22.0)];
 	usernameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
@@ -121,12 +118,12 @@
 	[self.contentView addSubview:usernameLabel];
 	
 	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	usernameButton.frame = CGRectMake(10.0, 144.0, 150.0, 44.0);
+	usernameButton.frame = CGRectMake(10.0, 228.0, 150.0, 44.0);
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[usernameButton setTag:_challengeVO.creatorVO.userID];
 	[self.contentView addSubview:usernameButton];
 	
-	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 165.0, 260.0, 22.0)];
+	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 254.0, 260.0, 22.0)];
 	ageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	ageLabel.textColor = [UIColor colorWithWhite:0.898 alpha:1.0];
 	ageLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
@@ -144,9 +141,9 @@
 //	[self.contentView addSubview:buttonBGView];
 	
 	UIButton *actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	actionButton.frame = CGRectMake(262.0, 77.0, 44.0, 44.0);
-	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_nonActive"] forState:UIControlStateNormal];
-	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_Active"] forState:UIControlStateHighlighted];
+	actionButton.frame = CGRectMake(246.0, 108.0, 64.0, 64.0);
+	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_nonActive"] forState:UIControlStateNormal];
+	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_Active"] forState:UIControlStateHighlighted];
 	[actionButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:actionButton];
 }

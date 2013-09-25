@@ -122,7 +122,7 @@
 	_headerBGImageView.frame = CGRectOffset(_headerBGImageView.frame, 0.0, -20.0);
 	[self addSubview:_headerBGImageView];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 14.0, 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 14.0, 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];

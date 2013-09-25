@@ -242,6 +242,24 @@
 //	[UIView animateWithDuration:1.25 animations:^(void) {
 //		_bgHolderView.alpha = 1.0;
 //	}];
+	
+	int modal_total = 0;
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:modal_total] forKey:@"modal_total"];
+	
+	else {
+		modal_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"] intValue];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++modal_total] forKey:@"modal_total"];
+	}
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (modal_total == 0) {
+		[[[UIAlertView alloc] initWithTitle:@""
+									message:@"Tap and hold any image to view fullscreen!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 
@@ -294,7 +312,7 @@
 	
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina5] * 170.0) + 560.0 + (kSnapMediumDim * (respondedOpponents / 5))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina5] * 88.0) + 500.0 + (kSnapMediumDim * (respondedOpponents / 4))));
 	//_scrollView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, -64.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
@@ -662,7 +680,7 @@
 	_challengeVO.creatorVO.score++;
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -683,7 +701,7 @@
 	((HONOpponentVO *)[_challengeVO.challengers lastObject]).score++;
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

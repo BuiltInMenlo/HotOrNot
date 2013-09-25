@@ -632,11 +632,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_indexPath = [_tableView indexPathForCell:tableCell];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"Are you sure you want to verify @%@?", _challengeVO.creatorVO.username]
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"Does @%@ look between 13 and 19?", _challengeVO.creatorVO.username]
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Verify & subscribe", @"Flag", nil];
+													otherButtonTitles:@"Yes, verify & subscribe", @"No, looks like a fake", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -671,7 +671,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -737,7 +737,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == [_challenges count] - 1) ? 245.0 : 198.0);
+	return ((indexPath.row == [_challenges count] - 1) ? 329.0 : 282.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
