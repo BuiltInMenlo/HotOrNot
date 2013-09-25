@@ -155,4 +155,27 @@ Small_160x160
         $image->setImageResolution($width,$height);
         $image->cropImage($width, $height, 0, $y);
     }
+    
+    public static function removeDeadFriends(){
+        $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
+        $docs = $dao->getFriendDocuments();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $userId = $hit->_source->source;
+            $user = BIM_Model_User::get( $userId );
+            if( ! $user->isExtant() ){
+                print_r( array("removing",$hit) );
+                $dao->removeRelation( $hit->_source );
+            } else {
+                $userId = $hit->_source->target;
+                $user = BIM_Model_User::get( $userId );
+                if( !$user->isExtant() ){
+                    print_r( array("removing",$hit) );
+                    $dao->removeRelation($hit->_source);
+                } else {
+                    print_r( array("retaining",$hit) );
+                }
+            }
+        }
+    }
 }

@@ -127,6 +127,18 @@ class BIM_Model_Volley{
         $userData->score = $score;
     }
     
+    public function getLatestImage(){
+        $img = null;
+        if( $this->challengers ){
+            $img = end( $this->challengers );
+            $img = $img->img;
+        }
+        if( !$img ){
+            $img = $this->creator->img;
+        }
+        return $img;
+    }
+    
     /**
      * return the list of users
      * in the volley including the creator
@@ -253,7 +265,7 @@ class BIM_Model_Volley{
 	    if( preg_match('/defaultAvatar/',$imgUrl) ){
 	        $imgUrl = preg_replace('/defaultAvatar\.png/i', 'defaultAvatar_o.jpg', $imgUrl);
 	    } else {
-    	    $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $imgUrl);
+    	    $imgUrl = preg_replace('/Large_640x1136/i', '', $imgUrl);
 	    }
 	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true, $status);
     }
@@ -293,6 +305,7 @@ class BIM_Model_Volley{
     
     public function updateImage( $url ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+	    $url = preg_replace('/Large_640x1136/i', '', $url);
         $dao->updateImage( $this->id, $url );
         $this->purgeFromCache();
     }
@@ -573,7 +586,14 @@ class BIM_Model_Volley{
     
     public static function getManagedVolleys( ){
         $ids = self::getExploreIds();
-        return self::getMulti($ids);
+        $ct = min( array(count($ids), 16) );
+        $indexes = array_rand( $ids, $ct );
+        $newIds = array();
+        foreach( $indexes as $index ){
+            $newIds[] = $ids[ $index ];
+        }
+        shuffle($newIds);
+        return self::getMulti( $newIds );
     }
     
     public static function autoVolley( $userId ){
