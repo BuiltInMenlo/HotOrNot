@@ -14,12 +14,13 @@ class BIM_Model_User{
             foreach( $params as $prop => $value ){
                 $this->$prop = $value;
             }
-            if( $this->age <= 0 ){
+            if( $this->age < 0 ){
                 //set the default age to 17
                 $date = new DateTime();
                 $date = $date->sub( new DateInterval('P17Y') );
                 $this->age = $date->format('Y-m-d H:i:s');
-            } else if( !empty( $this->age ) ){
+                $this->age = '0000-00-00 00:00:00';
+            } else if( $this->age >= 0 ){
                 $birthdate = new DateTime( "@$this->age" );
                 $this->age = $birthdate->format('Y-m-d H:i:s');
             }
@@ -32,7 +33,7 @@ class BIM_Model_User{
     		
     		// assing some additional properties
     		$this->name = $this->username; 
-    		$this->token = $this->device_token; 
+    		$this->token = $this->device_token;
     	    $this->avatar_url = $avatar_url;
     		$this->votes = $votes; 
     		//$this->pokes = $pokes; 
@@ -168,6 +169,46 @@ class BIM_Model_User{
         return ($this->img_url);
     }
     
+    /**
+     * 
+update tblUsers set age = -1 where id in (select id from tblUsers where username like "%snap4snap%" union select id from tblUsers where username like "%picchampX%" union select id from tblUsers where username like "%swagluver%" union select id from tblUsers where username like "%coolswagger%" union select id from tblUsers where username like "%yoloswag%" union select id from tblUsers where username like "%tumblrSwag%" union select id from tblUsers where username like "%instachallenger%" union select id from tblUsers where username like "%hotbitchswaglove%" union select id from tblUsers where username like "%lovepeaceswaghot%" union select id from tblUsers where username like "%hotswaglover%" union select id from tblUsers where username like "%snapforsnapper%" union select id from tblUsers where username like "%snaphard%" union select id from tblUsers where username like "%snaphardyo%" union select id from tblUsers where username like "%yosnaper%" union select id from tblUsers where username like "%yoosnapyoo");
+
+select added from tblUsers where username like "%snap4snap%"
+union
+select added from tblUsers where username like "%picchampX%"
+union
+select added from tblUsers where username like "%swagluver%"
+union
+select added from tblUsers where username like "%coolswagger%"
+union
+select added from tblUsers where username like "%yoloswag%"
+union
+select added from tblUsers where username like "%tumblrSwag%"
+union
+select added from tblUsers where username like "%instachallenger%"
+union
+select added from tblUsers where username like "%hotbitchswaglove%"
+union
+select added from tblUsers where username like "%lovepeaceswaghot%"
+union
+select added from tblUsers where username like "%hotswaglover%"
+union
+select added from tblUsers where username like "%snapforsnapper%"
+union
+select added from tblUsers where username like "%snaphard%"
+union
+select added from tblUsers where username like "%snaphardyo%"
+union
+select added from tblUsers where username like "%yosnaper%"
+union
+select added from tblUsers where username like "%yoosnapyoo";
+     * 
+     * 
+     * Enter description here ...
+     * @param unknown_type $token
+     * @param unknown_type $adId
+     */
+    
     public static function create( $token, $adId ){
 			// default names
 			$defaultName_arr = array(
@@ -191,6 +232,7 @@ class BIM_Model_User{
 			$rnd_ind = mt_rand(0, count($defaultName_arr) - 1);
 			$username = $defaultName_arr[$rnd_ind] . time();
         
+			$username = $username.'.'.uniqid(true);
 			$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
 			$id = $dao->create($username, $token, $adId);
 			return self::get($id);
@@ -516,6 +558,7 @@ class BIM_Model_User{
             print_r( array("archiving: ", $user ) );
             $user->archive();
             $user->delete();
+            // $user->removeFriends();
         }
     }
     
@@ -586,5 +629,59 @@ class BIM_Model_User{
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $ids = $dao->getPendingSuspendees( $limit );
         return self::getMulti($ids);
+    }
+    
+    public static function processProfileImages( $userIds ){
+        $conf = BIM_Config::aws();
+        S3::setAuth($conf->access_key, $conf->secret_key);
+        while( $userIds ){
+            $ids = array_splice($userIds, 0, 250);
+            $users = BIM_Model_User::getMulti($ids);
+            foreach( $users as $user ){
+                if( !empty( $user->img_url ) && !preg_match( '@facebook.com@', $user->img_url ) ){
+                    $imgPrefix = preg_replace('@\.jpg@','', $user->img_url );
+                    self::processImage( $imgPrefix );
+                    echo "processed user $user->id\n\n";
+                }
+            }
+            print count( $userIds )." remaining\n\n====\n\n";
+        }
+    }
+    
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-avatars' ){
+        echo "converting $imgPrefix\n";
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $convertedImages = BIM_Utils::finalizeImages($image);
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+                echo "put {$imgPrefix}{$suffix}.jpg\n";
+            }
+        }
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+            $imgUrl = "{$imgPrefix}.jpg";
+            try{
+                $image = new Imagick( $imgUrl );
+            } catch( Exception $e ){
+                $msg = $e->getMessage()." - $imgUrl";
+                error_log( $msg );
+                $image = null;
+            }
+        }
+        echo "\n";
+        return $image;
     }
 }

@@ -87,10 +87,10 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function upvoteChallenge(){
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
-		if ( !empty( $input->challengeID ) && !empty( $input->userID ) && !empty( $input->challengerID ) ){
+		if ( !empty( $input->challengeID ) && !empty( $input->userID ) && !empty( $input->challengerID ) && !empty( $input->imgURL ) ){
             $userId = $this->resolveUserId($input->userID);
 		    $votes = new BIM_App_Votes();
-		    $uv = $votes->upvoteChallenge( $input->challengeID, $userId, $input->challengerID );
+		    $uv = $votes->upvoteChallenge( $input->challengeID, $userId, $input->challengerID, $input->imgURL );
 		}
 		return $uv;
     }

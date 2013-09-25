@@ -50,3 +50,5 @@ function acceptchallengeasdefaultuser( $job, &$config ){ any_job($job, $config);
 function firstruncomplete( $job, &$config ){ any_job($job, $config); }
 function flaguser( $job, &$config ){ any_job($job, $config); }
 function purgeuservolleys( $job, &$config ){ any_job($job, $config); }
+function process_volley_images( $job, &$config ){ any_job($job, $config); }
+function process_profile_images( $job, &$config ){ any_job($job, $config); }

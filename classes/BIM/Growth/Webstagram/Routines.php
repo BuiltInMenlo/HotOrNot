@@ -680,6 +680,24 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         }
     }
     
+    /**
+     * parse kik ids out of the db data we collectd from webstagram
+     */
+    public static function parseKikIds(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $sql = "select kik_id from growth.ig_kik_canada";
+        $stmt = $dao->prepareAndExecute( $sql );
+        $kikStrings = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        foreach( $kikStrings as $kikString ){
+            $kikString = strip_tags($kikString);
+            $ptrn = '@kik[\W\s]*([\w]+)@is';
+            preg_match( $ptrn, $kikString, $matches );
+            if( !empty( $matches[1] ) ){
+                echo $matches[1]."\n";
+            }
+        }
+    }
+    
     public static function collectKikIds(){
         $g = new BIM_Growth();
         $dao = new BIM_DAO_Mysql( BIM_Config::db() );

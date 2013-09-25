@@ -1,17 +1,5 @@
 <?php 
 class BIM_Maint_Volley{
-    public static function resizeVolleyImages(){
-		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-		$sql = "select id from hotornot-dev.tblChallenges where added > '2013-07-12'";
-		$stmt = $dao->prepareAndExecute( $sql );
-        $volleyIds = $stmt->fecthAll(PDO::FETCH_COLUMN, 0);
-        while( $volleyIds ){
-            $ids = array_splice($volleyIds, 0, 250);
-            $volleys = self::getMulti($ids);
-            self::convertImage( $volley->creator->img );
-            print count( $volleyIds )." remaining\n";
-        }
-    }
     
     /**
 Final image sizes and where they are used
@@ -32,39 +20,91 @@ Medium_320x320
 Small_160x160
      * 
      */
-    public static function convertImage( $imgPath ){
-        
+    
+    public static function convertVolleyImages(){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$sql = "select id from `hotornot-dev`.tblChallenges where added > '2013-07-12'";
+		$stmt = $dao->prepareAndExecute( $sql );
+        $volleyIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        self::convertVolleys($volleyIds);
     }
     
-    public static function resizeImage( $imgFilePath ){
-        $percent = 0.5;
-        
-        // Get new dimensions
-        list($width, $height) = getimagesize($imgFilePath);
-        
-        print_r( array($width, $height) );
-        
-        $new_width = 1136;
-        $new_height = 1136;
-        
-        // Resample
-        $image_p = imagecreatetruecolor($new_width, $new_height);
-        $image = imagecreatefromjpeg($imgFilePath);
-        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-        
-        $new_height = 1136;
-        $new_width = 640;
-        
-        $x = (int) ($new_width - $new_height)/2;
-        $params = array(
-            'x' => $x,
-            'y' => 0,
-            'width' => 640,
-            'height' => $new_height,
-        );
-        imagecrop( $image_p, $params );
-        
-        // Output
-        imagejpeg($image_p, null, 100);
+    public static function convertVolleys( $volleyIds ){
+        $conf = BIM_Config_Dynamic::aws();
+        S3::setAuth($conf->access_key, $conf->secret_key);
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = BIM_Model_Volley::getMulti($ids);
+            foreach( $volleys as $volley ){
+                self::processImage( $volley->creator->img );
+                foreach( $volley->challengers as $challenger ){
+                    self::processImage( $challenger->img );
+                }
+                echo "processed volley $volley->id\n\n";
+            }
+            print count( $volleyIds )." remaining\n\n====\n\n";
+        }
+    }
+    
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-challenges' ){
+        echo "converting $imgPrefix\n";
+        $convertedImages = self::convertImage( $imgPrefix );
+        if( $convertedImages ){
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+                echo "put {$imgPrefix}{$suffix}.jpg\n";
+            }
+        }
+    }
+    
+    public static function convertImage( $imgPrefix ){
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $width = $image->getImageWidth();
+            $height = $image->getImageHeight();
+            $convertedImages = array();
+            if( $width == $height ){        
+                $convertedImages = self::convert( $image, 1136, 1136, 640, 1136 );
+            } else if( ($width == 480 && $height == 640) || ($width == 960 && $height == 1280) ){        
+                $convertedImages = self::convert( $image, 852, 1136, 640, 1136 );
+            } else {
+                error_log("we have an odd image size $width x $height - $imgPrefix");
+            }
+        }
+        return $convertedImages;
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}_o.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+            $imgUrl = "{$imgPrefix}_l.jpg";
+            try{
+                $image = new Imagick( $imgUrl );
+            } catch( Exception $e ){
+                $msg = $e->getMessage()." - $imgUrl";
+                error_log( $msg );
+                $image = null;
+            }
+        }
+        echo "\n";
+        return $image;
+    }
+    
+    public static function convert( $image, $resizeWidth, $resizeHeight, $cropWidth, $cropHeight ){
+        self::resize($image, $resizeWidth, $resizeHeight);
+        self::cropX($image, $cropWidth, $cropHeight);
+        $largeImage = clone $image;
+        $convertedImages = BIM_Utils::finalizeImages($image);
+        $convertedImages["Large_640x1136"] = $largeImage;
+        return $convertedImages;
     }
 }

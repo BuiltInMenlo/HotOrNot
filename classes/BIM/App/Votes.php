@@ -161,10 +161,10 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $targetId the id of the user receiving the vote
 	 * @return An associative object of the challenge (array)
 	**/
-	public function upvoteChallenge($volleyId, $userId, $targetId) {
+	public function upvoteChallenge($volleyId, $userId, $targetId, $imgUrl ) {
 	    $volley = BIM_Model_Volley::get($volleyId);
 	    if( $volley->isExtant() && $volley->hasUser( $targetId ) ){
-	        $volley->upVote( $targetId, $userId );
+	        $volley->upVote( $targetId, $userId, $imgUrl );
 	        if( $userId != $targetId ){
         		$liker = BIM_Model_User::get( $userId );
         		$target = BIM_Model_User::get( $targetId );

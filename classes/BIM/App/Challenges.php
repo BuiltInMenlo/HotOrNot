@@ -186,6 +186,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $validTargetIds = array();
             $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, $validTargetIds, $isPrivate, $expires);
             if( $volley ){
+                BIM_Jobs_Challenges::queueProcessVolleyImages( $volley->id );
                 foreach( $validTargets as $targetUser ){
                     // $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
                     if ($targetUser->notifications == "Y"){
@@ -383,6 +384,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $OK = false;
             if( $volley->is_private == 'N' ){
                 $volley->join( $userId, $imgUrl );
+                BIM_Jobs_Challenges::queueProcessVolleyImages( $volley->id );
                 $creator = BIM_Model_User::get($volley->creator->id );
                 $joiner = BIM_Model_User::get( $userId );
                 $this->doAcceptNotification($volley, $creator, $joiner);

@@ -14,5 +14,9 @@ class BIM_App_Discover extends BIM_App_Base{
 	public function getTopChallengesByVotes() {
 	    return BIM_Model_Volley::getTopVolleysByVotes();
 	}
+	
+	public function getManagedVolleys() {
+	    return BIM_Model_Volley::getManagedVolleys();
+	}
 }
 

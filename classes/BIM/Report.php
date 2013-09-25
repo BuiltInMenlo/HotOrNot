@@ -4,7 +4,7 @@ class BIM_Report{
     // get the top 50 users that have been suspended
     // and get the top 50 that are about to be suspended
     
-    public static function carlosDanger(){        
+    public static function carlosDanger(){
         echo("
         <html>
         <head>

@@ -212,13 +212,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
             $expires = $this->resolveExpires();
             $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;
             $challenges = new BIM_App_Challenges();
-            if( defined('IS_LEGACY') && IS_LEGACY ){
-                foreach( $usernames as $username ){
-                    $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
-                }
-            } else {
-                $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $usernames, $isPrivate, $expires );
-            }
+            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $usernames, $isPrivate, $expires );
         }
         return $uv;
     }

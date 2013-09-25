@@ -65,8 +65,8 @@ class BIM_Push_UrbanAirship_Iphone{
         
         $job = (object) array(
             'nextRunTime' => $time,
-            'class' => 'BIM_Jobs_Challenges',
-            'method' => 'doPush',
+            'class' => 'BIM_Push_UrbanAirship_Iphone',
+            'method' => 'sendPush',
             'name' => 'push',
             'params' => $push,
             'is_temp' => true,

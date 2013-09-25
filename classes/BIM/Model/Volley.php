@@ -46,24 +46,19 @@ class BIM_Model_Volley{
                     'img' => $challenger->challenger_img,
                     'score' => $challenger->likes,
                     'joined' => $joined,
+                    'joined_timestamp' => $challenger->joined,
                 );
                 $this->resolveScore($target);
                 $challengers[] = $target;            
             }
             
-            // legacy versions of client do not support multiple challengers
-            if( $this->isLegacy() ){
-                $this->challenger = $challengers[0];
-            } else{
-                $this->challengers = $challengers;
-            }
+            $this->challengers = $challengers;
             
             if( $populateUserData ){
                 $this->populateUsers();
             }
         }
     }
-    
     
     private function _setSubject( $volley ){
         if( empty($volley->subject) ){
@@ -89,11 +84,7 @@ class BIM_Model_Volley{
         self::_updateUser($this->creator, $creator);
         
         // populate the challengers
-        if( $this->isLegacy() ){
-            $challengers = array($this->challenger);
-        } else{
-            $challengers = $this->challengers;
-        }
+        $challengers = $this->challengers;
 	    foreach ( $challengers as $challenger ){
             $target = $users[ $challenger->id ];
             self::_updateUser($challenger, $target);
@@ -136,14 +127,16 @@ class BIM_Model_Volley{
         $userData->score = $score;
     }
     
-    // returns true if the requesting client
-    // is a legacy client
-    public function isLegacy(){
-        return (defined( 'IS_LEGACY' ) && IS_LEGACY );
-    }
-    
-    public static function legacy(){
-        return (defined( 'IS_LEGACY' ) && IS_LEGACY );
+    public function getLatestImage(){
+        $img = null;
+        if( $this->challengers ){
+            $img = end( $this->challengers );
+            $img = $img->img;
+        }
+        if( !$img ){
+            $img = $this->creator->img;
+        }
+        return $img;
     }
     
     /**
@@ -152,13 +145,9 @@ class BIM_Model_Volley{
      */
     public function getUsers(){
         $userIds = array();
-        if( $this->isLegacy() ){
-            $userIds[] = $this->challenger->id;
-        } else {
-            foreach( $this->challengers as $challenger ){
-    	        $userIds[] = $challenger->id;
-    	    }
-    	}
+        foreach( $this->challengers as $challenger ){
+	        $userIds[] = $challenger->id;
+	    }
     	$userIds[] = $this->creator->id;
     	return $userIds;
     }
@@ -170,6 +159,10 @@ class BIM_Model_Volley{
     
     public function getComments(){
         return BIM_Model_Comments::getForVolley( $this->id );
+    }
+    
+    public function getCreatorImage(){
+        return $this->creator->img.'Small_160x160.jpg';
     }
     
     public function isExpired(){
@@ -205,6 +198,21 @@ class BIM_Model_Volley{
             }
         }
         return $OK;
+    }
+    
+    public function sortChallengers(){
+        if($this->challengers){
+            usort($this->challengers, 
+                function( $a, $b ){
+                    $al = $a->joined_timestamp;
+                    $bl = $b->joined_timestamp;
+                    if ( $al == $bl ) {
+                        return 0;
+                    }
+                    return ($al > $bl) ? 1 : -1;
+                }
+            );
+        }
     }
     
     public function isCreator( $userId ){
@@ -257,7 +265,7 @@ class BIM_Model_Volley{
 	    if( preg_match('/defaultAvatar/',$imgUrl) ){
 	        $imgUrl = preg_replace('/defaultAvatar\.png/i', 'defaultAvatar_o.jpg', $imgUrl);
 	    } else {
-    	    $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $imgUrl);
+    	    $imgUrl = preg_replace('/Large_640x1136/i', '', $imgUrl);
 	    }
 	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true, $status);
     }
@@ -297,6 +305,7 @@ class BIM_Model_Volley{
     
     public function updateImage( $url ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+	    $url = preg_replace('/Large_640x1136/i', '', $url);
         $dao->updateImage( $this->id, $url );
         $this->purgeFromCache();
     }
@@ -308,10 +317,9 @@ class BIM_Model_Volley{
         $this->purgeFromCache();
     }
     
-    public function upVote( $targetId, $userId ){
+    public function upVote( $targetId, $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $isCreator = $this->isCreator($targetId);
-        $dao->upVote( $this->id, $userId, $targetId, $isCreator  );
+        $dao->upVote( $this->id, $userId, $targetId, $imgUrl  );
         $this->purgeFromCache();
     }
     
@@ -357,16 +365,10 @@ class BIM_Model_Volley{
         if( $this->creator->id == $data->id ){
             self::_updateUser($this->creator, $data);
         } else {
-            if( $this->isLegacy() ){
-                if( $this->challenger->id == $data->id ){
-                    self::_updateUser($this->challenger, $data);
-                }
-            } else {
-                if( !empty( $this->challengers ) ){
-                    foreach( $this->challengers as $challenger ){
-                        if( $challenger->id == $data->id ){
-                            self::_updateUser($challenger, $data);
-                        }
+            if( !empty( $this->challengers ) ){
+                foreach( $this->challengers as $challenger ){
+                    if( $challenger->id == $data->id ){
+                        self::_updateUser($challenger, $data);
                     }
                 }
             }
@@ -375,15 +377,11 @@ class BIM_Model_Volley{
     
     public function hasChallenger( $userId ){
         $has = false;
-        if( $this->isLegacy() ){
-            $has = ( $this->challenger->id == $userId );
-        } else {
-            if( !empty( $this->challengers ) ){
-                foreach( $this->challengers as $challenger ){
-                    if( $challenger->id == $userId ){
-                        $has = true;
-                        break;
-                    }
+        if( !empty( $this->challengers ) ){
+            foreach( $this->challengers as $challenger ){
+                if( $challenger->id == $userId ){
+                    $has = true;
+                    break;
                 }
             }
         }
@@ -510,15 +508,14 @@ class BIM_Model_Volley{
             self::populateVolleyUsers( $volleys );
             foreach( $volleys as $volley ){
                 $key = self::makeCacheKeys($volley->id);
-                if( !self::legacy() ){
-                    $cache->set( $key, $volley );
-                }
+                $cache->set( $key, $volley );
             }
         }
         
         // now reorder according to passed ids
         $volleyArr = array();
         foreach( $volleys as $id => $volley ){
+            // $volley->sortChallengers();
             $volleyArr[ $volley->id ] = $volley;
         }
         $volleys = array();
@@ -555,15 +552,16 @@ class BIM_Model_Volley{
         }
         if( !$volley ){
             $volley = new self($volleyId);
-            if( $volley->isExtant() && !self::legacy() ){
+            if( $volley->isExtant() ){
                 $cache->set( $cacheKey, $volley );
             }
         }
+        //$volley->sortChallengers();
         return $volley;
     }
     
     public static function getVolleysWithFriends( $userId ){
-        $friends = BIM_App_Social::getFollowed( (object) array('userID' => $userId ) );
+        $friends = BIM_App_Social::getFollowed( (object) array('userID' => $userId, 'size' => 100 ) );
         $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
         // we add our own id here so we will include our challenges as well, not just our friends
         $friendIds[] = $userId;
@@ -584,6 +582,18 @@ class BIM_Model_Volley{
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $ids = $dao->getTopVolleysByVotes();
         return self::getMulti($ids);
+    }
+    
+    public static function getManagedVolleys( ){
+        $ids = self::getExploreIds();
+        $ct = min( array(count($ids), 16) );
+        $indexes = array_rand( $ids, $ct );
+        $newIds = array();
+        foreach( $indexes as $index ){
+            $newIds[] = $ids[ $index ];
+        }
+        shuffle($newIds);
+        return self::getMulti( $newIds );
     }
     
     public static function autoVolley( $userId ){
@@ -714,5 +724,63 @@ class BIM_Model_Volley{
             }
             print count( $volleyIds )." remaining\n";
         }
+    }
+    
+    public static function processVolleyImages( $volleyIds ){
+        $conf = BIM_Config::aws();
+        S3::setAuth($conf->access_key, $conf->secret_key);
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = BIM_Model_Volley::getMulti($ids);
+            foreach( $volleys as $volley ){
+                self::processImage( $volley->creator->img );
+                foreach( $volley->challengers as $challenger ){
+                    if( !empty( $challenger->img ) ){
+                        self::processImage( $challenger->img );
+                    }
+                }
+                echo "processed volley $volley->id\n\n";
+            }
+            print count( $volleyIds )." remaining\n\n====\n\n";
+        }
+    }
+    
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-challenges' ){
+        echo "converting $imgPrefix\n";
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $convertedImages = BIM_Utils::finalizeImages($image);
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+                echo "put {$imgPrefix}{$suffix}.jpg\n";
+            }
+        }
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+        }
+        echo "\n";
+        return $image;
+    }
+    
+    public static function updateExploreIds( $volleyData ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		return $dao->updateExploreIds( $volleyData );
+    }
+    
+    public static function getExploreIds( ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		return $dao->getExploreIds( );
     }
 }

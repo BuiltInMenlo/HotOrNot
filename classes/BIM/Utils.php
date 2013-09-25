@@ -207,12 +207,38 @@ class BIM_Utils{
         }
 	}
 	
-    public static function setLegacy(){
-        $legacyKey = 'IS_LEGACY';
-        if( !empty( $_SERVER[ $legacyKey ] ) ){
-            define($legacyKey,TRUE);
-        } else {
-            define($legacyKey,FALSE);
-        }
-    }	
+    public static function finalizeImages( $image ){
+        $convertedImages = array();
+        
+        self::resize($image, 320, 568);
+        self::cropY($image, 320, 320);
+        $mediumImage = clone $image;
+        $convertedImages['Medium_320x320'] = $mediumImage;
+        
+        self::resize($image, 160, 160);
+        $smallImage = clone $image;
+        $convertedImages['Small_160x160'] = $smallImage;
+        
+        return $convertedImages;
+    }
+    
+    public static function resize( $image, $width, $height ){
+        $image->setImagePage(0,0,0,0);
+        $image->setImageResolution( $width, $height );
+        $image->resizeImage($width, $height,imagick::FILTER_LANCZOS,0);
+    }
+    
+    public static function cropX( $image, $width, $height ){
+        $x = (int) ($image->getImageWidth() - $width)/2;
+        $image->setImagePage(0,0,0,0);
+        $image->setImageResolution($width,$height);
+        $image->cropImage($width, $height, $x, 0);
+    }
+    
+    public static function cropY( $image, $width, $height ){
+        $y = (int) ($image->getImageHeight() - $height)/2;
+        $image->setImagePage(0,0,0,0);
+        $image->setImageResolution($width,$height);
+        $image->cropImage($width, $height, 0, $y);
+    }
 }
