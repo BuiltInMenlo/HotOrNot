@@ -10,7 +10,6 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		    BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
 		    if( $input->approves > 0 ){
 		        $input->target = $input->targetId;
-		        BIM_App_Social::addFriend($input);
 		    }
     		return array(
     			'id' => $input->userID,
