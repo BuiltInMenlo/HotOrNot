@@ -1,32 +1,40 @@
 <?php 
 
 class BIM_Config_Dynamic{
+
+    public static function session(){
+        return (object) array(
+            'cookie' => (object) array(
+                'name' => "bim_session",
+                'expires' => 86400 * 365,
+                'path' => '/',
+                'domain' => '',
+                'secure' => false,
+                'http_only' => false,
+            ),
+            'use' => false,
+        );
+    }
     
     public static function app(){
         return (object) array(
-            'base_path' => '/hotornot/api-shane'
-        );
-    }
-
-    public static function growthEmailInvites(){
-        return (object) array(
-        	'to_email' => 'shane@shanehill.com',
-        	'to_name' => 'leyla',
-        	'from_email' => 'test@shanehill.com',
-        	'from_name' => 'BIM',
-        	'subject' => 'email test',
+            'base_path' => '/hotornot/api-shane',
+            'sticky_volleys' => array(),
+            // 'auto_subscribes' => array(13169,2394)
+            'auto_subscribes' => array()
         );
     }
     
-    public static function smtp(){
+    public static function growthEmailInvites(){
         return (object) array(
-            'host' => 'smtp.mandrillapp.com',
-            'port' => 587,
-            'username' => '',
-            'password' => ''
+        	'to_email' => 'shane@shanehill.com',
+        	'to_name' => '',
+        	'from_email' => 'invite@letsvolley.com',
+        	'from_name' => 'GetVolleyApp',
+        	'subject' => 'You have been invited to Volley!',
         );
     }
-
+    
     public static function warningEmail(){
         return (object) array(
             'emailData' => (object) array(
@@ -37,12 +45,7 @@ class BIM_Config_Dynamic{
             	'text' => '',
             ),
 
-            'smtp' =>  (object) array(
-                'host' => 'smtp.mandrillapp.com',
-                'port' => 587,
-                'username' => 'apps@builtinmenlo.com',
-                'password' => 'JW-zqg_yVLs7suuVBwG_xw'
-            )
+            'smtp' =>  self::smtp()
         );
     }
     
@@ -54,7 +57,7 @@ class BIM_Config_Dynamic{
             'password' => ''
         );
     }
-
+    
     public static function queueFuncs(){
         return array(
             'BIM_Controller_Votes' => array(
@@ -89,10 +92,10 @@ class BIM_Config_Dynamic{
     
     public static function instagram(){
         return (object) array(
-            'link_for_bio' => 'http://getvolleyapp.com/b/b',
+            'link_for_bio' => 'http://getvolleyapp.com/b/beer',
             'api' => (object) array(
-                'client_id' => 'foo',
-                'client_secret' => 'bar',
+                'client_id' => '',
+                'client_secret' => '',
                 'access_token_url' => 'https://api.instagram.com/oauth/access_token',
                 'redirect_url' => "http://54.243.163.24/instagram_oauth.php"
         
@@ -110,8 +113,8 @@ class BIM_Config_Dynamic{
     public static function twilio(){
         return (object) array(
             'api' => (object) array(
-                'accountSid' => 'foo',
-                'authToken' => 'bar',
+                'accountSid' => '',
+                'authToken' => '',
                 'number' => '2394313268'
             ),
         );
@@ -120,16 +123,22 @@ class BIM_Config_Dynamic{
     public static function tumblr(){
         return (object) array(
             'api' => (object) array(
-                'consumerKey' => 'foo',
-                'consumerSecret' => 'bar',
+                'consumerKey' => '',
+                'consumerSecret' => '',
             ),
             'harvestSelfies' => (object) array(
                 'secsInPast' => 3600 * 24,
                 'maxItems' => 10000,
-                'tags' => array(
-                    'selfie', 'me', 'self', 'selfpic', 'bff', 'myface', 'rateme', 'duckface'
-                )
-            )
+                'tags' => BIM_Config::authenticTags()
+            ),
+            'urls' => (object) array(
+                'login' => 'https://www.tumblr.com/login',
+                'oauth' => (object) array(
+                	'callback' => 'http://54.243.163.24/tumblr_oauth.php',
+                	'authorize' => 'http://www.tumblr.com/oauth/authorize',
+                	'access_token' => 'http://www.tumblr.com/oauth/access_token',
+                	'request_token' => 'http://www.tumblr.com/oauth/request_token',
+            ))
         );
     }
     
@@ -154,7 +163,20 @@ class BIM_Config_Dynamic{
             ),
         );
     }
-
+    
+    public static function cache(){
+        return (object) array(
+            'memcached' => (object) array(
+                'servers' => array(  
+                    (object) array(
+                        'host' => '127.0.0.1',
+                        'port' => 11211
+                    ),
+                ),
+            )
+        );
+    }
+    
     public static function db(){
         return (object) array(
         	'locatorClassName' => 'BIM_Data_Locator_Simple',
@@ -165,39 +187,29 @@ class BIM_Config_Dynamic{
         				'host' => '127.0.0.1',
         				'user' => 'root',
         				'pass' => '',
-        				'dbname' => 'foo'
+        				'dbname' => ''
         			),
         			'reader' => (object) array(
         				'host' => '127.0.0.1',
         				'user' => 'root',
         				'pass' => '',
-        				'dbname' => 'foo'
+        				'dbname' => ''
         			),
         		),
         	),
         );
     }
     
-    public static function session(){
-        return (object) array(
-            'cookie' => (object) array(
-                'name' => "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw", // live
-                'expires' => 'https://go.urbanairship.com/api/push/',
-                'domain' => '',
-            ),
-        );
-    }
-
     public static function urbanAirship(){
         return (object) array(
             'api' => (object) array(
-                // 'pass_key' => "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ", // dev
-                'pass_key' => "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw", // live
+                //'pass_key' => "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ", // dev
+                'pass_key' => "", // live
                 'push_url' => 'https://go.urbanairship.com/api/push/',
             ),
         );
     }
-
+    
     public static function elasticSearch(){
         return (object) array(
             'api_root' => 'http://127.0.0.1:9200'
@@ -207,7 +219,123 @@ class BIM_Config_Dynamic{
     public static function sms(){
         return (object) array(
             'code_pattern' => '@\b(c1.+?1c)\b@i',
-            'secret' => 'our secret yo',
+            'secret' => '',
+            'useHashing' => true,
         );
     }
+    
+    public static function aws(){
+        return (object) array(
+            'access_key' => '',
+            'secret_key' => ''
+        );
+    }
+    
+	public static function proxies(){
+        return (object) array(
+                    'useProxies' => false,
+                    'proxies' => array(
+            			'209.164.89.38:21320',
+            			'198.204.248.43:21260',
+            			'209.164.76.35:21264',
+            			'192.161.48.195:21325',
+            			'50.118.142.153:21277',
+            			'216.172.144.53:21246',
+            			'192.161.164.222:21307',
+            			'74.211.96.165:21318',
+            			'192.64.33.35:21306',
+            			'50.117.15.254:21322',
+            			'209.164.89.36:21237',
+            			'198.204.248.54:21267',
+            			'209.164.76.43:21231',
+            			'192.161.48.160:21267',
+            			'50.118.142.170:21326',
+            			'216.172.144.193:21263',
+            			'192.161.164.128:21230',
+            			'74.211.96.43:21262',
+            			'192.64.33.11:21243',
+            			'50.117.15.170:21264',
+            			'209.164.89.32:21309',
+            			'198.204.248.46:21271',
+            			'209.164.76.31:21290',
+            			'192.161.48.215:21309',
+            			'50.118.142.120:21248',
+            			'216.172.144.106:21296',
+            			'192.161.164.133:21237',
+            			'74.211.96.188:21291',
+            			'192.64.33.26:21307',
+            			'50.117.15.29:21272',
+            			'209.164.89.43:21273',
+            			'198.204.248.55:21326',
+            			'209.164.76.45:21314',
+            			'192.161.48.218:21247',
+            			'50.118.142.194:21247',
+            			'216.172.144.8:21289',
+            			'192.161.164.55:21271',
+            			'74.211.96.151:21316',
+            			'192.64.33.46:21310',
+            			'50.117.15.149:21268',
+            			'209.164.89.41:21320',
+            			'198.204.248.45:21301',
+            			'209.164.76.33:21272',
+            			'192.161.48.231:21299',
+            			'50.118.142.80:21267',
+            			'216.172.144.3:21294',
+            			'192.161.164.156:21249',
+            			'74.211.96.93:21297',
+            			'192.64.33.72:21284',
+            			'50.117.15.40:21303',
+            			'209.164.89.42:21304',
+            			'198.204.248.52:21330',
+            			'209.164.76.30:21253',
+            			'192.161.48.192:21325',
+            			'50.118.142.229:21302',
+            			'216.172.144.172:21288',
+            			'192.161.164.217:21320',
+            			'74.211.96.86:21295',
+            			'192.64.33.66:21247',
+            			'50.117.15.203:21311',
+            			'209.164.89.31:21289',
+            			'198.204.248.36:21255',
+            			'209.164.76.41:21309',
+            			'192.161.48.247:21254',
+            			'50.118.142.79:21307',
+            			'216.172.144.217:21261',
+            			'192.161.164.218:21309',
+            			'74.211.96.241:21232',
+            			'192.64.33.70:21326',
+            			'50.117.15.214:21239',
+            			'209.164.89.45:21327',
+            			'198.204.248.49:21251',
+            			'209.164.76.36:21263',
+            			'192.161.48.219:21308',
+            			'50.118.142.57:21279',
+            			'216.172.144.84:21300',
+            			'192.161.164.90:21240',
+            			'74.211.96.36:21277',
+            			'192.64.33.56:21323',
+            			'50.117.15.242:21284',
+            			'209.164.89.30:21280',
+            			'198.204.248.42:21310',
+            			'209.164.76.37:21257',
+            			'192.161.48.200:21296',
+            			'50.118.142.200:21235',
+            			'216.172.144.122:21237',
+            			'192.161.164.33:21270',
+            			'74.211.96.144:21238',
+            			'192.64.33.14:21236',
+            			'50.117.15.205:21322',
+            			'209.164.89.44:21232',
+            			'198.204.248.44:21265',
+            			'209.164.76.32:21279',
+            			'192.161.48.230:21277',
+            			'50.118.142.94:21275',
+            			'216.172.144.77:21304',
+            			'192.161.164.16:21266',
+            			'74.211.96.83:21300',
+            			'192.64.33.108:21236',
+            			'50.117.15.252:21305',
+                    ),
+		);
+	}
 }

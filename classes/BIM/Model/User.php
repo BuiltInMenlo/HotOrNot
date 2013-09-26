@@ -408,6 +408,13 @@ select added from tblUsers where username like "%yoosnapyoo";
         }
     }
     
+    public function removeFriends(){
+        if( $this->isExtant() ){
+            $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
+            $docs = $dao->deleteRelationships( $this->id );
+        }
+    }
+    
     public static function makeCacheKeys( $ids ){
         if( $ids ){
             $return1 = false;

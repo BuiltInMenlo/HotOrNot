@@ -2,6 +2,50 @@
 
 class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
     
+    public function getPhoneLists_hashed( ){
+        $from = isset( $params->from ) ? $params->from : 0;
+        $size = isset( $params->size ) ? $params->size : 200000;
+        $query = array(
+            "from" => $from,
+            "size" => $size,
+        );
+        $urlSuffix = "contact_lists_2/phone/_search";
+        return $this->call('POST', $urlSuffix, $query);
+    }
+    
+    public function getEmailLists_hashed( ){
+        $from = isset( $params->from ) ? $params->from : 0;
+        $size = isset( $params->size ) ? $params->size : 200000;
+        $query = array(
+            "from" => $from,
+            "size" => $size,
+        );
+        $urlSuffix = "contact_lists_2/email/_search";
+        return $this->call('POST', $urlSuffix, $query);
+    }
+    
+    public function getPhoneLists( ){
+        $from = isset( $params->from ) ? $params->from : 0;
+        $size = isset( $params->size ) ? $params->size : 200000;
+        $query = array(
+            "from" => $from,
+            "size" => $size,
+        );
+        $urlSuffix = "contact_lists/phone/_search";
+        return $this->call('POST', $urlSuffix, $query);
+    }
+    
+    public function getEmailLists( ){
+        $from = isset( $params->from ) ? $params->from : 0;
+        $size = isset( $params->size ) ? $params->size : 200000;
+        $query = array(
+            "from" => $from,
+            "size" => $size,
+        );
+        $urlSuffix = "contact_lists/email/_search";
+        return $this->call('POST', $urlSuffix, $query);
+    }
+    
     public function findFriends( $params ){
         $hashedNumber = isset( $params->hashed_number ) ? $params->hashed_number : '';
         $hashedList = isset( $params->hashed_list ) ? $params->hashed_list : array();
@@ -107,6 +151,24 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
                 $doc->hashed_list = array();
             }
             $urlSuffix = "contact_lists/phone/$doc->id/_create";
+            $added = $this->call('PUT', $urlSuffix, $doc);
+            $added = json_decode( $added );
+            if( isset( $added->ok ) && $added->ok ){
+                $added = true;
+            } else {
+                $added = false;
+            }
+        }
+        return $added;
+    }
+    
+    public function putPhoneList( $doc ){
+        $added = false;
+        if( isset( $doc->id ) ){
+            if( empty( $doc->hashed_list ) || ! is_array($doc->hashed_list)  ){
+                $doc->hashed_list = array();
+            }
+            $urlSuffix = "contact_lists_2/phone/$doc->id";
             $added = $this->call('PUT', $urlSuffix, $doc);
             $added = json_decode( $added );
             if( isset( $added->ok ) && $added->ok ){

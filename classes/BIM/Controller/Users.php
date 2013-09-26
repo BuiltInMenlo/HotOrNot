@@ -54,18 +54,16 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public static function friendTeamVolley( $userId ){
         // have @teamvolley friend the new user	
-		$friendRelation = (object) array( 
-			'target' => 2394, 
-			'userID' => $userId, /*team volley id */
-		);
-		BIM_App_Social::addFriend($friendRelation);
-		
-        // have @teamvolley friend the new user	
-		$friendRelation = (object) array( 
-			'target' => 13169, 
-			'userID' => $userId, /*team volley id */
-		);
-		BIM_App_Social::addFriend($friendRelation);
+        $conf = BIM_Config::app();
+        if( !empty( $conf->auto_subscribes ) ){
+            foreach( $conf->auto_subscribes as $target ){
+        		$friendRelation = (object) array( 
+        			'target' => $target, 
+        			'userID' => $userId,
+        		);
+        		BIM_App_Social::addFriend($friendRelation);
+            }
+        }
     }
     
     public function getUserFromName(){

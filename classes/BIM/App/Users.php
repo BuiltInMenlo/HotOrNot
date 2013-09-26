@@ -445,7 +445,14 @@ class BIM_App_Users extends BIM_App_Base{
 	    if( isset( $list->id ) && $list->id ){
             if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
             if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
-    	    
+            
+            if( $list->hashed_list ){
+                BIM_Utils::hashList( $list->hashed_list );
+            }
+            if( $list->hashed_number ){
+                $list->hashed_number = BIM_Utils::blowfishEncrypt($list->hashed_number);
+            }
+            
             $user = BIM_Model_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
@@ -479,6 +486,13 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->email ) ) $list->email = '';
             if(! isset( $list->email_list ) ) $list->email_list = array();
     	    
+            if( $list->email_list ){
+                BIM_Utils::hashList( $list->email_list );
+            }
+            if( $list->email ){
+                $list->email = BIM_Utils::blowfishEncrypt($list->email);
+            }
+            
             $user = BIM_Model_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
@@ -554,7 +568,7 @@ class BIM_App_Users extends BIM_App_Base{
 	        $user = BIM_Model_User::get( $userId );
     	    if( $user->isExtant() ){
     	        $list = (object) array(
-    	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),
+    	            'hashed_number' => $params->From,
     	            'hashed_list' => array(),
     	            'id' => $user->id,
     	            'avatar_url' => $user->getAvatarUrl(),

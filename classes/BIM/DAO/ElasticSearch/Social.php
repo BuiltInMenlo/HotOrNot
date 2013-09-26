@@ -5,15 +5,35 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
     public function getFriendDocuments( ){
         $from = isset( $params->from ) ? $params->from : 0;
         $size = isset( $params->size ) ? $params->size : 200000;
-        
         $query = array(
             "from" => $from,
             "size" => $size,
         );
-        
         $urlSuffix = "social/friends/_search";
-        
         return $this->call('POST', $urlSuffix, $query);
+    }
+    
+    public function deleteRelationships( $userId ){
+        
+        $should = array(
+            array(
+            	"term" => array( "source" => $userId )
+            ),
+            array(
+            	"term" => array( "target" => $userId )
+            )
+        );
+        
+        $query = array(
+            "bool" => array(
+                "should" => $should,
+                "minimum_number_should_match" => 1
+            )
+        );
+        
+        $urlSuffix = "social/friends/_query";
+        
+        return $this->call('DELETE', $urlSuffix, $query);
         
     }
     
