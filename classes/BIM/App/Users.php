@@ -231,14 +231,19 @@ class BIM_App_Users extends BIM_App_Base{
 	    }
 	}
 	
+	/*
+'{	"device_tokens": ["3b0dda3bb65860a488c461c3b8fed94738cab970aa93e2f1bc17e123e7de4f6f"], 
+	"type":"2", 
+	"aps": {
+		"alert": "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?", 
+		"sound": "push_01.caf"
+	}
+}'	 
+	* 
+	 */
 	protected function sendApprovePush( $targetId ){
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
-            if( $target->isApproved() ){
-                $msg = "Congrats! Your Volley profile has been Volley verified!";
-            } else {
-                $msg = "Your Volley profile has been verified by another Volley user!";
-            }
             $push = array(
                 "device_tokens" => $target->device_token, 
                 "aps" =>  array(
@@ -246,6 +251,12 @@ class BIM_App_Users extends BIM_App_Base{
                     "sound" => "push_01.caf"
                 )
             );
+            if( $target->isApproved() ){
+                $push['aps']['alert'] = "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?";
+                $push['type'] = 2;
+            } else {
+                $push['aps']['alert'] = "Your Volley profile has been verified by another Volley user!";
+            }
             BIM_Jobs_Utils::queuePush($push);
         }
 	}
