@@ -89,20 +89,6 @@ class BIM_Model_Volley{
             $target = $users[ $challenger->id ];
             self::_updateUser($challenger, $target);
         }
-        if( !$challengers ){
-            $this->challengers = array(
-                (object) array(
-                    'id' => $this->creator->id,
-                    'img' => '',
-                    'score' => 0,
-                    'joined' => '1970-01-01',
-                	'fb_id' => '',
-                    'username' => $this->creator->username,
-                    'avatar' => '',
-                    'age' => $this->creator->age,
-                )
-            );
-        }
     }
     
     /**
