@@ -244,19 +244,19 @@ class BIM_App_Users extends BIM_App_Base{
 	protected function sendApprovePush( $targetId ){
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
+            if( $target->isApproved() ){
+                $msg = "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?";
+            } else {
+                $msg = "Your Volley profile has been verified by another Volley user! Would you like to share Volley with your friends?";
+            }
             $push = array(
-                "device_tokens" => $target->device_token, 
+                "device_tokens" => $target->device_token,
+                "type" => 2,
                 "aps" =>  array(
                     "alert" => $msg,
                     "sound" => "push_01.caf"
                 )
             );
-            if( $target->isApproved() ){
-                $push['aps']['alert'] = "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?";
-                $push['type'] = 2;
-            } else {
-                $push['aps']['alert'] = "Your Volley profile has been verified by another Volley user!";
-            }
             BIM_Jobs_Utils::queuePush($push);
         }
 	}
