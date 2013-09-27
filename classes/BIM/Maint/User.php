@@ -8,6 +8,39 @@ class BIM_Maint_User{
      * we get their current list of subscribers
      * and we then subscribe to 5 users
      */
+    public static function remindNewUsers(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $sql = "
+        	select id 
+        	from `hotornot-dev`.tblUsers 
+        	where added > '2013-09-27'
+        	and (img_url = '' or img_url is null)
+        ";
+        $stmt = $dao->prepareAndExecute($sql);
+        $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        $users = BIM_Model_User::getMulti($userIds);
+        foreach( $users as $user ){
+            echo "reminding $user->username : $user->id\n";
+            $msg = "Volley reminder! Please update your selfie to get verfied. No adults allowed!";
+            $push = array(
+                "device_tokens" => $user->device_token,
+                "aps" =>  array(
+                    "alert" => $msg,
+                    "sound" => "push_01.caf"
+                )
+            );
+            BIM_Jobs_Utils::queuePush($push);
+        }
+    }
+    
+    /**
+     * we need to get all the user ids into 2 arrays
+     * the arrays will be subcribees and subscribers
+     * 
+     * for each subscriber
+     * we get their current list of subscribers
+     * and we then subscribe to 5 users
+     */
     public static function introduceUsersToEachOther(){
         $dao = new BIM_DAO_Mysql( BIM_Config::db() );
         $sql = "select id from `hotornot-dev`.tblUsers where added > '2013-09-08'";
@@ -25,7 +58,7 @@ class BIM_Maint_User{
     }
     
     protected static function introduce( $userId, &$allSubscribees ){
-        $maxSubcribes = 5;
+        $maxSubcribes = mt_rand(2,5);
         // get 5 random ids and subscribe to those
         
         // exclude the friends and ourselves
@@ -61,7 +94,7 @@ class BIM_Maint_User{
             if( $allSubscribees[ $targetId ] >= $maxSubcribes ){
                 unset($allSubscribees[ $targetId ]);
             }
-            $pushTime += mt_rand( 1800, 3600 );
+            $pushTime += mt_rand( 2700, 7200 );
         }
         return $subscribeeIndexes;
     }
@@ -253,7 +286,7 @@ Small_160x160
             BIM_Utils::hashList( $list->hashed_list );
             $list->hashed_number = BIM_Utils::blowfishEncrypt( $list->hashed_number );
             
-            $urlSuffix = "contact_lists_2/phone/$list->id";
+            $urlSuffix = "contact_lists/phone/$list->id";
             $added = $dao->call('PUT', $urlSuffix, $list);
             $addedData = json_decode( $added );
             if( isset( $addedData->ok ) && $addedData->ok ){
@@ -270,7 +303,7 @@ Small_160x160
             BIM_Utils::hashList( $list->email_list );
             $list->email = BIM_Utils::blowfishEncrypt( $list->email );
             
-            $urlSuffix = "contact_lists_2/email/$list->id";
+            $urlSuffix = "contact_lists/email/$list->id";
             $added = $dao->call('PUT', $urlSuffix, $list);
             $addedData = json_decode( $added );
             if( isset( $addedData->ok ) && $addedData->ok ){

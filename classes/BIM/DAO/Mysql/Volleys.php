@@ -579,7 +579,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				AND tc.creator_id != 2394
 				
 			GROUP BY tc.id
-			ORDER BY tc.updated DESC 
+			ORDER BY tc.updated DESC, tc.id DESC 
 			LIMIT 100
         ";
         

@@ -565,7 +565,7 @@ select added from tblUsers where username like "%yoosnapyoo";
             print_r( array("archiving: ", $user ) );
             $user->archive();
             $user->delete();
-            // $user->removeFriends();
+            $user->removeFriends();
         }
     }
     
