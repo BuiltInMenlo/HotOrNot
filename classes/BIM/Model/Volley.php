@@ -564,9 +564,9 @@ class BIM_Model_Volley{
         return $dao->getTopHashTags($subjectName);
     }
     
-    public static function getTopVolleysByVotes( ){
+    public static function getTopVolleysByVotes( $timeInPast = null ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $ids = $dao->getTopVolleysByVotes();
+        $ids = $dao->getTopVolleysByVotes( $timeInPast );
         return self::getMulti($ids);
     }
     

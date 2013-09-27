@@ -48,6 +48,7 @@ class BIM_Controller_Base{
 
     public function normalizeAvatarImgUrl( $imgUrl  ){
         if( preg_match('@^http.*?http@', $imgUrl ) ){
+            file_put_contents('/tmp/piclog', $imgUrl."\n", FILE_APPEND);
             $imgUrl = preg_replace( '@^https*://.*?(https*://.+?\.jpg).+?\.jpg$@', '$1', $imgUrl );
         }        
         if( strstr($imgUrl,'s3.amazonaws.com/hotornot-avatars') ){

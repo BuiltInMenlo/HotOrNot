@@ -45,14 +45,14 @@ class BIM_Controller_Admin{
         ");
         
         // $volleys = BIM_Model_Volley::getTopVolleysByVotes();
-        $volleys = BIM_Model_Volley::getTopVolleysByVotes();
-        $rem = array();
-        $volleyArr = $volleys;
-        foreach( $volleyArr as $idx => $volley ){
-            if( in_array( $volley->id, $volleyIds ) ){
-                unset( $volleys[ $volley->id ] );
-            }
-        }
+        $volleys = BIM_Model_Volley::getTopVolleysByVotes( 86400 * 30 );
+        //$rem = array();
+        //$volleyArr = $volleys;
+        //foreach( $volleyArr as $idx => $volley ){
+          //  if( in_array( $volley->id, $volleyIds ) ){
+            //    unset( $volleys[ $volley->id ] );
+            //}
+        //}
         // $volleys = array_diff( $volleys, $volleyIds );
         echo "<hr>Top Volleys By Likes - ".count( $volleys )."&nbsp;&nbsp;<a href='#recent'>Most Recent</a><hr>\n";
         
@@ -97,7 +97,7 @@ class BIM_Controller_Admin{
         ");
         
         $v = new BIM_App_Votes();
-        $volleys = $v->getChallengesByDate();
+        $volleys = $v->getChallengesByCreationTime();
         echo "<hr><a id='recent'>Most Recent Volleys - ".count( $volleys )."</a><hr>\n";
         
         echo("

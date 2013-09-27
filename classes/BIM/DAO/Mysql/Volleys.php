@@ -824,6 +824,24 @@ WHERE is_verify != 1
         return $ids;
     }
     
+    public function getChallengesByCreationTime(){
+		$query = '
+			SELECT id 
+			FROM `hotornot-dev`.`tblChallenges` 
+			WHERE `is_private` != "Y" 
+				AND `status_id` IN (1,4)
+				AND is_verify != 1
+			ORDER BY `added` DESC 
+			LIMIT 100;'; 
+        $stmt = $this->prepareAndExecute( $query );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;
+    }
+    
     public function getChallengesByActivity(){
 		// get vote rows for challenges
 		$query = '
@@ -873,8 +891,8 @@ WHERE is_verify != 1
         return $stmt->fetchAll( PDO::FETCH_OBJ );
     }
     
-    public function getTopVolleysByVotes(){
-        $startDate = time() - ( 86400 * 90 );
+    public function getTopVolleysByVotes( $timeInPast = null ){
+        $startDate = $timeInPast ? (time() - $timeInPast) : (time() - ( 86400 * 90 ));
         $startDate = new DateTime( "@$startDate" );
         $startDate = $startDate->format('Y-m-d H:i:s');
         $query = '
@@ -883,7 +901,7 @@ WHERE is_verify != 1
         		join `hotornot-dev`.tblChallengeParticipants as p
         		on c.id = p.challenge_id
         	WHERE status_id = 4 
-        		AND started > ? 
+        		AND added > ? 
 				AND is_verify != 1
 				AND img != "" 
 				AND img is not null 				

@@ -34,6 +34,18 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * Gets the list of challenges sorted by date
 	 * @return The list of challenges (array)
 	**/
+	public function getChallengesByCreationTime() {
+        $volleys = array();
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $ids = $dao->getChallengesByCreationTime();
+        $volleys = BIM_Model_Volley::getMulti($ids);
+        return $volleys;
+	}
+	
+	/** 
+	 * Gets the list of challenges sorted by date
+	 * @return The list of challenges (array)
+	**/
 	public function getChallengesByDate() {
         $volleys = array();
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
