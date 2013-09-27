@@ -15,6 +15,18 @@ class BIM_Utils{
         return $number;
     }
     
+    public static function hashList( &$list ){
+        foreach( $list as &$value ){
+            $value = self::blowfishEncrypt($value);
+        }
+    }
+    
+    public static function decryptList( &$list ){
+        foreach( $list as &$value ){
+            $value = self::blowfishDecrypt($value);
+        }
+    }
+    
     public static function blowfishEncrypt( $number ){
         $c = BIM_Config::sms();
         $iv = base64_decode($c->blowfish->b64iv);
@@ -22,10 +34,10 @@ class BIM_Utils{
         return $enc;
     }
     
-    public static function blowfishDecrypt( $encrptedNumber ){
+    public static function blowfishDecrypt( $encryptedNumber ){
         $c = BIM_Config::sms();
         $iv = base64_decode($c->blowfish->b64iv);
-        $dec = mcrypt_decrypt( MCRYPT_BLOWFISH, $c->blowfish->key, base64_decode( $encrptedNumber ), MCRYPT_MODE_CBC, $iv );
+        $dec = mcrypt_decrypt( MCRYPT_BLOWFISH, $c->blowfish->key, base64_decode( $encryptedNumber ), MCRYPT_MODE_CBC, $iv );
         return $dec;
     }
     

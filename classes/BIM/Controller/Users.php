@@ -8,6 +8,9 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
 		    BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
+		    if( $input->approves > 0 ){
+		        $input->target = $input->targetId;
+		    }
     		return array(
     			'id' => $input->userID,
     			'mail' => true
@@ -50,18 +53,16 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public static function friendTeamVolley( $userId ){
         // have @teamvolley friend the new user	
-		$friendRelation = (object) array( 
-			'target' => 2394, 
-			'userID' => $userId, /*team volley id */
-		);
-		BIM_App_Social::addFriend($friendRelation);
-		
-        // have @teamvolley friend the new user	
-		$friendRelation = (object) array( 
-			'target' => 13169, 
-			'userID' => $userId, /*team volley id */
-		);
-		BIM_App_Social::addFriend($friendRelation);
+        $conf = BIM_Config::app();
+        if( !empty( $conf->auto_subscribes ) ){
+            foreach( $conf->auto_subscribes as $target ){
+        		$friendRelation = (object) array( 
+        			'target' => $target, 
+        			'userID' => $userId,
+        		);
+        		BIM_App_Social::addFriend($friendRelation);
+            }
+        }
     }
     
     public function getUserFromName(){

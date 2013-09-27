@@ -8,7 +8,7 @@ class BIM_App_Social extends BIM_App_Base{
         foreach( $targets as $target ){
             $params->target = $target;
             $added = self::_addFriend($params);
-            if(  $doNotification && $added ){
+            if( $added && $doNotification ){
                 BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
             }
         }
@@ -22,7 +22,7 @@ class BIM_App_Social extends BIM_App_Base{
     protected static function _addFriend( $params ){
         $added = false;
         $targetUser = BIM_Model_User::get( $params->target );
-        if( $targetUser ){
+        if( $targetUser->isExtant() ){
             $sourceUser = BIM_Model_User::get( $params->userID );
             $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
             $relation = (object) array(

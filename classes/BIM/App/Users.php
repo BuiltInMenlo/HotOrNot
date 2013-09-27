@@ -231,16 +231,27 @@ class BIM_App_Users extends BIM_App_Base{
 	    }
 	}
 	
+	/*
+'{	"device_tokens": ["3b0dda3bb65860a488c461c3b8fed94738cab970aa93e2f1bc17e123e7de4f6f"], 
+	"type":"2", 
+	"aps": {
+		"alert": "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?", 
+		"sound": "push_01.caf"
+	}
+}'	 
+	* 
+	 */
 	protected function sendApprovePush( $targetId ){
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
             if( $target->isApproved() ){
-                $msg = "Congrats! Your Volley profile has been Volley verified!";
+                $msg = "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?";
             } else {
-                $msg = "Your Volley profile has been verified by another Volley user!";
+                $msg = "Your Volley profile has been verified by another Volley user! Would you like to share Volley with your friends?";
             }
             $push = array(
-                "device_tokens" => $target->device_token, 
+                "device_tokens" => $target->device_token,
+                "type" => 2,
                 "aps" =>  array(
                     "alert" => $msg,
                     "sound" => "push_01.caf"
@@ -445,7 +456,14 @@ class BIM_App_Users extends BIM_App_Base{
 	    if( isset( $list->id ) && $list->id ){
             if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
             if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
-    	    
+            
+            if( $list->hashed_list ){
+                BIM_Utils::hashList( $list->hashed_list );
+            }
+            if( $list->hashed_number ){
+                $list->hashed_number = BIM_Utils::blowfishEncrypt($list->hashed_number);
+            }
+            
             $user = BIM_Model_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
@@ -479,6 +497,13 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->email ) ) $list->email = '';
             if(! isset( $list->email_list ) ) $list->email_list = array();
     	    
+            if( $list->email_list ){
+                BIM_Utils::hashList( $list->email_list );
+            }
+            if( $list->email ){
+                $list->email = BIM_Utils::blowfishEncrypt($list->email);
+            }
+            
             $user = BIM_Model_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
@@ -554,7 +579,7 @@ class BIM_App_Users extends BIM_App_Base{
 	        $user = BIM_Model_User::get( $userId );
     	    if( $user->isExtant() ){
     	        $list = (object) array(
-    	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),
+    	            'hashed_number' => $params->From,
     	            'hashed_list' => array(),
     	            'id' => $user->id,
     	            'avatar_url' => $user->getAvatarUrl(),

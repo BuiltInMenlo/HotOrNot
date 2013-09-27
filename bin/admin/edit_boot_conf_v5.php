@@ -1,22 +1,22 @@
 <?php
 require_once 'vendor/autoload.php';
 
-$conf125ErrMsg = '';
-$conf125 = BIM_App_Config::getBootConf( array('type' => '125') );
+$conf130ErrMsg = '';
+$conf130 = BIM_App_Config::getBootConf( array('type' => '130') );
 
 $method = strtolower( $_SERVER['REQUEST_METHOD'] );
 
 if( $method == 'post' ) {
     
-    $data = trim( $_POST['125'] );
+    $data = trim( $_POST['130'] );
     if( $data ){
         $params = array(
-            'type' => '125',
+            'type' => '130',
             'data' => $data,
         );
-        $conf125 = $data;
+        $conf130 = $data;
         if( ! BIM_App_Config::saveBootConf( $params ) ){
-            $conf125ErrMsg = "Bad input for the 125 boot confg!  Please make sure it is valid JSON!";
+            $conf130ErrMsg = "Bad input for the 130 boot confg!  Please make sure it is valid JSON!";
         }
     }
 }
@@ -35,10 +35,10 @@ Edit The Boot Configuration
 <table>
 <tr>
 <td>
-125 Boot Configuration
+130 Boot Configuration
 <br>
-<?php if( $conf125ErrMsg ) {?> <span style="color: red;"><b><?php echo $conf125ErrMsg;?></b></span><br><?php }?>
-<textarea rows="25" cols="50" name="125"><?php echo $conf125 ?></textarea>
+<?php if( $conf130ErrMsg ) {?> <span style="color: red;"><b><?php echo $conf130ErrMsg;?></b></span><br><?php }?>
+<textarea rows="25" cols="50" name="130"><?php echo $conf130 ?></textarea>
 </td>
 </tr>
 </table>

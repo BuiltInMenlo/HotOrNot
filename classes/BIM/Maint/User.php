@@ -1,5 +1,70 @@
 <?php 
 class BIM_Maint_User{
+    /**
+     * we need to get all the user ids into 2 arrays
+     * the arrays will be subcribees and subscribers
+     * 
+     * for each subscriber
+     * we get their current list of subscribers
+     * and we then subscribe to 5 users
+     */
+    public static function introduceUsersToEachOther(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $sql = "select id from `hotornot-dev`.tblUsers where added > '2013-09-08'";
+        $stmt = $dao->prepareAndExecute($sql);
+        $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        $allSubscribees = array();
+        foreach( $userIds as $userId ){
+            $allSubscribees[ $userId ] = 0;
+        }
+        
+        foreach( $userIds as $userId ){
+            print_r( array( $userId, self::introduce( $userId, $allSubscribees ) ) );
+            //exit();
+        }
+    }
+    
+    protected static function introduce( $userId, &$allSubscribees ){
+        $maxSubcribes = 5;
+        // get 5 random ids and subscribe to those
+        
+        // exclude the friends and ourselves
+        $params = (object) array('userID' => $userId);
+        $friends = BIM_App_Social::getFollowed($params);
+        $searchArray = $allSubscribees;
+        foreach( $friends as $friendRecord ){
+            unset( $searchArray[ $friendRecord->user->id ] );
+        }
+        unset( $searchArray[ $userId ] );
+        
+        $subscribeeIndexes = array_rand($searchArray, $maxSubcribes);
+        $user = BIM_Model_User::get( $userId );
+        $pushTime = time();
+        foreach( $subscribeeIndexes as $targetId ){
+            $target = BIM_Model_User::get( $targetId );
+
+            $params = (object) array(
+                'userID' => $userId,
+                'target' => $targetId,
+            );
+            BIM_App_Social::addFriend($params, false);
+            $msg = "@$user->username has subscribed to your Volleys!";
+            $push = array(
+                "device_tokens" =>  array( $target->device_token ),
+                "aps" =>  array(
+                    "alert" =>  $msg,
+                    "sound" =>  "push_01.caf"
+                )
+            );
+            BIM_Push_UrbanAirship_Iphone::createTimedPush($push, $pushTime);
+            $allSubscribees[ $targetId ]++;
+            if( $allSubscribees[ $targetId ] >= $maxSubcribes ){
+                unset($allSubscribees[ $targetId ]);
+            }
+            $pushTime += mt_rand( 1800, 3600 );
+        }
+        return $subscribeeIndexes;
+    }
     
     /**
 Final image sizes and where they are used
@@ -161,21 +226,113 @@ Small_160x160
         $docs = $dao->getFriendDocuments();
         $docs = json_decode($docs);
         foreach( $docs->hits->hits as $hit ){
-            $userId = $hit->_source->source;
-            $user = BIM_Model_User::get( $userId );
-            if( ! $user->isExtant() ){
+            $sourceId = $hit->_source->source;
+            $source = BIM_Model_User::get( $sourceId, true );
+            if( ! $source->isExtant() ){
                 print_r( array("removing",$hit) );
                 $dao->removeRelation( $hit->_source );
             } else {
-                $userId = $hit->_source->target;
-                $user = BIM_Model_User::get( $userId );
-                if( !$user->isExtant() ){
+                $targetId = $hit->_source->target;
+                $target = BIM_Model_User::get( $targetId, true );
+                if( !$target->isExtant() ){
                     print_r( array("removing",$hit) );
                     $dao->removeRelation($hit->_source);
                 } else {
-                    print_r( array("retaining",$hit) );
+                    // print_r( array("retaining",$hit) );
                 }
             }
         }
+    }
+    
+    public static function hashLists(){
+        $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+        $docs = $dao->getPhoneLists();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $list = $hit->_source;
+            BIM_Utils::hashList( $list->hashed_list );
+            $list->hashed_number = BIM_Utils::blowfishEncrypt( $list->hashed_number );
+            
+            $urlSuffix = "contact_lists_2/phone/$list->id";
+            $added = $dao->call('PUT', $urlSuffix, $list);
+            $addedData = json_decode( $added );
+            if( isset( $addedData->ok ) && $addedData->ok ){
+                echo "successfully hashed phone list for $list->id\n";
+            } else {
+                echo "could not hash phone list for $list->id - reason: $added\n";
+            }
+        }
+        
+        $docs = $dao->getEmailLists();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $list = $hit->_source;
+            BIM_Utils::hashList( $list->email_list );
+            $list->email = BIM_Utils::blowfishEncrypt( $list->email );
+            
+            $urlSuffix = "contact_lists_2/email/$list->id";
+            $added = $dao->call('PUT', $urlSuffix, $list);
+            $addedData = json_decode( $added );
+            if( isset( $addedData->ok ) && $addedData->ok ){
+                echo "successfully hashed email list for $list->id\n";
+            } else {
+                echo "could not hash phone list for $list->id - reason: $added\n";
+            }
+        }
+    
+    }
+    
+    public static function copyLists(){
+        $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+        $docs = $dao->getPhoneLists();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $list = $hit->_source;
+            $urlSuffix = "contact_lists_bkp/phone/$list->id";
+            $added = $dao->call('PUT', $urlSuffix, $list);
+            $addedData = json_decode( $added );
+            if( isset( $addedData->ok ) && $addedData->ok ){
+                echo "successfully copied phone list for $list->id\n";
+            } else {
+                echo "could not copy phone list for $list->id - reason: $added\n";
+            }
+        }
+        
+        $docs = $dao->getEmailLists();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $list = $hit->_source;
+            $urlSuffix = "contact_lists_bkp/email/$list->id";
+            $added = $dao->call('PUT', $urlSuffix, $list);
+            $addedData = json_decode( $added );
+            if( isset( $addedData->ok ) && $addedData->ok ){
+                echo "successfully copied email list for $list->id\n";
+            } else {
+                echo "could not copy phone list for $list->id - reason: $added\n";
+            }
+        }
+    
+    }
+    
+    public static function showHashedLists(){
+        $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+        $docs = $dao->getPhoneLists_hashed();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $list = $hit->_source;
+            BIM_Utils::decryptList( $list->hashed_list );
+            $list->hashed_number = BIM_Utils::blowfishDecrypt( $list->hashed_number );
+            print_r( $list );            
+        }
+        
+        $docs = $dao->getEmailLists_hashed();
+        $docs = json_decode($docs);
+        foreach( $docs->hits->hits as $hit ){
+            $list = $hit->_source;
+            BIM_Utils::decryptList( $list->email_list );
+            $list->email = BIM_Utils::blowfishDecrypt( $list->email );
+            print_r( $list );            
+        }
+    
     }
 }
