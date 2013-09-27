@@ -8,7 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONSearchBarHeaderViewDelegate;
+
 @interface HONSearchBarHeaderView : UIView
 - (void)toggleFocus:(BOOL)isFocused;
 - (void)backgroundingReset;
+
+@property(nonatomic, assign) id <HONSearchBarHeaderViewDelegate> delegate;
+@end
+
+
+@protocol HONSearchBarHeaderViewDelegate
+- (void)searchBarHeaderFocus:(HONSearchBarHeaderView *)searchBarHeaderView;
+- (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView;
+- (void)searchBarHeader:(HONSearchBarHeaderView *)searchBarHeaderView enteredSearch:(NSString *)searchQuery;
 @end

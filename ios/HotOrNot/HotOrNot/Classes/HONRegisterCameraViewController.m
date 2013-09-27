@@ -170,10 +170,9 @@
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				[_cameraOverlayView verifyOverlay:NO];
+//				[_cameraOverlayView verifyOverlay:NO];
 				[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
 					}];
 				}];
 				
@@ -266,11 +265,11 @@
 	}
 	
 	[self.imagePickerController takePicture];
-	[_cameraOverlayView takePhoto];
+//	[_cameraOverlayView takePhoto];
 }
 
 - (void)_restartProgress {
-	[_cameraOverlayView startProgress];
+//	[_cameraOverlayView startProgress];
 }
 
 
@@ -286,7 +285,7 @@
 		_clockTimer = nil;
 	}
 	
-	[_cameraOverlayView startProgress];
+//	[_cameraOverlayView startProgress];
 	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
@@ -302,7 +301,7 @@
 		}
 		
 	} else {
-		[_cameraOverlayView startProgress];
+//		[_cameraOverlayView startProgress];
 		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 	}
 }
@@ -353,7 +352,7 @@
 		_clockTimer = nil;
 	}
 	
-	[_cameraOverlayView startProgress];
+//	[_cameraOverlayView startProgress];
 	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
@@ -371,7 +370,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self _finalizeUser];
-	[_cameraOverlayView verifyOverlay:YES];
+//	[_cameraOverlayView verifyOverlay:YES];
 }
 
 

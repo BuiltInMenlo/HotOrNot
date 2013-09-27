@@ -18,6 +18,7 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONPopularViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONOpponentVO.h"
 #import "HONHeaderView.h"
@@ -55,6 +56,7 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor clearColor];
 		_bgImageView = imageView;
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
 	return (self);
@@ -293,6 +295,16 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	[_bgHolderView addSubview:_bgImageView];
+	
+	if ([[HONAppDelegate subscribeeList] count] < [HONAppDelegate profileFriendsThreshold]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:@"Find more people to subscribe to?"
+														   delegate:nil
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Find people", nil];
+		[alertView setTag:5];
+		[alertView show];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -441,6 +453,12 @@
 }
 
 
+#pragma mark - Notifications
+- (void)_refreshProfile:(NSNotification *)notification {
+	[self _goRefresh];
+}
+
+
 #pragma mark - UI Presentation
 - (void)_reloadAvatarImage {
 	__weak typeof(self) weakSelf = self;
@@ -552,7 +570,7 @@
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 	[profilePicButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
-	profilePicButton.hidden = YES;//([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	profilePicButton.hidden = !([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	[_scrollView addSubview:profilePicButton];
 	
 	
@@ -778,6 +796,19 @@
 			[_subscribeButton setTitle:@"Subscribe" forState:UIControlStateNormal];
 			_subscribeButton.frame = CGRectMake(0.0, 0.0, 73.0, 44.0);
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+		}
+	
+	} else if (alertView.tag == 5) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Find People %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

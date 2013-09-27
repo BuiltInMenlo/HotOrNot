@@ -97,7 +97,6 @@
 			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
 			}];
 		}
 		

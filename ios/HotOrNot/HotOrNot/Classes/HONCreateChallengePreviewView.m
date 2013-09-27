@@ -137,12 +137,6 @@
 	[_uploadingImageView startAnimating];
 //	[self addSubview:_uploadingImageView];
 	
-	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[_headerBGView addSubview:_backButton];
-	
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -3.0, 180.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
@@ -162,6 +156,12 @@
 	_subjectTextField.text = _subjectName;
 	_subjectTextField.delegate = self;
 	[_headerBGView addSubview:_subjectTextField];
+	
+	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_backButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[_headerBGView addSubview:_backButton];
 	
 	_subjectsView = [[HONCameraSubjectsView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina5] * 88.0))];
 	_subjectsView.hidden = YES;
@@ -287,6 +287,7 @@
 	[self _dropKeyboardAndRemove:NO];
 	if ([_subjectTextField.text length] > 0 && ![_subjectTextField.text isEqualToString:@"how are you feeling?"]) {
 		_subjectName = _subjectTextField.text;
+		[self.delegate previewView:self changeSubject:_subjectName];
 		
 		int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];

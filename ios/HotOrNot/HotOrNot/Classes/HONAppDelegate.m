@@ -112,9 +112,9 @@ const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
 #if __DEV_BUILD___ == 0
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+@interface HONAppDelegate()
 #else
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
@@ -122,6 +122,7 @@ NSString * const kTwilioSMS = @"6475577873";
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
+@property (nonatomic, strong) UIActivityViewController *activityViewController;
 @property (nonatomic) int challengeID;
 @end
 
@@ -194,6 +195,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
 }
 
++ (NSString *)socialShareFormat {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"sharing_social"]);
+}
+
 + (NSString *)smsInviteFormat {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
 }
@@ -220,8 +225,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:bucketType]);
 }
 
++ (int)profileFriendsThreshold {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_invite"] intValue]);
+}
+
 + (NSString *)bannerForSection:(int)section {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"section_banners"] objectAtIndex:section]);
+}
+
++ (BOOL)switchEnabledForKey:(NSString *)key {
+	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"switches"] objectForKey:key] uppercaseString] isEqualToString:@"YES"]);
 }
 
 + (NSString *)rndDefaultSubject {
@@ -786,6 +799,25 @@ NSString * const kTwilioSMS = @"6475577873";
 	}
 }
 
+- (void)_showShareShelf:(NSNotification *)notification {
+//	UIImage *image = (UIImage *)[notification object];
+	
+	__weak typeof(self) weakSelf = self;
+	_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:nil];
+	_activityViewController.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypePrint];
+	_activityViewController.view.backgroundColor = [UIColor whiteColor];
+	[_activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {
+		NSLog(@"completed dialog - activity: %@ - finished flag: %d", activityType, completed);
+		[weakSelf.activityViewController dismissViewControllerAnimated:YES completion:nil];
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_activityViewController];
+	[navigationController setNavigationBarHidden:YES];
+	
+	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - UI Presentation
 - (void)_dropTabs {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
@@ -857,6 +889,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SELF" object:nil];
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -884,6 +917,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
+	
+//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"verify_total"];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -1116,6 +1152,17 @@ NSString * const kTwilioSMS = @"6475577873";
 		} else {
 			if ([[userInfo objectForKey:@"type"] intValue] == 1)
 				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
+			
+			else if ([[userInfo objectForKey:@"type"] intValue] == 2) {
+				NSLog(@"---SHARE---");
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:@"Awesome! You have been Volley Verified! Would you like to share Volley with your friends?"//[userInfo objectForKey:@"aps"]
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"Yes", nil];
+				[alertView setTag:1];
+				[alertView show];
+			}
 		}
 	}
 }
@@ -1165,12 +1212,20 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_invite"] intValue]] forKey:@"profile_invite"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"insta_profile"] forKey:@"insta_profile"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-															  [[result objectForKey:@"sharing_switches"] objectForKey:@"instagram"],
-															  [[result objectForKey:@"sharing_switches"] objectForKey:@"twitter"], nil] forKey:@"sharing_switches"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
+															  [[result objectForKey:@"switches"] objectForKey:@"verify_invite"], @"verify_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_volley"], @"share_volley",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
@@ -1416,6 +1471,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == 1) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
 	}
 	
 	else if (alertView.tag == 2) {

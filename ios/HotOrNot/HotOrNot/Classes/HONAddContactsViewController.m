@@ -18,11 +18,11 @@
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
-#import "HONRecentOpponentViewCell.h"
+#import "HONInviteUserViewCell.h"
 #import "HONAddContactViewCell.h"
 
 
-@interface HONAddContactsViewController ()<HONRecentOpponentViewCellDelegate, HONAddContactViewCellDelegate>
+@interface HONAddContactsViewController ()<HONInviteUserViewCellDelegate, HONAddContactViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
@@ -33,16 +33,19 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int inviteTypeCounter;
 @property (nonatomic) int inviteTypeTotal;
+@property (nonatomic) BOOL isFirstRun;
 @end
 
 
 @implementation HONAddContactsViewController
 
-- (id)init {
+- (id)initAsFirstRun:(BOOL)isFirstRun {
 	if ((self = [super init])) {
 		[[Mixpanel sharedInstance] track:@"Add Contacts - Open"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		_isFirstRun = isFirstRun;
 	}
 	
 	return (self);
@@ -612,8 +615,8 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite All"
-														message:@"Do you wish to select all of your contacts?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are You Sure?"
+														message:@"Do you wish to select and invite all of your contacts?"
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -628,7 +631,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		for (int i=0; i<[_inAppContacts count]; i++) {
-			HONRecentOpponentViewCell *cell = (HONRecentOpponentViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+			HONInviteUserViewCell *cell = (HONInviteUserViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 			[cell toggleSelected:NO];
 		}
 		
@@ -671,8 +674,8 @@
 }
 
 
-#pragma mark - RecentOpponentViewCell Delegates
-- (void)recentOpponentViewCell:(HONRecentOpponentViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+#pragma mark - InviteUserViewCell Delegates
+- (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	if (isSelected){
 		[[Mixpanel sharedInstance] track:@"Add Contacts - Select In App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -757,10 +760,10 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		HONRecentOpponentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONInviteUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONRecentOpponentViewCell alloc] initAsInviteUser:YES];
+			cell = [[HONInviteUserViewCell alloc] init];
 			cell.userVO = (HONUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
@@ -838,7 +841,7 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
 				for (int i=0; i<[_inAppContacts count]; i++) {
-					HONRecentOpponentViewCell *cell = (HONRecentOpponentViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+					HONInviteUserViewCell *cell = (HONInviteUserViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 					[cell toggleSelected:YES];
 				}
 				
@@ -861,7 +864,9 @@
 		
 		if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
-			[self dismissViewControllerAnimated:YES completion:^(void){
+			[self dismissViewControllerAnimated:YES completion:^(void) {
+				if (_isFirstRun)
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR" object:nil];
 			}];
 		}
 	}

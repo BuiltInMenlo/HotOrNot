@@ -155,7 +155,7 @@
 	@try {
 				
 		// preview - full size
-		UIImage *oImage = (_rawImage.size.width >= 1936) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
+		UIImage *oImage = (_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:oImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 //		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
 //		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
@@ -263,20 +263,24 @@
 			} else {
 				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
-					if (_isFirstCamera) {
-						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-																			message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
-																		   delegate:self
-																  cancelButtonTitle:@"No"
-																  otherButtonTitles:@"Yes", nil];
-						[alertView show];
+//					if (_isFirstCamera) {
+//						
+//						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
+//																			message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
+//																		   delegate:self
+//																  cancelButtonTitle:@"No"
+//																  otherButtonTitles:@"Yes", nil];
+//						[alertView show];
 						
-					} else {
+//					} else {
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+							
+							if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
+								[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
 						}];
-					}
+//					}
 				}
 			}
 		}
@@ -397,14 +401,14 @@
 
 - (void)_showOverlay {
 	int camera_total = 0;
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
-	
-	else {
-		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
+//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
+//	
+//	else {
+//		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+//	}
 	
 	_isFirstCamera = (camera_total == 0);
 	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
@@ -590,20 +594,23 @@
 		
 		[_previewView uploadComplete];
 		if (_hasSubmitted) {
-			if (_isFirstCamera) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-																	message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes", nil];
-				[alertView show];
-			
-			} else {
+//			if (_isFirstCamera) {
+//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
+//																	message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
+//																   delegate:self
+//														  cancelButtonTitle:@"No"
+//														  otherButtonTitles:@"Yes", nil];
+//				[alertView show];
+//			
+//			} else {
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+					
+					if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
 				}];
-			}
+//			}
 		}
 	}
 }

@@ -14,43 +14,39 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONExploreViewController.h"
-#import "HONRefreshButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONExploreViewCell.h"
-#import "HONChangeAvatarViewController.h"
-#import "HONAddContactsViewController.h"
-#import "HONSettingsViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
-#import "HONUserProfileView.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONCollectionViewFlowLayout.h"
 #import "HONUserProfileViewController.h"
+#import "HONSnapPreviewViewController.h"
+#import "HONPopularViewController.h"
 
-@interface HONExploreViewController ()<HONExploreViewCellDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+
+@interface HONExploreViewController ()<HONExploreViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UIView *collectionHolderView;
 //@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
 //@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UIImageView *emptySetImgView;
 @property (nonatomic, strong) NSMutableDictionary *allChallenges;
 @property (nonatomic, strong) NSMutableArray *currChallenges;
 @property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
+@property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) HONUserProfileView *userProfileView;
-@property (nonatomic, strong) UIView *profileOverlayView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
@@ -85,8 +81,6 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	[_refreshButtonView toggleRefresh:YES];
-	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 	
@@ -136,8 +130,6 @@
 //			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
 		
-		[_refreshButtonView toggleRefresh:NO];
-		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -148,7 +140,6 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [error localizedDescription]);
 		
-		[_refreshButtonView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -215,21 +206,13 @@
 	[_tableView addSubview:_refreshControl];
 	[self.view addSubview:_tableView];
 	
-	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
-	_profileOverlayView.hidden = YES;
-	[self.view addSubview:_profileOverlayView];
-	
-	UIButton *closeProfileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeProfileButton.frame = _profileOverlayView.frame;
-	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[_profileOverlayView addSubview:closeProfileButton];
-	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -391.0, 320.0, 455.0)];
-	_userProfileView.delegate = self;
-	_userProfileView.alpha = 0.0;
-	[self.view addSubview:_userProfileView];
-	
+	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	searchButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
+	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_nonActive"] forState:UIControlStateNormal];
+	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_Active"] forState:UIControlStateHighlighted];
+	[searchButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:searchButton];
+		
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -272,40 +255,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-	
-	
-//	if (_userProfileView.isOpen) {
-//		[_userProfileView hide];
-//		[_profileHeaderButtonView toggleSelected:NO];
-//		
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
-//			_profileOverlayView.alpha = 0.0;
-//			_blurredImageView.alpha = 0.0;
-//			_userProfileView.alpha = 0.0;
-//		} completion:^(BOOL finished) {
-//			_profileOverlayView.hidden = YES;
-//			_userProfileView.hidden = YES;
-//			
-//			[_blurredImageView removeFromSuperview];
-//			_blurredImageView = nil;
-//		}];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-//		
-//	} else {
-//		[_userProfileView show];
-//		[_profileHeaderButtonView toggleSelected:YES];
-//		_profileOverlayView.hidden = NO;
-//		_userProfileView.hidden = NO;
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
-//			_profileOverlayView.alpha = 1.0;
-//			_blurredImageView.alpha = 1.0;
-//			_userProfileView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//	}
 }
 
 - (void)_goRefresh {
@@ -337,6 +286,16 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
+- (void)_goSearch {
+	[[Mixpanel sharedInstance] track:@"Explore - Search"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goCloseBanner {
 	[[Mixpanel sharedInstance] track:@"Explore - Close Banner"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -355,12 +314,10 @@
 #pragma mark - Notifications
 - (void)_selectedDiscoveryTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }
 
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
-	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }
 
@@ -393,7 +350,6 @@
 
 #pragma mark - UI Presentation
 - (void)_doneRefreshing {
-	[_refreshButtonView toggleRefresh:NO];
 	[_tableView reloadData];
 	
 	_isRefreshing = NO;
@@ -401,51 +357,30 @@
 }
 
 
-#pragma mark - UserProfile Delegates
-- (void)userProfileViewChangeAvatar:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
+#pragma mark - ExploreViewCell Delegates
+- (void)exploreViewCellShowPreview:(HONExploreViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:@"Explore - Show Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO forChallenge:_challengeVO asRoot:YES];
+	_snapPreviewViewController.delegate = self;
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
-- (void)userProfileViewInviteFriends:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
+- (void)exploreViewCellHidePreview:(HONExploreViewCell *)cell {
+	[[Mixpanel sharedInstance] track:@"Explore - Hide Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	[_snapPreviewViewController showControls];
 }
 
-- (void)userProfileViewPromote:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																							[HONAppDelegate instagramShareComment], @"caption",
-																							image, @"image", nil]];
-}
-
-- (void)userProfileViewSettings:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Settings"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-
-#pragma mark - DiscoveryViewCell Delegates
-- (void)discoveryViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
+- (void)exploreViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Explore - Select Volley"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -469,7 +404,7 @@
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)discoveryViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO {
+- (void)exploreViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Explore - Select Volley"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -491,6 +426,43 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - SnapPreview Delegates
+- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+}
+
+- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+}
+
+- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
 }
 
 

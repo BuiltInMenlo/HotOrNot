@@ -37,6 +37,7 @@
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileView.h"
 #import "HONUserProfileViewController.h"
+#import "HONPopularViewController.h"
 #import "HONCollectionViewFlowLayout.h"
 
 
@@ -125,7 +126,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showProfile:) name:@"SHOW_PROFILE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
 }
 
@@ -493,9 +494,9 @@
 	[super viewDidLoad];
 	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 	
-//	UIView *tintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
-//	tintView.backgroundColor = [HONAppDelegate honDebugBlueColor];
-//	[self.navigationController.navigationBar addSubview:tintView];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewDidUnload {
@@ -533,40 +534,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-	
-	
-//	if (_userProfileView.isOpen) {
-//		[_userProfileView hide];
-//		[_profileHeaderButtonView toggleSelected:NO];
-//		
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
-//			_profileOverlayView.alpha = 0.0;
-//			_blurredImageView.alpha = 0.0;
-//		} completion:^(BOOL finished) {
-//			_profileOverlayView.hidden = YES;
-//			_userProfileView.hidden = YES;
-//			
-//			[_blurredImageView removeFromSuperview];
-//			_blurredImageView = nil;
-//		}];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-//	
-//	} else {
-//		[_userProfileView show];
-//		[_profileHeaderButtonView toggleSelected:YES];
-//		
-//		_profileOverlayView.hidden = NO;
-//		_userProfileView.hidden = NO;
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
-//			_profileOverlayView.alpha = 1.0;
-//			_blurredImageView.alpha = 1.0;
-//			_userProfileView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//	}
 }
 
 - (void)_goRefresh {
@@ -647,13 +614,22 @@
 
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite Friends"
-														message:@"Do you want to invite friends?"
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	
-	[alertView show];
+	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite Friends"
+															message:@"Do you want to invite friends?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Invite", nil];
+		[alertView show];
+	}
+}
+
+- (void)_showPopular:(NSNotification *)notification {
+	if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"]) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_showProfile:(NSNotification *)notification {
@@ -1065,7 +1041,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}

@@ -22,6 +22,8 @@
 @end
 
 @protocol HONExploreViewCellDelegate
-- (void)discoveryViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO;
-- (void)discoveryViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO;
+- (void)exploreViewCellShowPreview:(HONExploreViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)exploreViewCellHidePreview:(HONExploreViewCell *)cell;
+- (void)exploreViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO;
+- (void)exploreViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO;
 @end

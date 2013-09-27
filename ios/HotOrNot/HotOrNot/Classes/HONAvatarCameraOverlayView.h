@@ -10,21 +10,18 @@
 
 @protocol HONAvatarCameraOverlayDelegate;
 @interface HONAvatarCameraOverlayView : UIView
-- (void)takePhoto;
 - (void)addPreview:(UIImage *)image;
 - (void)addPreviewAsFlipped:(UIImage *)image;
 - (void)removePreview;
 - (void)uploadComplete;
-- (void)startProgress;
 - (void)animateAccept;
-- (void)verifyOverlay:(BOOL)isIntro;
+- (void)resetControls;
+//- (void)verifyOverlay:(BOOL)isIntro;
 
 @property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end
 
 @protocol HONAvatarCameraOverlayDelegate
-- (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayView:(HONAvatarCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed;
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;

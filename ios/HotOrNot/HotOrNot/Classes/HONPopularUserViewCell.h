@@ -8,17 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONCelebVO.h"
+#import "HONPopularUserVO.h"
 
 @protocol HONPopularUserViewCellDelegate;
 @interface HONPopularUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
-@property (nonatomic, retain) HONCelebVO *celebVO;
+@property (nonatomic, retain) HONPopularUserVO *popularUserVO;
+@property (nonatomic) BOOL isSelected;
+
 @property (nonatomic, assign) id <HONPopularUserViewCellDelegate> delegate;
 @end
 
 
 @protocol HONPopularUserViewCellDelegate
-- (void)popularUserViewCell:(HONPopularUserViewCell *)cell celeb:(HONCelebVO *)celebVO toggleSelected:(BOOL)isSelected;
+- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected;
 @end

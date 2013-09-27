@@ -10,7 +10,7 @@
 
 @implementation HONCelebVO
 @synthesize dictionary;
-@synthesize fullName, username, avatarURL;
+@synthesize userID, fullName, username, avatarURL;
 
 + (HONCelebVO *)celebWithDictionary:(NSDictionary *)dictionary {
 	HONCelebVO *vo = [[HONCelebVO alloc] init];

@@ -27,7 +27,6 @@
 #import "HONAddContactsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONAddContactsViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
@@ -261,6 +260,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 							[NSString stringWithFormat:@"%d", userID], @"target",
 							@"0", @"auto", nil];
 	
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIAddFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -297,6 +297,23 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
+			if (isApprove) {
+				int verify_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"] intValue];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++verify_total] forKey:@"verify_total"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				if (verify_total == 2 && [HONAppDelegate switchEnabledForKey:@"verify_invite"]) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																		message:@"Invite your friends to help you get Verified faster!"
+																	   delegate:self
+															  cancelButtonTitle:@"Cancel"
+															  otherButtonTitles:@"Invite friends", nil];
+					
+					[alertView setTag:0];
+					[alertView show];
+				}
+			}
+			
 			[self _goRefresh];
 		}
 		
@@ -441,39 +458,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-	
-//	if (_userProfileView.isOpen) {
-//		[_userProfileView hide];
-//		[_profileHeaderButtonView toggleSelected:NO];
-//		
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
-//			_profileOverlayView.alpha = 0.0;
-//			_blurredImageView.alpha = 0.0;
-//			_userProfileView.alpha = 0.0;
-//		} completion:^(BOOL finished) {
-//			_profileOverlayView.hidden = YES;
-//			_userProfileView.hidden = YES;
-//			
-//			[_blurredImageView removeFromSuperview];
-//			_blurredImageView = nil;
-//		}];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-//		
-//	} else {
-//		[_userProfileView show];
-//		[_profileHeaderButtonView toggleSelected:YES];
-//		_profileOverlayView.hidden = NO;
-//		_userProfileView.hidden = NO;
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
-//			_profileOverlayView.alpha = 1.0;
-//			_blurredImageView.alpha = 1.0;
-//			_userProfileView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//	}
 }
 
 - (void)_goCreateChallenge {
@@ -802,6 +786,22 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 		
+		}
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verfiy - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

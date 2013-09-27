@@ -19,6 +19,8 @@
 
 @implementation HONSearchBarHeaderView
 
+@synthesize delegate = _delegate;
+
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_isUser = YES;
@@ -28,7 +30,8 @@
 		_staticBGImageView.alpha = 0.85;
 		[self addSubview:_staticBGImageView];
 		
-		_greenBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackgroundGreen"]];
+		_greenBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 49.0)];
+		_greenBGImageView.backgroundColor = [UIColor blackColor];
 		_greenBGImageView.userInteractionEnabled = YES;
 		_greenBGImageView.alpha = 0.0;
 		[_staticBGImageView addSubview:_greenBGImageView];
@@ -52,7 +55,7 @@
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[_greenBGImageView addSubview:_cancelButton];
+//		[_greenBGImageView addSubview:_cancelButton];
 	}
 	
 	return (self);
@@ -99,7 +102,9 @@
 	}];
 	
 	_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+	
+	[self.delegate searchBarHeaderCancel:self];
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
@@ -111,7 +116,7 @@
 									  _searchTextField.text, @"query", nil]];
 	
 	if (![_searchTextField.text isEqualToString:@"@"] && ![_searchTextField.text isEqualToString:@"search for users to snap with…"])
-		[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
+		[self.delegate searchBarHeader:self enteredSearch:[_searchTextField.text substringFromIndex:1]];//[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
 	
 	else {
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -122,7 +127,8 @@
 		_searchTextField.text = @"Tap here to search";
 		_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
 		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+		[self.delegate searchBarHeaderCancel:self];
+		//[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	}
 }
 
@@ -146,7 +152,8 @@
 	textField.text = (_isUser) ? @"@" : @"#";
 	textField.frame = CGRectMake(9.0, 11.0, 200.0, 24.0);
 	[_searchTextField setTextColor:[UIColor whiteColor]];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:textField.text];
+	[self.delegate searchBarHeaderFocus:self];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:textField.text];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {	

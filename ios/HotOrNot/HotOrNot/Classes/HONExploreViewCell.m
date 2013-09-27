@@ -66,7 +66,6 @@
 								 //[weakSelf _reloadLeftImage];
 							 }];
 	
-	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 6.0);
 	[self.contentView addSubview:gradientImageView];
@@ -85,6 +84,10 @@
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:selectButton];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLeftLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[selectButton addGestureRecognizer:lpGestureRecognizer];
 }
 
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
@@ -132,10 +135,30 @@
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:selectButton];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goRightLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[selectButton addGestureRecognizer:lpGestureRecognizer];
 }
 
 
 #pragma mark - Navigation
+- (void)_goLeftLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
+		[self.delegate exploreViewCellShowPreview:self forChallenge:_lChallengeVO];
+	
+	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
+		[self.delegate exploreViewCellHidePreview:self];
+}
+
+- (void)_goRightLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
+		[self.delegate exploreViewCellShowPreview:self forChallenge:_rChallengeVO];
+	
+	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
+		[self.delegate exploreViewCellHidePreview:self];
+}
+
 - (void)_goSelectLeft {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
@@ -147,7 +170,7 @@
 		[overlayView removeFromSuperview];
 	}];
 	
-	[self.delegate discoveryViewCell:self selectLeftChallenge:_lChallengeVO];
+	[self.delegate exploreViewCell:self selectLeftChallenge:_lChallengeVO];
 }
 
 - (void)_goSelectRight {
@@ -161,7 +184,7 @@
 		[overlayView removeFromSuperview];
 	}];
 	
-	[self.delegate discoveryViewCell:self selectRightChallenge:_rChallengeVO];
+	[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
 }
 
 

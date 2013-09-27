@@ -13,14 +13,17 @@
 
 #import "HONPopularViewController.h"
 #import "HONPopularUserViewCell.h"
-#import "HONCelebVO.h"
+#import "HONPopularUserVO.h"
 #import "HONHeaderView.h"
+#import "HONSearchBarHeaderView.h"
 
 
-@interface HONPopularViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONPopularUserViewCellDelegate>
-@property (nonatomic, strong) NSMutableArray *celebs;
-@property (nonatomic, strong) NSMutableArray *selectedCelebs;
-@property(nonatomic, strong) UITableView *tableView;
+@interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
+@property (nonatomic, strong) NSMutableArray *users;
+@property (nonatomic, strong) NSMutableArray *selectedUsers;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 
@@ -76,32 +79,141 @@
 	}];
 }
 
+- (void)_removeFriend:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"target", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIRemoveFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate writeSubscribeeList:result];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
+- (void)_retrieveUsers:(NSString *)username {
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 1], @"action",
+							username, @"username",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+		} else {
+			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedUsers);
+			
+			_users = [NSMutableArray array];
+			for (NSDictionary *serverList in parsedUsers) {
+				[_users addObject:[HONPopularUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[serverList objectForKey:@"id"], @"id",
+																		[serverList objectForKey:@"username"], @"username",
+																		[serverList objectForKey:@"avatar_url"], @"img_url", nil]]];
+			}
+			
+			if (_progressHUD != nil) {
+				if ([_users count] == 0) {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+					_progressHUD = nil;
+					
+					_users = [NSMutableArray array];
+					for (NSDictionary *dict in [HONAppDelegate popularPeople])
+						[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
+					
+				} else {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+			}
+			
+			[_tableView reloadData];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.frame = CGRectOffset(self.view.frame, 0.0, 20.0);
 	
-	_celebs = [NSMutableArray array];
-	_selectedCelebs = [NSMutableArray array];
+	_users = [NSMutableArray array];
+	_selectedUsers = [NSMutableArray array];
 	
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
-		[_celebs addObject:[HONCelebVO celebWithDictionary:dict]];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular People"];
-	[self.view addSubview:headerView];
+		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:doneButton];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	headerView.backgroundColor = [UIColor blackColor];
+	[headerView addButton:doneButton];
+	[self.view addSubview:headerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 44.0)) style:UITableViewStylePlain];
+	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
+	headerTitleLabel.backgroundColor = [UIColor clearColor];
+	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	headerTitleLabel.textColor = [UIColor whiteColor];
+	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
+	headerTitleLabel.text = @"Find People";
+	[headerView addSubview:headerTitleLabel];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.userInteractionEnabled = YES;
@@ -109,12 +221,12 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
-	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
-	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateHighlighted];
-	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:selectToggleButton];
+//	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
+//	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
+//	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateHighlighted];
+//	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:selectToggleButton];
 }
 
 - (void)viewDidLoad {
@@ -149,55 +261,64 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-//	if ([_selectedCelebs count] == 0) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-//															message:@"Invite popular people to Volley!"
-//														   delegate:self
-//												  cancelButtonTitle:@"Yes"
-//												  otherButtonTitles:@"No", nil];
-//		[alertView setTag:0];
-//		[alertView show];
-//		
-//	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:nil];
-//	}
+	for (HONPopularUserVO *vo in _selectedUsers)
+		[self _addFriend:vo.userID];
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
 #pragma mark - PopularUserVieCell Delegates
-- (void)popularUserViewCell:(HONPopularUserViewCell *)cell celeb:(HONCelebVO *)celebVO toggleSelected:(BOOL)isSelected {
+- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected {
 	if (isSelected) {
 		[[Mixpanel sharedInstance] track:@"Popular People - Select"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%@ - @%@", celebVO.fullName, celebVO.username], @"celeb", nil]];
+										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
 		
-		[_selectedCelebs addObject:celebVO];
+		[_selectedUsers addObject:popularUserVO];
+		
 	} else {
 		[[Mixpanel sharedInstance] track:@"Popular People - Deselect"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%@ - @%@", celebVO.fullName, celebVO.username], @"celeb", nil]];
+										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
 		
 		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONCelebVO *vo in _selectedCelebs) {
-			for (HONCelebVO *dropVO in _celebs) {
+		for (HONPopularUserVO *vo in _selectedUsers) {
+			for (HONPopularUserVO *dropVO in _users) {
 				if ([vo.username isEqualToString:dropVO.username]) {
 					[removeVOs addObject:vo];
 				}
 			}
 		}
 		
-		[_selectedCelebs removeObjectsInArray:removeVOs];
+		[_selectedUsers removeObjectsInArray:removeVOs];
 		removeVOs = nil;
 	}
 }
 
 
+#pragma mark - SearchBar Delegates
+- (void)searchBarHeaderFocus:(HONSearchBarHeaderView *)searchBarHeaderView {
+}
+
+- (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView {
+	_users = [NSMutableArray array];
+	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
+	
+	[_tableView reloadData];
+}
+
+- (void)searchBarHeader:(HONSearchBarHeaderView *)searchBarHeaderView enteredSearch:(NSString *)searchQuery {
+	[self _retrieveUsers:searchQuery];
+}
+
+
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_celebs count]);
+	return ([_users count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -205,16 +326,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
+	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+	_searchHeaderView.delegate = self;
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-	label.textColor = [HONAppDelegate honGreenTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Add people to home feed";
-	[headerImageView addSubview:label];
-	
-	return (headerImageView);
+	return (_searchHeaderView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -223,7 +338,7 @@
 	if (cell == nil)
 		cell = [[HONPopularUserViewCell alloc] init];
 	
-	cell.celebVO = (HONCelebVO *)[_celebs objectAtIndex:indexPath.row];
+	cell.popularUserVO = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
@@ -237,18 +352,11 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);
+	return (kSearchHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	
-	HONCelebVO *vo = (HONCelebVO *)[_celebs objectAtIndex:indexPath.row];
-	[self _addFriend:vo.userID];
+	return (nil);
 }
 
 
