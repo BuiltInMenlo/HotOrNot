@@ -412,7 +412,11 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function updateImage( $volleyId, $url ){
-        $sql = 'UPDATE `hotornot-dev`.tblChallenges SET creator_img = ? WHERE id = ?';
+        $sql = '
+        	UPDATE `hotornot-dev`.tblChallenges 
+        	SET creator_img = ?, updated = now() 
+        	WHERE id = ?
+        ';
         $params = array( $url, $volleyId );
         $this->prepareAndExecute($sql, $params);
     }

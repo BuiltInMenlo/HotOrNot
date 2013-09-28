@@ -42,11 +42,11 @@ class BIM_Controller_Base{
         return $this->input;
     }
     
-    public function normalizeVolleyImgUrl( $imgUrl  ){
+    public function normalizeVolleyImgUrl( $imgUrl ){
         return str_replace( 'hotornot-challenges.s3.amazonaws.com', 'd1fqnfrnudpaz6.cloudfront.net', $imgUrl );
     }
 
-    public function normalizeAvatarImgUrl( $imgUrl  ){
+    public function normalizeAvatarImgUrl( $imgUrl ){
         if( preg_match('@^http.*?http@', $imgUrl ) ){
             file_put_contents('/tmp/piclog', $imgUrl."\n", FILE_APPEND);
             $imgUrl = preg_replace( '@^(?:https*://.*?)+(https*://.+?\.jpg).+?\.jpg$@', '$1', $imgUrl );

@@ -81,17 +81,26 @@ class BIM_Jobs_Challenges extends BIM_Jobs{
     /*
      * PROCESS VOLLEY IMAGES
      */
-    public static function queueProcessVolleyImages( $volleyId ){
+    public static function queueProcessVolleyImages( $volleyId, $imgUrl = '' ){
         $job = array(
         	'class' => 'BIM_Jobs_Challenges',
         	'method' => 'processVolleyImages',
         	'data' => array( 'volley_id' => $volleyId ),
         );
+        if( !empty( $imgUrl ) ){
+            $job['data']['img_url'] = $imgUrl;
+        }
         return self::queueBackground( $job, 'process_volley_images' );
     }
 	
     public function processVolleyImages( $workload ){
-        BIM_Model_Volley::processVolleyImages( array( $workload->data->volley_id ) );
+        if( !empty( $workload->data->img_url ) ){
+            // we were passed a specific image url
+            // so we just process that and not the whole volley
+            BIM_Model_Volley::processImage( $workload->data->img_url );
+        } else {
+            BIM_Model_Volley::processVolleyImages( array( $workload->data->volley_id ) );
+        }
     }
     
     /*

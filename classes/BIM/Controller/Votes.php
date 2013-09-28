@@ -66,8 +66,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
         $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty($input->p)){
             return $this->getChallengesForProfile();
-        }
-		else if (isset($input->username)){
+        } else 
+        
+        if (isset($input->username)){
 		    $votes = new BIM_App_Votes();
 			return $votes->getChallengesForUsername($input->username);
 		}

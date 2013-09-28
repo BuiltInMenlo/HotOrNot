@@ -384,7 +384,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $OK = false;
             if( $volley->is_private == 'N' ){
                 $volley->join( $userId, $imgUrl );
-                BIM_Jobs_Challenges::queueProcessVolleyImages( $volley->id );
+                BIM_Jobs_Challenges::queueProcessVolleyImages( $volley->id, $imgUrl );
                 $creator = BIM_Model_User::get($volley->creator->id );
                 $joiner = BIM_Model_User::get( $userId );
                 $this->doAcceptNotification($volley, $creator, $joiner);
