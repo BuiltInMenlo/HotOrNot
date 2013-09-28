@@ -107,16 +107,6 @@
 		4C1BA89A17F51DAF006024B2 /* exploreSearch_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C1BA89617F51DAF006024B2 /* exploreSearch_Active@2x.png */; };
 		4C1BA89B17F51DAF006024B2 /* exploreSearch_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C1BA89717F51DAF006024B2 /* exploreSearch_nonActive.png */; };
 		4C1BA89C17F51DAF006024B2 /* exploreSearch_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C1BA89817F51DAF006024B2 /* exploreSearch_nonActive@2x.png */; };
-		4C1BA96917F57065006024B2 /* REActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA95B17F57065006024B2 /* REActivity.m */; };
-		4C1BA96A17F57065006024B2 /* REActivityViewController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C1BA95C17F57065006024B2 /* REActivityViewController.bundle */; };
-		4C1BA96B17F57065006024B2 /* REActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA95E17F57065006024B2 /* REActivityViewController.m */; };
-		4C1BA96C17F57066006024B2 /* REFacebookActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA96017F57065006024B2 /* REFacebookActivity.m */; };
-		4C1BA96D17F57066006024B2 /* REMailActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA96217F57065006024B2 /* REMailActivity.m */; };
-		4C1BA96E17F57066006024B2 /* REMessageActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA96417F57065006024B2 /* REMessageActivity.m */; };
-		4C1BA96F17F57066006024B2 /* RESinaWeiboActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA96617F57065006024B2 /* RESinaWeiboActivity.m */; };
-		4C1BA97017F57066006024B2 /* RETwitterActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA96817F57065006024B2 /* RETwitterActivity.m */; };
-		4C1BA97317F5708F006024B2 /* REActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA97217F5708F006024B2 /* REActivityView.m */; };
-		4C1BA97617F570B6006024B2 /* REActivityDelegateObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1BA97517F570B6006024B2 /* REActivityDelegateObject.m */; };
 		4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
 		4C225CC017B83F3C00330EB3 /* divider.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C225CBE17B83F3C00330EB3 /* divider.png */; };
 		4C225CC117B83F3C00330EB3 /* divider@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C225CBF17B83F3C00330EB3 /* divider@2x.png */; };
@@ -397,6 +387,14 @@
 		4CB5820C17E2D51E005FDB05 /* homeRowOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5820A17E2D51E005FDB05 /* homeRowOverlay.png */; };
 		4CB5820D17E2D51E005FDB05 /* homeRowOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB5820B17E2D51E005FDB05 /* homeRowOverlay@2x.png */; };
 		4CB75CFA16FFB3E7001A8738 /* HelveticaNeue.dfont in Resources */ = {isa = PBXBuildFile; fileRef = 4CB75CF916FFB3E7001A8738 /* HelveticaNeue.dfont */; };
+		4CBA313617F60CE5008CEDD6 /* nayButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313217F60CE5008CEDD6 /* nayButton_Active.png */; };
+		4CBA313717F60CE5008CEDD6 /* nayButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313317F60CE5008CEDD6 /* nayButton_Active@2x.png */; };
+		4CBA313817F60CE5008CEDD6 /* nayButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313417F60CE5008CEDD6 /* nayButton_nonActive.png */; };
+		4CBA313917F60CE5008CEDD6 /* nayButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313517F60CE5008CEDD6 /* nayButton_nonActive@2x.png */; };
+		4CBA313E17F60CF6008CEDD6 /* yayButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313A17F60CF5008CEDD6 /* yayButton_Active.png */; };
+		4CBA313F17F60CF6008CEDD6 /* yayButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313B17F60CF5008CEDD6 /* yayButton_Active@2x.png */; };
+		4CBA314017F60CF6008CEDD6 /* yayButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313C17F60CF6008CEDD6 /* yayButton_nonActive.png */; };
+		4CBA314117F60CF6008CEDD6 /* yayButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313D17F60CF6008CEDD6 /* yayButton_nonActive@2x.png */; };
 		4CBB5C87169CDCF600D44E77 /* moreIcon_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB5C85169CDCF600D44E77 /* moreIcon_Active.png */; };
 		4CBB5C88169CDCF600D44E77 /* moreIcon_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB5C86169CDCF600D44E77 /* moreIcon_Active@2x.png */; };
 		4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE874B16371D22004084DF /* HONSupportViewController.m */; };
@@ -654,26 +652,6 @@
 		4C1BA89617F51DAF006024B2 /* exploreSearch_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "exploreSearch_Active@2x.png"; sourceTree = "<group>"; };
 		4C1BA89717F51DAF006024B2 /* exploreSearch_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = exploreSearch_nonActive.png; sourceTree = "<group>"; };
 		4C1BA89817F51DAF006024B2 /* exploreSearch_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "exploreSearch_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C1BA95A17F57065006024B2 /* REActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REActivity.h; sourceTree = "<group>"; };
-		4C1BA95B17F57065006024B2 /* REActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REActivity.m; sourceTree = "<group>"; };
-		4C1BA95C17F57065006024B2 /* REActivityViewController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = REActivityViewController.bundle; sourceTree = "<group>"; };
-		4C1BA95D17F57065006024B2 /* REActivityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REActivityViewController.h; sourceTree = "<group>"; };
-		4C1BA95E17F57065006024B2 /* REActivityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REActivityViewController.m; sourceTree = "<group>"; };
-		4C1BA95F17F57065006024B2 /* REFacebookActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REFacebookActivity.h; sourceTree = "<group>"; };
-		4C1BA96017F57065006024B2 /* REFacebookActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REFacebookActivity.m; sourceTree = "<group>"; };
-		4C1BA96117F57065006024B2 /* REMailActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REMailActivity.h; sourceTree = "<group>"; };
-		4C1BA96217F57065006024B2 /* REMailActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REMailActivity.m; sourceTree = "<group>"; };
-		4C1BA96317F57065006024B2 /* REMessageActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REMessageActivity.h; sourceTree = "<group>"; };
-		4C1BA96417F57065006024B2 /* REMessageActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REMessageActivity.m; sourceTree = "<group>"; };
-		4C1BA96517F57065006024B2 /* RESinaWeiboActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESinaWeiboActivity.h; sourceTree = "<group>"; };
-		4C1BA96617F57065006024B2 /* RESinaWeiboActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESinaWeiboActivity.m; sourceTree = "<group>"; };
-		4C1BA96717F57065006024B2 /* RETwitterActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RETwitterActivity.h; sourceTree = "<group>"; };
-		4C1BA96817F57065006024B2 /* RETwitterActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RETwitterActivity.m; sourceTree = "<group>"; };
-		4C1BA97117F5708F006024B2 /* REActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REActivityView.h; sourceTree = "<group>"; };
-		4C1BA97217F5708F006024B2 /* REActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REActivityView.m; sourceTree = "<group>"; };
-		4C1BA97417F570B6006024B2 /* REActivityDelegateObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REActivityDelegateObject.h; sourceTree = "<group>"; };
-		4C1BA97517F570B6006024B2 /* REActivityDelegateObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REActivityDelegateObject.m; sourceTree = "<group>"; };
-		4C1BA97717F57118006024B2 /* REActivities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REActivities.h; sourceTree = "<group>"; };
 		4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewController.h; sourceTree = "<group>"; };
 		4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewController.m; sourceTree = "<group>"; };
 		4C225CBE17B83F3C00330EB3 /* divider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = divider.png; sourceTree = "<group>"; };
@@ -1134,6 +1112,14 @@
 		4CB5820A17E2D51E005FDB05 /* homeRowOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = homeRowOverlay.png; sourceTree = "<group>"; };
 		4CB5820B17E2D51E005FDB05 /* homeRowOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "homeRowOverlay@2x.png"; sourceTree = "<group>"; };
 		4CB75CF916FFB3E7001A8738 /* HelveticaNeue.dfont */ = {isa = PBXFileReference; lastKnownFileType = file; path = HelveticaNeue.dfont; sourceTree = "<group>"; };
+		4CBA313217F60CE5008CEDD6 /* nayButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nayButton_Active.png; sourceTree = "<group>"; };
+		4CBA313317F60CE5008CEDD6 /* nayButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nayButton_Active@2x.png"; sourceTree = "<group>"; };
+		4CBA313417F60CE5008CEDD6 /* nayButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nayButton_nonActive.png; sourceTree = "<group>"; };
+		4CBA313517F60CE5008CEDD6 /* nayButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nayButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CBA313A17F60CF5008CEDD6 /* yayButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yayButton_Active.png; sourceTree = "<group>"; };
+		4CBA313B17F60CF5008CEDD6 /* yayButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yayButton_Active@2x.png"; sourceTree = "<group>"; };
+		4CBA313C17F60CF6008CEDD6 /* yayButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yayButton_nonActive.png; sourceTree = "<group>"; };
+		4CBA313D17F60CF6008CEDD6 /* yayButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yayButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CBB5C85169CDCF600D44E77 /* moreIcon_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moreIcon_Active.png; sourceTree = "<group>"; };
 		4CBB5C86169CDCF600D44E77 /* moreIcon_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "moreIcon_Active@2x.png"; sourceTree = "<group>"; };
 		4CBE874A16371D1E004084DF /* HONSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSupportViewController.h; sourceTree = "<group>"; };
@@ -1479,33 +1465,6 @@
 				4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */,
 			);
 			name = "Avatar Camera";
-			sourceTree = "<group>";
-		};
-		4C1BA95917F57065006024B2 /* REActivity */ = {
-			isa = PBXGroup;
-			children = (
-				4C1BA97717F57118006024B2 /* REActivities.h */,
-				4C1BA95A17F57065006024B2 /* REActivity.h */,
-				4C1BA95B17F57065006024B2 /* REActivity.m */,
-				4C1BA97417F570B6006024B2 /* REActivityDelegateObject.h */,
-				4C1BA97517F570B6006024B2 /* REActivityDelegateObject.m */,
-				4C1BA97117F5708F006024B2 /* REActivityView.h */,
-				4C1BA97217F5708F006024B2 /* REActivityView.m */,
-				4C1BA95C17F57065006024B2 /* REActivityViewController.bundle */,
-				4C1BA95D17F57065006024B2 /* REActivityViewController.h */,
-				4C1BA95E17F57065006024B2 /* REActivityViewController.m */,
-				4C1BA95F17F57065006024B2 /* REFacebookActivity.h */,
-				4C1BA96017F57065006024B2 /* REFacebookActivity.m */,
-				4C1BA96117F57065006024B2 /* REMailActivity.h */,
-				4C1BA96217F57065006024B2 /* REMailActivity.m */,
-				4C1BA96317F57065006024B2 /* REMessageActivity.h */,
-				4C1BA96417F57065006024B2 /* REMessageActivity.m */,
-				4C1BA96517F57065006024B2 /* RESinaWeiboActivity.h */,
-				4C1BA96617F57065006024B2 /* RESinaWeiboActivity.m */,
-				4C1BA96717F57065006024B2 /* RETwitterActivity.h */,
-				4C1BA96817F57065006024B2 /* RETwitterActivity.m */,
-			);
-			path = REActivity;
 			sourceTree = "<group>";
 		};
 		4C32B99815FA6F4C0023A0EE /* Verify */ = {
@@ -1968,7 +1927,6 @@
 		4C62655A15F96E2900AA7FCE /* Other Classes */ = {
 			isa = PBXGroup;
 			children = (
-				4C1BA95917F57065006024B2 /* REActivity */,
 				4CEC303E17DACC9B0016AAE1 /* ImageEffects */,
 				4C8CBC30179CFAA600C95189 /* Tapstream */,
 				4CED1C09177D46C100A32F2B /* libPhoneNumber */,
@@ -2302,6 +2260,14 @@
 		4C824FB11612440B00C34FD9 /* Verify */ = {
 			isa = PBXGroup;
 			children = (
+				4CBA313A17F60CF5008CEDD6 /* yayButton_Active.png */,
+				4CBA313B17F60CF5008CEDD6 /* yayButton_Active@2x.png */,
+				4CBA313C17F60CF6008CEDD6 /* yayButton_nonActive.png */,
+				4CBA313D17F60CF6008CEDD6 /* yayButton_nonActive@2x.png */,
+				4CBA313217F60CE5008CEDD6 /* nayButton_Active.png */,
+				4CBA313317F60CE5008CEDD6 /* nayButton_Active@2x.png */,
+				4CBA313417F60CE5008CEDD6 /* nayButton_nonActive.png */,
+				4CBA313517F60CE5008CEDD6 /* nayButton_nonActive@2x.png */,
 				4CD7AACA17F09C2100B0CAF3 /* verifyButton_Active.png */,
 				4CD7AACB17F09C2100B0CAF3 /* verifyButton_Active@2x.png */,
 				4CD7AACC17F09C2100B0CAF3 /* verifyButton_nonActive.png */,
@@ -2945,6 +2911,7 @@
 				4CB2902E17EE6E660099EE62 /* Default-568h@2x.png in Resources */,
 				4C6266B615F96E2900AA7FCE /* LICENSE in Resources */,
 				4CED1C07177D463C00A32F2B /* README.md in Resources */,
+				4CBA313617F60CE5008CEDD6 /* nayButton_Active.png in Resources */,
 				4CEEFC7217E1527C0006A640 /* profileStatBackground.png in Resources */,
 				4C6266B715F96E2900AA7FCE /* README.rst in Resources */,
 				4C3CB1D217E43A020076BF78 /* cameraBackgroundHeader@2x.png in Resources */,
@@ -2960,9 +2927,11 @@
 				4CDFB3E0178DDC4E00438732 /* verifyVolleyAccount_nonActive@2x.png in Resources */,
 				4C25EED817EFB26900F6DBAB /* subscribeButton_nonActive@2x.png in Resources */,
 				4C0C40FE162BEBAE007F0DA3 /* moreIcon_nonActive@2x.png in Resources */,
+				4CBA313F17F60CF6008CEDD6 /* yayButton_Active@2x.png in Resources */,
 				4C0C414C162C9744007F0DA3 /* icon_512x512.png in Resources */,
 				4C0C414E162C9761007F0DA3 /* icon_57x57.png in Resources */,
 				4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */,
+				4CBA313E17F60CF6008CEDD6 /* yayButton_Active.png in Resources */,
 				4C31AFB01638745100358022 /* mainBG.png in Resources */,
 				4C31AFB11638745100358022 /* mainBG@2x.png in Resources */,
 				4CC4D14116390BA400E2B217 /* push_02.caf in Resources */,
@@ -3045,7 +3014,6 @@
 				4CDFB3DC178DDC4E00438732 /* verification@2x.png in Resources */,
 				4CABCE99172DE26A00AF5863 /* searchDiscoverBackground.png in Resources */,
 				4CABCE9A172DE26A00AF5863 /* searchDiscoverBackground@2x.png in Resources */,
-				4C1BA96A17F57065006024B2 /* REActivityViewController.bundle in Resources */,
 				4C51011017331DB900A5D342 /* defaultAvatar.png in Resources */,
 				4C51011817332B9C00A5D342 /* FormattedUILabel in Resources */,
 				4C7732D91741965100A86ED1 /* tableHeaderBackground.png in Resources */,
@@ -3107,6 +3075,7 @@
 				4C5C714A1773803D00FA6F51 /* searchToggleA@2x.png in Resources */,
 				4C5C714B1773803D00FA6F51 /* searchToggleB.png in Resources */,
 				4C5C714C1773803D00FA6F51 /* searchToggleB@2x.png in Resources */,
+				4CBA313817F60CE5008CEDD6 /* nayButton_nonActive.png in Resources */,
 				4C4103D31778BC9B001383E7 /* loader_001.png in Resources */,
 				4C4103D41778BC9B001383E7 /* loader_001@2x.png in Resources */,
 				4C25EEDD17EFEF0600F6DBAB /* registerButton_Active.png in Resources */,
@@ -3160,6 +3129,7 @@
 				4CEEFC6817E14A500006A640 /* submitButton_Active.png in Resources */,
 				4C03963517B6FB5900AECD97 /* moreButton_Active.png in Resources */,
 				4C03963617B6FB5A00AECD97 /* moreButton_Active@2x.png in Resources */,
+				4CBA313717F60CE5008CEDD6 /* nayButton_Active@2x.png in Resources */,
 				4C03963717B6FB5A00AECD97 /* moreButton_nonActive.png in Resources */,
 				4C03963817B6FB5A00AECD97 /* moreButton_nonActive@2x.png in Resources */,
 				4CEEFC5217E14A200006A640 /* tabMenu_activityButton_Active.png in Resources */,
@@ -3170,6 +3140,7 @@
 				4C3CB1D717E43F900076BF78 /* flashButton_Active.png in Resources */,
 				4C03964817B7024300AECD97 /* addPhoto_nonActive@2x.png in Resources */,
 				4C0396BA17B7038300AECD97 /* backButtonIcon_Active.png in Resources */,
+				4CBA313917F60CE5008CEDD6 /* nayButton_nonActive@2x.png in Resources */,
 				4C0396BB17B7038300AECD97 /* backButtonIcon_Active@2x.png in Resources */,
 				4C0396BC17B7038300AECD97 /* backButtonIcon_nonActive.png in Resources */,
 				4CEEFC6917E14A500006A640 /* submitButton_Active@2x.png in Resources */,
@@ -3181,6 +3152,7 @@
 				4CD5F63E17BB4EBE0029B0C4 /* cameraUpload_002.png in Resources */,
 				4CD5F63F17BB4EBE0029B0C4 /* cameraUpload_002@2x.png in Resources */,
 				4CD5F64017BB4EBE0029B0C4 /* cameraUpload_003.png in Resources */,
+				4CBA314017F60CF6008CEDD6 /* yayButton_nonActive.png in Resources */,
 				4CD5F64117BB4EBE0029B0C4 /* cameraUpload_003@2x.png in Resources */,
 				4CB5820C17E2D51E005FDB05 /* homeRowOverlay.png in Resources */,
 				4CAA454217BE02D4002670A6 /* whySelfie.png in Resources */,
@@ -3245,6 +3217,7 @@
 				4CB5820817E2D462005FDB05 /* profileBlurBackground.png in Resources */,
 				4C0F5F0117C9AB1000894551 /* overlayLoader003.png in Resources */,
 				4C0F5F0217C9AB1000894551 /* overlayLoader003@2x.png in Resources */,
+				4CBA314117F60CF6008CEDD6 /* yayButton_nonActive@2x.png in Resources */,
 				4CEEFC8B17E163D10006A640 /* defaultAvatar_o.png in Resources */,
 				4C0F5F1017C9C23100894551 /* cameraInfoOverlay-568h@2x.png in Resources */,
 				4C0F5F1117C9C23100894551 /* cameraInfoOverlay.png in Resources */,
@@ -3352,7 +3325,6 @@
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
 				4C62672915F96E2900AA7FCE /* EGORefreshTableHeaderView.m in Sources */,
 				4C62672E15F96E2900AA7FCE /* MBProgressHUD.m in Sources */,
-				4C1BA96E17F57066006024B2 /* REMessageActivity.m in Sources */,
 				4C8CBC50179CFAA600C95189 /* TSResponse.m in Sources */,
 				4C62673515F96E2900AA7FCE /* Reachability.m in Sources */,
 				4C8CBC4F179CFAA600C95189 /* TSPlatformImpl.m in Sources */,
@@ -3363,12 +3335,10 @@
 				4C0B691F179E06C200D3E12A /* HONSnapPreviewViewController.m in Sources */,
 				4C32B99B15FA6F720023A0EE /* HONVerifyViewCell.m in Sources */,
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
-				4C1BA97617F570B6006024B2 /* REActivityDelegateObject.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
-				4C1BA96917F57065006024B2 /* REActivity.m in Sources */,
 				B3BE3EAE1608E43800E7E2B7 /* HONSubjectVO.m in Sources */,
 				4C6BBC861615455000145996 /* HONSnapCameraOverlayView.m in Sources */,
 				4C8CBC4C179CFAA600C95189 /* TSEvent.m in Sources */,
@@ -3399,7 +3369,6 @@
 				4CA0852916A12FD900673F3A /* AFHTTPClient.m in Sources */,
 				4CA0852A16A12FD900673F3A /* AFHTTPRequestOperation.m in Sources */,
 				4CA0852B16A12FD900673F3A /* AFImageRequestOperation.m in Sources */,
-				4C1BA96B17F57065006024B2 /* REActivityViewController.m in Sources */,
 				4CA0852C16A12FD900673F3A /* AFJSONRequestOperation.m in Sources */,
 				4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */,
 				4CA0852D16A12FD900673F3A /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -3415,9 +3384,6 @@
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4CEC304117DACC9B0016AAE1 /* UIImage+ImageEffects.m in Sources */,
 				4C382FFC178B8AD700C7FA7C /* HONPopularUserViewCell.m in Sources */,
-				4C1BA96D17F57066006024B2 /* REMailActivity.m in Sources */,
-				4C1BA97317F5708F006024B2 /* REActivityView.m in Sources */,
-				4C1BA97017F57066006024B2 /* RETwitterActivity.m in Sources */,
 				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 				4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */,
@@ -3447,13 +3413,11 @@
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4CED1C1B177D46C100A32F2B /* NBPhoneMetaDataGenerator.m in Sources */,
 				4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */,
-				4C1BA96C17F57066006024B2 /* REFacebookActivity.m in Sources */,
 				4C382FF9178B8AA200C7FA7C /* HONPopularViewController.m in Sources */,
 				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,
 				4C08036417A4ACC0001FF5DE /* HONUserBirthdayViewController.m in Sources */,
 				4C08036717A4ACE6001FF5DE /* HONProfileRangeViewController.m in Sources */,
 				4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */,
-				4C1BA96F17F57066006024B2 /* RESinaWeiboActivity.m in Sources */,
 				4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineHeaderView.m in Sources */,

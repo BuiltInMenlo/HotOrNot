@@ -34,6 +34,8 @@
 #import "HONUserProfileView.h"
 #import "HONUserProfileViewController.h"
 #import "HONCollectionViewFlowLayout.h"
+#import "HONChangeAvatarViewController.h"
+
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
@@ -501,6 +503,27 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
+	
+	int verify_total = 0;
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"]) {
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:verify_total] forKey:@"verify_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	verify_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"] intValue];
+	
+	if (verify_total == 0 && [[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:@"You need a selfie profile image to get verified. Please update your selfie now!"
+														   delegate:self
+												  cancelButtonTitle:@"Take Photo"
+												  otherButtonTitles:@"OK", nil];
+		[alertView setTag:1];
+		[alertView show];
+	}
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++verify_total] forKey:@"verify_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)_refreshChallengesTab:(NSNotification *)notification {
@@ -599,9 +622,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_snapPreviewViewController showControls];
 }
 
-- (void)verifyViewCellTakeAction:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	[[Mixpanel sharedInstance] track:@"Verify - Take Action"
+	[[Mixpanel sharedInstance] track:@"Verify - Approve"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -616,16 +639,41 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_indexPath = [_tableView indexPathForCell:tableCell];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"Does @%@ look between 13 and 19?", _challengeVO.creatorVO.username]
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:@"Does @%@ look between 13 and 19?", _challengeVO.creatorVO.username]
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Yes, verify & subscribe", @"No, looks like a fake", nil];
+													otherButtonTitles:@"Verify & subscribe", @"Verify", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
+- (void)verifyViewCellDisprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	[[Mixpanel sharedInstance] track:@"Verify - Disprove"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
+	UITableViewCell *tableCell;
+	for (HONVerifyViewCell *cell in _cells) {
+		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+			tableCell = (UITableViewCell *)cell;
+			break;
+		}
+	}
 	
+	_indexPath = [_tableView indexPathForCell:tableCell];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Looks like a fake profile", @"Abusive content", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:1];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 
@@ -766,9 +814,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	
-	if (actionSheet.tag == 0 ) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Subscribe" : (buttonIndex == 1) ? @"Flag" : @" Cancel"]
+	if (actionSheet.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Subscribe" : (buttonIndex == 1) ? @"Subscribe" : @" Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -778,6 +825,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 		
 		} else if (buttonIndex == 1) {
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+		}
+	
+	} else if (actionSheet.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Fake" : (buttonIndex == 1) ? @"Abusive" : @" Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 0 || buttonIndex == 1) {
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
 									   delegate:nil
@@ -785,7 +842,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 							  otherButtonTitles:nil] show];
 			
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-		
+			
 		}
 	}
 }
@@ -794,7 +851,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verfiy - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
@@ -802,6 +859,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	
+	} else if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Take New Avatar %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	}
 }

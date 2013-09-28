@@ -67,7 +67,7 @@
 	NSString *currentTimestamp = [NSString stringWithFormat:@"%d", (int)[[NSDate date] timeIntervalSince1970]];
     
 	_filename = [NSString stringWithFormat:@"%@-%@", [HONAppDelegate deviceToken], currentTimestamp];
-	NSLog(@"FILENAME: %@/%@.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
+	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	@try {
 //		float avatarSize = 200.0;
@@ -117,6 +117,7 @@
 									[NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 									nil];
 	
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {

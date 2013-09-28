@@ -91,7 +91,7 @@
 	
 	_uploadCounter = 0;
 	_filename = [NSString stringWithFormat:@"%@-%d",[HONAppDelegate deviceToken], (int)[[NSDate date] timeIntervalSince1970]];
-	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
+	NSLog(@"FILENAME: %@", _filename);
 	
 	@try {
 //		float avatarSize = kSnapLargeDim;
@@ -137,19 +137,19 @@
 - (void)_finalizeUser {
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
+
 	
-	_filename = ([[[HONAppDelegate infoForUser] objectForKey:@"token"] isEqualToString:@"0000000000000000000000000000000000000000000000000000000000000000"]) ? @"https://graph.facebook.com/1149169958/picture?type=square" : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							_username, @"username",
 							_email, @"password",
 							_birthday, @"age",
-							_filename, @"imgURL",
+							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 							nil];
 	
 	NSLog(@"PARAMS:[%@]", params);
-	NSMutableString *avatarURL = [_filename mutableCopy];
+	NSMutableString *avatarURL = [[params objectForKey:@"imgURL"] mutableCopy];
 	[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 //	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
@@ -493,11 +493,17 @@
 }
 
 - (void)_goSkip {
-	[[[UIAlertView alloc] initWithTitle:@""
-								message:@"Sorry! at this time we require all members of Volley to have a selfie. It keeps things safe."
-							   delegate:nil
-					  cancelButtonTitle:@"OK"
-					  otherButtonTitles:nil] show];
+	[[Mixpanel sharedInstance] track:@"Register - Skip Photo"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:@"Warning if you SKIP your selfie image you may get flagged by the community!"
+													   delegate:self
+											  cancelButtonTitle:@"Take Photo"
+											  otherButtonTitles:@"OK", nil];
+	[alertView setTag:1];
+	[alertView show];
 }
 
 - (void)_goTakePhoto:(id)sender {
@@ -632,10 +638,6 @@
 	
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
 	
-//	UIImageView *previewImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//	previewImageView.image = image;
-//	[_cameraOverlayView addSubview:previewImageView];
-	
 	CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
 	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 	NSArray *features = [detctor featuresInImage:ciImage];
@@ -662,15 +664,14 @@
 		_selfieAttempts++;
 		
 		if (_selfieAttempts < 2) {
-			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-										message:@"Please retake your photo"
-									   delegate:self
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+																message:@"Please retake your photo"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:0];
+			[alertView show];
 		
-//			[previewImageView removeFromSuperview];
-//			previewImageView = nil;
-			
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
 										message:@"You may get flagged by the community."
@@ -747,8 +748,8 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
 	if (textField.tag == 0) {
-		if ([textField.text isEqualToString:@""])
-			textField.text = @"@";
+//		if ([textField.text isEqualToString:@""])
+//			textField.text = @"@";
 		
 		_usernameLabel.hidden = (textField.tag == 0);
 	}
@@ -780,7 +781,30 @@
 
 #pragma mark - AlertView Deleagtes
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	_cameraOverlayView.alpha = 1.0;
+	if (alertView.tag == 0)
+		_cameraOverlayView.alpha = 1.0;
+	
+	else if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Skip Photo %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			_filename = @"";
+			[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
+			
+			_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+			
+			[_usernameTextField becomeFirstResponder];
+			[_usernameButton setSelected:YES];
+			
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:0.5];
+			[UIView setAnimationDelay:0.33];
+			_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+			[UIView commitAnimations];
+		}
+	}
 }
 
 #pragma mark - AWS Delegates

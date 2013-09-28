@@ -40,6 +40,17 @@
 		_irisView.alpha = 0.0;
 		[self addSubview:_irisView];
 		
+		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+		headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
+		[self addSubview:headerBGImageView];
+		
+		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+		[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:cancelButton];
+		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];

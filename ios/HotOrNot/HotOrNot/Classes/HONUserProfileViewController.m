@@ -538,7 +538,7 @@
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
-	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
+	verifiedImageView.hidden = (_userVO.abuseCount > -10);
 	[_headerView addButton:verifiedImageView];
 	
 	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 224.0)];

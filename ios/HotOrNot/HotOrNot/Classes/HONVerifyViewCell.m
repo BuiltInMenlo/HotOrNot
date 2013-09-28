@@ -86,7 +86,8 @@
 	NSMutableString *avatarURL = [challengeVO.creatorVO.imagePrefix mutableCopy];
 	[avatarURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-//	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
+//	NSLog(@"FROM DB:[%@]", challengeVO.creatorVO.imagePrefix);
+	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -136,12 +137,19 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
-	UIButton *actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	actionButton.frame = CGRectMake(246.0, 108.0, 64.0, 64.0);
-	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_nonActive"] forState:UIControlStateNormal];
-	[actionButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_Active"] forState:UIControlStateHighlighted];
-	[actionButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:actionButton];
+	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	approveButton.frame = CGRectMake(255.0, 142.0, 49.0, 49.0);
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
+	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:approveButton];
+	
+	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	dispproveButton.frame = CGRectMake(255.0, 200.0, 49.0, 49.0);
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:dispproveButton];
 }
 
 - (void)showTapOverlay {
@@ -159,8 +167,12 @@
 
 
 #pragma mark - Navigation
-- (void)_goVerify {
-	[self.delegate verifyViewCellTakeAction:self forChallenge:_challengeVO];
+- (void)_goApprove {
+	[self.delegate verifyViewCellApprove:self forChallenge:_challengeVO];
+}
+
+- (void)_goDisprove {
+	[self.delegate verifyViewCellDisprove:self forChallenge:_challengeVO];
 }
 
 - (void)_goUserProfile {

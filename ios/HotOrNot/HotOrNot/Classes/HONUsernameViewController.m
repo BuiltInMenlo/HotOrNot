@@ -209,8 +209,8 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
 	if (textField.tag == 0) {
-		if ([textField.text isEqualToString:@""])
-			textField.text = @"@";
+//		if ([textField.text isEqualToString:@""])
+//			textField.text = @"@";
 	}
 	
 	return (YES);
@@ -222,7 +222,8 @@
 	if ([textField.text length] == 0)
 		textField.text = _username;
 	
-	_username = [textField.text substringFromIndex:1];
+	if ([[_username substringToIndex:1] isEqualToString:@"@"])
+		_username = [_username substringFromIndex:1];
 }
 
 @end

@@ -322,8 +322,8 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
+//			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -664,7 +664,7 @@
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 7.0, 7.0);
-	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
+	verifiedImageView.hidden = (_userVO.abuseCount > -10);
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
