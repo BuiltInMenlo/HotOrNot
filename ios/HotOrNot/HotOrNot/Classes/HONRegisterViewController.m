@@ -336,7 +336,7 @@
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	_submitButton.hidden = YES;
+//	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -377,14 +377,14 @@
 			imagePickerController.delegate = self;
 		
 			imagePickerController.showsCameraControls = NO;
-			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
+//			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
 			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 			
 			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
 			_cameraOverlayView.alpha = 0.0;
 			
 			_splashTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_splashTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+			_splashTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
 			[_cameraOverlayView addSubview:_splashTintView];
 			
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -401,8 +401,12 @@
 			
 			imagePickerController.cameraOverlayView = _cameraOverlayView;
 			
-			[UIView animateWithDuration:0.33 animations:^(void) {
+			[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 				_cameraOverlayView.alpha = 1.0;
+			} completion:^(BOOL finished) {
+				[UIView animateWithDuration:0.33 animations:^(void) {
+					_splashTintView.alpha = 0.5;
+				}];
 			}];
 		
 			self.previewPicker = imagePickerController;
@@ -578,7 +582,53 @@
 	}];
 }
 
+- (BOOL)_isValidEmail:(NSString *)checkString {
+	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
+	
+	NSString *stricterFilterString = @"^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z‌​]{2,4})$";
+	NSString *laxString = @".+@([A-Za-z0-9]+\\.)+[A-Za-z]{2}[A-Za-z]*";
+	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", (stricterFilter) ? stricterFilterString : laxString];
+	
+	return ([emailTest evaluateWithObject:checkString]);
+}
+
 - (void)_goSubmit {
+	BOOL isUsernameValid = ([_usernameTextField.text length] > 0);
+	BOOL isBirthdayTooOld = ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20);
+	BOOL isEmailValid = [self _isValidEmail:_emailTextField.text];
+	
+	
+	if (!isUsernameValid) {
+		[[[UIAlertView alloc] initWithTitle:@"No Username!"
+									message:@"You need to enter a username to start snapping"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		[_usernameTextField becomeFirstResponder];
+	}
+	
+	if (isBirthdayTooOld) {
+		[[[UIAlertView alloc] initWithTitle:@""
+									message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
+	
+	if (!isEmailValid) {
+		[[[UIAlertView alloc] initWithTitle:@"No email!"
+									message:@"You need to enter a valid email address to use Volley"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		[_emailTextField becomeFirstResponder];
+	}
+	
+	
+	if (isUsernameValid && isEmailValid)
+		[self _finalizeUser];
+	
+	/*
 	if ([_usernameTextField.text isEqualToString:@""] || [_usernameTextField.text isEqualToString:@"@"]) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to start snapping"
@@ -609,7 +659,7 @@
 			} else
 				[self _finalizeUser];
 		}
-	}
+	}*/
 }
 
 #pragma mark - UI Presentation
@@ -737,7 +787,7 @@
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
 		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 	} completion:^(BOOL finished) {
-		_submitButton.hidden = YES;
+//		_submitButton.hidden = YES;
 	}];
 }
 
@@ -764,7 +814,7 @@
 	
 	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+		//_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
 	} completion:^(BOOL finished) {
 	}];

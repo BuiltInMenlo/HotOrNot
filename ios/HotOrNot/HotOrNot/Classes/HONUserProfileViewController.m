@@ -103,7 +103,9 @@
 			
 			if (isRefresh) {
 				[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-				_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+				
+				int subscribeTotal = [_userVO.friends count] + [[HONAppDelegate subscribeeList] count];
+				_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:subscribeTotal]], (subscribeTotal == 1) ? @"" : @"s"];
 				_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 				_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 			
@@ -305,6 +307,8 @@
 		[alertView setTag:5];
 		[alertView show];
 	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

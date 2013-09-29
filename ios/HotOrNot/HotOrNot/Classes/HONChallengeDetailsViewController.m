@@ -22,7 +22,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONImagingDepictor.h"
 
-@interface HONChallengeDetailsViewController () <UIScrollViewDelegate, UIAlertViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
+@interface HONChallengeDetailsViewController () <HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIView *bgHolderView;
@@ -514,17 +514,28 @@
 	[flagButton setTitleColor:[UIColor colorWithRed:0.325 green:0.169 blue:0.174 alpha:1.0] forState:UIControlStateHighlighted];
 	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
+	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIToolbar *footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
 	[footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
 	[footerToolbar setItems:[NSArray arrayWithObjects:
 							 [[UIBarButtonItem alloc] initWithCustomView:joinFooterButton],
 							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-//							 [[UIBarButtonItem alloc] initWithCustomView:flagButton],
+							 [[UIBarButtonItem alloc] initWithCustomView:flagButton],
 							 nil]];
 	[self.view addSubview:footerToolbar];
 }
 
+- (int)_calcScore {
+	int score = _challengeVO.creatorVO.score;
+	for (HONOpponentVO *vo in _challengeVO.challengers)
+		score += vo.score;
+	
+	return (score);
+}
+
+
+#pragma mark - Navigation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
@@ -533,7 +544,7 @@
 		_opponentVO = nil;
 		if (CGRectContainsPoint(_heroImageHolderView.frame, touchPoint))
 			_opponentVO = _heroOpponentVO;
-			
+		
 		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
 			int col = touchPoint.x / kSnapMediumDim;
 			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / kSnapMediumDim;
@@ -574,9 +585,6 @@
 	}
 }
 
-
-
-#pragma mark - Navigation
 - (void)_goRefresh {
 	_isRefreshing = YES;
 	
@@ -676,6 +684,21 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goFlagChallenge {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Abusive content", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
+}
+
 - (void)_goUpvoteAnimationCreator {
 	_challengeVO.creatorVO.score++;
 	
@@ -757,21 +780,6 @@
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_opponentVO = opponentVO;
 	
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged for review"
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes, flag user", nil];
-	
-	[alertView setTag:0];
-	[alertView show];
-	
 	if (_snapPreviewViewController != nil) {
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
@@ -803,27 +811,17 @@
 }
 
 
-#pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Flag %@", (buttonIndex == 0) ? @"Abusive" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
-		if (buttonIndex == 1)
-			[self _flagUser:_opponentVO.userID];
+		if (buttonIndex == 0) {
+//			[self _flagChallenge];
+		}
 	}
 }
-
-
-- (int)_calcScore {
-	int score = _challengeVO.creatorVO.score;
-	for (HONOpponentVO *vo in _challengeVO.challengers)
-		score += vo.score;
-	
-	return (score);
-}
-
 @end

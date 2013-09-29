@@ -34,7 +34,7 @@
 @property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) NSArray *s3Uploads;
 @property (nonatomic, strong) UIImage *rawImage;
-@property (nonatomic, strong) UIImage *squaredImage;
+@property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -155,7 +155,7 @@
 	@try {
 				
 		// preview - full size
-		UIImage *oImage = (_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
+		UIImage *oImage = _processedImage;//(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:oImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 //		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
 //		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
@@ -385,7 +385,7 @@
     
     if (sourceType == UIImagePickerControllerSourceTypeCamera) {
         imagePickerController.showsCameraControls = NO;
-		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
+//		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		
 		_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -629,29 +629,20 @@
 	
 	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(_rawImage.size));
 	
-	UIImage *workingImage = _rawImage;
-	
 	// image is wider than tall (800x600)
 	if (_rawImage.size.width > _rawImage.size.height) {
 		_isMainCamera = (_rawImage.size.height > 1000);
-		if (_isMainCamera)
-			workingImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
+//		if (_isMainCamera)
+			_processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1707.0, 1280.0)] toRect:CGRectMake(374.0, 0.0, 960.0, 1280.0)];//_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
 		
-		float offset = (workingImage.size.width - workingImage.size.height) * 0.5;
-		_squaredImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(offset, 0.0, workingImage.size.height, workingImage.size.height)];
-		
-		// image is taller than wide (600x800)
+	// image is taller than wide (600x800)
 	} else if (_rawImage.size.width < _rawImage.size.height) {
 		_isMainCamera = (_rawImage.size.width > 1000);
-		if (_isMainCamera)
-			workingImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
-		
-		float offset = (workingImage.size.height - workingImage.size.width) * 0.5;
-		_squaredImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(0.0, offset, workingImage.size.width, workingImage.size.width)];
-		
-		// image is square
-	} else
-		_squaredImage = workingImage;
+//		if (_isMainCamera)
+			_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
+	}
+	
+	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
 //	CIImage *ciImage = [CIImage imageWithCGImage:workingImage.CGImage];
 //	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
@@ -664,11 +655,8 @@
 		for (HONUserVO *vo in _subscribers)
 			[_usernames addObject:vo.username];
 		
-		if (_isMainCamera)
-			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
-		else
-			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
-		
+	
+		_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
 		_previewView.delegate = self;
 		_previewView.isFirstCamera = _isFirstCamera;
 		[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
@@ -711,11 +699,7 @@
 //			for (HONUserVO *vo in _subscribers)
 //				[_usernames addObject:vo.username];
 //			
-//			if (_isMainCamera)
-//				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
-//			else
-//				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
-//			
+//			_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
 //			_previewView.delegate = self;
 //			_previewView.isFirstCamera = _isFirstCamera;
 //			[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];

@@ -38,6 +38,8 @@
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 
+#import "HONMailActivity.h"
+
 
 #if __DEV_BUILD___ == 1
 NSString * const kConfigURL = @"http://stage.letsvolley.com/hotornot";//54.221.205.30";
@@ -802,9 +804,22 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)_showShareShelf:(NSNotification *)notification {
 //	UIImage *image = (UIImage *)[notification object];
 	
+	HONMailActivity *mailActivity = [[HONMailActivity alloc] init];
+	
 	__weak typeof(self) weakSelf = self;
-	_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:nil];
-	_activityViewController.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypePrint];
+	//_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:nil];
+	_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:@[mailActivity]];
+	//_activityViewController.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypePrint];
+	_activityViewController.excludedActivityTypes = [[NSArray alloc] initWithObjects:
+                                                     UIActivityTypeCopyToPasteboard,
+                                                     UIActivityTypePostToWeibo,
+                                                     UIActivityTypePostToFacebook,
+                                                     UIActivityTypeSaveToCameraRoll,
+                                                     UIActivityTypeCopyToPasteboard,
+                                                     UIActivityTypeMail,
+                                                     UIActivityTypeMessage,
+                                                     UIActivityTypeAssignToContact,
+                                                     nil];
 	_activityViewController.view.backgroundColor = [UIColor whiteColor];
 	[_activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {
 		NSLog(@"completed dialog - activity: %@ - finished flag: %d", activityType, completed);

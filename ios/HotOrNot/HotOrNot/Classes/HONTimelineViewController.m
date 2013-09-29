@@ -520,6 +520,8 @@
 - (void)_goProfile {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
+	[_profileHeaderButtonView toggleSelected:YES];
+	
 	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];

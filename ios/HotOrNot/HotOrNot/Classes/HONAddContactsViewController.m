@@ -615,13 +615,27 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are You Sure?"
-														message:@"Do you wish to select and invite all of your contacts?"
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:1];
-	[alertView show];
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are You Sure?"
+//														message:@"Do you wish to select and invite all of your contacts?"
+//													   delegate:self
+//											  cancelButtonTitle:@"No"
+//											  otherButtonTitles:@"Yes", nil];
+//	[alertView setTag:1];
+//	[alertView show];
+	
+	if ([_selectedInAppContacts count] > 0)
+		[self _sendFriendRequests];
+	
+	if ([_selectedNonAppContacts count] > 0)
+		[self _sendInvites];
+	
+	if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+			if (_isFirstRun)
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR" object:nil];
+		}];
+	}
 }
 
 - (void)_goSelectAllToggle {
