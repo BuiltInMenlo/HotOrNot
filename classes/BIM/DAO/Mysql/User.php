@@ -496,6 +496,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 	    $this->prepareAndExecute( $sql, $params );
 	}
 	
+	public function setDeviceToken( $userId, $deviceToken ){
+	    $sql = 'update `hotornot-dev`.tblUsers set device_token = ? where id = ? ';
+	    $params = array( $deviceToken, $userId );
+	    $this->prepareAndExecute( $sql, $params );
+	}
+	
 	public function getSuspendees( $limit = 50 ){
 	    $limit = mysql_escape_string($limit);
         $sql = "select id from `hotornot-dev`.tblUsers where abuse_ct >= 10  order by abuse_ct desc, id limit $limit";

@@ -139,6 +139,13 @@ class BIM_Model_User{
         $this->purgeFromCache();
     }
     
+    public function setDeviceToken( $deviceToken ){
+        $this->device_token = $deviceToken;
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->setDeviceToken( $this->id, $deviceToken );
+        $this->purgeFromCache();
+    }
+    
     public static function isVerified( $userId ){
         $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
         $res = $dao->getPhoneList( (object) array('id' => $userId ) );
