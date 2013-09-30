@@ -14,7 +14,7 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 1
+#define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 
 
@@ -96,6 +96,7 @@ extern NSString * const kTwilioSMS;
 + (int)pokePointMultiplier;
 
 + (int)profileFriendsThreshold;
++ (int)profileSubscribeThreshold;
 
 + (NSString *)bannerForSection:(int)section;
 

@@ -377,7 +377,18 @@
 }
 
 - (void)_goJoinChallenge {
+	
+	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	[self.contentView addSubview:tappedOverlayView];
+	
 	[self.delegate timelineItemViewCell:self joinChallenge:_challengeVO];
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		tappedOverlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[tappedOverlayView removeFromSuperview];
+	}];
 }
 
 - (void)_goComments {

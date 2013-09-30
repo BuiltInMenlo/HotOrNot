@@ -119,7 +119,11 @@
 		[s3 putObject:por2];
 		
 	} @catch (AmazonClientException *exception) {
-		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		[[[UIAlertView alloc] initWithTitle:@"Upload Error"
+									message:exception.message
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -131,14 +135,15 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+		
+		_filename = @"";
 	}
 }
 
 - (void)_finalizeUser {
-	if ([[_username substringToIndex:1] isEqualToString:@"@"])
-		_username = [_username substringFromIndex:1];
+//	if ([[_username substringToIndex:1] isEqualToString:@"@"])
+//		_username = [_username substringFromIndex:1];
 
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -151,7 +156,6 @@
 	NSLog(@"PARAMS:[%@]", params);
 	NSMutableString *avatarURL = [[params objectForKey:@"imgURL"] mutableCopy];
 	[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-//	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
@@ -195,8 +199,8 @@
 					NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 					[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 				}];
 				
@@ -303,7 +307,7 @@
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_emailTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
-	_emailTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_emailTextField.keyboardType = UIKeyboardTypeEmailAddress;
 	_emailTextField.placeholder = @"Enter email";
 	_emailTextField.text = @"";
 	[_emailTextField setTag:1];
@@ -377,7 +381,7 @@
 			imagePickerController.delegate = self;
 		
 			imagePickerController.showsCameraControls = NO;
-//			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
+			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.0f);
 			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 			
 			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
@@ -404,9 +408,9 @@
 			[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 				_cameraOverlayView.alpha = 1.0;
 			} completion:^(BOOL finished) {
-				[UIView animateWithDuration:0.33 animations:^(void) {
+				[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 					_splashTintView.alpha = 0.5;
-				}];
+				} completion:nil];
 			}];
 		
 			self.previewPicker = imagePickerController;
@@ -538,6 +542,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
+	_filename = @"";
 	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
@@ -594,8 +599,8 @@
 
 - (void)_goSubmit {
 	BOOL isUsernameValid = ([_usernameTextField.text length] > 0);
-	BOOL isBirthdayTooOld = ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20);
 	BOOL isEmailValid = [self _isValidEmail:_emailTextField.text];
+	BOOL isBirthdayTooOld = ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20);
 	
 	
 	if (!isUsernameValid) {
@@ -750,14 +755,14 @@
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	[self dismissViewControllerAnimated:YES completion:^(void) {
-		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
-		
-		[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+//		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+//		
+//		[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//		
+//		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];

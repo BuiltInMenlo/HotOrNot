@@ -22,8 +22,11 @@
 #import "KikAPI.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
+#import "UAConfig.h"
 #import "UAirship.h"
 #import "UAPush.h"
+#import "UAAnalytics.h"
+
 
 #import "HONAppDelegate.h"
 #import "HONTabBarController.h"
@@ -125,6 +128,7 @@ NSString * const kTwilioSMS = @"6475577873";
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
 @property (nonatomic, strong) UIActivityViewController *activityViewController;
+@property (nonatomic, strong) NSTimer *userTimer;
 @property (nonatomic) int challengeID;
 @end
 
@@ -229,6 +233,10 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (int)profileFriendsThreshold {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_invite"] intValue]);
+}
+
++ (int)profileSubscribeThreshold {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_subscribe"] intValue]);
 }
 
 + (NSString *)bannerForSection:(int)section {
@@ -839,13 +847,11 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_showOKAlert:(NSString *)title withMessage:(NSString *)message {
-	UIAlertView *alertView = [[UIAlertView alloc]
-							  initWithTitle:title
-							  message:message
-							  delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil];
-	[alertView show];
+	[[[UIAlertView alloc] initWithTitle:title
+								message:message
+							   delegate:nil
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
 }
 
 - (void)_showUI {
@@ -913,16 +919,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-	TSConfig *config = [TSConfig configWithDefaults];
-	config.collectWifiMac = NO;
-	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+//	TSConfig *config = [TSConfig configWithDefaults];
+//	config.collectWifiMac = NO;
+//	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
-	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+//	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
@@ -969,19 +975,15 @@ NSString * const kTwilioSMS = @"6475577873";
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
 			[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
 		
-		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
-		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
-		[UAirship takeOff:takeOffOptions];
-		[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 		
 		if (![HONAppDelegate canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
 		
-		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
-								   withHomepageURI:@"http://www.builtinmenlo.com"
-									  addAppButton:YES];
+//		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
+//								   withHomepageURI:@"http://www.builtinmenlo.com"
+//									  addAppButton:YES];
 		
 		
 		int boot_total = 0;
@@ -1014,7 +1016,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		
 		self.tabBarController = [[HONTabBarController alloc] init];
-		//self.tabBarController.view.frame = CGRectOffset(self.tabBarController.view.frame, 0.0, 20.0);
 		self.tabBarController.delegate = self;
 		
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
@@ -1026,6 +1027,31 @@ NSString * const kTwilioSMS = @"6475577873";
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
+		
+		// If you just want everyone to immediately be prompted for push, you can
+		// leave this line out.
+		[UAPush setDefaultPushEnabledValue:YES];
+		[[UAPush shared] setPushEnabled:YES];
+		
+		// Set log level for debugging config loading (optional)
+		// It will be set to the value in the loaded config upon takeOff
+		[UAirship setLogLevel:UALogLevelNone];
+		
+		// Call takeOff (which creates the UAirship singleton)
+		[UAirship takeOff:[UAConfig defaultConfig]];
+		
+		// Print out the application configuration for debugging (optional)
+//		UA_LDEBUG(@"Config:\n%@", [config description]);
+		
+		// Set the icon badge to zero on startup (optional)
+		[[UAPush shared] resetBadge];
+		
+		// Set the notification types required for the app (optional). With the default value of push set to no,
+		// UAPush will record the desired remote notification types, but not register for
+		// push notifications as mentioned above. When push is enabled at a later time, the registration
+		// will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
+		// set it if you want to add or remove types.
+		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -1056,6 +1082,9 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSettings publishInstall:kFacebookAppID];
 	
+	// Set the icon badge to zero on resume (optional)
+    [[UAPush shared] resetBadge];
+	
 	//	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
@@ -1077,7 +1106,7 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-	[UAirship land];
+//	[UAirship land];
 	[FBSession.activeSession close];
 }
 
@@ -1085,6 +1114,7 @@ NSString * const kTwilioSMS = @"6475577873";
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
 	return ([FBAppCall handleOpenURL:url sourceApplication:sourceApplication]);
 }
+
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	[[UAPush shared] registerDeviceToken:deviceToken];
@@ -1108,7 +1138,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[HONAppDelegate writeDeviceToken:deviceID];
 	[self _retrieveConfigJSON];
 }
-
+ 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	UALOG(@"Received remote notification: %@", userInfo);
 	
@@ -1169,11 +1199,17 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 			
 		} else {
-			if ([[userInfo objectForKey:@"type"] intValue] == 1)
+			int pushType = [[userInfo objectForKey:@"type"] intValue];
+			
+			// somone joined your volley
+			
+			
+			
+			if (pushType == 1)
 				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
 			
+			// user verified
 			else if ([[userInfo objectForKey:@"type"] intValue] == 2) {
-				NSLog(@"---SHARE---");
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																	message:@"Awesome! You have been Volley Verified! Would you like to share Volley with your friends?"//[userInfo objectForKey:@"aps"]
 																   delegate:self
@@ -1181,10 +1217,29 @@ NSString * const kTwilioSMS = @"6475577873";
 														  otherButtonTitles:@"Yes", nil];
 				[alertView setTag:1];
 				[alertView show];
+			
+			} else if (pushType == 2) {
+				
 			}
 		}
 	}
 }
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+    UA_LINFO(@"Received remote notification (in appDelegate): %@", userInfo);
+	
+    // Optionally provide a delegate that will be used to handle notifications received while the app is running
+    // [UAPush shared].pushNotificationDelegate = your custom push delegate class conforming to the UAPushNotificationDelegate protocol
+	
+    // Reset the badge after a push is received in a active or inactive state
+    if (application.applicationState != UIApplicationStateBackground) {
+        [[UAPush shared] resetBadge];
+    }
+	
+    completionHandler(UIBackgroundFetchResultNoData);
+}
+
+
 
 
 #pragma mark - Startup Operations
@@ -1200,8 +1255,11 @@ NSString * const kTwilioSMS = @"6475577873";
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 		
 		else {
+//			[self _showOKAlert:@"GOT CONFIG" withMessage:@""];
+			
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
 			
 			NSMutableArray *sectionBanners = [NSMutableArray array];
 			for (NSString *sectionBanner in [result objectForKey:@"section_banners"])
@@ -1232,6 +1290,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_invite"] intValue]] forKey:@"profile_invite"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
@@ -1262,6 +1321,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 			
+//			[self _showOKAlert:@"PARSED CONFIG" withMessage:@""];
 			
 			if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
 				[self _showOKAlert:@"Update Required"
@@ -1292,9 +1352,10 @@ NSString * const kTwilioSMS = @"6475577873";
 						break;
 				}
 				
-				NSLog(@"REFRESHING:[%@]", notificationName);
 				[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 			}
+			
+//			_userTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(_retryUser) userInfo:nil repeats:YES];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1359,7 +1420,6 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 			
 			[self _retreiveSubscribees];
-//			[self _initTabs];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1375,6 +1435,19 @@ NSString * const kTwilioSMS = @"6475577873";
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+}
+
+- (void)_retryUser {
+	NSLog(@"---RETRY USER [%d]---", (int)[HONAppDelegate infoForUser]);
+//	[self _showOKAlert:@"RETRYING USER" withMessage:(![HONAppDelegate infoForUser]) ? @"NEEDED" : @"NOT NEEDED"];
+	
+	if (![HONAppDelegate infoForUser]) {
+		[self _registerUser];
+	
+	} else {
+		[_userTimer invalidate];
+		_userTimer = nil;
+	}
 }
 
 - (void)_retreiveSubscribees {
@@ -1505,12 +1578,6 @@ NSString * const kTwilioSMS = @"6475577873";
 				
 			case 2:
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
-				break;
-		}
-	
-	} else if (alertView.tag == 3) {
-		switch (buttonIndex) {
-			case 0:
 				break;
 		}
 	

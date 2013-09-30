@@ -298,15 +298,15 @@
 	[super viewDidAppear:animated];
 	[_bgHolderView addSubview:_bgImageView];
 	
-	if ([[HONAppDelegate subscribeeList] count] < [HONAppDelegate profileFriendsThreshold]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Find more people to subscribe to?"
-														   delegate:nil
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Find people", nil];
-		[alertView setTag:5];
-		[alertView show];
-	}
+//	if ([[HONAppDelegate subscribeeList] count] < [HONAppDelegate profileFriendsThreshold]) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//															message:@"Find more people to subscribe to?"
+//														   delegate:nil
+//												  cancelButtonTitle:@"No"
+//												  otherButtonTitles:@"Find people", nil];
+//		[alertView setTag:5];
+//		[alertView show];
+//	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 }
@@ -346,9 +346,9 @@
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:profile_total] forKey:@"profile_total"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 		}
-		profile_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
 		
-		if (!isFriend  && profile_total < 3) {
+		profile_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
+		if (!isFriend  && profile_total < [HONAppDelegate profileSubscribeThreshold]) {
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++profile_total] forKey:@"profile_total"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
@@ -542,7 +542,7 @@
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
-	verifiedImageView.hidden = (_userVO.abuseCount > -10);
+	verifiedImageView.hidden = !_userVO.isVerified;
 	[_headerView addButton:verifiedImageView];
 	
 	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 224.0)];

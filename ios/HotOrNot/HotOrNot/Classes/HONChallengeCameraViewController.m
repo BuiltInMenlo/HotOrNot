@@ -41,6 +41,7 @@
 @property (nonatomic, strong) NSDictionary *challengeParams;
 @property (nonatomic, strong) UIImageView *submitImageView;
 @property (nonatomic) BOOL hasSubmitted;
+@property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL isMainCamera;
 @property (nonatomic) BOOL isFirstCamera;
 @property (nonatomic) int selfieAttempts;
@@ -58,6 +59,7 @@
 		_subscriberIDs = [NSMutableArray array];
 		_subjectName = @"";
 		_selfieAttempts = 0;
+		_isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -73,6 +75,7 @@
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
 		_selfieAttempts = 0;
+		_isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -308,7 +311,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
+//	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)viewDidUnload {
@@ -321,6 +324,11 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+	if (_isFirstAppearance) {
+		_isFirstAppearance = NO;
+		[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

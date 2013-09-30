@@ -584,7 +584,7 @@
 		}
 		profile_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
 		
-		if (!isFriend && _hasVisitedProfile && profile_total < 3) {
+		if (!isFriend  && profile_total < [HONAppDelegate profileSubscribeThreshold]) {
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++profile_total] forKey:@"profile_total"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
@@ -665,7 +665,7 @@
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 7.0, 7.0);
-	verifiedImageView.hidden = (_userVO.abuseCount > -10);
+	verifiedImageView.hidden = !_userVO.isVerified;
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);

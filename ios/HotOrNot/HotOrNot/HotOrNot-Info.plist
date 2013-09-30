@@ -67,7 +67,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>15406</string>
+	<string>15554</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
@@ -81,6 +81,10 @@
 		<string>CartoGothicStd-BoldItalic.otf</string>
 		<string>CartoGothicStd-Book.otf</string>
 		<string>CartoGothicStd-Italic.otf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchImages</key>
 	<array>
