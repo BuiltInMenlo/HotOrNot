@@ -100,8 +100,8 @@ Small_160x160
     }
     
     public static function convert( $image, $resizeWidth, $resizeHeight, $cropWidth, $cropHeight ){
-        self::resize($image, $resizeWidth, $resizeHeight);
-        self::cropX($image, $cropWidth, $cropHeight);
+        BIM_Utils::resize($image, $resizeWidth, $resizeHeight);
+        BIM_Utils::cropX($image, $cropWidth, $cropHeight);
         $largeImage = clone $image;
         $convertedImages = BIM_Utils::finalizeImages($image);
         $convertedImages["Large_640x1136"] = $largeImage;

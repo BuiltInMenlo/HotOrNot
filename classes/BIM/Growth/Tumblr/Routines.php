@@ -671,6 +671,5 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $j->createJbb($job);
             */
         }
-        
     }
 }

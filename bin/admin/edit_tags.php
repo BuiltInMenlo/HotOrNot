@@ -89,6 +89,11 @@ if( $method == 'post' ) {
         BIM_Config::saveTags($data);
     }
     
+    if( $_POST['campaign']['create'] ){
+        $_POST['campaign']['network'] = $_POST['network'];        
+        BIM_Jobs_Growth::queueCreateCampaign( $_POST['campaign'] );
+    }
+    
     header('Location: edit_tags.php');
     exit();
 }
@@ -114,6 +119,20 @@ Edit Quotes and Tags
 </head>
 <body>
 <form method="post">
+<table border=1 cellpadding=4>
+<tr>
+<td>
+	Create a campaign <input type="checkbox" value="1" name="campaign[create]">
+	<br>
+	Campaign name: <input type="text" name="campaign[name]" size="5">
+	<br>
+	Insert a Volley hashtag <input type="text" name="campaign[link_freq]" size="5"> % of the time
+	<br>
+    Collect <input type="text" name="campaign[total_media]" size="5"> items for this campaign
+</td>
+</tr>
+</table>
+<br>
 Apply the changes to this network:
 <select name="network" id="network" onchange="populateForm()">
 <?php foreach( $networks as $network ){ ?>
@@ -138,7 +157,7 @@ Tag Group 2
 <textarea rows="25" cols="50" name="tags_ad" id="tags_ad"></textarea>
 </td>
 <td>
-Tag Group 3
+Volley Hashtags (these will get appended into comments)
 <br>
 <textarea rows="25" cols="50" name="tags_other" id="tags_other"></textarea>
 </td>

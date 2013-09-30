@@ -2,6 +2,20 @@
 
 class BIM_Jobs_Growth extends BIM_Jobs{
     
+    public static function queueCreateCampaign( $params ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Growth',
+        	'method' => 'createCampaign',
+        	'data' => $params
+        );
+        
+        return self::queueBackground( $job, 'createcampaign' );
+    }
+	
+    public function createCampaign( $workload ){
+        BIM_Growth::createCampaign($workload->data);
+    }
+    
     /**
      * 
      * @param int|string $userId - volley user id

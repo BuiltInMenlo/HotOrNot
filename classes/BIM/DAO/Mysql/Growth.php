@@ -40,9 +40,26 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 		$this->prepareAndExecute( $sql, $params );
     }
     
-	public function getTags(){
+	public function getTags( $network = '', $type = '' ){
 		$sql = "select * from growth.tags";
-		$stmt = $this->prepareAndExecute($sql);
+		$sqlParams = array();
+		$params = array();
+		if( $network ){
+		    $sqlParams[] = " network = ? ";
+		    $params[] = $network;
+		}
+		
+		if( $type ){
+		    $sqlParams[] = " type = ? ";
+		    $params[] = $type;
+		}
+		$sqlParams = join(' AND ', $sqlParams );
+		
+		if( $sqlParams ){
+		    $sql .= " WHERE $sqlParams";
+		}
+		
+		$stmt = $this->prepareAndExecute($sql, $params);
 		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
 		return $data;
 	}

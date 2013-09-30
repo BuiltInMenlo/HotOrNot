@@ -230,4 +230,102 @@ class BIM_Growth{
         }
         return $this->twilioApiClient;
     }
+    
+    /**
+     *
+       \_o_/
+         |
+       _/ \_
+     * getting campaign data means 
+     * getting all of the tags for a network
+     * then we take the total number of images to get and figure out how many per tag
+     * then we proceed to try and get images for those tags
+     * 
+     * we search tumblr with the tag
+     * foreach inage we:
+     * 		save the image to disk in a folder named after the job
+     * 		collect all comments for the images in a file named "comments" in the same folder
+     * 		collect the associated comment with the image and save it into a file named quotes
+     *
+     * after we have collected or exhausted all of the images
+     * we zip up the folder and associated images and send an email out to jason
+     * with a link to said zip file
+     */
+    public static function createCampaign( $params ){
+        $totalImages = $params->total_media;
+        $freq = $params->freq;
+        $network = $params->network;
+        $name = $params->name;
+        
+        $imagesRetrieved = 0;
+        
+        // first get the tags for the network
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        $tags = $dao->getTags( $network, 'authentic' );
+        $tags = $tags[0];
+        $tags = json_decode($tags->tags);
+        
+        $contentPerTag = ceil( $totalImages / count( $tags ) );
+        
+        $c = BIM_Config::tumblr();
+        $q = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+        
+        $dir = $name.'-'.uniqid();
+        mkdir( $dir );
+        $tarFiles = array();
+        foreach( $tags as $tag ){
+            $options = array( 'limit' => $contentPerTag );
+            $posts = $q->getTaggedPosts( $tag, $options );
+            foreach( $posts as $post ){
+                $contentRetrieved = 0;
+                if( $post->type == 'photo' && !empty( $post->photos ) ){
+                    foreach( $post->photos as $photo ){
+                        if( $imagesRetrieved >= $totalImages ){
+                            break(3);
+                        }
+                        $image = new Imagick( $photo->original_size->url );
+                        $imageName = explode('/', $photo->original_size->url );
+                        $imageName = array_pop( $imageName );
+                        $filePath = "$dir/$imageName";
+                        $image->writeImage( $filePath );
+                        $tarFiles[] = $filePath;
+                        
+                        $postData = $q->getBlogPosts( 
+                            $post->blog_name, 
+                            array( 
+                            	'id' => $post->id, 
+                            	'reblog_info' => true, 
+                            	'notes_info' => true 
+                            ) 
+                        );
+                        echo ++$imagesRetrieved." images retrieved. \n";
+                    }
+                }
+            }
+        }
+        // create the tar file and zip it uo
+        $tar_object = new Archive_Tar("$dir.tgz", true);
+        $tar_object->setErrorHandling(PEAR_ERROR_PRINT);
+        $tar_object->create($tarFiles);
+        
+        // now we move the tar file to the web dir and send an email out
+        rename("$dir.tgz", "/var/www/discover.getassembly.com/$dir.tgz");
+        
+        $c = BIM_Config::smtp();
+        $e = new BIM_Email_Swift( $c );
+        $emailData = (object) array(
+        	'to_email' => 'shane@builtinmenlo.com',
+        	'from_email' => 'apps@builtinmenlo.com',
+        	'from_name' => 'Scumbag Kim Dot Com',
+        	'subject' => 'Your shady campaign has been created',
+        	'text' => "The campaign $name has been created.  http://dev.letsvolley.com/$dir.tgz"
+        );
+
+        $e->sendEmail( $emailData );
+        
+        foreach( $tarFiles as $file ){
+            unlink( $file );
+        }
+        rmdir( $dir );
+    }
 }
