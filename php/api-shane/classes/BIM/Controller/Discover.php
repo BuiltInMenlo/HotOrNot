@@ -10,12 +10,6 @@ class BIM_Controller_Discover extends BIM_Controller_Base {
         $this->discover->test();
     }
     
-    public function getTopChallengesByLocation(){
-		if (isset($_POST['lat']) && isset($_POST['long'])){
-			return $this->discover->getTopChallengesByLocation($_POST['lat'], $_POST['long']);
-		}
-    }
-    
     public function getTopChallengesByVotes(){
 		$thisFunc = array( __CLASS__, __FUNCTION__ );
         if( $this->isStatic( $thisFunc ) ){

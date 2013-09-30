@@ -53,7 +53,7 @@ class BIM_App_Users extends BIM_App_Base{
 		$query = 'SELECT `id` FROM `tblChallenges` WHERE `creator_id` = '. $row->id .';';
 		$pics = mysql_num_rows(mysql_query($query));
 		
-		$query = 'SELECT `id` FROM `tblChallenges` WHERE `challenger_id` = '. $row->id .' AND `challenger_img` != "";';
+		$query = 'SELECT challenge_id as id FROM `tblChallengeParticipants` WHERE `user_id` = '. $row->id .' AND `img` != "";';
 		$pics += mysql_num_rows(mysql_query($query));
 		
 		
@@ -169,7 +169,30 @@ class BIM_App_Users extends BIM_App_Base{
 			$result = mysql_query($query);
 			
 			// starting users & snaps
-			$snap_arr = array(
+            $snap_arr = array(
+            	array(// @Team Volley #welcomeVolley
+            		'user_id' => "2394", 
+            		'subject_id' => "1367", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000000"),
+            	
+            	array(// @Team Volley #teamVolleyRules
+            		'user_id' => "2394", 
+            		'subject_id' => "1368", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000001"),
+            		
+            	array(// @Team Volley #teamVolley
+            		'user_id' => "2394", 
+            		'subject_id' => "1369", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002"),
+            		
+            	array(// @Team Volley #teamVolleygirls
+            		'user_id' => "2394", 
+            		'subject_id' => "1370", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000003")
+            );
+            $snap_arr = array( $snap_arr[ array_rand( $snap_arr ) ] );
+			/*
+            $snap_arr = array(
 				array(// @jason #bestFriend
 					'user_id' => "2393", 
 					'subject_id' => "9", 
@@ -183,16 +206,29 @@ class BIM_App_Users extends BIM_App_Base{
 					'subject_id' => "28", 
 					'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff_0000000001") 
 			);
+			*/
 			
 			// loop thru user/snap array
-			foreach ($snap_arr as $key => $val) {
+			$dao = new BIM_DAO_Mysql( BIM_Config::db() );
+            foreach ($snap_arr as $key => $val) {
+				$subjectId = $val['subject_id'];
+				$autoUserId = $val['user_id'];
+				$img = $val['img_prefix'];
 				
 				// add initial challenges
-				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "2", "'. $val['subject_id'] .'", "'. $val['user_id'] .'", "'. $val['img_prefix'] .'", "'. $user_id .'", "", "N", "0", NOW(), NOW());';
-				$result = mysql_query($query);
-				$challenge_id = mysql_insert_id();
+				$query = "
+					INSERT INTO `hotornot-dev`.tblChallenges (status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, started, added) 
+					VALUES ( '2', ?, ?, ?, 'N', '0', NOW(), NOW() )
+				";
+				$params = array( $subjectId, $autoUserId, $img );
+				$dao->prepareAndExecute($sql, $params);
+				
+				$challenge_id = $dao->lastInsertId;
+				
+				$sql = "insert into `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id) values (?,?)";
+				$params = array( $challenge_id, $user_id );
+				$dao->prepareAndExecute($sql, $params);
+				
 			}		
 		}
 		
@@ -254,14 +290,27 @@ class BIM_App_Users extends BIM_App_Base{
 			$invite_id = mysql_fetch_object($invite_result)->id;
 			
 			// get any pending challenges for this invited user
-			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 7 AND `challenger_id` = '. $invite_id .';';
+			$query = "
+				SELECT tc.`id` 
+				FROM tblChallenges as tc
+					JOIN tblChallengeParticipants as tcp
+					ON tc.id = tcp.challenge_id
+				WHERE tc.`status_id` = 7 
+					AND tcp.user_id = $invite_id;
+			";
+			
 			$invite_result = mysql_query($query);
 		
 			// loop thru the challenges
 			while ($challenge_row = mysql_fetch_array($invite_result, MYSQL_BOTH)) {
 				
 				// update challenge w/ new user id and status
-				$query = 'UPDATE `tblChallenges` SET `status_id` = 2, `challenger_id` = "'. $user_id .'" WHERE `id` = '. $challenge_row['id'] .';';
+				$id = $challenge_row['id'];
+				
+				$query = "UPDATE tblChallenges SET status_id = 2 WHERE id = $id";
+				$result = mysql_query($query);
+				
+				$query = "UPDATE tblChallengeParticipants SET user_id = $user_id  WHERE challenge_id = $id";
 				$result = mysql_query($query);
 			}
 		}

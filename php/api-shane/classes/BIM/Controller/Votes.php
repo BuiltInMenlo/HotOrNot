@@ -28,8 +28,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     }
     
     public function getVotersForChallenge(){
-		if (isset($_POST['challengeID'])){
-			return $this->votes->getVotersForChallenge($_POST['challengeID']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['challengeID'])){
+			return $this->votes->getVotersForChallenge($input['challengeID']);
 		}
 		return array();
     }
