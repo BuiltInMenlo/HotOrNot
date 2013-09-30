@@ -255,7 +255,6 @@ class BIM_Growth{
         $totalImages = $params->total_media;
         $freq = $params->freq;
         $network = $params->network;
-        $name = $params->name;
         
         $imagesRetrieved = 0;
         
@@ -270,7 +269,7 @@ class BIM_Growth{
         $c = BIM_Config::tumblr();
         $q = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
         
-        $dir = $name.'-'.uniqid();
+        $dir = $network.'-'.uniqid();
         mkdir( $dir );
         $tarFiles = array();
         foreach( $tags as $tag ){
@@ -289,7 +288,7 @@ class BIM_Growth{
                         $filePath = "$dir/$imageName";
                         $image->writeImage( $filePath );
                         $tarFiles[] = $filePath;
-                        
+                        /*
                         $postData = $q->getBlogPosts( 
                             $post->blog_name, 
                             array( 
@@ -298,7 +297,9 @@ class BIM_Growth{
                             	'notes_info' => true 
                             ) 
                         );
+                        */
                         echo ++$imagesRetrieved." images retrieved. \n";
+                        sleep(1);
                     }
                 }
             }
@@ -318,7 +319,7 @@ class BIM_Growth{
         	'from_email' => 'apps@builtinmenlo.com',
         	'from_name' => 'Scumbag Kim Dot Com',
         	'subject' => 'Your shady campaign has been created',
-        	'text' => "The campaign $name has been created.  http://dev.letsvolley.com/$dir.tgz"
+        	'text' => "The campaign $dir has been created.  http://dev.letsvolley.com/$dir.tgz"
         );
 
         $e->sendEmail( $emailData );

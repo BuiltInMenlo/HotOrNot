@@ -124,8 +124,6 @@ Edit Quotes and Tags
 <td>
 	Create a campaign <input type="checkbox" value="1" name="campaign[create]">
 	<br>
-	Campaign name: <input type="text" name="campaign[name]" size="5">
-	<br>
 	Insert a Volley hashtag <input type="text" name="campaign[link_freq]" size="5"> % of the time
 	<br>
     Collect <input type="text" name="campaign[total_media]" size="5"> items for this campaign
