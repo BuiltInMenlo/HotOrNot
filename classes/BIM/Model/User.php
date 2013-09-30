@@ -173,6 +173,7 @@ class BIM_Model_User{
      * 
 update tblUsers set age = -1 where id in (select id from tblUsers where username like "%snap4snap%" union select id from tblUsers where username like "%picchampX%" union select id from tblUsers where username like "%swagluver%" union select id from tblUsers where username like "%coolswagger%" union select id from tblUsers where username like "%yoloswag%" union select id from tblUsers where username like "%tumblrSwag%" union select id from tblUsers where username like "%instachallenger%" union select id from tblUsers where username like "%hotbitchswaglove%" union select id from tblUsers where username like "%lovepeaceswaghot%" union select id from tblUsers where username like "%hotswaglover%" union select id from tblUsers where username like "%snapforsnapper%" union select id from tblUsers where username like "%snaphard%" union select id from tblUsers where username like "%snaphardyo%" union select id from tblUsers where username like "%yosnaper%" union select id from tblUsers where username like "%yoosnapyoo");
 
+
 select added from tblUsers where username like "%snap4snap%"
 union
 select added from tblUsers where username like "%picchampX%"
@@ -202,9 +203,25 @@ union
 select added from tblUsers where username like "%yosnaper%"
 union
 select added from tblUsers where username like "%yoosnapyoo";
+=====
+=====
+delete from tblUsers where username like "%snap4snap%";
+delete from tblUsers where username like "%picchampX%";
+delete from tblUsers where username like "%swagluver%";
+delete from tblUsers where username like "%coolswagger%";
+delete from tblUsers where username like "%yoloswag%";
+delete from tblUsers where username like "%tumblrSwag%";
+delete from tblUsers where username like "%instachallenger%";
+delete from tblUsers where username like "%hotbitchswaglove%";
+delete from tblUsers where username like "%lovepeaceswaghot%";
+delete from tblUsers where username like "%hotswaglover%";
+delete from tblUsers where username like "%snapforsnapper%";
+delete from tblUsers where username like "%snaphard%";
+delete from tblUsers where username like "%snaphardyo%";
+delete from tblUsers where username like "%yosnaper%";
+delete from tblUsers where username like "%yoosnapyoo";
+
      * 
-     * 
-     * Enter description here ...
      * @param unknown_type $token
      * @param unknown_type $adId
      */
