@@ -41,7 +41,7 @@ class BIM_Growth_Persona{
         $username = explode('@',$this->$network->username);
         $username = $username[0];
         $quote = str_replace('[[USERNAME]]', $username, $quote);
-        if( mt_rand(1,100) >= 1 ){
+        if( mt_rand(1,100) >= 101 ){
             $quote .= " ".$this->getTrackingUrl( $network );
         }
         return $quote;
@@ -53,7 +53,7 @@ class BIM_Growth_Persona{
      *  // http://taps.io/mta5mda3 - askfm
      */
     public function getTrackingUrl( $network ){
-        
+        return "";
         $tUrls = array(
             'instagram' => 'http://taps.io/MTA5MDAz',
             'tumblr' => 'http://taps.io/MTA3MTY5',
