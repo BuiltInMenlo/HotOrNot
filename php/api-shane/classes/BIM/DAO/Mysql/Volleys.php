@@ -5,12 +5,13 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 	    $sql = "
 	    	select * 
 	    	from `hotornot-dev`.tblChallenges 
-	    	where started < DATE( FROM_UNIXTIME( ? ) )
+	    	where started > '2013-07-16'
 	    		and expires = -1
 	    		and status_id in (1,2)
+	    		and is_private = 'N'
 	    	order by added desc
 	    ";
-	    $time = time() - (86400 * 14);
+	    $time = time() - (86400 * 2);
 	    $params = array( $time );
 		$stmt = $this->prepareAndExecute( $sql, $params );
 		return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );

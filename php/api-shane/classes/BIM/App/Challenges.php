@@ -17,7 +17,9 @@ Challenges
  */
 
 class BIM_App_Challenges extends BIM_App_Base{
-	
+
+    protected static $excludeFromRevolleys = array();
+    
 	/** 
 	 * Helper function that adds a new subject or returns the ID of the subject if already created
 	 * @param $user_id The user's id that is adding the new subject (integer)
@@ -1033,9 +1035,15 @@ class BIM_App_Challenges extends BIM_App_Base{
 	    $conf = BIM_Config::db();
 	    
 	    $dao = new BIM_DAO_Mysql_User( $conf );
-	    $userId = $dao->getRandomUserId( array($volley->challenger_id, $volley->creator_id ) );
-	    if( $userId ){
-	        $subject = self::getSubject($volley->subject_id);
+	    array_push( self::$excludeFromRevolleys, $volley->challenger_id, $volley->creator_id );
+	    echo "exclude users has this many items: ",count( self::$excludeFromRevolleys ),"\n";
+	    $userId = $dao->getRandomUserId(  self::$excludeFromRevolleys );
+        if( $userId ){
+            array_pop( self::$excludeFromRevolleys );
+            array_pop( self::$excludeFromRevolleys );
+            self::$excludeFromRevolleys[] = $userId;
+            
+            $subject = self::getSubject($volley->subject_id);
 	        $challenger = new BIM_User( $userId );
 	        $creator = new BIM_User( $volley->creator_id );
 	        

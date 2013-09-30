@@ -597,7 +597,11 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $values = explode( ',', $line );
             $username = trim( $values[0] );
             $password = trim( $values[1] );
-            self::loadUser( $username, $password, 'tumblr' );
+            try{
+                self::loadUser( $username, $password, 'tumblr' );
+            } catch( Exception $e ){
+                echo "caught exception for $username, $password\n";
+            }
             $sleep = 10;
             echo "loaded $username sleeping for $sleep seconds\n";
             sleep($sleep);
@@ -637,7 +641,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             
         	$job = (object) array(
         	    'class' =>  'BIM_Jobs_Growth',
-        	    'name' => 'growth',
+        	    'name' => 'tumblr',
         	    'method' => 'doRoutines',
         	    'disabled' => 1,
         	    'schedule' => $schedule,
