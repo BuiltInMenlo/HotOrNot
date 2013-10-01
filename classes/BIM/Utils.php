@@ -108,7 +108,7 @@ class BIM_Utils{
     
 	// here we check for a valid session key
 	// in a cookie named as named in the onfig
-	public static function getSessionUser(){
+	public static function getSessionUser( $checkDeviceToken = false ){
 	    if( ! self::$user ){
 	        $sessionConf = BIM_Config::session();
 	        if( $sessionConf->use ){
@@ -121,20 +121,11 @@ class BIM_Utils{
                 }
                 self::$user = $user;
 	        }
-	        /*
-    	    $conf = BIM_Config::session();
-    	    if( !empty( $_COOKIE[ $conf->cookie->name ] ) ){
-    	        // decrypt the userId
-    	        $userId = BIM_Utils::getIdForSMSCode(  $_COOKIE[ $conf->cookie->name ]  );
-    	        if( $userId ){
-    	            $user = BIM_Model_User::get( $userId );
-    	            if( !$user->isExtant() ){
-    	                $user = null;
-    	            }
-                    self::$user = $user;    	            
-    	        }
-    	    }
-    	    */
+	    }
+	    if( $checkDeviceToken && self::$user ){
+	        if( self::$user->device_token != self::$deviceToken ){
+	            self::$user->setDeviceToken( self::$deviceToken );
+	        }
 	    }
 	    return self::$user;
 	}
