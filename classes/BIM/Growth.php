@@ -271,6 +271,8 @@ class BIM_Growth{
         
         $dir = $network.'-'.uniqid();
         mkdir( $dir );
+        $commentsFile = "$dir/comments.csv";
+        file_put_contents($commentsFile, "caption,post url,image name\n", FILE_APPEND);
         $tarFiles = array();
         foreach( $tags as $tag ){
             $options = array( 'limit' => $contentPerTag );
@@ -287,6 +289,9 @@ class BIM_Growth{
                         $imageName = array_pop( $imageName );
                         $filePath = "$dir/$imageName";
                         $image->writeImage( $filePath );
+                        $caption = strip_tags($post->caption);
+                        $postUrl = strip_tags($post->post_url);
+                        file_put_contents($commentsFile, "$caption,$postUrl,$imageName\n", FILE_APPEND);
                         $tarFiles[] = $filePath;
                         /*
                         $postData = $q->getBlogPosts( 
@@ -307,10 +312,11 @@ class BIM_Growth{
         // create the tar file and zip it uo
         $tar_object = new Archive_Tar("$dir.tgz", true);
         $tar_object->setErrorHandling(PEAR_ERROR_PRINT);
+        $tarFiles[] = $commentsFile;
         $tar_object->create($tarFiles);
         
         // now we move the tar file to the web dir and send an email out
-        rename("$dir.tgz", "/var/www/discover.getassembly.com/$dir.tgz");
+        rename("$dir.tgz", "/var/www/html/$dir.tgz");
         
         $c = BIM_Config::smtp();
         $e = new BIM_Email_Swift( $c );
@@ -319,7 +325,7 @@ class BIM_Growth{
         	'from_email' => 'apps@builtinmenlo.com',
         	'from_name' => 'Scumbag Kim Dot Com',
         	'subject' => 'Your shady campaign has been created',
-        	'text' => "The campaign $dir has been created.  http://dev.letsvolley.com/$dir.tgz"
+        	'text' => "The campaign $dir has been created.  http://64.27.28.124/$dir.tgz"
         );
 
         $e->sendEmail( $emailData );
