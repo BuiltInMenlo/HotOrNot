@@ -114,7 +114,7 @@ class BIM_Controller{
             $newUser = (strtolower( $request->controllerClass ) == 'bim_controller_users') 
                             && ( strtolower( $request->method ) == 'submitnewuser' );
 
-            if( $newUser || BIM_Utils::getSessionUser() ){
+            if( $newUser || BIM_Utils::getSessionUser(true) ){
                 $OK = true;
             }
 	    }
