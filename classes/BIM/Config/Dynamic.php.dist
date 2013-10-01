@@ -21,7 +21,8 @@ class BIM_Config_Dynamic{
             'base_path' => '/hotornot/api-shane',
             'sticky_volleys' => array(),
             // 'auto_subscribes' => array(13169,2394)
-            'auto_subscribes' => array()
+            'auto_subscribes' => array(),
+            'super_users' => array()
         );
     }
     

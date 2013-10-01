@@ -204,9 +204,13 @@ class BIM_App_Users extends BIM_App_Base{
     	$user = BIM_Model_User::get( $userId );
 	    if( $target->isExtant() && $userId != $targetId ){
     	    $verifyVolley = BIM_Model_Volley::getVerifyVolley( $targetId );
+    	    $approves = ($approves ? -1 : 1);
+    	    $c = BIM_Config::app();
+    	    if( !empty($c->super_users) && in_array($user->adid, $c->super_users ) ){
+    	        $approves = ($approves * 10000);
+    	    }
     	    // make sure the flagged user cannot 
     	    // upvote or downvote themselves
-    	    $approves = ($approves ? -1 : 1);
     	    $purge = false;
     	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
     	        $purge = true;
