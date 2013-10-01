@@ -36,6 +36,7 @@
 @property (nonatomic, strong) UIView *avatarHolderView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *subscribersLabel;
+@property (nonatomic, strong) UILabel *subscribeesLabel;
 @property (nonatomic, strong) UILabel *volleysLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIView *gridHolderView;
@@ -104,8 +105,8 @@
 			if (isRefresh) {
 				[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 				
-				int subscribeTotal = [_userVO.friends count] + [[HONAppDelegate subscribeeList] count];
-				_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:subscribeTotal]], (subscribeTotal == 1) ? @"" : @"s"];
+				_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+				_subscribeesLabel.text = [NSString stringWithFormat:@"%@ subscribee%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate subscribeeList] count]]], ([[HONAppDelegate subscribeeList] count] == 1) ? @"" : @"s"];
 				_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 				_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 			
@@ -581,21 +582,28 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 260.0, 260.0, 30.0)];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 250.0, 260.0, 30.0)];
 	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
 	
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 312.0, 260.0, 30.0)];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 290.0, 260.0, 30.0)];
+	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_subscribersLabel.textColor = [UIColor whiteColor];
+	_subscribersLabel.backgroundColor = [UIColor clearColor];
+	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscribee%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate subscribeeList] count]]], ([[HONAppDelegate subscribeeList] count] == 1) ? @"" : @"s"];
+	[_scrollView addSubview:_subscribersLabel];
+	
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 330.0, 260.0, 30.0)];
 	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_volleysLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 364.0, 260.0, 30.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 370.0, 260.0, 30.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];

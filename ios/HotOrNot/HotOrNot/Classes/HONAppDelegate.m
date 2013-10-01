@@ -1028,19 +1028,19 @@ NSString * const kTwilioSMS = @"6475577873";
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
-		[UAPush setDefaultPushEnabledValue:YES];
-		[[UAPush shared] setPushEnabled:YES];
-		[UAirship setLogLevel:UALogLevelNone];
-		[UAirship takeOff:[UAConfig defaultConfig]];
-		//UA_LDEBUG(@"Config:\n%@", [config description]);
-		[[UAPush shared] resetBadge];
-		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
+//		[UAPush setDefaultPushEnabledValue:YES];
+//		[[UAPush shared] setPushEnabled:YES];
+//		[UAirship setLogLevel:UALogLevelNone];
+//		[UAirship takeOff:[UAConfig defaultConfig]];
+//		//UA_LDEBUG(@"Config:\n%@", [config description]);
+//		[[UAPush shared] resetBadge];
+//		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
 		
-//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 6];
-//		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
-//		
-//		[HONAppDelegate writeDeviceToken:deviceID];
-//		[self _retrieveConfigJSON];
+		NSString *deviceID = [NSString stringWithFormat:@"%064d", 6];
+		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
+		
+		[HONAppDelegate writeDeviceToken:deviceID];
+		[self _retrieveConfigJSON];
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -1072,7 +1072,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[FBSettings publishInstall:kFacebookAppID];
 	
 	// Set the icon badge to zero on resume (optional)
-    [[UAPush shared] resetBadge];
+//    [[UAPush shared] resetBadge];
 	
 	//	[FBAppCall handleDidBecomeActive];
 	
@@ -1095,7 +1095,6 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-//	[UAirship land];
 	[FBSession.activeSession close];
 }
 
