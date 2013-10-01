@@ -321,7 +321,7 @@ class BIM_Growth{
         $c = BIM_Config::smtp();
         $e = new BIM_Email_Swift( $c );
         $emailData = (object) array(
-        	'to_email' => 'shane@builtinmenlo.com',
+        	'to_email' => 'jason@builtinmenlo.com',
         	'from_email' => 'apps@builtinmenlo.com',
         	'from_name' => 'Scumbag Kim Dot Com',
         	'subject' => 'Your shady campaign has been created',
