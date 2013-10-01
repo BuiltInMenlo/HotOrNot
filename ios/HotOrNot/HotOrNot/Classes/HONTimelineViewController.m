@@ -238,7 +238,7 @@
 		}
 		
 		_isRefreshing = NO;
-//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
@@ -255,7 +255,7 @@
 		_progressHUD = nil;
 		
 		_isRefreshing = NO;
-//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -425,10 +425,10 @@
 //	[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
 //	[_collectionHolderView addSubview:_collectionView];
 	
-	_refreshControl = [[UIRefreshControl alloc] init];
-	_refreshControl.frame = CGRectOffset(_refreshControl.frame, 0.0, 100.0);
-	_refreshControl.tintColor = [UIColor whiteColor];
-	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
+//	_refreshControl = [[UIRefreshControl alloc] init];
+//	_refreshControl.frame = CGRectOffset(_refreshControl.frame, 0.0, 100.0);
+//	_refreshControl.tintColor = [UIColor whiteColor];
+//	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
@@ -439,8 +439,14 @@
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-	[_tableView addSubview:_refreshControl];
+//	[_tableView addSubview:_refreshControl];
 	[self.view addSubview:_tableView];
+	
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView.delegate = self;
+	[_tableView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
+
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -912,11 +918,11 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-//	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 

@@ -1028,30 +1028,19 @@ NSString * const kTwilioSMS = @"6475577873";
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
-		// If you just want everyone to immediately be prompted for push, you can
-		// leave this line out.
 		[UAPush setDefaultPushEnabledValue:YES];
 		[[UAPush shared] setPushEnabled:YES];
-		
-		// Set log level for debugging config loading (optional)
-		// It will be set to the value in the loaded config upon takeOff
 		[UAirship setLogLevel:UALogLevelNone];
-		
-		// Call takeOff (which creates the UAirship singleton)
 		[UAirship takeOff:[UAConfig defaultConfig]];
-		
-		// Print out the application configuration for debugging (optional)
-//		UA_LDEBUG(@"Config:\n%@", [config description]);
-		
-		// Set the icon badge to zero on startup (optional)
+		//UA_LDEBUG(@"Config:\n%@", [config description]);
 		[[UAPush shared] resetBadge];
-		
-		// Set the notification types required for the app (optional). With the default value of push set to no,
-		// UAPush will record the desired remote notification types, but not register for
-		// push notifications as mentioned above. When push is enabled at a later time, the registration
-		// will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
-		// set it if you want to add or remove types.
 		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
+		
+//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 6];
+//		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
+//		
+//		[HONAppDelegate writeDeviceToken:deviceID];
+//		[self _retrieveConfigJSON];
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -1300,6 +1289,7 @@ NSString * const kTwilioSMS = @"6475577873";
 															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
 															  [[result objectForKey:@"switches"] objectForKey:@"verify_invite"], @"verify_invite",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_volley"], @"share_volley",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_profile"], @"share_profile",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",

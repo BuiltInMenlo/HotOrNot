@@ -101,13 +101,13 @@
 		}
 		
 		_isRefreshing = NO;
-//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		
 		_isRefreshing = NO;
-//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -237,29 +237,25 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	//_bgHolderView.alpha = 0.0;
 	[_bgHolderView addSubview:_bgImageView];
-//	[UIView animateWithDuration:1.25 animations:^(void) {
-//		_bgHolderView.alpha = 1.0;
-//	}];
-	
-	int modal_total = 0;
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:modal_total] forKey:@"modal_total"];
-	
-	else {
-		modal_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"] intValue];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++modal_total] forKey:@"modal_total"];
-	}
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (modal_total == 0) {
-		[[[UIAlertView alloc] initWithTitle:@""
-									message:@"Tap and hold any image to view fullscreen!"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
+
+//	int modal_total = 0;
+//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"])
+//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:modal_total] forKey:@"modal_total"];
+//	
+//	else {
+//		modal_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"] intValue];
+//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++modal_total] forKey:@"modal_total"];
+//	}
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+//	
+//	if (modal_total == 0) {
+//		[[[UIAlertView alloc] initWithTitle:@""
+//									message:@"Tap and hold any image to view fullscreen!"
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//	}
 }
 
 
@@ -330,10 +326,10 @@
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
-//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-//	_refreshTableHeaderView.delegate = self;
-//	[_scrollView addSubview:_refreshTableHeaderView];
-//	[_refreshTableHeaderView refreshLastUpdatedDate];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView.delegate = self;
+	[_scrollView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;
@@ -803,11 +799,11 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-//	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 

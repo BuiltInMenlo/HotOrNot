@@ -47,6 +47,7 @@
 @property (nonatomic, strong) UIView *cameraOverlayView;
 @property (nonatomic, strong) UIImageView *overlayImageView;
 @property (nonatomic, strong) UIView *splashTintView;
+@property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
 
 @property (nonatomic) int selfieAttempts;
@@ -405,16 +406,28 @@
 			
 			imagePickerController.cameraOverlayView = _cameraOverlayView;
 			
+			self.previewPicker = imagePickerController;
+			
+			
 			[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 				_cameraOverlayView.alpha = 1.0;
 			} completion:^(BOOL finished) {
-				[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+				[UIView animateWithDuration:0.33 animations:^(void) {
 					_splashTintView.alpha = 0.5;
-				} completion:nil];
+				}];
 			}];
-		
-			self.previewPicker = imagePickerController;
-			[self presentViewController:self.previewPicker animated:NO completion:nil];
+			
+			
+			[self presentViewController:self.previewPicker animated:NO completion:^(void) {
+//				[UIView animateWithDuration:0.33 animations:^(void) {
+//					_cameraOverlayView.alpha = 1.0;
+//				} completion:^(BOOL finished) {
+//					[UIView animateWithDuration:0.33 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//						_splashTintView.alpha = 0.5;
+//					} completion:nil];
+//				}];
+			}];
+			
 		
 		} else {
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -455,7 +468,7 @@
 		takePhotoButton.frame = CGRectMake(118.0, [UIScreen mainScreen].bounds.size.height - 133.0, 84.0, 84.0);
 		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
 		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
-		[takePhotoButton addTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
+		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		takePhotoButton.alpha = 0.0;
 		[_cameraOverlayView addSubview:takePhotoButton];
 		
@@ -514,10 +527,15 @@
 	[alertView show];
 }
 
-- (void)_goTakePhoto:(id)sender {
-//	UIButton *button = (UIButton *)sender;
-//	[button removeTarget:self action:@selector(_goTakePhoto:) forControlEvents:UIControlEventTouchUpInside];
-//	button.alpha = 0.5;
+- (void)_goTakePhoto {
+	_irisView = [[UIView alloc] initWithFrame:_cameraOverlayView.frame];
+	_irisView.backgroundColor = [UIColor blackColor];
+	_irisView.alpha = 0.0;
+	[_cameraOverlayView addSubview:_irisView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_irisView.alpha = 1.0;
+	}];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Verifying Selfie…";
@@ -527,7 +545,6 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tutorialBubbleImageView.alpha = 0.0;
-		_cameraOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[_tutorialBubbleImageView removeFromSuperview];
 		_tutorialBubbleImageView = nil;
@@ -632,40 +649,8 @@
 	
 	if (isUsernameValid && isEmailValid)
 		[self _finalizeUser];
-	
-	/*
-	if ([_usernameTextField.text isEqualToString:@""] || [_usernameTextField.text isEqualToString:@"@"]) {
-		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-									message:@"You need to enter a username to start snapping"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-		[_usernameTextField becomeFirstResponder];
-	
-	} else {
-		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20) {
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
-			[self _finalizeUser];
-		
-		} else {
-			if ([_emailTextField.text length] == 0) {
-				[[[UIAlertView alloc] initWithTitle:@"No email!"
-											message:@"You need to enter an email address to use Volley"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-				[_emailTextField becomeFirstResponder];
-			
-			} else
-				[self _finalizeUser];
-		}
-	}*/
 }
+
 
 #pragma mark - UI Presentation
 - (void)_presentCamera {
@@ -681,9 +666,6 @@
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
 	_birthday = [dateFormat stringFromDate:_datePicker.date];
-	
-	
-	//NSLog(@"DIFF:[%f]", [[NSDate date] timeIntervalSinceDate:_datePicker.date]);
 }
 
 
@@ -836,8 +818,11 @@
 
 #pragma mark - AlertView Deleagtes
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0)
+	if (alertView.tag == 0) {
 		_cameraOverlayView.alpha = 1.0;
+		[_irisView removeFromSuperview];
+		_irisView = nil;
+	}
 	
 	else if (alertView.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Skip Photo %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]

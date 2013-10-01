@@ -322,7 +322,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && [HONAppDelegate switchEnabledForKey:@"share_profile"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley?"
 															message:@"Would you like to share Volley on Instagram?"
 														   delegate:self

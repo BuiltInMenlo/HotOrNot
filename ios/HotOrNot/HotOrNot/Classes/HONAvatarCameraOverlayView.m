@@ -131,6 +131,12 @@
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
 		imgView.frame = frame;
 	}
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_blackMatteView.hidden = YES;
+	}];
 }
 
 - (void)addPreviewAsFlipped:(UIImage *)image {
@@ -141,6 +147,12 @@
 	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 	[_previewHolderView addSubview:previewImageView];
 	_previewHolderView.hidden = NO;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_blackMatteView.hidden = YES;
+	}];
 }
 
 - (void)removePreview {
@@ -209,9 +221,9 @@
 	_uploadingImageView.alpha = 1.0;
 	[_uploadingImageView startAnimating];
 	
-	_irisView.alpha = 1.0;
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		_irisView.alpha = 0.33;
+	_blackMatteView.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 1.0;
 	} completion:^(BOOL finished){}];
 	
 	[self.delegate cameraOverlayViewTakePicture:self];

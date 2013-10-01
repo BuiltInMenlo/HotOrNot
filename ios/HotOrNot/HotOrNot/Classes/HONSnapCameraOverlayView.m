@@ -114,6 +114,13 @@
 
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
 	[self addSubview:previewView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_blackMatteView.hidden = YES;
+	}];
+	
 }
 
 
@@ -182,9 +189,8 @@
 - (void)_goTakePhoto {
 	_blackMatteView.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blackMatteView.alpha = 0.33;
+		_blackMatteView.alpha = 1.0;
 	} completion:^(BOOL finished) {
-		_blackMatteView.hidden = YES;
 	}];
 	
 	[_tutorialBubbleImageView removeFromSuperview];
