@@ -10,6 +10,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSnapCameraOverlayView.h"
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONSnapCameraOverlayView
@@ -113,6 +115,9 @@
 }
 
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
+	[_progressHUD hide:YES];
+	_progressHUD = nil;
+	
 	[self addSubview:previewView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -120,7 +125,6 @@
 	} completion:^(BOOL finished) {
 		_blackMatteView.hidden = YES;
 	}];
-	
 }
 
 
@@ -188,9 +192,18 @@
 
 - (void)_goTakePhoto {
 	_blackMatteView.hidden = NO;
-	[UIView animateWithDuration:0.25 animations:^(void) {
+	[UIView animateWithDuration:0.125 animations:^(void) {
 		_blackMatteView.alpha = 1.0;
 	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blackMatteView.alpha = 0.0;
+		}];
+		
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = @"Loading…";
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
 	}];
 	
 	[_tutorialBubbleImageView removeFromSuperview];

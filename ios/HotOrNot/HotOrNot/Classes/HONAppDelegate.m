@@ -919,16 +919,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-//	TSConfig *config = [TSConfig configWithDefaults];
-//	config.collectWifiMac = NO;
-//	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+	TSConfig *config = [TSConfig configWithDefaults];
+	config.collectWifiMac = NO;
+	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
-//	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
@@ -981,9 +981,9 @@ NSString * const kTwilioSMS = @"6475577873";
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
 		
-//		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
-//								   withHomepageURI:@"http://www.builtinmenlo.com"
-//									  addAppButton:YES];
+		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
+								   withHomepageURI:@"http://www.builtinmenlo.com"
+									  addAppButton:YES];
 		
 		
 		int boot_total = 0;
@@ -1069,7 +1069,8 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	[FBSettings publishInstall:kFacebookAppID];
+//	[FBSettings publishInstall:kFacebookAppID];
+	[FBAppEvents activateApp];
 	
 	// Set the icon badge to zero on resume (optional)
 	[[UAPush shared] resetBadge];

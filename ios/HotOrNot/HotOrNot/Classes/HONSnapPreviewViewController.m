@@ -8,7 +8,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 
