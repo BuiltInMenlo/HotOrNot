@@ -151,6 +151,7 @@
 							_username, @"username",
 							_email, @"password",
 							_birthday, @"age",
+							[HONAppDelegate deviceToken], @"token",
 							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 							nil];
 	

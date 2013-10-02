@@ -1027,18 +1027,55 @@ NSString * const kTwilioSMS = @"6475577873";
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
-//		[UAPush setDefaultPushEnabledValue:YES];
-//		[[UAPush shared] setPushEnabled:YES];
-//		[UAirship setLogLevel:UALogLevelNone];
-//		[UAirship takeOff:[UAConfig defaultConfig]];
-//		//UA_LDEBUG(@"Config:\n%@", [config description]);
-//		[[UAPush shared] resetBadge];
-//		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
 		
-		NSString *deviceID = [NSString stringWithFormat:@"%064d", 7];
-		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
 		
-		[HONAppDelegate writeDeviceToken:deviceID];
+		// This prevents the UA Library from registering with UIApplication by default. This will allow
+		// you to prompt your users at a later time. This gives your app the opportunity to explain the
+		// benefits of push or allows users to turn it on explicitly in a settings screen.
+		//
+		// If you just want everyone to immediately be prompted for push, you can
+		// leave this line out.
+//		[UAPush setDefaultPushEnabledValue:NO];
+		
+		// Set log level for debugging config loading (optional)
+		// It will be set to the value in the loaded config upon takeOff
+		[UAirship setLogLevel:UALogLevelNone];
+		
+		// Populate AirshipConfig.plist with your app's info from https://go.urbanairship.com
+		// or set runtime properties here.
+		UAConfig *config = [UAConfig defaultConfig];
+		
+		// You can then programatically override the plist values:
+		// config.developmentAppKey = @"YourKey";
+		// etc.
+		
+		// Call takeOff (which creates the UAirship singleton)
+		[UAirship takeOff:config];
+		
+		// Print out the application configuration for debugging (optional)
+		UA_LDEBUG(@"Config:\n%@", [config description]);
+		
+		// Set the icon badge to zero on startup (optional)
+		[[UAPush shared] resetBadge];
+		
+		// Set the notification types required for the app (optional). With the default value of push set to no,
+		// UAPush will record the desired remote notification types, but not register for
+		// push notifications as mentioned above. When push is enabled at a later time, the registration
+		// will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
+		// set it if you want to add or remove types.
+		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge |
+											 UIRemoteNotificationTypeSound |
+											 UIRemoteNotificationTypeAlert);
+		
+		
+		
+//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 7];
+//		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
+//		
+//		[HONAppDelegate writeDeviceToken:deviceID];
+//		[self _retrieveConfigJSON];
+		
+		[HONAppDelegate writeDeviceToken:@""];
 		[self _retrieveConfigJSON];
 		
 	} else {
@@ -1118,17 +1155,22 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
-	[self _retrieveConfigJSON];
+	[self _enableNotifications];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
 	UALOG(@"Failed To Register For Remote Notifications With Error: %@", error);
 	
-	NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
-	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", deviceID);
+	if ([[HONAppDelegate advertisingIdentifier] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
+		NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
+		NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", deviceID);
+		
+		[HONAppDelegate writeDeviceToken:deviceID];
 	
-	[HONAppDelegate writeDeviceToken:deviceID];
-	[self _retrieveConfigJSON];
+	} else
+		[HONAppDelegate writeDeviceToken:@""];
+	
+//	[self _retrieveConfigJSON];
 }
  
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1370,7 +1412,7 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)_registerUser {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 1], @"action",
-							[HONAppDelegate deviceToken], @"token",
+//							[HONAppDelegate deviceToken], @"token",
 							nil];
 	
 	NSLog(@"PARAMS:[%@]", params);
@@ -1430,6 +1472,47 @@ NSString * const kTwilioSMS = @"6475577873";
 		_progressHUD = nil;
 	}];
 }
+
+- (void)_enableNotifications {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 4], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							@"Y", @"isNotifications",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			if ([userResult objectForKey:@"id"] != [NSNull null])
+				[HONAppDelegate writeUserInfo:userResult];
+		}
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 - (void)_retryUser {
 	NSLog(@"---RETRY USER [%d]---", (int)[HONAppDelegate infoForUser]);
