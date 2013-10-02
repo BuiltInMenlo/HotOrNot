@@ -1170,7 +1170,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	} else
 		[HONAppDelegate writeDeviceToken:@""];
 	
-//	[self _retrieveConfigJSON];
+	[self _enableNotifications];
 }
  
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1456,6 +1456,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 			
 			[self _retreiveSubscribees];
+			[self _initTabs];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1554,8 +1555,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			[HONAppDelegate writeSubscribeeList:result];
-			
-			[self _initTabs];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
