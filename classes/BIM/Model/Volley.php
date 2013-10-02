@@ -769,4 +769,26 @@ class BIM_Model_Volley{
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
 		return $dao->getExploreIds( );
     }
+    
+    public static function isCreatorImage( $imgUrl ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$ids = $dao->getIdsByCreatorImage( $imgUrl );
+		return ( !empty($ids) ? true : false );
+    }
+    
+    public static function deleteByImage( $imgUrl ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$dao->deleteByImage( $imgUrl );
+    }
+    
+    public static function isParticipantImage( $imgUrl ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$ids = $dao->getIdsByParticipantImage( $imgUrl );
+		return ( !empty($ids) ? true : false );
+    }
+    
+    public static function deleteParticipantByImage( $imgUrl ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$dao->deleteParticipantByImage( $imgUrl );
+    }
 }

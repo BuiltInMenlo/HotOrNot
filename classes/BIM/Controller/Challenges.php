@@ -246,13 +246,23 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
      */
     public function getVerifyList(){
         $input = (object) ($_POST ? $_POST : $_GET);
-        $challenge = array();
+        $verifyList = array();
         if( isset( $input->userID ) ){
             $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            $challenge = $challenges->getVerifyList( $userId );
+            $verifyList = $challenges->getVerifyList( $userId );
         }
-        return $challenge;
+        return $verifyList;
+    }
+    
+    public function missingImage(){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $fixed = false;
+        if( isset( $input->imgURL ) ){
+            $challenges = new BIM_App_Challenges();
+            $fixed = $challenges->missingImage( $input->imgURL );
+        }
+        return $fixed;
     }
     
 }

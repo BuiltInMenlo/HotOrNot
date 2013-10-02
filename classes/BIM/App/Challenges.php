@@ -600,4 +600,41 @@ class BIM_App_Challenges extends BIM_App_Base{
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         return $dao->getHashTagId($tagId);
     }
+    
+/**
+
+append the Large_640x1136.jp suffix and try to download the image
+
+if the image can be downloaded then we just process it to create the medium and small versions and end the process there
+
+if the large image cannot be found
+
+look for the associated volley with the image
+if the volley is found, determine if the image is from the creator or a participant.
+if the image is from the creator, we remove the whole volley
+if the image is from a participant, remove the participant record from the db, NOT the whole volley
+On the above, you should only call volley/missingimage if there is a failed upload or if there is a missing volley image. 
+If most or all of the images in a volley are missing, then do not make the call as this is likely due to a poor internet connection 
+
+*/
+    public function missingImage( $imgPrefix ){
+        $fixed = false;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+            BIM_Utils::finalizeImages($image);
+            $fixed = true;            
+        } catch( ImagickException $e ){
+            // this means we could not find the image in our image repo
+            // so now we need to remove data associated with it
+            if( BIM_Model_Volley::isCreatorImage($imgPrefix) ){
+                BIM_Model_Volley::deleteByImage( $imgPrefix );
+                $fixed = true;
+            } else if( BIM_Model_Volley::isParticipantImage( $imgPrefix ) ){
+                BIM_Model_Volley::deleteParticipantByImage( $imgPrefix );
+                $fixed = true;
+            }
+        }
+        return $fixed;
+    }
 }

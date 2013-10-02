@@ -969,4 +969,55 @@ WHERE is_verify != 1
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
+    
+    public function getIdsByCreatorImage( $imgUrl ){
+        $sql = "
+        	select id 
+        	from `hotornot-dev`.tblChallenges
+        	where creator_img = ?
+        ";
+        $params = array( $imgUrl );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
+    public function deleteByImage( $imgUrl ){
+        $sql = "
+        	delete from tblChallengeParticipants
+        	where challenge_id in (
+            	select id 
+            	from `hotornot-dev`.tblChallenges
+            	where creator_img = ?
+        	)
+        ";
+        $params = array( $imgUrl );
+        $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
+        	delete from tblChallenges
+        	where creator_img = ?
+        ";
+        $params = array( $imgUrl );
+        $this->prepareAndExecute( $sql, $params );
+    }
+    
+    public function getIdsByParticipantImage( $imgUrl ){
+        $sql = "
+        	select id 
+        	from `hotornot-dev`.tblChallengeParticipants
+        	where img = ?
+        ";
+        $params = array( $imgUrl );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
+    public function deleteParticipantByImage( $imgUrl ){
+        $sql = "
+        	delete from tblChallengeParticipants
+        	where img = ?
+        ";
+        $params = array( $imgUrl );
+        $this->prepareAndExecute( $sql, $params );
+    }
 }
