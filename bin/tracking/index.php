@@ -15,7 +15,8 @@ if( $ct > 1 ){
 
     $params['referer'] = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
     $params['user_agent'] = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-    
+
+    $params = (object) $params;    
     $app = new BIM_App_G();
     $app->trackClick($params);
     
