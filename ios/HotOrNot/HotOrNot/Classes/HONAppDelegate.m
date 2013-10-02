@@ -61,6 +61,7 @@ NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley
 //NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
 //NSString * const kMixPanelToken = @"de3e67b68e6b8bf0344ca58573733ee5"; // Soft Launch II
 NSString * const kFacebookAppID = @"600550136636754";
+NSString * const kTestFlightAppToken = @"139f9073-a4d0-4ecd-9bb8-462a10380218";
 
 //api endpts
 NSString * const kAPIChallenges = @"Challenges.php";
@@ -915,12 +916,10 @@ NSString * const kTwilioSMS = @"6475577873";
 #ifdef FONTS
 	[self _showFonts];
 #endif
+//	[TestFlight takeOff:kTestFlightAppToken];
 	
-	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
-	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
-	
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -939,7 +938,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
 	
-//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"verify_total"];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1028,24 +1027,28 @@ NSString * const kTwilioSMS = @"6475577873";
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
-		[UAPush setDefaultPushEnabledValue:YES];
-		[[UAPush shared] setPushEnabled:YES];
-		[UAirship setLogLevel:UALogLevelNone];
-		[UAirship takeOff:[UAConfig defaultConfig]];
-		//UA_LDEBUG(@"Config:\n%@", [config description]);
-		[[UAPush shared] resetBadge];
-		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
+//		[UAPush setDefaultPushEnabledValue:YES];
+//		[[UAPush shared] setPushEnabled:YES];
+//		[UAirship setLogLevel:UALogLevelNone];
+//		[UAirship takeOff:[UAConfig defaultConfig]];
+//		//UA_LDEBUG(@"Config:\n%@", [config description]);
+//		[[UAPush shared] resetBadge];
+//		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
 		
-//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 6];
-//		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
-//		
-//		[HONAppDelegate writeDeviceToken:deviceID];
-//		[self _retrieveConfigJSON];
+		NSString *deviceID = [NSString stringWithFormat:@"%064d", 7];
+		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
+		
+		[HONAppDelegate writeDeviceToken:deviceID];
+		[self _retrieveConfigJSON];
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
 			   withMessage:@"This app requires a network connection to work."];
 	}
+	
+	
+	NSLog(@"ADID:[%@]", [HONAppDelegate advertisingIdentifier]);
+//	[self _showOKAlert:@"" withMessage:[HONAppDelegate advertisingIdentifier]];
 	
 	return (YES);
 }
@@ -1070,7 +1073,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 //	[FBSettings publishInstall:kFacebookAppID];
-	[FBAppEvents activateApp];
+//	[FBAppEvents activateApp];
 	
 	// Set the icon badge to zero on resume (optional)
 	[[UAPush shared] resetBadge];
@@ -1236,6 +1239,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, kConfigJSON);
+//	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:kConfigJSON parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
