@@ -222,9 +222,13 @@
 	[_uploadingImageView startAnimating];
 	
 	_blackMatteView.hidden = NO;
-	[UIView animateWithDuration:0.25 animations:^(void) {
+	[UIView animateWithDuration:0.125 animations:^(void) {
 		_blackMatteView.alpha = 1.0;
-	} completion:^(BOOL finished){}];
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blackMatteView.alpha = 0.0;
+		}];
+	}];
 	
 	[self.delegate cameraOverlayViewTakePicture:self];
 }
