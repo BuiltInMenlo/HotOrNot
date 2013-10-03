@@ -312,9 +312,48 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $date;
     }
     
-    public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate, $password = null ){
+    public function updateUsernameAvatarFirstRun( $userId, $username, $imgUrl, $birthdate, $email = null, $deviceToken = '' ){
         $ageSql = $passSql = '';
-        $password = $password?:'';
+        $email = $email?:'';
+        $params = array( $username, $imgUrl, $userId );
+        
+        $notifications = 'N';
+        if( $deviceToken ){
+            $notifications = 'Y';
+        }
+        
+        if( $birthdate ){
+            $birthdate = new DateTime( $birthdate );
+            $birthdate = $birthdate->format('U');
+            $ageSql = ' age = ?,';
+            $params = array( $username, $imgUrl, $birthdate, $userId );
+        }
+        
+        if( $email ){
+            $passSql = ' email = ?,';
+            $params = array( $username, $imgUrl, $birthdate, $email );
+        }
+        
+        $query = "
+        	UPDATE `hotornot-dev`.tblUsers 
+        	SET username = ?, 
+        		img_url = ?, 
+        		$ageSql
+        		$passSql
+        		last_login = CURRENT_TIMESTAMP,
+        		notifications = ?,
+        		device_token = ?
+        		WHERE id = ?
+        ";
+        $params[] = $notifications;
+        $params[] = $deviceToken;
+        $params[] = $userId;
+        $stmt = $this->prepareAndExecute( $query, $params );
+    }
+    
+    public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate, $email = null ){
+        $ageSql = $passSql = '';
+        $email = $email?:'';
         $params = array( $username, $imgUrl, $userId );
         
         if( $birthdate ){
@@ -324,9 +363,9 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
             $params = array( $username, $imgUrl, $birthdate, $userId );
         }
         
-        if( $password ){
-            $passSql = ' password = ?,';
-            $params = array( $username, $imgUrl, $birthdate, $password, $userId );
+        if( $email ){
+            $passSql = ' email = ?,';
+            $params = array( $username, $imgUrl, $birthdate, $email, $userId );
         }
         
         $query = "
@@ -407,15 +446,15 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $this->lastInsertId;
     }
     
-    public function create( $username, $deviceToken, $adId ){
+    public function create( $username, $adId ){
 		// add new user			
 		$query = "
 			INSERT INTO `hotornot-dev`.tblUsers 
 			( username, device_token, fb_id, gender, bio, website, paid, points, notifications, last_login, added, adid ) 
-			VALUES ( ?, ?, '', 'N', '', '', 'N', '0', 'Y', CURRENT_TIMESTAMP, NOW(), ? )
+			VALUES ( ?, null, '', 'N', '', '', 'N', '0', 'Y', CURRENT_TIMESTAMP, NOW(), ? )
 		";
 		
-        $params = array( $username, $deviceToken, $adId );
+        $params = array( $username, $adId );
         $stmt = $this->prepareAndExecute($query, $params);
         
 		return $this->lastInsertId;
@@ -514,5 +553,27 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $sql = "select id from `hotornot-dev`.tblUsers where abuse_ct < 10 and abuse_ct > 5 order by abuse_ct desc, id limit $limit";
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+	}
+	
+	/**
+    	select username from tblUsers where username = 'wertuigh'
+    	union all
+    	select email from tblUsers where email = 'fdggte'
+	 */
+	public function usernameOrEmailExists( $input ){
+	    $limit = mysql_escape_string($limit);
+        $sql = "
+        	(select 'username' as property, username as value from tblUsers where username = ? limit 1)
+        	union all
+        	(select 'email' as property, email as value from tblUsers where email = ? limit 1)
+        ";
+        $stmt = $this->prepareAndExecute( $sql );
+        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        $result = (object) array();
+        foreach( $data as $row ){
+            $prop = $row->property;
+            $result->$prop = $row->value;
+        }
+        return $result;
 	}
 }

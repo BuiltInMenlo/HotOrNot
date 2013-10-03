@@ -10,7 +10,6 @@ class BIM_Model_User{
         }
         
         if( !empty($params->id) ){
-            unset( $params->password );
             foreach( $params as $prop => $value ){
                 $this->$prop = $value;
             }
@@ -31,9 +30,22 @@ class BIM_Model_User{
     		// find the avatar image
     		$avatar_url = $this->getAvatarUrl();
     		
-    		// assing some additional properties
+    		// adding some additional properties
     		$this->name = $this->username; 
     		$this->token = $this->device_token;
+    		
+    		if( !$this->token ){
+    		    $this->token = '';
+    		}
+    		
+    		if( !$this->email ){
+    		    $this->email = '';
+    		}
+    		
+    		if( !$this->device_token ){
+    		    $this->device_token = '';
+    		}
+    		
     	    $this->avatar_url = $avatar_url;
     		$this->votes = $votes; 
     		//$this->pokes = $pokes; 
@@ -209,6 +221,22 @@ union
 select added from tblUsers where username like "%yosnaper%"
 union
 select added from tblUsers where username like "%yoosnapyoo";
+
+delete from tblUsers where username like "%snap4snap%";
+delete from tblUsers where username like "%picchampX%";
+delete from tblUsers where username like "%swagluver%";
+delete from tblUsers where username like "%coolswagger%";
+delete from tblUsers where username like "%yoloswag%";
+delete from tblUsers where username like "%tumblrSwag%";
+delete from tblUsers where username like "%instachallenger%";
+delete from tblUsers where username like "%hotbitchswaglove%";
+delete from tblUsers where username like "%lovepeaceswaghot%";
+delete from tblUsers where username like "%hotswaglover%";
+delete from tblUsers where username like "%snapforsnapper%";
+delete from tblUsers where username like "%snaphard%";
+delete from tblUsers where username like "%snaphardyo%";
+delete from tblUsers where username like "%yosnaper%";
+delete from tblUsers where username like "%yoosnapyoo";
      * 
      * 
      * Enter description here ...
@@ -216,7 +244,7 @@ select added from tblUsers where username like "%yoosnapyoo";
      * @param unknown_type $adId
      */
     
-    public static function create( $token, $adId ){
+    public static function create( $adId ){
 			// default names
 			$defaultName_arr = array(
 				"snap4snap",
@@ -241,7 +269,7 @@ select added from tblUsers where username like "%yoosnapyoo";
         
 			$username = $username.'.'.uniqid(true);
 			$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-			$id = $dao->create($username, $token, $adId);
+			$id = $dao->create($username, $adId);
 			return self::get($id);
     }
     
@@ -253,6 +281,18 @@ select added from tblUsers where username like "%yoosnapyoo";
             $this->purgeFromCache();
             $this->purgeFromCache( $targetId );
         }
+    }
+    
+    public function updateUsernameAvatarFirstRun( $username, $imgUrl, $birthdate = null, $password = null, $deviceToken = '' ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateUsernameAvatarFirstRun( $this->id, $username, $imgUrl, $birthdate, $password, $deviceToken );
+        $this->username = $username;
+        $this->img_url = $imgUrl;
+        if( !empty($birthdate) ){
+            $this->age = $birthdate;
+        }
+        $this->purgeFromCache();
+        $this->queuePurgeVolleys();
     }
     
     public function updateUsernameAvatar( $username, $imgUrl, $birthdate = null, $password = null ){
@@ -697,5 +737,22 @@ select added from tblUsers where username like "%yoosnapyoo";
         }
         echo "\n";
         return $image;
+    }
+    
+    /*
+     * returns a data structure indicating which one exists
+     * in the following structure
+     * 
+     * array(
+     * 		'username' => true | false
+     * 		'email' => true | false
+     * )
+     * 
+     * returns false if neither one exists
+     * 
+     */
+    public static function usernameOrEmailExists( $input ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        return $dao->usernameOrEmailExists( $input );
     }
 }

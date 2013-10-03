@@ -35,19 +35,17 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param $device_token The Urban Airship token generated on device (string)
 	 * @return An associative object representing a user (array)
 	**/
-	public function submitNewUser($device_token) {
+	public function submitNewUser() {
 	    $user = BIM_Model_User::getByToken( BIM_Utils::getAdvertisingId() );
-	    if( !$user || ! $user->isExtant() ){
-	        $user = BIM_Model_User::getByToken( $device_token );
-	    }
-	    
 		if ( $user && $user->isExtant() ) {
 		    $user->updateLastLogin();
 		    if( empty( $user->adid ) ){
 		        $user->setAdvertisingId( BIM_Utils::getAdvertisingId() );
 		    }
 		} else {
-			$user = BIM_Model_User::create( $device_token, BIM_Utils::getAdvertisingId() );
+		    // historically, we were passing the device token at this point 
+		    // but it has been removed so we pass null to the create function
+			$user = BIM_Model_User::create( BIM_Utils::getAdvertisingId() );
 		}
         return $user;
 	}
@@ -59,14 +57,31 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param $img_url The url to the avatar (string)
 	 * @return An associative object representing a user (array)
 	**/
-	public function updateUsernameAvatar($userId, $username, $imgUrl, $birthdate = null, $password = null, $createVerifyVolley = true ) {
+	public function updateUsernameAvatar($userId, $username, $imgUrl, $birthdate = null, $email = null, $createVerifyVolley = true ) {
         $user = BIM_Model_User::get($userId);
-        $user->updateUsernameAvatar( $username, $imgUrl, $birthdate, $password  );
+        $user->updateUsernameAvatar( $username, $imgUrl, $birthdate, $email  );
         BIM_Jobs_Users::queueProcessProfileImages( $userId );
         if( $createVerifyVolley ){
             BIM_Model_Volley::addVerifVolley($userId, $imgUrl); // will create a verify volley if one does not yet exist
         }
         return $user;
+	}
+	
+	/**
+	 * Updates a user's name and avatar image
+	 * @param $user_id The user's id (integer)
+	 * @param $username The new username (string)
+	 * @param $img_url The url to the avatar (string)
+	 * @return An associative object representing a user (array)
+	**/
+	public function updateUsernameAvatarFirstRun( $userId, $username, $imgUrl, $birthdate = null, $email = null, $createVerifyVolley = true, $deviceToken = '' ) {
+        $user = BIM_Model_User::get($userId);
+        $user->updateUsernameAvatarFirstRun( $username, $imgUrl, $birthdate, $email, $deviceToken  );
+        BIM_Jobs_Users::queueProcessProfileImages( $userId );
+        if( $createVerifyVolley ){
+            BIM_Model_Volley::addVerifVolley($userId, $imgUrl); // will create a verify volley if one does not yet exist
+        }
+        return BIM_Model_User::get( $userId );
 	}
 	
 	/**
