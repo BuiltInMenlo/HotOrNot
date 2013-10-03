@@ -3,8 +3,8 @@ require_once 'vendor/autoload.php';
 
 $workload = (object) array(
     'data' => (object) array( 
-    	'friend_id' => 9718, 
-    	'user_id' => 9719
+    	'friend_id' => 13373, 
+    	'user_id' => 13391
     )
 );
 
