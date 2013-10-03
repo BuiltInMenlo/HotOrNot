@@ -561,13 +561,13 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     	select email from tblUsers where email = 'fdggte'
 	 */
 	public function usernameOrEmailExists( $input ){
-	    $limit = mysql_escape_string($limit);
         $sql = "
-        	(select 'username' as property, username as value from tblUsers where username = ? limit 1)
+        	(select 'username' as property, username as value from `hotornot-dev`.tblUsers where username = ? limit 1)
         	union all
-        	(select 'email' as property, email as value from tblUsers where email = ? limit 1)
+        	(select 'email' as property, email as value from `hotornot-dev`.tblUsers where email = ? limit 1)
         ";
-        $stmt = $this->prepareAndExecute( $sql );
+        $params = array( $input->username, $input->password );
+        $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
         $result = (object) array();
         foreach( $data as $row ){

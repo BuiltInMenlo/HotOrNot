@@ -37,7 +37,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     	    $existingUser = BIM_Model_User::getByUsername( $input->username );
             $userId = $this->resolveUserId( $input->userID );
             $result = self::usernameOrEmailExists($input);
-    	    if ( !$result  || $existingUser->id == $userId ) {
+            if ( !$result  || $existingUser->id == $userId ) {
                 $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $device_token = empty($input->token) ? '' : $input->token;
                 $users = new BIM_App_Users();
