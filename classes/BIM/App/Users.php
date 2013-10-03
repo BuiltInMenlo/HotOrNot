@@ -37,10 +37,6 @@ class BIM_App_Users extends BIM_App_Base{
 	**/
 	public function submitNewUser($device_token) {
 	    $user = BIM_Model_User::getByToken( BIM_Utils::getAdvertisingId() );
-	    if( !$user || ! $user->isExtant() ){
-	        $user = BIM_Model_User::getByToken( $device_token );
-	    }
-	    
 		if ( $user && $user->isExtant() ) {
 		    $user->updateLastLogin();
 		    if( empty( $user->adid ) ){
