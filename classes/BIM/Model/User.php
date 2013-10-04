@@ -706,6 +706,8 @@ delete from tblUsers where username like "%yoosnapyoo";
         echo "converting $imgPrefix\n";
         $image = self::getImage($imgPrefix);
         if( $image ){
+            $conf = BIM_Config::aws();
+            S3::setAuth($conf->access_key, $conf->secret_key);
             $convertedImages = BIM_Utils::finalizeImages($image);
             $parts = parse_url( $imgPrefix );
             $path = trim($parts['path'] , '/');
