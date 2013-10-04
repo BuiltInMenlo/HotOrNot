@@ -553,7 +553,7 @@
 		
 	} else {
 		if ([_subjectName length] == 0)
-			_subjectName = [HONAppDelegate rndDefaultSubject];
+			_subjectName = [[HONAppDelegate defaultSubjects] objectAtIndex:(arc4random() % [[HONAppDelegate defaultSubjects] count])];
 		
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",

@@ -249,11 +249,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"switches"] objectForKey:key] uppercaseString] isEqualToString:@"YES"]);
 }
 
-+ (NSString *)rndDefaultSubject {
-	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
-	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
-}
-
 + (NSArray *)defaultSubjects {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"]);
 }

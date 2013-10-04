@@ -661,7 +661,7 @@
 - (void)_goSubmit {
 	BOOL isUsernameValid = ([_usernameTextField.text length] > 0);
 	BOOL isEmailValid = [self _isValidEmail:_emailTextField.text];
-	BOOL isBirthdayTooOld = ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20);
+//	BOOL isBirthdayTooOld = ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20);
 	
 	
 	if (!isUsernameValid) {
@@ -673,13 +673,13 @@
 		[_usernameTextField becomeFirstResponder];
 	}
 	
-	if (isBirthdayTooOld) {
-		[[[UIAlertView alloc] initWithTitle:@""
-									message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
+//	if (isBirthdayTooOld) {
+//		[[[UIAlertView alloc] initWithTitle:@""
+//									message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//	}
 	
 	if (!isEmailValid) {
 		[[[UIAlertView alloc] initWithTitle:@"No email!"

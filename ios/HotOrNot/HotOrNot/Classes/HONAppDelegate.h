@@ -107,7 +107,6 @@ extern NSString * const kTwilioSMS;
 + (NSString *)emailInviteFormat;
 + (NSString *)instagramShareComment;
 
-+ (NSString *)rndDefaultSubject;
 + (NSArray *)defaultSubjects;
 
 + (NSArray *)searchSubjects;

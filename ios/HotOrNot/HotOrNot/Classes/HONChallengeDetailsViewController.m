@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <Twitter/TWTweetComposeViewController.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
@@ -504,6 +506,15 @@
 	[joinFooterButton setTitle:@"Join Volley" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
+	
+	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
+	[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
+	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
+	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
+	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 	[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0] forState:UIControlStateNormal];
@@ -516,6 +527,8 @@
 	[footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
 	[footerToolbar setItems:[NSArray arrayWithObjects:
 							 [[UIBarButtonItem alloc] initWithCustomView:joinFooterButton],
+							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+							 [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
 							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 							 [[UIBarButtonItem alloc] initWithCustomView:flagButton],
 							 nil]];
@@ -680,6 +693,21 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
+- (void)_goShareChallenge {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Share Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Twitter", @"Instagram", nil];
+	[actionSheet setTag:1];
+	[actionSheet showInView:self.view];
+}
+
 - (void)_goFlagChallenge {
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag Challenge"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -817,6 +845,47 @@
 		
 		if (buttonIndex == 0) {
 //			[self _flagChallenge];
+		}
+	
+	} else if (actionSheet.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+		
+		if (buttonIndex == 0) {
+			if ([TWTweetComposeViewController canSendTweet]) {
+				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
+				
+				[tweetViewController setInitialText:_challengeVO.subjectName];
+				[tweetViewController addImage:_heroImageView.image];
+//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
+				[self presentViewController:tweetViewController animated:YES completion:nil];
+				
+				// check on this part using blocks. no more delegates? :)
+				tweetViewController.completionHandler = ^(TWTweetComposeViewControllerResult res) {
+					if (res == TWTweetComposeViewControllerResultDone) {
+					} else if (res == TWTweetComposeViewControllerResultCancelled) {
+					}
+					
+					[tweetViewController dismissViewControllerAnimated:YES completion:nil];
+				};
+			
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:@"Cannot use Twitter from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		
+		} else if (buttonIndex == 1) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
+																object:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[HONAppDelegate instagramShareComment], @"caption",
+																		[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+																									avatarImage:[HONAppDelegate avatarImage]
+																									   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
 		}
 	}
 }
