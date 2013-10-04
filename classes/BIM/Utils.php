@@ -210,6 +210,34 @@ class BIM_Utils{
         }
 	}
 	
+    public static function processImage( $imgPrefix, $bucket = 'hotornot-challenges' ){
+        $image = self::getImage($imgPrefix);
+        if( $image ){
+            $conf = BIM_Config::aws();
+            S3::setAuth($conf->access_key, $conf->secret_key);
+            $convertedImages = BIM_Utils::finalizeImages($image);
+            $parts = parse_url( $imgPrefix );
+            $path = trim($parts['path'] , '/');
+            foreach( $convertedImages as $suffix => $image ){
+                $name = "{$path}{$suffix}.jpg";
+                S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+            }
+        }
+    }
+    
+    protected static function getImage( $imgPrefix ){
+        $image = null;
+        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
+        try{
+            $image = new Imagick( $imgUrl );
+        } catch ( Exception $e ){
+            $msg = $e->getMessage()." - $imgUrl";
+            error_log( $msg );
+            $image = null;
+        }
+        return $image;
+    }
+    
     public static function finalizeImages( $image ){
         $convertedImages = array();
         

@@ -619,10 +619,8 @@ If most or all of the images in a volley are missing, then do not make the call 
 */
     public function missingImage( $imgPrefix ){
         $fixed = false;
-        $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
         try{
-            $image = new Imagick( $imgUrl );
-            BIM_Utils::finalizeImages($image);
+            BIM_Utils::processImage( $imgPrefix );
             $fixed = true;            
         } catch( ImagickException $e ){
             // this means we could not find the image in our image repo

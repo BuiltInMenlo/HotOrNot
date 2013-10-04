@@ -75,6 +75,20 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
 		return array();
     }
     /**
+            if( !empty($input->p)){
+                $user = BIM_Model_User::getByUsername( $input->username );
+                // here we filter out the volley pics that do ot belong ot the user
+                // $volleys = $this->getChallengesForProfile();
+                foreach( $volleys as $volley ){
+                    if( $volley->creator->id != $user->id && !empty( $volley->challengers ) ){
+                        foreach($volley->challengers as $idx => $challenger ){
+                            if( $challenger->id != $user->id ){
+                                unset( $volley->challengers[ $idx ] );
+                            }
+                        }
+                    }
+                }
+            }
      * 
      * this functions submits a single vote for a challenge pic
      * this function can possibly by async in that it will queue the work
