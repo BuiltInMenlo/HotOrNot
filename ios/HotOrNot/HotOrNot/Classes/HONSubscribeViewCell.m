@@ -1,28 +1,28 @@
 //
-//  HONInviteUserViewCell.m
+//  HONSubscribeViewCell.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 06.10.13.
+//  Created by Matt Holcombe on 10/4/13 @ 6:55 PM.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONInviteUserViewCell.h"
+#import "HONSubscribeViewCell.h"
 
-
-@interface HONInviteUserViewCell ()
+@interface HONSubscribeViewCell ()
 @property (nonatomic, strong) UIButton *followButton;
 @property (nonatomic, strong) UIButton *checkButton;
 @end
 
-@implementation HONInviteUserViewCell
+@implementation HONSubscribeViewCell
 @synthesize delegate = _delegate;
 @synthesize userVO = _userVO;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
+
 
 - (id)init {
 	if ((self = [super init])) {
@@ -73,14 +73,15 @@
 	_followButton.hidden = YES;
 	_checkButton.hidden = NO;
 	
-	[self.delegate inviteUserViewCell:self user:_userVO toggleSelected:YES];
+	[self.delegate subscribeViewCell:self user:_userVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
 	_followButton.hidden = NO;
 	_checkButton.hidden = YES;
 	
-	[self.delegate inviteUserViewCell:self user:_userVO toggleSelected:NO];
+	[self.delegate subscribeViewCell:self user:_userVO toggleSelected:NO];
 }
+
 
 @end

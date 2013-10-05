@@ -204,8 +204,8 @@
 				}
 				
 				count++;
-				if (count >= 20)
-					break;
+//				if (count >= 25)
+//					break;
 			}
 			
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];

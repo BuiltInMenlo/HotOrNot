@@ -10,10 +10,11 @@
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
-#import <FacebookSDK/FacebookSDK.h>
-#import <HockeySDK/HockeySDK.h>
-#import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonHMAC.h>
+#import <FacebookSDK/FacebookSDK.h>
+#import <Foundation/Foundation.h>
+#import <HockeySDK/HockeySDK.h>
+#import <Twitter/TWTweetComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -798,7 +799,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		_documentInteractionController.UTI = instaFormat;
 		_documentInteractionController.delegate = self;
 		_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
-		[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:[HONAppDelegate appTabBarController].view animated:YES];
+		//[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:[HONAppDelegate appTabBarController].view animated:YES];
+		[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.tabBarController.view animated:YES];
 		
 	} else {
 		[self _showOKAlert:NSLocalizedString(@"alert_instagramError_t", nil)
@@ -807,34 +809,45 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_showShareShelf:(NSNotification *)notification {
-//	UIImage *image = (UIImage *)[notification object];
+	UIImage *image = (UIImage *)[notification object];
 	
-	HONMailActivity *mailActivity = [[HONMailActivity alloc] init];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Twitter", @"Instagram", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.tabBarController.view];
 	
-	__weak typeof(self) weakSelf = self;
-	//_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:nil];
-	_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:@[mailActivity]];
-	//_activityViewController.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypePrint];
-	_activityViewController.excludedActivityTypes = [[NSArray alloc] initWithObjects:
-                                                     UIActivityTypeCopyToPasteboard,
-                                                     UIActivityTypePostToWeibo,
-                                                     UIActivityTypePostToFacebook,
-                                                     UIActivityTypeSaveToCameraRoll,
-                                                     UIActivityTypeCopyToPasteboard,
-                                                     UIActivityTypeMail,
-                                                     UIActivityTypeMessage,
-                                                     UIActivityTypeAssignToContact,
-                                                     nil];
-	_activityViewController.view.backgroundColor = [UIColor whiteColor];
-	[_activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {
-		NSLog(@"completed dialog - activity: %@ - finished flag: %d", activityType, completed);
-		[weakSelf.activityViewController dismissViewControllerAnimated:YES completion:nil];
-	}];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_activityViewController];
-	[navigationController setNavigationBarHidden:YES];
+//	HONMailActivity *mailActivity = [[HONMailActivity alloc] init];
+//	
+//	__weak typeof(self) weakSelf = self;
+//	//_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:nil];
+//	_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:@[mailActivity]];
+//	//_activityViewController.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypePrint];
+//	_activityViewController.excludedActivityTypes = [[NSArray alloc] initWithObjects:
+//                                                     UIActivityTypeCopyToPasteboard,
+//                                                     UIActivityTypePostToWeibo,
+//                                                     UIActivityTypePostToFacebook,
+//                                                     UIActivityTypeSaveToCameraRoll,
+//                                                     UIActivityTypeCopyToPasteboard,
+//                                                     UIActivityTypeMail,
+//                                                     UIActivityTypeMessage,
+//                                                     UIActivityTypeAssignToContact,
+//                                                     nil];
+//	_activityViewController.view.backgroundColor = [UIColor whiteColor];
+//	[_activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {
+//		NSLog(@"completed dialog - activity: %@ - finished flag: %d", activityType, completed);
+//		[weakSelf.activityViewController dismissViewControllerAnimated:YES completion:nil];
+//	}];
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_activityViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	
+//	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 	
-	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+	
 }
 
 
@@ -1488,7 +1501,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
@@ -1633,6 +1646,16 @@ NSString * const kTwilioSMS = @"6475577873";
 		}
 	}
 }
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+//	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Flag %@", (buttonIndex == 0) ? @"Abusive" : @"Cancel"]
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+}
+
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {

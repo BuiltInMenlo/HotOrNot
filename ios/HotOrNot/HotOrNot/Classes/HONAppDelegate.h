@@ -13,7 +13,7 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 0
+#define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 
@@ -76,7 +76,7 @@ const NSUInteger kRecentOpponentsDisplayTotal;
 extern NSString * const kTwilioSMS;
 
 
-@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
 
 + (NSMutableString *)hmacToken;
 + (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;

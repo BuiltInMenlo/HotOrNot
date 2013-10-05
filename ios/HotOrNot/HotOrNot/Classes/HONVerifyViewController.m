@@ -177,8 +177,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				}
 				
 				count++;
-				if (count >= 20)
-					break;
+//				if (count >= 20)
+//					break;
 			}
 
 			[_refreshButtonView toggleRefresh:NO];

@@ -16,6 +16,7 @@
 #import "HONPopularUserVO.h"
 #import "HONHeaderView.h"
 #import "HONSearchBarHeaderView.h"
+#import "HONUserProfileViewController.h"
 
 
 @interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
@@ -356,7 +357,24 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	bgImageView.backgroundColor = [UIColor blackColor];
+	
+	HONPopularUserVO *vo = [_users objectAtIndex:indexPath.row];
+	
+	NSLog(@"didSelectRowAtIndexPath:[%@]", vo.username);
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:bgImageView];
+	userPofileViewController.userID = vo.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

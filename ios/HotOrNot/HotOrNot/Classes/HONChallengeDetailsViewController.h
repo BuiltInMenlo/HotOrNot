@@ -11,6 +11,6 @@
 #import "HONChallengeVO.h"
 
 
-@interface HONChallengeDetailsViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate>
+@interface HONChallengeDetailsViewController : UIViewController <UIScrollViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate>
 - (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView;
 @end

@@ -24,6 +24,9 @@
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 
+#import "HONSubscribeesViewController.h"
+#import "HONSubscribersViewController.h"
+
 
 @interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
@@ -153,7 +156,7 @@
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 555.0 + (kSnapMediumDim * ([_challenges count] / 5))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 655.0 + (kSnapMediumDim * ([_challenges count] / 5))));
 			[self _makeGrid];
 		}
 		
@@ -458,6 +461,19 @@
 }
 
 
+- (void)_goSubscribers {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribersViewController alloc] initWithUserID:_userID]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSubscribees {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribeesViewController alloc] initWithUserID:_userID]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - Notifications
 - (void)_refreshProfile:(NSNotification *)notification {
 	[self _goRefresh];
@@ -546,14 +562,14 @@
 	verifiedImageView.hidden = !_userVO.isVerified;
 	[_headerView addButton:verifiedImageView];
 	
-	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 224.0)];
+	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 324.0)];
 	_avatarHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_avatarHolderView];
 	
 	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake(0.0, -114.0, 320.0, 568.0);
+	CGRect frame = CGRectMake(0.0, -122.0, 320.0, 568.0);
 	
 	NSLog(@"PROFILE LOADING:[%@]", imageURL);
 	
@@ -571,7 +587,7 @@
 	[_avatarHolderView addSubview:_avatarImageView];
 	
 	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profilePicButton.frame = CGRectMake(270.0, 178.0, 44.0, 44.0);
+	profilePicButton.frame = CGRectMake(270.0, 278.0, 44.0, 44.0);
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 	[profilePicButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
@@ -582,33 +598,50 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 250.0, 260.0, 30.0)];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 350.0, 260.0, 30.0)];
 	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 290.0, 260.0, 30.0)];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 390.0, 260.0, 30.0)];
 	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscribee%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate subscribeeList] count]]], ([[HONAppDelegate subscribeeList] count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
 	
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 330.0, 260.0, 30.0)];
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 430.0, 260.0, 30.0)];
 	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_volleysLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 370.0, 260.0, 30.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 470.0, 260.0, 30.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_likesLabel];
+	
+	UIButton *subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	subscribersButton.frame = CGRectMake(10.0, 150.0, 104.0, 44.0);
+	[subscribersButton setBackgroundImage:[UIImage imageNamed:@"subscribe_nonActive"] forState:UIControlStateNormal];
+	[subscribersButton setBackgroundImage:[UIImage imageNamed:@"subscribe_Active"] forState:UIControlStateHighlighted];
+	[subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
+	subscribersButton.hidden = !([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	[self.view addSubview:subscribersButton];
+	
+	UIButton *subscribeesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	subscribeesButton.frame = CGRectMake(198.0, 150.0, 104.0, 44.0);
+	[subscribeesButton setBackgroundImage:[UIImage imageNamed:@"subscribe_nonActive"] forState:UIControlStateNormal];
+	[subscribeesButton setBackgroundImage:[UIImage imageNamed:@"subscribe_Active"] forState:UIControlStateHighlighted];
+	[subscribeesButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
+	subscribeesButton.hidden = !([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	[self.view addSubview:subscribeesButton];
+	
 	
 	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -664,7 +697,7 @@
 }
 
 - (void)_makeGrid {
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	

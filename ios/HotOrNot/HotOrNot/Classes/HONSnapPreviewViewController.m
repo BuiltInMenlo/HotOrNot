@@ -272,7 +272,7 @@
 			_isRefreshing = NO;
 //			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 500.0 + (kSnapMediumDim * ([_challenges count] / 5))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapMediumDim * ([_challenges count] / 5))));
 			[self _makeGrid];
 		}
 		
@@ -472,15 +472,15 @@
 	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	[_buttonHolderView addSubview:flagButton];
 	
-	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
+	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 325.0)];
 	_avatarHolderView.clipsToBounds = YES;
 	[_profileHolderView addSubview:_avatarHolderView];
 	
 	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake(0.0, -114.0, 320.0, 568.0);
-	
+	CGRect frame = CGRectMake(0.0, -122.0, 320.0, 568.0);
+	   
 	NSLog(@"PROFILE LOADING:[%@]", imageURL);
 	
 	__weak typeof(self) weakSelf = self;
@@ -504,25 +504,25 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 250.0, 260.0, 28.0)];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 350.0, 260.0, 28.0)];
 	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_subscribersLabel];
 	
-	_subscribeesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 290.0, 260.0, 28.0)];
+	_subscribeesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 390.0, 260.0, 28.0)];
 	_subscribeesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_subscribeesLabel.textColor = [UIColor whiteColor];
 	_subscribeesLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_subscribeesLabel];
 	
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 330.0, 260.0, 28.0)];
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 430.0, 260.0, 28.0)];
 	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_volleysLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 370.0, 260.0, 28.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 470.0, 260.0, 28.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
@@ -811,7 +811,7 @@
 }
 
 - (void)_makeGrid {
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	

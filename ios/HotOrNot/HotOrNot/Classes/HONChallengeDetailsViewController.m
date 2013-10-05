@@ -25,6 +25,7 @@
 #import "HONImagingDepictor.h"
 
 @interface HONChallengeDetailsViewController () <HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIView *bgHolderView;
@@ -145,31 +146,6 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-	}];
-}
-
-- (void)_upvoteChallenge:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 6], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-							[NSString stringWithFormat:@"%d", userID], @"challengerID",
-							nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 	}];
 }
 
@@ -499,11 +475,11 @@
 //	[headerView addSubview:subjectLabel];
 	
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
+	joinFooterButton.frame = CGRectMake(0.0, 0.0, 35.0, 44.0);
 	[joinFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[joinFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
-	[joinFooterButton setTitle:@"Join Volley" forState:UIControlStateNormal];
+	[joinFooterButton setTitle:@"Join" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	
@@ -724,45 +700,9 @@
 }
 
 - (void)_goUpvoteAnimationCreator {
-	_challengeVO.creatorVO.score++;
-	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
-//		[self _upvoteChallenge:_challengeVO.creatorVO.userID];
-	}
-	
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
 }
 
 - (void)_goUpvoteAnimationChallenger:(int)userID {
-	((HONOpponentVO *)[_challengeVO.challengers lastObject]).score++;
-	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
-//		[self _upvoteChallenge:userID];
-	}
-	
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
 }
 
 
@@ -794,11 +734,29 @@
 		_snapPreviewViewController = nil;
 	}
 	
+	
 	if (_opponentVO.userID == _challengeVO.creatorVO.userID)
-		[self _goUpvoteAnimationCreator];
+		_challengeVO.creatorVO.score++;
 	
 	else
-		[self _goUpvoteAnimationChallenger:_opponentVO.userID];
+		((HONOpponentVO *)[_challengeVO.challengers lastObject]).score++;
+	
+	
+	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0)
+		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:(_opponentVO.userID == _challengeVO.creatorVO.userID)];
+	
+	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
+	
+	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
 }
 
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -880,13 +838,61 @@
 			}
 		
 		} else if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
-																object:[NSDictionary dictionaryWithObjectsAndKeys:
-																		[HONAppDelegate instagramShareComment], @"caption",
-																		[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-																									avatarImage:[HONAppDelegate avatarImage]
-																									   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
+			NSString *instaURL = @"instagram://app";
+			NSString *instaFormat = @"com.instagram.exclusivegram";
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
+			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+															  avatarImage:[HONImagingDepictor cropImage:_heroImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
+																 username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+			
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
+				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+				_documentInteractionController.UTI = instaFormat;
+				_documentInteractionController.delegate = self;
+				//_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
+				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+											message:@"This device isn't allowed or doesn't recognize instagram"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
 		}
 	}
 }
+
+
+#pragma mark - DocumentInteraction Delegates
+- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
+	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
+	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
+	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
+	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+
 @end
