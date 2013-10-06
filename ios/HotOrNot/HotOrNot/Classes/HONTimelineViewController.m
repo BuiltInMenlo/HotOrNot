@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -52,20 +53,16 @@
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic, strong) UIView *collectionHolderView;
-//@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
-//@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UIImageView *tooltipImageView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) HONUserProfileView *userProfileView;
-@property (nonatomic, strong) UIView *profileOverlayView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic) int userID;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -127,7 +124,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -448,21 +444,6 @@
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 
 	
-	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
-	_profileOverlayView.hidden = YES;
-	[self.view addSubview:_profileOverlayView];
-	
-	UIButton *closeProfileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeProfileButton.frame = _profileOverlayView.frame;
-	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[_profileOverlayView addSubview:closeProfileButton];
-	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -391.0, 320.0, 455.0)];
-	_userProfileView.delegate = self;
-	_userProfileView.alpha = 0.0;
-	[self.view addSubview:_userProfileView];
-	
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -499,10 +480,6 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[HONAppDelegate offsetSubviewsForIOS7:self.view];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewDidUnload {
@@ -567,8 +544,6 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self _removeToolTip];
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -588,13 +563,23 @@
 }
 
 - (void)_goRegistration {
-	[[Mixpanel sharedInstance] track:@"Register User"
+	[[Mixpanel sharedInstance] track:@"Start First Run"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
+	_tutorialImageView.userInteractionEnabled = YES;
+	_tutorialImageView.alpha = 0.0;
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _tutorialImageView.frame;
+	[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+	[_tutorialImageView addSubview:closeButton];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -610,18 +595,32 @@
 	}
 }
 
+- (void)_goRemoveTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+	}];
+}
+
+
 
 #pragma mark - UI Presentation
-- (void)_removeToolTip {
-	if (_tooltipImageView != nil) {
-		[_tooltipImageView removeFromSuperview];
-		_tooltipImageView = nil;
-	}
-}
 
 
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tutorialImageView.alpha = 1.0;
+	}];
+	
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite Friends"
 															message:@"Do you want to invite friends?"
@@ -649,6 +648,10 @@
 	[_tableView setContentOffset:CGPointZero animated:YES];
 //	[_refreshButtonView toggleRefresh:YES];
 	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"timeline_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	if (_timelineType == HONTimelineTypeSingleUser) {
 		if (_username != nil)
 			[self _retrieveUserByUsername];
@@ -674,10 +677,6 @@
 		
 	
 	[self _retrieveChallenges];
-}
-
-- (void)_killTooltip:(NSNotification *)notification {
-	[self _removeToolTip];
 }
 
 
@@ -786,7 +785,9 @@
 	}];
 	
 	[cell showTapOverlay];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+	
+	HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:challengeDetailsViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }

@@ -41,6 +41,7 @@
 #import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
+#import "HONAddContactsViewController.h"
 
 #import "HONMailActivity.h"
 
@@ -232,10 +233,6 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (NSString *)s3BucketForType:(NSString *)bucketType {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:bucketType]);
-}
-
-+ (int)profileFriendsThreshold {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_invite"] intValue]);
 }
 
 + (int)profileSubscribeThreshold {
@@ -947,28 +944,36 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"verify_total"];
+	
+	NSArray *totals = @[@"background_total",
+						@"timeline_total",
+						@"explore_total",
+						@"exploreRefresh_total",
+						@"verify_total",
+						@"verifyRefresh_total",
+						@"popular_total",
+						@"verifyAction_total",
+						@"preview_total",
+						@"details_total",
+						@"camera_total",
+						@"profile_total",
+						@"like_total"];
+	
+	for (NSString *key in totals) {
+//		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	}
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	
-//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"modal_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"camera_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"profile_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-//	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"verify_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-
-
-	
 #if __ALWAYS_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	for (NSString *key in totals)
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 #endif
 
@@ -1110,6 +1115,10 @@ NSString * const kTwilioSMS = @"6475577873";
 //	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
 //		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"background_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 }
 
@@ -1119,7 +1128,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 //	[FBSettings publishInstall:kFacebookAppID];
-//	[FBAppEvents activateApp];
+	[FBAppEvents activateApp];
 	
 	// Set the icon badge to zero on resume (optional)
 	[[UAPush shared] resetBadge];
@@ -1130,6 +1139,28 @@ NSString * const kTwilioSMS = @"6475577873";
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
+		if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:@"Find / invite contacts?"
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"Find people", nil];
+			[alertView setTag:3];
+			[alertView show];
+		}
+		
+		if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:@"Share Volley with your friends!"
+															   delegate:self
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"Share", nil];
+			[alertView setTag:4];
+			[alertView show];
+		}
+		
 		
 		if (![HONAppDelegate canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
@@ -1336,18 +1367,25 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_invite"] intValue]] forKey:@"profile_invite"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"insta_profile"] forKey:@"insta_profile"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
 															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
 															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
-															  [[result objectForKey:@"switches"] objectForKey:@"verify_invite"], @"verify_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_volley"], @"share_volley",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_profile"], @"share_profile",
+															  [[result objectForKey:@"switches"] objectForKey:@"profile_invite"], @"profile_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"popular_invite"], @"popular_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"explore_invite"], @"explore_invite",
+															  
+															  [[result objectForKey:@"switches"] objectForKey:@"background_share"], @"background_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"volley_share"], @"volley_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"verify_share"], @"verify_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"like_share"], @"like_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"profile_share"], @"profile_share",
+															  
 															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
@@ -1622,7 +1660,27 @@ NSString * const kTwilioSMS = @"6475577873";
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 				break;
 		}
-	
+		
+	} else if (alertView.tag == 3) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Backgrounding - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+		}
+		
+	} else if (alertView.tag == 4) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Backgrounding - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
+		}
+		
 	} else if (alertView.tag == 5) {
 		switch (buttonIndex) {
 			case 0:

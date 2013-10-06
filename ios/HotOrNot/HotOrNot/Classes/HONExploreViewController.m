@@ -28,6 +28,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONPopularViewController.h"
+#import "HONAddContactsViewController.h"
 
 
 @interface HONExploreViewController ()<HONExploreViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
@@ -39,6 +40,7 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UIImageView *emptySetImgView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) NSMutableDictionary *allChallenges;
 @property (nonatomic, strong) NSMutableArray *currChallenges;
 @property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
@@ -234,6 +236,10 @@
 	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+}
+
 - (void)viewDidUnload {
 	[super viewDidUnload];
 }
@@ -268,6 +274,21 @@
 	
 	_isRefreshing = YES;
 	[self _retrieveChallenges];
+	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"exploreRefresh_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"exploreRefresh_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:@"Find / invite contacts?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Find people", nil];
+		[alertView setTag:0];
+		[alertView show];
+	}
+
 	
 //	NSLog(@"refresh:[%d]", [_allChallenges count]);
 //	_currChallenges = [NSMutableArray array];
@@ -314,11 +335,46 @@
 	}];
 }
 
+- (void)_goRemoveTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+	}];
+}
+
 
 #pragma mark - Notifications
 - (void)_selectedDiscoveryTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _goRefresh];
+	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"explore_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"explore_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 0) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = _tutorialImageView.frame;
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
 }
 
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
@@ -538,6 +594,25 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (nil);
 }
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			
+		}
+	}
+}
+
 
 /*
 #pragma mark - CollectionView DataSource Delegates

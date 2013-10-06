@@ -28,7 +28,7 @@
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
 @property (nonatomic, strong) HONCameraSubjectsView *subjectsView;
-@property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *headerBGView;
 @end
 
@@ -42,15 +42,16 @@
 		self.backgroundColor = [UIColor blackColor];
 		
 		_subjectName = subject;
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:0.3333333];//_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / ([HONAppDelegate isRetina5]) ? 1280.0 : 1280.0)];
 		NSLog(@"NORMAL -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
+		float mult = (self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0;
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * -0.5);
+		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * mult);
 		[self addSubview:previewImageView];
 		
 		_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
-		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * -0.5);
+		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * mult);
 		_blurredImageView.alpha = 0.0;
 		[self addSubview:_blurredImageView];
 
@@ -66,16 +67,17 @@
 		
 		_subjectName = subject;
 		
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:0.3333333];//[HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / ([HONAppDelegate isRetina5]) ? 1280.0 : 1280.0)];
 		NSLog(@"MIRRORED -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
+		float mult = (self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0;
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * -0.5);
+		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * mult);
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
 		
 		_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
-		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * -0.5);
+		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * mult);
 		_blurredImageView.transform = CGAffineTransformScale(_blurredImageView.transform, -1.0f, 1.0f);
 		_blurredImageView.alpha = 0.0;
 		[self addSubview:_blurredImageView];
@@ -322,6 +324,19 @@
 	[self _goSubmit];
 }
 
+- (void)_goCloseTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+	}];
+}
+
 
 #pragma mark - UI Presentation
 - (void)_raiseKeyboard {
@@ -331,16 +346,21 @@
 	_subjectsView.hidden = NO;
 	if (_isFirstCamera) {
 		_isFirstCamera = NO;
-		_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep3"]];
-		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - (121.0 + ([HONAppDelegate isRetina5] * 44.0)));
-		_tutorialBubbleImageView.alpha = 0.0;
-//		[self addSubview:_tutorialBubbleImageView];
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_emotion-568h@2x" : @"tutorial_emotion"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		[self addSubview:_tutorialImageView];
+		
+		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeTutorialButton.frame = _tutorialImageView.frame;
+		[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+		[_tutorialImageView addSubview:closeTutorialButton];
 	}
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialBubbleImageView != nil) {
-			_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -58.0);
-			_tutorialBubbleImageView.alpha = 1.0;
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 1.0;
 		}
 		
 		_blurredImageView.alpha = 1.0;
@@ -359,9 +379,8 @@
 	[_subjectTextField resignFirstResponder];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialBubbleImageView != nil) {
-			_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, 58.0);
-			_tutorialBubbleImageView.alpha = 0.0;
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
 		}
 		
 		_blurredImageView.alpha = 0.0;
@@ -376,9 +395,9 @@
 		if (isRemoved) {
 			[self removeFromSuperview];
 			
-			if (_tutorialBubbleImageView != nil) {
-				[_tutorialBubbleImageView removeFromSuperview];
-				_tutorialBubbleImageView = nil;
+			if (_tutorialImageView != nil) {
+				[_tutorialImageView removeFromSuperview];
+				_tutorialImageView = nil;
 			}
 		}
 		
@@ -426,13 +445,13 @@
 	if ([textField.text isEqualToString:@""])
 		textField.text = @"#";
 	
-	if (_tutorialBubbleImageView != nil) {
+	if (_tutorialImageView != nil) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialBubbleImageView.alpha = 0.0;
+			_tutorialImageView.alpha = 0.0;
 			
 		} completion:^(BOOL finished) {
-			[_tutorialBubbleImageView removeFromSuperview];
-			_tutorialBubbleImageView = nil;
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
 		}];
 	}
 	

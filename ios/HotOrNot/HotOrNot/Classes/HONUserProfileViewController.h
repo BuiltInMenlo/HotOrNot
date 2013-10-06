@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate>
+@interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
 - (id)initWithBackground:(UIImageView *)imageView;
 @property (nonatomic) int userID;
 @end

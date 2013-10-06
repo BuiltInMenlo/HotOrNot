@@ -26,7 +26,7 @@
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
-@property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
@@ -67,7 +67,7 @@
 //		[self addSubview:flashButton];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake(118.0, [UIScreen mainScreen].bounds.size.height - 133.0, 84.0, 84.0);
+		_takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
@@ -146,22 +146,20 @@
 	_cancelButton.hidden = NO;
 	_takePhotoButton.hidden = NO;
 	
-	_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep2"]];
-	_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
-	_tutorialBubbleImageView.alpha = 0.0;
+	_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
+	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
+	_tutorialImageView.userInteractionEnabled = YES;
+	_tutorialImageView.alpha = 0.0;
+	[self addSubview:_tutorialImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = self.frame;
+	closeTutorialButton.frame = _tutorialImageView.frame;
 	[closeTutorialButton addTarget:self action:@selector(_goCloseBubble:) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:closeTutorialButton];
+	[_tutorialImageView addSubview:closeTutorialButton];
 	
 	[UIView animateWithDuration:0.33 animations:^(void) {
-		_tutorialBubbleImageView.alpha = 1.0;
-		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -35.0);
+		_tutorialImageView.alpha = 1.0;
 	}];
-	
-	
-	[self addSubview:_tutorialBubbleImageView];
 }
 
 - (void)_goCloseBubble:(id)sender {
@@ -171,10 +169,10 @@
 	button = nil;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tutorialBubbleImageView.alpha = 0.0;
+		_tutorialImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		[_tutorialBubbleImageView removeFromSuperview];
-		_tutorialBubbleImageView = nil;
+		[_tutorialImageView removeFromSuperview];
+		_tutorialImageView = nil;
 	}];
 }
 
@@ -205,9 +203,6 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.taskInProgress = YES;
 	}];
-	
-	[_tutorialBubbleImageView removeFromSuperview];
-	_tutorialBubbleImageView = nil;
 	
 	[self.delegate cameraOverlayViewTakePhoto:self];
 }

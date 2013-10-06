@@ -7,6 +7,7 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
+#import <Twitter/TWTweetComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -38,6 +39,7 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *avatarHolderView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UILabel *subscribersLabel;
 @property (nonatomic, strong) UILabel *subscribeesLabel;
 @property (nonatomic, strong) UILabel *volleysLabel;
@@ -49,6 +51,7 @@
 @property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) BOOL isRefreshing;
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @end
 
 
@@ -301,18 +304,36 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	[_bgHolderView addSubview:_bgImageView];
-	
-//	if ([[HONAppDelegate subscribeeList] count] < [HONAppDelegate profileFriendsThreshold]) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//															message:@"Find more people to subscribe to?"
-//														   delegate:nil
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Find people", nil];
-//		[alertView setTag:5];
-//		[alertView show];
-//	}
-	
+		
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
+	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"profile_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 0 && (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = _tutorialImageView.frame;
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
+//			closeButton.backgroundColor = [HONAppDelegate honDebugGreenColor];
+			
+		} else {
+//			closeButton.backgroundColor = [HONAppDelegate honDebugRedColor];
+		}
+		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -326,49 +347,40 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && [HONAppDelegate switchEnabledForKey:@"share_profile"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley?"
-															message:@"Would you like to share Volley on Instagram?"
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
+	if (total == 0 && _userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:@"Find / invite contacts?"
 														   delegate:self
 												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		
-		[alertView setTag:1];
+												  otherButtonTitles:@"Find people", nil];
+		[alertView setTag:5];
 		[alertView show];
 	
 	} else {
-		BOOL isFriend = NO;
-		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-			if (vo.userID == _userVO.userID) {
-				isFriend = YES;
-				break;
-			}
-		}
-		
-		int profile_total = 0;
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:profile_total] forKey:@"profile_total"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-		}
-		
-		profile_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-		if (!isFriend  && profile_total < [HONAppDelegate profileSubscribeThreshold]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++profile_total] forKey:@"profile_total"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
-															   delegate:self
-													  cancelButtonTitle:@"No"
-													  otherButtonTitles:@"Yes", nil];
-			[alertView setTag:0];
-			[alertView show];
-		
-		} else {
+//		BOOL isFriend = NO;
+//		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+//			if (vo.userID == _userVO.userID) {
+//				isFriend = YES;
+//				break;
+//			}
+//		}
+//		
+//		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
+//		if (!isFriend && total < [HONAppDelegate profileSubscribeThreshold]) {
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
+//															   delegate:self
+//													  cancelButtonTitle:@"No"
+//													  otherButtonTitles:@"Yes", nil];
+//			[alertView setTag:0];
+//			[alertView show];
+//		
+//		} else {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			}];
-		}
+//		}
 	}
 }
 
@@ -450,8 +462,22 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goShare {
+	[[Mixpanel sharedInstance] track:@"User Profile - Share"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Twitter", @"Instagram", nil];
+	[actionSheet setTag:1];
+	[actionSheet showInView:self.view];
+}
+
 - (void)_goSettings {
-	[[Mixpanel sharedInstance] track:@"Profile - Settings"
+	[[Mixpanel sharedInstance] track:@"User Profile - Settings"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -472,6 +498,28 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
+
+- (void)_goRemoveTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+	}];
+}
+
+- (void)_goTapHoldAlert {
+	[[[UIAlertView alloc] initWithTitle:@"Tap and hold to view full screen!"
+								message:@""
+							   delegate:nil
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
+}
+
 
 
 #pragma mark - Notifications
@@ -645,12 +693,20 @@
 	
 	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(0.0, 0.0, 92.0, 44.0);
+		inviteButton.frame = CGRectMake(0.0, 0.0, 40.0, 44.0);
 		[inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[inviteButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[inviteButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		[inviteButton setTitle:@"Invite friends" forState:UIControlStateNormal];
+		[inviteButton setTitle:@"Invite" forState:UIControlStateNormal];
 		[inviteButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+		
+		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
+		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
+		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
+		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
@@ -663,6 +719,8 @@
 		[_footerToolbar setItems:[NSArray arrayWithObjects:
 								  [[UIBarButtonItem alloc] initWithCustomView:inviteButton],
 								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+								  [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
+								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 								  [[UIBarButtonItem alloc] initWithCustomView:settingsButton], nil]];
 	
 	} else {
@@ -671,6 +729,14 @@
 		[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		
+		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
+		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
+		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
+		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
@@ -682,6 +748,8 @@
 		
 		[_footerToolbar setItems:[NSArray arrayWithObjects:
 								  [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
+								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+								  [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
 								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 								  [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
 	}
@@ -712,6 +780,11 @@
 		imageView.userInteractionEnabled = YES;
 		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
 		[imageHolderView addSubview:imageView];
+		
+		UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		tapHoldButton.frame = imageView.frame;
+		[tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
+		[imageHolderView addSubview:tapHoldButton];
 		
 		_challengeCounter++;
 	}
@@ -844,19 +917,115 @@
 		}
 	
 	} else if (alertView.tag == 5) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Find People %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 
 		
 		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
+		
+		} else {
+			[self dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+			}];
 		}
 	}
 }
 
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 0) {
+			if ([TWTweetComposeViewController canSendTweet]) {
+				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
+				
+				[tweetViewController setInitialText:_userVO.username];
+				[tweetViewController addImage:_avatarImageView.image];
+//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
+				[self presentViewController:tweetViewController animated:YES completion:nil];
+				
+				// check on this part using blocks. no more delegates? :)
+				tweetViewController.completionHandler = ^(TWTweetComposeViewControllerResult res) {
+					if (res == TWTweetComposeViewControllerResultDone) {
+					} else if (res == TWTweetComposeViewControllerResultCancelled) {
+					}
+					
+					[tweetViewController dismissViewControllerAnimated:YES completion:nil];
+				};
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:@"Cannot use Twitter from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 1) {
+			NSString *instaURL = @"instagram://app";
+			NSString *instaFormat = @"com.instagram.exclusivegram";
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
+			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+															  avatarImage:[HONImagingDepictor cropImage:_avatarImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
+																 username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+			
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
+				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+				_documentInteractionController.UTI = instaFormat;
+				_documentInteractionController.delegate = self;
+				//_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
+				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+											message:@"This device isn't allowed or doesn't recognize instagram"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		}
+	}
+}
+
+
+#pragma mark - DocumentInteraction Delegates
+- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
+	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
+	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
+	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
+	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
+}
 
 @end

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONExploreViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONExploreViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
 @end

@@ -17,6 +17,7 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONUserProfileViewController.h"
+#import "HONAddContactsViewController.h"
 
 
 @interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
@@ -245,6 +246,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"popular_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -265,7 +270,20 @@
 	for (HONPopularUserVO *vo in _selectedUsers)
 		[self _addFriend:vo.userID];
 	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
+	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:@"Find / invite contacts?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Find people", nil];
+		[alertView setTag:0];
+		[alertView show];
+		
+	
+	} else {
+		[self dismissViewControllerAnimated:YES completion:nil];
+	}
 }
 
 
@@ -381,21 +399,18 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		switch(buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:@"Invite Celeb - Confirm Done"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[self dismissViewControllerAnimated:YES completion:nil];
-				break;
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Invite Celeb - Cancel Done"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				break;
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			
+		} else {
+			[self dismissViewControllerAnimated:YES completion:^(void) {
+			}];
 		}
 	}
 }

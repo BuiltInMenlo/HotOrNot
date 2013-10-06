@@ -39,7 +39,7 @@
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
-@property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) BOOL isRefreshing;
@@ -98,7 +98,6 @@
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			[_refreshButtonView toggleRefresh:NO];
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			[self performSelector:@selector(_makeUI) withObject:nil afterDelay:0.25];
 		}
@@ -217,16 +216,28 @@
 	
 	[_bgHolderView addSubview:_bgImageView];
 
-//	int modal_total = 0;
-//	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"])
-//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:modal_total] forKey:@"modal_total"];
-//	
-//	else {
-//		modal_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"modal_total"] intValue];
-//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++modal_total] forKey:@"modal_total"];
-//	}
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-//	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"details_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"details_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 0) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = _tutorialImageView.frame;
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
+//
 //	if (modal_total == 0) {
 //		[[[UIAlertView alloc] initWithTitle:@""
 //									message:@"Tap and hold any image to view fullscreen!"
@@ -482,7 +493,6 @@
 	[joinFooterButton setTitle:@"Join" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	
 	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 	[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -572,8 +582,6 @@
 
 - (void)_goRefresh {
 	_isRefreshing = YES;
-	
-	[_refreshButtonView toggleRefresh:YES];
 	[self _refreshChallenge];
 }
 
@@ -699,11 +707,19 @@
 	[actionSheet showInView:self.view];
 }
 
-- (void)_goUpvoteAnimationCreator {
+- (void)_goRemoveTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+	}];
 }
 
-- (void)_goUpvoteAnimationChallenger:(int)userID {
-}
 
 
 #pragma mark - Notifications

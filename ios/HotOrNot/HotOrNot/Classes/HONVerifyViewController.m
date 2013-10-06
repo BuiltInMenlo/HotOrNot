@@ -54,6 +54,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -295,19 +296,19 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			
 		} else {
 			if (isApprove) {
-				int verify_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"] intValue];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++verify_total] forKey:@"verify_total"];
+				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyAction_total"] intValue];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyAction_total"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				if (verify_total == 2 && [HONAppDelegate switchEnabledForKey:@"verify_invite"]) {
+				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
 					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																		message:@"Invite your friends to help you get Verified faster!"
+																		message:@"Share Volley with your friends!"
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
-															  otherButtonTitles:@"Invite friends", nil];
-					
+															  otherButtonTitles:@"Share", nil];
 					[alertView setTag:0];
 					[alertView show];
+					
 				}
 			}
 			
@@ -483,6 +484,20 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_isRefreshing = YES;
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
+	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyRefresh_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyRefresh_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:@"Share Volley with your friends!"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Share", nil];
+		[alertView setTag:0];
+		[alertView show];
+	}
 }
 
 - (void)_goCloseBanner {
@@ -500,6 +515,19 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}];
 }
 
+- (void)_goRemoveTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+	}];
+}
+
 
 #pragma mark - Notifications
 - (void)_selectedChallengesTab:(NSNotification *)notification {
@@ -507,26 +535,44 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 	
-	int verify_total = 0;
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"]) {
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:verify_total] forKey:@"verify_total"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
 	
-	verify_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"] intValue];
-	
-	if (verify_total == 0 && [[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"You need a selfie profile image to get verified. Please update your selfie now!"
-														   delegate:self
-												  cancelButtonTitle:@"Take Photo"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:1];
-		[alertView show];
-	}
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++verify_total] forKey:@"verify_total"];
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verify_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 0) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = _tutorialImageView.frame;
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+		
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
+//			closeButton.backgroundColor = [HONAppDelegate honDebugGreenColor];
+			
+		} else {
+//			closeButton.backgroundColor = [HONAppDelegate honDebugRedColor];
+		}
+				
+			
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																message:@"You need a selfie profile image to get verified. Please update your selfie now!"
+//															   delegate:self
+//													  cancelButtonTitle:@"Take Photo"
+//													  otherButtonTitles:@"OK", nil];
+//			[alertView setTag:1];
+//			[alertView show];
+	}
 }
 
 - (void)_refreshChallengesTab:(NSNotification *)notification {
@@ -622,7 +668,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	[_snapPreviewViewController showControls];
+	//[_snapPreviewViewController showControls];
+	
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
 }
 
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
@@ -854,14 +905,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	
 	} else if (alertView.tag == 1) {

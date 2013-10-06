@@ -280,8 +280,8 @@
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 							
-//							if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
-//								[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
+							if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
+								[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
 						}];
 //					}
 				}
@@ -408,15 +408,9 @@
 }
 
 - (void)_showOverlay {
-	int camera_total = 0;
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
-	
-	else {
-		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+	int camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	_isFirstCamera = (camera_total == 0);
 	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
@@ -615,8 +609,8 @@
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 					
-//					if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
+					if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
 				}];
 //			}
 		}

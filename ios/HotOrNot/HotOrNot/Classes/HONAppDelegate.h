@@ -95,7 +95,6 @@ extern NSString * const kTwilioSMS;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
 
-+ (int)profileFriendsThreshold;
 + (int)profileSubscribeThreshold;
 
 + (NSString *)bannerForSection:(int)section;

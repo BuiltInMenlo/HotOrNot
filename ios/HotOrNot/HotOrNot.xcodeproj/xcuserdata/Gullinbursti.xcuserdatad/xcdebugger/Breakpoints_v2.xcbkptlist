@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HotOrNot/Classes/HONUserProfileViewController.m"
-            timestampString = "402628032.152725"
+            timestampString = "402732303.212607"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "301"
-            endingLineNumber = "301"
+            startingLineNumber = "304"
+            endingLineNumber = "304"
             landmarkName = "-viewDidAppear:"
             landmarkType = "5">
          </BreakpointContent>
