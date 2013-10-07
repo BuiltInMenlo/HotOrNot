@@ -276,4 +276,12 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         }
         return array();
     }
+    
+    public function processImage(){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if( !empty( $input->imgURL ) ){
+            BIM_Jobs_Users::queueProcessImage( $input->imgURL );
+        }
+        return true;
+    }
 }

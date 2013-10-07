@@ -79,6 +79,22 @@ class BIM_Jobs_Challenges extends BIM_Jobs{
     }
     
     /*
+     * PROCESS IMAGE
+     */
+    public static function queueProcessImage( $imgUrl ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Challenges',
+        	'method' => 'processImage',
+        	'data' => array( 'img_url' => $imgUrl ),
+        );
+        return self::queueBackground( $job, 'process_image' );
+    }
+	
+    public function processImage( $workload ){
+        BIM_Utils::processImage( $workload->data->img_url );
+    }
+    
+    /*
      * PROCESS VOLLEY IMAGES
      */
     public static function queueProcessVolleyImages( $volleyId, $imgUrl = '' ){

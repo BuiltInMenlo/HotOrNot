@@ -265,4 +265,11 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         return $fixed;
     }
     
+    public function processImage(){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if( !empty( $input->imgURL ) ){
+            BIM_Jobs_Challenges::queueProcessImage( $input->imgURL);
+        }
+        return true;
+    }
 }
