@@ -6,7 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
@@ -14,6 +13,7 @@
 #import <FacebookSDK/FacebookSDK.h>
 #import <Foundation/Foundation.h>
 #import <HockeySDK/HockeySDK.h>
+#import <sys/utsname.h>
 #import <Twitter/TWTweetComposeViewController.h>
 
 #import "AFHTTPClient.h"
@@ -42,6 +42,8 @@
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
+#import "HONUserProfileViewController.h"
+#import "HONSettingsViewController.h"
 
 #import "HONMailActivity.h"
 
@@ -960,7 +962,7 @@ NSString * const kTwilioSMS = @"6475577873";
 						@"like_total"];
 	
 	for (NSString *key in totals) {
-//		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	}
 	
@@ -1041,6 +1043,15 @@ NSString * const kTwilioSMS = @"6475577873";
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
+		
+		//NSLog(@"DEVICE:[%@]", [UIDevice currentDevice].description);
+		
+		struct utsname systemInfo;
+		uname(&systemInfo);
+		
+//		return [NSString stringWithCString:systemInfo.machine
+//								  encoding:NSUTF8StringEncoding];
+//		
 		
 		
 		// This prevents the UA Library from registering with UIApplication by default. This will allow
@@ -1140,25 +1151,28 @@ NSString * const kTwilioSMS = @"6475577873";
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
-		if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:@"Find / invite contacts?"
-															   delegate:self
-													  cancelButtonTitle:@"No"
-													  otherButtonTitles:@"Find people", nil];
-			[alertView setTag:3];
-			[alertView show];
-		}
 		
-		if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:@"Share Volley with your friends!"
-															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"Share", nil];
-			[alertView setTag:4];
-			[alertView show];
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
+			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
+			if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+																	message:@"Get more subscribers now, tap OK."
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"OK", nil];
+				[alertView setTag:3];
+				[alertView show];
+			}
+			
+			if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+																	message:@"Get more subscribers now, tap OK."
+																   delegate:self
+														  cancelButtonTitle:@"Cancel"
+														  otherButtonTitles:@"OK", nil];
+				[alertView setTag:4];
+				[alertView show];
+			}
 		}
 		
 		
@@ -1236,57 +1250,20 @@ NSString * const kTwilioSMS = @"6475577873";
 //			AudioServicesPlaySystemSound(1007);
 //			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 			
-			if ([userInfo objectForKey:@"type"] != nil) {
-				int type_id = [[userInfo objectForKey:@"type"] intValue];
-				switch (type_id) {
-						
-					// challenge request
-					case 1:{
-						_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
-//						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//																			message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-//																		   delegate:self
-//																  cancelButtonTitle:@"Cancel"
-//																  otherButtonTitles:@"OK", nil];
-//						[alertView setTag:3];
-//						[alertView show];
-						break;}
-						
-						// poke
-					case 2:
-//						[self _showOKAlert:@"Poke"
-//							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-						break;
-						
-						// accpeted challenge
-					case 3:
-//						[self _showOKAlert:@""
-//							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-						break;
-						
-					default:
-//						[self _showOKAlert:@""
-//							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-						break;
-				}
-			
-			} else {
-//				[self _showOKAlert:@""
-//					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+			if ([userInfo objectForKey:@"type"] == nil) {
+				[self _showOKAlert:@""
+					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			}
 			
 		} else {
 			int pushType = [[userInfo objectForKey:@"type"] intValue];
 			
 			// somone joined your volley
-			
-			
-			
 			if (pushType == 1)
 				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
 			
 			// user verified
-			else if ([[userInfo objectForKey:@"type"] intValue] == 2) {
+			else if (pushType == 2) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																	message:@"Awesome! You have been Volley Verified! Would you like to share Volley with your friends?"//[userInfo objectForKey:@"aps"]
 																   delegate:self
@@ -1295,9 +1272,28 @@ NSString * const kTwilioSMS = @"6475577873";
 				[alertView setTag:1];
 				[alertView show];
 			
-			} else if (pushType == 2) {
-				
+			// user profile
+			} else if (pushType == 3) {
+				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+				userPofileViewController.userID = [[userInfo objectForKey:@"user"] intValue];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			
+			// find friends
+			} else if (pushType == 4) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			
+			// settings
+			} else if (pushType == 5) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 			}
+			
+			
 		}
 	}
 }

@@ -279,12 +279,12 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"exploreRefresh_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Find / invite contacts?"
+	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Find people", nil];
+												  otherButtonTitles:@"OK", nil];
 		[alertView setTag:0];
 		[alertView show];
 	}

@@ -1,5 +1,5 @@
 //
-//  HONPrivacyViewController.h
+//  HONFAQViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.28.12.
@@ -10,5 +10,5 @@
 
 #import "HONWebViewController.h"
 
-@interface HONPrivacyViewController : HONWebViewController
+@interface HONFAQViewController : HONWebViewController
 @end

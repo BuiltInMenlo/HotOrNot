@@ -301,11 +301,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																		message:@"Share Volley with your friends!"
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+																		message:@"Get more subscribers now, tap OK."
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
-															  otherButtonTitles:@"Share", nil];
+															  otherButtonTitles:@"OK", nil];
 					[alertView setTag:0];
 					[alertView show];
 					
@@ -489,12 +489,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyRefresh_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Share Volley with your friends!"
+	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Share", nil];
+												  otherButtonTitles:@"OK", nil];
 		[alertView setTag:0];
 		[alertView show];
 	}
@@ -724,7 +724,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Looks like a fake profile", @"Abusive content", nil];
+													otherButtonTitles:@"This user does not look 13 - 19", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:1];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -883,12 +883,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		}
 	
 	} else if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Fake" : (buttonIndex == 1) ? @"Abusive" : @" Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Confirm" : @" Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
-		if (buttonIndex == 0 || buttonIndex == 1) {
+		if (buttonIndex == 0) {
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
 									   delegate:nil

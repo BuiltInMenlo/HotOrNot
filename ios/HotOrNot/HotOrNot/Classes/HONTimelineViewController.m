@@ -467,6 +467,13 @@
 			[self _retrieveUserByID];
 	}
 	
+	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	searchButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
+	[searchButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
+	[searchButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
+	[searchButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:searchButton];
+	
 	if (!_isPushView) {
 #if __ALWAYS_VERIFY__ == 1
 		[self _goVerify];
@@ -595,6 +602,16 @@
 	}
 }
 
+- (void)_goAddContacts {
+	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goRemoveTutorial {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {
@@ -622,11 +639,11 @@
 	}];
 	
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite Friends"
-															message:@"Do you want to invite friends?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Invite", nil];
+												  otherButtonTitles:@"OK", nil];
 		[alertView show];
 	}
 }

@@ -1,21 +1,21 @@
 //
-//  HONPrivacyViewController.m
+//  HONFAQViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.28.12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONPrivacyViewController.h"
+#import "HONFAQViewController.h"
 
 
-@interface HONPrivacyViewController () <UIWebViewDelegate>
+@interface HONFAQViewController () <UIWebViewDelegate>
 @end
 
-@implementation HONPrivacyViewController
+@implementation HONFAQViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/privacy.htm", [HONAppDelegate customerServiceURL]] title:@"Privacy Policy"])) {
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/faq.htm", [HONAppDelegate customerServiceURL]] title:@"FAQ"])) {
 	}
 	
 	return (self);

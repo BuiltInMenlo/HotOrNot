@@ -48,26 +48,32 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-	[self.view addSubview:bgImageView];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_headerTitle];
-	[headerView hideRefreshing];
-	[self.view addSubview:headerView];
-	
-	_doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[_doneButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[_doneButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-	[_doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:_doneButton];
-	
-	_webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0)];
+	_webView = [[UIWebView alloc] initWithFrame:self.view.frame];
 	[_webView setBackgroundColor:[UIColor clearColor]];
 	_webView.delegate = self;
 	[_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
 	[self.view addSubview:_webView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	[headerView hideRefreshing];
+	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	headerView.backgroundColor = [UIColor blackColor];
+	[headerView addButton:closeButton];
+	[self.view addSubview:headerView];
+	
+	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
+	headerTitleLabel.backgroundColor = [UIColor clearColor];
+	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	headerTitleLabel.textColor = [UIColor whiteColor];
+	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
+	headerTitleLabel.text = _headerTitle;
+	[headerView addSubview:headerTitleLabel];
 	
 	if (!_progressHUD) {
 		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];

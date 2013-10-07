@@ -57,7 +57,11 @@
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
-				
+		
+		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
+		gutterView.backgroundColor = [UIColor blackColor];
+		[self addSubview:gutterView];
+		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_captureButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 133.0, 94.0, 94.0);
 		//_captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);

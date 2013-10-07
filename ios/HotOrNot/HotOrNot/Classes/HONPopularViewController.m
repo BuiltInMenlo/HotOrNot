@@ -272,11 +272,11 @@
 	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:@"Find / invite contacts?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Find people", nil];
+												  otherButtonTitles:@"OK", nil];
 		[alertView setTag:0];
 		[alertView show];
 		

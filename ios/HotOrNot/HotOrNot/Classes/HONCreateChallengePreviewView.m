@@ -67,7 +67,8 @@
 		
 		_subjectName = subject;
 		
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:0.3333333];//[HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / ([HONAppDelegate isRetina5]) ? 1280.0 : 1280.0)];
+		//_previewImage = [HONImagingDepictor scaleImage:image byFactor:0.3333333];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
 		NSLog(@"MIRRORED -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
 		float mult = (self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0;

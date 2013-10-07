@@ -200,7 +200,7 @@
 					NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 					[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 				}];
@@ -507,6 +507,10 @@
 		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
 		_tutorialBubbleImageView.alpha = 0.0;
 		[_cameraOverlayView addSubview:_tutorialBubbleImageView];
+		
+		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
+		gutterView.backgroundColor = [UIColor blackColor];
+		[_cameraOverlayView addSubview:gutterView];
 		
 		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);

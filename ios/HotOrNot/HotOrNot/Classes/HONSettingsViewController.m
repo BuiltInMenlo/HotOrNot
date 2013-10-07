@@ -15,7 +15,7 @@
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
-#import "HONPrivacyViewController.h"
+#import "HONFAQViewController.h"
 #import "HONSupportViewController.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
@@ -37,13 +37,13 @@
 - (id)init {
 	if ((self = [super init])) {
 		
-		_captions = [NSArray arrayWithObjects:
-						 NSLocalizedString(@"settings_notifications", nil),
-						 NSLocalizedString(@"settings_inviteSMS", nil),
-						 NSLocalizedString(@"settings_inviteEmail", nil),
-						 NSLocalizedString(@"settings_changeUsername", nil),
-						 NSLocalizedString(@"settings_support", nil),
-						 NSLocalizedString(@"settings_privacy", nil), nil];
+		_captions = @[NSLocalizedString(@"settings_notifications", nil),
+					  NSLocalizedString(@"settings_inviteSMS", nil),
+					  NSLocalizedString(@"settings_inviteEmail", nil),
+					  NSLocalizedString(@"settings_changeUsername", nil),
+					  @"Change email",
+					  NSLocalizedString(@"settings_support", nil),
+					  @"FAQ"];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -78,16 +78,25 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	closeButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:NSLocalizedString(@"header_settings", nil)];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -13.0);
 	_headerView.backgroundColor = [UIColor blackColor];
 	[_headerView hideRefreshing];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
+	
+	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
+	headerTitleLabel.backgroundColor = [UIColor clearColor];
+	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	headerTitleLabel.textColor = [UIColor whiteColor];
+	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
+	headerTitleLabel.text = @"Settings";
+	[_headerView addSubview:headerTitleLabel];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavBarHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -257,8 +266,32 @@
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
+			
+		case 4:{
+			[[Mixpanel sharedInstance] track:@"Settings - Change Email"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			if ([MFMailComposeViewController canSendMail]) {
+				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+				mailComposeViewController.mailComposeDelegate = self;
+				[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
+				[mailComposeViewController setSubject:@"Change My Email Address"];
+				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				
+				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																	message:@"Cannot send email from this device!"
+																   delegate:nil
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView show];
+			}
+			break;}
 
-		case 4:
+		case 5:
 			[[Mixpanel sharedInstance] track:@"Settings - Show Support"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -268,12 +301,12 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 5:
-			[[Mixpanel sharedInstance] track:@"Settings - Show Privacy"
+		case 6:
+			[[Mixpanel sharedInstance] track:@"Settings - Show FAQ"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyViewController alloc] init]];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
