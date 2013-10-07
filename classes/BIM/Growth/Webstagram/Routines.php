@@ -217,7 +217,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             foreach( $taggedIds as $tag => $ids ){
                 foreach( $ids as $id ){
                     $message = $this->persona->getVolleyQuote( 'instagram' );
-                    $this->submitComment( $id, $message );
+                    //$this->submitComment( $id, $message );
                     
                     if( mt_rand(1,100) <= 100  ){
                         $this->like($id);
@@ -668,6 +668,14 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                         ";
                         $params = array($name,$matches[1],$profileUrl);
                         $dao->prepareAndExecute( $sql, $params );
+                    } else if( preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $matches[1] ) ) {
+                        $sql = "
+                        	insert ignore into growth.ig_kik_canada
+                        	(name,kik_id,url)
+                        	values (?,?,?)
+                        ";
+                        $params = array($name,$matches[1],$profileUrl);
+                        $dao->prepareAndExecute( $sql, $params );
                     } else {
                         echo "no kik for $name\n";
                     }
@@ -691,6 +699,24 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         foreach( $kikStrings as $kikString ){
             $kikString = strip_tags($kikString);
             $ptrn = '@kik[\W\s]*([\w]+)@is';
+            preg_match( $ptrn, $kikString, $matches );
+            if( !empty( $matches[1] ) ){
+                echo $matches[1]."\n";
+            }
+        }
+    }
+    
+    /**
+     * parse kik ids out of the db data we collectd from webstagram
+     */
+    public static function parseEmails(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $ptrn = '/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i';
+        $sql = "select kik_id from growth.ig_kik_canada";
+        $stmt = $dao->prepareAndExecute( $sql );
+        $kikStrings = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        foreach( $kikStrings as $kikString ){
+            $kikString = strip_tags($kikString);
             preg_match( $ptrn, $kikString, $matches );
             if( !empty( $matches[1] ) ){
                 echo $matches[1]."\n";
@@ -740,8 +766,17 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                         ";
                         $params = array($name,$matches[1],$profileUrl);
                         $dao->prepareAndExecute( $sql, $params );
+                    } else if( preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $matches[1] ) ) {
+                        echo "found email for $name\n";
+                        $sql = "
+                        	insert ignore into growth.ig_kik
+                        	(name,kik_id,url)
+                        	values (?,?,?)
+                        ";
+                        $params = array($name,$matches[1],$profileUrl);
+                        $dao->prepareAndExecute( $sql, $params );
                     } else {
-                        echo "no kik for $name\n";
+                        echo "no kik or email for $name\n";
                     }
                 }
                 
