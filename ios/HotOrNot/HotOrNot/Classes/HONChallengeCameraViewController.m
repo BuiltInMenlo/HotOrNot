@@ -183,13 +183,13 @@
 		por3.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		[s3 putObject:por3];
 		
-		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por4.delegate = self;
-		por4.contentType = @"image/jpeg";
-		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-		[s3 putObject:por4];
+//		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
+//		por4.delegate = self;
+//		por4.contentType = @"image/jpeg";
+//		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+//		[s3 putObject:por4];
 		
-		_s3Uploads = [NSArray arrayWithObjects:por3, por4, nil];
+		_s3Uploads = [NSArray arrayWithObjects:por3, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
