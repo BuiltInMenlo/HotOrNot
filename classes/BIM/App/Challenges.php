@@ -87,12 +87,16 @@ class BIM_App_Challenges extends BIM_App_Base{
             )
         );
         
-        if( $delay ){
-            $pushTime = time() + $delay;
-            $this->createTimedPush($push, $pushTime);
-        } else {
-            BIM_Jobs_Utils::queuePush( $push );
-        }
+        BIM_Jobs_Utils::queuePush( $push );
+        
+        // schedule 2 more pushesÊfor each person in the volley during daytime hours
+        $time = time() + 86400;
+        $time = $time - ( $time % 86400 );
+        $secondPushTime = $time + (3600 * 17);
+        $thirdPushTime = $secondPushTime + (3600 * 9);
+        
+        $this->createTimedPush($push, $secondPushTime);
+        $this->createTimedPush($push, $thirdPushTime);
     }
     
     public function createTimedAccept( $volleyObject, $creator, $targetUser, $time ){
@@ -225,15 +229,6 @@ class BIM_App_Challenges extends BIM_App_Base{
             )
         );
         BIM_Jobs_Utils::queuePush( $push );
-        
-        // schedule 2 more pushesÊfor each person in the volley during daytime hours
-        $time = time() + 86400;
-        $time = $time - ( $time % 86400 );
-        $secondPushTime = $time + (3600 * 17);
-        $thirdPushTime = $secondPushTime + (3600 * 9);
-        
-        $this->createTimedPush($push, $secondPushTime);
-        $this->createTimedPush($push, $thirdPushTime);
     }
     
     /** 
