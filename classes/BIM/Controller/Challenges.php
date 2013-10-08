@@ -237,7 +237,6 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if( !empty( $input->challengeID ) ){
             $challenge = BIM_Model_Volley::get( $input->challengeID );
             if( !empty( $input->cancelFor ) ){
-                $challenges = new BIM_App_Challenges();
                 BIM_Utils::cancelTimedPushes( $input->cancelFor, $input->challengeID );
             }
         }
