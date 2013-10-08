@@ -95,8 +95,8 @@ class BIM_App_Challenges extends BIM_App_Base{
         $secondPushTime = $time + (3600 * 17);
         $thirdPushTime = $secondPushTime + (3600 * 9);
         
-        $this->createTimedPush($push, $secondPushTime);
-        $this->createTimedPush($push, $thirdPushTime);
+        //$this->createTimedPush($push, $secondPushTime);
+        //$this->createTimedPush($push, $thirdPushTime);
     }
     
     public function createTimedAccept( $volleyObject, $creator, $targetUser, $time ){
