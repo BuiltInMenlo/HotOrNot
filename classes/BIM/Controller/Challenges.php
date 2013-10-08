@@ -234,9 +234,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function get(){
         $input = (object) ($_POST ? $_POST : $_GET);
         $challenge = array();
-        if( isset( $input->challengeID ) ){
-            $challenges = new BIM_App_Challenges();
+        if( !empty( $input->challengeID ) ){
             $challenge = BIM_Model_Volley::get( $input->challengeID );
+            if( !empty( $input->cancelFor ) ){
+                $challenges = new BIM_App_Challenges();
+                BIM_Utils::cancelTimedPushes( $input->cancelFor, $input->challengeID );
+            }
         }
         return $challenge;
     }

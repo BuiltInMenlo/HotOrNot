@@ -64,22 +64,10 @@ class BIM_App_Challenges extends BIM_App_Base{
     }
     
     public function doAcceptNotification( $volleyObject, $creator, $targetUser, $delay = 0 ){
-        // @jason joined the Volley #WhatsUp"
-        $msg = "$targetUser->username has joined the Volley $volleyObject->subject";
-        
-        $deviceTokens = array();
-        $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
-        foreach( $users as $user ){
-            if( $user->canPush() && ($targetUser->id != $user->id) ){
-                $deviceTokens[] = $user->device_token;
-            }
-        }
-        
-        $deviceTokens = array_unique($deviceTokens);
+        $msg = "@$targetUser->username has joined the Volley $volleyObject->subject";
         
         $push = array(
-            "device_tokens" =>  $deviceTokens,
-            "type" => "1",
+            "type" => "6",
             "challenge" => $volleyObject->id,
             "aps" =>  array(
                 "alert" =>  $msg,
@@ -87,16 +75,24 @@ class BIM_App_Challenges extends BIM_App_Base{
             )
         );
         
-        BIM_Jobs_Utils::queuePush( $push );
-        
-        // schedule 2 more pushesÊfor each person in the volley during daytime hours
         $time = time() + 86400;
         $time = $time - ( $time % 86400 );
         $secondPushTime = $time + (3600 * 17);
         $thirdPushTime = $secondPushTime + (3600 * 9);
         
-        //$this->createTimedPush($push, $secondPushTime);
-        //$this->createTimedPush($push, $thirdPushTime);
+        $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
+        foreach( $users as $user ){
+            if( $user->canPush() && ($targetUser->id != $user->id) ){
+                $push["device_tokens"] =  array( $user->device_token );
+                BIM_Jobs_Utils::queuePush( $push );
+                
+                $jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
+                $this->createTimedPush($push, $secondPushTime, $jobId );
+                
+                $jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
+                $this->createTimedPush($push, $thirdPushTime,  $jobId );
+            }
+        }
     }
     
     public function createTimedAccept( $volleyObject, $creator, $targetUser, $time ){
@@ -120,7 +116,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $j->createJbb($job);
     }
     
-    public function createTimedPush( $push, $time ){
+    public function createTimedPush( $push, $time, $jobId ){
         $time = new DateTime("@$time");
         $time = $time->format('Y-m-d H:i:s');
         
@@ -132,6 +128,12 @@ class BIM_App_Challenges extends BIM_App_Base{
             'params' => $push,
             'is_temp' => true,
         );
+        
+        if( !empty( $jobId ) ){
+            // create an id that we can use to remove and cancel the job later
+            $job->id = $jobId;
+        }
+        file_put_contents('/tmp/debug', print_r( array( $job ) , 1) );
         
         $j = new BIM_Jobs_Gearman();
         $j->createJbb($job);
