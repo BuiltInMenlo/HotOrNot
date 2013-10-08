@@ -30,6 +30,7 @@
 	if ((self = [super init])) {
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
 		[self addSubview:_bgImageView];
+		[super hideChevron];
 	}
 	
 	return (self);
@@ -39,6 +40,7 @@
 	if ((self = [self init])) {
 		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 163.0);
 		_bgImageView.image = [UIImage imageNamed:@"profileBackground"];
+		[super hideChevron];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 97.0, 97.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
@@ -88,6 +90,7 @@
 - (id)initAsMidCell:(NSString *)caption {
 	if ((self = [self init])) {
 		_caption = caption;
+		[super hideChevron];
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 21.0, 200.0, 20.0)];
 		_captionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
@@ -106,7 +109,8 @@
 	int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
 	NSString *formattedScore = [numberFormatter stringFromNumber:[NSNumber numberWithInt:score]];
 	
-	CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//	CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	CGSize size = [formattedScore sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18]}];
 	_scoreLabel.frame = CGRectMake(78.0, 13.0, size.width, size.height);
 	_scoreLabel.text = formattedScore;
 	

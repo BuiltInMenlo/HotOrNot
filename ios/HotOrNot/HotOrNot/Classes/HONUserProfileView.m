@@ -80,7 +80,8 @@
 		_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate ageForDate:birthday]];
 		[holderView addSubview:_nameAgeLabel];
 		
-		CGSize size = [_nameAgeLabel.text sizeWithFont:_nameAgeLabel.font constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//		CGSize size = [_nameAgeLabel.text sizeWithFont:_nameAgeLabel.font constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		CGSize size = [_nameAgeLabel.text sizeWithAttributes:@{NSFontAttributeName:_nameAgeLabel.font}];
 		_nameAgeLabel.frame = CGRectMake(160.0 - (size.width * 0.5), 222.0, size.width, size.height);
 		
 		UIImageView *checkIconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkMarkIcon"]];

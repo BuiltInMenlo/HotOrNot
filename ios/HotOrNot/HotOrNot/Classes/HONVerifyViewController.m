@@ -35,6 +35,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONCollectionViewFlowLayout.h"
 #import "HONChangeAvatarViewController.h"
+#import "HONFAQViewController.h"
 
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
@@ -545,17 +546,27 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
+		[self.view addSubview:_tutorialImageView];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = _tutorialImageView.frame;
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_tutorialImageView.alpha = 1.0;
 		}];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify FAQ"
+															message:@"Do you want the see the FAQ about verifying?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:2];
+		[alertView show];
+
 		
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
 //			closeButton.backgroundColor = [HONAppDelegate honDebugGreenColor];
@@ -668,11 +679,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	//[_snapPreviewViewController showControls];
-	
 	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_snapPreviewViewController.view.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_snapPreviewViewController.view removeFromSuperview];
+			_snapPreviewViewController = nil;
+		}];
 	}
 }
 
@@ -697,7 +710,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Verify & subscribe", @"Verify", nil];
+													otherButtonTitles:@"Verify & follow", @"Verify", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -757,7 +770,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -869,7 +882,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Subscribe" : (buttonIndex == 1) ? @"Subscribe" : @" Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Follow" : (buttonIndex == 1) ? @"Approve" : @" Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -925,6 +938,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
+		}
+	
+	} else if (alertView.tag == 2) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - FAQ %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

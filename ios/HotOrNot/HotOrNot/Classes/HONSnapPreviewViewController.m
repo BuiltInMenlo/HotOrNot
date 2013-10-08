@@ -771,9 +771,10 @@
 		[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
+		[_subscribeButton setTitle:(isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
+		
 		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-		_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 95.0 : 73.0, 44.0);
+		_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
 		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
@@ -1007,7 +1008,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -1065,8 +1066,10 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
-			[_subscribeButton setTitle:@"Unsubscribe" forState:UIControlStateNormal];
-			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_subscribeButton setTitle:@"Unfollow" forState:UIControlStateNormal];
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			[_subscribeButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_subscribeButton addTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 	
 	} else if (alertView.tag == 2) {
@@ -1077,7 +1080,9 @@
 		
 		if (buttonIndex == 1) {
 			[self _removeFriend:_userVO.userID];
-			[_subscribeButton setTitle:@"Subscribe" forState:UIControlStateNormal];
+			[_subscribeButton setTitle:@"Follow" forState:UIControlStateNormal];
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			[_subscribeButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 	
@@ -1088,8 +1093,8 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
-			[_subscribeButton setTitle:@"Unsubscribe" forState:UIControlStateNormal];
-			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_subscribeButton setTitle:@"Unfollow" forState:UIControlStateNormal];
+//			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 		
 		[self.delegate snapPreviewViewControllerClose:self];

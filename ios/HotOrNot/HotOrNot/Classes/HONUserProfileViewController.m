@@ -50,6 +50,8 @@
 @property (nonatomic, strong) UIButton *subscribeButton;
 @property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic) int challengeCounter;
+@property (nonatomic) int followingCounter;
+
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @end
@@ -61,8 +63,8 @@
 
 - (id)initWithBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
-		self.view.backgroundColor = [UIColor clearColor];
 		_bgImageView = imageView;
+		self.view.backgroundColor = (imageView == nil) ? [UIColor blackColor] : [UIColor clearColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
@@ -101,7 +103,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -141,11 +143,7 @@
 		} else {
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-			
-			_subscribeesLabel.text = [NSString stringWithFormat:@"%@ following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[result count]]]];
-			
+			_followingCounter = [result count];
 			[self _makeUI];
 		}
 		
@@ -332,6 +330,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
 	[_bgHolderView addSubview:_bgImageView];
 		
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
@@ -681,14 +680,14 @@
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
-	
+
 	_subscribeesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 390.0, 260.0, 30.0)];
 	_subscribeesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_subscribeesLabel.textColor = [UIColor whiteColor];
 	_subscribeesLabel.backgroundColor = [UIColor clearColor];
-	_subscribeesLabel.text = [NSString stringWithFormat:@"%@ following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate subscribeeList] count]]]];
+	_subscribeesLabel.text = [NSString stringWithFormat:@"%@ following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
 	[_scrollView addSubview:_subscribeesLabel];
-	
+
 	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 430.0, 260.0, 30.0)];
 	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_volleysLabel.textColor = [UIColor whiteColor];
@@ -712,7 +711,7 @@
 	subscribeesButton.frame = _subscribeesLabel.frame;
 	[subscribeesButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:subscribeesButton];
-	
+
 	
 	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -729,7 +728,7 @@
 		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
-//		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
@@ -752,14 +751,17 @@
 		[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		
+		[_subscribeButton setTitle:(isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
+		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+		_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
-//		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
@@ -776,13 +778,6 @@
 								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 								  [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
 	}
-	
-//	_footerToolbar.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	
-	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
-	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-	_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 95.0 : 73.0, 44.0);
-	
 	
 	[self _retrieveChallenges];
 }
@@ -846,7 +841,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -921,9 +916,10 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
-			[_subscribeButton setTitle:@"Unsubscribe" forState:UIControlStateNormal];
-			_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
-			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_subscribeButton setTitle:@"Unfollow" forState:UIControlStateNormal];
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			[_subscribeButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_subscribeButton addTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 		
 	} else if (alertView.tag == 4) {
@@ -934,8 +930,9 @@
 		
 		if (buttonIndex == 1) {
 			[self _removeFriend:_userVO.userID];
-			[_subscribeButton setTitle:@"Subscribe" forState:UIControlStateNormal];
-			_subscribeButton.frame = CGRectMake(0.0, 0.0, 73.0, 44.0);
+			[_subscribeButton setTitle:@"Follow" forState:UIControlStateNormal];
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			[_subscribeButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 	

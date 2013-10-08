@@ -303,6 +303,44 @@
 	}];
 }
 
+- (void)_finalizeUpload {
+	
+	NSString *urlPath = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							urlPath, @"imgURL",
+							nil];
+	
+	NSLog(@"PARAMS:[%@]", params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessChallengeImage);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIProcessChallengeImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -597,6 +635,8 @@
 		}
 		
 		[_previewView uploadComplete];
+		[self _finalizeUpload];
+			
 		if (_hasSubmitted) {
 //			if (_isFirstCamera) {
 //				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
@@ -636,14 +676,12 @@
 	// image is wider than tall (800x600)
 	if (_rawImage.size.width > _rawImage.size.height) {
 		_isMainCamera = (_rawImage.size.height > 1000);
-//		if (_isMainCamera)
-			_processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1707.0, 1280.0)] toRect:CGRectMake(374.0, 0.0, 960.0, 1280.0)];//_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
+		_processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1707.0, 1280.0)] toRect:CGRectMake(374.0, 0.0, 960.0, 1280.0)];//_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
 		
 	// image is taller than wide (600x800)
 	} else if (_rawImage.size.width < _rawImage.size.height) {
 		_isMainCamera = (_rawImage.size.width > 1000);
-//		if (_isMainCamera)
-			_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
+		_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
 	}
 	
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));

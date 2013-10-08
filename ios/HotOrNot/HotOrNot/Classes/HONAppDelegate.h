@@ -46,6 +46,8 @@ extern NSString * const kAPIUsersFirstRunComplete;
 extern NSString * const kAPISetUserAgeGroup;
 extern NSString * const kAPIJoinChallenge;
 extern NSString * const kAPIGetVerifyList;
+extern NSString * const kAPIProcessChallengeImage;
+extern NSString * const kAPIProcessUserImage;
 
 
 // view heights

@@ -40,7 +40,8 @@
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];
 	
-	CGSize size = [_commentVO.content sizeWithFont:[[HONAppDelegate cartoGothicBook] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//	CGSize size = [_commentVO.content sizeWithFont:[[HONAppDelegate cartoGothicBook] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate cartoGothicBook] fontWithSize:16]}];
 	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 33.0, 200.0, size.height)];
 	contentLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	contentLabel.textColor = [HONAppDelegate honBlueTextColor];

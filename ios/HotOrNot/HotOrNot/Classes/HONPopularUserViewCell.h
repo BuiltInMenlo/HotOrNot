@@ -13,6 +13,7 @@
 @protocol HONPopularUserViewCellDelegate;
 @interface HONPopularUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+- (void)toggleSelected:(BOOL)isSelected;
 
 @property (nonatomic, retain) HONPopularUserVO *popularUserVO;
 @property (nonatomic) BOOL isSelected;

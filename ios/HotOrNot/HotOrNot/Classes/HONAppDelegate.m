@@ -93,6 +93,8 @@ NSString * const kAPISetUserAgeGroup = @"users/setage";
 NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
 NSString * const kAPIJoinChallenge = @"challenges/join";
 NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
+NSString * const kAPIProcessChallengeImage = @"challenges/processimage";
+NSString * const kAPIProcessUserImage = @"users/processimage";
 
 
 // view heights
@@ -814,7 +816,7 @@ NSString * const kTwilioSMS = @"6475577873";
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Twitter", @"Instagram", nil];
+													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.tabBarController.view];
 	
@@ -880,31 +882,44 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	
+	NSShadow *shadow = [NSShadow new];
+	[shadow setShadowColor:[UIColor clearColor]];
+	[shadow setShadowOffset:CGSizeMake(0.0f, 0.0f)];
+	
 //	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
 //	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
 	[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [UIColor whiteColor], UITextAttributeTextColor,
-														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], UITextAttributeFont, nil]];
+//														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor whiteColor], NSForegroundColorAttributeName,
+//														  [UIColor clearColor], UITextAttributeTextShadowColor,
+														  shadow, NSShadowAttributeName,
+//														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], UITextAttributeFont, nil]];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], NSFontAttributeName, nil]];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [UIColor whiteColor], UITextAttributeTextColor,
-														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateNormal];
+//														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor whiteColor], NSForegroundColorAttributeName,
+//														  [UIColor clearColor], UITextAttributeTextShadowColor,
+														  shadow, NSShadowAttributeName,
+//														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont, nil] forState:UIControlStateNormal];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], NSFontAttributeName, nil] forState:UIControlStateNormal];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [UIColor whiteColor], UITextAttributeTextColor,
-														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateHighlighted];
+//														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor whiteColor], NSForegroundColorAttributeName,
+//														  [UIColor clearColor], UITextAttributeTextShadowColor,
+														  shadow, NSShadowAttributeName,
+//														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont, nil] forState:UIControlStateHighlighted];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], NSFontAttributeName, nil] forState:UIControlStateHighlighted];
 	
 	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
-	[[UITabBar appearance] setTintColor:[UIColor blackColor]];
+//	[[UITabBar appearance] setTintColor:[UIColor blackColor]];
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
 	[[UIToolbar appearance] setBarTintColor:[UIColor blackColor]];
-	[[UIToolbar appearance] setTintColor:[UIColor blackColor]];
+//	[[UIToolbar appearance] setTintColor:[UIColor blackColor]];
 	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];

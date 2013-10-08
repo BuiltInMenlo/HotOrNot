@@ -632,7 +632,8 @@
 
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+	[self.view addSubview:_tutorialImageView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tutorialImageView.alpha = 1.0;
@@ -644,7 +645,13 @@
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"OK", nil];
+		[alertView setTag:0];
 		[alertView show];
+	
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
@@ -870,7 +877,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 18.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -1066,10 +1073,12 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 1) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+	if (alertView.tag == 0) {
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 	}
 }
 

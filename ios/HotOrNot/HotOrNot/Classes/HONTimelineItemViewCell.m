@@ -134,7 +134,7 @@
 //	NSLog(@"CREATOR:(%@)[%f] CHALLENGER:(%@)[%f]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", _challengeVO.creatorVO.dictionary, [_challengeVO.creatorVO.joinedDate timeIntervalSinceNow], ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).dictionary, [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow]);
 	
 	_heroOpponentVO = _challengeVO.creatorVO;
-	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]))
+	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]) && !_challengeVO.isCelebCreated)
 		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
 				
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);

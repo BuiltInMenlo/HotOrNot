@@ -18,11 +18,13 @@
 #import "HONSearchBarHeaderView.h"
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
+#import "HONImagingDepictor.h"
 
 
 @interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
+@property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -189,9 +191,16 @@
 	
 	_users = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];
+	_cells = [NSMutableArray array];
 	
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
 		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
+	
+	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	selectAllButton.frame = CGRectMake(10.0, 13.0, 64.0, 44.0);
+	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	[selectAllButton addTarget:self action:@selector(_goSelectAll) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
@@ -202,6 +211,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
 	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
 	headerView.backgroundColor = [UIColor blackColor];
+	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	
@@ -267,23 +277,47 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	for (HONPopularUserVO *vo in _selectedUsers)
-		[self _addFriend:vo.userID];
-	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
-	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
-															message:@"Get more subscribers now, tap OK."
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
-		[alertView show];
+	if ([_selectedUsers count] > 0) {
+		for (HONPopularUserVO *vo in _selectedUsers)
+			[self _addFriend:vo.userID];
 		
-	
+		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
+		if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+																message:@"Get more subscribers now, tap OK."
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"OK", nil];
+			[alertView setTag:0];
+			[alertView show];
+			
+			
+		} else {
+			[self dismissViewControllerAnimated:YES completion:nil];
+		}
+		
 	} else {
-		[self dismissViewControllerAnimated:YES completion:nil];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure sure you don't want to follow everyone?"
+															message:@""
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"No", nil];
+		[alertView setTag:1];
+		[alertView show];
 	}
+}
+
+- (void)_goSelectAll {
+	[[Mixpanel sharedInstance] track:@"Popular People - Select All"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[_selectedUsers removeAllObjects];
+	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+	
+	for (HONPopularUserViewCell *cell in _cells)
+		[cell toggleSelected:YES];
 }
 
 
@@ -361,6 +395,8 @@
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
+	[_cells addObject:cell];
+	
 	return (cell);
 }
 
@@ -381,14 +417,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	bgImageView.backgroundColor = [UIColor blackColor];
-	
 	HONPopularUserVO *vo = [_users objectAtIndex:indexPath.row];
 	
 	NSLog(@"didSelectRowAtIndexPath:[%@]", vo.username);
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:bgImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -411,6 +444,41 @@
 		} else {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 			}];
+		}
+	
+	} else if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			[_selectedUsers removeAllObjects];
+			for (NSDictionary *dict in [HONAppDelegate popularPeople])
+				[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+			
+			for (HONPopularUserViewCell *cell in _cells)
+				[cell toggleSelected:YES];
+			
+			for (HONPopularUserVO *vo in _selectedUsers)
+				[self _addFriend:vo.userID];
+			
+			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
+			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+																	message:@"Get more subscribers now, tap OK."
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"OK", nil];
+				[alertView setTag:0];
+				[alertView show];
+				
+				
+			} else {
+				[self dismissViewControllerAnimated:YES completion:nil];
+			}
+			
+		} else {
+			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 	}
 }

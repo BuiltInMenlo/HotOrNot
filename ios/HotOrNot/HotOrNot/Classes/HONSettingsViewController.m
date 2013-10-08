@@ -41,7 +41,7 @@
 					  NSLocalizedString(@"settings_inviteSMS", nil),
 					  NSLocalizedString(@"settings_inviteEmail", nil),
 					  NSLocalizedString(@"settings_changeUsername", nil),
-					  @"Change email",
+					  @"Change Email",
 					  NSLocalizedString(@"settings_support", nil),
 					  @"FAQ"];
 		
@@ -206,7 +206,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	//[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	UINavigationController *navigationController;
 	//HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];

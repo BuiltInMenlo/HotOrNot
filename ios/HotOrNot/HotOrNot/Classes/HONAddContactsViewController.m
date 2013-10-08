@@ -574,8 +574,8 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Contacts Permissions"
-															message:@"We need your OK to access the the address book."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
+															message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
 														   delegate:nil
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
