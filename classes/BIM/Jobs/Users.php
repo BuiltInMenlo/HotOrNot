@@ -43,9 +43,17 @@ class BIM_Jobs_Users extends BIM_Jobs{
         $user = BIM_Model_User::get( $workload->data->user_id );
         $friend = BIM_Model_User::get( $workload->data->friend_id );
         
-        // @jason has added you as a friend
-        $msg = "@$user->username has subscribed to your Volley updates";
-        BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
+        $msg = "@$user->username has subscribed to your Volley updates!";
+        $push = array(
+            "device_tokens" => $friend->device_token,
+            "type" => 3,
+            "user" => $user->id, 
+            "aps" =>  array(
+                "alert" => $msg,
+                "sound" => "push_01.caf"
+            )
+        );
+        BIM_Jobs_Utils::queuePush($push);
     }
     
     public static function queueFriendAcceptedNotification( $userId, $friendId ){
