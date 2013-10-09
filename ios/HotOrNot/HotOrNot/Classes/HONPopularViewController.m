@@ -220,7 +220,7 @@
 	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
 	headerTitleLabel.textColor = [UIColor whiteColor];
 	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Find People";
+	headerTitleLabel.text = @"Follow People";
 	[headerView addSubview:headerTitleLabel];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];

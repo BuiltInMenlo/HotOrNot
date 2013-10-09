@@ -222,8 +222,9 @@
 	
 	if (total == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
 		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.hidden = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -297,7 +298,7 @@
 	
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina5] * 88.0) + 500.0 + (kSnapMediumDim * (respondedOpponents / 4))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina4Inch] * 88.0) + 500.0 + (kSnapMediumDim * (respondedOpponents / 4))));
 	//_scrollView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, -64.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;

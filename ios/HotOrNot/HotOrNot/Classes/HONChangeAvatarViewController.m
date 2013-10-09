@@ -249,7 +249,7 @@
 		_imagePicker.delegate = self;
 		
 		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.25f);
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		
 		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -298,7 +298,7 @@
 	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 	NSArray *features = [detctor featuresInImage:ciImage];
 	
-	if ([features count] > 0) {
+	if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
 		[self _uploadPhoto:image];
 //		[self dismissViewControllerAnimated:YES completion:^(void) {}];
 		
@@ -341,7 +341,7 @@
 		_imagePicker.delegate = self;
 		
 		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.25f);
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		
 		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];

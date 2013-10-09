@@ -431,7 +431,7 @@
     
     if (sourceType == UIImagePickerControllerSourceTypeCamera) {
         imagePickerController.showsCameraControls = NO;
-		float scale = ([HONAppDelegate isRetina5]) ? 1.55f : 1.25f;
+		float scale = ([HONAppDelegate isRetina4Inch]) ? 1.55f : 1.25f;
 		imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
 		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, scale, scale);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;

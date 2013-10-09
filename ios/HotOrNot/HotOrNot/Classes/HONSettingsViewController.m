@@ -16,7 +16,7 @@
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
 #import "HONFAQViewController.h"
-#import "HONSupportViewController.h"
+#import "HONTermsConditionsViewController.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
@@ -42,7 +42,7 @@
 					  NSLocalizedString(@"settings_inviteEmail", nil),
 					  NSLocalizedString(@"settings_changeUsername", nil),
 					  @"Change Email",
-					  NSLocalizedString(@"settings_support", nil),
+					  @"Terms & Conditions",
 					  @"FAQ"];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
@@ -296,7 +296,7 @@
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSupportViewController alloc] init]];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;

@@ -342,6 +342,7 @@
 	if (total == 0 && (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.hidden = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -560,7 +561,7 @@
 - (void)_reloadAvatarImage {
 	__weak typeof(self) weakSelf = self;
 	
-	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136_o.jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
@@ -726,7 +727,7 @@
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
-		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
+		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
@@ -759,7 +760,7 @@
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
-		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
+		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		

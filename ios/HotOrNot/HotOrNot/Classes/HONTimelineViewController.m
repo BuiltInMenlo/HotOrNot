@@ -467,12 +467,12 @@
 			[self _retrieveUserByID];
 	}
 	
-	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
-	[searchButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
-	[searchButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
-	[searchButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:searchButton];
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
+	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:inviteButton];
 	
 	if (!_isPushView) {
 #if __ALWAYS_VERIFY__ == 1
@@ -579,8 +579,9 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
+	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
 	_tutorialImageView.userInteractionEnabled = YES;
+	_tutorialImageView.hidden = YES;
 	_tutorialImageView.alpha = 0.0;
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];

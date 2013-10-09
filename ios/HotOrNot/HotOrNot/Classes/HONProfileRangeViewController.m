@@ -123,15 +123,15 @@
 	_ageRangeType = 1;
 	_ranges = [NSArray arrayWithObjects:@"13-17", @"18-25", @"26-35", @"36+", nil];
 	
-	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
+	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
 	bgImageView.frame = [UIScreen mainScreen].bounds;
 	[self.view addSubview:bgImageView];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 15.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
-	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunAgeRangeCopy-568h@2x" : @"firstRunAgeRangeCopy"];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 15.0, 254.0, ([HONAppDelegate isRetina4Inch]) ? 144.0 : 124.0)];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"firstRunAgeRangeCopy-568h@2x" : @"firstRunAgeRangeCopy"];
 	[self.view addSubview:captionImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 147.0, 244.0, 44.0)];
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina4Inch]) ? 192.0 : 147.0, 244.0, 44.0)];
 	inputBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
 	inputBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:inputBGImageView];

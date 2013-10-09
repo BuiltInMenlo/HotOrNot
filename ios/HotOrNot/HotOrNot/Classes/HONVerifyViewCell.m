@@ -47,7 +47,7 @@
 	[_challengeImageView removeFromSuperview];
 	_challengeImageView = nil;
 	
-	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	NSMutableString *imageURL = [_challengeVO.creatorVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -185.0, imageSize.width, imageSize.height);

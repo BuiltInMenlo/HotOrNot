@@ -124,11 +124,11 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
+	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
 	bgImageView.frame = [UIScreen mainScreen].bounds;
 	[self.view addSubview:bgImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 163.0, 244.0, 44.0)];
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina4Inch]) ? 192.0 : 163.0, 244.0, 44.0)];
 	inputBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
 	[self.view addSubview:inputBGImageView];
 	

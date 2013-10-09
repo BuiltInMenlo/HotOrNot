@@ -162,7 +162,7 @@
 	
 	__weak typeof(self) weakSelf = self;
 	
-	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, 0.0, imageSize.width, imageSize.height);
@@ -186,7 +186,7 @@
 	_imageView = nil;
 	
 	NSString *imageURL = [NSString stringWithFormat:@"%@_o.jpg", _opponentVO.imagePrefix];
-	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, 0.0, imageSize.width, imageSize.height);
 	
 	NSLog(@"CHALLENGE RELOADING:[%@]", imageURL);
@@ -604,6 +604,7 @@
 	if (total == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.hidden = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -638,17 +639,17 @@
 		}
 	}
 		
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"preview_total"] intValue];
-	if (!isFriend && total < [HONAppDelegate profileSubscribeThreshold]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:3];
-		[alertView show];
-		
-	} else
+//	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"preview_total"] intValue];
+//	if (!isFriend && total < [HONAppDelegate profileSubscribeThreshold]) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//															message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
+//														   delegate:self
+//												  cancelButtonTitle:@"No"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:3];
+//		[alertView show];
+//		
+//	} else
 		[self.delegate snapPreviewViewControllerClose:self];
 }
 
@@ -895,7 +896,7 @@
 - (void)_reloadProfileImage {
 	__weak typeof(self) weakSelf = self;
 	
-	CGSize imageSize = ([HONAppDelegate isRetina5]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
+	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
 	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136_o.jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];

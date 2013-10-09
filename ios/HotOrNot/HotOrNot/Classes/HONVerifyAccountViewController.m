@@ -101,8 +101,8 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina5]) ? 99.0 : 89.0)];
-	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? (_isEmail) ? @"verifyEmailText-568h@2x" : @"verifyPhoneText-568h@2x" : (_isEmail) ? @"verifyEmailText" : @"verifyPhoneText"];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina4Inch]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina4Inch]) ? 99.0 : 89.0)];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? (_isEmail) ? @"verifyEmailText-568h@2x" : @"verifyPhoneText-568h@2x" : (_isEmail) ? @"verifyEmailText" : @"verifyPhoneText"];
 	[self.view addSubview:captionImageView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -112,11 +112,11 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:doneButton];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 130.0, 244.0, 44.0)];
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina4Inch]) ? 192.0 : 130.0, 244.0, 44.0)];
 	usernameBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
 	[self.view addSubview:usernameBGImageView];
 	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake(55.0, ([HONAppDelegate isRetina5]) ? 201.0 : 138.0, 210.0, 30.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake(55.0, ([HONAppDelegate isRetina4Inch]) ? 201.0 : 138.0, 210.0, 30.0)];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;

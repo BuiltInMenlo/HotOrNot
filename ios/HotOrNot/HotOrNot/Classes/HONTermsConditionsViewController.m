@@ -1,21 +1,21 @@
 //
-//  HONSupportViewController.m
+//  HONTermsConditionsViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 10.23.12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONSupportViewController.h"
+#import "HONTermsConditionsViewController.h"
 
 
-@interface HONSupportViewController () <UIWebViewDelegate>
+@interface HONTermsConditionsViewController () <UIWebViewDelegate>
 @end
 
-@implementation HONSupportViewController
+@implementation HONTermsConditionsViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/support.htm", [HONAppDelegate customerServiceURL]] title:@"Support"])) {
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/terms.htm", [HONAppDelegate customerServiceURL]] title:@"Terms & Conditions"])) {
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	

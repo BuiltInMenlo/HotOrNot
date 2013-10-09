@@ -1,5 +1,5 @@
 //
-//  HONSupportViewController.h
+//  HONTermsConditionsViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 10.23.12.
@@ -10,5 +10,5 @@
 
 #import "HONWebViewController.h"
 
-@interface HONSupportViewController : HONWebViewController
+@interface HONTermsConditionsViewController : HONWebViewController
 @end

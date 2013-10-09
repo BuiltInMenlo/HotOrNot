@@ -99,7 +99,7 @@
 	
 	if (isTutorial) {
 		_infoImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
+		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
 		[self addSubview:_infoImageView];
 		
 		UIButton *tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -151,7 +151,7 @@
 	_takePhotoButton.hidden = NO;
 	
 	_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
-	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
+	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
 	_tutorialImageView.userInteractionEnabled = YES;
 	_tutorialImageView.alpha = 0.0;
 	[self addSubview:_tutorialImageView];

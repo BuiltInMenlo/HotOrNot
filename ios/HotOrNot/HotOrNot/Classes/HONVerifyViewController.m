@@ -415,6 +415,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_refreshButtonView toggleRefresh:YES];
 	
 	_dynamics = [NSMutableArray array];
+	
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
+	[inviteButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:inviteButton];
 }
 
 - (void)viewDidLoad {
@@ -516,6 +523,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}];
 }
 
+- (void)_goFAQ {
+	[[Mixpanel sharedInstance] track:@"Verify - FAQ"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goRemoveTutorial {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {
@@ -543,8 +560,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	if (total == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
 		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.hidden = YES;
 		_tutorialImageView.alpha = 0.0;
 		[self.view addSubview:_tutorialImageView];
 		
@@ -559,13 +577,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			_tutorialImageView.alpha = 1.0;
 		}];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify FAQ"
-															message:@"Do you want the see the FAQ about verifying?"
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:2];
-		[alertView show];
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify FAQ"
+//															message:@"Do you want the see the FAQ about verifying?"
+//														   delegate:self
+//												  cancelButtonTitle:@"No"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:2];
+//		[alertView show];
 
 		
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {

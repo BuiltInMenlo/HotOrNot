@@ -470,7 +470,15 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 
-+ (BOOL)isRetina5 {
++ (BOOL)isPhoneType5s {
+	struct utsname systemInfo;
+	uname(&systemInfo);
+	
+	return (![[NSString stringWithCString:systemInfo.machine
+								 encoding:NSUTF8StringEncoding] rangeOfString:@"iPhone6"].location == NSNotFound);
+}
+
++ (BOOL)isRetina4Inch {
 	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
@@ -664,9 +672,12 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #pragma mark - Data Calls
-- (void)_challengeObjectFromPush:(int)challengeID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+- (void)_challengeObjectFromPush:(int)challengeID cancelNextPushes:(BOOL)isCancel {
+	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", challengeID], @"challengeID", nil];
+	
+	if (isCancel)
+		[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"cancelFor"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -1061,12 +1072,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		//NSLog(@"DEVICE:[%@]", [UIDevice currentDevice].description);
 		
-		struct utsname systemInfo;
-		uname(&systemInfo);
-		
-//		return [NSString stringWithCString:systemInfo.machine
-//								  encoding:NSUTF8StringEncoding];
-//		
 		
 		
 		// This prevents the UA Library from registering with UIApplication by default. This will allow
@@ -1275,7 +1280,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			// somone joined your volley
 			if (pushType == 1)
-				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
+				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
 			
 			// user verified
 			else if (pushType == 2) {
@@ -1306,8 +1311,10 @@ NSString * const kTwilioSMS = @"6475577873";
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
 				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-			}
 			
+			} else if (pushType == 6) {
+				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
+			}
 			
 		}
 	}
@@ -1699,18 +1706,6 @@ NSString * const kTwilioSMS = @"6475577873";
 				break;
 				
 			case 1:
-				break;
-		}
-	}
-}
-
-
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 3) {
-		switch (buttonIndex) {
-			case 1:
-				NSLog(@"CHALLENGE:(%d)", _challengeID);
-				[self _challengeObjectFromPush:_challengeID];
 				break;
 		}
 	}

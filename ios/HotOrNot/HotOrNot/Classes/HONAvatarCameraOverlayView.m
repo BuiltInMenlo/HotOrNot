@@ -131,7 +131,7 @@
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
 	
-	if ([HONAppDelegate isRetina5]) {
+	if ([HONAppDelegate isRetina4Inch]) {
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
 		imgView.frame = frame;
 	}
@@ -144,10 +144,10 @@
 }
 
 - (void)addPreviewAsFlipped:(UIImage *)image {
-	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83333f];
+	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina4Inch]) ? 0.55f : 0.83333f];
 	
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
-	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, (-26.0 + (ABS(self.frame.size.height - image.size.height) * -0.5)) + (-26.0 * [HONAppDelegate isRetina5]));
+	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, (-26.0 + (ABS(self.frame.size.height - image.size.height) * -0.5)) + (-26.0 * [HONAppDelegate isRetina4Inch]));
 	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 	[_previewHolderView addSubview:previewImageView];
 	_previewHolderView.hidden = NO;

@@ -166,7 +166,7 @@
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[_headerBGView addSubview:_backButton];
 	
-	_subjectsView = [[HONCameraSubjectsView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina5] * 88.0))];
+	_subjectsView = [[HONCameraSubjectsView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0))];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	[self addSubview:_subjectsView];
@@ -349,7 +349,7 @@
 	if (_isFirstCamera) {
 		_isFirstCamera = NO;
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_emotion-568h@2x" : @"tutorial_emotion"];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_emotion-568h@2x" : @"tutorial_emotion"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
 		[self addSubview:_tutorialImageView];

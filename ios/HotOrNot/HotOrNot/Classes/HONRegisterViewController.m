@@ -462,7 +462,7 @@
 			imagePickerController.delegate = self;
 		
 			imagePickerController.showsCameraControls = NO;
-			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.0f);
+			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
 			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 			
 			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
@@ -473,7 +473,7 @@
 			[_cameraOverlayView addSubview:_splashTintView];
 			
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x" : @"whySelfie"];
 			_overlayImageView.userInteractionEnabled = YES;
 			[_cameraOverlayView addSubview:_overlayImageView];
 			
@@ -511,7 +511,7 @@
 		
 		} else {
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x" : @"whySelfie"];
 			_overlayImageView.userInteractionEnabled = YES;
 			_overlayImageView.alpha = 0.0;
 			[_tutorialHolderView addSubview:_overlayImageView];
@@ -766,7 +766,7 @@
 	[_progressHUD hide:YES];
 	_progressHUD = nil;
 	
-	if ([features count] > 0) {
+	if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
 		[self _uploadPhoto:image];
 		[self dismissViewControllerAnimated:YES completion:^(void) {}];
 		

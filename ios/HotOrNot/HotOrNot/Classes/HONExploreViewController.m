@@ -360,8 +360,9 @@
 	
 	if (total == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
 		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.hidden = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];

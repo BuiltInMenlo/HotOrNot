@@ -48,7 +48,7 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+	_webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, [UIScreen mainScreen].bounds.size.height - 45.0)];
 	[_webView setBackgroundColor:[UIColor clearColor]];
 	_webView.delegate = self;
 	[_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
