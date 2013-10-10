@@ -64,22 +64,10 @@ class BIM_App_Challenges extends BIM_App_Base{
     }
     
     public function doAcceptNotification( $volleyObject, $creator, $targetUser, $delay = 0 ){
-        // @jason joined the Volley #WhatsUp"
-        $msg = "$targetUser->username has joined the Volley $volleyObject->subject";
-        
-        $deviceTokens = array();
-        $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
-        foreach( $users as $user ){
-            if( $user->canPush() && ($targetUser->id != $user->id) ){
-                $deviceTokens[] = $user->device_token;
-            }
-        }
-        
-        $deviceTokens = array_unique($deviceTokens);
+        $msg = "@$targetUser->username has joined the Volley $volleyObject->subject";
         
         $push = array(
-            "device_tokens" =>  $deviceTokens,
-            "type" => "1",
+            "type" => "6",
             "challenge" => $volleyObject->id,
             "aps" =>  array(
                 "alert" =>  $msg,
@@ -87,11 +75,23 @@ class BIM_App_Challenges extends BIM_App_Base{
             )
         );
         
-        if( $delay ){
-            $pushTime = time() + $delay;
-            $this->createTimedPush($push, $pushTime);
-        } else {
-            BIM_Jobs_Utils::queuePush( $push );
+        $time = time() + 86400;
+        $time = $time - ( $time % 86400 );
+        $secondPushTime = $time + (3600 * 17);
+        $thirdPushTime = $secondPushTime + (3600 * 9);
+        
+        $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
+        foreach( $users as $user ){
+            if( $user->canPush() && ($targetUser->id != $user->id) ){
+                $push["device_tokens"] =  array( $user->device_token );
+                BIM_Jobs_Utils::queuePush( $push );
+                
+                $jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
+                $this->createTimedPush($push, $secondPushTime, $jobId );
+                
+                $jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
+                $this->createTimedPush($push, $thirdPushTime,  $jobId );
+            }
         }
     }
     
@@ -116,7 +116,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $j->createJbb($job);
     }
     
-    public function createTimedPush( $push, $time ){
+    public function createTimedPush( $push, $time, $jobId ){
         $time = new DateTime("@$time");
         $time = $time->format('Y-m-d H:i:s');
         
@@ -128,6 +128,12 @@ class BIM_App_Challenges extends BIM_App_Base{
             'params' => $push,
             'is_temp' => true,
         );
+        
+        if( !empty( $jobId ) ){
+            // create an id that we can use to remove and cancel the job later
+            $job->id = $jobId;
+        }
+        file_put_contents('/tmp/debug', print_r( array( $job ) , 1) );
         
         $j = new BIM_Jobs_Gearman();
         $j->createJbb($job);
@@ -167,35 +173,27 @@ class BIM_App_Challenges extends BIM_App_Base{
         $volley = null;
         $creator = BIM_Model_User::get( $userId );
         if ( $creator->isExtant() ) {
-            if( ! is_array( $targetIds ) ){
-                $targetIds = array( $targetIds );
-            }
-            
-            $validTargetIds = array();
-            $validTargets = array();
-            foreach( $targetIds as $target ){
-                if( !is_object( $target ) ){
-                    $target = BIM_Model_User::get( $target );
-                }
-                if( $target->isExtant() ){
-                    $validTargetIds[] = $target->id;
-                    $validTargets[] = $target;
-                }
-            }
-            // we are blanking out the target ids here as we do not need them and they cause unnecessary overhead
-            $validTargetIds = array();
-            $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, $validTargetIds, $isPrivate, $expires);
-            if( $volley ){
-                //BIM_Jobs_Challenges::queueProcessVolleyImages( $volley->id );
-                foreach( $validTargets as $targetUser ){
-                    // $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
-                    if ($targetUser->notifications == "Y"){
-                        $this->doNotification( $creator, $targetUser, $volley->id, $hashTag, $expires, $isPrivate );
-                    }
-                }
+            $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, array(), $isPrivate, $expires);
+            if( $volley->isExtant() ){
+                $this->sendVolleyNotifications($creator, $targetIds, $volley->id );
             }
         }
         return $volley;
+    }
+    
+    public function sendVolleyNotifications( $creator, $targetIds, $volleyId ){
+        $volley = BIM_Model_Volley::get( $volleyId );
+        if( ! is_array( $targetIds ) ){
+            $targetIds = array( $targetIds );
+        }
+        foreach( $targetIds as $target ){
+            if( !is_object( $target ) ) {
+                $target = BIM_Model_User::get( $target );
+            }
+            if ( $target->isExtant() && $target->notifications == "Y"){
+                $this->doNotification( $creator, $target, $volley->id, $volley->subject );
+            }
+        }
     }
     
     protected static function reminderTime(){
@@ -220,14 +218,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         return $this->submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $usernames, $isPrivate, $expires);
     }
     
-    public function doNotification( $creator, $target, $volleyId, $hashTag, $expires, $isPrivate = 'N' ){
-        $private = $isPrivate == 'Y' ? ' private' : '';
-        $expiresTxt = '';
-        if($expires == 86400){
-            $expiresTxt = ' that will expire in 24 hours';
-        } else if( $expires == 600 ){
-            $expiresTxt = ' that will expire in 10 mins';
-        }
+    public function doNotification( $creator, $target, $volleyId, $hashTag ){
         // @jason just created the Volley #WhatsUp
         $msg = "@$creator->username has just created the Volley $hashTag";
         $push = array(
@@ -240,13 +231,6 @@ class BIM_App_Challenges extends BIM_App_Base{
             )
         );
         BIM_Jobs_Utils::queuePush( $push );
-        // create the reminder push
-        if( $expires > 0 ){
-            $msg = "@$creator->username has sent you a$private Volley that will expire in 2 mins! $hashTag";
-            $push['aps']['alert'] = $msg;
-            $time = $expires - self::reminderTime();
-            BIM_Push_UrbanAirship_Iphone::createTimedPush($push, $time);
-        }
     }
     
     /** 

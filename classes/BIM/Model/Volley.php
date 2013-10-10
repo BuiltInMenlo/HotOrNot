@@ -135,7 +135,7 @@ class BIM_Model_Volley{
 	        $userIds[] = $challenger->id;
 	    }
     	$userIds[] = $this->creator->id;
-    	return $userIds;
+    	return array_unique($userIds);
     }
     
     public function comment( $userId, $text ){

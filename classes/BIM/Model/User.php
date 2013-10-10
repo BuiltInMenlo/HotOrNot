@@ -46,7 +46,8 @@ class BIM_Model_User{
     		    $this->device_token = '';
     		}
     		
-    	    $this->avatar_url = $avatar_url;
+    	    $this->is_celeb = $this->isCelebrity();
+    		$this->avatar_url = $avatar_url;
     		$this->votes = $votes; 
     		//$this->pokes = $pokes; 
     		$this->pics = $pics;
@@ -62,6 +63,15 @@ class BIM_Model_User{
                 $this->adid = '';
             }
         }
+    }
+    
+    public function isCelebrity(){
+        $is = false;
+        $c = BIM_Config::app();
+        if( !empty( $c->celebrities ) && in_array( $this->id, $c->celebrities ) ){
+            $is = true;
+        }
+        return (int) $is;
     }
     
     public static function purgeById( $ids ){

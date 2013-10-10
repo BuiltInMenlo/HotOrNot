@@ -2,6 +2,20 @@
 
 class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 	
+	public function cancelTimedPushes( $userId, $volleyId  ){
+	    $volleyId = mysql_escape_string($volleyId);
+	    $userId = mysql_escape_string($userId);
+	    
+	    $id = join('_', array(v,$userId,$volleyId) );
+		$sql = "
+			update queue.gearman_jobs
+			set disabled = 1
+			where id like '$id%'
+		";
+		
+		$this->prepareAndExecute($sql);
+	}
+    
 	public function getJobs(){
 		$sql = "
 			select * 
