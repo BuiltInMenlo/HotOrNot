@@ -602,10 +602,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $profileUrl = "http://web.stagram.com/n/$user->name/";
             $response = $g->get( $profileUrl );
     
-            $following = 0;
             $followers = 0;
-            $likes = 0;
-    
             $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
             preg_match( $ptrn, $response, $matches );
             if( isset( $matches[1] ) ){
@@ -613,13 +610,29 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             }
             if( $followers >= 100000 ){
                 echo "found $user->name with $followers followers\n";
-                $sql = "
-                	insert ignore into growth.ig_promoters
-                	(name,followers,url)
-                	values (?,?,?)
-                ";
-                $params = array($user->name,$followers,$profileUrl);
-                $dao->prepareAndExecute( $sql, $params );
+                
+                $matches = array();
+                $ptrn = '@class="ui_tools".*?style="padding-top:5px;">(.*?)</p>@is';
+                preg_match($ptrn, $response, $matches);
+                if( !empty($matches[1] ) ){
+                    $bio = strip_tags($matches[1]);
+                    // print "$bio\n";
+                    if( preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $bio, $matches ) ) {
+                        echo $matches[0]."\n";
+                        $email = $matches[0];
+                        if( $email ){
+                            $sql = "
+                            	insert ignore into growth.ig_promoters
+                            	(name,followers,url,email)
+                            	values (?,?,?,?)
+                            ";
+                            $params = array($user->name,$followers,$profileUrl,$email);
+                            $dao->prepareAndExecute( $sql, $params );
+                        }
+                    } else {
+                        //echo "no email for $promoter->name\n";
+                    }
+                }
             }
         }
     }
@@ -784,6 +797,39 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 echo "completed name $name - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
+        }
+    }
+    
+    public static function getPromoterEmails(){
+        $sql = "select * from growth.ig_promoters";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $stmt = $dao->prepareAndExecute($sql);
+        $promoters = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        
+        $g = new BIM_Growth();
+        foreach( $promoters as $promoter ){
+            $profileUrl = $promoter->url;
+            // echo "getting $promoter->url\n";
+            $response = $g->get( $profileUrl );
+            
+            $matches = array();
+            $ptrn = '@class="ui_tools".*?style="padding-top:5px;">(.*?)</p>@is';
+            preg_match($ptrn, $response, $matches);
+            if( !empty($matches[1] ) ){
+                $bio = strip_tags($matches[1]);
+                // print "$bio\n";
+                if( preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $bio, $matches ) ) {
+                    echo $matches[0]."\n";
+                    $sql = "update growth.ig_promoters set email = ? where url = ?";
+                    $params = array( $matches[0], $promoter->url);
+                    $dao->prepareAndExecute($sql,$params);
+                } else {
+                    echo "no email for $promoter->name\n";
+                }
+            }
+            
+            $sleep = 1;
+            sleep($sleep);
         }
     }
 }
