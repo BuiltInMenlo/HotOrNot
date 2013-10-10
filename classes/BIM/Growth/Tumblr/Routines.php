@@ -672,4 +672,39 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             */
         }
     }
+    
+    public static function getRichKids(){
+        $g = new BIM_Growth();
+        $richKidLink = 'http://richkidsofinstagram.tumblr.com/page/73';
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        
+        while( $richKidLink ){
+            $response = $g->get( $richKidLink );
+            
+            $ptrn = '@<div class="postbody photo">.*?(http://instagram.com/p/[^/<>]+?/)" target="_blank">([^/]+?)</a>@is';
+            $matches = array();
+            preg_match_all($ptrn,$response,$matches);
+            if( isset($matches[1]) ){
+                foreach( $matches[1] as $index => $link ){
+                    $name =  $matches[2][$index];
+                    $sql = "insert ignore into growth.rkoi (link,name) values (?,?)";
+                    $params = array( $link, $name );
+                    $dao->prepareAndExecute($sql,$params);
+                }
+            }
+            
+            // now we get the next link
+            $ptrn = '@<a href="(.+?)" class="next"><span class="next">Next page</span></a>@';
+            preg_match($ptrn, $response, $matches);
+            $richKidLink = null;
+            if( isset( $matches[1] ) ){
+                $richKidLink = "http://richkidsofinstagram.tumblr.com".$matches[1];
+            }
+            
+            if( $richKidLink ){
+                sleep(2);
+                echo "getting $richKidLink\n";
+            }
+        }
+    }
 }
