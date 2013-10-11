@@ -16,6 +16,7 @@ const CGFloat kDelay;
 
 
 @interface HONImageLoadingView : UIView
+- (id)initInViewCenter:(UIView *)view;
 - (id)initAtPos:(CGPoint)pos;
 
 - (void)startAnimating;

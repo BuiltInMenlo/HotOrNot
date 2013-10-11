@@ -103,7 +103,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -632,7 +632,7 @@
 		}
 	}
 	
-	[_headerView setTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
+	[_headerView setTitle:_userVO.username];
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
@@ -706,12 +706,12 @@
 	UIButton *subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	subscribersButton.frame = _subscribersLabel.frame;
 	[subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:subscribersButton];
+	[_scrollView addSubview:subscribersButton];
 	
 	UIButton *subscribeesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	subscribeesButton.frame = _subscribeesLabel.frame;
 	[subscribeesButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:subscribeesButton];
+	[_scrollView addSubview:subscribeesButton];
 
 	
 	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {

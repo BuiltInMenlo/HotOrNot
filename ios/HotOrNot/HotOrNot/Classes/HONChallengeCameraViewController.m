@@ -32,7 +32,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic) int uploadCounter;
-@property (nonatomic, strong) NSArray *s3Uploads;
+@property (nonatomic, strong) S3PutObjectRequest *por;
 @property (nonatomic, strong) UIImage *rawImage;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSMutableArray *usernames;
@@ -45,6 +45,7 @@
 @property (nonatomic) BOOL isMainCamera;
 @property (nonatomic) BOOL isFirstCamera;
 @property (nonatomic) int selfieAttempts;
+@property (nonatomic, strong) NSTimer *uploadTimer;
 @end
 
 
@@ -152,6 +153,8 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	_uploadCounter = 0;
 	
+	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_cancelUpload) userInfo:nil repeats:NO];
+	
 	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
@@ -177,19 +180,17 @@
 //		por2.data = UIImageJPEGRepresentation(exploreImage, kSnapJPEGCompress);
 //		[s3 putObject:por2];
 		
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por3.delegate = self;
-		por3.contentType = @"image/jpeg";
-		por3.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
-		[s3 putObject:por3];
+		_por = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-challenges"];
+		_por.delegate = self;
+		_por.contentType = @"image/jpeg";
+		_por.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+		[s3 putObject:_por];
 		
 //		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
 //		por4.delegate = self;
 //		por4.contentType = @"image/jpeg";
 //		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
 //		[s3 putObject:por4];
-		
-		_s3Uploads = [NSArray arrayWithObjects:por3, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -243,7 +244,7 @@
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			if (_uploadCounter == [_s3Uploads count]) {
+			if (_uploadCounter == 1) {
 				[UIView animateWithDuration:0.5 animations:^(void) {
 					_submitImageView.alpha = 0.0;
 				} completion:^(BOOL finished) {
@@ -265,7 +266,7 @@
 				
 			} else {
 				_hasSubmitted = YES;
-				if (_uploadCounter == [_s3Uploads count]) {
+				if (_uploadCounter == 1) {
 //					if (_isFirstCamera) {
 //						
 //						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
@@ -463,6 +464,28 @@
 		[self _retrieveUser];
 }
 
+- (void)_cancelUpload {
+	if (_uploadTimer != nil) {
+		[_uploadTimer invalidate];
+		_uploadTimer = nil;
+	}
+	
+	_uploadCounter = 0;
+	[_por.urlConnection cancel];
+	_por = nil;
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.mode = MBProgressHUDModeCustomView;
+	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+	[_progressHUD show:NO];
+	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	_progressHUD = nil;
+}
+
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -486,8 +509,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	for (S3PutObjectRequest *por in _s3Uploads)
-		[por.urlConnection cancel];
+	_uploadCounter = 0;
+	[_por.urlConnection cancel];
+	_por = nil;
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -496,8 +520,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	for (S3PutObjectRequest *por in _s3Uploads)
-		[por.urlConnection cancel];
+	_uploadCounter = 0;
+	[_por.urlConnection cancel];
+	_por = nil;
 	
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -543,8 +568,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	for (S3PutObjectRequest *por in _s3Uploads)
-		[por.urlConnection cancel];
+	_uploadCounter = 0;
+	[_por.urlConnection cancel];
+	_por = nil;
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
@@ -557,8 +583,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	for (S3PutObjectRequest *por in _s3Uploads)
-		[por.urlConnection cancel];
+	_uploadCounter = 0;
+	[_por.urlConnection cancel];
+	_por = nil;
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -623,8 +650,13 @@
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
+	if (_uploadTimer != nil) {
+		[_uploadTimer invalidate];
+		_uploadTimer = nil;
+	}
+	
 	_uploadCounter++;
-	if (_uploadCounter == [_s3Uploads count]) {
+	if (_uploadCounter == 1) {
 		if (_submitImageView != nil) {
 			[UIView animateWithDuration:0.5 animations:^(void) {
 				_submitImageView.alpha = 0.0;

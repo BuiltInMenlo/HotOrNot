@@ -19,6 +19,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONUserVO.h"
 
 
 @interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
@@ -297,11 +298,11 @@
 		}
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure sure you don't want to follow everyone?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
 															message:@""
 														   delegate:self
-												  cancelButtonTitle:@"Yes"
-												  otherButtonTitles:@"No", nil];
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
 		[alertView setTag:1];
 		[alertView show];
 	}
@@ -391,10 +392,21 @@
 	if (cell == nil)
 		cell = [[HONPopularUserViewCell alloc] init];
 	
-	cell.popularUserVO = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
+	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
+	cell.popularUserVO = vo;
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
+	BOOL isFound = NO;
+	for (HONUserVO *userVO in [HONAppDelegate subscribeeList]) {
+		if (vo.userID == userVO.userID) {
+			isFound = YES;
+			[_selectedUsers addObject:vo];
+			break;
+		}
+	}
+	
+	[cell toggleSelected:isFound];
 	[_cells addObject:cell];
 	
 	return (cell);

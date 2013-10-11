@@ -420,8 +420,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	inviteButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
+	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:inviteButton];
+	
+	UIButton *faqButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	faqButton.frame = CGRectMake(-14.0, 48.0, 64.0, 64.0);
+	[faqButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
+	[faqButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
+	[faqButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:faqButton];
 }
 
 - (void)viewDidLoad {
@@ -521,6 +528,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
+}
+
+- (void)_goAddContacts {
+	[[Mixpanel sharedInstance] track:@"Verify - Invite Friends"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goFAQ {

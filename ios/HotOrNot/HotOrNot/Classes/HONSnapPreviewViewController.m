@@ -438,6 +438,9 @@
 	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imageHolderView];
 	
+//	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+//	[_imageHolderView addSubview:imageLoadingView];
+	
 	if (_isVerify)
 		[self _loadForVerify];
 	
@@ -740,7 +743,7 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:_userVO.username];
 	[headerView addButton:verifiedImageView];
 	[headerView addButton:doneButton];
 	headerView.alpha = 0.0;

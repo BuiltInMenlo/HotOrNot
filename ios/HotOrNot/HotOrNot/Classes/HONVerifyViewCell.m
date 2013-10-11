@@ -78,6 +78,9 @@
 	_imageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_imageHolderView];
 	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+	[_imageHolderView addSubview:imageLoadingView];
+	
 	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -100.0, 320.0, 568.0)];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = 0.0;

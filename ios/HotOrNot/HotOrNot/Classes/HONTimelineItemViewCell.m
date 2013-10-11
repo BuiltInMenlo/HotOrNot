@@ -160,8 +160,8 @@
 	_heroImageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_heroImageHolderView];
 	
-//	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
-//	[_heroImageHolderView addSubview:imageLoadingView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroImageHolderView];
+	[_heroImageHolderView addSubview:imageLoadingView];
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
 	_heroImageView.userInteractionEnabled = YES;

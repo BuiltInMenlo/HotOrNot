@@ -54,6 +54,9 @@
 	_leftHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_leftHolderView];
 	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_leftHolderView];
+	[_leftHolderView addSubview:imageLoadingView];
+	
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftImageView.alpha = 0.0;
 	[_leftHolderView addSubview:_leftImageView];
@@ -104,6 +107,9 @@
 	_rightHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
 //	_rightHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_rightHolderView];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_rightHolderView];
+	[_rightHolderView addSubview:imageLoadingView];
 
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_rightImageView.alpha = 0.0;

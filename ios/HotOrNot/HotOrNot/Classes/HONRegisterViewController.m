@@ -196,18 +196,31 @@
 				
 				[self _retreiveSubscribees];
 				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-					[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
-					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
+				if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																		message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
+																	   delegate:self
+															  cancelButtonTitle:@"OK"
+															  otherButtonTitles:nil];
+					[alertView setTag:2];
+					[alertView show];
+				
+				} else {
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+						[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+						
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+//					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
-				}];
+					}];
+				}
 				
 			} else {
 				if (_progressHUD == nil)
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				
+				[_progressHUD setYOffset:-80.0];
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -421,7 +434,6 @@
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-//	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -701,38 +713,49 @@
 - (void)_goSubmit {
 	BOOL isUsernameValid = ([_usernameTextField.text length] > 0);
 	BOOL isEmailValid = [self _isValidEmail:_emailTextField.text];
-//	BOOL isBirthdayTooOld = ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20);
 	
 	
-	if (!isUsernameValid) {
-		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-									message:@"You need to enter a username to start snapping"
+	if (!isUsernameValid && !isEmailValid) {
+		[[[UIAlertView alloc] initWithTitle:@"No Username & Email!"
+									message:@"You need to enter a username and email address to start snapping"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
 		[_usernameTextField becomeFirstResponder];
+	
+	} else {
+		if (!isUsernameValid) {
+			[[[UIAlertView alloc] initWithTitle:@"No Username!"
+										message:@"You need to enter a username to start snapping"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			[_usernameTextField becomeFirstResponder];
+		}
+		
+		if (!isEmailValid) {
+			[[[UIAlertView alloc] initWithTitle:@"No email!"
+										message:@"You need to enter a valid email address to use Volley"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			[_emailTextField becomeFirstResponder];
+		}
 	}
 	
-//	if (isBirthdayTooOld) {
-//		[[[UIAlertView alloc] initWithTitle:@""
-//									message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
-//	}
-	
-	if (!isEmailValid) {
-		[[[UIAlertView alloc] initWithTitle:@"No email!"
-									message:@"You need to enter a valid email address to use Volley"
+	if ([_birthdayLabel.text isEqualToString:@"What is your birthday?"]) {
+		[[[UIAlertView alloc] initWithTitle:@"No Birthday!"
+									message:@"You need to a birthday to keep the communty safe."
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_emailTextField becomeFirstResponder];
+		
+		[self _goPicker];
+	
+	} else {
+		if (isUsernameValid && isEmailValid)
+			[self _finalizeUser];
 	}
-	
-	
-	if (isUsernameValid && isEmailValid)
-		[self _finalizeUser];
 }
 
 
@@ -834,7 +857,7 @@
 			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 			
-			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:_birthday]] < 19)
+//			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:_birthday]] < 19)
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 		}];
 	}];
@@ -856,7 +879,7 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
-		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 	} completion:^(BOOL finished) {
 //		_submitButton.hidden = YES;
 	}];
@@ -883,9 +906,8 @@
 	
 	_usernameLabel.hidden = ([_usernameTextField.text length] > 0);
 	
-	_submitButton.hidden = NO;
+//	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		//_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
 	} completion:^(BOOL finished) {
 	}];
@@ -928,6 +950,16 @@
 			_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 			[UIView commitAnimations];
 		}
+	
+	} else if (alertView.tag == 2) {
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+//			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
+		}];
 	}
 }
 

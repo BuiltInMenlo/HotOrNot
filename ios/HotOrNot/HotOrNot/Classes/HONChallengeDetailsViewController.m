@@ -23,6 +23,7 @@
 #import "HONRefreshButtonView.h"
 #import "HONUserProfileViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONImageLoadingView.h"
 
 @interface HONChallengeDetailsViewController () <HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
@@ -329,6 +330,9 @@
 	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
 	_heroImageHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_heroImageHolderView];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroImageHolderView];
+	[_heroImageHolderView addSubview:imageLoadingView];
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
 	_heroImageView.userInteractionEnabled = YES;
