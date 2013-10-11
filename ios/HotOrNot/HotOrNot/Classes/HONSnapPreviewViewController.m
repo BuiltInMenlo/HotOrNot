@@ -438,8 +438,8 @@
 	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imageHolderView];
 	
-//	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
-//	[_imageHolderView addSubview:imageLoadingView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+	[_imageHolderView addSubview:imageLoadingView];
 	
 	if (_isVerify)
 		[self _loadForVerify];
@@ -511,12 +511,15 @@
 	_avatarHolderView.clipsToBounds = YES;
 	[_profileHolderView addSubview:_avatarHolderView];
 	
+	HONImageLoadingView *imageLoading2View = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
+	[_avatarHolderView addSubview:imageLoading2View];
+	
 	NSMutableString *imageURL = [_opponentVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake(0.0, -122.0, 320.0, 568.0);
 	   
-	NSLog(@"PROFILE LOADING:[%@]", imageURL);
+	NSLog(@"PROFILE LOADING:[%@]\n[%@]", _opponentVO.avatarURL, imageURL);
 	
 	__weak typeof(self) weakSelf = self;
 	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
@@ -778,7 +781,7 @@
 		[_subscribeButton setTitle:(isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
 		
 		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-		_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+		_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 64.0 : 47.0, 44.0);
 		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
@@ -1071,7 +1074,7 @@
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
 			[_subscribeButton setTitle:@"Unfollow" forState:UIControlStateNormal];
-			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 			[_subscribeButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 			[_subscribeButton addTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
@@ -1085,7 +1088,7 @@
 		if (buttonIndex == 1) {
 			[self _removeFriend:_userVO.userID];
 			[_subscribeButton setTitle:@"Follow" forState:UIControlStateNormal];
-			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, 47.0, 44.0);
 			[_subscribeButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}

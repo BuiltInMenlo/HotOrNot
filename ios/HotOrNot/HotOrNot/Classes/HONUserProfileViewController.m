@@ -21,6 +21,7 @@
 #import "HONSettingsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONImageLoadingView.h"
 #import "HONOpponentVO.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
@@ -643,6 +644,9 @@
 	_avatarHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_avatarHolderView];
 	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
+	[_avatarHolderView addSubview:imageLoadingView];
+	
 	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
@@ -754,7 +758,7 @@
 		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[_subscribeButton setTitle:(isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
 		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-		_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+		_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 64.0 : 47.0, 44.0);
 
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
@@ -918,7 +922,7 @@
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
 			[_subscribeButton setTitle:@"Unfollow" forState:UIControlStateNormal];
-			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 			[_subscribeButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 			[_subscribeButton addTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
@@ -932,7 +936,7 @@
 		if (buttonIndex == 1) {
 			[self _removeFriend:_userVO.userID];
 			[_subscribeButton setTitle:@"Follow" forState:UIControlStateNormal];
-			_subscribeButton.frame = CGRectMake(0.0, 0.0, [_subscribeButton.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}].width, 44.0);
+			_subscribeButton.frame = CGRectMake(0.0, 0.0, 47.0, 44.0);
 			[_subscribeButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}

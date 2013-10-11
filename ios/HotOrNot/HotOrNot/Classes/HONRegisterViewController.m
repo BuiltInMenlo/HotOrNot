@@ -546,6 +546,10 @@
 
 #pragma mark - Navigation
 - (void)_goProfileCamera {
+	[[Mixpanel sharedInstance] track:@"Register - Signup"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[UIView animateWithDuration:0.5 animations:^(void) {
 		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height);
 		_overlayImageView.alpha = 0.0;

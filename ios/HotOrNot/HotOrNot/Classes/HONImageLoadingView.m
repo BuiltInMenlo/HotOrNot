@@ -23,6 +23,7 @@
 											   [UIImage imageNamed:@"loader_003"], nil];
 		_animationImageView.animationDuration = 0.5f;
 		_animationImageView.animationRepeatCount = 0;
+		_animationImageView.alpha = 0.5;
 		[self addSubview:_animationImageView];
 		
 		[self _goAnimate];

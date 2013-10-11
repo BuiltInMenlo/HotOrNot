@@ -238,7 +238,7 @@
 }
 
 - (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Register - Skip Photo"
+	[[Mixpanel sharedInstance] track:@"Change Avatar - Skip Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -285,7 +285,7 @@
 	if (alertView.tag == 0) {
 		switch(buttonIndex) {
 			case 0:
-				[[Mixpanel sharedInstance] track:@"Register - Skip Photo Confirm"
+				[[Mixpanel sharedInstance] track:@"Change Avatar - Skip Photo Confirm"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
@@ -293,7 +293,7 @@
 				break;
 				
 			case 1:
-				[[Mixpanel sharedInstance] track:@"Register - Skip Photo Cancel"
+				[[Mixpanel sharedInstance] track:@"Change Avatar - Skip Photo Cancel"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				

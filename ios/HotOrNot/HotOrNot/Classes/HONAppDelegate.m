@@ -887,6 +887,11 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 //	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	struct utsname systemInfo;
+	uname(&systemInfo);
+	
+	NSLog(@"--DEVICE:[%@]--", [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+	
 //	NSLog(@"ADID:[%@]\nVENDOR:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
