@@ -162,7 +162,6 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		ON tc.id = tcp.challenge_id 
         	WHERE tc.id in ( $placeHolders )
         	ORDER BY tc.id, tcp.joined, tcp.user_id
-        	LIMIT 100
         ";
         
         $stmt = $this->prepareAndExecute( $sql, $ids );

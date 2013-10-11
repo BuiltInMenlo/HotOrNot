@@ -293,4 +293,13 @@ class BIM_Utils{
         $image->setImageResolution($width,$height);
         $image->cropImage($width, $height, 0, $y);
     }
+    
+    public static function isCelebrity( $id ){
+        $isCeleb = false;
+        $c = BIM_Config::app();
+        if( !empty( $c->celebrities ) && in_array( $id, $c->celebrities ) ){
+            $isCeleb = true;
+        }
+        return (int) $isCeleb;
+    }
 }

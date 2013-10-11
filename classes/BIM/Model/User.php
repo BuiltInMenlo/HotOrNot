@@ -66,12 +66,7 @@ class BIM_Model_User{
     }
     
     public function isCelebrity(){
-        $is = false;
-        $c = BIM_Config::app();
-        if( !empty( $c->celebrities ) && in_array( $this->id, $c->celebrities ) ){
-            $is = true;
-        }
-        return (int) $is;
+        return BIM_Utils::isCelebrity($this->id);
     }
     
     public static function purgeById( $ids ){
