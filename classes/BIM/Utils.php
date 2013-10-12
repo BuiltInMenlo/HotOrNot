@@ -7,6 +7,11 @@ class BIM_Utils{
     protected static $deviceToken = null;
     protected static $profile = array();
     
+    public static function cancelTimedPushes( $userId, $volleyId ){
+        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+        $dao->cancelTimedPushes( $userId, $volleyId );
+    }
+    
     public static function hashMobileNumber( $number ){
         $c = BIM_Config::sms();
         if( !empty($c->useHashing) ){

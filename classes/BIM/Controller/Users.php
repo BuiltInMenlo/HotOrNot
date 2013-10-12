@@ -24,7 +24,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     	    if (  ! $existingUser || ! $existingUser->isExtant() || $existingUser->id == $userId ) {
                 $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $users = new BIM_App_Users();
-			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $birthdate );
+			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL);
     	    }
 		}
 		return false;
