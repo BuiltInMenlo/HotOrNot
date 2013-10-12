@@ -1,36 +1,41 @@
 <?php
 
-class BIM_App_G extends BIM_App_Base{
+class BIM_Controller_G extends BIM_Controller_Base {
     
-    public function volleyUserPhotoComment( $params ){
-        if( isset($params->userID) && isset($params->username) && isset($params->password) ){
-            $o = new BIM_Jobs_Instagram();
-            return $o->queueVolleyUserPhotoComment($params->userId, $params->username, $params->password);
+    public function trackClick( ){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if( isset( $input->click ) ){
+            $parts = explode('/',$input->click );
+            $ct = count($parts);
+            if( $ct > 1 ){
+                $params = array();
+                
+                $idx = $ct - 2;
+                $params->network_id = $parts[$idx];
+                
+                $idx = $ct - 1;
+                $params->persona_name = $parts[$idx];
+            }
         }
+        $growth = new BIM_App_G();
+        return $growth->trackClick( $params );
     }
     
-    public function emailInvites( $params ){
-        if( isset( $params->userID) && isset($params->addresses ) ){
-            $o = new BIM_Jobs_Growth();
-            return $o->queueEmailInvites( $params->userID, $params->addresses );
-        }
+    public function smsInvites( ){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $growth = new BIM_App_G();
+        return $growth->smsInvites( $input );
+    }
+
+    public function emailInvites( ){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $growth = new BIM_App_G();
+        return $growth->emailInvites( $input );
     }
     
-    public function smsInvites( $params ){
-        if( isset( $params->userID) && isset($params->numbers ) ){
-            $o = new BIM_Jobs_Growth();
-            return $o->queueSMSInvites( $params->userID, $params->numbers );
-        }
-    }
-    
-    public function trackClick( $params ){
-        $networkId = $params->network_id;
-        $personaName = $params->persona_name;
-        $persona = new BIM_Growth_Persona( $personaName );
-        $persona->name = $personaName;
-        $referer = isset($params->referer) ? $params->referer : '';
-        $ua = isset($params->user_agent) ? $params->user_agent : '';
-        $persona->trackInboundClick($networkId, $referer, $ua);
-        return true;
+    public function volleyUserPhotoComment( ){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $growth = new BIM_App_G();
+        return $growth->volleyUserPhotoComment( $input );
     }
 }
