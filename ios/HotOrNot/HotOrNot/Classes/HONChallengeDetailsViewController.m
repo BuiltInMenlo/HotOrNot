@@ -34,6 +34,7 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *heroImageHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
+@property (nonatomic, strong) UIImageView *creatorImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
@@ -225,7 +226,6 @@
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
 		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.hidden = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -332,7 +332,11 @@
 	[_scrollView addSubview:_heroImageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroImageHolderView];
+	[imageLoadingView startAnimating];
 	[_heroImageHolderView addSubview:imageLoadingView];
+	
+	_creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
+	[_creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]]];
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
 	_heroImageView.userInteractionEnabled = YES;
@@ -836,8 +840,8 @@
 			if ([TWTweetComposeViewController canSendTweet]) {
 				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
 				
-				[tweetViewController setInitialText:_challengeVO.subjectName];
-				[tweetViewController addImage:_heroImageView.image];
+				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], _challengeVO.subjectName, _challengeVO.creatorVO.username]];
+				[tweetViewController addImage:_creatorImageView.image];
 //				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
 				[self presentViewController:tweetViewController animated:YES completion:nil];
 				
@@ -863,7 +867,7 @@
 			NSString *instaFormat = @"com.instagram.exclusivegram";
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
 			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-															  avatarImage:[HONImagingDepictor cropImage:_heroImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
+															  avatarImage:[HONImagingDepictor cropImage:_creatorImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
 																 username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
 			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
 			
@@ -871,7 +875,7 @@
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = instaFormat;
 				_documentInteractionController.delegate = self;
-				//_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _challengeVO.subjectName, _challengeVO.creatorVO.username] forKey:@"InstagramCaption"];
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
 				
 			} else {

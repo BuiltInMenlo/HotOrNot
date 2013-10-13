@@ -36,13 +36,12 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONProfileHeaderButtonView.h"
-#import "HONUserProfileView.h"
 #import "HONUserProfileViewController.h"
 #import "HONPopularViewController.h"
 #import "HONCollectionViewFlowLayout.h"
 
 
-@interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -174,7 +173,7 @@
 		[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"p"];
 	}
 	
-	//NSLog(@"CHALLENGE PARAMS:[%@]", params);
+	NSLog(@"CHALLENGE PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -457,7 +456,8 @@
 		_progressHUD.taskInProgress = YES;
 	}
 	
-	[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.5];
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
+		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
 	
 	if (_timelineType == HONTimelineTypeSingleUser) {
 		if (_username != nil)
@@ -468,7 +468,7 @@
 	}
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
+	inviteButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
@@ -641,10 +641,10 @@
 	}];
 	
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
-															message:@"Get more subscribers now, tap OK."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find & invite friends to Volley?"
+															message:@""
 														   delegate:self
-												  cancelButtonTitle:@"No"
+												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"OK", nil];
 		[alertView setTag:0];
 		[alertView show];
@@ -702,49 +702,6 @@
 		
 	
 	[self _retrieveChallenges];
-}
-
-
-#pragma mark - UserProfile Delegates
-- (void)userProfileViewChangeAvatar:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)userProfileViewInviteFriends:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)userProfileViewPromote:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																							[HONAppDelegate instagramShareComment], @"caption",
-																							image, @"image", nil]];
-}
-
-- (void)userProfileViewSettings:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Settings"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

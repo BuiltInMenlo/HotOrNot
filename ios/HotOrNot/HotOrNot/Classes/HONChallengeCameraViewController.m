@@ -834,7 +834,7 @@
 - (void)_sendToInstagram {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
 														object:[NSDictionary dictionaryWithObjectsAndKeys:
-																[HONAppDelegate instagramShareComment], @"caption",
+																[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _subjectName, [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
 																[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
 																							avatarImage:[HONAppDelegate avatarImage]
 																							   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];

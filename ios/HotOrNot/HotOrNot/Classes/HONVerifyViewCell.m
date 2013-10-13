@@ -79,6 +79,7 @@
 	[self.contentView addSubview:_imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
 	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -100.0, 320.0, 568.0)];
@@ -90,7 +91,7 @@
 	[avatarURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 //	NSLog(@"FROM DB:[%@]", challengeVO.creatorVO.imagePrefix);
-	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
+//	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

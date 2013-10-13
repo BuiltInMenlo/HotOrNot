@@ -40,8 +40,8 @@
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_followButton.frame = CGRectMake(198.0, 11.0, 104.0, 44.0);
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"subscribe_nonActive"] forState:UIControlStateNormal];
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"subscribe_Active"] forState:UIControlStateHighlighted];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_followButton];
 	}

@@ -6,9 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <MessageUI/MFMessageComposeViewController.h>
-#import <MessageUI/MFMailComposeViewController.h>
-
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
@@ -23,7 +20,7 @@
 #import "HONSearchBarHeaderView.h"
 #import "HONTimelineViewController.h"
 
-@interface HONSettingsViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONSettingsViewController ()
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
@@ -42,6 +39,7 @@
 					  NSLocalizedString(@"settings_inviteEmail", nil),
 					  NSLocalizedString(@"settings_changeUsername", nil),
 					  @"Change Email",
+					  @"Deactivate Account",
 					  @"Terms & Conditions",
 					  @"FAQ"];
 		
@@ -282,16 +280,30 @@
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																	message:@"Cannot send email from this device!"
-																   delegate:nil
-														  cancelButtonTitle:@"OK"
-														  otherButtonTitles:nil];
-				[alertView show];
+				[[[UIAlertView alloc] initWithTitle:@"Email Error"
+											message:@"Cannot send email from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
 			}
 			break;}
+			
+		case 5:{
+			[[Mixpanel sharedInstance] track:@"Settings - Deactivate"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Deactivate Account"
+																message:@"Are you sure?"
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"Yes", nil];
+			[alertView setTag:1];
+			[alertView show];
+			
+			break;}
 
-		case 5:
+		case 6:
 			[[Mixpanel sharedInstance] track:@"Settings - Show Support"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -301,7 +313,7 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 6:
+		case 7:
 			[[Mixpanel sharedInstance] track:@"Settings - Show FAQ"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -435,6 +447,29 @@
 				break;
 		}
 	
+	} else if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Deactivate %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			if ([MFMailComposeViewController canSendMail]) {
+				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+				mailComposeViewController.mailComposeDelegate = self;
+				[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
+				[mailComposeViewController setSubject:@"Deactivate My Volley Account"];
+				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nCancel my account!", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				
+				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Email Error"
+											message:@"Cannot send email from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		}
 	}
 }
 

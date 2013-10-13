@@ -20,6 +20,7 @@
 #import "HONContactUserVO.h"
 #import "HONInviteUserViewCell.h"
 #import "HONAddContactViewCell.h"
+#import "HONUserProfileViewController.h"
 
 
 @interface HONAddContactsViewController ()<HONInviteUserViewCellDelegate, HONAddContactViewCellDelegate>
@@ -796,7 +797,7 @@
 //		}
 		
 		cell.delegate = self;
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		return (cell);
 		
 	} else {
@@ -831,11 +832,21 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return ((indexPath.section == 0) ? indexPath : nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	HONUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
+	
+	NSLog(@"didSelectRowAtIndexPath:[%@]", vo.username);
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+	userPofileViewController.userID = vo.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

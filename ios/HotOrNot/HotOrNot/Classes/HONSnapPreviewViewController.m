@@ -18,6 +18,8 @@
 #import "HONUserVO.h"
 #import "HONHeaderView.h"
 #import "HONImagingDepictor.h"
+#import "HONSubscribersViewController.h"
+#import "HONSubscribeesViewController.h"
 
 @interface HONSnapPreviewViewController () <HONSnapPreviewViewControllerDelegate>
 @property (nonatomic, strong) NSString *url;
@@ -25,6 +27,7 @@
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UIView *releaseHolderView;
 @property (nonatomic, strong) UIView *buttonHolderView;
+@property (nonatomic, strong) UIView *nameHolderView;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
@@ -438,9 +441,6 @@
 	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imageHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
-	[_imageHolderView addSubview:imageLoadingView];
-	
 	if (_isVerify)
 		[self _loadForVerify];
 	
@@ -476,6 +476,28 @@
 	[_closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchDown];
 	[_scrollView addSubview:_closeButton];
 	
+	_nameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 29.0, 320.0, 64.0)];
+	[_scrollView addSubview:_nameHolderView];
+	
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
+	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+	creatorNameLabel.textColor = [UIColor whiteColor];
+	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	creatorNameLabel.backgroundColor = [UIColor clearColor];
+	creatorNameLabel.text = _opponentVO.username;
+	[_nameHolderView addSubview:creatorNameLabel];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 20.0, 270.0, 23.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17];
+	subjectLabel.textColor = [UIColor whiteColor];
+	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = _challengeVO.subjectName;
+	[_nameHolderView addSubview:subjectLabel];
+	
+	
 	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 23.0, 320.0, 74.0)];
 	_buttonHolderView.alpha = 0.0;
 	[_scrollView addSubview:_buttonHolderView];
@@ -487,17 +509,17 @@
 	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	[_buttonHolderView addSubview:upvoteButton];
 	
-	UIButton *profileSubscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profileSubscribeButton.frame = CGRectMake(118.0, -5.0, 84.0, 84.0);
-	[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateNormal];
-	[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateHighlighted];
-	profileSubscribeButton.alpha = 0.33;
-	[_buttonHolderView addSubview:profileSubscribeButton];
+	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profileButton.frame = CGRectMake(118.0, -5.0, 84.0, 84.0);
+	[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateNormal];
+	[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateHighlighted];
+	profileButton.alpha = 0.33;
+	[_buttonHolderView addSubview:profileButton];
 	
 	if (_isRoot) {
-		[profileSubscribeButton addTarget:self action:@selector(_goSubscribeProfile) forControlEvents:UIControlEventTouchUpInside];
-		[profileSubscribeButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_Active"] forState:UIControlStateHighlighted];
-		profileSubscribeButton.alpha = 1.0;
+		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+		[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_Active"] forState:UIControlStateHighlighted];
+		profileButton.alpha = 1.0;
 	}
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -559,6 +581,21 @@
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_volleysLabel];
+	
+	UIButton *subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	subscribersButton.frame = _subscribersLabel.frame;
+	[subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
+	[_profileHolderView addSubview:subscribersButton];
+	
+	UIButton *subscribeesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	subscribeesButton.frame = _subscribeesLabel.frame;
+	[subscribeesButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
+	[_profileHolderView addSubview:subscribeesButton];
+	
+	UIButton *volleysButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	volleysButton.frame = _volleysLabel.frame;
+	[volleysButton addTarget:self action:@selector(_goVolleys) forControlEvents:UIControlEventTouchUpInside];
+	[_profileHolderView addSubview:volleysButton];
 	
 	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 470.0, 260.0, 28.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
@@ -684,46 +721,6 @@
 	}
 }
 
-- (void)_goSubscribeProfile {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Subscribe / Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-	
-	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-
-	BOOL isFriend = NO;
-	if (!isUser) {
-		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-			if (vo.userID == _userVO.userID) {
-				isFriend = YES;
-				break;
-			}
-		}
-	}
-
-	UIActionSheet *actionSheet;
-	if (isUser) {
-		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-												  delegate:self
-										 cancelButtonTitle:@"Cancel"
-									destructiveButtonTitle:nil
-										 otherButtonTitles:@"Profile", nil];
-		
-	} else {
-		actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-												  delegate:self
-										 cancelButtonTitle:@"Cancel"
-									destructiveButtonTitle:nil
-										 otherButtonTitles:@"View profile", (isFriend) ? @"Unsubscribe from user updates" : @"Subscribe to user updates", nil];
-	}
-	
-	[actionSheet setTag:0];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet showInView:self.view];
-}
-
 - (void)_goProfile {
 //	NSLog(@"USER:[%@]", _userVO.dictionary);
 	
@@ -733,6 +730,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	[_closeButton removeFromSuperview];
+	[_nameHolderView removeFromSuperview];
 	
 	_hasVisitedProfile = YES;
 	
@@ -895,6 +893,23 @@
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
+}
+
+
+- (void)_goSubscribers {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribersViewController alloc] initWithUserID:_opponentVO.userID]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSubscribees {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribeesViewController alloc] initWithUserID:_opponentVO.userID]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goVolleys {
+	[_scrollView scrollRectToVisible:CGRectMake(0.0, _scrollView.frame.size.height, 320.0, _gridHolderView.frame.size.height) animated:YES];
 }
 
 
@@ -1121,39 +1136,7 @@
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	
 	if (actionSheet.tag == 0) {
-		BOOL isFriend = NO;
-		if (!isUser) {
-			for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-				if (vo.userID == _userVO.userID) {
-					isFriend = YES;
-					break;
-				}
-			}
-		}
-		
-		if (buttonIndex == 0) {
-			[self _goProfile];
-		
-		} else if (buttonIndex == 1) {
-			if (!isUser) {
-				if (isFriend)
-					[self _goUnsubscribe];
-				
-				else
-					[self _goSubscribe];
-			}
-		
-		} else {
-			[[Mixpanel sharedInstance] track:@"Volley Preview - Subscribe / Profile Cancel"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-											  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-		}
-	
 	} else if (actionSheet.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1164,7 +1147,7 @@
 			if ([TWTweetComposeViewController canSendTweet]) {
 				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
 				
-				[tweetViewController setInitialText:_userVO.username];
+				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], _challengeVO.subjectName, _opponentVO.username]];
 				[tweetViewController addImage:_avatarImageView.image];
 				//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
 				[self presentViewController:tweetViewController animated:YES completion:nil];
@@ -1199,7 +1182,7 @@
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = instaFormat;
 				_documentInteractionController.delegate = self;
-				//_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _challengeVO.subjectName, _opponentVO.username] forKey:@"InstagramCaption"];
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
 				
 			} else {

@@ -31,7 +31,6 @@
 #import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
-#import "HONUserProfileView.h"
 #import "HONUserProfileViewController.h"
 #import "HONCollectionViewFlowLayout.h"
 #import "HONChangeAvatarViewController.h"
@@ -41,7 +40,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONVerifyViewController() <HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONVerifyViewController() <HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 //@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) UIView *collectionHolderView;
 //@property (nonatomic, strong) UICollectionView *collectionView;
@@ -66,8 +65,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) HONUserProfileView *userProfileView;
-@property (nonatomic, strong) UIView *profileOverlayView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -393,21 +390,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 
 
-	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
-	_profileOverlayView.hidden = YES;
-	[self.view addSubview:_profileOverlayView];
-	
-	UIButton *closeProfileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeProfileButton.frame = _profileOverlayView.frame;
-	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[_profileOverlayView addSubview:closeProfileButton];
-	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -391.0, 320.0, 455.0)];
-	_userProfileView.delegate = self;
-	_userProfileView.alpha = 0.0;
-	[self.view addSubview:_userProfileView];
-	
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -416,17 +398,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_dynamics = [NSMutableArray array];
 	
-	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(-14.0, [UIScreen mainScreen].bounds.size.height - 103.0, 64.0, 64.0);
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:inviteButton];
-	
 	UIButton *faqButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	faqButton.frame = CGRectMake(-14.0, 48.0, 64.0, 64.0);
-	[faqButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
-	[faqButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
+	faqButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 64.0, 64.0);
+	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_nonActive"] forState:UIControlStateNormal];
+	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_Active"] forState:UIControlStateHighlighted];
 	[faqButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:faqButton];
 }
@@ -624,49 +599,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)_refreshChallengesTab:(NSNotification *)notification {
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
-}
-
-
-#pragma mark - UserProfile Delegates
-- (void)userProfileViewChangeAvatar:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)userProfileViewInviteFriends:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)userProfileViewPromote:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																							[HONAppDelegate instagramShareComment], @"caption",
-																							image, @"image", nil]];
-}
-
-- (void)userProfileViewSettings:(HONUserProfileView *)userProfileView {
-	[[Mixpanel sharedInstance] track:@"Profile - Settings"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[self _goProfile];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

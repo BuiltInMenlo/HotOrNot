@@ -93,6 +93,7 @@ NSString * const kAPISetUserAgeGroup = @"users/setage";
 NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
 NSString * const kAPIJoinChallenge = @"challenges/join";
 NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
+NSString * const kAPIMissingImage = @"challenges/missingimage";
 NSString * const kAPIProcessChallengeImage = @"challenges/processimage";
 NSString * const kAPIProcessUserImage = @"users/processimage";
 
@@ -209,10 +210,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
 }
 
-+ (NSString *)socialShareFormat {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"sharing_social"]);
-}
-
 + (NSString *)smsInviteFormat {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
 }
@@ -222,7 +219,11 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 + (NSString *)instagramShareComment {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"insta_profile"]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"instagram_share"]);
+}
+
++ (NSString *)twitterShareComment {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twitter_share"]);
 }
 
 + (int)createPointMultiplier {
@@ -474,8 +475,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	struct utsname systemInfo;
 	uname(&systemInfo);
 	
-	return (![[NSString stringWithCString:systemInfo.machine
-								 encoding:NSUTF8StringEncoding] rangeOfString:@"iPhone6"].location == NSNotFound);
+	return ([[NSString stringWithCString:systemInfo.machine
+								encoding:NSUTF8StringEncoding] rangeOfString:@"iPhone6"].location == 0);
 }
 
 + (BOOL)isRetina4Inch {
@@ -891,6 +892,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	uname(&systemInfo);
 	
 	NSLog(@"--DEVICE:[%@]--", [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+	NSLog(@"is5s:[%d]", [HONAppDelegate isPhoneType5s]);
+	
+	
 	
 //	NSLog(@"ADID:[%@]\nVENDOR:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
 	
@@ -1169,7 +1173,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	// Set the icon badge to zero on resume (optional)
 	[[UAPush shared] resetBadge];
 	
-	//	[FBAppCall handleDidBecomeActive];
+//	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
@@ -1190,8 +1194,8 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 			
 			if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
-																	message:@"Get more subscribers now, tap OK."
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley with your friends?"
+																	message:@""
 																   delegate:self
 														  cancelButtonTitle:@"Cancel"
 														  otherButtonTitles:@"OK", nil];
@@ -1394,7 +1398,8 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"insta_profile"] forKey:@"insta_profile"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"instagram_share"] forKey:@"instagram_share"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twitter_share"] forKey:@"twitter_share"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
 															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",

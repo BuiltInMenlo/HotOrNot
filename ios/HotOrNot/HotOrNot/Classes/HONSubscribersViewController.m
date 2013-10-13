@@ -74,18 +74,10 @@
 			_userVO = [HONUserVO userWithDictionary:userResult];
 			NSArray *friends = [userResult objectForKey:@"friends"];
 			
-			for (NSDictionary *dict in friends) {
-				[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																	   [NSString stringWithFormat:@"%d", [[dict objectForKey:@"id"] intValue]], @"id",
-																	   [NSString stringWithFormat:@"%d", 0], @"points",
-																	   [NSString stringWithFormat:@"%d", 0], @"votes",
-																	   [NSString stringWithFormat:@"%d", 0], @"pokes",
-																	   [NSString stringWithFormat:@"%d", 0], @"pics",
-																	   [NSString stringWithFormat:@"%d", 0], @"age",
-																	   [dict objectForKey:@"username"], @"username",
-																	   @"", @"fb_id",
-																	   [dict objectForKey:@"avatar_url"], @"avatar_url", nil]]];
-			}
+			for (NSDictionary *dict in friends)
+				[_subscribers addObject:[HONUserVO userWithDictionary:[dict objectForKey:@"user"]]];
+			
+			[_tableView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

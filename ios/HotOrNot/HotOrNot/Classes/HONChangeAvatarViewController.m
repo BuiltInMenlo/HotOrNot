@@ -306,8 +306,8 @@
 		_selfieAttempts++;
 		
 		if (_selfieAttempts < 2) {
-			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-										message:@"Please retake your photo"
+			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
+										message:@"Please retry taking your selfie photo, good lighting helps!"
 									   delegate:self
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -318,7 +318,7 @@
 			[_cameraOverlayView resetControls];
 		
 		} else {
-			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
 										message:@"You may get flagged by the community."
 									   delegate:nil
 							  cancelButtonTitle:@"OK"

@@ -13,6 +13,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
 #import "UIImageView+AFNetworking.h"
+#import "MBProgressHUD.h"
 
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -37,6 +38,7 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *avatarHolderView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
@@ -106,20 +108,32 @@
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
-			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-			
-			_userVO = [HONUserVO userWithDictionary:userResult];
-			
-			if (isRefresh) {
-				[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+			if ([userResult objectForKey:@"id"] != nil) {
+				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+				[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 				
-				_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-				_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
-				_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+				_userVO = [HONUserVO userWithDictionary:userResult];
+				
+				if (isRefresh) {
+					[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+					
+					_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+					_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+					_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+				
+				} else
+					[self _retreiveSubscribees];
 			
-			} else
-				[self _retreiveSubscribees];
+			} else {
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = @"User not found!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -172,7 +186,7 @@
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
-			
+			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [challengesResult count]);
 			_challenges = [NSMutableArray array];
 			
 			for (NSDictionary *serverList in challengesResult) {
@@ -529,6 +543,10 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goVolleys {
+	[_scrollView scrollRectToVisible:CGRectMake(0.0, _scrollView.frame.size.height, 320.0, _gridHolderView.frame.size.height) animated:YES];
+}
+
 - (void)_goRemoveTutorial {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {
@@ -645,6 +663,7 @@
 	[_scrollView addSubview:_avatarHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
+	[imageLoadingView startAnimating];
 	[_avatarHolderView addSubview:imageLoadingView];
 	
 	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
@@ -717,6 +736,10 @@
 	[subscribeesButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:subscribeesButton];
 
+	UIButton *volleysButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	volleysButton.frame = _volleysLabel.frame;
+	[volleysButton addTarget:self action:@selector(_goVolleys) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:volleysButton];
 	
 	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -897,7 +920,7 @@
 			if (buttonIndex == 1) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
 																	object:[NSDictionary dictionaryWithObjectsAndKeys:
-																			[HONAppDelegate instagramShareComment], @"caption",
+																			[NSString stringWithFormat:[HONAppDelegate instagramShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
 																			[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
 																										avatarImage:[HONAppDelegate avatarImage]
 																										   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
@@ -974,7 +997,7 @@
 			if ([TWTweetComposeViewController canSendTweet]) {
 				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
 				
-				[tweetViewController setInitialText:_userVO.username];
+				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _userVO.username]];
 				[tweetViewController addImage:_avatarImageView.image];
 //				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
 				[self presentViewController:tweetViewController animated:YES completion:nil];
@@ -1009,7 +1032,7 @@
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = instaFormat;
 				_documentInteractionController.delegate = self;
-				//_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], @"#profile", _userVO.username] forKey:@"InstagramCaption"];
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
 				
 			} else {

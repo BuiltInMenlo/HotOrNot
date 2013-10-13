@@ -48,7 +48,7 @@
 @property (nonatomic, strong) UIImageView *overlayImageView;
 @property (nonatomic, strong) UIView *splashTintView;
 @property (nonatomic, strong) UIView *irisView;
-@property (nonatomic, strong) UIImageView *tutorialBubbleImageView;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) int uploadCounter;
@@ -505,7 +505,7 @@
 				_cameraOverlayView.alpha = 1.0;
 			} completion:^(BOOL finished) {
 				[UIView animateWithDuration:0.33 animations:^(void) {
-					_splashTintView.alpha = 0.5;
+					_splashTintView.alpha = 0.67;
 				}];
 			}];
 			
@@ -555,14 +555,14 @@
 		_overlayImageView.alpha = 0.0;
 		_splashTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_tutorialBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"overlayStep2"]];
-		_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 18.0, [UIScreen mainScreen].bounds.size.height - 250.0);
-		_tutorialBubbleImageView.alpha = 0.0;
-		[_cameraOverlayView addSubview:_tutorialBubbleImageView];
-		
 		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
-		gutterView.backgroundColor = [UIColor blackColor];
+		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_cameraOverlayView addSubview:gutterView];
+		
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:_cameraOverlayView.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
+		_tutorialImageView.alpha = 0.0;
+		[_cameraOverlayView addSubview:_tutorialImageView];
 		
 		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
@@ -572,17 +572,12 @@
 		takePhotoButton.alpha = 0.0;
 		[_cameraOverlayView addSubview:takePhotoButton];
 		
-		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeTutorialButton.frame = _cameraOverlayView.frame;
-		[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
-		[_cameraOverlayView addSubview:closeTutorialButton];
-		
 		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
 		headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
 		[_cameraOverlayView addSubview:headerBGImageView];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+		skipButton.frame = CGRectMake(258.0, 0.0, 64.0, 44.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
@@ -592,24 +587,18 @@
 			takePhotoButton.alpha = 1.0;
 		} completion:^(BOOL finished) {
 			[UIView animateWithDuration:0.33 animations:^(void) {
-				_tutorialBubbleImageView.alpha = 1.0;
-				_tutorialBubbleImageView.frame = CGRectOffset(_tutorialBubbleImageView.frame, 0.0, -35.0);
+				_tutorialImageView.alpha = 1.0;
 			}];
 		}];
 	}];
 }
 
-- (void)_goCloseTutorial:(id)sender {
-	UIButton *button = (UIButton *)sender;
-	[button removeTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
-	[button removeFromSuperview];
-	button = nil;
-	
+- (void)_goCloseTutorial {
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tutorialBubbleImageView.alpha = 0.0;
+		_tutorialImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		[_tutorialBubbleImageView removeFromSuperview];
-		_tutorialBubbleImageView = nil;
+		[_tutorialImageView removeFromSuperview];
+		_tutorialImageView = nil;
 	}];
 }
 
@@ -628,6 +617,8 @@
 }
 
 - (void)_goTakePhoto {
+	[self _goCloseTutorial];
+	
 	_irisView = [[UIView alloc] initWithFrame:_cameraOverlayView.frame];
 	_irisView.backgroundColor = [UIColor blackColor];
 	_irisView.alpha = 0.0;
@@ -642,13 +633,6 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tutorialBubbleImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[_tutorialBubbleImageView removeFromSuperview];
-		_tutorialBubbleImageView = nil;
-	}];
 	
 	[self.previewPicker takePicture];
 }
@@ -790,9 +774,6 @@
 	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 	NSArray *features = [detctor featuresInImage:ciImage];
 	
-	[_progressHUD hide:YES];
-	_progressHUD = nil;
-	
 	if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
 		[self _uploadPhoto:image];
 		[self dismissViewControllerAnimated:YES completion:^(void) {}];
@@ -812,8 +793,8 @@
 		_selfieAttempts++;
 		
 		if (_selfieAttempts < 2) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-																message:@"Please retake your photo"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
+																message:@"Please retry taking your selfie photo, good lighting helps!"
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];
@@ -821,7 +802,7 @@
 			[alertView show];
 		
 		} else {
-			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
+			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
 										message:@"You may get flagged by the community."
 									   delegate:nil
 							  cancelButtonTitle:@"OK"

@@ -38,8 +38,8 @@
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_followButton.frame = CGRectMake(198.0, 11.0, 104.0, 44.0);
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"subscribe_nonActive"] forState:UIControlStateNormal];
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"subscribe_Active"] forState:UIControlStateHighlighted];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_followButton];
 	}
@@ -50,8 +50,11 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
+	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
+	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
+	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];

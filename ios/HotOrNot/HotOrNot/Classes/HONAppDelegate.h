@@ -14,7 +14,7 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 0
+#define __ALWAYS_REGISTER__ 1
 #define __ALWAYS_VERIFY__ 0
 
 
@@ -103,9 +103,10 @@ extern NSString * const kTwilioSMS;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
 
-+ (NSString *)socialShareFormat;
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;
+
++ (NSString *)twitterShareComment;
 + (NSString *)instagramShareComment;
 
 + (NSArray *)defaultSubjects;
