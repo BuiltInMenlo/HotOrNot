@@ -608,7 +608,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:@"Warning if you SKIP your selfie image you may get flagged by the community!"
+														message:@"WARNING YOUR PROFILE MAY GET FLAGGED FOR NOT HAVING A SELFIE. VOLLEY USES YOUR SELFIE IMAGE TO KEEP THE COMMUNITY SAFE!\n#NOADULTS"
 													   delegate:self
 											  cancelButtonTitle:@"Take Photo"
 											  otherButtonTitles:@"OK", nil];
