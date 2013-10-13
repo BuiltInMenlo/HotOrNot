@@ -1007,8 +1007,10 @@
 			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
 			
             int idx = (row * 4) + col;
-            opponentVO = [_challengeImages objectAtIndex:idx][0];
-            challengeVO = [_challengeImages objectAtIndex:idx][1];
+            if(idx < [_challengeImages count]){
+                opponentVO = [_challengeImages objectAtIndex:idx][0];
+                challengeVO = [_challengeImages objectAtIndex:idx][1];
+            }
 		}
 		
 		if (opponentVO != nil) {
