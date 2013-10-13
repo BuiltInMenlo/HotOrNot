@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		340149F01808AF8300581096 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340149EF1808AF8300581096 /* FacebookSDK.framework */; };
 		4C0077A5176E3C5900E263D1 /* selectedRowCheck.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0077A3176E3C5900E263D1 /* selectedRowCheck.png */; };
 		4C0077A6176E3C5900E263D1 /* selectedRowCheck@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0077A4176E3C5900E263D1 /* selectedRowCheck@2x.png */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
@@ -198,7 +199,6 @@
 		4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */; };
 		4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745A16C05699007D901B /* HONSearchViewController.m */; };
 		4C4B802917D94ACD00D660B2 /* HONRegisterCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4B802817D94ACD00D660B2 /* HONRegisterCameraViewController.m */; };
-		4C4BAB4317A0EC2400AA4457 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3E53C81783408C0065D1AA /* FacebookSDK.framework */; };
 		4C4DCD4017A8E9CC00A0A246 /* inviteAllButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4DCD3C17A8E9CC00A0A246 /* inviteAllButton_Active.png */; };
 		4C4DCD4117A8E9CC00A0A246 /* inviteAllButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4DCD3D17A8E9CC00A0A246 /* inviteAllButton_Active@2x.png */; };
 		4C4DCD4217A8E9CC00A0A246 /* inviteAllButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4DCD3E17A8E9CC00A0A246 /* inviteAllButton_nonActive.png */; };
@@ -559,6 +559,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		340149EF1808AF8300581096 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		4C0077A3176E3C5900E263D1 /* selectedRowCheck.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = selectedRowCheck.png; sourceTree = "<group>"; };
 		4C0077A4176E3C5900E263D1 /* selectedRowCheck@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selectedRowCheck@2x.png"; sourceTree = "<group>"; };
 		4C026019172B2CA8001CC476 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
@@ -736,7 +737,6 @@
 		4C3CB1DE17E440070076BF78 /* cameraButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONCreateChallengePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateChallengePreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateChallengePreviewView.m; sourceTree = "<group>"; };
-		4C3E53C81783408C0065D1AA /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		4C4103CD1778BC9B001383E7 /* loader_001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loader_001.png; sourceTree = "<group>"; };
 		4C4103CE1778BC9B001383E7 /* loader_001@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "loader_001@2x.png"; sourceTree = "<group>"; };
 		4C4103CF1778BC9B001383E7 /* loader_002.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loader_002.png; sourceTree = "<group>"; };
@@ -1319,10 +1319,10 @@
 				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
-				4C4BAB4317A0EC2400AA4457 /* FacebookSDK.framework in Frameworks */,
 				4C62675A15F96FA800AA7FCE /* MapKit.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4CD9265D17FBCFDF0006732D /* libTestFlight.a in Frameworks */,
+				340149F01808AF8300581096 /* FacebookSDK.framework in Frameworks */,
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */,
@@ -2002,9 +2002,9 @@
 		4C6266AE15F96E2900AA7FCE /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				340149EF1808AF8300581096 /* FacebookSDK.framework */,
 				4CC5F96D17F961CF00BCA1DE /* AWSiOSSDK.framework */,
 				4CC5F96B17F95F4A00BCA1DE /* HockeySDK.framework */,
-				4C3E53C81783408C0065D1AA /* FacebookSDK.framework */,
 			);
 			path = "Other Frameworks";
 			sourceTree = "<group>";
@@ -3501,9 +3501,10 @@
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)/HotOrNot/Other\\ Frameworks\\\"",
-					"\\\"$(SRCROOT)/HotOrNot/Other\\ Frameworks\\\"",
+					"\\\\\\\"$(SRCROOT)/HotOrNot/Other\\\\\\ Frameworks\\\\\\\"",
+					"\\\\\\\"$(SRCROOT)/HotOrNot/Other\\\\\\ Frameworks\\\\\\\"",
 					"/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Other\\ Frameworks",
+					"/Users/shane/dev/volley/hotornot-bkp/ios/HotOrNot/HotOrNot/Other\\ Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
@@ -3531,9 +3532,10 @@
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)/HotOrNot/Other\\ Frameworks\\\"",
-					"\\\"$(SRCROOT)/HotOrNot/Other\\ Frameworks\\\"",
+					"\\\\\\\"$(SRCROOT)/HotOrNot/Other\\\\\\ Frameworks\\\\\\\"",
+					"\\\\\\\"$(SRCROOT)/HotOrNot/Other\\\\\\ Frameworks\\\\\\\"",
 					"/labor/clients/built_in_menlo/projects/HotOrNot/ios/HotOrNot/HotOrNot/Other\\ Frameworks",
+					"/Users/shane/dev/volley/hotornot-bkp/ios/HotOrNot/HotOrNot/Other\\ Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
