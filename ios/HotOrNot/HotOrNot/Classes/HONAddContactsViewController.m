@@ -513,6 +513,12 @@
 	_selectedNonAppContacts = [NSMutableArray array];
 	_selectedInAppContacts = [NSMutableArray array];
 	
+	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteAllButton.frame = CGRectMake(10.0, 13.0, 64.0, 44.0);
+	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
+	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
+	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
@@ -522,6 +528,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
 	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
 	headerView.backgroundColor = [UIColor blackColor];
+	[headerView addButton:inviteAllButton];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
 	
@@ -532,13 +539,6 @@
 	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
 	headerTitleLabel.text = @"Friends";
 	[headerView addSubview:headerTitleLabel];
-	
-//	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	inviteAllButton.frame = CGRectMake(0.0, 25.0, 84.0, 34.0);
-//	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
-//	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
-//	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:inviteAllButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];

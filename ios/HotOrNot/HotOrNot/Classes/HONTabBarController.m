@@ -76,7 +76,7 @@
 //		else
 //			[view setFrame:[UIScreen mainScreen].bounds];//[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
 		
-		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
+//		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
 	}
 
 //	for (UIViewController *viewController in self.viewControllers)

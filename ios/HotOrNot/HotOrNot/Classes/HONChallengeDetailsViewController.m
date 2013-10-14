@@ -394,22 +394,37 @@
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 322.0, 320.0, 44.0)];
 	[_scrollView addSubview:footerHolderView];
 	
-//	NSString *opponents = @"";
-//	for (HONOpponentVO *vo in _challengeVO.challengers) {
-//		opponents = [opponents stringByAppendingFormat:@"%@, ", vo.username];
-//	}
+	NSMutableArray *opponentIDs = [NSMutableArray array];
+	for (HONOpponentVO *vo in _challengeVO.challengers) {
+		if ([vo.imagePrefix length] > 0) {
+			BOOL isFound = NO;
+			for (NSNumber *userID in opponentIDs) {
+				if ([userID intValue] == vo.userID) {
+					isFound = YES;
+					break;
+				}
+			}
+			
+			if (!isFound)
+				[opponentIDs addObject:[NSNumber numberWithInt:vo.userID]];
+		}
+	}
 	
+	NSString *participants = _challengeVO.creatorVO.username;
+	int uniqueOpponents = ([opponentIDs count] - (int)_isChallengeOpponent) - 1;
+	if ((_isChallengeCreator && _isChallengeOpponent) || (!_isChallengeCreator && !_isChallengeOpponent)) {
+		if (_challengeVO.creatorVO.userID == _heroOpponentVO.userID)
+			participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@ and %d other%@", _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
+		
+		else
+			participants = (uniqueOpponents > 1) ? [NSString stringWithFormat:@"%@, %@ and %d other%@", _challengeVO.creatorVO.username, _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
+	}
 	
+	if (!_isChallengeCreator && _isChallengeOpponent)
+		participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@, you and %d other%@", _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%@ and you", _challengeVO.creatorVO.username];
 	
-//	NSString *emails = @"";
-//	for (HONContactUserVO *vo in addresses) {
-//		emails = [emails stringByAppendingFormat:@"%@|", vo.email];
-//	}
-//	
-//	NSLog(@"SELECTED CONTACTS:[%@]", [emails substringToIndex:[emails length] - 1]);
-	
-	
-	//NSString *opponents = [NSString stringWithFormat:@"%@%@%@", _challengeVO.creatorVO.username, (isOpponent) ? @", you" : @"", (_opponentCounter > 0) ? [NSString stringWithFormat:@" & %d others", _opponentCounter] : @""];
+	if ([_challengeVO.challengers count] == 0)
+		participants = _challengeVO.creatorVO.username;
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
@@ -417,7 +432,7 @@
 	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = [NSString stringWithFormat:@"%@%@%@", _challengeVO.creatorVO.username, (isOpponent) ? @", you" : @"", (_opponentCounter > 0) ? [NSString stringWithFormat:@" & %d other%@…", _opponentCounter, (_opponentCounter != 1) ? @"s" : @""] : @""];//_challengeVO.creatorVO.username;
+	creatorNameLabel.text = participants;
 	[footerHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];

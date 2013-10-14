@@ -173,8 +173,7 @@
 		[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"p"];
 	}
 	
-	NSLog(@"CHALLENGE PARAMS:[%@]", params);
-	
+//	NSLog(@"CHALLENGE PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -185,7 +184,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			

@@ -891,11 +891,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	struct utsname systemInfo;
 	uname(&systemInfo);
 	
-	NSLog(@"--DEVICE:[%@]--", [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
-	NSLog(@"is5s:[%d]", [HONAppDelegate isPhoneType5s]);
-	
-	
-	
+//	NSLog(@"--DEVICE:[%@]--", [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+//	NSLog(@"is5s:[%d]", [HONAppDelegate isPhoneType5s]);
 //	NSLog(@"ADID:[%@]\nVENDOR:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -1493,7 +1490,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //							[HONAppDelegate deviceToken], @"token",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
+//	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	
@@ -1520,12 +1517,10 @@ NSString * const kTwilioSMS = @"6475577873";
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				[HONAppDelegate writeUserInfo:userResult];
 				
-				NSMutableString *avatarURL = [[userResult objectForKey:@"avatar_url"] mutableCopy];
-				NSLog(@"IMG:[%@]", avatarURL);
-				
-				[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-				[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-				[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
+//				NSMutableString *avatarURL = [[userResult objectForKey:@"avatar_url"] mutableCopy];
+//				[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+//				[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) {
 					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];

@@ -128,10 +128,10 @@
 							nil];
 	
 	//NSLog(@"PARAMS:[%@]", params);
-	NSMutableString *avatarURL = [_filename mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
+//	NSMutableString *avatarURL = [_filename mutableCopy];
+//	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+//	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];

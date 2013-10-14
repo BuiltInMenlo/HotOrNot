@@ -92,7 +92,7 @@
 	
 	_uploadCounter = 0;
 	_filename = [NSString stringWithFormat:@"%@-%d",[HONAppDelegate deviceToken], (int)[[NSDate date] timeIntervalSince1970]];
-	NSLog(@"FILENAME: %@", _filename);
+//	NSLog(@"FILENAME: %@", _filename);
 	
 	@try {
 //		float avatarSize = kSnapLargeDim;
@@ -152,11 +152,7 @@
 							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
-	NSMutableString *avatarURL = [[params objectForKey:@"imgURL"] mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 816.0) withUserDefaultsKey:@"avatar_image"];
-	
+//	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -273,7 +269,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			[HONAppDelegate writeSubscribeeList:result];
 		}
 		
@@ -297,7 +293,7 @@
 							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
+//	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -306,8 +302,8 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 		}
 		
 		if (_progressHUD != nil) {
@@ -477,7 +473,7 @@
 			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
 			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 			
-			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height * 2.0)];
+			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 			_cameraOverlayView.alpha = 0.0;
 			
 			_splashTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -551,7 +547,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.5 animations:^(void) {
-		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height);
+		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height * 0.5);
 		_overlayImageView.alpha = 0.0;
 		_splashTintView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -560,7 +556,7 @@
 		[_cameraOverlayView addSubview:gutterView];
 		
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:_cameraOverlayView.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_1stRun-568h@2x" : @"tutorial_1stRun"];
 		_tutorialImageView.alpha = 0.0;
 		[_cameraOverlayView addSubview:_tutorialImageView];
 		
@@ -800,6 +796,9 @@
 													  otherButtonTitles:nil];
 			[alertView setTag:0];
 			[alertView show];
+			
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
 		
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
@@ -958,6 +957,11 @@
 		_progressHUD = nil;
 		
 		[self _finalizeUpload];
+		
+//		NSMutableString *avatarURL = [[params objectForKey:@"imgURL"] mutableCopy];
+//		[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+		[HONImagingDepictor writeImageFromWeb:([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+
 	}
 }
 

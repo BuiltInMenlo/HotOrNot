@@ -39,6 +39,7 @@
 					  NSLocalizedString(@"settings_inviteEmail", nil),
 					  NSLocalizedString(@"settings_changeUsername", nil),
 					  @"Change Email",
+					  @"Change Birthday",
 					  @"Deactivate Account",
 					  @"Terms & Conditions",
 					  @"FAQ"];
@@ -289,6 +290,30 @@
 			break;}
 			
 		case 5:{
+			[[Mixpanel sharedInstance] track:@"Settings - Change Birthday"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			if ([MFMailComposeViewController canSendMail]) {
+				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+				mailComposeViewController.mailComposeDelegate = self;
+				[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
+				[mailComposeViewController setSubject:@"Change My Email Address"];
+				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your birthday change here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				
+				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Email Error"
+											message:@"Cannot send email from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+			break;}
+			
+		case 6:{
 			[[Mixpanel sharedInstance] track:@"Settings - Deactivate"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -303,7 +328,7 @@
 			
 			break;}
 
-		case 6:
+		case 7:
 			[[Mixpanel sharedInstance] track:@"Settings - Show Support"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -313,7 +338,7 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 7:
+		case 8:
 			[[Mixpanel sharedInstance] track:@"Settings - Show FAQ"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

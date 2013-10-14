@@ -70,7 +70,7 @@
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 6.0);
 	[self.contentView addSubview:gradientImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 125.0, 140.0, 24.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 130.0, 140.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	subjectLabel.textColor = [UIColor colorWithWhite:0.898 alpha:1.0];
 	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
@@ -121,7 +121,7 @@
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 160.0, 6.0);
 	[self.contentView addSubview:gradientImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(169.0, 125.0, 140.0, 24.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(169.0, 130.0, 140.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	subjectLabel.textColor = [UIColor colorWithWhite:0.898 alpha:1.0];
 	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
