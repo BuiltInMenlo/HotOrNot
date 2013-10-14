@@ -49,6 +49,7 @@
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) NSMutableArray *challengeImages;
 @property (nonatomic, strong) UIToolbar *footerToolbar;
 @property (nonatomic, strong) UIButton *subscribeButton;
 @property (nonatomic, strong) UIButton *flagButton;
@@ -201,7 +202,7 @@
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 655.0 + (kSnapMediumDim * ([_challenges count] / 5))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapMediumDim * ( ( [_challenges count] / 4) + 1) )));
 			[self _makeGrid];
 		}
 		
@@ -613,10 +614,11 @@
 			int col = touchPoint.x / (kSnapMediumDim + 1.0);
 			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
 			
-			if ((row * 4) + col < [_challenges count]) {
-				challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:(row * 4) + col];
-				opponentVO = challengeVO.creatorVO;
-			}
+            int idx = (row * 4) + col;
+            if(idx < [_challengeImages count]){
+                opponentVO = [_challengeImages objectAtIndex:idx][0];
+                challengeVO = [_challengeImages objectAtIndex:idx][1];
+            }
 		}
 		
 		if (opponentVO != nil) {
@@ -811,31 +813,61 @@
 }
 
 - (void)_makeGrid {
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
+    _challengeImages = [NSMutableArray new];
+    NSInteger gridCount = 0;
+    for (HONChallengeVO *vo in _challenges) {
+        if( _userVO.userID == vo.creatorVO.userID ){
+            gridCount++;
+            NSMutableArray *dataArray = [NSMutableArray new];
+            [dataArray addObject:vo.creatorVO];
+            [dataArray addObject:vo];
+            [_challengeImages addObject:dataArray];
+        }
+        for (HONOpponentVO *challenger in vo.challengers) {
+            if( _userVO.userID == challenger.userID ){
+                gridCount++;
+                NSMutableArray *dataArray = [NSMutableArray new];
+                [dataArray addObject:challenger];
+                [dataArray addObject:vo];
+                [_challengeImages addObject:dataArray];
+            }
+        }
+    }
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapMediumDim * (( (int) gridCount / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	
 	_challengeCounter = 0;
 	for (HONChallengeVO *vo in _challenges) {
-		CGPoint pos = CGPointMake(kSnapMediumDim * (_challengeCounter % 4), kSnapMediumDim * (_challengeCounter / 4));
-		
-		UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
-		[_gridHolderView addSubview:imageHolderView];
-		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-		imageView.userInteractionEnabled = YES;
-		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
-		[imageHolderView addSubview:imageView];
-		
-		UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		tapHoldButton.frame = imageView.frame;
-		[tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
-		[imageHolderView addSubview:tapHoldButton];
-		
-		_challengeCounter++;
+        if( _userVO.userID == vo.creatorVO.userID ){
+            [self _makeGridElement:vo.creatorVO];
+        }
+        for (HONOpponentVO *challenger in vo.challengers) {
+            if( _userVO.userID == challenger.userID ){
+                [self _makeGridElement:challenger];
+            }
+        }
 	}
 }
 
+-(void)_makeGridElement:(HONOpponentVO *)challenger {
+    CGPoint pos = CGPointMake(kSnapMediumDim * (_challengeCounter % 4), kSnapMediumDim * (_challengeCounter / 4));
+    
+    UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
+    [_gridHolderView addSubview:imageHolderView];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+    imageView.userInteractionEnabled = YES;
+    [imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", challenger.imagePrefix]] placeholderImage:nil];
+    [imageHolderView addSubview:imageView];
+    
+    UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    tapHoldButton.frame = imageView.frame;
+    [tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
+    [imageHolderView addSubview:tapHoldButton];
+    _challengeCounter++;
+    
+}
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
