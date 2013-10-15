@@ -198,9 +198,9 @@
 		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 	
 	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectAllButton.frame = CGRectMake(10.0, 13.0, 64.0, 44.0);
-	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	selectAllButton.frame = CGRectMake(10.0, 23.0, 74.0, 24.0);
+	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_nonActive"] forState:UIControlStateNormal];
+	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_Active"] forState:UIControlStateHighlighted];
 	[selectAllButton addTarget:self action:@selector(_goSelectAll) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -221,7 +221,7 @@
 	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
 	headerTitleLabel.textColor = [UIColor whiteColor];
 	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Follow People";
+	headerTitleLabel.text = @"Search";
 	[headerView addSubview:headerTitleLabel];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
@@ -324,31 +324,40 @@
 
 #pragma mark - PopularUserVieCell Delegates
 - (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected {
-	if (isSelected) {
-		[[Mixpanel sharedInstance] track:@"Popular People - Select"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
-		
-		[_selectedUsers addObject:popularUserVO];
-		
-	} else {
-		[[Mixpanel sharedInstance] track:@"Popular People - Deselect"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
-		
-		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONPopularUserVO *vo in _selectedUsers) {
-			for (HONPopularUserVO *dropVO in _users) {
-				if ([vo.username isEqualToString:dropVO.username]) {
-					[removeVOs addObject:vo];
+	if ([HONAppDelegate hasTakenSelfie]) {
+		if (isSelected) {
+			[[Mixpanel sharedInstance] track:@"Popular People - Select"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
+			
+			[_selectedUsers addObject:popularUserVO];
+			
+		} else {
+			[[Mixpanel sharedInstance] track:@"Popular People - Deselect"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
+			
+			NSMutableArray *removeVOs = [NSMutableArray array];
+			for (HONPopularUserVO *vo in _selectedUsers) {
+				for (HONPopularUserVO *dropVO in _users) {
+					if ([vo.username isEqualToString:dropVO.username]) {
+						[removeVOs addObject:vo];
+					}
 				}
 			}
+			
+			[_selectedUsers removeObjectsInArray:removeVOs];
+			removeVOs = nil;
 		}
 		
-		[_selectedUsers removeObjectsInArray:removeVOs];
-		removeVOs = nil;
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+									message:@"You cannot subscribe to anyone until you give us your profile photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	}
 }
 

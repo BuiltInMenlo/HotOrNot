@@ -536,6 +536,12 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Loading…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	[self.imagePickerController takePicture];
 }
 
@@ -622,6 +628,7 @@
 									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									   [NSString stringWithFormat:@"%d", 1], @"expires",
 									   _subjectName, @"subject",
+									   @"N", @"changedSubject",
 									   @"", @"username",
 									   @"N", @"isPrivate",
 									   @"0", @"challengerID",
@@ -637,6 +644,17 @@
 		
 		if (_challengeVO != nil)
 			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+		
+		
+		if (_volleySubmitType == HONVolleySubmitTypeJoin && ![_subjectName isEqualToString:_challengeVO.subjectName]) {
+			[params setObject:@"Y" forKey:@"changedSubject"];
+			
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:@"Changing the hashtag creates a new Volley."
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		}
 		
 		_challengeParams = [params copy];
 		NSLog(@"PARAMS:[%@]", _challengeParams);
@@ -668,6 +686,11 @@
 		
 		[_previewView uploadComplete];
 		[self _finalizeUpload];
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
 			
 		if (_hasSubmitted) {
 //			if (_isFirstCamera) {
@@ -716,20 +739,14 @@
 		_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
 	}
 	
-	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
+	NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(_processedImage.size), [HONImagingDepictor totalLuminance:_processedImage]);
 	
-//	CIImage *ciImage = [CIImage imageWithCGImage:workingImage.CGImage];
-//	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-//	NSArray *features = [detctor featuresInImage:ciImage];
-//	
-//	NSLog(@"FEATURES:[%d]", [features count]);
-	
-//	if ([features count] > 0) {
+	if ([HONImagingDepictor totalLuminance:_processedImage] > kMinLuminosity) {
 		_usernames = [NSMutableArray array];
 		for (HONUserVO *vo in _subscribers)
 			[_usernames addObject:vo.username];
 		
-	
+
 		_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
 		_previewView.delegate = self;
 		_previewView.isFirstCamera = _isFirstCamera;
@@ -752,50 +769,18 @@
 			[[NSUserDefaults standardUserDefaults] synchronize];
 		}
 	
-//	} else {
-//		_selfieAttempts++;
-//		
-//		if (_selfieAttempts < 3) {
-//			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-//										message:@"Please retake your photo"
-//									   delegate:self
-//							  cancelButtonTitle:@"OK"
-//							  otherButtonTitles:nil] show];
-//			
-//		} else {
-//			[[[UIAlertView alloc] initWithTitle:@"No selfie detected!"
-//										message:@"You may get flagged by the community."
-//									   delegate:nil
-//							  cancelButtonTitle:@"OK"
-//							  otherButtonTitles:nil] show];
-//			
-//			_usernames = [NSMutableArray array];
-//			for (HONUserVO *vo in _subscribers)
-//				[_usernames addObject:vo.username];
-//			
-//			_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
-//			_previewView.delegate = self;
-//			_previewView.isFirstCamera = _isFirstCamera;
-//			[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
-//			[_previewView showKeyboard];
-//			
-//			[_cameraOverlayView submitStep:_previewView];
-//			
-//			[self _uploadPhotos];
-//			
-//			
-//			int friend_total = 0;
-//			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
-//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
-//				
-//			} else {
-//				friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
-//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
-//			}
-//		}
-//	}
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"Light Level Too Low!"
+									message:@"You need better lighting in your photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

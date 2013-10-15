@@ -107,6 +107,7 @@ const CGSize kTabSize = {80.0, 50.0};
 
 
 // snap params
+const CGFloat kMinLuminosity = 0.33;
 const CGFloat kSnapRatio = 1.33333333f;
 const CGFloat kSnapJPEGCompress = 0.400f;
 
@@ -483,6 +484,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
++ (BOOL)hasTakenSelfie {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"] isEqualToString:@"NO"]);
+}
+
 + (BOOL)hasNetwork {
 	[[Reachability reachabilityForInternetConnection] startNotifier];
 	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
@@ -506,10 +511,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
 	return (YES);
-}
-
-+ (BOOL)audioMuted {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"] isEqualToString:@"YES"]);
 }
 
 + (NSString *)deviceLocale {

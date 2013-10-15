@@ -49,6 +49,7 @@
 @property (nonatomic, strong) UIView *splashTintView;
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) UIView *whySelfieView;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) int uploadCounter;
@@ -481,7 +482,7 @@
 			[_cameraOverlayView addSubview:_splashTintView];
 			
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
 			_overlayImageView.userInteractionEnabled = YES;
 			[_cameraOverlayView addSubview:_overlayImageView];
 			
@@ -519,7 +520,7 @@
 		
 		} else {
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x" : @"whySelfie"];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
 			_overlayImageView.userInteractionEnabled = YES;
 			_overlayImageView.alpha = 0.0;
 			[_tutorialHolderView addSubview:_overlayImageView];
@@ -573,9 +574,9 @@
 		[_cameraOverlayView addSubview:headerBGImageView];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(258.0, 0.0, 64.0, 44.0);
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
+		skipButton.frame = CGRectMake(228.0, 10.0, 84.0, 24.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 		[_cameraOverlayView addSubview:skipButton];
 		
@@ -603,13 +604,78 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:@"WARNING YOUR PROFILE MAY GET FLAGGED FOR NOT HAVING A SELFIE. VOLLEY USES YOUR SELFIE IMAGE TO KEEP THE COMMUNITY SAFE!\n#NOADULTS"
-													   delegate:self
-											  cancelButtonTitle:@"Take Photo"
-											  otherButtonTitles:@"OK", nil];
-	[alertView setTag:1];
-	[alertView show];
+	
+	_whySelfieView = [[UIView alloc] initWithFrame:self.view.frame];
+	_whySelfieView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	_whySelfieView.alpha = 0.0;
+	[_cameraOverlayView addSubview:_whySelfieView];
+	
+	UIImageView *infoImageView = [[UIImageView alloc] initWithFrame:_whySelfieView.frame];
+	infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x": @"whySelfie"];
+	[_whySelfieView addSubview:infoImageView];
+	
+	UIButton *closeSkipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeSkipButton.frame = CGRectMake(40.0, [UIScreen mainScreen].bounds.size.height - 236.0, 240.0, 64.0);
+	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_nonActive"] forState:UIControlStateNormal];
+	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_Active"] forState:UIControlStateHighlighted];
+	[closeSkipButton addTarget:self action:@selector(_goCloseSkip) forControlEvents:UIControlEventTouchUpInside];
+	[_whySelfieView addSubview:closeSkipButton];
+	
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(85.0, [UIScreen mainScreen].bounds.size.height - 159.0, 150.0, 24.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkipPhoto) forControlEvents:UIControlEventTouchUpInside];
+	[_whySelfieView addSubview:skipButton];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_whySelfieView.alpha = 1.0;
+	}];
+	
+	
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//														message:@"WARNING YOUR PROFILE MAY GET FLAGGED FOR NOT HAVING A SELFIE. VOLLEY USES YOUR SELFIE IMAGE TO KEEP THE COMMUNITY SAFE!\n#NOADULTS"
+//													   delegate:self
+//											  cancelButtonTitle:@"Take Photo"
+//											  otherButtonTitles:@"OK", nil];
+//	[alertView setTag:1];
+//	[alertView show];
+}
+
+- (void)_goSkipPhoto {
+	[[Mixpanel sharedInstance] track:@"Register - Skip Photo Confirm"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_filename = @"";
+	[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
+	
+	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	
+	[_usernameTextField becomeFirstResponder];
+	[_usernameButton setSelected:YES];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	[UIView setAnimationDelay:0.33];
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)_goCloseSkip {
+	[[Mixpanel sharedInstance] track:@"Register - Skip Photo Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_whySelfieView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_whySelfieView removeFromSuperview];
+		_whySelfieView = nil;
+	}];
 }
 
 - (void)_goTakePhoto {
@@ -631,6 +697,9 @@
 	_progressHUD.taskInProgress = YES;
 	
 	[self.previewPicker takePicture];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)_goCloseSplash {
@@ -762,51 +831,15 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo");
-	
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
+	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo:[%f]", [HONImagingDepictor totalLuminance:image]);
 	
-	CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
-	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-	NSArray *features = [detctor featuresInImage:ciImage];
-	
-	if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
-		[self _uploadPhoto:image];
-		[self dismissViewControllerAnimated:YES completion:^(void) {}];
+	if ([HONImagingDepictor totalLuminance:image] > kMinLuminosity) {
+		CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
+		CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+		NSArray *features = [detctor featuresInImage:ciImage];
 		
-		_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-		
-		[_usernameTextField becomeFirstResponder];
-		[_usernameButton setSelected:YES];
-		
-		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:0.5];
-		[UIView setAnimationDelay:0.33];
-		_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-		[UIView commitAnimations];
-	
-	} else {
-		_selfieAttempts++;
-		
-		if (_selfieAttempts < 2) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
-																message:@"Please retry taking your selfie photo, good lighting helps!"
-															   delegate:self
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:nil];
-			[alertView setTag:0];
-			[alertView show];
-			
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
-										message:@"You may get flagged by the community."
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
+		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
 			[self _uploadPhoto:image];
 			[self dismissViewControllerAnimated:YES completion:^(void) {}];
 			
@@ -820,7 +853,43 @@
 			[UIView setAnimationDelay:0.33];
 			_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 			[UIView commitAnimations];
+		
+		} else {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
+																message:@"Please retry taking your selfie photo, good lighting helps!"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:0];
+			[alertView show];
+			
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+			
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_irisView.alpha = 0.0;
+			} completion:^(BOOL finished) {
+				[_irisView removeFromSuperview];
+				_irisView = nil;
+			}];
 		}
+		
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"Light Level Too Low!"
+									message:@"You need better lighting in your photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_irisView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_irisView removeFromSuperview];
+			_irisView = nil;
+		}];
 	}
 }
 

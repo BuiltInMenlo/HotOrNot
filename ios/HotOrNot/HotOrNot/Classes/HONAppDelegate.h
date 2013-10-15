@@ -13,7 +13,7 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 1
+#define __DEV_BUILD___ 0
 #define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 
@@ -58,6 +58,7 @@ const CGFloat kOrthodoxTableCellHeight;
 const CGSize kTabSize;
 
 // snap params
+const CGFloat kMinLuminosity;
 const CGFloat kSnapRatio;
 const CGFloat kSnapJPEGCompress;
 
@@ -142,10 +143,10 @@ extern NSString * const kTwilioSMS;
 
 + (BOOL)isPhoneType5s;
 + (BOOL)isRetina4Inch;
++ (BOOL)hasTakenSelfie;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingConfigServer;
-+ (BOOL)audioMuted;
 + (NSString *)deviceLocale;
 + (void)offsetSubviewsForIOS7:(UIView *)view;
 

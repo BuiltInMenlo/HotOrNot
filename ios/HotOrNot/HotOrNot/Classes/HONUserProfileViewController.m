@@ -452,18 +452,27 @@
 }
 
 - (void)_goSubscribe {
-	[[Mixpanel sharedInstance] track:@"User Profile - Subscribe"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+	if ([HONAppDelegate hasTakenSelfie]) {
+		[[Mixpanel sharedInstance] track:@"User Profile - Subscribe"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:3];
+		[alertView show];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:3];
-	[alertView show];
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+									message:@"You cannot subscribe to anyone until you give us your profile photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)_goUnsubscribe {
@@ -516,7 +525,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Twitter", @"Instagram", nil];
+													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
 	[actionSheet setTag:1];
 	[actionSheet showInView:self.view];
 }
@@ -561,6 +570,43 @@
 	}];
 }
 
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
+		
+		HONChallengeVO *challengeVO = nil;
+		HONOpponentVO *opponentVO = nil;
+		
+		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
+			int col = touchPoint.x / (kSnapMediumDim + 1.0);
+			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
+			
+            int idx = (row * 4) + col;
+            if(idx < [_challengeImages count]){
+                opponentVO = [_challengeImages objectAtIndex:idx][0];
+                challengeVO = [_challengeImages objectAtIndex:idx][1];
+            }
+		}
+		
+		if (opponentVO != nil) {
+			[[Mixpanel sharedInstance] track:@"User Profile - Show Photo Detail"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+											  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent",
+											  nil]];
+			
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:(_userVO.userID != opponentVO.userID)];
+			_snapPreviewViewController.delegate = self;
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+		}
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+		[_snapPreviewViewController showControls];
+	}
+}
+
 - (void)_goTapHoldAlert {
 	[[[UIAlertView alloc] initWithTitle:@"Tap and hold to view full screen!"
 								message:@""
@@ -601,43 +647,6 @@
 							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 								 NSLog(@"%@", weakSelf.userVO.imageURL);
 							 }];
-}
-
--(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
-	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
-		
-		HONChallengeVO *challengeVO = nil;
-		HONOpponentVO *opponentVO = nil;
-		
-		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
-			int col = touchPoint.x / (kSnapMediumDim + 1.0);
-			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
-			
-            int idx = (row * 4) + col;
-            if(idx < [_challengeImages count]){
-                opponentVO = [_challengeImages objectAtIndex:idx][0];
-                challengeVO = [_challengeImages objectAtIndex:idx][1];
-            }
-		}
-		
-		if (opponentVO != nil) {
-			[[Mixpanel sharedInstance] track:@"User Profile - Show Photo Detail"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-											  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent",
-											  nil]];
-			
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:(_userVO.userID != opponentVO.userID)];
-			_snapPreviewViewController.delegate = self;
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
-		}
-		
-	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		[_snapPreviewViewController showControls];
-	}
 }
 
 - (void)_makeUI {

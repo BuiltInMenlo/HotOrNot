@@ -45,20 +45,6 @@
 		_headerBGImageView.frame = CGRectOffset(_headerBGImageView.frame, 0.0, -20.0);
 		[self addSubview:_headerBGImageView];
 		
-		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_flipButton.frame = CGRectMake(-2.0, 0.0, 44.0, 44.0);
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_flipButton];
-		
-		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_cancelButton];
-		
 //		UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		flashButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
 //		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_nonActive"] forState:UIControlStateNormal];
@@ -69,13 +55,6 @@
 		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
 		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[self addSubview:gutterView];
-		
-		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
-		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
-		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_takePhotoButton];
 		
 		_whiteMatteView = [[UIImageView alloc] initWithFrame:self.frame];
 		_whiteMatteView.backgroundColor = [UIColor whiteColor];
@@ -98,20 +77,51 @@
 	}];
 	
 	if (isTutorial) {
-		_infoImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
-		[self addSubview:_infoImageView];
+//		_infoImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
+//		[self addSubview:_infoImageView];
+//		
+//		UIButton *tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		tutorialButton.frame = _infoImageView.frame;
+//		[tutorialButton addTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:tutorialButton];
+//		
+//		_headerBGImageView.hidden = YES;
+//		_flipButton.hidden = YES;
+//		_cancelButton.hidden = YES;
+//		_takePhotoButton.hidden = YES;
 		
-		UIButton *tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		tutorialButton.frame = _infoImageView.frame;
-		[tutorialButton addTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:tutorialButton];
-		
-		_headerBGImageView.hidden = YES;
-		_flipButton.hidden = YES;
-		_cancelButton.hidden = YES;
-		_takePhotoButton.hidden = YES;
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		[self addSubview:_tutorialImageView];
+	
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
 	}
+	
+	_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_flipButton.frame = CGRectMake(-2.0, 0.0, 44.0, 44.0);
+	[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+	[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+	[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:_flipButton];
+	
+	_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:_cancelButton];
+	
+	_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
+	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+	[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+	[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:_takePhotoButton];
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
@@ -119,9 +129,6 @@
 }
 
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
-	[_progressHUD hide:YES];
-	_progressHUD = nil;
-	
 	[self addSubview:previewView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -150,28 +157,13 @@
 	_cancelButton.hidden = NO;
 	_takePhotoButton.hidden = NO;
 	
-	_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
-	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
-	_tutorialImageView.userInteractionEnabled = YES;
-	_tutorialImageView.alpha = 0.0;
-	[self addSubview:_tutorialImageView];
-	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeTutorialButton.frame = _tutorialImageView.frame;
-	[closeTutorialButton addTarget:self action:@selector(_goCloseBubble:) forControlEvents:UIControlEventTouchUpInside];
+	[closeTutorialButton addTarget:self action:@selector(_goCloseBubble) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialImageView addSubview:closeTutorialButton];
-	
-	[UIView animateWithDuration:0.33 animations:^(void) {
-		_tutorialImageView.alpha = 1.0;
-	}];
 }
 
-- (void)_goCloseBubble:(id)sender {
-	UIButton *button = (UIButton *)sender;
-	[button removeTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
-	[button removeFromSuperview];
-	button = nil;
-	
+- (void)_goCloseBubble {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tutorialImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -193,6 +185,8 @@
 }
 
 - (void)_goTakePhoto {
+	[self _goCloseBubble];
+	
 	_blackMatteView.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_blackMatteView.alpha = 1.0;
@@ -200,12 +194,6 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_blackMatteView.alpha = 0.0;
 		}];
-		
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = @"Loading…";
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.taskInProgress = YES;
 	}];
 	
 	[self.delegate cameraOverlayViewTakePhoto:self];

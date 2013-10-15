@@ -8,6 +8,7 @@
 
 #import "AFImageRequestOperation.h"
 #import "UIImage+ImageEffects.h"
+#import "UIImage+Pixels.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONImagingDepictor.h"
@@ -92,6 +93,19 @@
 
 + (UIImage *)createBlurredScreenShot {
 	return ([[HONImagingDepictor createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
+}
+
++ (double)totalLuminance:(UIImage *)image {
+	unsigned char* pixels = [image rgbaPixels];
+	
+	double luminance = 0.0;
+	for(int p=0; p<image.size.width * image.size.height * 4; p+=4)
+		luminance += pixels[p] * 0.299 + pixels[p+1] * 0.587 + pixels[p+2] * 0.114;
+	
+	luminance /= (image.size.width * image.size.height);
+	luminance /= 255.0;
+	
+	return (luminance);
 }
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {

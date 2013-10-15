@@ -414,32 +414,31 @@
 	int uniqueOpponents = ([opponentIDs count] - (int)_isChallengeOpponent) - 1;
 	if ((_isChallengeCreator && _isChallengeOpponent) || (!_isChallengeCreator && !_isChallengeOpponent)) {
 		if (_challengeVO.creatorVO.userID == _heroOpponentVO.userID)
-			participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@ and %d other%@", _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
+			participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@ and %d other%@", _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
 		
 		else
-			participants = (uniqueOpponents > 1) ? [NSString stringWithFormat:@"%@, %@ and %d other%@", _challengeVO.creatorVO.username, _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
+			participants = (uniqueOpponents > 1) ? [NSString stringWithFormat:@"%@, %@ and %d other%@", _heroOpponentVO.username, _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
 	}
 	
 	if (!_isChallengeCreator && _isChallengeOpponent)
-		participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@, you and %d other%@", _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%@ and you", _challengeVO.creatorVO.username];
+		participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@, you and %d other%@", _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%@ and %@", _heroOpponentVO.username, _challengeVO.creatorVO.username];
 	
 	if ([_challengeVO.challengers count] == 0)
 		participants = _challengeVO.creatorVO.username;
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
-	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
-	creatorNameLabel.textColor = [UIColor whiteColor];
-	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = participants;
-	[footerHolderView addSubview:creatorNameLabel];
+	UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
+	participantsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+	participantsLabel.textColor = [UIColor whiteColor];
+	participantsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	participantsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	participantsLabel.backgroundColor = [UIColor clearColor];
+	participantsLabel.text = participants;
+	[footerHolderView addSubview:participantsLabel];
 	
-	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	creatorButton.frame = CGRectMake(9.0, 0.0, 150.0, 44.0);
-	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-	[creatorButton addTarget:self action:@selector(_goHeroProfile) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:creatorButton];
+	UIButton *heroButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	heroButton.frame = CGRectMake(9.0, 0.0, 150.0, 44.0);
+	[heroButton addTarget:self action:@selector(_goHeroProfile) forControlEvents:UIControlEventTouchUpInside];
+	[footerHolderView addSubview:heroButton];
 	
 	//CGSize size = [creatorNameLabel.text sizeWithFont:creatorNameLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 17.0, 270.0, 27.0)];
@@ -466,32 +465,7 @@
 	_likesLabel.textAlignment = NSTextAlignmentRight;
 	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 	[footerHolderView addSubview:_likesLabel];
-	
-//	UIButton *challengersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	challengersButton.frame = CGRectMake(266.0, 19.0, 24.0, 24.0);
-//	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateNormal];
-//	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateHighlighted];
-//	[footerHolderView addSubview:challengersButton];
-//	
-//	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(282.0, 20.0, 40.0, 22.0)];
-//	challengersLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-//	challengersLabel.textColor = [UIColor whiteColor];
-//	challengersLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-//	challengersLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-//	challengersLabel.backgroundColor = [UIColor clearColor];
-//	challengersLabel.textAlignment = NSTextAlignmentCenter;
-//	challengersLabel.text = (_opponentCounter > 99) ? @"99+" : [NSString stringWithFormat:@"%d", _opponentCounter];
-//	[footerHolderView addSubview:challengersLabel];
 		
-//	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(149.0, 29.0, 160.0, 16.0)];
-//	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-//	timeLabel.textColor = [UIColor whiteColor];
-//	timeLabel.backgroundColor = [UIColor clearColor];
-//	timeLabel.textAlignment = NSTextAlignmentRight;
-//	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-//	[footerHolderView addSubview:timeLabel];
-	
-	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinButton.frame = CGRectMake(6.0, 158.0, 78.0, 78.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
@@ -499,16 +473,6 @@
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:joinButton];
 		
-//	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 58.0)];
-//	[_scrollView addSubview:headerView];
-//	
-//	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 5.0, 170.0, 28.0)];
-//	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:26];
-//	subjectLabel.textColor = [UIColor whiteColor];
-//	subjectLabel.backgroundColor = [UIColor clearColor];
-//	subjectLabel.text = _challengeVO.subjectName;
-//	[headerView addSubview:subjectLabel];
-	
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinFooterButton.frame = CGRectMake(0.0, 0.0, 35.0, 44.0);
 	[joinFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -558,7 +522,6 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
-//		NSLog(@"TOUCH PT:[%@] <%@>", NSStringFromCGPoint(touchPoint), NSStringFromCGRect(_gridHolderView.frame));
 		
 		_opponentVO = nil;
 		if (CGRectContainsPoint(_heroImageHolderView.frame, touchPoint))
@@ -578,28 +541,30 @@
 			}
 		}
 		
-		if (_opponentVO != nil) {
-			[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-											  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-											  nil]];
+		if ([HONAppDelegate hasTakenSelfie]) {
+			if (_opponentVO != nil) {
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
+												  nil]];
+				
+				_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO forChallenge:_challengeVO asRoot:YES];
+				_snapPreviewViewController.delegate = self;
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+			}
 			
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO forChallenge:_challengeVO asRoot:YES];
-			_snapPreviewViewController.delegate = self;
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+										message:@"You cannot view Volleys until you give us a profile photo."
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		[[Mixpanel sharedInstance] track:@"Timeline Details - Hide Photo Detail"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-										  nil]];
-		
 		[_snapPreviewViewController showControls];
 	}
 }
@@ -641,26 +606,35 @@
 
 
 - (void)_goHeroProfile {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Hero Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _heroOpponentVO.userID, _heroOpponentVO.username], @"opponent", nil]];
-	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-	userPofileViewController.userID = _challengeVO.creatorVO.userID;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	if ([HONAppDelegate hasTakenSelfie]) {
+		[[Mixpanel sharedInstance] track:@"Timeline Details - Hero Profile"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+										  [NSString stringWithFormat:@"%d - %@", _heroOpponentVO.userID, _heroOpponentVO.username], @"opponent", nil]];
+		
+		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+		_blurredImageView.alpha = 0.0;
+		[self.view addSubview:_blurredImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blurredImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = _challengeVO.creatorVO.userID;
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+		
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+									message:@"You cannot view profiles until you give us a profile photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)_goUserProfile:(id)sender {
@@ -691,14 +665,23 @@
 }
 
 - (void)_goJoinChallenge {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Join Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	if ([HONAppDelegate hasTakenSelfie]) {
+		[[Mixpanel sharedInstance] track:@"Timeline Details - Join Challenge"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+									message:@"You cannot contribute your Volley until you give us a profile photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)_goShareChallenge {
@@ -711,7 +694,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Twitter", @"Instagram", nil];
+													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
 	[actionSheet setTag:1];
 	[actionSheet showInView:self.view];
 }

@@ -35,7 +35,7 @@
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 200.0, 24.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:19];
-	label.textColor = [HONAppDelegate honGrey608Color];
+	label.textColor = [UIColor whiteColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = [_subject objectForKey:@"text"];
 	[self.contentView addSubview:label];

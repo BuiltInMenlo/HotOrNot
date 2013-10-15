@@ -44,7 +44,7 @@
 	_lChallengeVO = lChallengeVO;
 	
 	_leftHeroOpponentVO = _lChallengeVO.creatorVO;
-//	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_leftHeroOpponentVO.joinedDate timeIntervalSinceNow]))
+//	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_leftHeroOpponentVO.joinedDate timeIntervalSinceNow]) && !_lChallengeVO.isCelebCreated)
 //		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
 	
 	__weak typeof(self) weakSelf = self;
@@ -94,7 +94,7 @@
 	_rChallengeVO = rChallengeVO;
 	
 	_rightHeroOpponentVO = _rChallengeVO.creatorVO;
-//	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]))
+//	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]) && !_rChallengeVO.isCelebCreated)
 //		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
 	
 //	NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_rightHeroOpponentVO.imagePrefix]);

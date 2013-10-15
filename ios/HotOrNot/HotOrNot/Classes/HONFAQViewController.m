@@ -15,7 +15,7 @@
 @implementation HONFAQViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/faq.htm", [HONAppDelegate customerServiceURL]] title:@"FAQ"])) {
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/faq.htm", [HONAppDelegate customerServiceURL]] title:@"Verify Help"])) {
 	}
 	
 	return (self);

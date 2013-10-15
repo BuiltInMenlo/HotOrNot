@@ -279,33 +279,16 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
-	
-//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-//		[self dismissViewControllerAnimated:NO completion:^(void) {
-//			[_cameraOverlayView addPreview:image];
-//		}];
-//		
-//	} else {
-//		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-//			[_cameraOverlayView addPreviewAsFlipped:image];
-//		
-//		else
-//			[_cameraOverlayView addPreview:image];
-//	}
-	
-	
-	CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
-	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-	NSArray *features = [detctor featuresInImage:ciImage];
-	
-	if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
-		[self _uploadPhoto:image];
-//		[self dismissViewControllerAnimated:YES completion:^(void) {}];
 		
-	} else {
-		_selfieAttempts++;
+	if ([HONImagingDepictor totalLuminance:image] > kMinLuminosity) {
+		CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
+		CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+		NSArray *features = [detctor featuresInImage:ciImage];
 		
-		if (_selfieAttempts < 2) {
+		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
+			[self _uploadPhoto:image];
+			
+		} else {
 			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
 										message:@"Please retry taking your selfie photo, good lighting helps!"
 									   delegate:self
@@ -316,20 +299,19 @@
 			_progressHUD = nil;
 			
 			[_cameraOverlayView resetControls];
-		
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
-										message:@"You may get flagged by the community."
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-			
-			[self _uploadPhoto:image];
-//			[self dismissViewControllerAnimated:YES completion:^(void) {}];
 		}
+	
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"Light Level Too Low!"
+									message:@"You need better lighting in your photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+		
+		[_cameraOverlayView resetControls];
 	}
 }
 
@@ -416,6 +398,9 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[_imagePicker takePicture];
 }

@@ -346,19 +346,19 @@
 	[_previewBackButton removeFromSuperview];
 	
 	_subjectsView.hidden = NO;
-	if (_isFirstCamera) {
-		_isFirstCamera = NO;
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_emotion-568h@2x" : @"tutorial_emotion"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		[self addSubview:_tutorialImageView];
-		
-		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeTutorialButton.frame = _tutorialImageView.frame;
-		[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
-		[_tutorialImageView addSubview:closeTutorialButton];
-	}
+//	if (_isFirstCamera) {
+//		_isFirstCamera = NO;
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
+//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_emotion-568h@2x" : @"tutorial_emotion"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		[self addSubview:_tutorialImageView];
+//		
+//		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeTutorialButton.frame = _tutorialImageView.frame;
+//		[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+//		[_tutorialImageView addSubview:closeTutorialButton];
+//	}
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {

@@ -831,18 +831,27 @@
 }
 
 - (void)_goSubscribe {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Subscribe"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+	if ([HONAppDelegate hasTakenSelfie]) {
+		[[Mixpanel sharedInstance] track:@"Volley Preview - Subscribe"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:1];
-	[alertView show];
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+									message:@"You cannot subscribe to anyone until you give us your profile photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)_goUnsubscribe {
@@ -870,7 +879,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Twitter", @"Instagram", nil];
+													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
 	[actionSheet setTag:1];
 	[actionSheet showInView:self.view];
 }
@@ -1028,14 +1037,6 @@
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-//		[[Mixpanel sharedInstance] track:@"Timeline Details - Hide Photo Detail"
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-//										  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent",
-//										  nil]];
-		
-		
 		[_snapPreviewViewController showControls];
 	}
 }

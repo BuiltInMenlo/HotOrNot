@@ -170,14 +170,14 @@
 	int uniqueOpponents = ([opponentIDs count] - (int)_isChallengeOpponent) - 1;
 	if ((_isChallengeCreator && _isChallengeOpponent) || (!_isChallengeCreator && !_isChallengeOpponent)) {
 		if (_challengeVO.creatorVO.userID == _heroOpponentVO.userID)
-			participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@ and %d other%@", _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
+			participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@ and %d other%@", _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
 		
 		else
-			participants = (uniqueOpponents > 1) ? [NSString stringWithFormat:@"%@, %@ and %d other%@", _challengeVO.creatorVO.username, _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
+			participants = (uniqueOpponents > 1) ? [NSString stringWithFormat:@"%@, %@ and %d other%@", _heroOpponentVO.username, _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
 	}
 	
 	if (!_isChallengeCreator && _isChallengeOpponent)
-		participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@, you and %d other%@", _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%@ and you", _challengeVO.creatorVO.username];
+		participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@, you and %d other%@", _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%@ and %@", _heroOpponentVO.username, _challengeVO.creatorVO.username];
 	
 	if ([_challengeVO.challengers count] == 0)
 		participants = _challengeVO.creatorVO.username;
@@ -195,11 +195,10 @@
 	creatorNameLabel.text = participants;
 	[footerHolderView addSubview:creatorNameLabel];
 	
-	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	creatorButton.frame = CGRectMake(9.0, 0.0, 150.0, 44.0);
-	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-	[creatorButton addTarget:self action:@selector(_goCreatorProfile) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:creatorButton];
+	UIButton *heroButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	heroButton.frame = creatorNameLabel.frame;
+	[heroButton addTarget:self action:@selector(_goHeroProfile) forControlEvents:UIControlEventTouchUpInside];
+	[footerHolderView addSubview:heroButton];
 	
 	//CGSize size = [creatorNameLabel.text sizeWithFont:creatorNameLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 19.0, 270.0, 23.0)];
@@ -248,26 +247,31 @@
 	}];
 }
 
-- (void)_triggerSelect {
-}
-
-- (void)_goCreatorProfile {
-	[self.delegate timelineItemViewCell:self showProfileForUserID:_challengeVO.creatorVO.userID forChallenge:_challengeVO];
+- (void)_goHeroProfile {
+	[self.delegate timelineItemViewCell:self showProfileForUserID:_heroOpponentVO.userID forChallenge:_challengeVO];
 }
 
 - (void)_goJoinChallenge {
+	if ([HONAppDelegate hasTakenSelfie]) {
+		UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
+		tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+		[self.contentView addSubview:tappedOverlayView];
+		
+		[self.delegate timelineItemViewCell:self joinChallenge:_challengeVO];
+		
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			tappedOverlayView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[tappedOverlayView removeFromSuperview];
+		}];
 	
-	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	[self.contentView addSubview:tappedOverlayView];
-	
-	[self.delegate timelineItemViewCell:self joinChallenge:_challengeVO];
-	
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		tappedOverlayView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[tappedOverlayView removeFromSuperview];
-	}];
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+									message:@"You cannot contribute your Volley until you give us a profile photo."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)_goComments {
