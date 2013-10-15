@@ -959,8 +959,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #endif
 //	[TestFlight takeOff:kTestFlightAppToken];
 	
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;

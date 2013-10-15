@@ -252,26 +252,17 @@
 }
 
 - (void)_goJoinChallenge {
-	if ([HONAppDelegate hasTakenSelfie]) {
-		UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
-		tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-		[self.contentView addSubview:tappedOverlayView];
-		
-		[self.delegate timelineItemViewCell:self joinChallenge:_challengeVO];
-		
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			tappedOverlayView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[tappedOverlayView removeFromSuperview];
-		}];
+	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	[self.contentView addSubview:tappedOverlayView];
 	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-									message:@"You cannot contribute your Volley until you give us a profile photo."
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
+	[self.delegate timelineItemViewCell:self joinChallenge:_challengeVO];
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		tappedOverlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[tappedOverlayView removeFromSuperview];
+	}];
 }
 
 - (void)_goComments {

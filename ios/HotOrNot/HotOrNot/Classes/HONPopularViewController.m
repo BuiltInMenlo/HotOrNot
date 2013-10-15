@@ -333,12 +333,12 @@
 			
 			[_selectedUsers addObject:popularUserVO];
 			
-		} else {
-			[[Mixpanel sharedInstance] track:@"Popular People - Deselect"
+			[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Deselect%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 											  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
 			
+		} else {
 			NSMutableArray *removeVOs = [NSMutableArray array];
 			for (HONPopularUserVO *vo in _selectedUsers) {
 				for (HONPopularUserVO *dropVO in _users) {
