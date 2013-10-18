@@ -41,11 +41,11 @@ class BIM_Model_User{
     		if( !$this->email ){
     		    $this->email = '';
     		}
-    		
+
     		if( !$this->device_token ){
     		    $this->device_token = '';
     		}
-    		
+
     	    $this->is_celeb = $this->isCelebrity();
     		$this->avatar_url = $avatar_url;
     		$this->votes = $votes; 

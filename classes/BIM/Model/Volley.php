@@ -61,6 +61,27 @@ class BIM_Model_Volley{
         }
     }
     
+    public function getPics( $userId ){
+        $pics = array();
+        if( $this->creator->id == $userId ){
+            $pics[] = $this->creator;
+        }
+        foreach( $this->challengers as $challenger ){
+            if( $challenger->id == $userId ){
+                $pics[] = $challenger;
+            }
+        }
+        return $pics;
+    }
+    
+    public function setAsCreator( $userId ){
+        $data = $this->hasUser( $userId );
+        if( $data ){
+            $this->creator = $data;
+        }
+        return $data;
+    }
+    
     private function _setSubject( $volley ){
         if( empty($volley->subject) ){
             $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
@@ -366,7 +387,7 @@ class BIM_Model_Volley{
         if( !empty( $this->challengers ) ){
             foreach( $this->challengers as $challenger ){
                 if( $challenger->id == $userId ){
-                    $has = true;
+                    $has = $challenger;
                     break;
                 }
             }
@@ -375,7 +396,7 @@ class BIM_Model_Volley{
     }
     
     public function hasUser( $userId ){
-        $has = ($this->creator->id == $userId);
+        $has = ($this->creator->id == $userId) ? $this->creator : null;
         if( !$has ){
             $has = $this->hasChallenger($userId);
         }
