@@ -162,7 +162,6 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		ON tc.id = tcp.challenge_id 
         	WHERE tc.id in ( $placeHolders )
         	ORDER BY tc.id, tcp.joined, tcp.user_id
-        	LIMIT 100
         ";
         
         $stmt = $this->prepareAndExecute( $sql, $ids );
@@ -717,13 +716,15 @@ WHERE is_verify != 1
         $query = "
 			SELECT tc.id 
 			FROM `hotornot-dev`.`tblChallenges` as tc
-            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	LEFT JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
 			WHERE ( tc.status_id IN (1,2,4) ) 
 				$privateSql
 				AND (tc.`creator_id` = ? OR tcp.`user_id` = ? )
-				AND is_verify != 1 
-			ORDER BY tc.`updated` DESC LIMIT 50;";
+				AND tc.is_verify != 1 
+			GROUP BY id
+			ORDER BY tc.`updated`
+			";
 				
 		$params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $query, $params );

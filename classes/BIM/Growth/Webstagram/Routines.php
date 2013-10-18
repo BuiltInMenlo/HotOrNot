@@ -6,6 +6,11 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
     protected $oauth = null;
     protected $oauth_data = null;
     
+    public static function doLikesAndFollows(){
+        $routines = new self( 'getvolleyapp' );
+        $routines->browseTags();
+    }
+    
     public function __construct( $persona ){
         $this->persona = new BIM_Growth_Persona( $persona );
         
@@ -28,6 +33,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             't' => mt_rand(5000, 10000)
         );
         $response = json_decode( $this->post( $url ) );
+        print_r( $response );
         if( empty( $response->status ) || $response->status != 'OK' ){
             $msg = "cannot like photo using id : $id with persona: ".$this->persona->instagram->username;
             echo "$msg\n";
@@ -213,18 +219,19 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $taggedIds = $this->getTaggedIds( );
-            $lastTag =& end( $taggedIds );
             foreach( $taggedIds as $tag => $ids ){
                 foreach( $ids as $id ){
-                    $message = $this->persona->getVolleyQuote( 'instagram' );
+                    //$message = $this->persona->getVolleyQuote( 'instagram' );
                     //$this->submitComment( $id, $message );
                     
-                    if( mt_rand(1,100) <= 100  ){
+                    if( mt_rand(1,100) <= 100 ){
+                        echo "liking $id\n";
                         $this->like($id);
                     }
                     
-                    if( mt_rand(1, 100) <= 30 ){
+                    if( mt_rand(1,100) <= 10 ){
                         list($photoId, $userId) = explode('_', $id );
+                        echo "following $userId\n";
                         $this->follow( $userId );
                     }
                     
@@ -272,12 +279,117 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $e->sendEmail( $c->emailData );
     }
     
+    public static function popularTags(){
+        return array(
+            "love",
+            "instagood",
+            "me",
+            "cute",
+            "follow",
+            "photooftheday",
+            "like",
+            "tbt",
+            "followme",
+            "girl",
+            "tagsforlikes",
+            "beautiful",
+            "picoftheday",
+            "happy",
+            "instadaily",
+            "summer",
+            "igers",
+            "fun",
+            "smile",
+            "bestoftheday",
+            "instamood",
+            "food",
+            "swag",
+            "instalike",
+            "friends",
+            "like4like",
+            "fashion",
+            "amazing",
+            "tflers",
+            "webstagram",
+            "iphoneonly",
+            "selfie",
+            "all_shots",
+            "style",
+            "tweegram",
+            "lol",
+            "instago",
+            "l4l",
+            "pretty",
+            "follow4follow",
+            "eyes",
+            "sun",
+            "nofilter",
+            "my",
+            "instacool",
+            "hair",
+            "nice",
+            "life",
+            "instafollow",
+            "bored",
+            "family",
+            "cool",
+            "instacollage",
+            "likeforlike",
+            "look",
+            "iphonesia",
+            "funny",
+            "20likes",
+            "sky",
+            "hot",
+            "colorful",
+            "throwbackthursday",
+            "statigram",
+            "girls",
+            "shoutout",
+            "beach",
+            "pink",
+            "harrystyles",
+            "instagramhub",
+            "party",
+            "night",
+            "photo",
+            "boyfriend",
+            "f4f",
+            "blue",
+            "repost",
+            "baby",
+            "throwback",
+            "makeup",
+            "followforfollow",
+            "niallhoran",
+            "nature",
+            "music",
+            "art",
+            "loveit",
+            "instalove",
+            "picstitch",
+            "day",
+            "igdaily",
+            "beauty",
+            "black",
+            "shoes",
+            "awesome",
+            "followback",
+            "home",
+            "jj",
+            "tired",
+            "christmas",
+            "instaphoto",
+            "instapic",
+        );        
+    }
+    
     public function getTaggedIds( ){
-        $tags = $this->persona->getTags();
+        $tags = self::popularTags();// $this->persona->getTags();
         $taggedIds = array();
         if($tags){
-            $tags = array_rand( $tags, 1 );
-            $idsPerTag = $this->persona->idsPerTagInsta();
+            //$tags = array_rand( $tags, 1 );
+            $idsPerTag = 2;// $this->persona->idsPerTagInsta();
             foreach( $tags as $tag ){
                 $ids = $this->getIdsForTag($tag, 2);
                 $taggedIds[ $tag ] = array();
@@ -602,10 +714,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $profileUrl = "http://web.stagram.com/n/$user->name/";
             $response = $g->get( $profileUrl );
     
-            $following = 0;
             $followers = 0;
-            $likes = 0;
-    
             $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
             preg_match( $ptrn, $response, $matches );
             if( isset( $matches[1] ) ){
@@ -613,13 +722,29 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             }
             if( $followers >= 100000 ){
                 echo "found $user->name with $followers followers\n";
-                $sql = "
-                	insert ignore into growth.ig_promoters
-                	(name,followers,url)
-                	values (?,?,?)
-                ";
-                $params = array($user->name,$followers,$profileUrl);
-                $dao->prepareAndExecute( $sql, $params );
+                
+                $matches = array();
+                $ptrn = '@class="ui_tools".*?style="padding-top:5px;">(.*?)</p>@is';
+                preg_match($ptrn, $response, $matches);
+                if( !empty($matches[1] ) ){
+                    $bio = strip_tags($matches[1]);
+                    // print "$bio\n";
+                    if( preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $bio, $matches ) ) {
+                        echo $matches[0]."\n";
+                        $email = $matches[0];
+                        if( $email ){
+                            $sql = "
+                            	insert ignore into growth.ig_promoters
+                            	(name,followers,url,email)
+                            	values (?,?,?,?)
+                            ";
+                            $params = array($user->name,$followers,$profileUrl,$email);
+                            $dao->prepareAndExecute( $sql, $params );
+                        }
+                    } else {
+                        //echo "no email for $promoter->name\n";
+                    }
+                }
             }
         }
     }
@@ -784,6 +909,39 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 echo "completed name $name - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
+        }
+    }
+    
+    public static function getPromoterEmails(){
+        $sql = "select * from growth.ig_promoters";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $stmt = $dao->prepareAndExecute($sql);
+        $promoters = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        
+        $g = new BIM_Growth();
+        foreach( $promoters as $promoter ){
+            $profileUrl = $promoter->url;
+            // echo "getting $promoter->url\n";
+            $response = $g->get( $profileUrl );
+            
+            $matches = array();
+            $ptrn = '@class="ui_tools".*?style="padding-top:5px;">(.*?)</p>@is';
+            preg_match($ptrn, $response, $matches);
+            if( !empty($matches[1] ) ){
+                $bio = strip_tags($matches[1]);
+                // print "$bio\n";
+                if( preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $bio, $matches ) ) {
+                    echo $matches[0]."\n";
+                    $sql = "update growth.ig_promoters set email = ? where url = ?";
+                    $params = array( $matches[0], $promoter->url);
+                    $dao->prepareAndExecute($sql,$params);
+                } else {
+                    echo "no email for $promoter->name\n";
+                }
+            }
+            
+            $sleep = 1;
+            sleep($sleep);
         }
     }
 }

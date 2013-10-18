@@ -30,6 +30,7 @@ class BIM_Model_Volley{
                 'img' => $volley->creator_img,
                 'score' => $volley->creator_likes,
             );
+    	    $this->is_celeb = BIM_Utils::isCelebrity( $volley->creator_id );
             // finally get the correct score if necessary
             
             $this->creator = $creator;
@@ -58,6 +59,27 @@ class BIM_Model_Volley{
                 $this->populateUsers();
             }
         }
+    }
+    
+    public function getPics( $userId ){
+        $pics = array();
+        if( $this->creator->id == $userId ){
+            $pics[] = $this->creator;
+        }
+        foreach( $this->challengers as $challenger ){
+            if( $challenger->id == $userId ){
+                $pics[] = $challenger;
+            }
+        }
+        return $pics;
+    }
+    
+    public function setAsCreator( $userId ){
+        $data = $this->hasUser( $userId );
+        if( $data ){
+            $this->creator = $data;
+        }
+        return $data;
     }
     
     private function _setSubject( $volley ){
@@ -347,15 +369,14 @@ class BIM_Model_Volley{
         return (!$this->isExtant());
     }
     
-    public function updateUser( $data ){
-        if( $this->creator->id == $data->id ){
-            self::_updateUser($this->creator, $data);
-        } else {
-            if( !empty( $this->challengers ) ){
-                foreach( $this->challengers as $challenger ){
-                    if( $challenger->id == $data->id ){
-                        self::_updateUser($challenger, $data);
-                    }
+    public function updateUser( $userObj ){
+        if( $this->creator->id == $userObj->id ){
+            self::_updateUser($this->creator, $userObj);
+        }
+        if( !empty( $this->challengers ) ){
+            foreach( $this->challengers as $challenger ){
+                if( $challenger->id == $userObj->id ){
+                    self::_updateUser($challenger, $userObj);
                 }
             }
         }
@@ -366,7 +387,7 @@ class BIM_Model_Volley{
         if( !empty( $this->challengers ) ){
             foreach( $this->challengers as $challenger ){
                 if( $challenger->id == $userId ){
-                    $has = true;
+                    $has = $challenger;
                     break;
                 }
             }
@@ -375,7 +396,7 @@ class BIM_Model_Volley{
     }
     
     public function hasUser( $userId ){
-        $has = ($this->creator->id == $userId);
+        $has = ($this->creator->id == $userId) ? $this->creator : null;
         if( !$has ){
             $has = $this->hasChallenger($userId);
         }
@@ -553,9 +574,6 @@ class BIM_Model_Volley{
         $friendIds[] = $userId;
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $ids = $dao->getVolleysWithFriends($userId, $friendIds);
-
-//        print_r( array($ids,$friendIds) );
-        
         return self::getMulti($ids);
     }
     
