@@ -741,45 +741,31 @@
 	
 	NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(_processedImage.size), [HONImagingDepictor totalLuminance:_processedImage]);
 	
-	if ([HONImagingDepictor totalLuminance:_processedImage] > kMinLuminosity) {
-		_usernames = [NSMutableArray array];
-		for (HONUserVO *vo in _subscribers)
-			[_usernames addObject:vo.username];
-		
-
-		_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
-		_previewView.delegate = self;
-		_previewView.isFirstCamera = _isFirstCamera;
-		[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
-		[_previewView showKeyboard];
-		
-		[_cameraOverlayView submitStep:_previewView];
-		
-		[self _uploadPhotos];
-		
-		
-		int friend_total = 0;
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-		} else {
-			friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-		}
+	_usernames = [NSMutableArray array];
+	for (HONUserVO *vo in _subscribers)
+		[_usernames addObject:vo.username];
 	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Light Level Too Low!"
-									message:@"You need better lighting in your photo."
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+
+	_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
+	_previewView.delegate = self;
+	_previewView.isFirstCamera = _isFirstCamera;
+	[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
+	[_previewView showKeyboard];
+	
+	[_cameraOverlayView submitStep:_previewView];
+	
+	[self _uploadPhotos];
+	
+	
+	int friend_total = 0;
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+	} else {
+		friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 }
 

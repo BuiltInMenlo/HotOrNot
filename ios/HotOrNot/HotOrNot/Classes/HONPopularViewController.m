@@ -18,6 +18,7 @@
 #import "HONSearchBarHeaderView.h"
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
+#import "HONChangeAvatarViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 
@@ -325,18 +326,13 @@
 #pragma mark - PopularUserVieCell Delegates
 - (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected {
 	if ([HONAppDelegate hasTakenSelfie]) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - %@elect%@", (isSelected) ? @"Des" : @"S", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
+		
 		if (isSelected) {
-			[[Mixpanel sharedInstance] track:@"Popular People - Select"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
-			
 			[_selectedUsers addObject:popularUserVO];
-			
-			[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Deselect%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
 			
 		} else {
 			NSMutableArray *removeVOs = [NSMutableArray array];
@@ -353,11 +349,13 @@
 		}
 		
 	} else {
-		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-									message:@"You cannot subscribe to anyone until you give us your profile photo."
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
+															message:@"You cannot subscribe to anyone until you give us your profile photo."
+														   delegate:self
+												  cancelButtonTitle:@"Cancel"
+												  otherButtonTitles:@"Take Profile", nil];
+		[alertView setTag:2];
+		[alertView show];
 	}
 }
 
@@ -500,6 +498,17 @@
 			
 		} else {
 			[self dismissViewControllerAnimated:YES completion:nil];
+		}
+	
+	} else if (alertView.tag == 2) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	}
 }

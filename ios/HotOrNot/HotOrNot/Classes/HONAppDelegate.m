@@ -1399,6 +1399,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"instagram_share"] forKey:@"instagram_share"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twitter_share"] forKey:@"twitter_share"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [[result objectForKey:@"switches"] objectForKey:@"splash_camera"], @"splash_camera",
 															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
 															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
 															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",

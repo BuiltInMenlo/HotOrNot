@@ -166,7 +166,7 @@
 		}
 	}
 	
-	NSString *participants = _challengeVO.creatorVO.username;
+	NSString *participants = _heroOpponentVO.username;
 	int uniqueOpponents = ([opponentIDs count] - (int)_isChallengeOpponent) - 1;
 	if ((_isChallengeCreator && _isChallengeOpponent) || (!_isChallengeCreator && !_isChallengeOpponent)) {
 		if (_challengeVO.creatorVO.userID == _heroOpponentVO.userID)
@@ -225,6 +225,12 @@
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
 	[footerHolderView addSubview:likesButton];
+	
+	NSLog(@"TIMELINE:[%d]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue]);
+	
+	UIImageView *tapHoldImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tapHoldOverlay_nonActive"]];
+	tapHoldImageView.hidden = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0;
+	[self addSubview:tapHoldImageView];
 }
 
 

@@ -482,19 +482,25 @@
 			[_cameraOverlayView addSubview:_splashTintView];
 			
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash-568h@2x" : @"firstRunBackground-568h@2x" : ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash" : @"firstRunBackground"];
 			_overlayImageView.userInteractionEnabled = YES;
 			[_cameraOverlayView addSubview:_overlayImageView];
 			
 			UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
+			signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 160.0, 49.0);
 			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
 			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 			[signupButton addTarget:self action:@selector(_goProfileCamera) forControlEvents:UIControlEventTouchUpInside];
 			[_overlayImageView addSubview:signupButton];
 			
-			imagePickerController.cameraOverlayView = _cameraOverlayView;
+			UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			skipButton.frame = CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 156.0, 160.0, 49.0);
+			[skipButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+			[skipButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+			[skipButton addTarget:self action:@selector(_goSkipCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+			[_overlayImageView addSubview:skipButton];
 			
+			imagePickerController.cameraOverlayView = _cameraOverlayView;
 			self.previewPicker = imagePickerController;
 			
 			
@@ -520,7 +526,7 @@
 		
 		} else {
 			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
+			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash-568h@2x" : @"firstRunBackground-568h@2x" : ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash" : @"firstRunBackground"];
 			_overlayImageView.userInteractionEnabled = YES;
 			_overlayImageView.alpha = 0.0;
 			[_tutorialHolderView addSubview:_overlayImageView];
@@ -640,6 +646,81 @@
 //											  otherButtonTitles:@"OK", nil];
 //	[alertView setTag:1];
 //	[alertView show];
+}
+
+- (void)_goSkipCloseSplash {
+	[[Mixpanel sharedInstance] track:@"Register - Splash Skip Photo"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+	UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
+	gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	[_cameraOverlayView addSubview:gutterView];
+	
+	_tutorialImageView = [[UIImageView alloc] initWithFrame:_cameraOverlayView.frame];
+	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_1stRun-568h@2x" : @"tutorial_1stRun"];
+	_tutorialImageView.alpha = 0.0;
+	[_cameraOverlayView addSubview:_tutorialImageView];
+	
+	UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
+	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+	[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
+	takePhotoButton.alpha = 0.0;
+	[_cameraOverlayView addSubview:takePhotoButton];
+	
+	UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+	headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
+	[_cameraOverlayView addSubview:headerBGImageView];
+	
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(228.0, 10.0, 84.0, 24.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+	[_cameraOverlayView addSubview:skipButton];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		takePhotoButton.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}];
+	
+	_whySelfieView = [[UIView alloc] initWithFrame:self.view.frame];
+	_whySelfieView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	_whySelfieView.alpha = 0.0;
+	[_cameraOverlayView addSubview:_whySelfieView];
+	
+	UIImageView *infoImageView = [[UIImageView alloc] initWithFrame:_whySelfieView.frame];
+	infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x": @"whySelfie"];
+	[_whySelfieView addSubview:infoImageView];
+	
+	UIButton *closeSkipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeSkipButton.frame = CGRectMake(40.0, [UIScreen mainScreen].bounds.size.height - 236.0, 240.0, 64.0);
+	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_nonActive"] forState:UIControlStateNormal];
+	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_Active"] forState:UIControlStateHighlighted];
+	[closeSkipButton addTarget:self action:@selector(_goCloseSkip) forControlEvents:UIControlEventTouchUpInside];
+	[_whySelfieView addSubview:closeSkipButton];
+	
+	UIButton *stillSkipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	stillSkipButton.frame = CGRectMake(85.0, [UIScreen mainScreen].bounds.size.height - 159.0, 150.0, 24.0);
+	[stillSkipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_nonActive"] forState:UIControlStateNormal];
+	[stillSkipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_Active"] forState:UIControlStateHighlighted];
+	[stillSkipButton addTarget:self action:@selector(_goSkipPhoto) forControlEvents:UIControlEventTouchUpInside];
+	[_whySelfieView addSubview:stillSkipButton];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_whySelfieView.alpha = 1.0;
+	}];
+	
+	[UIView animateWithDuration:0.5 animations:^(void) {
+		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height * 0.5);
+		_overlayImageView.alpha = 0.0;
+	}];
 }
 
 - (void)_goSkipPhoto {
