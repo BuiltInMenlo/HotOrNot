@@ -212,6 +212,7 @@ class BIM_Utils{
             file_put_contents('/tmp/req_profile', $totalTime );
             file_put_contents('/tmp/sql_profile', print_r(BIM_DAO_Mysql::$profile ,1) );
             file_put_contents('/tmp/es_profile', print_r(BIM_DAO_ElasticSearch::$profile ,1) );
+            file_put_contents('/tmp/cache_profile', print_r(BIM_Cache::$profile ,1) );
         }
 	}
 	

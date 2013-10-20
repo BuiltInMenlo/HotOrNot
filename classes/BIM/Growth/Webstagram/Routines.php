@@ -683,6 +683,117 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         }
     }
     
+    public static function findShoutOuts( $selfieUrl = null ){
+        if( !$selfieUrl ){
+            $selfieUrl = 'http://web.stagram.com//tag/selfie/';
+        }
+        
+        $g = new BIM_Growth_Webstagram();
+        $attempts = 0;
+        while( $selfieUrl && $attempts < 3 ){
+            @unlink('/tmp/cookies_BIM_Growth_Webstagram.txt');
+            echo "getting $selfieUrl\n";
+            $response = $g->get( $selfieUrl );
+            self::_findShoutOuts( $response );
+            $oldSelfieurl = $selfieUrl;
+            $selfieUrl = self::getNextSelfieUrl($response);
+            
+            $msg = '';
+            $sleep = 1;
+            
+            if( !$selfieUrl ){
+                $attempts++;
+                $selfieUrl = $oldSelfieurl;
+                $sleep = 30;
+                $msg = " could not find selfie url at $selfieUrl";
+            }
+            
+            echo "sleeping for $sleep seconds.  $msg\n";
+            sleep( $sleep );
+        }
+    }
+    
+    public static function getNextSelfieUrl( $text ){
+        $url = null;
+        $ptrn = '@<a href="(.*?)" rel="next">Earlier</a>@i';
+        preg_match($ptrn, $text, $matches);
+        if( !empty( $matches[1] ) ){
+            $url = 'http://web.stagram.com/'.$matches[1];
+        } else {
+            print_r( $text );
+        }
+        return $url;
+    }
+    
+    public static function getUsersFromText( $text ){
+        $ids = array();
+        $ptrn = '@id="photo\d+_(\d+)".*?<strong><a href="/n/(.*?)/">.*?</a></strong>@is';
+        preg_match_all($ptrn,$text,$ids);
+        
+        $selfies = array();
+        $ptrn = '@<div class="photo relative">.*?<a href="(/p/.*?)"><img@is';
+        preg_match_all( $ptrn, $text, $selfies );
+        
+        $users = array();
+        foreach( $ids[1] as $idx => $id ){
+            $name = $ids[2][$idx];
+            $users[] = (object) array(
+                'id' => $id,
+                'name' => $name,
+                'selfie' => 'http://web.stagram.com'.$selfies[1][$idx]
+            );
+        }
+        return $users;
+    }
+    
+    public static function _findShoutOuts( $response ){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $g = new BIM_Growth_Webstagram();
+        echo "getting users\n";
+        $users = self::getUsersFromText( $response );        
+        
+        foreach( $users as $idx => $user ){
+            $profileUrl = "http://web.stagram.com/n/$user->name/";
+            $response = $g->get( $profileUrl );
+    
+            $followers = 0;
+            $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
+            preg_match( $ptrn, $response, $matches );
+            if( isset( $matches[1] ) ){
+                $followers = $matches[1];
+            }
+            
+            $following = 0;
+            $ptrn = '@<\s*span.+?id="following_count_\d+"\s*>(.*?)<@im';
+            preg_match( $ptrn, $response, $matches );
+            if( isset( $matches[1] ) ){
+                $following = $matches[1];
+            }
+            
+            $followRatio = -1;
+            if( $followers ){
+                $followRatio = ceil( ($following / $followers) * 100 );
+            }
+            // <span style="font-size:123.1%;" id="following_count_16659424">106</span>
+            
+            if( $followers >= 1000 && $followers <= 2000 && $followRatio < 50 && $followRatio > 0 ){
+                echo "inserting $user->name with $followRatio - followers: $followers and following: $following \n";
+                $matches = array();
+                $sql = "
+                	insert ignore into growth.ig_shoutouts
+                	(name,followers,following,url,selfie,follow_ratio)
+                	values (?,?,?,?,?,?)
+                ";
+                $params = array($user->name,$followers,$following, $profileUrl,$user->selfie,$followRatio);
+                $dao->prepareAndExecute( $sql, $params );
+            }
+            
+            $sleep = 1;
+            echo "checked $user->name followers: $followers - following: $following - ratio: $followRatio - sleeping for $sleep second\n";
+            sleep( $sleep );
+        }
+    }
+    
     public static function findPromoters(){
         for( $n = 0; $n < 10; $n++ ){
             @unlink('/tmp/cookies_BIM_Growth_Webstagram.txt');
