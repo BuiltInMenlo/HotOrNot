@@ -918,8 +918,19 @@ WHERE is_verify != 1
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
     
-    public function getVolleyIds(){
+    public function getVolleyIdsByUpdatedTime( $date ){
+        $sql = "select id from `hotornot-dev`.tblChallenges where updated >= ? and is_verify != 1";
+        $params = array( $date );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
+    public function getVolleyIds( $noVerifyVolleys = false ){
         $sql = "select id from `hotornot-dev`.tblChallenges";
+        if( $noVerifyVolleys ){
+            $sql = " $sql where is_verify != 1 ";
+        }
+        $sql = " $sql order by id desc ";
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
@@ -984,7 +995,7 @@ WHERE is_verify != 1
     
     public function deleteByImage( $imgUrl ){
         $sql = "
-        	delete from tblChallengeParticipants
+        	delete from `hotornot-dev`.tblChallengeParticipants
         	where challenge_id in (
             	select id 
             	from `hotornot-dev`.tblChallenges
@@ -995,7 +1006,7 @@ WHERE is_verify != 1
         $this->prepareAndExecute( $sql, $params );
         
         $sql = "
-        	delete from tblChallenges
+        	delete from `hotornot-dev`.tblChallenges
         	where creator_img = ?
         ";
         $params = array( $imgUrl );
@@ -1004,18 +1015,19 @@ WHERE is_verify != 1
     
     public function getIdsByParticipantImage( $imgUrl ){
         $sql = "
-        	select id 
+        	select challenge_id 
         	from `hotornot-dev`.tblChallengeParticipants
         	where img = ?
         ";
         $params = array( $imgUrl );
         $stmt = $this->prepareAndExecute( $sql, $params );
-        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        return $ids;
     }
     
     public function deleteParticipantByImage( $imgUrl ){
         $sql = "
-        	delete from tblChallengeParticipants
+        	delete from `hotornot-dev`.tblChallengeParticipants
         	where img = ?
         ";
         $params = array( $imgUrl );
