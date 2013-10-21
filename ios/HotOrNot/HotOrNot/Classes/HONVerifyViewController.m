@@ -326,6 +326,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}];
 }
 
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
@@ -681,14 +682,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	if (_snapPreviewViewController != nil) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_snapPreviewViewController.view.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_snapPreviewViewController.view removeFromSuperview];
-			_snapPreviewViewController = nil;
-		}];
-	}
+//	if (_snapPreviewViewController != nil) {
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_snapPreviewViewController.view.alpha = 0.0;
+//		} completion:^(BOOL finished) {
+//			[_snapPreviewViewController.view removeFromSuperview];
+//			_snapPreviewViewController = nil;
+//		}];
+//	}
+	
+	[_snapPreviewViewController showControls];
 }
 
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
@@ -710,7 +713,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		
 		_indexPath = [_tableView indexPathForCell:tableCell];
 		
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:@"Does @%@ look between 13 and 19?", _challengeVO.creatorVO.username]
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
@@ -934,7 +937,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		}
 	
 	} else if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Confirm" : @" Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];

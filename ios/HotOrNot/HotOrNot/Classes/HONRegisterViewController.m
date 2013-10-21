@@ -18,7 +18,6 @@
 
 #import "HONRegisterViewController.h"
 #import "HONHeaderView.h"
-#import "HONRegisterCameraViewController.h"
 #import "HONImagingDepictor.h"
 
 
@@ -512,15 +511,7 @@
 				}];
 			}];
 			
-			
 			[self presentViewController:self.previewPicker animated:NO completion:^(void) {
-//				[UIView animateWithDuration:0.33 animations:^(void) {
-//					_cameraOverlayView.alpha = 1.0;
-//				} completion:^(BOOL finished) {
-//					[UIView animateWithDuration:0.33 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-//						_splashTintView.alpha = 0.5;
-//					} completion:nil];
-//				}];
 			}];
 			
 		
@@ -585,6 +576,27 @@
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 		[_cameraOverlayView addSubview:skipButton];
+		
+		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cancelButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height + 300.0, 106.0, 24.0);
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
+		[cancelButton addTarget:self action:@selector(_goRetake) forControlEvents:UIControlEventTouchUpInside];
+		[_cameraOverlayView addSubview:cancelButton];
+		
+		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		retakeButton.frame = CGRectMake(106.0, [UIScreen mainScreen].bounds.size.height + 300.0, 106.0, 24.0);
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
+		[retakeButton addTarget:self action:@selector(_goRetake) forControlEvents:UIControlEventTouchUpInside];
+		[_cameraOverlayView addSubview:retakeButton];
+		
+		UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		acceptButton.frame = CGRectMake(212.0, [UIScreen mainScreen].bounds.size.height + 300.0, 106.0, 24.0);
+		[acceptButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
+		[acceptButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
+		[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
+		[_cameraOverlayView addSubview:acceptButton];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			takePhotoButton.alpha = 1.0;
@@ -894,10 +906,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_presentCamera {
-	[self.navigationController pushViewController:[[HONRegisterCameraViewController alloc] initWithPassword:_email andBirthday:_birthday] animated:NO];
-}
-
 - (void)_pickerValueChanged {
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateStyle:NSDateFormatterLongStyle];
@@ -928,6 +936,15 @@
 			
 			[_usernameTextField becomeFirstResponder];
 			[_usernameButton setSelected:YES];
+			
+//			[UIView animateWithDuration:0.1 animations:^(void) {
+//				_cameraOverlayView.frame = CGRectOffset(_cameraOverlayView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
+//			} completion:^(BOOL finished) {
+//				UIImageView *previewImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//				previewImageView.frame = CGRectOffset(previewImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+//				previewImageView.image = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+//				[_cameraOverlayView addSubview:previewImageView];
+//			}];
 			
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:0.5];

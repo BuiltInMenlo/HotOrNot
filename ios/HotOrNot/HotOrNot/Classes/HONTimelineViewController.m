@@ -581,10 +581,14 @@
 }
 
 - (void)_goRegistration {
-	[[Mixpanel sharedInstance] track:@"Start First Run"
+	[[Mixpanel sharedInstance] track:@"Register User"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+//	[[Mixpanel sharedInstance] track:@"Start First Run"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//	
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
