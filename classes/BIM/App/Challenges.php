@@ -602,21 +602,74 @@ If most or all of the images in a volley are missing, then do not make the call 
 
 */
     public function missingImage( $imgPrefix ){
+        $image = BIM_Utils::getImage( $imgPrefix );
         $fixed = false;
-        try{
-            BIM_Utils::processImage( $imgPrefix );
-            $fixed = true;            
-        } catch( ImagickException $e ){
-            // this means we could not find the image in our image repo
-            // so now we need to remove data associated with it
-            if( BIM_Model_Volley::isCreatorImage($imgPrefix) ){
-                BIM_Model_Volley::deleteByImage( $imgPrefix );
-                $fixed = true;
-            } else if( BIM_Model_Volley::isParticipantImage( $imgPrefix ) ){
-                BIM_Model_Volley::deleteParticipantByImage( $imgPrefix );
-                $fixed = true;
-            }
+        if( $image ){
+            $fixed = BIM_Utils::processImage( $imgPrefix );
+        } else {
+            $fixed = self::handleMissingImage( $imgPrefix );
         }
         return $fixed;
+    }
+    
+    protected static function handleMissingImage( $imgPrefix ){
+        $fixed = false;
+        if( BIM_Model_Volley::isCreatorImage($imgPrefix) ){
+            BIM_Model_Volley::deleteByImage( $imgPrefix );
+            $fixed = true;
+        } else if( BIM_Model_Volley::isParticipantImage( $imgPrefix ) ){
+            BIM_Model_Volley::deleteParticipantByImage( $imgPrefix );
+            $fixed = true;
+        }
+        return $fixed;
+    }
+    
+    public static function checkVolleyImages(){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $volleyIds = $dao->getVolleyIds( true );
+        $a = new self();
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = BIM_Model_Volley::getMulti($ids);
+            if( $volleys ){
+                foreach( $volleys as $volley ){
+                    $a->missingImage($volley->creator->img);
+                    if( $volley->challengers ){
+                        foreach( $volley->challengers as $challenger ){
+                            $a->missingImage( $challenger->img );
+                        }
+                    }
+                }
+            }
+            print count( $volleyIds )." remaining\n";
+        }
+    }
+    
+    public static function checkVolleyImagesFromLastXSeconds( $seconds = 1800 ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$time = time() - $seconds;
+		$d = new DateTime( "@$time" );
+		$d = $d->format('Y-m-d H:i:s');
+        $volleyIds = $dao->getVolleyIdsByUpdatedTime( $d );
+        
+        error_log("processing volleys that were updated since $d");
+        
+        $a = new self();
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = BIM_Model_Volley::getMulti($ids);
+            if( $volleys ){
+                foreach( $volleys as $volley ){
+                    error_log( "checking volley $volley->id" );
+                    $a->missingImage($volley->creator->img);
+                    if( $volley->challengers ){
+                        foreach( $volley->challengers as $challenger ){
+                            $a->missingImage( $challenger->img );
+                        }
+                    }
+                }
+            }
+            print count( $volleyIds )." remaining\n";
+        }
     }
 }

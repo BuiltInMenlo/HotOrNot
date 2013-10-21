@@ -228,6 +228,7 @@ class BIM_Utils{
                 S3::putObjectString($image->getImageBlob(), $bucket, $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
             }
         }
+        return (bool) $image;
     }
     
     public static function processUserImage( $imgPrefix, $bucket = 'hotornot-avatars' ){
@@ -246,7 +247,7 @@ class BIM_Utils{
         }
     }
     
-    protected static function getImage( $imgPrefix ){
+    public static function getImage( $imgPrefix ){
         $image = null;
         $imgUrl = "{$imgPrefix}Large_640x1136.jpg";
         try{

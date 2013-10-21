@@ -641,7 +641,6 @@ class BIM_Model_Volley{
         while( $volleyIds ){
             $ids = array_splice($volleyIds, 0, 250);
             self::getMulti($ids);
-            $ids = array_splice($volleyIds, 0, 250);
             print count( $volleyIds )." remaining\n";
         }
     }
@@ -793,7 +792,7 @@ class BIM_Model_Volley{
     public static function isCreatorImage( $imgUrl ){
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
 		$ids = $dao->getIdsByCreatorImage( $imgUrl );
-		return ( !empty($ids) ? true : false );
+		return !empty($ids);
     }
     
     public static function deleteByImage( $imgUrl ){
@@ -804,7 +803,7 @@ class BIM_Model_Volley{
     public static function isParticipantImage( $imgUrl ){
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
 		$ids = $dao->getIdsByParticipantImage( $imgUrl );
-		return ( !empty($ids) ? true : false );
+		return !empty($ids);
     }
     
     public static function deleteParticipantByImage( $imgUrl ){
