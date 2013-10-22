@@ -43,6 +43,7 @@
 @property (nonatomic, strong) UILabel *birthdayLabel;
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) NSTimer *clockTimer;
+@property (nonatomic, strong) UIView *splashHolderView;
 @property (nonatomic, strong) UIView *cameraOverlayView;
 @property (nonatomic, strong) UIImageView *overlayImageView;
 @property (nonatomic, strong) UIView *splashTintView;
@@ -139,6 +140,81 @@
 		
 		_filename = @"";
 	}
+}
+
+- (void)_checkUsername {
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = @"";
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
+	
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							_username, @"username",
+							_email, @"password",
+							nil];
+	
+//	NSLog(@"PARAMS:[%@]", params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPICheckNameAndEmail parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			if ([[userResult objectForKey:@"result"] intValue] == 0) {
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+				
+				[self _goCamera];
+				
+			} else {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				
+				[_progressHUD setYOffset:-80.0];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = ([[userResult objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+				
+				[_usernameTextField becomeFirstResponder];
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
 }
 
 - (void)_finalizeUser {
@@ -311,6 +387,8 @@
 			_progressHUD = nil;
 		}
 		
+		[self _finalizeUser];
+		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
@@ -451,6 +529,22 @@
 	_tutorialHolderView.backgroundColor = [UIColor blackColor];
 	_tutorialHolderView.alpha = 0.0;
 	[self.view addSubview:_tutorialHolderView];
+	
+	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_splashHolderView.backgroundColor = [UIColor blackColor];
+	[self.view addSubview:_splashHolderView];
+	
+	_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
+	_overlayImageView.userInteractionEnabled = YES;
+	[_splashHolderView addSubview:_overlayImageView];
+	
+	UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
+	[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+	[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+	[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+	[_splashHolderView addSubview:signupButton];
 }
 
 - (void)viewDidLoad {
@@ -460,89 +554,146 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if (_isFirstAppearance) {
-		_isFirstAppearance = NO;
-		
-		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-			UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-			imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-			imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-			imagePickerController.delegate = self;
-		
-			imagePickerController.showsCameraControls = NO;
-			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
-			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-			
-			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-			_cameraOverlayView.alpha = 0.0;
-			
-			_splashTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_splashTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
-			[_cameraOverlayView addSubview:_splashTintView];
-			
-			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash-568h@2x" : @"firstRunBackground-568h@2x" : ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash" : @"firstRunBackground"];
-			_overlayImageView.userInteractionEnabled = YES;
-			[_cameraOverlayView addSubview:_overlayImageView];
-			
-			UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 160.0, 49.0);
-			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-			[signupButton addTarget:self action:@selector(_goProfileCamera) forControlEvents:UIControlEventTouchUpInside];
-			[_overlayImageView addSubview:signupButton];
-			
-			UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			skipButton.frame = CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 156.0, 160.0, 49.0);
-			[skipButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-			[skipButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-			[skipButton addTarget:self action:@selector(_goSkipCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-			[_overlayImageView addSubview:skipButton];
-			
-			imagePickerController.cameraOverlayView = _cameraOverlayView;
-			self.previewPicker = imagePickerController;
-			
-			
-			[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-				_cameraOverlayView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				[UIView animateWithDuration:0.33 animations:^(void) {
-					_splashTintView.alpha = 0.67;
-				}];
-			}];
-			
-			[self presentViewController:self.previewPicker animated:NO completion:^(void) {
-			}];
-			
-		
-		} else {
-			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash-568h@2x" : @"firstRunBackground-568h@2x" : ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash" : @"firstRunBackground"];
-			_overlayImageView.userInteractionEnabled = YES;
-			_overlayImageView.alpha = 0.0;
-			[_tutorialHolderView addSubview:_overlayImageView];
-			
-			UIButton *closeSplashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			closeSplashButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
-			[closeSplashButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-			[closeSplashButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-			[closeSplashButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-			[_tutorialHolderView addSubview:closeSplashButton];
-			
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				_overlayImageView.alpha = 1.0;
-				_tutorialHolderView.alpha = 1.0;
-			}];
-		}
-	}
+//	if (_isFirstAppearance) {
+//		_isFirstAppearance = NO;
+//		
+//		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//			UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+//			imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+//			imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+//			imagePickerController.delegate = self;
+//		
+//			imagePickerController.showsCameraControls = NO;
+//			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
+//			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+//			
+//			_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+//			_cameraOverlayView.alpha = 0.0;
+//			
+//			_splashTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//			_splashTintView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+//			[_cameraOverlayView addSubview:_splashTintView];
+//			
+//			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash-568h@2x" : @"firstRunBackground-568h@2x" : ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash" : @"firstRunBackground"];
+//			_overlayImageView.userInteractionEnabled = YES;
+//			[_cameraOverlayView addSubview:_overlayImageView];
+//			
+//			UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 160.0, 49.0);
+//			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+//			[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+//			[signupButton addTarget:self action:@selector(_goProfileCamera) forControlEvents:UIControlEventTouchUpInside];
+//			[_overlayImageView addSubview:signupButton];
+//			
+//			UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			skipButton.frame = CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 156.0, 160.0, 49.0);
+//			[skipButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+//			[skipButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+//			[skipButton addTarget:self action:@selector(_goSkipCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+//			[_overlayImageView addSubview:skipButton];
+//			
+//			imagePickerController.cameraOverlayView = _cameraOverlayView;
+//			self.previewPicker = imagePickerController;
+//			
+//			
+//			[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//				_cameraOverlayView.alpha = 1.0;
+//			} completion:^(BOOL finished) {
+//				[UIView animateWithDuration:0.33 animations:^(void) {
+//					_splashTintView.alpha = 0.67;
+//				}];
+//			}];
+//			
+//			[self presentViewController:self.previewPicker animated:NO completion:^(void) {
+//			}];
+//			
+//		} else {
+//			_overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//			_overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash-568h@2x" : @"firstRunBackground-568h@2x" : ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) ? @"splash" : @"firstRunBackground"];
+//			_overlayImageView.userInteractionEnabled = YES;
+//			_overlayImageView.alpha = 0.0;
+//			[_tutorialHolderView addSubview:_overlayImageView];
+//			
+//			UIButton *closeSplashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			closeSplashButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 156.0, 320.0, 49.0);
+//			[closeSplashButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+//			[closeSplashButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+//			[closeSplashButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+//			[_tutorialHolderView addSubview:closeSplashButton];
+//			
+//			[UIView animateWithDuration:0.33 animations:^(void) {
+//				_overlayImageView.alpha = 1.0;
+//				_tutorialHolderView.alpha = 1.0;
+//			}];
+//		}
+//	}
 }
 
 
 #pragma mark - Navigation
-- (void)_goProfileCamera {
-	[[Mixpanel sharedInstance] track:@"Register - Signup"
+- (void)_goCloseSplash {
+	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+//	[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
+	_filename = @"";
+	
+	[_usernameTextField becomeFirstResponder];
+	[_usernameButton setSelected:YES];
+	
+	[_splashHolderView removeFromSuperview];
+	_splashHolderView = nil;
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	[UIView setAnimationDelay:0.33];
+	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	[UIView setAnimationDelay:0.33];
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+}
+
+- (void)_goCamera {
+	[[Mixpanel sharedInstance] track:@"Register - Camera"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+		imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+		imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+		imagePickerController.delegate = self;
+		
+		imagePickerController.showsCameraControls = NO;
+		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
+		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		
+		_cameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+		_cameraOverlayView.alpha = 0.0;
+		
+		imagePickerController.cameraOverlayView = _cameraOverlayView;
+		self.previewPicker = imagePickerController;
+		
+		
+		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_cameraOverlayView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_splashTintView.alpha = 0.67;
+			}];
+		}];
+		
+		[self presentViewController:self.previewPicker animated:NO completion:^(void) {
+		}];
+	}
+	
 	
 	[UIView animateWithDuration:0.5 animations:^(void) {
 		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height * 0.5);
@@ -605,15 +756,6 @@
 				_tutorialImageView.alpha = 1.0;
 			}];
 		}];
-	}];
-}
-
-- (void)_goCloseTutorial {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tutorialImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[_tutorialImageView removeFromSuperview];
-		_tutorialImageView = nil;
 	}];
 }
 
@@ -771,8 +913,17 @@
 	}];
 }
 
+- (void)_goCloseCameraTutorial {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tutorialImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_tutorialImageView removeFromSuperview];
+		_tutorialImageView = nil;
+	}];
+}
+
 - (void)_goTakePhoto {
-	[self _goCloseTutorial];
+	[self _goCloseCameraTutorial];
 	
 	_irisView = [[UIView alloc] initWithFrame:_cameraOverlayView.frame];
 	_irisView.backgroundColor = [UIColor blackColor];
@@ -793,30 +944,6 @@
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (void)_goCloseSplash {
-	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
-	_filename = @"";
-	
-	[_usernameTextField becomeFirstResponder];
-	[_usernameButton setSelected:YES];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	[UIView setAnimationDelay:0.33];
-	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	[UIView setAnimationDelay:0.33];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
 }
 
 - (void)_goUsername {
@@ -900,7 +1027,8 @@
 	
 	} else {
 		if (isUsernameValid && isEmailValid)
-			[self _finalizeUser];
+			[self _checkUsername];
+//			[self _finalizeUser];
 	}
 }
 
@@ -930,7 +1058,7 @@
 		
 		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
 			[self _uploadPhoto:image];
-			[self dismissViewControllerAnimated:YES completion:^(void) {}];
+//			[self dismissViewControllerAnimated:YES completion:^(void) {}];
 			
 			_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 			
@@ -1057,6 +1185,9 @@
 	
 	_usernameLabel.hidden = ([_usernameTextField.text length] > 0);
 	
+	_username = _usernameTextField.text;
+	_email = _emailTextField.text;
+	
 //	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
@@ -1065,7 +1196,7 @@
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
-	_username = ([_usernameTextField.text length] > 0 && [[_usernameTextField.text substringToIndex:1] isEqualToString:@"@"]) ? [_usernameTextField.text substringFromIndex:1] : _usernameTextField.text;
+	_username = _usernameTextField.text;
 	_email = _emailTextField.text;
 }
 

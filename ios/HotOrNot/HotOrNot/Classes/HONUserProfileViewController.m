@@ -457,22 +457,14 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
 	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:3];
-		[alertView show];
 	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-									message:@"You cannot subscribe to anyone until you give us your profile photo."
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:3];
+	[alertView show];
 }
 
 - (void)_goUnsubscribe {

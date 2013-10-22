@@ -468,11 +468,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[self presentViewController:navigationController animated:NO completion:nil];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot contribute your Volley until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:3];
 		[alertView show];
 	}
@@ -642,11 +642,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot view profiles until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:4];
 		[alertView show];
 	}
@@ -666,11 +666,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot view Volleys until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:5];
 		[alertView show];
 	}
@@ -723,11 +723,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot verify anyone until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:6];
 		[alertView show];
 	}
@@ -762,11 +762,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot verify anyone until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:7];
 		[alertView show];
 	}
@@ -909,11 +909,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot view profiles until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:4];
 		[alertView show];
 	}

@@ -349,11 +349,11 @@
 		}
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot subscribe to anyone until you give us your profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:2];
 		[alertView show];
 	}

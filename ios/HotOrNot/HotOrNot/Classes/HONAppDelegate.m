@@ -90,6 +90,7 @@ NSString * const kAPIChallengeObject = @"challenges/get";
 NSString * const kAPIGetPublicMessages = @"challenges/getpublic";
 NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
 NSString * const kAPISetUserAgeGroup = @"users/setage";
+NSString * const kAPICheckNameAndEmail = @"users/checkNameAndEmail";
 NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
 NSString * const kAPIJoinChallenge = @"challenges/join";
 NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
@@ -180,6 +181,7 @@ NSString * const kTwilioSMS = @"6475577873";
 + (AFHTTPClient *)getHttpClientWithHMAC {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
+	[httpClient setDefaultHeader:@"X-DEVICE" value:[HONAppDelegate deviceModel]];
 	return httpClient;
 }
  
@@ -190,6 +192,13 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (NSString *)identifierForVendor {
 	return ([[UIDevice currentDevice].identifierForVendor UUIDString]);
+}
+
++ (NSString *)deviceModel {
+	struct utsname systemInfo;
+	uname(&systemInfo);
+	
+	return ([NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
 }
 
 
@@ -473,11 +482,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 + (BOOL)isPhoneType5s {
-	struct utsname systemInfo;
-	uname(&systemInfo);
-	
-	return ([[NSString stringWithCString:systemInfo.machine
-								encoding:NSUTF8StringEncoding] rangeOfString:@"iPhone6"].location == 0);
+	return ([[HONAppDelegate deviceModel] rangeOfString:@"iPhone6"].location == 0);
 }
 
 + (BOOL)isRetina4Inch {

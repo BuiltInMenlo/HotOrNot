@@ -654,18 +654,9 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-									message:@"You cannot contribute your Volley until you give us a profile photo."
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goShareChallenge {

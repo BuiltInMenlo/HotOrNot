@@ -312,11 +312,11 @@
 		[self presentViewController:navigationController animated:NO completion:nil];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot contribute your Volley until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:1];
 		[alertView show];
 	}
@@ -454,11 +454,11 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot view Volleys until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:2];
 		[alertView show];
 	}
@@ -498,11 +498,11 @@
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot view volleys until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:3];
 		[alertView show];
 	}
@@ -534,11 +534,11 @@
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You need a selfie!"
-															message:@"You cannot view volleys until you give us a profile photo."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Profile", nil];
+												  otherButtonTitles:@"Take Photo", nil];
 		[alertView setTag:3];
 		[alertView show];
 	}

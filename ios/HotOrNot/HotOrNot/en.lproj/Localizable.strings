@@ -105,3 +105,5 @@
 "alert_rateApp_store" = "Visit App Store";
 "alert_poke_t" = "";
 "alert_poke_m" = "";
+"alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
+"alert_noSelfie_m" = "You need a profile photo to proceed.";
