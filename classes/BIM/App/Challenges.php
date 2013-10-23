@@ -669,7 +669,7 @@ If most or all of the images in a volley are missing, then do not make the call 
                     }
                 }
             }
-            print count( $volleyIds )." remaining\n";
+            error_log( count( $volleyIds )." remaining\n" );
         }
     }
 }
