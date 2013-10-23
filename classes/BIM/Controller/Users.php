@@ -287,7 +287,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function getSubscribees( ){
         $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty( $input->userID ) ){
-            $input->userID = $this->resolveUserId( $input->userID );
+            // $input->userID = $this->resolveUserId( $input->userID );
             return BIM_App_Social::getFollowed( $input );
         }
         return array();
