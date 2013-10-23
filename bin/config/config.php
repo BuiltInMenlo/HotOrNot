@@ -1,17 +1,9 @@
 <?php
 require_once 'vendor/autoload.php';
 
-$conf = isset( $_SERVER['SCRIPT_NAME'] ) ? $_SERVER['SCRIPT_NAME'] : '';
-$type = 'live';
-if( preg_match( '/dev/', $conf ) ){
-    $type = 'dev';
-} else if( preg_match( '/122/', $conf ) ){
-    $type = '122';
-} else if( preg_match( '/123/', $conf ) ){
-    $type = '123';
-} else if( preg_match( '/124/', $conf ) ){
-    $type = '124';
-} else if( preg_match( '/130/', $conf ) ){
-    $type = '130';
+$requestPath = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+$ptrn = '@^.*?/boot_(\w+).*?$@';
+if( preg_match($ptrn,$requestPath) ){
+    $build = preg_replace($ptrn, '$1', $requestPath);
+    echo BIM_App_Config::getBootConf( array('type' => $build ) );
 }
-echo BIM_App_Config::getBootConf( array('type' => $type ) );
