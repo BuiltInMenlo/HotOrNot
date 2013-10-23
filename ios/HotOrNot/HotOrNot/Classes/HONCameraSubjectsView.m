@@ -78,7 +78,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:10];
 	label.textColor = [HONAppDelegate honGrey318Color];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"SUGGESTIONS";
+	label.text = @"TRENDING";
 	[headerView addSubview:label];
 	
 	return (headerView);

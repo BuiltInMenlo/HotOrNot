@@ -11,19 +11,18 @@
 #import "HONUserVO.h"
 
 @protocol HONCreateChallengePreviewViewDelegate;
-@interface HONCreateChallengePreviewView : UIView
+@interface HONCreateChallengePreviewView : UIView <UIAlertViewDelegate, UITextFieldDelegate>
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image;
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image;
 - (void)uploadComplete;
-- (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw;
 - (void)showKeyboard;
 
 @property (nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;
 @property (nonatomic) BOOL isFirstCamera;
+@property (nonatomic) BOOL isJoinChallenge;
 @end
 
 @protocol HONCreateChallengePreviewViewDelegate
-- (void)previewView:(HONCreateChallengePreviewView *)previewView removeChallenger:(HONUserVO *)userVO;
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView;
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject;
 - (void)previewViewClose:(HONCreateChallengePreviewView *)previewView;

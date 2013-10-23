@@ -837,36 +837,6 @@ NSString * const kTwilioSMS = @"6475577873";
 													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.tabBarController.view];
-	
-	
-//	HONMailActivity *mailActivity = [[HONMailActivity alloc] init];
-//	
-//	__weak typeof(self) weakSelf = self;
-//	//_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:nil];
-//	_activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSString stringWithFormat:[HONAppDelegate socialShareFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"]]] applicationActivities:@[mailActivity]];
-//	//_activityViewController.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypePrint];
-//	_activityViewController.excludedActivityTypes = [[NSArray alloc] initWithObjects:
-//                                                     UIActivityTypeCopyToPasteboard,
-//                                                     UIActivityTypePostToWeibo,
-//                                                     UIActivityTypePostToFacebook,
-//                                                     UIActivityTypeSaveToCameraRoll,
-//                                                     UIActivityTypeCopyToPasteboard,
-//                                                     UIActivityTypeMail,
-//                                                     UIActivityTypeMessage,
-//                                                     UIActivityTypeAssignToContact,
-//                                                     nil];
-//	_activityViewController.view.backgroundColor = [UIColor whiteColor];
-//	[_activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {
-//		NSLog(@"completed dialog - activity: %@ - finished flag: %d", activityType, completed);
-//		[weakSelf.activityViewController dismissViewControllerAnimated:YES completion:nil];
-//	}];
-//	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_activityViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	
-//	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-	
-	
 }
 
 
@@ -1187,8 +1157,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
 			if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
-																	message:@"Get more subscribers now, tap OK."
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE FRIENDS?"
+																	message:@"Get more followers now, tap OK."
 																   delegate:self
 														  cancelButtonTitle:@"No"
 														  otherButtonTitles:@"OK", nil];
@@ -1197,7 +1167,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			}
 			
 			if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley with your friends?"
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE VOLLEY?"
 																	message:@""
 																   delegate:self
 														  cancelButtonTitle:@"Cancel"
@@ -1726,10 +1696,62 @@ NSString * const kTwilioSMS = @"6475577873";
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-//	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Flag %@", (buttonIndex == 0) ? @"Abusive" : @"Cancel"]
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	if (actionSheet.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Root - Share %@", (buttonIndex == 0) ? @"Twitter" : @"Instagram"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 0) {
+			if ([TWTweetComposeViewController canSendTweet]) {
+				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
+				
+				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]]];
+				[tweetViewController addImage:[HONAppDelegate avatarImage]];
+//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
+				[self.tabBarController presentViewController:tweetViewController animated:YES completion:nil];
+				
+				// check on this part using blocks. no more delegates? :)
+				tweetViewController.completionHandler = ^(TWTweetComposeViewControllerResult res) {
+					if (res == TWTweetComposeViewControllerResultDone) {
+					} else if (res == TWTweetComposeViewControllerResultCancelled) {
+					}
+					
+					[tweetViewController dismissViewControllerAnimated:YES completion:nil];
+				};
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:@"Cannot use Twitter from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else if (buttonIndex == 1) {
+			NSString *instaURL = @"instagram://app";
+			NSString *instaFormat = @"com.instagram.exclusivegram";
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
+			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+															  avatarImage:[HONImagingDepictor cropImage:[HONAppDelegate avatarImage] toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
+																 username:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
+			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+			
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
+				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+				_documentInteractionController.UTI = instaFormat;
+				_documentInteractionController.delegate = self;
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]] forKey:@"InstagramCaption"];
+				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.tabBarController.view animated:YES];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+											message:@"This device isn't allowed or doesn't recognize instagram"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		}
+	}
 }
 
 

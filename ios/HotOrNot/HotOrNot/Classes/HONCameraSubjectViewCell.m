@@ -10,6 +10,10 @@
 
 #import "HONCameraSubjectViewCell.h"
 
+@interface HONCameraSubjectViewCell()
+@property (nonatomic, strong) UIImageView *priceImageView;
+@end
+
 @implementation HONCameraSubjectViewCell
 
 @synthesize subject = _subject;
@@ -21,6 +25,10 @@
 - (id)initAsEvenRow:(BOOL)isEven {
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:(0.15 * isEven)];
+		
+		_priceImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"freeButton_nonActive"]];
+		_priceImageView.frame = CGRectOffset(_priceImageView.frame, 245.0, 10.0);
+		[self addSubview:_priceImageView];
 	}
 	
 	return (self);
@@ -42,6 +50,8 @@
 }
 
 - (void)showTapOverlay {
+	_priceImageView.image = [UIImage imageNamed:@"freeButton_Active"];
+	
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 	[self.contentView addSubview:tappedOverlayView];
@@ -50,6 +60,7 @@
 		tappedOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
+		_priceImageView.image = [UIImage imageNamed:@"freeButton_nonActive"];
 	}];
 }
 

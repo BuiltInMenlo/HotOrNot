@@ -547,26 +547,6 @@
 
 
 #pragma mark - PreviewView Delegates
-- (void)previewView:(HONCreateChallengePreviewView *)previewView removeChallenger:(HONUserVO *)userVO {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Remove Opponent"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"challenger", nil]];
-	
-	NSMutableArray *removeVOs = [NSMutableArray array];
-	for (HONUserVO *vo in _subscribers) {
-		if (vo.userID == userVO.userID) {
-			[removeVOs addObject:vo];
-			break;
-		}
-	}
-	
-	[_subscribers removeObjectsInArray:removeVOs];
-	removeVOs = nil;
-	
-	[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
-}
-
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
 	NSLog(@"previewViewBackToCamera");
 	
@@ -581,6 +561,10 @@
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
 	NSLog(@"previewView:changeSubject:[%@]", subject);
+	
+	if (_volleySubmitType == HONVolleySubmitTypeJoin && ![_subjectName isEqualToString:subject])
+		_volleySubmitType = HONVolleySubmitTypeMatch;
+	
 	_subjectName = subject;
 }
 
@@ -749,7 +733,7 @@
 	_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
 	_previewView.delegate = self;
 	_previewView.isFirstCamera = _isFirstCamera;
-	[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
+	_previewView.isJoinChallenge = (_volleySubmitType == HONVolleySubmitTypeJoin);
 	[_previewView showKeyboard];
 	
 	[_cameraOverlayView submitStep:_previewView];

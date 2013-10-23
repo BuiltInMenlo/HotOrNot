@@ -15,11 +15,12 @@
 #import "HONUserVO.h"
 #import "HONCameraSubjectsView.h"
 
-@interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate, HONCameraSubjectsViewDelegate>
+@interface HONCreateChallengePreviewView () <HONCameraSubjectsViewDelegate>
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) NSString *tmpSubjectName;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *backButton;
@@ -30,11 +31,14 @@
 @property (nonatomic, strong) HONCameraSubjectsView *subjectsView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *headerBGView;
+@property (nonatomic, strong) UIImageView *replyImageView;
+@property (nonatomic) BOOL hasEditedSubject;
 @end
 
 @implementation HONCreateChallengePreviewView
 @synthesize delegate = _delegate;
 @synthesize isFirstCamera = _isFirstCamera;
+@synthesize isJoinChallenge = _isJoinChallenge;
 
 
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
@@ -55,6 +59,8 @@
 		_blurredImageView.frame = CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * mult);
 		_blurredImageView.alpha = 0.0;
 		[self addSubview:_blurredImageView];
+		
+		_hasEditedSubject = NO;
 
 		[self _makeUI];
 	}
@@ -67,6 +73,8 @@
 		self.backgroundColor = [UIColor blackColor];;
 		
 		_subjectName = subject;
+		
+		_hasEditedSubject = NO;
 		
 		//_previewImage = [HONImagingDepictor scaleImage:image byFactor:0.3333333];
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
@@ -96,15 +104,23 @@
 	_isFirstCamera = isFirstCamera;
 }
 
+- (void)setIsJoinChallenge:(BOOL)isJoinChallenge {
+	_isJoinChallenge = isJoinChallenge;
+	
+	_placeholderLabel.frame = CGRectMake((_isJoinChallenge) ? 35.0 : 10.0, -2.0, 180.0, 50.0);
+	_subjectTextField.frame = _placeholderLabel.frame;
+	
+	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smallReplyArrow_nonActive"]];
+	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 5.0, 10.0);
+	_replyImageView.hidden = !_isJoinChallenge;
+	[_headerBGView addSubview:_replyImageView];
+}
+
 - (void)uploadComplete {
 	[_uploadingImageView stopAnimating];
 	[_uploadingImageView removeFromSuperview];
 	
 	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-}
-
-- (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw {
-//	_actionLabel.text = [NSString stringWithFormat:@"%d", [users count]];//(isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];
 }
 
 - (void)showKeyboard {
@@ -140,14 +156,14 @@
 	[_uploadingImageView startAnimating];
 //	[self addSubview:_uploadingImageView];
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -3.0, 180.0, 50.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -2.0, 180.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_placeholderLabel.textColor = [UIColor whiteColor];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"how are you feeling?" : @"";
 	[_headerBGView addSubview:_placeholderLabel];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, -2.0, 180.0, 50.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -164,6 +180,7 @@
 	_backButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	_backButton.alpha = 0.75;
 	[_headerBGView addSubview:_backButton];
 	
 	_subjectsView = [[HONCameraSubjectsView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0))];
@@ -296,7 +313,6 @@
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-//		[self _dropKeyboardAndRemove:YES];
 		[self.delegate previewViewSubmit:self];
 		
 		[_subjectTextField resignFirstResponder];
@@ -411,16 +427,44 @@
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+	
+	if (_isJoinChallenge && !_hasEditedSubject) {
+		_hasEditedSubject = YES;
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you don't want to reply to this Volley?"
+															message:@"Changing it will create a new hashtag."
+														   delegate:self
+												  cancelButtonTitle:@"Edit Hashtag"
+												  otherButtonTitles:@"Submit Volley", nil];
+		[alertView setTag:2];
+		[alertView show];
+	}
 }
 
 
 #pragma mark - SubjectsView Delegates
 - (void)subjectsView:(HONCameraSubjectsView *)cameraSubjectsView selectSubject:(NSString *)subject {
-	_subjectName = subject;
-	_subjectTextField.text = _subjectName;
-	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+	_tmpSubjectName = subject;
 	
-	[self.delegate previewView:self changeSubject:_subjectName];
+	if (_isJoinChallenge && !_hasEditedSubject) {
+		_hasEditedSubject = YES;
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure you don't want to reply to this Volley?"
+															message:@"Changing it will create a new hashtag."
+														   delegate:self
+												  cancelButtonTitle:@"Edit Hashtag"
+												  otherButtonTitles:@"Submit Volley", nil];
+		[alertView setTag:1];
+		[alertView show];
+	
+	} else {
+		_subjectName = _tmpSubjectName;
+		_placeholderLabel.frame = CGRectMake(10.0, -2.0, 180.0, 50.0);
+		_subjectTextField.frame = _placeholderLabel.frame;
+		
+		_subjectTextField.text = _subjectName;
+		_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+	}
 }
 
 
@@ -428,6 +472,44 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		[self _raiseKeyboard];
+	
+	} else if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Camera Preview - Create New Volley %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 0) {
+			_replyImageView.hidden = YES;
+			
+			_subjectName = _tmpSubjectName;
+			_placeholderLabel.frame = CGRectMake(10.0, -2.0, 180.0, 50.0);
+			_subjectTextField.frame = _placeholderLabel.frame;
+			
+			_subjectTextField.text = _subjectName;
+			
+		} else {
+			[self _goSubmit];
+		}
+	
+	} else if (alertView.tag == 2) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Camera Preview - Create New Volley %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 0) {
+			_replyImageView.hidden = YES;
+			
+			_subjectName = @"";
+			_placeholderLabel.frame = CGRectMake(10.0, -2.0, 180.0, 50.0);
+			_subjectTextField.frame = _placeholderLabel.frame;
+			
+			_subjectTextField.text = _subjectName;
+			_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+			
+		} else {
+			_subjectTextField.text = _subjectName;
+			[self _goSubmit];
+		}
 	}
 }
 

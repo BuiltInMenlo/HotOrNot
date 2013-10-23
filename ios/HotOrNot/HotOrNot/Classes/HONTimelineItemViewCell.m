@@ -143,7 +143,7 @@
 	
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(6.0, 158.0, 78.0, 78.0);
+	joinButton.frame = CGRectMake(0.0, 153.0, 64.0, 64.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -186,7 +186,7 @@
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 320.0, 320.0, 44.0)];
 	[self.contentView addSubview:footerHolderView];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 3.0, 290.0, 19.0)];
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
 	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
@@ -201,7 +201,7 @@
 	[footerHolderView addSubview:heroButton];
 	
 	//CGSize size = [creatorNameLabel.text sizeWithFont:creatorNameLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 19.0, 270.0, 23.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 21.0, 270.0, 23.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
@@ -210,7 +210,7 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[footerHolderView addSubview:subjectLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 19.0, 40.0, 19.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(249.0, 18.0, 40.0, 19.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
@@ -221,7 +221,7 @@
 	[footerHolderView addSubview:_likesLabel];
 	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(289.0, 17.0, 24.0, 24.0);
+	likesButton.frame = CGRectMake(290.0, 16.0, 24.0, 24.0);
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
 	[footerHolderView addSubview:likesButton];

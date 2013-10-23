@@ -134,7 +134,7 @@
 
 - (void)_retreiveSubscribees {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
+							[NSString stringWithFormat:@"%d", _opponentVO.userID], @"userID", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -575,17 +575,17 @@
 	
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(24.0, 0.0, 74.0, 74.0);
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
+	approveButton.frame = CGRectMake(74.0, 0.0, 74.0, 74.0);
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"largeYay_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"largeYay_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	approveButton.hidden = !_isVerify;
 	[_buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(222.0, 0.0, 74.0, 74.0);
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+	dispproveButton.frame = CGRectMake(170.0, 0.0, 74.0, 74.0);
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"largeNay_nonActive"] forState:UIControlStateNormal];
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"largeNay_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 	dispproveButton.hidden = !_isVerify;
 	[_buttonHolderView addSubview:dispproveButton];
@@ -933,7 +933,7 @@
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
-	[actionSheet setTag:1];
+	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 }
 
@@ -1257,7 +1257,7 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-	} else if (actionSheet.tag == 1) {
+	} else if (actionSheet.tag == 0) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1328,6 +1328,8 @@
 			[self _verifyUser:_opponentVO.userID asLegit:YES];
 		}
 		
+		[self.delegate snapPreviewViewControllerClose:self];
+		
 	} else if (actionSheet.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Disprove %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1342,8 +1344,9 @@
 							  otherButtonTitles:nil] show];
 			
 			[self _verifyUser:_opponentVO.userID asLegit:NO];
-			
 		}
+		
+		[self.delegate snapPreviewViewControllerClose:self];
 	}
 }
 

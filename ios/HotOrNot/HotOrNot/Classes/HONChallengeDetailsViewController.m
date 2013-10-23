@@ -468,18 +468,18 @@
 	[footerHolderView addSubview:_likesLabel];
 		
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(6.0, 158.0, 78.0, 78.0);
+	joinButton.frame = CGRectMake(0.0, 160.0, 64.0, 64.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:joinButton];
 		
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinFooterButton.frame = CGRectMake(0.0, 0.0, 35.0, 44.0);
+	joinFooterButton.frame = CGRectMake(0.0, 0.0, 43.0, 44.0);
 	[joinFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[joinFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
-	[joinFooterButton setTitle:@"Join" forState:UIControlStateNormal];
+	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
