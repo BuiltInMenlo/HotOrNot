@@ -580,6 +580,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				AND u.user_id is null
 				AND tc.creator_id != ?
 				AND tc.creator_id != 2394
+				AND tc.creator_img != ''
+				AND tc.creator_img not like '%defaultAvatar%'
 				
 			GROUP BY tc.id
 			ORDER BY tc.updated DESC, tc.id DESC 
