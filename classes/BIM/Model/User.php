@@ -290,9 +290,13 @@ delete from tblUsers where username like "%yoosnapyoo";
     
     public function updateUsernameAvatarFirstRun( $username, $imgUrl, $birthdate = null, $password = null, $deviceToken = '' ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        if( empty($this->avatar_url) ||  ! preg_match('@defaultAvatar@i', $imgUrl) ){
+            $this->avatar_url = $imgUrl;
+        } else if( !empty($this->avatar_url) && preg_match('@defaultAvatar@i', $imgUrl) ){
+            $imgUrl = $this->avatar_url;
+        }
         $dao->updateUsernameAvatarFirstRun( $this->id, $username, $imgUrl, $birthdate, $password, $deviceToken );
         $this->username = $username;
-        $this->img_url = $imgUrl;
         if( !empty($birthdate) ){
             $this->age = $birthdate;
         }
@@ -304,7 +308,7 @@ delete from tblUsers where username like "%yoosnapyoo";
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateUsernameAvatar( $this->id, $username, $imgUrl, $birthdate, $password );
         $this->username = $username;
-        $this->img_url = $imgUrl;
+        $this->avatar_url = $imgUrl;
         if( !empty($birthdate) ){
             $this->age = $birthdate;
         }

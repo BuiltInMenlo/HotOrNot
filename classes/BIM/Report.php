@@ -97,20 +97,127 @@ class BIM_Report{
     }
     
     public static function printStats(){
-        $totalUsers = self::getTotalUsers();
+        $startDate = '2013-09-10 00:00:00';
+        $endDate = '2013-09-17 00:00:00';
+        $totalUsers = self::getTotalUsers( $startDate, $endDate );
     }
     
 /**
 Total number of users
 */
 
-    public static function getTotalUsers(){
-        $sql = "select count(*) from `hotornot-dev`.tblUsers";
+    public static function getTotalVolleys( $startDate, $endDate ){
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblChallenges 
+        	where added >= ? and added <= ? and is_verify != 1
+        ";
         $dao = new BIM_DAO_Mysql( BIM_Config::db() );
-        $stmt = $dao->prepareAndExecute( $sql );
-        return $stmt->fetchColumn(0);
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        return (int) $stmt->fetchColumn(0);
     }
     
+    public static function getTotalVolleyJoins( $startDate, $endDate ){
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblChallengeParticipants 
+        	where joined >= unix_timestamp( ? )  and  joined <= unix_timestamp( ? ) ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        return (int) $stmt->fetchColumn(0);
+    }
+    
+    public static function getTotalUsers( $startDate, $endDate ){
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblUsers 
+        	where last_login >= ? and last_login <= ?
+        ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        return (int) $stmt->fetchColumn(0);
+    }
+    
+    public static function getTotalFlagged( $startDate, $endDate ){
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblUsers 
+        	where added >= ? and added <= ? and abuse_ct >= 10
+        ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        return (int) $stmt->fetchColumn(0);
+    }
+    
+    public static function getTotalVerified( $startDate, $endDate ){
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblUsers 
+        	where added >= ? and added <= ? and abuse_ct <= -10
+        ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        return (int) $stmt->fetchColumn(0);
+    }
+    
+    public static function getVolleyAverages( $startDate, $endDate ){
+        $totalUsers = self::getTotalUsers($startDate, $endDate);
+        $totalVolleys = self::getTotalVolleys($startDate, $endDate);
+        $totalVolleys += self::getTotalVolleyJoins($startDate, $endDate);
+        return $totalVolleys / $totalUsers;
+    }
+    
+    public static function getFlagAverages( $startDate, $endDate ){
+        $totalUsers = self::getTotalUsers($startDate, $endDate);
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblFlaggedUserApprovals 
+        	where added >= unix_timestamp(?) 
+        		and added <= unix_timestamp(?) 
+        		and flag < 0
+        ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        $totalFlags = (int) $stmt->fetchColumn(0);
+        return $totalFlags / $totalUsers;
+    }
+    
+    public static function getVerifyAverages( $startDate, $endDate ){
+        $totalUsers = self::getTotalUsers($startDate, $endDate);
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblFlaggedUserApprovals 
+        	where added >= unix_timestamp(?) 
+        		and added <= unix_timestamp(?) 
+        		and flag > 0
+        ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        $totalFlags = (int) $stmt->fetchColumn(0);
+        return $totalFlags / $totalUsers;
+    }
+        
+    public static function getLikeAverages( $startDate, $endDate ){
+        $totalUsers = self::getTotalUsers($startDate, $endDate);
+        $sql = "
+        	select count(*) 
+        	from `hotornot-dev`.tblChallengeVotes 
+        	where added >= ? and added <= ?
+        ";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $params = array( $startDate, $endDate );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        $totalVotes = (int) $stmt->fetchColumn(0);
+        return $totalVotes / $totalUsers;
+    }
+
 /**
 Total number of unique daily actives
 */
@@ -118,8 +225,32 @@ Total number of unique daily actives
         $sql = "select count(*) from `hotornot-dev`.tblUsers";
         $dao = new BIM_DAO_Mysql( BIM_Config::db() );
         $stmt = $dao->prepareAndExecute( $sql );
-        return $stmt->fetchColumn(0);
+        return (int) $stmt->fetchColumn(0);
     }
+
+/*
+Network wide totals:
+
+    How many users?
+    How many Volleys created?
+    How many users have been flagged out?
+    How many users have been Verified?
+    How many Volleys created?
+    How many Volley replies?
+
+Engagement:
+
+    What % come back more than once?
+    What % came back 3 out of the first 7 days?
+
+Per user averages:
+
+    Avg # of Volleys
+    Avg # of people flags
+    Avg # of Verifies
+    Avg # of Likes
+
+ */
 
 /**
 Avg. number of mins per user per day

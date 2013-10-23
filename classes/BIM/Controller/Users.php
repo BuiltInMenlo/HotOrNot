@@ -49,6 +49,22 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		return $result;
     }
     
+    public function checkNameAndEmail(){
+        $result = null;
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if ( !empty($input->userID) && !empty($input->username) && !empty( $input->password ) ){
+            $result = self::usernameOrEmailExists($input);
+    	    $existingUser = BIM_Model_User::getByUsername( $input->username );
+            $userId = $this->resolveUserId( $input->userID );
+            if ( !$result  || $existingUser->id == $userId ) {
+                $users = new BIM_App_Users();
+                $result = $users->updateUsernameAvatarFirstRun($userId, $input->username, '', -1, $input->password, 'token-'.uniqid(true) );
+                $result = (object) array('result' => 0 );
+            }
+        }
+        return $result;
+    }
+    
     protected function usernameOrEmailExists( $input ){
         $result = BIM_Model_User::usernameOrEmailExists($input);
         if( $result ){
@@ -59,7 +75,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             } else if( !empty($result->username) ){
     	        $result = (object) array('result' => 1 );
             } else {
-                $result = null;
+    	        $result = null;
             }
         }
         return $result;
