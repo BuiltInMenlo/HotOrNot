@@ -545,7 +545,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $sql = "
             SELECT tc.id 
             FROM `hotornot-dev`.tblChallenges as tc
-            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	LEFT JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
             WHERE tc.status_id in ( 1,2,4 ) and is_verify != 1
                 AND (tc.creator_id = ?  OR tcp.user_id = ? )

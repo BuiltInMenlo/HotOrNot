@@ -232,7 +232,7 @@ class BIM_Model_Volley{
         return $dao->hasApproved( $this->id, $userId );
     }
     
-    public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires, $isVerify = false, $status = 2 ) {
+    public static function create( $userId, $hashTag, $imgUrl, $targetIds = array(), $isPrivate = 'N', $expires = -1, $isVerify = false, $status = 2 ) {
         $volleyId = null;
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
@@ -278,11 +278,11 @@ class BIM_Model_Volley{
 	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true, $status);
     }
     
-    public static function addVerifVolley( $targetId, $imgUrl ){
+    public static function addVerifVolley( $targetId, $imgUrl = null ){
         $vv = self::getVerifyVolley($targetId);
         if( $vv->isNotExtant() ){
             $vv = self::createVerifyVolley($targetId);
-        } else {
+        } else if( $imgUrl ){
             $vv->updateImage( $imgUrl );
         }
     }

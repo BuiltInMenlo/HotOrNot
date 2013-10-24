@@ -41,7 +41,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
                 $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $device_token = empty($input->token) ? '' : $input->token;
                 $users = new BIM_App_Users();
-			    $result = $users->updateUsernameAvatarFirstRun($userId, $input->username, $input->imgURL, $input->age, $input->password, $device_token );
+			    $result = $users->updateUsernameAvatarFirstRun($userId, $input->username, $input->imgURL, $input->age, $input->password, true, $device_token );
                 self::friendTeamVolley($userId);
                 BIM_Jobs_Users::queueFirstRunComplete($userId);
             }

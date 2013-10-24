@@ -2,4 +2,4 @@
 
 require_once 'vendor/autoload.php';
 
-BIM_App_Admin::manageExplore();
+BIM_App_Admin::createVolley();

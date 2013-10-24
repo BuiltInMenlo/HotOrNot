@@ -1,5 +1,95 @@
 <?php 
-class BIM_Controller_Admin{
+class BIM_App_Admin{
+    
+    /**
+     * if we are receiving a posted image
+     * first we upload the image to s3
+     * then we generate the small images
+     * then we write the volley
+     * 
+     * and redirect the user back to the create page
+     * 
+     * if we do not receive a posted image
+     * we just simply print the form and the volleys beneath it
+     * 
+     */
+    
+    public static function createVolley(){
+        $input = (object)( $_POST? $_POST : $_GET);
+        
+        if( !empty( $_FILES['image'] ) ){
+            $image = new Imagick( $_FILES['image']['tmp_name'] );
+            $conf = BIM_Config::aws();
+            S3::setAuth($conf->access_key, $conf->secret_key);
+            $namePrefix = 'TV_Volley_Image-'.uniqid(true);
+            $name = "{$namePrefix}Large_640x1136.jpg";
+            $imgUrlPrefix = "https://d1fqnfrnudpaz6.cloudfront.net/$namePrefix";
+            S3::putObjectString($image->getImageBlob(), 'hotornot-challenges', $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+            BIM_Utils::processImage($imgUrlPrefix);
+            
+            //BIM_Model_Volley::create( 2394, $input->hashtag, $imgUrlPrefix );
+        }
+        
+        echo("
+        <html>
+        <head>
+		<script src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+        </head>
+        <body>
+        ");
+        
+        $volleys = BIM_Model_Volley::getVolleys(2394);
+        
+        echo("
+        Create a new Volley for Team Volley
+        <br><br>
+		<form method='post'enctype='multipart/form-data'>
+        	Hash Tag: <input type='text' size='100' name='hashtag'>
+        	<br>
+			Volley Image: <input type='file' name='image'>
+			<br>
+        <input type='submit'>
+        
+        </form>
+        
+		<hr>Team Volley volleys - ".count( $volleys )."<hr>\n
+        <table border=1 cellpadding=10>
+        <tr>
+        <th>Volley Id</th>
+        <th>Image</th>
+        <th>Creator</th>
+        <th>Hash Tag</th>
+        <th>Challengers</th>
+        <th>Creation Date</th>
+        <th>Last Updated</th>
+        </tr>
+        ");
+        // now get the flag counts for each user
+        foreach( $volleys as $volley ){
+            $creator = $volley->creator;
+            $totalChallengers = count($volley->challengers);
+            $img = $volley->getCreatorImage();
+            if( $volley->isExtant() ){
+                echo "
+                <tr>
+                <td>$volley->id</td>
+                <td><img src='$img'></td>
+                <td>$creator->username</td>
+                <td>$volley->subject</td>
+                <td>$totalChallengers</td>
+                <td>$volley->added</td>
+                <td>$volley->updated</td>
+                </tr>
+                ";
+            }
+        }
+        echo("
+        </table>
+        </body>
+        </html>
+        ");
+        exit;
+    }
     
     /**
      * We present a formn with the top 100 voleys by date 
