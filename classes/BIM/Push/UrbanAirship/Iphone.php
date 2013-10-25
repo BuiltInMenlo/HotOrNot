@@ -75,4 +75,41 @@ class BIM_Push_UrbanAirship_Iphone{
         $j = new BIM_Jobs_Gearman();
         $j->createJbb($job);
     }
+    
+    public static function pushCreators( $volleys ){
+        $creators = array();
+        foreach ($volleys as $volley){
+            $creators[] = $volley->creator->id;
+        }
+        $users = BIM_Model_User::getMulti($creators);
+        $msg = "Your Selfie was promoted in Volley!";
+        foreach( $users as $user ){
+            if( $user->canPush() && !empty( $user->device_token ) ){
+                $push = (object) array(
+                    'device_tokens' => $user->device_token,
+                    "aps" => array(
+                        "alert" => $msg,
+                        "sound" => "push_01.caf"
+                    )
+                );
+                BIM_Jobs_Utils::queuePush($push); 
+            }
+        }
+        
+    }
+    
+    public static function shoutoutPush( $volley ){
+        $user = BIM_Model_User::get($volley->creator->id);
+        $msg = "Yo! Your Selfie got a shoutout from Team Volley!";
+        if( $user->canPush() && !empty( $user->device_token ) ){
+            $push = (object) array(
+                'device_tokens' => $user->device_token,
+                "aps" => array(
+                    "alert" => $msg,
+                    "sound" => "push_01.caf"
+                )
+            );
+            BIM_Jobs_Utils::queuePush($push); 
+        }
+    }
 }

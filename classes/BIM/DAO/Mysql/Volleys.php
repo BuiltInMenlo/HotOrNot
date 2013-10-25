@@ -835,17 +835,11 @@ WHERE is_verify != 1
 		$query = '
 			SELECT id 
 			FROM `hotornot-dev`.`tblChallenges` 
-			WHERE `is_private` != "Y" 
-				AND `status_id` IN (1,4)
-				AND is_verify != 1
+			WHERE is_verify != 1
 			ORDER BY `added` DESC 
 			LIMIT 100;'; 
         $stmt = $this->prepareAndExecute( $query );
-        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
-        foreach( $ids as &$id ){
-            $id = $id->id;
-        }
-        $ids = array_unique($ids);
+        $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         return $ids;
     }
     
@@ -856,8 +850,7 @@ WHERE is_verify != 1
 			FROM `hotornot-dev`.tblChallenges as tc
 				JOIN `hotornot-dev`.tblChallengeVotes as tcv
 				ON tc.id = tcv.challenge_id 
-			WHERE tc.status_id in (1,4)
-				AND is_verify != 1
+			WHERE is_verify != 1
 			LIMIT 100
 		';
         $stmt = $this->prepareAndExecute( $query );
@@ -953,6 +946,15 @@ WHERE is_verify != 1
         $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         return $data;
+    }
+    
+    public function deleteVolleys( $ids ){
+        $placeHolders = join(',',array_fill(0, count( $ids ), '?') );
+        $sql = "delete from `hotornot-dev`.tblChallengeParticipants where challenge_id IN ( $placeHolders )";
+        $stmt = $this->prepareAndExecute( $sql, $ids );
+        
+        $sql = "delete from `hotornot-dev`.tblChallenges where id IN ( $placeHolders )";
+        $stmt = $this->prepareAndExecute( $sql, $ids );
     }
     
     public function updateExploreIds( $volleyData ){

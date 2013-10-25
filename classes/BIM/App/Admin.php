@@ -1,6 +1,27 @@
 <?php 
 class BIM_App_Admin{
     
+    public static function shoutout(){
+        $input = (object)( $_POST? $_POST : $_GET);
+        if( !empty( $input->volleyId ) ){
+            $volley = BIM_Model_Volley::get( $input->volleyId );
+            if( $volley->isExtant() ){
+                $namePrefix = 'TV_Volley_Image-'.uniqid(true);
+                $name = "{$namePrefix}Large_640x1136.jpg";
+                $imgUrlPrefix = "https://d1fqnfrnudpaz6.cloudfront.net/$namePrefix";
+                $imgUrl = $volley->creator->img.'Large_640x1136.jpg';
+                
+                BIM_Utils::putImage( $imgUrl, $name );
+                BIM_Utils::processImage($imgUrlPrefix);
+                
+                $hashTag = "#shoutout";
+                $volley = BIM_Model_Volley::create( 2394, $hashTag, $imgUrlPrefix );
+                BIM_Push_UrbanAirship_Iphone::shoutoutPush( $volley );
+                print_r( json_encode( $volley ) );
+            }
+        }
+    }
+    
     /**
      * if we are receiving a posted image
      * first we upload the image to s3
@@ -17,17 +38,24 @@ class BIM_App_Admin{
     public static function createVolley(){
         $input = (object)( $_POST? $_POST : $_GET);
         
-        if( !empty( $_FILES['image'] ) ){
-            $image = new Imagick( $_FILES['image']['tmp_name'] );
-            $conf = BIM_Config::aws();
-            S3::setAuth($conf->access_key, $conf->secret_key);
+        $volleyIds = array();
+        if( property_exists($input, 'volleyIds') ){
+            $volleyIds = !empty($input->volleyIds) ? $input->volleyIds : array();
+            BIM_Model_Volley::deleteVolleys( $volleyIds );
+        }
+        
+        if( !empty( $_FILES['image'] ) && !empty( $input->hashtag ) ){
+            $imagePath = $_FILES['image']['tmp_name'];
             $namePrefix = 'TV_Volley_Image-'.uniqid(true);
             $name = "{$namePrefix}Large_640x1136.jpg";
             $imgUrlPrefix = "https://d1fqnfrnudpaz6.cloudfront.net/$namePrefix";
-            S3::putObjectString($image->getImageBlob(), 'hotornot-challenges', $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+            
+            BIM_Utils::putImage( $imagePath, $name );
             BIM_Utils::processImage($imgUrlPrefix);
             
-            //BIM_Model_Volley::create( 2394, $input->hashtag, $imgUrlPrefix );
+            $hashTag = trim($input->hashtag,'#');
+            $hashTag = "#$hashTag";
+            BIM_Model_Volley::create( 2394, $hashTag, $imgUrlPrefix );
         }
         
         echo("
@@ -50,9 +78,8 @@ class BIM_App_Admin{
 			<br>
         <input type='submit'>
         
-        </form>
-        
 		<hr>Team Volley volleys - ".count( $volleys )."<hr>\n
+		
         <table border=1 cellpadding=10>
         <tr>
         <th>Volley Id</th>
@@ -62,6 +89,7 @@ class BIM_App_Admin{
         <th>Challengers</th>
         <th>Creation Date</th>
         <th>Last Updated</th>
+        <th>Remove Volley</th>
         </tr>
         ");
         // now get the flag counts for each user
@@ -69,6 +97,7 @@ class BIM_App_Admin{
             $creator = $volley->creator;
             $totalChallengers = count($volley->challengers);
             $img = $volley->getCreatorImage();
+            $checked = in_array( $volley->id, $volleyIds ) ? ' checked ' : '';
             if( $volley->isExtant() ){
                 echo "
                 <tr>
@@ -79,12 +108,14 @@ class BIM_App_Admin{
                 <td>$totalChallengers</td>
                 <td>$volley->added</td>
                 <td>$volley->updated</td>
+                <td><input type='checkbox' $checked name='volleyIds[]' value='$volley->id'></td>
                 </tr>
                 ";
             }
         }
         echo("
         </table>
+        </form>
         </body>
         </html>
         ");
@@ -118,6 +149,7 @@ class BIM_App_Admin{
                 }
             }
             BIM_Model_Volley::updateExploreIds( $volleyData );
+            BIM_Push_UrbanAirship_Iphone::pushCreators( $volleyData );
         } else {
             $volleyIds = BIM_Model_Volley::getExploreIds();
         }
@@ -128,6 +160,25 @@ class BIM_App_Admin{
         <script type='text/javascript'>
         	function clearAll(){
         		$('[name=\"volleyIds[]\"]').each(function(index,el){ $(el).prop('checked',false);} )
+        	}
+        	
+            var successCallback = function( options, success, response ){ 
+                console.log(options, success, response);
+            };
+            
+            var errorCallback = function(jqXHR, errorType, exceptionObject){ 
+            	console.log( jqXHR, errorType, exceptionObject ); 
+    		}
+            
+        	function shoutout( volleyId ){
+                $.ajax({
+                    url: '/admin/shoutout.php?volleyId=' + volleyId,
+                    dataType: 'json',
+                    type: 'GET',
+                    context: this,
+                    success: successCallback,
+                    error: errorCallback
+                  });
         	}
         </script>
         </head>
@@ -170,7 +221,7 @@ class BIM_App_Admin{
             if( $volley->isExtant() ){
                 echo "
                 <tr>
-                <td>$volley->id</td>
+                <td>$volley->id - <input type='button' onClick='shoutout($volley->id);' value='shout out'></td>
                 <td><img src='$img'></td>
                 <td>$creator->username</td>
                 <td>$volley->subject</td>
@@ -212,7 +263,7 @@ class BIM_App_Admin{
             if( $volley->isExtant() ){
                 echo "
                 <tr>
-                <td>$volley->id</td>
+                <td>$volley->id - <input type='button' onClick='shoutout($volley->id);' value='shout out'></td>
                 <td><img src='$img'></td>
                 <td>$creator->username</td>
                 <td>$volley->subject</td>

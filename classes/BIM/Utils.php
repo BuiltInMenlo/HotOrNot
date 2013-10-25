@@ -216,6 +216,15 @@ class BIM_Utils{
         }
 	}
 	
+    public static function putImage( $image, $name ){
+            if( is_string($image) ){
+                $image = new Imagick( $image );
+            }
+            $conf = BIM_Config::aws();
+            S3::setAuth($conf->access_key, $conf->secret_key);
+            S3::putObjectString($image->getImageBlob(), 'hotornot-challenges', $name, S3::ACL_PUBLIC_READ, array(), 'image/jpeg' );
+	}            
+	
     public static function processImage( $imgPrefix, $bucket = 'hotornot-challenges' ){
         $image = self::getImage($imgPrefix);
         if( $image ){

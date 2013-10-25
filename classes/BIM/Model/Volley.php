@@ -810,4 +810,9 @@ class BIM_Model_Volley{
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
 		$dao->deleteParticipantByImage( $imgUrl );
     }
+    
+    public static function deleteVolleys( $ids ){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$dao->deleteVolleys($ids);
+    }
 }
