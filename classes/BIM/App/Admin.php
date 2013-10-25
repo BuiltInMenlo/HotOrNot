@@ -148,8 +148,15 @@ class BIM_App_Admin{
                     $volleyData[] = $volley;
                 }
             }
+
+            // now we figure out which creators to push
+            // and send them a push
+            $currentVolleyIds = BIM_Model_Volley::getExploreIds();
+            $volleysToPush = array_diff($volleyIds, $currentVolleyIds);
+            $volleysToPush = BIM_Model_Volley::getMulti( $volleysToPush );
+            BIM_Push_UrbanAirship_Iphone::pushCreators( $volleysToPush );
+            
             BIM_Model_Volley::updateExploreIds( $volleyData );
-            BIM_Push_UrbanAirship_Iphone::pushCreators( $volleyData );
         } else {
             $volleyIds = BIM_Model_Volley::getExploreIds();
         }
