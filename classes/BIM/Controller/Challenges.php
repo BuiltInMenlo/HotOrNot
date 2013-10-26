@@ -189,11 +189,13 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function join(){
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
-        if (isset( $input->userID) && isset($input->challengeID) && isset($input->imgURL)) {
+        if (!empty( $input->userID) && !empty($input->challengeID) && !empty($input->imgURL)) {
             $input->imgURL = $this->normalizeVolleyImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->join( $userId, $input->challengeID, $input->imgURL );
+            // get the response hashtag
+            $hashTag = empty( $input->subject ) ? '' : $input->subject; 
+            $uv = $challenges->join( $userId, $input->challengeID, $input->imgURL, $hashTag );
         }
         if( $uv ){
             return array(

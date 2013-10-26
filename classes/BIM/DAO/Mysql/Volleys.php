@@ -156,7 +156,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		tcp.user_id AS challenger_id, 
         		tcp.img AS challenger_img,
         		tcp.joined as joined,
-        		tcp.likes as likes
+        		tcp.likes as likes,
+        		tcp.subject as reply
         	FROM `hotornot-dev`.tblChallenges AS tc 
         		LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
@@ -172,7 +173,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             foreach( $data as $row ){
                 if( empty( $volleys[ $row->id ] ) ){
                     if( !empty( $row->challenger_id ) ){
-                        $row->challengers = array( ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img,  'joined' => $row->joined, 'likes' => $row->likes ) );
+                        $row->challengers = array( ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img,  'joined' => $row->joined, 'likes' => $row->likes, 'subject' => $row->reply ) );
                     } else {
                         $row->challengers = array();
                     }
@@ -183,7 +184,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
                     $volleys[ $row->id ] = $row;
                 } else {
                     $volley = $volleys[ $row->id ];
-                    $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined, 'likes' => $row->likes );
+                    $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined, 'likes' => $row->likes, 'subject' => $row->reply );
                 }
             }
         }
@@ -298,17 +299,30 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         }
     }
     
-    public function join( $volleyId, $userId, $imgUrl ){
-        $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined, likes ) VALUES (?, ?, ?, ?, ?)';
-        $params = array( $volleyId, $userId, $imgUrl, time(), 0 );
+    public function join( $volleyId, $userId, $imgUrl, $hashTag = '' ){
+        $sql = '
+        	INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants 
+        	(challenge_id, user_id, img, joined, likes, subject ) 
+        	VALUES 
+        	(?, ?, ?, ?, ?, ?)
+        ';
+        $params = array( $volleyId, $userId, $imgUrl, time(), 0, $hashTag );
         $this->prepareAndExecute($sql, $params);
 
         if( $this->rowCount ){
-            $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
+            $sql = '
+            	UPDATE `hotornot-dev`.tblChallenges 
+            	SET status_id = 4, updated = NOW(), started = NOW() 
+            	WHERE id = ?
+            ';
             $params = array( $volleyId );
             $this->prepareAndExecute($sql, $params);
             
-            $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
+            $sql = '
+            	UPDATE `hotornot-dev`.tblUsers 
+            	SET total_challenges = total_challenges + 1 
+            	WHERE id = ?
+            ';
             $params = array( $userId );
             $this->prepareAndExecute($sql, $params);
         }

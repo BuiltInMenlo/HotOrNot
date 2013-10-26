@@ -274,15 +274,13 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $img_url The URL to the challenger's image (string)
      * @return The ID of the challenge (integer)
     **/
-    public function join($userId, $volleyId, $imgUrl ) {
+    public function join($userId, $volleyId, $imgUrl, $hashTag = '' ) {
         $volley = BIM_Model_Volley::get( $volleyId );
-        if( $volley ){
-            $OK = false;
-            if( $volley->is_private == 'N' ){
-                $volley->join( $userId, $imgUrl );
-                $joiner = BIM_Model_User::get( $userId );
-                BIM_Push::doVolleyAcceptNotification( $volley->id, $joiner->id );
-            }
+        if( $volley->isExtant() ){
+            $volley->join( $userId, $imgUrl, $hashTag );
+            $volley = BIM_Model_Volley::get($volleyId, true);
+            $joiner = BIM_Model_User::get( $userId );
+            BIM_Push::doVolleyAcceptNotification( $volley->id, $joiner->id );
         }
         return $volley;        
     }

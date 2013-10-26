@@ -46,7 +46,8 @@ class BIM_Model_Volley{
                     'id' => $challenger->challenger_id,
                     'img' => $challenger->challenger_img,
                     'score' => $challenger->likes,
-                    'joined' => $joined,
+                    'subject' => empty($challenger->subject) ? $this->subject : $challenger->subject,
+                	'joined' => $joined,
                     'joined_timestamp' => $challenger->joined,
                 );
                 $this->resolveScore($target);
@@ -351,9 +352,12 @@ class BIM_Model_Volley{
     }
     
     // $userId, $imgUrl
-    public function join( $userId, $imgUrl ){
+    public function join( $userId, $imgUrl, $hashTag = '' ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $dao->join( $this->id, $userId, $imgUrl );
+        if( !$hashTag ){
+            $hashTag = $this->subject;
+        }
+        $dao->join( $this->id, $userId, $imgUrl, $hashTag );
         
         $this->purgeFromCache();
         $user = BIM_Model_User::purgeById( $userId );
