@@ -280,16 +280,12 @@ class BIM_Push{
         }
     }
     
-    public static function sendVolleyNotifications( $creatorId, $targetIds, $volleyId ){
-        $creator = BIM_Model_User::get($creatorId);
+    public static function sendVolleyNotifications( $volleyId ){
         $volley = BIM_Model_Volley::get( $volleyId );
-        if( ! is_array( $targetIds ) ){
-            $targetIds = array( $targetIds );
-        }
-        foreach( $targetIds as $target ){
-            if( !is_object( $target ) ) {
-                $target = BIM_Model_User::get( $target );
-            }
+        $creator = BIM_Model_User::get($volley->creator->id);
+        $targetIds = $volley->getUsers();
+        $targets = BIM_Model_User::getMulti($targetIds);
+        foreach( $targets as $target ){
             if ( $target->isExtant() && $target->notifications == "Y"){
                 $msg = "@$creator->username has just created the Volley $volley->subject";
                 $push = array(

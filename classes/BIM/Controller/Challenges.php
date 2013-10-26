@@ -207,14 +207,13 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function submitChallengeWithUsernames(){
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
-        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && property_exists($input, 'usernames') ){
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) ){
             $input->imgURL = $this->normalizeVolleyImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
-            $usernames = explode('|', $input->usernames );
             $expires = $this->resolveExpires();
             $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $usernames, $isPrivate, $expires );
+            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $isPrivate, $expires );
         }
         return $uv;
     }
@@ -222,13 +221,13 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function submitChallengeWithUsername(){
         $input = (object) ($_POST ? $_POST : $_GET);
         $uv = null;
-        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && property_exists($input, 'username') ){
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) ){
             $input->imgURL = $this->normalizeVolleyImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
             $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;
             $expires = $this->resolveExpires();
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $input->username, $isPrivate, $expires  );
+            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $isPrivate, $expires  );
         }
         return $uv;
     }
