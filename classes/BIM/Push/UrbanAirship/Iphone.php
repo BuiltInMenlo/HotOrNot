@@ -2,20 +2,6 @@
 
 class BIM_Push_UrbanAirship_Iphone{
     
-    public static function send( $ids, $msg ){
-        if( !is_array($ids) ){
-            $ids = array( $ids );
-        }
-        $push = (object) array(
-            'device_tokens' => $ids,
-            "aps" => array(
-                "alert" => $msg,
-                "sound" => "push_01.caf"
-            )
-        );
-        self::sendPush($push);
-    }
-    
     public static function sendPushBatch( $push ){
         $conf = BIM_Config::urbanAirship();
         $pushStr = json_encode($push);
@@ -36,6 +22,7 @@ class BIM_Push_UrbanAirship_Iphone{
     }
     
     public static function sendPush( $push ){
+        file_put_contents( '/tmp/push_debug', print_r($push,1) );
         $conf = BIM_Config::urbanAirship();
         if( !is_object($push->device_tokens) && !is_array($push->device_tokens) ){
             $push->device_tokens = array( $push->device_tokens );
@@ -56,60 +43,6 @@ class BIM_Push_UrbanAirship_Iphone{
             $err_msg = curl_error($ch);
             $header = curl_getinfo($ch);
             curl_close($ch);
-        }
-    }
-    
-    public static function createTimedPush( $push, $time ){
-        $time = new DateTime("@$time");
-        $time = $time->format('Y-m-d H:i:s');
-        
-        $job = (object) array(
-            'nextRunTime' => $time,
-            'class' => 'BIM_Push_UrbanAirship_Iphone',
-            'method' => 'sendPush',
-            'name' => 'push',
-            'params' => $push,
-            'is_temp' => true,
-        );
-        
-        $j = new BIM_Jobs_Gearman();
-        $j->createJbb($job);
-    }
-    
-    public static function pushCreators( $volleys ){
-        $creators = array();
-        foreach ($volleys as $volley){
-            $creators[] = $volley->creator->id;
-        }
-        $users = BIM_Model_User::getMulti($creators);
-        $msg = "Your Selfie was promoted in Volley!";
-        foreach( $users as $user ){
-            if( $user->canPush() && !empty( $user->device_token ) ){
-                $push = (object) array(
-                    'device_tokens' => $user->device_token,
-                    "aps" => array(
-                        "alert" => $msg,
-                        "sound" => "push_01.caf"
-                    )
-                );
-                BIM_Jobs_Utils::queuePush($push); 
-            }
-        }
-        
-    }
-    
-    public static function shoutoutPush( $volley ){
-        $user = BIM_Model_User::get($volley->creator->id);
-        $msg = "Yo! Your Selfie got a shoutout from Team Volley!";
-        if( $user->canPush() && !empty( $user->device_token ) ){
-            $push = (object) array(
-                'device_tokens' => $user->device_token,
-                "aps" => array(
-                    "alert" => $msg,
-                    "sound" => "push_01.caf"
-                )
-            );
-            BIM_Jobs_Utils::queuePush($push); 
         }
     }
 }

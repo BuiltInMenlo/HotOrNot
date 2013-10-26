@@ -1,13 +1,6 @@
 <?php 
 class BIM_Maint_User{
-    /**
-     * we need to get all the user ids into 2 arrays
-     * the arrays will be subcribees and subscribers
-     * 
-     * for each subscriber
-     * we get their current list of subscribers
-     * and we then subscribe to 5 users
-     */
+    
     public static function remindNewUsers(){
         $dao = new BIM_DAO_Mysql( BIM_Config::db() );
         $sql = "
@@ -21,15 +14,7 @@ class BIM_Maint_User{
         $users = BIM_Model_User::getMulti($userIds);
         foreach( $users as $user ){
             echo "reminding $user->username : $user->id\n";
-            $msg = "Volley reminder! Please update your selfie to get verfied. No adults allowed!";
-            $push = array(
-                "device_tokens" => $user->device_token,
-                "aps" =>  array(
-                    "alert" => $msg,
-                    "sound" => "push_01.caf"
-                )
-            );
-            BIM_Jobs_Utils::queuePush($push);
+            BIM_Push::selfieReminder($user->id);
         }
     }
     
@@ -81,15 +66,7 @@ class BIM_Maint_User{
                 'target' => $targetId,
             );
             BIM_App_Social::addFriend($params, false);
-            $msg = "@$user->username has subscribed to your Volleys!";
-            $push = array(
-                "device_tokens" =>  array( $target->device_token ),
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            BIM_Push_UrbanAirship_Iphone::createTimedPush($push, $pushTime);
+            BIM_Push::introPush($userId, $targetId, $pushTime);
             $allSubscribees[ $targetId ]++;
             if( $allSubscribees[ $targetId ] >= $maxSubcribes ){
                 unset($allSubscribees[ $targetId ]);

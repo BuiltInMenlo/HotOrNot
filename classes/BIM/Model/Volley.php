@@ -241,20 +241,71 @@ class BIM_Model_Volley{
         return self::get( $volleyId );
     }
     
+/**
+(object) array(
+	"id"=> "37726",
+	"status"=> "9",
+	"subject"=> "#__verifyMe__",
+	"comments"=> 0,
+	"has_viewed"=> "N",
+	"started"=> "2013-10-25 20:29:19",
+	"added"=> "2013-10-25 20:29:19",
+	"updated"=> "2013-10-26 15:31:30",
+	"expires"=> "-1",
+	"is_private"=> "N",
+	"is_verify"=> 1,
+	"is_celeb"=> 0,
+	"creator"=> (object) array(
+		"id"=> "13248",
+		"img"=> "https:\/\/d3j8du2hyvd35p.cloudfront.net\/925a2ae0a711f6c72d456ca2e4ef75d1aaa98e9db45587eb7dec23b5d46f80b3-1382801487.jpg",
+		"score"=> 0,
+		"fb_id"=> "",
+		"username"=> "bimtester7",
+		"avatar"=> "https:\/\/d3j8du2hyvd35p.cloudfront.net\/925a2ae0a711f6c72d456ca2e4ef75d1aaa98e9db45587eb7dec23b5d46f80b3-1382801487Large_640x1136.jpg",
+		"age"=> "1998-10-25 00:00:00"
+	),
+	"challengers"=> []
+) 
+ */
     public static function getAccountSuspendedVolley( $targetId ){
-        $vv = self::getVerifyVolley( $targetId );
-        $vv->subject = '#Account_Disabled_Temporarily';
-        $vv->challengers = array(
-            (object) array(
-                'id' => $vv->creator->id,
-                'img' => $vv->creator->img,
-                'score' => 0,
-                'joined' => '1970-01-01 12:34:56',
-            	'fb_id' => '',
-                'username' => $vv->creator->username,
-                'avatar' => $vv->creator->avatar,
-                'age' => $vv->creator->age,
-            )
+        $target = BIM_Model_User::get($targetId);
+        $img = $target->getAvatarUrl();
+        $img = str_replace('Large_640x1136.jpg', '', $img);
+        
+        $vv = (object) array(
+        	"id"=> 1,
+        	"status"=> "9",
+        	"subject"=> "#Account_Disabled_Temporarily",
+        	"comments"=> 0,
+        	"has_viewed"=> "N",
+        	"started"=> "1970-01-01 00:00:00",
+        	"added"=> "1970-01-01 00:00:00",
+        	"updated"=> "1970-01-01 00:00:00",
+        	"expires"=> "-1",
+        	"is_private"=> "N",
+        	"is_verify"=> 1,
+        	"is_celeb"=> 0,
+        	"creator"=> (object) array(
+        		"id"=> $target->id,
+        		"img"=> $img,
+        		"score"=> 0,
+        		"fb_id"=> "",
+        		"username"=> $target->username,
+        		"avatar"=> $target->getAvatarUrl(),
+        		"age"=> $target->age
+        	),
+        	"challengers"=> array(
+                (object) array(
+                    'id' => $target->id,
+                    'img' => $img,
+                    'score' => 0,
+                    'joined' => '1970-01-01 00:00:00',
+                	'fb_id' => '',
+                    'username' => $target->username,
+                    'avatar' => $target->getAvatarUrl(),
+                    'age' => $target->age,
+                )
+        	)
         );
         return $vv;
     }
@@ -281,7 +332,10 @@ class BIM_Model_Volley{
     public static function addVerifVolley( $targetId, $imgUrl = null ){
         $vv = self::getVerifyVolley($targetId);
         if( $vv->isNotExtant() ){
-            $vv = self::createVerifyVolley($targetId);
+    	    $target = BIM_Model_User::get( $targetId );
+    	    if( $target->ageOK() ){
+                $vv = self::createVerifyVolley($targetId);
+    	    }
         } else if( $imgUrl ){
             $vv->updateImage( $imgUrl );
         }
@@ -602,24 +656,25 @@ class BIM_Model_Volley{
     
     public static function autoVolley( $userId ){
 		// starting users & snaps
+        $teamVolleyId = BIM_Config::app()->team_volley_id;
         $snap_arr = array(
         	array(// @Team Volley #welcomeVolley
-        		'user_id' => "2394", 
+        		'user_id' => $teamVolleyId, 
         		'subject_id' => "1367", 
         		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000000"),
         	
         	array(// @Team Volley #teamVolleyRules
-        		'user_id' => "2394", 
+        		'user_id' => $teamVolleyId, 
         		'subject_id' => "1368", 
         		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000001"),
         		
         	array(// @Team Volley #teamVolley
-        		'user_id' => "2394", 
+        		'user_id' => $teamVolleyId, 
         		'subject_id' => "1369", 
         		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002"),
         		
         	array(// @Team Volley #teamVolleygirls
-        		'user_id' => "2394", 
+        		'user_id' => $teamVolleyId, 
         		'subject_id' => "1370", 
         		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000003")
         );

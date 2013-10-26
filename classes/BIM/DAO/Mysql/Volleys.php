@@ -568,6 +568,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
      * @param unknown_type $userId
      */
     public function getVerificationVolleyIds( $userId ){
+        $teamVolleyId = BIM_Config::app()->team_volley_id;
         
         $sql = "
 			SELECT tc.id 
@@ -579,7 +580,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				AND tc.is_verify = 1 
 				AND u.user_id is null
 				AND tc.creator_id != ?
-				AND tc.creator_id != 2394
+				AND tc.creator_id != $teamVolleyId
 				AND tc.creator_img != ''
 				AND tc.creator_img not like '%defaultAvatar%'
 				

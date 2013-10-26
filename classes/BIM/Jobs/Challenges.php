@@ -142,11 +142,6 @@ class BIM_Jobs_Challenges extends BIM_Jobs{
     	$this->voteJobs->queueStaticTopChallengesByVotes();
     }
     
-    public function doPush( $workload ){
-        $push = json_decode($workload->params);
-        BIM_Push_UrbanAirship_Iphone::sendPush( $push );
-    }
-    
     public static function queueAcceptChallengeAsDefaultUser( $volleyObject, $creator, $targetUser ){
         $job = array(
         	'class' => 'BIM_Jobs_Challenges',

@@ -9,7 +9,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->target = $target;
             $added = self::_addFriend($params);
             if( $added && $doNotification ){
-                BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
+                BIM_Push::friendNotification( $params->userID, $params->target );
             }
         }
         
@@ -79,7 +79,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->source = $source;
             $accepted = self::_acceptFriend($params);
             if( $accepted ){
-                BIM_Jobs_Users::queueFriendAcceptedNotification( $params->userID, $params->source );
+                BIM_Push::friendAcceptedNotification( $params->userID, $params->source );
             }
         }
         

@@ -58,7 +58,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             $userId = $this->resolveUserId( $input->userID );
             if ( !$result  || $existingUser->id == $userId ) {
                 $users = new BIM_App_Users();
-                $result = $users->updateUsernameAvatarFirstRun($userId, $input->username, '', -1, $input->password, 'token-'.uniqid(true) );
+                $result = $users->updateUsernameAvatarFirstRun($userId, $input->username, '', -1, $input->password, false, BIM_Utils::getDeviceToken() );
                 $result = (object) array('result' => 0 );
             }
         }

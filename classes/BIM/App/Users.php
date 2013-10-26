@@ -186,21 +186,10 @@ class BIM_App_Users extends BIM_App_Base{
 	public function pokeUser($pokerId, $targetId) {
 	    $poker = BIM_Model_User::get( $targetId );
 	    $pokeId = $poker->poke( $targetId );
-	    
 	    $target = BIM_Model_User::get( $targetId );
-		if ($pokeId && $target->notifications == "Y"){
-            $msg = "@$poker->username has poked you!";
-			$push = array(
-		    	"device_tokens" =>  array( $target->device_token ), 
-		    	"type" => "2",
-		    	"aps" =>  array(
-		    		"alert" =>  $msg,
-		    		"sound" =>  "push_01.caf"
-		        )
-		    );
-    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+		if ($pokeId && $target->canPush() ){
+		    BIM_Push::pokePush($pokerId, $targetId);
 		}
-	    
 		return array(
 			'id' => $pokeId
 		);
@@ -221,7 +210,7 @@ class BIM_App_Users extends BIM_App_Base{
     	    $verifyVolley = BIM_Model_Volley::getVerifyVolley( $targetId );
     	    $approves = ($approves ? -1 : 1);
     	    $c = BIM_Config::app();
-    	    if( !empty($c->super_users) && in_array($user->adid, $c->super_users ) ){
+    	    if( $user->isSuperUser() ){
     	        $approves = ($approves * 10000);
     	    }
     	    // make sure the flagged user cannot 
@@ -231,15 +220,15 @@ class BIM_App_Users extends BIM_App_Base{
     	        $purge = true;
                 $verifyVolley = BIM_Model_Volley::createVerifyVolley( $targetId, 10 );
         	    $target->flag( $verifyVolley->id, $userId, $approves );
-                $this->sendVerifyPush( $targetId );
+                BIM_Push::sendFlaggedPush($targetId);
                 $this->sendFlaggedEmail($userId);
     	    } else if( $verifyVolley->isExtant() && !$verifyVolley->hasApproved($userId) ){
     	        $purge = true;
         	    $target->flag( $verifyVolley->id, $userId, $approves );
         	    if( $approves < 0 ){
-    	            $this->sendApprovePush( $targetId );
+        	        BIM_Push::sendApprovePush($targetId);
         	    } else if( $approves > 0 ){
-                    $this->sendVerifyPush( $targetId );
+                    BIM_Push::sendFlaggedPush($targetId);
         	    }
     	    }
     	    if( $purge ){
@@ -250,36 +239,6 @@ class BIM_App_Users extends BIM_App_Base{
 	    }
 	}
 	
-	/*
-'{	"device_tokens": ["3b0dda3bb65860a488c461c3b8fed94738cab970aa93e2f1bc17e123e7de4f6f"], 
-	"type":"2", 
-	"aps": {
-		"alert": "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?", 
-		"sound": "push_01.caf"
-	}
-}'	 
-	* 
-	 */
-	protected function sendApprovePush( $targetId ){
-    	$target = BIM_Model_User::get( $targetId );
-        if( $target->canPush() ){
-            if( $target->isApproved() ){
-                $msg = "Awesome! You have been Volley Verified! Would you like to share Volley with your friends?";
-            } else {
-                $msg = "Your Volley profile has been verified by another Volley user! Would you like to share Volley with your friends?";
-            }
-            $push = array(
-                "device_tokens" => $target->device_token,
-                "type" => 2,
-                "aps" =>  array(
-                    "alert" => $msg,
-                    "sound" => "push_01.caf"
-                )
-            );
-            BIM_Jobs_Utils::queuePush($push);
-        }
-	}
-
 	protected function sendFlaggedEmail( $userId ){
 		// send email
 	    $user = BIM_Model_User::get( $userId );
@@ -301,93 +260,6 @@ class BIM_App_Users extends BIM_App_Base{
         );
         
 		mail($to, $subject, $body, $headers );
-	}
-	
-	/**
-	 * 
-	 * @param int $targetId usr bring flagged
-	 * @param array[int] $userIds - list of users to push
-	 */
-	public function sendVerifyPush( $targetId ){
-
-    	$target = BIM_Model_User::get( $targetId );
-        if( $target->canPush() ){
-            
-            // Your Volley profile has been flagged
-            
-            $msg = "Your Volley profile has been flagged";
-            if( $target->isSuspended() ){
-                $msg = "Your Volley profile has been suspended";
-            }
-            $push = array(
-                "device_tokens" =>  $target->device_token, 
-                "type" => "3", 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            
-            BIM_Jobs_Utils::queuePush($push);
-        }
-	    
-        /*
-        $friends = BIM_Model_User::getMulti($userIds);
-        $deviceTokens = array();
-        foreach( $friends as $friend ){
-            if( $friend->canPush() ){
-                $deviceTokens[] = $friend->device-token;
-            }
-        }
-        
-        if( $deviceTokens ){
-            $msg = "Your friend $target->username has been flagged as a fake. Log in to prove they are real!";
-            $push = array(
-                "device_tokens" => $deviceTokens, 
-                "type" => "3", 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            
-            BIM_Jobs_Utils::queuePush($push);
-        }
-        */
-	}
-	
-	/**
-	 * 
-	 * @param int $targetId usr bring flagged
-	 * @param array[int] $userIds - list of users to push
-	 */
-	public function sendFirstRunPush( $userIds, $targetId ){
-	    
-	    $userIds[] = $targetId;
-        $users = BIM_Model_User::getMulti($userIds);
-        $target = $users[ $targetId ];
-        unset( $users[ $targetId ] );
-        
-        $deviceTokens = array();
-        foreach( $users as $user ){
-            if( $user->canPush() ){
-                $deviceTokens[] = $user->device-token;
-            }
-        }
-        
-        if( $deviceTokens ){
-            $msg = "A new user just joined Volley, can you verify them? @$target->username";
-            $push = array(
-                "device_tokens" => $deviceTokens, 
-                "type" => "3", 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            
-            BIM_Jobs_Utils::queuePush($push);
-        }
 	}
 	
 	/**
@@ -630,7 +502,7 @@ class BIM_App_Users extends BIM_App_Base{
 	            'email' => $params->email
 	        );
 	        $this->addEmailList($list);
-            BIM_Jobs_Growth::queueEmailVerifyPush($params);
+            BIM_Push::emailVerifyPush($params->user_id);
             $verified = true;
 	    }
 	    return $verified;
@@ -645,7 +517,7 @@ class BIM_App_Users extends BIM_App_Base{
 	            'hashed_number' => $phone
 	        );
 	        $this->addPhoneList($list);
-            BIM_Jobs_Growth::queueEmailVerifyPush($params);
+            BIM_Push::emailVerifyPush($params->user_id);
             $verified = true;
 	    }
 	    return $verified;
@@ -662,11 +534,17 @@ class BIM_App_Users extends BIM_App_Base{
     public function firstRunComplete( $userId ){
         $user = BIM_Model_User::get( $userId );
         if( $user->isExtant() ){
+            $teamVolleyId = BIM_Config::app()->team_volley_id;
             $approves = 0;
             if( ! $user->hasSelfie() ){
                 // flag them 5 times
                 // since they refused to give a selfie
-                $this->flagUser(2394, $userId, 5);
+                $user->updateAbuseCount( 5 );
+            } 
+            
+            if( ! $user->ageOK() ){
+                // suspend them if not in correct age range
+                $user->updateAbuseCount( 10000 );
             }
         }
         return BIM_Model_User::get( $userId );

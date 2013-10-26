@@ -178,23 +178,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	    if( $volley->isExtant() && $volley->hasUser( $targetId ) ){
 	        $volley->upVote( $targetId, $userId, $imgUrl );
 	        if( $userId != $targetId ){
-        		$liker = BIM_Model_User::get( $userId );
-        		$target = BIM_Model_User::get( $targetId );
-        		// @jason liked your Volley #WhatsUp"
-    			$msg = "@$liker->username liked your Volley $volley->subject";
-    			if( $volley->subject == '#__verifyMe__' ){
-    			    $msg = "Your profile selfie has been liked by @$liker->username";
-    			}
-    			$push = array(
-    		    	"device_tokens" =>  $target->device_token, 
-    		    	"type" => "1",
-    			    "challenge" => $volleyId, 
-    		    	"aps" =>  array(
-    		    		"alert" =>  $msg,
-    		    		"sound" =>  "push_01.caf"
-    		        )
-    		    );
-        	    BIM_Jobs_Utils::queuePush( $push );
+	            BIM_Push::likePush($userId, $targetId, $volleyId);
 	        }
 	    }
 		return BIM_Model_Volley::get( $volleyId );

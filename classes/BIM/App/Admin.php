@@ -15,8 +15,9 @@ class BIM_App_Admin{
                 BIM_Utils::processImage($imgUrlPrefix);
                 
                 $hashTag = "#shoutout";
-                $volley = BIM_Model_Volley::create( 2394, $hashTag, $imgUrlPrefix );
-                BIM_Push_UrbanAirship_Iphone::shoutoutPush( $volley );
+                $teamVolleyId = BIM_Config::app()->team_volley_id;
+                $volley = BIM_Model_Volley::create( $teamVolleyId, $hashTag, $imgUrlPrefix );
+                BIM_Push::shoutoutPush( $volley );
                 print_r( json_encode( $volley ) );
             }
         }
@@ -37,6 +38,7 @@ class BIM_App_Admin{
     
     public static function createVolley(){
         $input = (object)( $_POST? $_POST : $_GET);
+        $teamVolleyId = BIM_Config::app()->team_volley_id;
         
         $volleyIds = array();
         if( property_exists($input, 'volleyIds') ){
@@ -55,7 +57,7 @@ class BIM_App_Admin{
             
             $hashTag = trim($input->hashtag,'#');
             $hashTag = "#$hashTag";
-            BIM_Model_Volley::create( 2394, $hashTag, $imgUrlPrefix );
+            BIM_Model_Volley::create( $teamVolleyId, $hashTag, $imgUrlPrefix );
         }
         
         echo("
@@ -66,7 +68,7 @@ class BIM_App_Admin{
         <body>
         ");
         
-        $volleys = BIM_Model_Volley::getVolleys(2394);
+        $volleys = BIM_Model_Volley::getVolleys($teamVolleyId);
         
         echo("
         Create a new Volley for Team Volley
@@ -154,7 +156,7 @@ class BIM_App_Admin{
             $currentVolleyIds = BIM_Model_Volley::getExploreIds();
             $volleysToPush = array_diff($volleyIds, $currentVolleyIds);
             $volleysToPush = BIM_Model_Volley::getMulti( $volleysToPush );
-            BIM_Push_UrbanAirship_Iphone::pushCreators( $volleysToPush );
+            BIM_Push::pushCreators( $volleysToPush );
             
             BIM_Model_Volley::updateExploreIds( $volleyData );
         } else {

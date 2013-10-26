@@ -48,7 +48,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative object for a challenge (array)
     **/
     public function acceptChallengeAsDefaultUser($volleyObject, $creator, $targetUser) {
-        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
+        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
         if ( in_array($targetUser->id, $defaultUserID_arr) ) {
             $time = time() + mt_rand(30, 120);
             $this->createTimedAccept( $volleyObject, $creator, $targetUser, $time );
@@ -58,41 +58,7 @@ class BIM_App_Challenges extends BIM_App_Base{
     public function doAcceptChallemgeAsDefaultUser( $volley, $creator, $targetUser ){
         $imgUrl = "https://hotornot-challenges.s3.amazonaws.com/". $targetUser->device_token ."_000000000". mt_rand(0, 2);
         $volley->accept( $targetUser->id, $imgUrl );
-        if ($creator->notifications == "Y"){
-            $this->doAcceptNotification($volley, $creator, $targetUser);
-        }
-    }
-    
-    public function doAcceptNotification( $volleyObject, $creator, $targetUser, $delay = 0 ){
-        $msg = "@$targetUser->username has joined the Volley $volleyObject->subject";
-        
-        $push = array(
-            "type" => "6",
-            "challenge" => $volleyObject->id,
-            "aps" =>  array(
-                "alert" =>  $msg,
-                "sound" =>  "push_01.caf"
-            )
-        );
-        
-        $time = time() + 86400;
-        $time = $time - ( $time % 86400 );
-        $secondPushTime = $time + (3600 * 17);
-        $thirdPushTime = $secondPushTime + (3600 * 9);
-        
-        $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
-        foreach( $users as $user ){
-            if( $user->canPush() && ($targetUser->id != $user->id) ){
-                $push["device_tokens"] =  array( $user->device_token );
-                BIM_Jobs_Utils::queuePush( $push );
-                
-                $jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
-                $this->createTimedPush($push, $secondPushTime, $jobId );
-                
-                $jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
-                $this->createTimedPush($push, $thirdPushTime,  $jobId );
-            }
-        }
+        BIM_Push::doVolleyAcceptNotification($volley->id, $targetUser->id);
     }
     
     public function createTimedAccept( $volleyObject, $creator, $targetUser, $time ){
@@ -116,29 +82,6 @@ class BIM_App_Challenges extends BIM_App_Base{
         $j->createJbb($job);
     }
     
-    public function createTimedPush( $push, $time, $jobId ){
-        $time = new DateTime("@$time");
-        $time = $time->format('Y-m-d H:i:s');
-        
-        $job = (object) array(
-            'nextRunTime' => $time,
-            'class' => 'BIM_Jobs_Challenges',
-            'method' => 'doPush',
-            'name' => 'push',
-            'params' => $push,
-            'is_temp' => true,
-        );
-        
-        if( !empty( $jobId ) ){
-            // create an id that we can use to remove and cancel the job later
-            $job->id = $jobId;
-        }
-        file_put_contents('/tmp/debug', print_r( array( $job ) , 1) );
-        
-        $j = new BIM_Jobs_Gearman();
-        $j->createJbb($job);
-    }
-    
     /**
      * Inserts a new challenge and attempts to match on a waiting challenge with the same subject
      * @param $user_id The ID of the user submitting the challenge (integer)
@@ -149,11 +92,10 @@ class BIM_App_Challenges extends BIM_App_Base{
     public function submitMatchingChallenge($userId, $hashTag, $imgUrl, $expires) {
         $volley = BIM_Model_Volley::getRandomAvailableByHashTag( $hashTag, $userId );
         if ( $volley && $volley->isExtant() ) {
-            $creator = BIM_Model_User::get( $volley->creator->id );
             $targetUser = BIM_Model_User::get( $userId );
             if( $targetUser->isExtant() ){
                 $volley->accept( $userId, $imgUrl );
-                $this->doAcceptNotification($volley, $creator, $targetUser);
+                BIM_Push::doVolleyAcceptNotification( $volley->id, $targetUser->id );
             }
         } else {
             $volley = BIM_Model_Volley::create($userId, $hashTag, $imgUrl, -1, 'N', $expires);
@@ -175,25 +117,10 @@ class BIM_App_Challenges extends BIM_App_Base{
         if ( $creator->isExtant() ) {
             $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, array(), $isPrivate, $expires);
             if( $volley->isExtant() ){
-                $this->sendVolleyNotifications($creator, $targetIds, $volley->id );
+                BIM_Push::sendVolleyNotifications($creator->id, $targetIds, $volley->id );
             }
         }
         return $volley;
-    }
-    
-    public function sendVolleyNotifications( $creator, $targetIds, $volleyId ){
-        $volley = BIM_Model_Volley::get( $volleyId );
-        if( ! is_array( $targetIds ) ){
-            $targetIds = array( $targetIds );
-        }
-        foreach( $targetIds as $target ){
-            if( !is_object( $target ) ) {
-                $target = BIM_Model_User::get( $target );
-            }
-            if ( $target->isExtant() && $target->notifications == "Y"){
-                $this->doNotification( $creator, $target, $volley->id, $volley->subject );
-            }
-        }
     }
     
     protected static function reminderTime(){
@@ -216,21 +143,6 @@ class BIM_App_Challenges extends BIM_App_Base{
             $uname = BIM_Model_User::getByUsername( $uname );
         }
         return $this->submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $usernames, $isPrivate, $expires);
-    }
-    
-    public function doNotification( $creator, $target, $volleyId, $hashTag ){
-        // @jason just created the Volley #WhatsUp
-        $msg = "@$creator->username has just created the Volley $hashTag";
-        $push = array(
-            "device_tokens" =>  array( $target->device_token ), 
-            "type" => "1",
-            "challenge" => $volleyId,
-            "aps" =>  array(
-                "alert" =>  $msg,
-                "sound" =>  "push_01.caf"
-            )
-        );
-        BIM_Jobs_Utils::queuePush( $push );
     }
     
     /** 
@@ -368,10 +280,8 @@ class BIM_App_Challenges extends BIM_App_Base{
             $OK = false;
             if( $volley->is_private == 'N' ){
                 $volley->join( $userId, $imgUrl );
-                //BIM_Jobs_Challenges::queueProcessVolleyImages( $volley->id, $imgUrl );
-                $creator = BIM_Model_User::get($volley->creator->id );
                 $joiner = BIM_Model_User::get( $userId );
-                $this->doAcceptNotification($volley, $creator, $joiner);
+                BIM_Push::doVolleyAcceptNotification( $volley->id, $joiner->id );
             }
         }
         return $volley;        
@@ -395,9 +305,8 @@ class BIM_App_Challenges extends BIM_App_Base{
                 $volley->accept($userId, $imgUrl);
                 if( $userId != $volley->creator->id ){
                     $users = BIM_Model_User::getMulti(array( $volley->creator->id, $userId ), TRUE);
-                    $creator = $users[ $volley->creator->id ];
                     $joiner = $users[ $userId ];
-                    $this->doAcceptNotification($volley, $creator, $joiner);
+                    BIM_Push::doVolleyAcceptNotification( $volley->id, $joiner->id );
                 }
             }
         }
@@ -500,35 +409,13 @@ class BIM_App_Challenges extends BIM_App_Base{
     
     public static function reVolley( $volley ){
         $conf = BIM_Config::db();
-        
         $dao = new BIM_DAO_Mysql_User( $conf );
         $userId = $dao->getRandomUserId( array($volley->challenger_id, $volley->creator_id ) );
         if( $userId ){
-            $subject = self::getSubject($volley->subject_id);
             $challenger = BIM_Model_User::get( $userId );
-            $creator = BIM_Model_User::get( $volley->creator_id );
-            
             $dao = new BIM_DAO_Mysql_Volleys( $conf );
-            
             $dao->reVolley( $volley, $challenger );
-            
-            // send push if allowed
-            if ($challenger->notifications == "Y"){
-                 $private = $volley->is_private == 'Y' ? ' private' : '';
-                 $msg = "@$creator->username has sent you a$private Volley. $subject";
-                 
-                $push = array(
-                    //"device_tokens" =>  array( '66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035' ), 
-                    "device_tokens" =>  array( $challenger->device_token ), 
-                    "type" => "1", 
-                    "challenge" => $volley->id, 
-                    "aps" =>  array(
-                        "alert" =>  $msg,
-                        "sound" =>  "push_01.caf"
-                    )
-                );
-                BIM_Jobs_Utils::queuePush( $push );
-            }
+            BIM_Push::reVolleyPush( $volley->id, $challenger->id );
             echo "Volley $volley->id was re-vollied to $challenger->username : $challenger->id\n";
         }
     }
@@ -540,7 +427,8 @@ class BIM_App_Challenges extends BIM_App_Base{
      * 
      */
     public static function redistributeVolleys(){
-        $sql = "select id from `hotornot-dev`.tblChallenges where creator_id = 2394";
+        $teamVolleyId = BIM_Config::app()->team_volley_id;
+        $sql = "select id from `hotornot-dev`.tblChallenges where creator_id = $teamVolleyId";
         $dao = new BIM_DAO_Mysql( BIM_Config::db() );
         $stmt = $dao->prepareAndExecute( $sql );
         $challengeIds = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
@@ -561,7 +449,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             		and joined <= unix_timestamp('2013-08-12')
             		and challenge_id not in ( $placeHolders )
             		and user_id > 2500
-            		and user_id not in (2408,2454,2456,3932,2383,2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 1, 903)
+            		and user_id not in (2408,2454,2456,3932,2383,2390, 2391, 2392, 2393, $teamVolleyId, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 1, 903)
             	limit $limit
             ";
 		    array_unshift($challengeIdsForQuery, $challengeId);

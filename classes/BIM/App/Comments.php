@@ -24,34 +24,9 @@ class BIM_App_Comments extends BIM_App_Base{
 	 * @return An associative object for a challenge (array)
 	**/
     public function submitCommentForChallenge($volleyId, $userId, $text) {
-        
         $volley = BIM_Model_Volley::get($volleyId);
-        $commenter = BIM_Model_User::get($userId);
-        $creator = BIM_Model_User::get( $volley->creator->id );
         $comment = $volley->comment( $userId, $text );
-
-        $userIds = $volley->getUsers();
-	    $users = BIM_Model_User::getMulti( $userIds );
-	    
-	    $deviceTokens = array();
-	    foreach( $users as $user ){
-	        $deviceTokens[] = $user->device_token;
-	    }
-        
-		// send push if creator allows it
-		if ($creator->notifications == "Y" && $creator->id != $userId){
-            $msg = "$commenter->username has commented on your $volley->subject snap!";
-			$push = array(
-		    	"device_tokens" =>  $deviceTokens, 
-		    	"type" => "3", 
-		    	"aps" =>  array(
-		    		"alert" =>  $msg,
-		    		"sound" =>  "push_01.caf"
-		        )
-		    );
-    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
-		}
-		
+        BIM_Push::commentPush($userId, $volleyId);
 		return $comment;
 	}
 	

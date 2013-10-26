@@ -180,16 +180,26 @@ class BIM_Utils{
 	 * 
 	 * @param string $birthdate a date in the format: Y-m-d H:i:s
 	 */
-	public static function ageOK( $birthdate ){
-	    return true;
+	public static function ageOK( $userBirthdate ){
 	    $OK = false;
-        $birthdate = new DateTime( $birthdate );
-        $cutoffBirthdate = new DateTime();
-        $cutoffBirthdate->sub( new DateInterval('P20Y') );
-        if( $cutoffBirthdate < $birthdate ){
+        $userBirthdate = new DateTime( $userBirthdate );
+        
+        $youngBirthdate = new DateTime();
+        $youngBirthdate->sub( new DateInterval('P14Y') );
+        
+        $oldBirthdate = new DateTime();
+        $oldBirthdate->sub( new DateInterval('P20Y') );
+        
+        if( ( $userBirthdate < $youngBirthdate ) && ( $userBirthdate > $oldBirthdate ) ){
+            // if the users birthdate comes 
+            // BEFORE our youngest acceptable age
+            // AND
+            // if the users birthdate comes 
+            // AFTER our oldest acceptable age
             $OK = true;
         }
-	    return $OK;
+        
+        return $OK;
 	}
 	
 	public static function isProfiling(){

@@ -65,6 +65,25 @@ class BIM_Model_User{
         }
     }
     
+    public function isTeamVolleyUser(){
+    	$c = BIM_Config::app();
+    	return ($this->id == $c->team_volley_id);
+    }
+    
+    public function isSuperUser(){
+        $super = false;
+    	$c = BIM_Config::app();
+    	$isSuperAdId = !empty($c->super_users) && in_array($this->adid, $c->super_users );
+        if( $this->isTeamVolleyUser() || $isSuperAdId ){
+	        $super = true;
+	    }
+        return $super;
+    }
+    
+    public function ageOK(){
+        return BIM_Utils::ageOK($this->age);
+    }
+    
     public function isCelebrity(){
         return BIM_Utils::isCelebrity($this->id);
     }
