@@ -34,28 +34,18 @@ typedef enum {
 } EGOPullRefreshState;
 
 @protocol EGORefreshTableHeaderDelegate;
-@interface EGORefreshTableHeaderView : UIView {
-	
-	id _delegate;
-	EGOPullRefreshState _state;
-	UILabel *_statusLabel;
-	UIActivityIndicatorView *_activityIndicatorView;
-	float _headerOffset;
-}
-
+@interface EGORefreshTableHeaderView : UIView
 - (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset;
-
-@property(nonatomic,assign) id <EGORefreshTableHeaderDelegate> delegate;
-
-- (void)refreshLastUpdatedDate;
+- (id)initWithFrame:(CGRect)frame withScrollView:(UIScrollView *)scrollView includeHeaderOffset:(BOOL)isOffset;
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView;
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView;
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView;
 
+@property (nonatomic, assign) id <EGORefreshTableHeaderDelegate> delegate;
 @end
+
+
 @protocol EGORefreshTableHeaderDelegate
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view;
 - (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view;
-@optional
-- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view;
 @end

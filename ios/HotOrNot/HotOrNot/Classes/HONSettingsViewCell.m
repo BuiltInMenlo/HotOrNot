@@ -72,7 +72,7 @@
 		votesLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
 		[self addSubview:votesLabel];
 		
-		int points = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]) + ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+		int points = [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] + [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] + [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue];
 		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 124.0, 107.0, 30.0)];
 		pointsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		pointsLabel.textColor = [UIColor whiteColor];
@@ -106,7 +106,7 @@
 - (void)updateTopCell {
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-	int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+	int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] + [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue];
 	NSString *formattedScore = [numberFormatter stringFromNumber:[NSNumber numberWithInt:score]];
 	
 //	CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];

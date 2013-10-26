@@ -9,5 +9,4 @@
 #import <UIKit/UIKit.h>
 
 @interface HONRegisterViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>
-
 @end

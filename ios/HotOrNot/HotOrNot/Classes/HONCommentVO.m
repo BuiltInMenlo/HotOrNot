@@ -24,7 +24,7 @@
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarURL = [dictionary objectForKey:@"img_url"];
-	vo.userScore = [[dictionary objectForKey:@"score"] intValue] * [HONAppDelegate votePointMultiplier];
+	vo.userScore = [[dictionary objectForKey:@"score"] intValue];
 	vo.content = [dictionary objectForKey:@"text"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];

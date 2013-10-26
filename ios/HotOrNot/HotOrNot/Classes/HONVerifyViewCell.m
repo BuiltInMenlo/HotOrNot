@@ -54,26 +54,30 @@
 	
 //	NSLog(@"VERIFY RELOADING:[%@]", imageURL);
 	
-	__weak typeof(self) weakSelf = self;
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_challengeImageView.image = image;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_challengeImageView.alpha = 1.0; } completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+	};
+	
 	_challengeImageView = [[UIImageView alloc] initWithFrame:frame];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_challengeImageView];
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							   placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-								   weakSelf.challengeImageView.image = image;
-								   [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
-							   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-							   }];
+							   placeholderImage:nil
+										success:imageSuccessBlock
+										failure:imageFailureBlock];
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	__weak typeof(self) weakSelf = self;
-	
-	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 282.0)];
+	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyTableCellHeight)];
 	_imageHolderView.clipsToBounds = YES;
 	_imageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_imageHolderView];
@@ -93,67 +97,75 @@
 //	NSLog(@"FROM DB:[%@]", challengeVO.creatorVO.imagePrefix);
 //	NSLog(@"VERIFY LOADING:[%@]", avatarURL);
 	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_challengeImageView.image = image;
+		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_challengeImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[self _imageLoadFallback];
+	};
+	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-									weakSelf.challengeImageView.image = image;
-									[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
-								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-									[weakSelf _imageLoadFallback];
-								}];
+								placeholderImage:nil
+										success:successBlock
+										failure:failureBlock];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 128.0);
+	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
 	[self.contentView addSubview:gradientImageView];
 	
-//	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(134.0, 13.0, 90.0, 16.0)];
-//	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
-//	timeLabel.textColor = [UIColor whiteColor];
-//	timeLabel.backgroundColor = [UIColor clearColor];
-//	timeLabel.textAlignment = NSTextAlignmentRight;
-//	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-//	[self.contentView addSubview:timeLabel];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(255.0, 210.0, 49.0, 107.0)];
+	[self.contentView addSubview:buttonHolderView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 233.0, 150.0, 22.0)];
+	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	approveButton.frame = CGRectMake(0.0, 0.0, 49.0, 49.0);
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
+	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:approveButton];
+	
+	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	dispproveButton.frame = CGRectMake(0.0, 58.0, 49.0, 49.0);
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:dispproveButton];
+	
+	
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kHeroVolleyTableCellHeight - 56.0, 320.0, 53.0)];
+	[self.contentView addSubview:footerView];
+	
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 5.0, 150.0, 22.0)];
 	usernameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	usernameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = _challengeVO.creatorVO.username;
-	[self.contentView addSubview:usernameLabel];
+	[footerView addSubview:usernameLabel];
 	
 	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	usernameButton.frame = CGRectMake(10.0, 228.0, 150.0, 44.0);
+	usernameButton.frame = CGRectMake(10.0, 0.0, 150.0, 44.0);
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[usernameButton setTag:_challengeVO.creatorVO.userID];
-	[self.contentView addSubview:usernameButton];
+	[footerView addSubview:usernameButton];
 	
-	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 254.0, 260.0, 22.0)];
+	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 26.0, 260.0, 22.0)];
 	ageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	ageLabel.textColor = [UIColor colorWithWhite:0.898 alpha:1.0];
 	ageLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	ageLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	ageLabel.backgroundColor = [UIColor clearColor];
 	ageLabel.text = ([_challengeVO.creatorVO.birthday timeIntervalSince1970] == 0.0) ? @"hasn't set a birthday yet" : @"does this user look 13 to 19?";
-	[self.contentView addSubview:ageLabel];
+	[footerView addSubview:ageLabel];
+	
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
-	
-	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(255.0, 142.0, 49.0, 49.0);
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
-	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:approveButton];
-	
-	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(255.0, 200.0, 49.0, 49.0);
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:dispproveButton];
 }
 
 - (void)showTapOverlay {
@@ -161,7 +173,6 @@
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	[self.contentView addSubview:tappedOverlayView];
 	
-//	NSLog(@"OVERLAY:[%@]", NSStringFromCGRect(_tappedOverlayView.frame));
 	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		tappedOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {

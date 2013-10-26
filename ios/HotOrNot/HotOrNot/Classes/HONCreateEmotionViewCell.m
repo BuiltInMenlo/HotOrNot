@@ -8,23 +8,35 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONCameraSubjectViewCell.h"
+#import "HONCreateEmotionViewCell.h"
 
-@interface HONCameraSubjectViewCell()
+
+@interface HONCreateEmotionViewCell()
+@property (nonatomic, strong) HONEmotionVO *emotionVO;
 @property (nonatomic, strong) UIImageView *priceImageView;
 @end
 
-@implementation HONCameraSubjectViewCell
-
-@synthesize subject = _subject;
+@implementation HONCreateEmotionViewCell
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsEvenRow:(BOOL)isEven {
+- (id)initWithEmotion:(HONEmotionVO *)emotionVO AsEvenRow:(BOOL)isEven {
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:(0.15 * isEven)];
+		_emotionVO = emotionVO;
+		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 9.0, 44.0, 44.0)];
+		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.imageSmallURL] placeholderImage:nil];
+		[self.contentView addSubview:imageView];
+		
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 200.0, 24.0)];
+		label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:19];
+		label.textColor = [UIColor whiteColor];
+		label.backgroundColor = [UIColor clearColor];
+		label.text = _emotionVO.hastagName;
+		[self.contentView addSubview:label];
 		
 		_priceImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"freeButton_nonActive"]];
 		_priceImageView.frame = CGRectOffset(_priceImageView.frame, 245.0, 10.0);
@@ -34,21 +46,8 @@
 	return (self);
 }
 
-- (void)setSubject:(NSDictionary *)subject {
-	_subject = subject;
-	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 9.0, 44.0, 44.0)];
-	[imageView setImageWithURL:[NSURL URLWithString:[_subject objectForKey:@"img"]] placeholderImage:nil];
-	[self.contentView addSubview:imageView];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 200.0, 24.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:19];
-	label.textColor = [UIColor whiteColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = [_subject objectForKey:@"text"];
-	[self.contentView addSubview:label];
-}
 
+#pragma mark - UI Presentation
 - (void)showTapOverlay {
 	_priceImageView.image = [UIImage imageNamed:@"freeButton_Active"];
 	

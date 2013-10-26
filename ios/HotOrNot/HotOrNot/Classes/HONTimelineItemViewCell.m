@@ -13,22 +13,20 @@
 
 #import "HONTimelineItemViewCell.h"
 #import "HONImageLoadingView.h"
+#import "HONHeroFooterView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
 #import "HONOpponentVO.h"
 
 
-@interface HONTimelineItemViewCell()
+@interface HONTimelineItemViewCell() <HONHeroFooterViewDelegate>
 @property (nonatomic, strong) UIView *heroImageHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
-@property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) NSMutableArray *voters;
+@property (nonatomic, strong) HONHeroFooterView *heroFooterView;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
-@property (nonatomic) BOOL isChallengeCreator;
-@property (nonatomic) BOOL isChallengeOpponent;
-@property (nonatomic) int opponentCounter;
 
 @end
 
@@ -71,42 +69,19 @@
 		((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
 	}
 	
-	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
+	[_heroFooterView updateLikesCaption:(_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)]];
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	NSLog(@"CHALLENGE:[%d]", _challengeVO.challengeID);
-//	if (_challengeVO.challengeID == 21567)
-//		NSLog(@"DICT:[%@]", _challengeVO.dictionary);
-//	NSLog(@"CREATOR:(%@)[%f] CHALLENGER:(%@)[%f]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", _challengeVO.creatorVO.dictionary, [_challengeVO.creatorVO.joinedDate timeIntervalSinceNow], ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).dictionary, [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow]);
-	
 	_heroOpponentVO = _challengeVO.creatorVO;
 	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]) && !_challengeVO.isCelebCreated)
 		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
 				
-	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
-	_isChallengeOpponent = NO;
-	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.userID) {
-			_isChallengeOpponent = YES;
-			break;
-		}
-	}
-	
-	_opponentCounter = 0;
-	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix length] > 0)
-			_opponentCounter++;
-	}
-	
-	
 	__weak typeof(self) weakSelf = self;
 	
-	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
+	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyTableCellHeight)];
 	_heroImageHolderView.clipsToBounds = YES;
 	_heroImageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_heroImageHolderView];
@@ -138,7 +113,7 @@
 	[self addGestureRecognizer:lpGestureRecognizer];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 216.0);
+	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
 	[self.contentView addSubview:gradientImageView];
 	
 	
@@ -149,84 +124,9 @@
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:joinButton];
 	
-	
-	NSMutableArray *opponentIDs = [NSMutableArray array];
-	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		if ([vo.imagePrefix length] > 0) {
-			BOOL isFound = NO;
-			for (NSNumber *userID in opponentIDs) {
-				if ([userID intValue] == vo.userID) {
-					isFound = YES;
-					break;
-				}
-			}
-			
-			if (!isFound)
-				[opponentIDs addObject:[NSNumber numberWithInt:vo.userID]];
-		}
-	}
-	
-	NSString *participants = _heroOpponentVO.username;
-	int uniqueOpponents = ([opponentIDs count] - (int)_isChallengeOpponent) - 1;
-	if ((_isChallengeCreator && _isChallengeOpponent) || (!_isChallengeCreator && !_isChallengeOpponent)) {
-		if (_challengeVO.creatorVO.userID == _heroOpponentVO.userID)
-			participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@ and %d other%@", _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
-		
-		else
-			participants = (uniqueOpponents > 1) ? [NSString stringWithFormat:@"%@, %@ and %d other%@", _heroOpponentVO.username, _challengeVO.creatorVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : _challengeVO.creatorVO.username;
-	}
-	
-	if (!_isChallengeCreator && _isChallengeOpponent)
-		participants = (uniqueOpponents > 0) ? [NSString stringWithFormat:@"%@, you and %d other%@", _heroOpponentVO.username, uniqueOpponents, (uniqueOpponents == 1) ? @"" : @"s"] : [NSString stringWithFormat:@"%@ and %@", _heroOpponentVO.username, _challengeVO.creatorVO.username];
-	
-	if ([_challengeVO.challengers count] == 0)
-		participants = _challengeVO.creatorVO.username;
-	
-	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 320.0, 320.0, 44.0)];
-	[self.contentView addSubview:footerHolderView];
-	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 3.0, 290.0, 19.0)];
-	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
-	creatorNameLabel.textColor = [UIColor whiteColor];
-	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = participants;
-	[footerHolderView addSubview:creatorNameLabel];
-	
-	UIButton *heroButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	heroButton.frame = creatorNameLabel.frame;
-	[heroButton addTarget:self action:@selector(_goHeroProfile) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:heroButton];
-	
-	//CGSize size = [creatorNameLabel.text sizeWithFont:creatorNameLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 21.0, 270.0, 23.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17];
-	subjectLabel.textColor = [UIColor whiteColor];
-	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _challengeVO.subjectName;
-	[footerHolderView addSubview:subjectLabel];
-	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(249.0, 18.0, 40.0, 19.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-	_likesLabel.textColor = [UIColor whiteColor];
-	_likesLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-	_likesLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.textAlignment = NSTextAlignmentRight;
-	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
-	[footerHolderView addSubview:_likesLabel];
-	
-	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(290.0, 16.0, 24.0, 24.0);
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
-	[footerHolderView addSubview:likesButton];
-	
-	NSLog(@"TIMELINE:[%d]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue]);
+	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:320.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
+	_heroFooterView.delegate = self;
+	[self.contentView addSubview:_heroFooterView];
 	
 	UIImageView *tapHoldImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tapHoldOverlay_nonActive"]];
 	tapHoldImageView.hidden = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0;
@@ -235,10 +135,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goMore {
-	
-}
-
 - (void)_goDetails {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
@@ -251,10 +147,6 @@
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
 	}];
-}
-
-- (void)_goHeroProfile {
-	[self.delegate timelineItemViewCell:self showProfileForUserID:_heroOpponentVO.userID forChallenge:_challengeVO];
 }
 
 - (void)_goJoinChallenge {
@@ -283,9 +175,7 @@
 - (void)_reloadHeroImage {
 	__weak typeof(self) weakSelf = self;
 	
-	//HONOpponentVO *vo = (_opponentCounter == 0) ? _challengeVO.creatorVO : (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
-	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 370.0, 370.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, kHeroVolleyTableCellHeight, kHeroVolleyTableCellHeight)];
 	_heroImageView.alpha = 0.0;
 	[_heroImageHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
@@ -324,12 +214,12 @@
 	}];
 }
 
-- (int)_calcScore {
-	int score = _challengeVO.creatorVO.score;
-	for (HONOpponentVO *vo in _challengeVO.challengers)
-		score += vo.score;
+
+#pragma mark - HeroFooterView Delegates
+- (void)heroFooterView:(HONHeroFooterView *)heroFooterView showProfile:(HONOpponentVO *)heroOpponentVO {
+	NSLog(@"heroFooterView:showProfile");
 	
-	return (score);
+	[self.delegate timelineItemViewCell:self showProfileForUserID:heroOpponentVO.userID forChallenge:_challengeVO];
 }
 
 

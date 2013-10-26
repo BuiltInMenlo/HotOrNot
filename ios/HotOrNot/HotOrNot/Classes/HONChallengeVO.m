@@ -69,6 +69,7 @@
 	}
 	
 	vo.creatorVO = [HONOpponentVO opponentWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+														  vo.subjectName, @"subject",
 														  [[dictionary objectForKey:@"creator"] objectForKey:@"id"], @"id",
 														  [[dictionary objectForKey:@"creator"] objectForKey:@"fb_id"], @"fb_id",
 														  [[dictionary objectForKey:@"creator"] objectForKey:@"username"], @"username",
@@ -80,7 +81,9 @@
 	
 	vo.challengers = [NSMutableArray array];
 	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {
-		[vo.challengers addObject:[HONOpponentVO opponentWithDictionary:challenger]];
+		NSMutableDictionary *dictMod = [NSMutableDictionary dictionaryWithDictionary:challenger];
+		[dictMod setObject:vo.subjectName forKey:@"subject"];
+		[vo.challengers addObject:[HONOpponentVO opponentWithDictionary:dictMod]];
 	}
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorAvatar, vo.challengerAvatar);

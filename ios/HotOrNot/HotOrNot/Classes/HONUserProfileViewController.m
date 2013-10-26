@@ -7,7 +7,8 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import <Twitter/TWTweetComposeViewController.h>
+#import <Social/SLComposeViewController.h>
+#import <Social/SLServiceTypes.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -23,21 +24,25 @@
 #import "HONPopularViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
+#import "HONUserProfileGridView.h"
 #import "HONOpponentVO.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
+#import "HONEmotionVO.h"
 
 #import "HONSubscribeesViewController.h"
 #import "HONSubscribersViewController.h"
 
 
-@interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate>
+@interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONBasicParticipantGridViewDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
+@property (nonatomic, strong) HONUserProfileGridView *profileGridView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *avatarHolderView;
@@ -116,10 +121,10 @@
 				_userVO = [HONUserVO userWithDictionary:userResult];
 				
 				if (isRefresh) {
-					[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+					[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.avatarURL] placeholderImage:nil];
 					
 					_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-					_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+					_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
 					_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 				
 				} else
@@ -161,7 +166,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			_followingCounter = [result count];
-			[self _makeUI];
+			[self _retrieveChallenges];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -203,7 +208,8 @@
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapMediumDim * ( ( [_challenges count] / 4) + 1) )));
+			[self _makeUI];
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapThumbSize.height * ( ( [_challenges count] / 4) + 1) )));
 			[self _makeGrid];
 		}
 		
@@ -309,9 +315,9 @@
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.25;
-	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	lpGestureRecognizer.minimumPressDuration = 0.25;
+//	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
 	//	_refreshTableHeaderView.delegate = self;
@@ -514,13 +520,12 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
-	[actionSheet setTag:1];
-	[actionSheet showInView:self.view];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"		 : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _userVO.username],
+																							@"image"		   : _avatarImageView.image,
+																							@"url"			 : @"",
+																							@"mp_event"		: @"Timeline Details",
+																							@"view_controller" : self}];
 }
 
 - (void)_goSettings {
@@ -571,14 +576,14 @@
 		HONOpponentVO *opponentVO = nil;
 		
 		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
-			int col = touchPoint.x / (kSnapMediumDim + 1.0);
-			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
+			int col = touchPoint.x / (kSnapThumbSize.width + 1.0);
+			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapThumbSize.height + 1.0);
 			
-            int idx = (row * 4) + col;
-            if(idx < [_challengeImages count]){
-                opponentVO = [_challengeImages objectAtIndex:idx][0];
-                challengeVO = [_challengeImages objectAtIndex:idx][1];
-            }
+			int idx = (row * 4) + col;
+			if(idx < [_challengeImages count]){
+				opponentVO = [_challengeImages objectAtIndex:idx][0];
+				challengeVO = [_challengeImages objectAtIndex:idx][1];
+			}
 		}
 		
 		if (opponentVO != nil) {
@@ -621,7 +626,7 @@
 	__weak typeof(self) weakSelf = self;
 	
 	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
-	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
+	NSMutableString *imageURL = [_userVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136_o.jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -114.0, imageSize.width, imageSize.height);
@@ -638,7 +643,7 @@
 								 weakSelf.avatarImageView.image = image;
 								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								 NSLog(@"%@", weakSelf.userVO.imageURL);
+								 NSLog(@"%@", weakSelf.userVO.avatarURL);
 							 }];
 }
 
@@ -670,7 +675,7 @@
 	[imageLoadingView startAnimating];
 	[_avatarHolderView addSubview:imageLoadingView];
 	
-	NSMutableString *imageURL = [_userVO.imageURL mutableCopy];
+	NSMutableString *imageURL = [_userVO.avatarURL mutableCopy];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	CGRect frame = CGRectMake(0.0, -122.0, 320.0, 568.0);
@@ -689,6 +694,55 @@
 								[weakSelf _reloadAvatarImage];
 							}];
 	[_avatarHolderView addSubview:_avatarImageView];
+	
+	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];;
+	if (_userVO.userID == newestChallenge.creatorVO.userID)
+		_heroOpponentVO = newestChallenge.creatorVO;
+	
+	NSLog(@"newestChallenge:[%@]", newestChallenge.dictionary);
+	
+	for (HONOpponentVO *vo in newestChallenge.challengers) {
+		NSLog(@"opponent:[%@]", vo.dictionary);
+		if (_userVO.userID == vo.userID) {
+			_heroOpponentVO = vo;
+			break;
+		}
+	}
+	
+	
+	BOOL isEmotionFound = NO;
+	HONEmotionVO *emotionVO;
+	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
+		if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
+			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+			isEmotionFound = YES;
+			break;
+		}
+	}
+	
+	for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
+		if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
+			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+			isEmotionFound = YES;
+			break;
+		}
+	}
+	
+	if (isEmotionFound) {
+		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 278.0, 43.0, 43.0)];
+		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
+		[_scrollView addSubview:emoticonImageView];
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0 + (((int)isEmotionFound) * 32.0), 288.0, 250.0, 22.0)];
+		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+		subjectLabel.textColor = [UIColor whiteColor];
+		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		subjectLabel.backgroundColor = [UIColor clearColor];
+		subjectLabel.text = _heroOpponentVO.subjectName;
+		[_scrollView addSubview:subjectLabel];
+	}
+	
 	
 	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	profilePicButton.frame = CGRectMake(270.0, 278.0, 44.0, 44.0);
@@ -720,7 +774,7 @@
 	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
-	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_volleysLabel];
 	
 	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 470.0, 260.0, 30.0)];
@@ -810,66 +864,72 @@
 								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 								  [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
 	}
-	
-	[self _retrieveChallenges];
 }
 
 - (void)_makeGrid {
-    _challengeImages = [NSMutableArray new];
-    NSInteger gridCount = 0;
-    for (HONChallengeVO *vo in _challenges) {
-        if( _userVO.userID == vo.creatorVO.userID ){
-            gridCount++;
-            NSMutableArray *dataArray = [NSMutableArray new];
-            [dataArray addObject:vo.creatorVO];
-            [dataArray addObject:vo];
-            [_challengeImages addObject:dataArray];
-        }
-        for (HONOpponentVO *challenger in vo.challengers) {
-            if( _userVO.userID == challenger.userID ){
-                gridCount++;
-                NSMutableArray *dataArray = [NSMutableArray new];
-                [dataArray addObject:challenger];
-                [dataArray addObject:vo];
-                [_challengeImages addObject:dataArray];
-            }
-        }
-    }
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapMediumDim * (( (int) gridCount / 4) + 1))];
-	_gridHolderView.backgroundColor = [UIColor clearColor];
-	[_scrollView addSubview:_gridHolderView];
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:529.0 forChallenges:_challenges asPrimaryOpponent:_heroOpponentVO];
+	_profileGridView.delegate = self;
+	[_scrollView addSubview:_profileGridView];
 	
-	_challengeCounter = 0;
-	for (HONChallengeVO *vo in _challenges) {
-        if( _userVO.userID == vo.creatorVO.userID ){
-            [self _makeGridElement:vo.creatorVO];
-        }
-        for (HONOpponentVO *challenger in vo.challengers) {
-            if( _userVO.userID == challenger.userID ){
-                [self _makeGridElement:challenger];
-            }
-        }
-	}
+	
+//	_challengeImages = [NSMutableArray new];
+//	NSInteger gridCount = 0;
+//	for (HONChallengeVO *vo in _challenges) {
+//		if (_userVO.userID == vo.creatorVO.userID ) {
+//			gridCount++;
+//			NSMutableArray *dataArray = [NSMutableArray new];
+//			[dataArray addObject:vo.creatorVO];
+//			[dataArray addObject:vo];
+//			[_challengeImages addObject:dataArray];
+//		}
+//		
+//		for (HONOpponentVO *challenger in vo.challengers) {
+//			if (_userVO.userID == challenger.userID ) {
+//				gridCount++;
+//				NSMutableArray *dataArray = [NSMutableArray new];
+//				[dataArray addObject:challenger];
+//				[dataArray addObject:vo];
+//				[_challengeImages addObject:dataArray];
+//			}
+//		}
+//	}
+//	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapThumbSize.height * (( (int) gridCount / 4) + 1))];
+//	_gridHolderView.backgroundColor = [UIColor clearColor];
+//	[_scrollView addSubview:_gridHolderView];
+//	
+//	_challengeCounter = 0;
+//	for (HONChallengeVO *vo in _challenges) {
+//		if (_userVO.userID == vo.creatorVO.userID) {
+//			[self _makeGridElement:vo.creatorVO];
+//		}
+//		
+//		for (HONOpponentVO *challenger in vo.challengers) {
+//			if (_userVO.userID == challenger.userID ) {
+//				[self _makeGridElement:challenger];
+//			}
+//		}
+//	}
 }
 
 -(void)_makeGridElement:(HONOpponentVO *)challenger {
-    CGPoint pos = CGPointMake(kSnapMediumDim * (_challengeCounter % 4), kSnapMediumDim * (_challengeCounter / 4));
-    
-    UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
-    [_gridHolderView addSubview:imageHolderView];
-    
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-    imageView.userInteractionEnabled = YES;
-    [imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", challenger.imagePrefix]] placeholderImage:nil];
-    [imageHolderView addSubview:imageView];
-    
-    UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    tapHoldButton.frame = imageView.frame;
-    [tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
-    [imageHolderView addSubview:tapHoldButton];
-    _challengeCounter++;
-    
+	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_challengeCounter % 4), kSnapThumbSize.height * (_challengeCounter / 4));
+	
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
+	[_gridHolderView addSubview:imageHolderView];
+	
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
+	imageView.userInteractionEnabled = YES;
+	[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", challenger.imagePrefix]] placeholderImage:nil];
+	[imageHolderView addSubview:imageView];
+	
+	UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	tapHoldButton.frame = imageView.frame;
+	[tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
+	[imageHolderView addSubview:tapHoldButton];
+	_challengeCounter++;
+	
 }
+
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -881,6 +941,19 @@
 }
 
 
+#pragma mark - GridView Delegates
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:YES];
+	_snapPreviewViewController.delegate = self;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+}
+
+- (void)participantGridViewPreviewShowControls:(HONBasicParticipantGridView *)participantGridView {
+	[_snapPreviewViewController showControls];
+}
+
+
 //#pragma mark - RefreshTableHeader Delegates
 //- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
 //	[self _goRefresh];
@@ -888,10 +961,6 @@
 //
 //- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
 //	return (_isRefreshing);
-//}
-//
-//- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-//	return ([NSDate date]);
 //}
 
 
@@ -1016,98 +1085,6 @@
 			}];
 		}
 	}
-}
-
-
-#pragma mark - ActionSheet Delegates
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 0) {
-			if ([TWTweetComposeViewController canSendTweet]) {
-				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
-				
-				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _userVO.username]];
-				[tweetViewController addImage:_avatarImageView.image];
-//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
-				[self presentViewController:tweetViewController animated:YES completion:nil];
-				
-				// check on this part using blocks. no more delegates? :)
-				tweetViewController.completionHandler = ^(TWTweetComposeViewControllerResult res) {
-					if (res == TWTweetComposeViewControllerResultDone) {
-					} else if (res == TWTweetComposeViewControllerResultCancelled) {
-					}
-					
-					[tweetViewController dismissViewControllerAnimated:YES completion:nil];
-				};
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:@"Cannot use Twitter from this device!"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			}
-			
-		} else if (buttonIndex == 1) {
-			NSString *instaURL = @"instagram://app";
-			NSString *instaFormat = @"com.instagram.exclusivegram";
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
-			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-															  avatarImage:[HONImagingDepictor cropImage:_avatarImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
-																 username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-			
-			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
-				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-				_documentInteractionController.UTI = instaFormat;
-				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], @"#profile", _userVO.username] forKey:@"InstagramCaption"];
-				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize instagram"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			}
-		}
-	}
-}
-
-
-#pragma mark - DocumentInteraction Delegates
-- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [controller name], @"controller", nil]];
-}
-
-- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [controller name], @"controller", nil]];
-}
-
-- (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [controller name], @"controller", nil]];
-}
-
-- (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [controller name], @"controller", nil]];
 }
 
 @end

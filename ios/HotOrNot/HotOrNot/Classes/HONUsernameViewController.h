@@ -8,5 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUsernameViewController : UIViewController
+@interface HONUsernameViewController : UIViewController <UITextFieldDelegate>
 @end

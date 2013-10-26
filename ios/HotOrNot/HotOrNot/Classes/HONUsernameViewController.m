@@ -14,7 +14,7 @@
 #import "HONHeaderView.h"
 
 
-@interface HONUsernameViewController () <UITextFieldDelegate>
+@interface HONUsernameViewController ()
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;

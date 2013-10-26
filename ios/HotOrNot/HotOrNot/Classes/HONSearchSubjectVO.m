@@ -6,15 +6,15 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONSubjectVO.h"
+#import "HONSearchSubjectVO.h"
 
-@implementation HONSubjectVO
+@implementation HONSearchSubjectVO
 
 @synthesize dictionary;
 @synthesize subjectID, subjectName, score, actives;
 
-+ (HONSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
-	HONSubjectVO *vo = [[HONSubjectVO alloc] init];
++ (HONSearchSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
+	HONSearchSubjectVO *vo = [[HONSearchSubjectVO alloc] init];
 	vo.dictionary = dictionary;
 	
 	vo.subjectID = [[dictionary objectForKey:@"id"] intValue];

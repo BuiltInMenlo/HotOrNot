@@ -40,7 +40,7 @@
 	_userVO = userVO;
 	
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 38.0, 38.0)];
-	[userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	[userImageView setImageWithURL:[NSURL URLWithString:_userVO.avatarURL] placeholderImage:nil];
 	[self addSubview:userImageView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 24.0, 200.0, 20.0)];

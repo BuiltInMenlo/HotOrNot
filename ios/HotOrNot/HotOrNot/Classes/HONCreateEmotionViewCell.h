@@ -8,11 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONUserVO.h"
+#import "HONEmotionVO.h"
 
-@interface HONCameraSubjectViewCell : UITableViewCell
+@interface HONCreateEmotionViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
-- (id)initAsEvenRow:(BOOL)isEven;
+- (id)initWithEmotion:(HONEmotionVO *)emotionVO AsEvenRow:(BOOL)isEven;
 - (void)showTapOverlay;
-@property (nonatomic, retain) NSDictionary *subject;
 @end

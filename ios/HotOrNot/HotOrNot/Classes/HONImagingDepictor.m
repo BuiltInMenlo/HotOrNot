@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "AFImageRequestOperation.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImage+Pixels.h"
@@ -99,7 +101,7 @@
 	unsigned char* pixels = [image rgbaPixels];
 	
 	double luminance = 0.0;
-	for(int p=0; p<image.size.width * image.size.height * 4; p+=4)
+	for (int p=0; p<image.size.width * image.size.height * 4; p+=4)
 		luminance += pixels[p] * 0.299 + pixels[p+1] * 0.587 + pixels[p+2] * 0.114;
 	
 	luminance /= (image.size.width * image.size.height);

@@ -135,7 +135,7 @@
 																			   [NSString stringWithFormat:@"%d", 0], @"age",
 																			   vo.username, @"username",
 																			   vo.fbID, @"fb_id",
-																			   vo.imageURL, @"avatar_url", nil]]];
+																			   vo.avatarURL, @"avatar_url", nil]]];
 						[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
 					}
 				}
@@ -320,8 +320,20 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+				[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
+					_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
+					_previewView.delegate = self;
+					_previewView.isFirstCamera = _isFirstCamera;
+					_previewView.isJoinChallenge = (_volleySubmitType == HONVolleySubmitTypeJoin);
+					[_previewView showKeyboard];
+					
+					[self.view addSubview:_previewView];
+				}];
+			}
 		}
 		
 		if (_progressHUD != nil) {
@@ -495,7 +507,7 @@
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Flip Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
@@ -507,7 +519,7 @@
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Back"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_uploadCounter = 0;
 	[_por.urlConnection cancel];
@@ -518,7 +530,7 @@
 	NSLog(@"cameraOverlayViewCloseCamera");
 	[[Mixpanel sharedInstance] track:@"Create Volley - Cancel"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_uploadCounter = 0;
 	[_por.urlConnection cancel];
@@ -534,7 +546,7 @@
 - (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
@@ -552,7 +564,7 @@
 	
 	[[Mixpanel sharedInstance] track:@"Create Volley - Retake Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_uploadCounter = 0;
 	[_por.urlConnection cancel];
@@ -571,20 +583,21 @@
 - (void)previewViewClose:(HONCreateChallengePreviewView *)previewView {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_uploadCounter = 0;
 	[_por.urlConnection cancel];
 	_por = nil;
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+//	[self dismissViewControllerAnimated:NO completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Submit"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_hasSubmitted = NO;
 	int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
@@ -603,8 +616,8 @@
 		[alertView show];
 		
 	} else {
-		if ([_subjectName length] == 0)
-			_subjectName = [[HONAppDelegate defaultSubjects] objectAtIndex:(arc4random() % [[HONAppDelegate defaultSubjects] count])];
+//		if ([_subjectName length] == 0)
+//			_subjectName = [[HONAppDelegate defaultSubjects] objectAtIndex:(arc4random() % [[HONAppDelegate defaultSubjects] count])];
 		
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
@@ -729,14 +742,15 @@
 	for (HONUserVO *vo in _subscribers)
 		[_usernames addObject:vo.username];
 	
-
-	_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
-	_previewView.delegate = self;
-	_previewView.isFirstCamera = _isFirstCamera;
-	_previewView.isJoinChallenge = (_volleySubmitType == HONVolleySubmitTypeJoin);
-	[_previewView showKeyboard];
-	
-	[_cameraOverlayView submitStep:_previewView];
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
+		_previewView.delegate = self;
+		_previewView.isFirstCamera = _isFirstCamera;
+		_previewView.isJoinChallenge = (_volleySubmitType == HONVolleySubmitTypeJoin);
+		[_previewView showKeyboard];
+		
+		[_cameraOverlayView submitStep:_previewView];
+	}
 	
 	[self _uploadPhotos];
 	
@@ -775,7 +789,7 @@
 		
 		[[Mixpanel sharedInstance] track:@"Create Volley - Promote Instagram"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		[self performSelector:@selector(_sendToInstagram) withObject:Nil afterDelay:2.0];
 	}
@@ -792,7 +806,7 @@
 																[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _subjectName, [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
 																[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
 																							avatarImage:[HONAppDelegate avatarImage]
-																							   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
+																							   username:[[HONAppDelegate infoForUser] objectForKey:@"username"]], @"image", nil]];
 }
 
 

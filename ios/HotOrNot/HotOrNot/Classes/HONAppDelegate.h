@@ -13,9 +13,9 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 0
+#define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
-#define __ALWAYS_VERIFY__ 0
+#define __RESET_TOTALS__ 0
 
 
 // api endpts
@@ -49,6 +49,7 @@ extern NSString * const kAPIJoinChallenge;
 extern NSString * const kAPIGetVerifyList;
 extern NSString * const kAPIProcessChallengeImage;
 extern NSString * const kAPIProcessUserImage;
+extern NSString * const kAPISuspendedAccount;
 
 
 // view heights
@@ -56,7 +57,7 @@ const CGFloat kNavBarHeaderHeight;
 const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
-const CGSize kTabSize;
+const CGFloat kHeroVolleyTableCellHeight;
 
 // snap params
 const CGFloat kMinLuminosity;
@@ -69,14 +70,13 @@ const CGFloat kHUDErrorTime;
 const CGFloat kProfileTime;
 
 // image sizes
-const CGFloat kSnapThumbDim;
-const CGFloat kSnapMediumDim;
-const CGFloat kSnapLargeDim;
+const CGSize kSnapThumbSize;
+const CGSize kSnapMediumSize;
+const CGSize kSnapLargeSize;
 const CGFloat kAvatarDim;
 
 
 const BOOL kIsImageCacheEnabled;
-const NSUInteger kRecentOpponentsDisplayTotal;
 extern NSString * const kTwilioSMS;
 
 
@@ -96,9 +96,7 @@ extern NSString * const kTwilioSMS;
 
 + (NSString *)s3BucketForType:(NSString *)bucketType;
 
-+ (int)createPointMultiplier;
-+ (int)votePointMultiplier;
-+ (int)pokePointMultiplier;
++ (NSRange)ageRange;
 
 + (int)profileSubscribeThreshold;
 
@@ -112,7 +110,8 @@ extern NSString * const kTwilioSMS;
 + (NSString *)twitterShareComment;
 + (NSString *)instagramShareComment;
 
-+ (NSArray *)defaultSubjects;
++ (NSArray *)composeEmotions;
++ (NSArray *)replyEmotions;
 
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
@@ -192,3 +191,6 @@ extern NSString * const kTwilioSMS;
 @property (strong, nonatomic) UITabBarController *tabBarController;
 
 @end
+
+
+// [UIColor colorWithRed:0.761 green:0.340 blue:0.846 alpha:0.5];

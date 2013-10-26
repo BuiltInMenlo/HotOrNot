@@ -14,6 +14,7 @@
 
 typedef int (*PYStdWriter)(void *, const char *, int);
 static PYStdWriter _oldStdWrite;
+int __pyStderrWrite(void *inFD, const char *buffer, int size);
 
 int __pyStderrWrite(void *inFD, const char *buffer, int size)
 {

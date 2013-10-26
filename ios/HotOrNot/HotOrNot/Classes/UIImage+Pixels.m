@@ -39,7 +39,8 @@
 	unsigned char* bitmapData = (unsigned char*) malloc(bytesPerRow*self.size.height);
 	
 	// Create the bitmap context, we set the alpha to none here to tell the bitmap we don't care about alpha values
-	CGContextRef context = CGBitmapContextCreate(bitmapData,self.size.width,self.size.height,BITS_PER_COMPONENT,bytesPerRow,colourSpace,kCGImageAlphaNone);
+//	CGContextRef context = CGBitmapContextCreate(bitmapData,self.size.width,self.size.height,BITS_PER_COMPONENT,bytesPerRow,colourSpace,kCGImageAlphaNone);
+	CGContextRef context = CGBitmapContextCreate(bitmapData,self.size.width,self.size.height,BITS_PER_COMPONENT,bytesPerRow,colourSpace,(CGBitmapInfo)kCGImageAlphaNone);
 	
 	// We are done with the colour space now so no point in keeping it around
 	CGColorSpaceRelease(colourSpace);

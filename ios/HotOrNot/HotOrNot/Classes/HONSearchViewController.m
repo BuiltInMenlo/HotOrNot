@@ -13,7 +13,7 @@
 #import "HONSearchViewController.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
-#import "HONSubjectVO.h"
+#import "HONSearchSubjectVO.h"
 #import "HONSearchSubjectViewCell.h"
 #import "HONSearchUserViewCell.h"
 #import "HONUserProfileViewController.h"
@@ -298,7 +298,7 @@
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedSubjects) {
-				HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:serverList];
+				HONSearchSubjectVO *vo = [HONSearchSubjectVO subjectWithDictionary:serverList];
 				
 				if (vo != nil)
 					[_results addObject:vo];
@@ -476,7 +476,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:vo.username];
 		
 	} else {
-		HONSubjectVO *vo = (HONSubjectVO *)[_results objectAtIndex:indexPath.row];
+		HONSearchSubjectVO *vo = (HONSearchSubjectVO *)[_results objectAtIndex:indexPath.row];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:vo.subjectName];
 	}
 }

@@ -17,7 +17,7 @@
 	return (NSStringFromClass(self));
 }
 
-- (void)setSubjectVO:(HONSubjectVO *)subjectVO {
+- (void)setSubjectVO:(HONSearchSubjectVO *)subjectVO {
 	_subjectVO = subjectVO;
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 18.0, 200.0, 16.0)];

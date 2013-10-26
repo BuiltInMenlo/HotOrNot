@@ -243,6 +243,7 @@
 				mailComposeViewController.mailComposeDelegate = self;
 				//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
 				[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				[mailComposeViewController.view setTag:0];
 				
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
@@ -277,6 +278,7 @@
 				[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
 				[mailComposeViewController setSubject:@"Change My Email Address"];
 				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				[mailComposeViewController.view setTag:1];
 				
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
@@ -297,6 +299,7 @@
 			if ([MFMailComposeViewController canSendMail]) {
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				mailComposeViewController.mailComposeDelegate = self;
+				[mailComposeViewController.view setTag:2];
 				[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
 				[mailComposeViewController setSubject:@"Change My Email Address"];
 				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your birthday change here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
@@ -359,52 +362,74 @@
 
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	
+	NSString *mpAction = @"";
 	switch (result) {
 		case MessageComposeResultCancelled:
-			NSLog(@"SMS: canceled");
+			mpAction = @"Canceled";
 			break;
 			
 		case MessageComposeResultSent:
-			NSLog(@"SMS: sent");
+			mpAction = @"Sent";
 			break;
 			
 		case MessageComposeResultFailed:
-			NSLog(@"SMS: failed");
+			mpAction = @"Failed";
 			break;
 			
 		default:
-			NSLog(@"SMS: not sent");
+			mpAction = @"Not Sent";
 			break;
 	}
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Invite via SMS Message %@", mpAction]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
-#pragma mark - MessageCompose Delegates
+#pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+	
+	NSString *mpEvent = @"";
+	if (controller.view.tag == 0) {
+		mpEvent = @"Invite via Email";
+	
+	} else if (controller.view.tag == 1) {
+		mpEvent = @"Change Email";
+		
+	} else if (controller.view.tag == 3) {
+		mpEvent = @"Change Birthday";
+	}
+	
+	NSString *mpAction = @"";
 	switch (result) {
 		case MFMailComposeResultCancelled:
-			NSLog(@"EMAIL: canceled");
+			mpAction = @"Canceled";
 			break;
 			
 		case MFMailComposeResultFailed:
-			NSLog(@"EMAIL: failed");
+			mpAction = @"Failed";
 			break;
 			
 		case MFMailComposeResultSaved:
-			NSLog(@"EMAIL: saved");
+			mpAction = @"Saved";
 			break;
 			
 		case MFMailComposeResultSent:
-			NSLog(@"EMAIL: sent");
+			mpAction = @"Sent";
 			break;
 			
 		default:
-			NSLog(@"EMAIL: not sent");
+			mpAction = @"Not Sent";
 			break;
 	}
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - %@ Message %@", mpEvent, mpAction]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }

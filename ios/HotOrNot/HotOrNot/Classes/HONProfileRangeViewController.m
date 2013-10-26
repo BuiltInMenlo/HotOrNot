@@ -86,7 +86,7 @@
 			
 			[[Mixpanel sharedInstance] track:@"Register - Submit"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 			
 			NSMutableArray *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
 			[userInfo setValue:[NSString stringWithFormat:@"%d", _ageRangeType] forKey:@"age"];
@@ -168,7 +168,7 @@
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Register - Submit Range"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d", _ageRangeType], @"range", nil]];
 	
 	[self _submitAgeRange];
@@ -198,7 +198,7 @@
 	
 	[[Mixpanel sharedInstance] track:@"Register - Change Range"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d", _ageRangeType], @"range", nil]];
 	
 	_birthdayLabel.text = [_ranges objectAtIndex:row];

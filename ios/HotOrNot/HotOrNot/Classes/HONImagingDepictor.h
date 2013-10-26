@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <QuartzCore/QuartzCore.h>
 
 @interface HONImagingDepictor : NSObject
 + (UIImage *)createImageFromView:(UIView *)view;

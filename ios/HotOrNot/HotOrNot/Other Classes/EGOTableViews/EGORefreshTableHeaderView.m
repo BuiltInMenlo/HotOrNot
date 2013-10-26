@@ -22,32 +22,59 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
+
+//
+//  HONAppDelegate.h
+//  HotOrNot
+//
+//  Created by Matthew Holcombe on 09.06.12.
+//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//
+
 //
 
 #import "EGORefreshTableHeaderView.h"
-#import "HONAppDelegate.h"
 
-#define TEXT_COLOR	 [UIColor blackColor]
-#define FLIP_ANIMATION_DURATION 0.18f
+#define kHeaderOffset 64.0f
+#define kLoadingTheshold 40.0f
 
 
-@interface EGORefreshTableHeaderView (Private)
-- (void)setState:(EGOPullRefreshState)aState;
+@interface EGORefreshTableHeaderView ()
+@property (nonatomic) EGOPullRefreshState state;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic) CGFloat headerOffset;
+@property (nonatomic) BOOL isLoading;
 @end
 
 @implementation EGORefreshTableHeaderView
-
 @synthesize delegate = _delegate;
 
-
-- (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset {
+- (id)initWithFrame:(CGRect)frame withScrollView:(UIScrollView *)scrollView includeHeaderOffset:(BOOL)isOffset {
 	if (self = [super initWithFrame:frame]) {
-		_headerOffset = isOffset * 64.0;
+		_scrollView = scrollView;
+		_headerOffset = isOffset * kHeaderOffset;
 		
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - 40.0, 24.0, 24.0);
+		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - kLoadingTheshold, 24.0, 24.0);
+		[self addSubview:_activityIndicatorView];
+		
+		[self setState:EGOOPullRefreshNormal];
+	}
+	
+	return (self);
+}
+
+- (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset {
+	if (self = [super initWithFrame:frame]) {
+		_headerOffset = isOffset * kHeaderOffset;
+		
+		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - kLoadingTheshold, 24.0, 24.0);
 		[self addSubview:_activityIndicatorView];
 		
 		[self setState:EGOOPullRefreshNormal];
@@ -57,34 +84,10 @@
 }
 
 
-#pragma mark -
-#pragma mark Setters
-
-- (void)refreshLastUpdatedDate {
-	if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceLastUpdated:)]) {
-		
-		NSDate *date = [_delegate egoRefreshTableHeaderDataSourceLastUpdated:self];
-		
-		NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-		[formatter setAMSymbol:@"am"];
-		[formatter setPMSymbol:@"pm"];
-		[formatter setDateFormat:@"MM/dd/yyyy @ hh:mma"];
-		_statusLabel.text = [NSString stringWithFormat:@"Last loaded %@", [formatter stringFromDate:date]];
-		[[NSUserDefaults standardUserDefaults] setObject:_statusLabel.text forKey:@"EGORefreshTableView_LastRefresh"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-	} else {
-		
-		_statusLabel.text = nil;
-		
-	}
-}
-
-- (void)setState:(EGOPullRefreshState)aState{
+#pragma mark - Public API
+- (void)setState:(EGOPullRefreshState)aState {
 	switch (aState) {
 		case EGOOPullRefreshPulling:
-			_statusLabel.text = NSLocalizedString(@"Release to refresh…", @"Release to refresh status");
-			
 			[_activityIndicatorView startAnimating];
 			_activityIndicatorView.hidden = NO;
 			break;
@@ -95,14 +98,9 @@
 			
 			[_activityIndicatorView stopAnimating];
 			_activityIndicatorView.hidden = YES;
-			
-			_statusLabel.text = NSLocalizedString(@"Pull down to refresh…", @"Pull down to refresh status");
-			[self refreshLastUpdatedDate];			
 			break;
 			
 		case EGOOPullRefreshLoading:
-			_statusLabel.text = NSLocalizedString(@"Refreshing…", @"Loading Status");
-			
 			[_activityIndicatorView startAnimating];
 			_activityIndicatorView.hidden = NO;
 			break;
@@ -117,135 +115,53 @@
 
 #pragma mark - ScrollView Methods
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"egoRefreshScrollViewDidScroll OFFSET:[%f] INSET:[%@]", -scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
 	
 	if (_state == EGOOPullRefreshLoading) {
-		CGFloat offset = MAX(scrollView.contentOffset.y * -1, _headerOffset);
-		offset = MIN(offset, 44.0 + _headerOffset);
-		scrollView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
+		scrollView.contentInset = UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, _headerOffset), kLoadingTheshold + _headerOffset), 0.0f, 0.0f, 0.0f);
 		
 	} else if (scrollView.isDragging) {
-		
-		BOOL _loading = NO;
-		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceIsLoading:)]) {
-			_loading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
-		}
-		
-		if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -40.0f - _headerOffset && scrollView.contentOffset.y < 0.0f + _headerOffset && !_loading) {
+		if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset && scrollView.contentOffset.y < 0.0f + _headerOffset && !_isLoading) {
 			[self setState:EGOOPullRefreshNormal];
 			
-		} else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -40.0f - _headerOffset && !_loading) {
+		} else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -kLoadingTheshold - _headerOffset && !_isLoading) {
 			[self setState:EGOOPullRefreshPulling];
 		}
 		
-		if (scrollView.contentInset.top != _headerOffset) {
-			scrollView.contentInset = UIEdgeInsetsZero;
-		}
+		if (scrollView.contentInset.top != _headerOffset)
+			scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
 	}
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
+//	NSLog(@"egoRefreshScrollViewDidEndDragging INSET:[%@]", NSStringFromUIEdgeInsets(scrollView.contentInset));
 	
-	BOOL _loading = NO;
-	if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceIsLoading:)]) {
-		_loading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
-	}
-	
-	if (scrollView.contentOffset.y <= -40.0f - _headerOffset && !_loading) {
-		
-		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)]) {
-			[_delegate egoRefreshTableHeaderDidTriggerRefresh:self];
-		}
+	if (scrollView.contentOffset.y <= -kLoadingTheshold - _headerOffset && !_isLoading) {
+		[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];
 		
 		[self setState:EGOOPullRefreshLoading];
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.2];
-		scrollView.contentInset = UIEdgeInsetsMake(44.0f + _headerOffset, 0.0f, 0.0f, 0.0f);
+		scrollView.contentInset = UIEdgeInsetsMake(kLoadingTheshold + _headerOffset, 0.0f, 0.0f, 0.0f);
 		[UIView commitAnimations];
 	}
 }
 
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView {
+//	NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading INSET:[%@]", NSStringFromUIEdgeInsets(scrollView.contentInset));
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.3];
-	[scrollView setContentInset:UIEdgeInsetsMake(0.0f + _headerOffset, 0.0f, 0.0f, 0.0f)];
+	scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
 	[UIView commitAnimations];
 	
 	[self setState:EGOOPullRefreshNormal];
-	
 }
 
 
-//- (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {
-//	if (_state == EGOOPullRefreshLoading) {
-//		CGFloat offset = MAX(scrollView.contentOffset.y * -1, 64);
-//		offset = MIN(offset, 108);
-//		scrollView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
-//		
-//	} else if (scrollView.isDragging) {
-//		
-//		BOOL _loading = NO;
-//		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceIsLoading:)]) {
-//			_loading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
-//		}
-//		
-//		if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -100.0f && scrollView.contentOffset.y < 64.0f && !_loading) {
-//			[self setState:EGOOPullRefreshNormal];
-//		
-//		} else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -100.0f && !_loading) {
-//			[self setState:EGOOPullRefreshPulling];
-//		}
-//		
-//		if (scrollView.contentInset.top != 64) {
-//			scrollView.contentInset = UIEdgeInsetsMake(64.0, 0.0f, 0.0f, 0.0f);
-//		}
-//	}
-//}
-//
-//- (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
-//	//NSLog(@"egoRefreshScrollViewDidEndDragging");
-//	
-//	BOOL _loading = NO;
-//	if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceIsLoading:)]) {
-//		_loading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
-//	}
-//	
-//	if (scrollView.contentOffset.y <= -100.0f && !_loading) {
-//		NSLog(@"%f %d",scrollView.contentOffset.y, !_loading);
-//		
-//		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)]) {
-//			[_delegate egoRefreshTableHeaderDidTriggerRefresh:self];
-//		}
-//		
-//		
-//		[self setState:EGOOPullRefreshLoading];
-//		[UIView beginAnimations:nil context:NULL];
-//		[UIView setAnimationDuration:0.2];
-//		scrollView.contentInset = UIEdgeInsetsMake(108.0f, 0.0f, 0.0f, 0.0f);
-//		[UIView commitAnimations];
-//	}
-//}
-//
-//- (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView {	
-//	//NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading");
-//	
-//	[UIView beginAnimations:nil context:NULL];
-//	[UIView setAnimationDuration:0.3];
-//	[scrollView setContentInset:UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f)];
-//	[UIView commitAnimations];
-//	
-//	[self setState:EGOOPullRefreshNormal];
-//	
-//}
-
-
-#pragma mark -
-#pragma mark Dealloc
-
+#pragma mark - Dealloc
 - (void)dealloc {
-	
-	_delegate=nil;
-	_statusLabel = nil;
+	self.delegate = nil;
 	
 	[super dealloc];
 }

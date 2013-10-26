@@ -50,7 +50,7 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	NSMutableString *avatarURL = [_userVO.imageURL mutableCopy];
+	NSMutableString *avatarURL = [_userVO.avatarURL mutableCopy];
 	[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];

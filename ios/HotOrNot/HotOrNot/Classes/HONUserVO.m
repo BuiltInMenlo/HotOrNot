@@ -12,7 +12,7 @@
 @implementation HONUserVO
 
 @synthesize dictionary;
-@synthesize userID, fbID, username, points, votes, pokes, abuseCount, isVerified, score, pics, imageURL, birthday, friends;
+@synthesize userID, fbID, username, points, votes, abuseCount, totalVolleys, isVerified, isSuspended, score, avatarURL, birthday, friends;
 
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONUserVO *vo = [[HONUserVO alloc] init];
@@ -20,15 +20,16 @@
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.points = [[dictionary objectForKey:@"points"] intValue];
-	vo.votes = [[dictionary objectForKey:@"votes"] intValue];
-	vo.pokes = [[dictionary objectForKey:@"pokes"] intValue];
-	vo.pics = [[dictionary objectForKey:@"pics"] intValue];
+	vo.votes = [[dictionary objectForKey:@"total_votes"] intValue];
+	vo.totalVolleys = [[dictionary objectForKey:@"total_challenges"] intValue];
 	vo.abuseCount = [[dictionary objectForKey:@"abuse_ct"] intValue];
 	vo.isVerified = ([[dictionary objectForKey:@"is_verified"] intValue] == 1);
-	vo.score = (vo.points * [HONAppDelegate createPointMultiplier]) + (vo.votes * [HONAppDelegate votePointMultiplier]) + (vo.pokes * [HONAppDelegate pokePointMultiplier]);
+	vo.isSuspended = ([[dictionary objectForKey:@"is_suspended"] intValue] == 1);
+	vo.score = vo.points + vo.votes;
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
-	vo.imageURL = [dictionary objectForKey:@"avatar_url"];
+//	vo.imageURL = [dictionary objectForKey:@"avatar_url"];
+	vo.avatarURL = [dictionary objectForKey:@"avatar_url"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -53,7 +54,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.username = nil;
-	self.imageURL = nil;
+	self.avatarURL = nil;
 	self.fbID = nil;
 	self.friends = nil;
 	self.birthday = nil;

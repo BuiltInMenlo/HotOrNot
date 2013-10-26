@@ -14,6 +14,7 @@
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *fbID;
+@property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarURL;
 @property (nonatomic, retain) NSString *imagePrefix;

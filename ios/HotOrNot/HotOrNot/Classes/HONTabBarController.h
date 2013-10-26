@@ -8,9 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONTabBarController : UITabBarController {
-}
+const CGSize kTabSize;
 
-#define kTabHeight 49.0
-
+@interface HONTabBarController : UITabBarController
 @end

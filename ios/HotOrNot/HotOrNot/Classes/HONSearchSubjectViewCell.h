@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 
 #import "HONGenericRowViewCell.h"
-#import "HONSubjectVO.h"
+#import "HONSearchSubjectVO.h"
 
 @interface HONSearchSubjectViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
 
-@property (nonatomic, strong) HONSubjectVO *subjectVO;
+@property (nonatomic, strong) HONSearchSubjectVO *subjectVO;
 @end

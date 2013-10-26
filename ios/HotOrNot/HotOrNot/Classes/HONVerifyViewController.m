@@ -21,7 +21,6 @@
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONImagingDepictor.h"
-#import "HONRefreshButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONAddContactsViewController.h"
@@ -32,7 +31,6 @@
 #import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileViewController.h"
-#import "HONCollectionViewFlowLayout.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONFAQViewController.h"
 
@@ -41,34 +39,25 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 @interface HONVerifyViewController() <HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
-//@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
-@property (nonatomic, strong) UIView *collectionHolderView;
-//@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
 @property (nonatomic, strong) NSMutableArray *cells;
-@property (nonatomic, strong) NSMutableArray *dynamics;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int blockCounter;
-@property (nonatomic, strong) UIImageView *togglePrivateImageView;
-@property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isPrivate;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
-
 @end
 
 @implementation HONVerifyViewController
@@ -116,7 +105,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			if (error != nil) {
 				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 				
-				[_refreshButtonView toggleRefresh:NO];
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
@@ -132,7 +120,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 			
-			[_refreshButtonView toggleRefresh:NO];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -155,7 +142,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
-			[_refreshButtonView toggleRefresh:NO];
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
@@ -166,7 +152,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
 			
-			int count = 0;
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
@@ -174,26 +159,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				if (vo != nil) {
 					[_challenges addObject:vo];
 				}
-				
-				count++;
-//				if (count >= 20)
-//					break;
 			}
 
-			[_refreshButtonView toggleRefresh:NO];
 			_emptyImageView.hidden = [_challenges count] > 0;
-			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
-			
 			[_tableView reloadData];
-			[_refreshControl endRefreshing];
-			
-//			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-//			_flowLayout.minimumLineSpacing = 0.0;
-						
-//			[UIView animateWithDuration:0.5 animations:^(void) {
-//				_collectionView.alpha = 1.0;
-//			}];
-
 			
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
@@ -202,7 +171,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		
-		[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -339,72 +307,36 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
 	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
-	_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
-//	[self.view addSubview:_bannerView];
-	
-	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
-	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:2]] placeholderImage:nil];
-	[_bannerView addSubview:bannerImageView];
-	
-	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	bannerButton.frame = bannerImageView.frame;
-	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
-	[_bannerView addSubview:bannerButton];
-	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
 	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"] * 90.0));
 	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
-	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-	[self.view addSubview:_collectionHolderView];
-	
-	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-	flowLayout.minimumLineSpacing = 0.0;
-	
-//	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
-//	[_collectionView setDataSource:self];
-//	[_collectionView setDelegate:self];
-//	_collectionView.alwaysBounceVertical = YES;
-//	[_collectionView registerClass:[HONVerifyViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-//	[_collectionHolderView addSubview:_collectionView];
-//
-//	_refreshControl = [[UIRefreshControl alloc] init];
-//	_refreshControl.tintColor = [UIColor whiteColor];
-//	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-	
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-//	[_tableView addSubview:_refreshControl];
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
 
 
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
-	[_refreshButtonView toggleRefresh:YES];
-	
-	_dynamics = [NSMutableArray array];
-	
-	UIButton *faqButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	faqButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
-	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_nonActive"] forState:UIControlStateNormal];
-	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_Active"] forState:UIControlStateHighlighted];
-	[faqButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:faqButton];
+//	UIButton *faqButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	faqButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
+//	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_nonActive"] forState:UIControlStateNormal];
+//	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_Active"] forState:UIControlStateHighlighted];
+//	[faqButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:faqButton];
 }
 
 - (void)viewDidLoad {
@@ -484,7 +416,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_isRefreshing = YES;
-	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyRefresh_total"] intValue];
@@ -511,7 +442,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
-		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
@@ -554,7 +484,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 #pragma mark - Notifications
 - (void)_selectedChallengesTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 	
 	
@@ -609,7 +538,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 - (void)_refreshChallengesTab:(NSNotification *)notification {
-	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 }
 
@@ -819,10 +747,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	return (_isRefreshing);
 }
 
-- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-	return ([NSDate date]);
-}
-
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -865,7 +789,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == [_challenges count] - 1) ? 329.0 : 282.0);
+//	return ((indexPath.row == [_challenges count] - 1) ? 329.0 : 282.0);
+	return (kHeroVolleyTableCellHeight + ((int)(indexPath.row == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -884,7 +809,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
@@ -925,7 +850,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	if (actionSheet.tag == 0) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Follow" : (buttonIndex == 1) ? @"Approve" : @" Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 0) {
@@ -939,7 +864,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (actionSheet.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 0) {
@@ -961,7 +886,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	if (alertView.tag == 0) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
@@ -973,7 +898,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Take New Avatar %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -984,7 +909,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - FAQ %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
@@ -995,7 +920,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 3) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Create Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -1006,7 +931,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 4) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Show Profile Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -1017,7 +942,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 5) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Show Detail Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -1028,7 +953,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 6) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Approve Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -1039,7 +964,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} else if (alertView.tag == 7) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {

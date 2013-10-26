@@ -13,17 +13,18 @@
 #import "HONTabBarController.h"
 #import "HONAlertPopOverView.h"
 #import "HONImagingDepictor.h"
+#import "HONChangeAvatarViewController.h"
+
+const CGSize kTabSize = {80.0, 50.0};
 
 @interface HONTabBarController ()
-@property (nonatomic, retain) UIButton *timelineButton;
-@property (nonatomic, retain) UIButton *challengesButton;
-@property (nonatomic, retain) UIButton *discoveryButton;
-@property (nonatomic, retain) UIButton *settingsButton;
-
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, strong) UIView *tabBarView;
+@property (nonatomic, retain) UIButton *homeButton;
+@property (nonatomic, retain) UIButton *exploreButton;
+@property (nonatomic, retain) UIButton *verifyButton;
+@property (nonatomic, retain) UIButton *avatarNeededButton;
 @property (nonatomic, strong) HONAlertPopOverView *alertPopOverView;
-@property (nonatomic) CGPoint touchPt;
 @end
 
 @implementation HONTabBarController
@@ -32,6 +33,7 @@
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
 	return (self);
@@ -46,20 +48,26 @@
 - (void)loadView {
 	[super loadView];
 	
-	[self _hideNativeTabBar];
-	[self _addCustomTabs];
-	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
-	//if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
-	//	[self _updateChallengeAlerts];
+	for (UIView *view in self.view.subviews) {
+		if([view isKindOfClass:[UITabBar class]])
+			_tabBarView = view;
+	}
 	
-//	[self _showAlertPopOverWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
-//												  [NSNumber numberWithInt:arc4random() % 15], @"status",
-//												  [NSNumber numberWithInt:arc4random() % 15], @"score",
-//												  [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
+	[self _addCustomTabs];
+	
+	if (![HONAppDelegate hasTakenSelfie]) {
+		_avatarNeededButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_avatarNeededButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - (kTabSize.height + 54.0), 44.0, 44.0);
+		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_nonActive"] forState:UIControlStateNormal];
+		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_Active"] forState:UIControlStateHighlighted];
+		[_avatarNeededButton addTarget:self action:@selector(_goProfileAvatar) forControlEvents:UIControlEventTouchUpInside];
+		[self.view addSubview:_avatarNeededButton];
+	}
+	
+//	[self _createPopoverBadge];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -68,94 +76,51 @@
 
 
 #pragma mark - Presentation
-- (void)_hideNativeTabBar {
-	for (UIView *view in self.view.subviews) {
-		if([view isKindOfClass:[UITabBar class]])
-		_tabBarView = view;//view.hidden = YES;
-		
-//		else
-//			[view setFrame:[UIScreen mainScreen].bounds];//[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
-		
-//		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
-	}
-
-//	for (UIViewController *viewController in self.viewControllers)
-//		viewController.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height);
-}
-
-- (void)hideNewTabBar {
-	_timelineButton.hidden = YES;
-	_challengesButton.hidden = YES;
-	_discoveryButton.hidden = YES;
-	_settingsButton.hidden = YES;
-}
-
-- (void)showNewTabBar {
-	_timelineButton.hidden = NO;
-	_challengesButton.hidden = NO;
-	_discoveryButton.hidden = NO;
-	_settingsButton.hidden = NO;
-}
-
 -(void)_addCustomTabs {
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
 	
-//	UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
-//	bgView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-//	[_tabHolderView addSubview:bgView];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tabMenuBackground"]];
+	bgImageView.userInteractionEnabled = YES;
+	[_tabHolderView addSubview:bgImageView];
+	[bgImageView setTag:-1];
+	bgImageView.hidden = YES;
 	
-//	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
-//	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
-//	bgImageView.userInteractionEnabled = YES;
-//	[_tabHolderView addSubview:bgImageView];
+	_homeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_homeButton.frame = CGRectMake(20.0, 0.0, kTabSize.width, kTabSize.height);
+	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
+	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
+	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
+	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
+	[_tabHolderView addSubview:_homeButton];
+	[_homeButton setTag:0];
 	
-	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_timelineButton.frame = CGRectMake(20.0, 0.0, kTabSize.width, kTabSize.height);
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	//[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
-	[_timelineButton setTag:0];
-	[_timelineButton setSelected:YES];
+	_exploreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_exploreButton.frame = CGRectMake(40.0 + kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateDisabled];
+	[_tabHolderView addSubview:_exploreButton];
+	[_exploreButton setTag:1];
 	
-	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_discoveryButton.frame = CGRectMake(40.0 + kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
-	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
-	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
-	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
-	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	//[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateDisabled];
-	[_discoveryButton setTag:1];
+	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_verifyButton.frame = CGRectMake(60.0 + (kTabSize.width * 2.0), 0.0, kTabSize.width, kTabSize.height);
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
+	[_tabHolderView addSubview:_verifyButton];
+	[_verifyButton setTag:2];
 	
-	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_challengesButton.frame = CGRectMake(60.0 + (kTabSize.width * 2.0), 0.0, kTabSize.width, kTabSize.height);
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	//[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
-	[_challengesButton setTag:2];
-	
-//	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	_settingsButton.frame = CGRectMake(kTabSize.width * 3.0, 0.0, kTabSize.width, kTabSize.height);
-//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
-//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Tapped"] forState:UIControlStateHighlighted];
-//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateSelected];
-//	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-//	//[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateDisabled];
-//	[_settingsButton setTag:3];
-	
-	[_tabHolderView addSubview:_timelineButton];
-	[_tabHolderView addSubview:_challengesButton];
-	[_tabHolderView addSubview:_discoveryButton];
-//	[_tabHolderView addSubview:_settingsButton];
-	
-	[self _toggleTabsEnabled:YES];
+	[_homeButton setSelected:YES];
+	[self _toggleTabButtonsEnabled:YES];
 }
 
-- (void)_showAlertPopOverWithTotals:(NSDictionary *)dict {
+- (void)_showBadgesWithTotals:(NSDictionary *)dict {
 	[_alertPopOverView setAlerts:dict];
 	_alertPopOverView.alpha = 0.0;
 	[self.view addSubview:_alertPopOverView];
@@ -166,9 +131,7 @@
 	}];
 }
 
-- (void)_hideAlertPopOver {
-	
-	// update local
+- (void)_hideBadges {
 	[[NSUserDefaults standardUserDefaults] setValue:[[NSUserDefaults standardUserDefaults] objectForKey:@"update_challenges"] forKey:@"local_challenges"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -181,99 +144,98 @@
 	}
 }
 
-- (void)_toggleTabsEnabled:(BOOL)isEnabled {
+- (void)_toggleTabButtonsEnabled:(BOOL)isEnabled {
 	if	(isEnabled) {
-		[_timelineButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		[_challengesButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		[_discoveryButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		[_settingsButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	
+		for (UIButton *button in _tabHolderView.subviews) {
+			if (button.tag != -1)
+				[button addTarget:self action:@selector(_goTabButton:) forControlEvents:UIControlEventTouchUpInside];
+		}
+		
 	} else {
-		[_timelineButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		[_challengesButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		[_discoveryButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		[_settingsButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		for (UIButton *button in _tabHolderView.subviews) {
+			if (button.tag != -1)
+				[button removeTarget:self action:@selector(_goTabButton:) forControlEvents:UIControlEventTouchUpInside];
+		}
 	}
+}
+
+- (void)_createPopoverBadge {
+	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
+		[self _updateBadges];
+
+	[self _showBadgesWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
+								 [NSNumber numberWithInt:arc4random() % 15], @"status",
+								 [NSNumber numberWithInt:arc4random() % 15], @"score",
+								 [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
 }
 
 
 #pragma mark - Navigation
-- (void)buttonClicked:(id)sender {
-	[self _selectTab:[sender tag]];
-}
-
-- (void)_selectTab:(int)tabID {
+- (void)_goTabButton:(id)sender {
+	int tabID = [sender tag];
+	
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
-	NSString *mixPanelTrack = @"";
+	NSString *mpEvent = @"";
 	NSString *notificationName = @"";
-	
 	switch(tabID) {
 		case 0:
-			[_timelineButton setSelected:YES];
-			[_challengesButton setSelected:NO];
-			[_discoveryButton setSelected:NO];
-			[_settingsButton setSelected:NO];
+			[_homeButton setSelected:YES];
+			[_verifyButton setSelected:NO];
+			[_exploreButton setSelected:NO];
 			
-			mixPanelTrack = @"Tab Bar - Timeline";
+			mpEvent = @"Tab Bar - Timeline";
 			notificationName = @"SELECTED_VOTE_TAB";
 			break;
 			
 		case 1:
-			[_timelineButton setSelected:NO];
-			[_challengesButton setSelected:NO];
-			[_discoveryButton setSelected:YES];
-			[_settingsButton setSelected:NO];
+			[_homeButton setSelected:NO];
+			[_verifyButton setSelected:NO];
+			[_exploreButton setSelected:YES];
 			
-			mixPanelTrack = @"Tab Bar - Discover";
+			mpEvent = @"Tab Bar - Discover";
 			notificationName = @"SELECTED_DISCOVERY_TAB";
 			break;
 			
 		case 2:
-			[self _hideAlertPopOver];
+			[self _hideBadges];
 			
-			[_timelineButton setSelected:NO];
-			[_challengesButton setSelected:YES];
-			[_discoveryButton setSelected:NO];
-			[_settingsButton setSelected:NO];
+			[_homeButton setSelected:NO];
+			[_verifyButton setSelected:YES];
+			[_exploreButton setSelected:NO];
 			
-			mixPanelTrack = @"Tab Bar - Activity";
+			mpEvent = @"Tab Bar - Activity";
 			notificationName = @"SELECTED_CHALLENGES_TAB";
 			break;
 			
-		case 3:
-			[_timelineButton setSelected:NO];
-			[_challengesButton setSelected:NO];
-			[_discoveryButton setSelected:NO];
-			[_settingsButton setSelected:YES];
-			
-			mixPanelTrack = @"Tab Bar - Settings";
-			//notificationName = @"SELECTED_PROFILE_TAB";
-			//notificationName = @"SELECTED_VOTE_TAB";
+		default:
 			break;
 	}
 	
-	[[Mixpanel sharedInstance] track:mixPanelTrack
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	//int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
+	[[Mixpanel sharedInstance] track:mpEvent
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
-	//[self _updateChallengeAlerts];
+	[self _updateBadges];
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-	
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"KILL_TOOLTIP" object:nil];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	//[self _dropTabs];
+}
+
+- (void)_goProfileAvatar {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 
@@ -285,7 +247,14 @@
 		
 		_tabHolderView.alpha = 1.0;
 		_tabBarView.alpha = 1.0;
+		
+	} completion:^(BOOL finished) {
+		_avatarNeededButton.hidden = NO;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_avatarNeededButton.alpha = 1.0;
+		}];
 	}];
+	
 }
 
 - (void)_hideTabs:(NSNotification *)notification {
@@ -295,12 +264,24 @@
 		
 		_tabHolderView.alpha = 0.0;
 		_tabBarView.alpha = 0.0;
+		
+		_avatarNeededButton.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_avatarNeededButton.hidden = YES;
 	}];
+}
+
+- (void)_refreshProfile:(NSNotification *)notification {
+	if (_avatarNeededButton != nil) {
+		_avatarNeededButton.hidden = YES;
+		[_avatarNeededButton removeFromSuperview];
+		_avatarNeededButton = nil;
+	}
 }
 
 
 #pragma mark - Data Housekeeping
-- (void)_updateChallengeAlerts {
+- (void)_updateBadges {
 	NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 													[NSNumber numberWithInt:0], @"status",
 													[NSNumber numberWithInt:0], @"score",
@@ -378,7 +359,7 @@
 			//NSLog(@"CHANGES:\n%@", alertTotals);
 			
 			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
-				[self _showAlertPopOverWithTotals:alertTotals];
+				[self _showBadgesWithTotals:alertTotals];
 			}
 		}
 		

@@ -13,8 +13,9 @@
 #import <FacebookSDK/FacebookSDK.h>
 #import <Foundation/Foundation.h>
 #import <HockeySDK/HockeySDK.h>
+#import <Social/SLComposeViewController.h>
+#import <Social/SLServiceTypes.h>
 #import <sys/utsname.h>
-#import <Twitter/TWTweetComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -36,6 +37,7 @@
 #import "HONExploreViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONChallengeVO.h"
+#import "HONEmotionVO.h"
 #import "HONUserVO.h"
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
@@ -44,8 +46,7 @@
 #import "HONAddContactsViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
-
-#import "HONMailActivity.h"
+#import "HONSuspendedViewController.h"
 
 
 #if __DEV_BUILD___ == 1
@@ -97,6 +98,7 @@ NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
 NSString * const kAPIMissingImage = @"challenges/missingimage";
 NSString * const kAPIProcessChallengeImage = @"challenges/processimage";
 NSString * const kAPIProcessUserImage = @"users/processimage";
+NSString * const kAPISuspendedAccount = @"users/suspendedaccount";
 
 
 // view heights
@@ -104,8 +106,7 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGSize kTabSize = {80.0, 50.0};
-
+const CGFloat kHeroVolleyTableCellHeight = 370.0f;
 
 // snap params
 const CGFloat kMinLuminosity = 0.33;
@@ -118,13 +119,12 @@ const CGFloat kHUDErrorTime = 1.5f;
 const CGFloat kProfileTime = 0.25f;
 
 // image sizes
-const CGFloat kSnapThumbDim = 37.0f;
-const CGFloat kSnapMediumDim = 80.0f;
-const CGFloat kSnapLargeDim = 221.0f;
+const CGSize kSnapThumbSize = {80.0f, 80.0f};
+const CGSize kSnapMediumSize = {160.0f, 160.0f};
+const CGSize kSnapLargeSize = {320.0f, 568.0f};
 const CGFloat kAvatarDim = 200.0f;
 
 const BOOL kIsImageCacheEnabled = YES;
-const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
 #if __DEV_BUILD___ == 0
@@ -139,6 +139,7 @@ NSString * const kTwilioSMS = @"6475577873";
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
 @property (nonatomic, strong) UIActivityViewController *activityViewController;
+@property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic, strong) NSTimer *userTimer;
 @property (nonatomic) int challengeID;
 @end
@@ -210,10 +211,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"service_url"]);
 }
 + (NSDictionary *)s3Credentials {
-	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAJVS6Y36AQCMRWLQQ", @"key",
-			 @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
-	
-	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
+	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAJVS6Y36AQCMRWLQQ", @"key", @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
 }
 
 + (NSString *)twilioSMS {
@@ -236,14 +234,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twitter_share"]);
 }
 
-+ (int)createPointMultiplier {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:2] intValue]);
-}
-+ (int)votePointMultiplier {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:0] intValue]);
-}
-+ (int)pokePointMultiplier {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
++ (NSRange)ageRange {
+	return (NSMakeRange([[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:0] intValue] * 31536000, [[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:1] intValue] * 31536000));
 }
 
 + (NSString *)s3BucketForType:(NSString *)bucketType {
@@ -262,8 +254,22 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"switches"] objectForKey:key] uppercaseString] isEqualToString:@"YES"]);
 }
 
-+ (NSArray *)defaultSubjects {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"]);
++ (NSArray *)composeEmotions {
+	NSMutableArray *emotions = [NSMutableArray array];
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"compose_emotions"])
+		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+	
+	return ([emotions copy]);
+//	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"compose_emotions"]);
+}
+
++ (NSArray *)replyEmotions {
+	NSMutableArray *emotions = [NSMutableArray array];
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"reply_emotions"])
+		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+	
+	return ([emotions copy]);
+//	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"reply_emotions"]);
 }
 
 + (void)offsetSubviewsForIOS7:(UIView *)view {
@@ -766,7 +772,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[Mixpanel sharedInstance] track:@"Timeline - Poke User"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -801,6 +807,36 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 
+- (void)_sendToTwitter:(NSNotification *)notification {
+	_shareInfo = [notification object];
+	
+	if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+		SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+		SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+			[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Twitter %@", [_shareInfo objectForKey:@"mp_event"], (result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			
+			[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
+		};
+		
+		NSLog(@"SHARE INFO:[%@]", _shareInfo);
+		[twitterComposeViewController setInitialText:[_shareInfo objectForKey:@"caption"]];
+		[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
+//		[twitterComposeViewController addURL:[_shareInfo objectForKey:@"url"]];
+		twitterComposeViewController.completionHandler = completionBlock;
+		
+		[[_shareInfo objectForKey:@"view_controller"] presentViewController:twitterComposeViewController animated:YES completion:nil];
+		
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@""
+									message:@"Cannot use Twitter from this device!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
+}
+
 - (void)_sendToInstagram:(NSNotification *)notification {
 	NSString *instaURL = @"instagram://app";
 	NSString *instaFormat = @"com.instagram.exclusivegram";
@@ -828,7 +864,7 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 - (void)_showShareShelf:(NSNotification *)notification {
-	UIImage *image = (UIImage *)[notification object];
+	_shareInfo = [notification object];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
@@ -836,7 +872,11 @@ NSString * const kTwilioSMS = @"6475577873";
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
 	[actionSheet setTag:0];
-	[actionSheet showInView:self.tabBarController.view];
+	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
+}
+
+- (void)_initTabBar:(NSNotification *)notification {
+	[self _initTabs];
 }
 
 
@@ -864,12 +904,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 //	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	struct utsname systemInfo;
-	uname(&systemInfo);
-	
-//	NSLog(@"--DEVICE:[%@]--", [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
-//	NSLog(@"is5s:[%d]", [HONAppDelegate isPhoneType5s]);
-//	NSLog(@"ADID:[%@]\nVENDOR:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
+//	NSLog(@"ADID:[%@]\nVENDORID:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
@@ -879,31 +914,22 @@ NSString * const kTwilioSMS = @"6475577873";
 	[shadow setShadowColor:[UIColor clearColor]];
 	[shadow setShadowOffset:CGSizeMake(0.0f, 0.0f)];
 	
-//	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
-//	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
-	[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
+	//[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+//	[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
+	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-//														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor whiteColor], NSForegroundColorAttributeName,
-//														  [UIColor clearColor], UITextAttributeTextShadowColor,
 														  shadow, NSShadowAttributeName,
-//														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], UITextAttributeFont, nil]];
 														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], NSFontAttributeName, nil]];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-//														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor whiteColor], NSForegroundColorAttributeName,
-//														  [UIColor clearColor], UITextAttributeTextShadowColor,
 														  shadow, NSShadowAttributeName,
-//														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont, nil] forState:UIControlStateNormal];
 														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], NSFontAttributeName, nil] forState:UIControlStateNormal];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-//														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor whiteColor], NSForegroundColorAttributeName,
-//														  [UIColor clearColor], UITextAttributeTextShadowColor,
 														  shadow, NSShadowAttributeName,
-//														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont, nil] forState:UIControlStateHighlighted];
 														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], NSFontAttributeName, nil] forState:UIControlStateHighlighted];
 	
 	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
@@ -927,7 +953,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 //	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SELF" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -944,6 +971,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
 	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
@@ -979,8 +1009,15 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 #if __ALWAYS_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	
+	for (NSString *key in totals)
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
+#endif
+	
+#if __RESET_TOTALS__ == 1
 	for (NSString *key in totals)
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	
@@ -1021,6 +1058,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 		
+//		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
+		
 //		if (boot_total == 5) {
 //			UIAlertView *alertView = [[UIAlertView alloc]
 //									  initWithTitle:@"Rate Volley"
@@ -1035,16 +1074,16 @@ NSString * const kTwilioSMS = @"6475577873";
 		[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 		[[Mixpanel sharedInstance] track:@"App Boot"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		
 		self.tabBarController = [[HONTabBarController alloc] init];
 		self.tabBarController.delegate = self;
+		self.tabBarController.view.hidden = YES;
 		
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
-			self.tabBarController.view.hidden = YES;
-			[self performSelector:@selector(_showUI) withObject:nil afterDelay:3.0];
-		}
+//		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
+//			[self performSelector:@selector(_showUI) withObject:nil afterDelay:3.0];
+//		}
 		
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -1123,7 +1162,7 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	[[Mixpanel sharedInstance] track:@"App Entering Background"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 //	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
 //		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
@@ -1151,7 +1190,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
@@ -1338,14 +1377,17 @@ NSString * const kTwilioSMS = @"6475577873";
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
+			NSMutableArray *ageRange = [NSMutableArray array];
+			for (NSNumber *age in [result objectForKey:@"age_range"])
+				[ageRange addObject:age];
 			
-			NSMutableArray *sectionBanners = [NSMutableArray array];
-			for (NSString *sectionBanner in [result objectForKey:@"section_banners"])
-				[sectionBanners addObject:sectionBanner];
+			NSMutableArray *composeEmotions = [NSMutableArray array];
+			for (NSString *emotion in [result objectForKey:@"compose_emotions"])
+				[composeEmotions addObject:emotion];
 			
-			NSMutableArray *hashtags = [NSMutableArray array];
-			for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
-				[hashtags addObject:hashtag];
+			NSMutableArray *replyEmotions = [NSMutableArray array];
+			for (NSString *emotion in [result objectForKey:@"reply_emotions"])
+				[replyEmotions addObject:emotion];
 			
 			NSMutableArray *subjects = [NSMutableArray array];
 			for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
@@ -1392,15 +1434,13 @@ NSString * const kTwilioSMS = @"6475577873";
 															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
 															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-															  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
-															  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
-															  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 															  [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"], @"challenges",
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars", nil] forKey:@"s3_buckets"];
-			[[NSUserDefaults standardUserDefaults] setObject:[sectionBanners copy] forKey:@"section_banners"];
-			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars",
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"], @"emoticons", nil] forKey:@"s3_buckets"];
+			[[NSUserDefaults standardUserDefaults] setObject:[ageRange copy] forKey:@"age_range"];
+			[[NSUserDefaults standardUserDefaults] setObject:[composeEmotions copy] forKey:@"compose_emotions"];
+			[[NSUserDefaults standardUserDefaults] setObject:[replyEmotions copy] forKey:@"reply_emotions"];
 			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
 			[[NSUserDefaults standardUserDefaults] setObject:[celebs copy] forKey:@"invite_celebs"];
@@ -1505,7 +1545,14 @@ NSString * const kTwilioSMS = @"6475577873";
 				}
 			}
 			
-			[self _initTabs];
+			if ([[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue] == 1) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+						
+			} else {
+				[self _initTabs];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1579,6 +1626,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)_initTabs {
 	[_bgImageView removeFromSuperview];
+	self.tabBarController.view.hidden = NO;
 	
 	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController;
 	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
@@ -1643,7 +1691,11 @@ NSString * const kTwilioSMS = @"6475577873";
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == 1) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"            : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																								@"image"              : [HONAppDelegate avatarImage],
+																								@"url"                : @"",
+																								@"mp_event"           : @"App Root",
+																								@"view_controller"    : self.tabBarController}];
 	}
 	
 	else if (alertView.tag == 2) {
@@ -1664,7 +1716,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	} else if (alertView.tag == 3) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Backgrounding - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1675,10 +1727,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	} else if (alertView.tag == 4) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Backgrounding - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"            : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]],
+																									@"image"              : [HONAppDelegate avatarImage],
+																									@"url"                : @"",
+																									@"mp_event"           : @"App Root",
+																									@"view_controller"    : self.tabBarController}];
 		}
 		
 	} else if (alertView.tag == 5) {
@@ -1697,27 +1753,29 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Root - Share %@", (buttonIndex == 0) ? @"Twitter" : @"Instagram"]
+		NSLog(@"SHARE INFO:[%@]", _shareInfo);
+		
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == 0) ? @"Twitter" : @"Instagram"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 0) {
-			if ([TWTweetComposeViewController canSendTweet]) {
-				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
-				
-				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]]];
-				[tweetViewController addImage:[HONAppDelegate avatarImage]];
-//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
-				[self.tabBarController presentViewController:tweetViewController animated:YES completion:nil];
-				
-				// check on this part using blocks. no more delegates? :)
-				tweetViewController.completionHandler = ^(TWTweetComposeViewControllerResult res) {
-					if (res == TWTweetComposeViewControllerResultDone) {
-					} else if (res == TWTweetComposeViewControllerResultCancelled) {
-					}
+			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+					[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Twitter %@", [_shareInfo objectForKey:@"mp_event"], (result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]
+										  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 					
-					[tweetViewController dismissViewControllerAnimated:YES completion:nil];
+					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
+				
+				[twitterComposeViewController setInitialText:[_shareInfo objectForKey:@"caption"]];
+				[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
+//				[twitterComposeViewController addURL:[_shareInfo objectForKey:@"url"]];
+				twitterComposeViewController.completionHandler = completionBlock;
+				
+				[[_shareInfo objectForKey:@"view_controller"] presentViewController:twitterComposeViewController animated:YES completion:nil];
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@""
@@ -1759,28 +1817,28 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
 	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [controller name], @"controller", nil]];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
 	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [controller name], @"controller", nil]];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
 	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [controller name], @"controller", nil]];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
 	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [controller name], @"controller", nil]];
 }
 

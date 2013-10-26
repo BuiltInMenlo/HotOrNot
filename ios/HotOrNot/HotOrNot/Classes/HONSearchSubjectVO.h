@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface HONSubjectVO : NSObject
-+ (HONSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary;
+@interface HONSearchSubjectVO : NSObject
++ (HONSearchSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

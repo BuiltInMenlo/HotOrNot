@@ -28,7 +28,7 @@
 	if ((self = [super init])) {
 		[[Mixpanel sharedInstance] track:@"Invite Celeb - Open"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	}
 	
 	return (self);
@@ -97,7 +97,7 @@
 - (void)_goDone {
 	[[Mixpanel sharedInstance] track:@"Invite Celeb - Done"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 //	if ([_selectedCelebs count] == 0) {
 //		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
@@ -120,14 +120,14 @@
 	if (isSelected) {
 		[[Mixpanel sharedInstance] track:@"Invite Celeb - Select"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%@ - @%@", celebVO.fullName, celebVO.username], @"celeb", nil]];
 		
 		[_selectedCelebs addObject:celebVO];
 	} else {
 		[[Mixpanel sharedInstance] track:@"Invite Celeb - Deselect"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%@ - @%@", celebVO.fullName, celebVO.username], @"celeb", nil]];
 		
 		NSMutableArray *removeVOs = [NSMutableArray array];
@@ -206,7 +206,7 @@
 			case 0:
 				[[Mixpanel sharedInstance] track:@"Invite Celeb - Confirm Done"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 				
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[self dismissViewControllerAnimated:YES completion:nil];
@@ -215,7 +215,7 @@
 			case 1:
 				[[Mixpanel sharedInstance] track:@"Invite Celeb - Cancel Done"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 				break;
 		}
 	}

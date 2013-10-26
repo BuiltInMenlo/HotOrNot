@@ -51,8 +51,6 @@
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
-@property (nonatomic, strong) UIView *bannerView;
-@property (nonatomic, strong) UIView *collectionHolderView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *cells;
@@ -65,7 +63,6 @@
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic) int userID;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
 @implementation HONTimelineViewController
@@ -150,15 +147,6 @@
 		bannerIndex = 0;
 	
 	
-	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
-	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:bannerIndex]] placeholderImage:nil];
-	[_bannerView addSubview:bannerImageView];
-	
-	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	bannerButton.frame = bannerImageView.frame;
-	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
-	[_bannerView addSubview:bannerButton];
-	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"%d", _timelineType] forKey:@"action"];
@@ -188,8 +176,6 @@
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
-			
-			int count = 0;
 			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
@@ -197,34 +183,9 @@
 					if (vo.expireSeconds != 0)
 						[_challenges addObject:vo];
 				}
-				
-				count++;
-//				if (count >= 25)
-//					break;
 			}
 			
-			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
-			[_refreshControl endRefreshing];
-			
-//			[UIView animateWithDuration:0.33 animations:^(void) {
-//				_collectionView.alpha = 0.0;
-//			} completion:^(BOOL finished) {
-//				_collectionView.alpha = 1.0;
-				[_tableView reloadData];
-//			}];
-			
-//			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-//			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
-//			_flowLayout.minimumLineSpacing = 0.0;
-			
-//			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-//			_refreshTableHeaderView.delegate = self;
-//			[_collectionView addSubview:_refreshTableHeaderView];
-//			[_refreshTableHeaderView refreshLastUpdatedDate];
-			
-//			[UIView animateWithDuration:0.33 animations:^(void) {
-//				_collectionView.alpha = 1.0;
-//			}];
+			[_tableView reloadData];
 		}
 		
 		if (_progressHUD != nil) {
@@ -399,51 +360,34 @@
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
+	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
+	
 	if (_timelineType == HONTimelineTypeFriends)
 		_headerView = [[HONHeaderView alloc] initAsVoteWall];
 		
 	else if (_timelineType == HONTimelineTypeSubject)
 		_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
 	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
-//	[self.view addSubview:_bannerView];
-	
-	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-	[self.view addSubview:_collectionHolderView];
-	
-	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-	flowLayout.minimumLineSpacing = 0.0;
-	
-//	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
-//	[_collectionView setDataSource:self];
-//	[_collectionView setDelegate:self];
-//	[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-//	[_collectionHolderView addSubview:_collectionView];
-	
-//	_refreshControl = [[UIRefreshControl alloc] init];
-//	_refreshControl.frame = CGRectOffset(_refreshControl.frame, 0.0, 100.0);
-//	_refreshControl.tintColor = [UIColor whiteColor];
-//	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	//_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
+	_tableView.contentInset = UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-//	[_tableView addSubview:_refreshControl];
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
 
 	
-	[_headerView addButton:_profileHeaderButtonView];
+	[_headerView addButton:inviteButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
@@ -467,18 +411,7 @@
 			[self _retrieveUserByID];
 	}
 	
-	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:inviteButton];
-	
 	if (!_isPushView) {
-#if __ALWAYS_VERIFY__ == 1
-		[self _goVerify];
-#endif
-		
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 			[self _goRegistration];
 	}
@@ -530,7 +463,6 @@
 
 - (void)_goRefresh {
 	_isRefreshing = YES;
-//	[_refreshButtonView toggleRefresh:YES];
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -685,9 +617,6 @@
 }
 
 - (void)_selectedVoteTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
-//	[_refreshButtonView toggleRefresh:YES];
-	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"timeline_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -960,10 +889,6 @@
 	return (_isRefreshing);
 }
 
-- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-	return ([NSDate date]);
-}
-
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -973,63 +898,6 @@
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
-
-
-/*
-#pragma mark - CollectionView DataSource Delegates
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return ([_challenges count]);
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONTimelineItemViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-//    cell.backgroundColor = (indexPath.row % 2 == 0) ? [UIColor greenColor] : [UIColor redColor];
-	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
-	cell.delegate = self;
-	
-	[_cells addObject:cell];
-	
-    return (cell);
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (CGSizeMake(320.0, (indexPath.row == [_challenges count] - 1) ? 417.0 : 370.0)); //47
-}
-
-
-#pragma mark - CollectionView Delegates
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (YES);
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONTimelineItemViewCell *cell = (HONTimelineItemViewCell *)[_cells objectAtIndex:indexPath.row];
-	[cell showTapOverlay];
-	
-	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	_challengeVO = challengeVO;
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-		//.modalTransitionStyle
-	}];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-}*/
 
 
 #pragma mark - TableView DataSource Delegates
@@ -1063,7 +931,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == [_challenges count] - 1) ? 417.0 : 370.0); //47
+	return (kHeroVolleyTableCellHeight + ((int)(indexPath.row == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

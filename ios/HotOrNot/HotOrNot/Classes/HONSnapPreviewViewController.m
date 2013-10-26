@@ -6,7 +6,9 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Twitter/TWTweetComposeViewController.h>
+
+#import <Social/SLComposeViewController.h>
+#import <Social/SLServiceTypes.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -121,7 +123,7 @@
 			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 			
 			_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-			_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+			_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
 			_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 			
 			[self _retreiveSubscribees];
@@ -214,11 +216,6 @@
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-//	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-20 00:00:00"]];
-//	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 11595 && diff > 0);
-//	NSString *imageURL = (isOriginalImageAvailable) ? _opponentVO.imagePrefix : _opponentVO.avatarURL;
-//	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * ratio) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * ratio), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
-	
 	
 	NSMutableString *imageURL = [_opponentVO.imagePrefix mutableCopy];
 	[imageURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
@@ -248,10 +245,6 @@
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-//	NSTimeInterval diff = [_opponentVO.joinedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
-//	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
-//	NSString *imageURL = [NSString stringWithFormat:@"%@_%@.jpg", _opponentVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
-//	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * 0.75) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * 0.75), self.view.frame.size.height) : CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 320.0) * 0.5, 320.0, 320.0);//CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
 
 	NSString *imageURL = [NSString stringWithFormat:@"%@Large_640x1136.jpg", _opponentVO.imagePrefix];
 	CGRect frame = CGRectMake(0.0, (568.0 - self.view.frame.size.height) * -0.5, 320.0, 568.0);
@@ -308,7 +301,7 @@
 			
 			_isRefreshing = NO;
 //			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapMediumDim * ( ( [_challenges count] / 4) + 1) )));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapThumbSize.height * ( ( [_challenges count] / 4) + 1) )));
 			[self _makeGrid];
 		}
 		
@@ -1053,7 +1046,7 @@
             }
         }
     }
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapMediumDim * (( (int) gridCount / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 529.0, 320.0, kSnapThumbSize.height * (( (int) gridCount / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	
@@ -1071,12 +1064,12 @@
 }
 
 -(void)_makeGridElement:(HONOpponentVO *)challenger {
-    CGPoint pos = CGPointMake(kSnapMediumDim * (_challengeCounter % 4), kSnapMediumDim * (_challengeCounter / 4));
+    CGPoint pos = CGPointMake(kSnapThumbSize.width * (_challengeCounter % 4), kSnapThumbSize.height * (_challengeCounter / 4));
     
-    UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
+    UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
     [_gridHolderView addSubview:imageHolderView];
     
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
     imageView.userInteractionEnabled = YES;
     [imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", challenger.imagePrefix]] placeholderImage:nil];
     [imageHolderView addSubview:imageView];
@@ -1097,8 +1090,8 @@
 		HONOpponentVO *opponentVO = nil;
 		
 		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
-			int col = touchPoint.x / (kSnapMediumDim + 1.0);
-			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
+			int col = touchPoint.x / (kSnapThumbSize.width + 1.0);
+			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapThumbSize.height + 1.0);
 			
             int idx = (row * 4) + col;
             if(idx < [_challengeImages count]){
@@ -1257,29 +1250,28 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-	} else if (actionSheet.tag == 0) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 0) {
-			if ([TWTweetComposeViewController canSendTweet]) {
-				TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
-				
-				[tweetViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], _challengeVO.subjectName, _opponentVO.username]];
-				[tweetViewController addImage:_avatarImageView.image];
-				//				[tweetViewController addURL:[NSURL URLWithString:@"http://bit.ly/mywdays"]];
-				[self presentViewController:tweetViewController animated:YES completion:nil];
-				
-				// check on this part using blocks. no more delegates? :)
-				tweetViewController.completionHandler = ^(TWTweetComposeViewControllerResult res) {
-					if (res == TWTweetComposeViewControllerResultDone) {
-					} else if (res == TWTweetComposeViewControllerResultCancelled) {
-					}
+			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+					[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Share Twitter %@", (result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]
+										  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 					
-					[tweetViewController dismissViewControllerAnimated:YES completion:nil];
+					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
+				
+				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], _challengeVO.subjectName, _opponentVO.username]];
+				[twitterComposeViewController addImage:_avatarImageView.image];
+				twitterComposeViewController.completionHandler = completionBlock;
+				
+				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@""
@@ -1288,7 +1280,7 @@
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
 			}
-			
+						
 		} else if (buttonIndex == 1) {
 			NSString *instaURL = @"instagram://app";
 			NSString *instaFormat = @"com.instagram.exclusivegram";

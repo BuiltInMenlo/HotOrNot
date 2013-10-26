@@ -24,7 +24,6 @@
 #import "HONProfileHeaderButtonView.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONImagingDepictor.h"
-#import "HONCollectionViewFlowLayout.h"
 #import "HONUserProfileViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONPopularViewController.h"
@@ -33,9 +32,6 @@
 
 
 @interface HONExploreViewController ()<HONExploreViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
-@property (nonatomic, strong) UIView *collectionHolderView;
-//@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
-//@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -46,12 +42,10 @@
 @property (nonatomic, strong) NSMutableArray *currChallenges;
 @property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
-@property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
 @implementation HONExploreViewController
@@ -61,9 +55,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedDiscoveryTab:) name:@"SELECTED_DISCOVERY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 	}
 	
 	return (self);
@@ -115,16 +106,7 @@
 			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
 			[_tableView reloadData];
-			[_refreshControl endRefreshing];
-			
-//			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-//			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
-//			_flowLayout.minimumLineSpacing = 0.0;
-						
-//			[UIView animateWithDuration:0.5 animations:^(void) {
-//				_collectionView.alpha = 1.0;
-//			}];
-			
+
 //			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
 		
@@ -166,58 +148,27 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
-//	[self.view addSubview:_bannerView];
-	
-	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
-	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:1]] placeholderImage:nil];
-	[_bannerView addSubview:bannerImageView];
-	
-	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	bannerButton.frame = bannerImageView.frame;
-	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
-	[_bannerView addSubview:bannerButton];
-	
-	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-	[self.view addSubview:_collectionHolderView];
-	
-//	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-//	flowLayout.minimumLineSpacing = 0.0;
-	
-//	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
-//	[_collectionView setDataSource:self];
-//	[_collectionView setDelegate:self];
-//	[_collectionView registerClass:[HONExploreViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-//	[_collectionHolderView addSubview:_collectionView];
-	
-//	_refreshControl = [[UIRefreshControl alloc] init];
-//	_refreshControl.tintColor = [UIColor whiteColor];
-//	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-	
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-//	[_tableView addSubview:_refreshControl];
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
+	searchButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_nonActive"] forState:UIControlStateNormal];
 	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_Active"] forState:UIControlStateHighlighted];
 	[searchButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:searchButton];
-		
-	[_headerView addButton:_profileHeaderButtonView];
+	
+	[_headerView addButton:searchButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
@@ -270,7 +221,7 @@
 - (void)_goRefresh {
 	[[Mixpanel sharedInstance] track:@"Discover - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_isRefreshing = YES;
 	[self _retrieveChallenges];
@@ -304,7 +255,7 @@
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Create Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
@@ -325,7 +276,7 @@
 - (void)_goSearch {
 	[[Mixpanel sharedInstance] track:@"Explore - Search"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -335,12 +286,11 @@
 - (void)_goCloseBanner {
 	[[Mixpanel sharedInstance] track:@"Explore - Close Banner"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
-		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
@@ -349,7 +299,7 @@
 - (void)_goAddContacts {
 	[[Mixpanel sharedInstance] track:@"Explore - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -372,8 +322,8 @@
 
 #pragma mark - Notifications
 - (void)_selectedDiscoveryTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
-	[self _goRefresh];
+	_isRefreshing = YES;
+	[self _retrieveChallenges];
 	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"explore_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"explore_total"];
@@ -403,39 +353,13 @@
 	[self _goRefresh];
 }
 
-- (void)_showSearchTable:(NSNotification *)notification {
-	[self.navigationController setNavigationBarHidden:YES animated:YES];
-	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-		//_tableView.frame = CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height);
-		//_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (-90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
-		_bannerView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		_bannerView.hidden = YES;
-	}];
-}
-
-- (void)_hideSearchTable:(NSNotification *)notification {
-	_bannerView.hidden = NO;
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-//		_tableView.frame = CGRectMake(0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]), _tableView.frame.size.width, _tableView.frame.size.height);
-//		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
-		_bannerView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-}
-
-- (void)_resignSearchBarFocus:(NSNotification *)notification {
-	if (_searchHeaderView != nil)
-		[_searchHeaderView toggleFocus:NO];
-}
-
 
 #pragma mark - UI Presentation
 - (void)_doneRefreshing {
 	[_tableView reloadData];
 	
 	_isRefreshing = NO;
-//	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
+	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 }
 
 
@@ -445,7 +369,7 @@
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
@@ -467,7 +391,7 @@
 - (void)exploreViewCellHidePreview:(HONExploreViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Explore - Hide Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[_snapPreviewViewController showControls];
@@ -477,7 +401,7 @@
 	_challengeVO = challengeVO;
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
@@ -513,7 +437,7 @@
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
@@ -591,10 +515,6 @@
 	return (_isRefreshing);
 }
 
-- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-	return ([NSDate date]);
-}
-
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -657,7 +577,7 @@
 	if (alertView.tag == 0) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		
 		if (buttonIndex == 1) {
@@ -670,7 +590,7 @@
 	} else if (alertView.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Create Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -681,7 +601,7 @@
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Show Detail Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
@@ -693,7 +613,7 @@
 	} else if (alertView.tag == 3) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];

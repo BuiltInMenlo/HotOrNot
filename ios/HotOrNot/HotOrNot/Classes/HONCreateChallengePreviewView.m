@@ -13,9 +13,9 @@
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 #import "HONUserVO.h"
-#import "HONCameraSubjectsView.h"
+#import "HONVolleyEmotionsPickerView.h"
 
-@interface HONCreateChallengePreviewView () <HONCameraSubjectsViewDelegate>
+@interface HONCreateChallengePreviewView () <HONVolleyEmotionsPickerViewDelegate>
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) UIImageView *blurredImageView;
@@ -23,12 +23,11 @@
 @property (nonatomic, strong) NSString *tmpSubjectName;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
-@property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
-@property (nonatomic, strong) UIButton *subscribersBackButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
-@property (nonatomic, strong) HONCameraSubjectsView *subjectsView;
+@property (nonatomic, strong) HONVolleyEmotionsPickerView *subjectsView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *headerBGView;
 @property (nonatomic, strong) UIImageView *replyImageView;
@@ -114,13 +113,15 @@
 	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 5.0, 10.0);
 	_replyImageView.hidden = !_isJoinChallenge;
 	[_headerBGView addSubview:_replyImageView];
+	
+	_subjectsView.isJoinVolley = _isJoinChallenge;
 }
 
 - (void)uploadComplete {
 	[_uploadingImageView stopAnimating];
 	[_uploadingImageView removeFromSuperview];
 	
-	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+	[_cancelButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 }
 
 - (void)showKeyboard {
@@ -176,14 +177,14 @@
 	_subjectTextField.delegate = self;
 	[_headerBGView addSubview:_subjectTextField];
 	
-	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	_backButton.alpha = 0.75;
-	[_headerBGView addSubview:_backButton];
+	_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cancelButton.frame = CGRectMake(248.0, 0.0, 64.0, 44.0);
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	_cancelButton.alpha = 0.75;
+	[_headerBGView addSubview:_cancelButton];
 	
-	_subjectsView = [[HONCameraSubjectsView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0))];
+	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0)) AsComposeSubjects:!_isJoinChallenge];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	[self addSubview:_subjectsView];
@@ -213,14 +214,6 @@
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:submitButton];
-	
-	_subscribersBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_subscribersBackButton.frame = CGRectMake(9.0, 14.0, 44.0, 44.0);
-	[_subscribersBackButton setBackgroundImage:[UIImage imageNamed:@"backCameraButton_nonActive"] forState:UIControlStateNormal];
-	[_subscribersBackButton setBackgroundImage:[UIImage imageNamed:@"backCameraButton_Active"] forState:UIControlStateHighlighted];
-	[_subscribersBackButton addTarget:self action:@selector(_goSubscribersClose) forControlEvents:UIControlEventTouchDown];
-	_subscribersBackButton.alpha = 0.0;
-	[self addSubview:_subscribersBackButton];
 }
 
 
@@ -228,7 +221,7 @@
 - (void)_goToggleKeyboard {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Create Volley - Toggle Preview %@", ([_subjectTextField isFirstResponder]) ? @"Down" : @"Up"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	if ([_subjectTextField isFirstResponder])
 		[self _dropKeyboardAndRemove:NO];
@@ -236,58 +229,6 @@
 	else
 		[self _raiseKeyboard];
 }
-
-- (void)_goSubscribers {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Show Opponents"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_subjectsView.hidden = NO;
-	
-	[_subjectTextField resignFirstResponder];
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blackMatteView.alpha = 0.65;
-		
-//		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, 100);
-//		_subjectHolderView.alpha = 0.0;
-		_uploadingImageView.alpha = 0.0;
-		
-		_subjectsView.alpha = 1.0;
-		_subjectsView.frame = CGRectOffset(_subjectsView.frame, 0.0, -100.0);
-		
-		_buttonHolderView.alpha = 0.0;
-		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
-	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_subscribersBackButton.alpha = 1.0;
-		}];
-	}];
-}
-
-- (void)_goSubscribersClose {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Hide Opponents"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_subjectsView.hidden = NO;
-	
-	[_subjectTextField becomeFirstResponder];
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blackMatteView.alpha = 0.0;
-		_subscribersBackButton.alpha = 0.0;
-		
-//		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, -100);
-//		_subjectHolderView.alpha = 1.0;
-		_uploadingImageView.alpha = 1.0;
-		
-		_subjectsView.alpha = 0.0;
-		_subjectsView.frame = CGRectOffset(_subjectsView.frame, 0.0, 100.0);
-		
-		_buttonHolderView.alpha = 1.0;
-		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
-	} completion:nil];
-}
-
 
 - (void)_goBack {
 	[self _dropKeyboardAndRemove:YES];
@@ -302,7 +243,7 @@
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Camera Preview - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _dropKeyboardAndRemove:NO];
 	if ([_subjectTextField.text length] > 0 && ![_subjectTextField.text isEqualToString:@"how are you feeling?"]) {
@@ -322,7 +263,7 @@
 			_uploadingImageView.alpha = 0.0;
 			_placeholderLabel.alpha = 0.0;
 			_subjectTextField.alpha = 0.0;
-			_backButton.alpha = 0.0;
+			_cancelButton.alpha = 0.0;
 		} completion:^(BOOL finished) {
 		}];
 	
@@ -388,7 +329,7 @@
 		_subjectsView.alpha = 1.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
 		_buttonHolderView.alpha = 1.0;
-		_backButton.alpha = 1.0;
+		_cancelButton.alpha = 1.0;
 	}completion:^(BOOL finished) {
 	}];
 }
@@ -442,9 +383,9 @@
 }
 
 
-#pragma mark - SubjectsView Delegates
-- (void)subjectsView:(HONCameraSubjectsView *)cameraSubjectsView selectSubject:(NSString *)subject {
-	_tmpSubjectName = subject;
+#pragma mark - EmotionsPickerView Delegates
+- (void)emotionsPickerView:(HONVolleyEmotionsPickerView *)cameraSubjectsView selectEmotion:(HONEmotionVO *)emotionVO {
+	_tmpSubjectName = emotionVO.hastagName;
 	
 	if (_isJoinChallenge && !_hasEditedSubject) {
 		_hasEditedSubject = YES;
@@ -476,7 +417,7 @@
 	} else if (alertView.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Camera Preview - Create New Volley %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 0) {
 			_replyImageView.hidden = YES;
@@ -494,7 +435,7 @@
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Camera Preview - Create New Volley %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 0) {
 			_replyImageView.hidden = YES;

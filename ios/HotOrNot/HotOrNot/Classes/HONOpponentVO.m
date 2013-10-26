@@ -11,7 +11,7 @@
 @implementation HONOpponentVO
 
 @synthesize dictionary;
-@synthesize userID, fbID, username, avatarURL, imagePrefix, joinedDate, score, birthday;
+@synthesize userID, fbID, subjectName, username, avatarURL, imagePrefix, joinedDate, score, birthday;
 
 + (HONOpponentVO *)opponentWithDictionary:(NSDictionary *)dictionary {
 	HONOpponentVO *vo = [[HONOpponentVO alloc] init];
@@ -19,6 +19,7 @@
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
+	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.imagePrefix = ([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @"";
 	vo.avatarURL = ([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : [NSString stringWithFormat:@"%@.jpg", vo.imagePrefix];
@@ -37,6 +38,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.fbID = nil;
+	self.subjectName = nil;
 	self.username = nil;
 	self.avatarURL = nil;
 	self.imagePrefix = nil;

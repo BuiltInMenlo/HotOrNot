@@ -459,12 +459,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 
 	CGFloat remainingHeight = bounds.size.height - totalSize.height - kPadding - 4 * margin; 
 	CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
-	CGSize detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
-	
-	
-//	NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:detailsLabel.text attributes:@{NSFontAttributeName:detailsLabel.font}];
-//	CGRect rect = [attributedText boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-//	CGSize detailsLabelSize = rect.size;
+//	CGSize detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
+	CGSize detailsLabelSize = [detailsLabel.text boundingRectWithSize:maxSize
+										 options:NSStringDrawingUsesLineFragmentOrigin
+									  attributes:@{NSFontAttributeName:detailsLabelFont}
+										 context:nil].size;
 	
 	totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
 	totalSize.height += detailsLabelSize.height;
