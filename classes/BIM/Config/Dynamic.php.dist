@@ -18,11 +18,11 @@ class BIM_Config_Dynamic{
     
     public static function app(){
         return (object) array(
+            'team_volley_id' => 2394,
             'base_path' => '/hotornot/api-shane',
-            'sticky_volleys' => array(),
-            // 'auto_subscribes' => array(13169,2394)
-            'auto_subscribes' => array(),
-            'super_users' => array()
+            'sticky_volleys' => array(), // a volley id that we want to tag to the top of the timeline
+            'auto_subscribes' => array(), // user ids to which auto subscribe
+            'super_users' => array(), // list of advertising ids from the Iphone
         );
     }
     
