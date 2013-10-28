@@ -519,21 +519,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 //		[alertView show];
 
 		
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
-//			closeButton.backgroundColor = [HONAppDelegate honDebugGreenColor];
-			
-		} else {
-//			closeButton.backgroundColor = [HONAppDelegate honDebugRedColor];
-		}
-				
-			
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//																message:@"You need a selfie profile image to get verified. Please update your selfie now!"
-//															   delegate:self
-//													  cancelButtonTitle:@"Take Photo"
-//													  otherButtonTitles:@"OK", nil];
-//			[alertView setTag:1];
-//			[alertView show];
+//		closeButton.backgroundColor = ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) ? [HONAppDelegate honDebugGreenColor] : [HONAppDelegate honDebugRedColor];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 	}
 }
 
@@ -684,7 +671,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
-														otherButtonTitles:@"This user does not look 13 - 19", nil];
+														otherButtonTitles:[NSString stringWithFormat:@"This user does not look %d - %d", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length], nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -889,22 +876,23 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:[HONAppDelegate avatarImage]];
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:YES completion:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"		   : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _challengeVO.creatorVO.username],
+																									@"image"		   : [HONAppDelegate avatarImage],
+																									@"url"			   : @"",
+																									@"mp_event"		   : @"Timeline Details",
+																									@"view_controller" : self}];
 		}
 	
-	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Take New Avatar %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
+//	} else if (alertView.tag == 1) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Take New Avatar %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+//		
+//		if (buttonIndex == 0) {
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:NO completion:nil];
+//		}
 	
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - FAQ %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]

@@ -36,7 +36,7 @@
 		
 		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 28.0, 150.0, 19.0)];
 		creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-		creatorNameLabel.textColor = [HONAppDelegate honGrey518Color];
+		creatorNameLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.518];
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
 		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 		[self addSubview:creatorNameLabel];

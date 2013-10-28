@@ -40,6 +40,7 @@
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UIButton *verifyButton;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONUserProfileGridView *profileGridView;
@@ -60,20 +61,24 @@
 @property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) int followingCounter;
+@property (nonatomic) BOOL isUser;
+@property (nonatomic) BOOL isFriend;
 
 @property (nonatomic) BOOL isRefreshing;
-@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @end
 
 
 @implementation HONUserProfileViewController
-
 @synthesize userID = _userID;
 
 - (id)initWithBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
 		_bgImageView = imageView;
 		self.view.backgroundColor = (imageView == nil) ? [UIColor blackColor] : [UIColor clearColor];
+		
+		_isUser = NO;
+		_isFriend = NO;
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
@@ -119,9 +124,13 @@
 				[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 				
 				_userVO = [HONUserVO userWithDictionary:userResult];
+				_isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+				
+				if (!_isUser)
+					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 				
 				if (isRefresh) {
-					[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.avatarURL] placeholderImage:nil];
+					[self _makeAvatarImage];
 					
 					_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 					_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
@@ -143,6 +152,17 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		if ([error.description isEqualToString:kNetErrorNoConnection]) {
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = @"No network connection!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+		}
+		
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
 }
@@ -193,22 +213,21 @@
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
-//			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [challengesResult count]);
+			VolleyJSONLog(@"AFNetworking [-] %@: CHALLENGES:[%d]", [[self class] description], [challengesResult count]);
 			_challenges = [NSMutableArray array];
 			
 			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil) {
-					if (vo.expireSeconds != 0)
-						[_challenges addObject:vo];
-				}
+				if (vo != nil)
+					[_challenges addObject:vo];
 			}
 			
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
 			[self _makeUI];
+			
 			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapThumbSize.height * ( ( [_challenges count] / 4) + 1) )));
 			[self _makeGrid];
 		}
@@ -294,6 +313,37 @@
 	}];
 }
 
+- (void)_verifyUser:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 10], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"targetID",
+							[NSString stringWithFormat:@"%d", 1], @"approves",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else
+			[self _goRefresh];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - Public APIs
 - (void)setUserID:(int)userID {
@@ -329,9 +379,14 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:doneButton];
+	
+	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_verifyButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	[_headerView addButton:_verifyButton];
 	[_headerView addButton:doneButton];
 	[self.view addSubview:_headerView];
 	
@@ -373,18 +428,12 @@
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) {
-//			closeButton.backgroundColor = [HONAppDelegate honDebugGreenColor];
-			
-		} else {
-//			closeButton.backgroundColor = [HONAppDelegate honDebugRedColor];
-		}
-		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_tutorialImageView.alpha = 1.0;
 		}];
+		
+//		closeButton.backgroundColor = ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) ? [HONAppDelegate honDebugGreenColor] : [HONAppDelegate honDebugRedColor];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 	}
 }
 
@@ -410,16 +459,15 @@
 		[alertView show];
 	
 	} else {
-//		BOOL isFriend = NO;
 //		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
 //			if (vo.userID == _userVO.userID) {
-//				isFriend = YES;
+//				_isFriend = YES;
 //				break;
 //			}
 //		}
 //		
 //		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-//		if (!isFriend && total < [HONAppDelegate profileSubscribeThreshold]) {
+//		if (!_isFriend && total < [HONAppDelegate profileSubscribeThreshold]) {
 //			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 //																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
 //															   delegate:self
@@ -456,6 +504,22 @@
 	_gridHolderView = nil;
 	
 	[self _retrieveChallenges];
+}
+
+- (void)_goVerify {
+	[[Mixpanel sharedInstance] track:@"User Profile - Verify User"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Verify user & follow updates", @"Verify user only", [NSString stringWithFormat:@"This user does not look %d to %d", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length], nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
 }
 
 - (void)_goSubscribe {
@@ -521,10 +585,10 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"		 : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _userVO.username],
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"		   : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _userVO.username],
 																							@"image"		   : _avatarImageView.image,
-																							@"url"			 : @"",
-																							@"mp_event"		: @"Timeline Details",
+																							@"url"			   : @"",
+																							@"mp_event"		   : @"Timeline Details",
 																							@"view_controller" : self}];
 }
 
@@ -622,39 +686,11 @@
 
 
 #pragma mark - UI Presentation
-- (void)_reloadAvatarImage {
-	__weak typeof(self) weakSelf = self;
-	
-	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
-	NSMutableString *imageURL = [_userVO.avatarURL mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	[imageURL replaceOccurrencesOfString:@"Large_640x1136_o.jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -114.0, imageSize.width, imageSize.height);
-	
-	NSLog(@"PROFILE RELOADING:[%@]", imageURL);
-	
-	_avatarHolderView.clipsToBounds = YES;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
-	_avatarImageView.alpha = 0.0;
-	[_avatarHolderView addSubview:_avatarImageView];
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
-															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-								 weakSelf.avatarImageView.image = image;
-								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
-							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								 NSLog(@"%@", weakSelf.userVO.avatarURL);
-							 }];
-}
-
 - (void)_makeUI {
-	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	
-	BOOL isFriend = NO;
-	if (!isUser) {
+	if (!_isUser) {
 		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
 			if (vo.userID == _userVO.userID) {
-				isFriend = YES;
+				_isFriend = YES;
 				break;
 			}
 		}
@@ -667,39 +703,43 @@
 	verifiedImageView.hidden = !_userVO.isVerified;
 	[_headerView addButton:verifiedImageView];
 	
-	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 324.0)];
-	_avatarHolderView.clipsToBounds = YES;
-	[_scrollView addSubview:_avatarHolderView];
+//	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 264.0)];
+//	_avatarHolderView.clipsToBounds = YES;
+//	[_scrollView addSubview:_avatarHolderView];
+//	
+//	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
+//	[imageLoadingView startAnimating];
+//	[_avatarHolderView addSubview:imageLoadingView];
+//	
+//	
+//	NSLog(@"PROFILE LOADING:[%@]", _userVO.avatarURL);
+//	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//		_avatarImageView.image = image;
+//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//			_avatarImageView.alpha = 1.0;
+//		} completion:nil];
+//	};
+//	
+//	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//	};
+//	
+//	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -122.0, 320.0, 568.0)];
+//	[_avatarHolderView addSubview:_avatarImageView];
+//	_avatarImageView.alpha = 0.0;
+//	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+//							placeholderImage:nil
+//									 success:imageSuccessBlock
+//									 failure:imageFailureBlock
+//	 ];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
-	[imageLoadingView startAnimating];
-	[_avatarHolderView addSubview:imageLoadingView];
+	[self _makeAvatarImage];
 	
-	NSMutableString *imageURL = [_userVO.avatarURL mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake(0.0, -122.0, 320.0, 568.0);
-	
-	NSLog(@"PROFILE LOADING:[%@]", imageURL);
-	
-	__weak typeof(self) weakSelf = self;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:frame];
-	_avatarImageView.alpha = 0.0;
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
-															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-								weakSelf.avatarImageView.image = image;
-								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
-							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								[weakSelf _reloadAvatarImage];
-							}];
-	[_avatarHolderView addSubview:_avatarImageView];
-	
-	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];;
-	if (_userVO.userID == newestChallenge.creatorVO.userID)
+	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];
+	BOOL isEmotionFound = (_userVO.userID == newestChallenge.creatorVO.userID);
+	if (isEmotionFound)
 		_heroOpponentVO = newestChallenge.creatorVO;
 	
-	NSLog(@"newestChallenge:[%@]", newestChallenge.dictionary);
+//	NSLog(@"newestChallenge:[%@]", newestChallenge.dictionary);
 	
 	for (HONOpponentVO *vo in newestChallenge.challengers) {
 		NSLog(@"opponent:[%@]", vo.dictionary);
@@ -710,7 +750,6 @@
 	}
 	
 	
-	BOOL isEmotionFound = NO;
 	HONEmotionVO *emotionVO;
 	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
 		if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
@@ -728,24 +767,27 @@
 		}
 	}
 	
+	NSLog(@"%@", emotionVO.imageLargeURL);
+	
 	if (isEmotionFound) {
 		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 278.0, 43.0, 43.0)];
+		emoticonImageView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
 		[_scrollView addSubview:emoticonImageView];
-		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0 + (((int)isEmotionFound) * 32.0), 288.0, 250.0, 22.0)];
-		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.text = _heroOpponentVO.subjectName;
-		[_scrollView addSubview:subjectLabel];
 	}
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0 + (((int)isEmotionFound) * 32.0), 288.0, 250.0, 22.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+	subjectLabel.textColor = [UIColor whiteColor];
+	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = newestChallenge.subjectName;
+	[_scrollView addSubview:subjectLabel];
 	
 	
 	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profilePicButton.frame = CGRectMake(270.0, 278.0, 44.0, 44.0);
+	profilePicButton.frame = CGRectMake(123.0, 115.0, 74.0, 74.0);
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 	[profilePicButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
@@ -756,29 +798,29 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 350.0, 260.0, 30.0)];
-	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 289.0, 260.0, 35.0)];
+	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
 
-	_subscribeesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 390.0, 260.0, 30.0)];
-	_subscribeesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_subscribeesLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 336.0, 260.0, 35.0)];
+	_subscribeesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
 	_subscribeesLabel.textColor = [UIColor whiteColor];
 	_subscribeesLabel.backgroundColor = [UIColor clearColor];
 	_subscribeesLabel.text = [NSString stringWithFormat:@"%@ following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
 	[_scrollView addSubview:_subscribeesLabel];
 
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 430.0, 260.0, 30.0)];
-	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 384.0, 260.0, 35.0)];
+	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_volleysLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 470.0, 260.0, 30.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 432.0, 260.0, 35.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
@@ -837,9 +879,9 @@
 		[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		[_subscribeButton setTitle:(isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
-		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-		_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 64.0 : 47.0, 44.0);
+		[_subscribeButton setTitle:(_isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
+		[_subscribeButton addTarget:self action:(_isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+		_subscribeButton.frame = CGRectMake(0.0, 0.0, (_isFriend) ? 64.0 : 47.0, 44.0);
 
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
@@ -866,8 +908,44 @@
 	}
 }
 
+- (void)_makeAvatarImage {
+	NSLog(@"PROFILE LOADING:[%@]", _userVO.avatarURL);
+	
+	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 264.0)];
+	_avatarHolderView.clipsToBounds = YES;
+	[_scrollView addSubview:_avatarHolderView];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
+	[imageLoadingView startAnimating];
+	[_avatarHolderView addSubview:imageLoadingView];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_avatarImageView.image = image;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+	};
+	
+	if (_avatarImageView != nil) {
+		[_avatarImageView removeFromSuperview];
+		_avatarImageView = nil;
+	}
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -122.0, 320.0, 568.0)];
+	[_avatarHolderView addSubview:_avatarImageView];
+	_avatarImageView.alpha = 0.0;
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							placeholderImage:nil
+									 success:imageSuccessBlock
+									 failure:imageFailureBlock
+	 ];
+}
+
 - (void)_makeGrid {
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:529.0 forChallenges:_challenges asPrimaryOpponent:_heroOpponentVO];
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:498.0 forChallenges:_challenges asPrimaryOpponent:_heroOpponentVO];
 	_profileGridView.delegate = self;
 	[_scrollView addSubview:_profileGridView];
 	
@@ -911,24 +989,24 @@
 //	}
 }
 
--(void)_makeGridElement:(HONOpponentVO *)challenger {
-	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_challengeCounter % 4), kSnapThumbSize.height * (_challengeCounter / 4));
-	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
-	[_gridHolderView addSubview:imageHolderView];
-	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-	imageView.userInteractionEnabled = YES;
-	[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", challenger.imagePrefix]] placeholderImage:nil];
-	[imageHolderView addSubview:imageView];
-	
-	UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	tapHoldButton.frame = imageView.frame;
-	[tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
-	[imageHolderView addSubview:tapHoldButton];
-	_challengeCounter++;
-	
-}
+//-(void)_makeGridElement:(HONOpponentVO *)challenger {
+//	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_challengeCounter % 4), kSnapThumbSize.height * (_challengeCounter / 4));
+//	
+//	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
+//	[_gridHolderView addSubview:imageHolderView];
+//	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
+//	imageView.userInteractionEnabled = YES;
+//	[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", challenger.imagePrefix]] placeholderImage:nil];
+//	[imageHolderView addSubview:imageView];
+//	
+//	UIButton *tapHoldButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	tapHoldButton.frame = imageView.frame;
+//	[tapHoldButton addTarget:self action:@selector(_goTapHoldAlert) forControlEvents:UIControlEventTouchUpInside];
+//	[imageHolderView addSubview:tapHoldButton];
+//	_challengeCounter++;
+//	
+//}
 
 
 #pragma mark - ScrollView Delegates
@@ -1086,5 +1164,35 @@
 		}
 	}
 }
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Verify User%@", (buttonIndex == 0) ? @" & Follow" : (buttonIndex == 1) ? @"" : @"Flag"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+		
+		if (buttonIndex == 0) {
+			[self _verifyUser:_userVO.userID];
+			[self _addFriend:_userVO.userID];
+		
+		} else if (buttonIndex == 1) {
+			[self _verifyUser:_userVO.userID];
+			
+		} else if (buttonIndex == 2) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																message:@"This person will be flagged for review"
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"Yes, flag user", nil];
+			
+			[alertView setTag:2];
+			[alertView show];
+		}
+	}
+}
+
 
 @end

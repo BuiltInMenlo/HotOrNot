@@ -42,11 +42,11 @@
 		self.primaryOpponentVO = opponentVO;
 		self.selectedOpponentVO = nil;
 		
-		self.challenges = [NSMutableArray arrayWithObject:challengeVO];
 		self.challengeVO = challengeVO;
+		self.challenges = [NSMutableArray arrayWithObject:self.challengeVO];
 		
 		
-		NSLog(@"[%@] -> (DETAILS) %@", [[self class] description], NSStringFromCGRect(self.frame));
+		NSLog(@"[%@] -> (DETAILS INIT) %d", [[self class] description], [self.challenges count]);
 	}
 	
 	return (self);
@@ -69,11 +69,10 @@
 
 #pragma mark - UI Presentation
 - (void)layoutGrid {
-	
 	_holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbSize.height * (([self.gridOpponents count] / 4) + 1))];
 	[self addSubview:_holderView];
 	
-	NSLog(@"layoutGrid (SUPER) -> [%@]", NSStringFromCGRect(_holderView.frame));
+//	NSLog(@"layoutGrid (SUPER) -> [%@]", NSStringFromCGRect(_holderView.frame));
 	
 	_cells = [NSMutableArray new];
 	
@@ -89,26 +88,26 @@
 }
 
 - (void)createItemForParticipant:(HONOpponentVO *)opponentVO {
-//	HONOpponentVO *vo = ([opponentVO.imagePrefix isEqualToString:_primaryOpponentVO.imagePrefix]) ? _challengeVO.creatorVO : opponentVO;
+	HONOpponentVO *vo = ([opponentVO.imagePrefix isEqualToString:_primaryOpponentVO.imagePrefix]) ? _challengeVO.creatorVO : opponentVO;
+	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@Large_640x1136.jpg", [vo.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
 	
 	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_participantCounter % 4), kSnapThumbSize.height * (_participantCounter / 4));
-//	NSLog(@"_createItemForParticipant:[%d]-- @->POS: %@", _participantCounter, NSStringFromCGPoint(pos));
 	
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
+	imageHolderView.backgroundColor = [HONAppDelegate honDebugColorByName:@"red" atOpacity:0.33];
 	[_holderView addSubview:imageHolderView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-	[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", opponentVO.imagePrefix]] placeholderImage:nil];
+	[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.imagePrefix]] placeholderImage:nil];
 	[imageHolderView addSubview:imageView];
 	
-//	NSLog(@"REPLY:[%d]><[%d]", opponentVO.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-	if ((opponentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
+	if (![vo.subjectName isEqualToString:_challengeVO.creatorVO.subjectName])
 		[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
 	
 	_profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_profileButton.frame = imageView.frame;
 	_profileButton.hidden = YES;
-	[_profileButton setTag:opponentVO.userID];
+	[_profileButton setTag:vo.userID];
 	[imageHolderView addSubview:_profileButton];
 	
 	_participantCounter++;

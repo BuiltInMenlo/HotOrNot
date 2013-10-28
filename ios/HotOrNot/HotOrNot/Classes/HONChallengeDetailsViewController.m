@@ -63,9 +63,25 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
+		
+		NSMutableArray *mChallenge = [vo.challengers mutableCopy];
+		int min = ([vo.challengers count] < 5) ? 0 : 5;
+		int diff = ([vo.challengers count]) - min;
+		int len = (diff == min) ? 0 : diff;
+		[mChallenge removeObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(min, len)]];
+		
 //		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+//		NSLog(@"CREATOR[%@] -- CHALLENGERS:[%d]", vo.creatorVO.subjectName, [vo.challengers count]);
 		_challengeVO = vo;
 		_bgImageView = imageView;
+		
+		int cnt = 0;
+		for (HONOpponentVO *vo in _challengeVO.challengers) {
+			NSLog(@"\tCHALLENGER:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", vo.subjectName);
+			
+			if (++cnt == 5)
+				break;
+		}
 		
 		self.view.backgroundColor = [UIColor clearColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -226,22 +242,18 @@
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina4Inch] * 88.0) + 500.0 + (kSnapThumbSize.height * ([_challengeVO.challengers count] / 4))));
-	_scrollView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
+	_scrollView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
-	NSLog(@"SCROLLVIEW.contentSize:[%@]", NSStringFromCGSize(_scrollView.contentSize));
-	
-	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _scrollView.contentSize.height)];
-	_contentHolderView.frame = CGRectOffset(_contentHolderView.frame, 0.0, -64.0);
-	_contentHolderView.alpha = 0.5;
+	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, _scrollView.contentSize.height)];
+	_contentHolderView.frame = CGRectOffset(_contentHolderView.frame, 0.0, _scrollView.contentInset.top);
 	[_scrollView addSubview:_contentHolderView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-	_refreshTableHeaderView.frame = CGRectOffset(_refreshTableHeaderView.frame, 0.0, 64.0);
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height + 64.0, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
 	
@@ -357,7 +369,7 @@
 //		
 //		CGPoint pos = CGPointMake(kSnapThumbSize.width * (cnt % 4), kSnapThumbSize.height * (cnt / 4));
 //		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
-//		opponentHolderView.backgroundColor = [HONAppDelegate honDebugRedColor];
+//		opponentHolderView.backgroundColor = [HONAppDelegate honDebugColorByName:@"red" atOpacity:nil];
 //		[_gridHolderView addSubview:opponentHolderView];
 //		
 //		UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];

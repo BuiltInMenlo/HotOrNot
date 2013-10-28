@@ -9,10 +9,35 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Volley.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>4C3B4876181CF1C10073B91F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4C3B487C181CF2990073B91F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4C3B4883181CF2F50073B91F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>4C62652415F96C7100AA7FCE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4CCA417D181CE9A200FC9863</key>
 		<dict>
 			<key>primary</key>
 			<true/>

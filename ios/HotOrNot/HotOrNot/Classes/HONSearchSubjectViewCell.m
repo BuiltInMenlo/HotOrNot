@@ -29,7 +29,7 @@
 	
 	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 35.0, 200.0, 16.0)];
 	scoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
-	scoreLabel.textColor = [HONAppDelegate honGrey635Color];
+	scoreLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.635];
 	scoreLabel.backgroundColor = [UIColor clearColor];
 	scoreLabel.text = (_subjectVO.score == 1) ? NSLocalizedString(@"search_snap", nil) : [NSString stringWithFormat:NSLocalizedString(@"search_snaps", nil), _subjectVO.score];
 	[self addSubview:scoreLabel];

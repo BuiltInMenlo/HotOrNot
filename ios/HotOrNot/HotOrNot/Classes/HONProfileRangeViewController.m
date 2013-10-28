@@ -138,7 +138,7 @@
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(6.0, 8.0, 230.0, 30.0)];
 	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
-	_birthdayLabel.textColor = [HONAppDelegate honGrey710Color];
+	_birthdayLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.710];
 	_birthdayLabel.text = [_ranges objectAtIndex:0];
 	[inputBGImageView addSubview:_birthdayLabel];
 	

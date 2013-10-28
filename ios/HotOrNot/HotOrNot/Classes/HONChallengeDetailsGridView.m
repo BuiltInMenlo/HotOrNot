@@ -18,7 +18,7 @@
 
 - (id)initAtPos:(int)yPos forChallenge:(HONChallengeVO *)challengeVO asPrimaryOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initAtPos:yPos forChallenge:challengeVO asPrimaryOpponent:opponentVO])) {
-		NSLog(@"[%@]", [[self class] description]);
+//		NSLog(@"[%@] == (%d) [%@]", [[self class] description], [challengeVO.challengers count], challengeVO.dictionary);
 		[self layoutGrid];
 	}
 	

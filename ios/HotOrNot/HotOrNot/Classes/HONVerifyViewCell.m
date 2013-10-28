@@ -159,7 +159,7 @@
 	ageLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	ageLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	ageLabel.backgroundColor = [UIColor clearColor];
-	ageLabel.text = ([_challengeVO.creatorVO.birthday timeIntervalSince1970] == 0.0) ? @"hasn't set a birthday yet" : @"does this user look 13 to 19?";
+	ageLabel.text = ([_challengeVO.creatorVO.birthday timeIntervalSince1970] == 0.0) ? @"hasn't set a birthday yet" : [NSString stringWithFormat:@"does this user look %d to %d?", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length];
 	[footerView addSubview:ageLabel];
 	
 	

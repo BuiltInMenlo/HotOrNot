@@ -82,7 +82,7 @@
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 320.0, kOrthodoxTableHeaderHeight)];
 	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:12];
-	label.textColor = [HONAppDelegate honGrey318Color];
+	label.textColor = [HONAppDelegate honPercentGreyscaleColor:0.318];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (_isJoinVolley) ? @"REPLIES" : @"TRENDING";
 	[headerView addSubview:label];

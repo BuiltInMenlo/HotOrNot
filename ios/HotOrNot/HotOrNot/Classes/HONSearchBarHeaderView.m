@@ -42,7 +42,7 @@
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_searchTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
-		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
+		[_searchTextField setTextColor:[HONAppDelegate honPercentGreyscaleColor:0.635]];
 		[_searchTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_searchTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
@@ -69,7 +69,7 @@
 	
 	} else {
 		[_searchTextField resignFirstResponder];
-		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
+		[_searchTextField setTextColor:[HONAppDelegate honPercentGreyscaleColor:0.635]];
 	}
 	
 	_staticBGImageView.alpha = (isFocused) ? 1.0 : 0.85;
@@ -95,7 +95,7 @@
 	
 	
 	_searchTextField.text = @"Tap here to search";
-	[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
+	[_searchTextField setTextColor:[HONAppDelegate honPercentGreyscaleColor:0.635]];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 0.0;
 		_staticBGImageView.alpha = 0.85;
@@ -126,7 +126,7 @@
 		
 		_searchTextField.text = @"Tap here to search";
 		_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
-		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
+		[_searchTextField setTextColor:[HONAppDelegate honPercentGreyscaleColor:0.635]];
 		[self.delegate searchBarHeaderCancel:self];
 		//[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	}
@@ -149,7 +149,7 @@
 		_cancelButton.alpha = 1.0;
 	}];
 	
-	textField.text = (_isUser) ? @"@" : @"#";
+	textField.text = (_isUser) ? @"" : @"#";
 	textField.frame = CGRectMake(9.0, 11.0, 200.0, 24.0);
 	[_searchTextField setTextColor:[UIColor whiteColor]];
 	[self.delegate searchBarHeaderFocus:self];
@@ -158,7 +158,7 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {	
 	if ([textField.text isEqualToString:@""])
-		textField.text = (_isUser) ? @"@" : @"#";
+		textField.text = (_isUser) ? @"" : @"#";
 	
 	return (YES);
 }

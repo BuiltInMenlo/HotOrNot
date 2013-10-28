@@ -63,7 +63,7 @@
 	
 	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 180.0, 18.0)];
 	contactLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	contactLabel.textColor = [HONAppDelegate honGrey455Color];
+	contactLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.455];
 	contactLabel.backgroundColor = [UIColor clearColor];
 	contactLabel.text = [NSString stringWithFormat:@"@%@", _celebVO.username];
 	[self addSubview:contactLabel];

@@ -188,7 +188,7 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = ([[userResult objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+				_progressHUD.labelText = ((BOOL)[[userResult objectForKey:@"result"] intValue]) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -263,12 +263,12 @@
 				
 				[self _retreiveSubscribees];
 				
-				NSLog(@"AGE RANGE:[%d, %d] <%f>", [HONAppDelegate ageRange].location, [HONAppDelegate ageRange].length, [[NSDate date] timeIntervalSinceDate:_datePicker.date]);
+				NSLog(@"AGE RANGE:[%d, %d] <%f>", [HONAppDelegate ageRangeAsSeconds:YES].location, [HONAppDelegate ageRangeAsSeconds:YES].length, [[NSDate date] timeIntervalSinceDate:_datePicker.date]);
 				
 				//if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20) {
-				if (!NSLocationInRange([[NSDate date] timeIntervalSinceDate:_datePicker.date], [HONAppDelegate ageRange])) {
+				if (!NSLocationInRange([[NSDate date] timeIntervalSinceDate:_datePicker.date], [HONAppDelegate ageRangeAsSeconds:YES])) {
 					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																		message:@"Volley is intended for young adults 14 to 19. You may get flagged by the community."
+																		message:[NSString stringWithFormat:@"Volley is intended for young adults %d to %d. You may get flagged by the community.", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length]
 																	   delegate:self
 															  cancelButtonTitle:@"OK"
 															  otherButtonTitles:nil];
@@ -294,7 +294,7 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = ([[userResult objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+				_progressHUD.labelText = ((BOOL)[[userResult objectForKey:@"result"] intValue]) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -429,7 +429,7 @@
 	
 	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
 	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
-	_usernameLabel.textColor = [HONAppDelegate honGrey710Color];
+	_usernameLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.710];
 	_usernameLabel.backgroundColor = [UIColor clearColor];
 //	_usernameLabel.text = @"Enter username";
 	[self.view addSubview:_usernameLabel];
@@ -446,7 +446,7 @@
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = @"Enter username";
-	_usernameTextField.text = @"snap";//[[HONAppDelegate infoForUser] objectForKey:@"username"];//@"";
+	_usernameTextField.text = @"";//@"snap";//[[HONAppDelegate infoForUser] objectForKey:@"username"];//
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
@@ -473,7 +473,7 @@
 	_emailTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_emailTextField.keyboardType = UIKeyboardTypeEmailAddress;
 	_emailTextField.placeholder = @"Enter email";
-	_emailTextField.text = @"snap@snap.com";
+	_emailTextField.text = @"";//@"snap@snap.com";
 	[_emailTextField setTag:1];
 	_emailTextField.delegate = self;
 	[self.view addSubview:_emailTextField];
@@ -484,7 +484,7 @@
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
 	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
-	_birthdayLabel.textColor = [HONAppDelegate honGrey710Color];
+	_birthdayLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.710];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
 	_birthdayLabel.text = @"What is your birthday?";
 	[self.view addSubview:_birthdayLabel];
@@ -503,7 +503,7 @@
 	[yearDateFormat setDateFormat:@"yyyy-MM-dd"];
 	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	_datePicker.date = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [yearDateFormat dateFromString:@"1998-01-01"] : [yearDateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
+	_datePicker.date = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [yearDateFormat dateFromString:@"1970-01-01"] : [yearDateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
 	_datePicker.minimumDate = [yearDateFormat dateFromString:@"1970-01-01"];
 	_datePicker.maximumDate = [NSDate date];

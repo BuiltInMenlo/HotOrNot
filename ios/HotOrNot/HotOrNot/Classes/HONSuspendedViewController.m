@@ -72,17 +72,17 @@
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-//			if ([[result objectForKey:@"result"] intValue] == 1) {
+//			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
-			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Passcode Verified"
-																message:@"Your account has been reinstated"
-															   delegate:self
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:nil];
-			[alertView setTag:0];
-			[alertView show];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Passcode Verified"
+																	message:@"Your account has been reinstated"
+																   delegate:self
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView setTag:0];
+				[alertView show];
 				
 				
 //			} else {

@@ -35,7 +35,6 @@
 @property (nonatomic, strong) S3PutObjectRequest *por;
 @property (nonatomic, strong) UIImage *rawImage;
 @property (nonatomic, strong) UIImage *processedImage;
-@property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *challengeParams;
@@ -67,7 +66,7 @@
 }
 
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"%@ - initAsJoinChallenge:[%d] (%d/%d)", [self description], challengeVO.challengeID, challengeVO.creatorVO.userID, ((HONOpponentVO *)[challengeVO.challengers lastObject]).userID);
+	NSLog(@"%@ - initAsJoinChallenge:[%d] \"%@\"", [self description], challengeVO.challengeID, challengeVO.subjectName);
 	if ((self = [super init])) {
 		_volleySubmitType = HONVolleySubmitTypeJoin;
 		
@@ -403,7 +402,6 @@
 																   [NSString stringWithFormat:@"%d", 0], @"pics",
 																   [NSString stringWithFormat:@"%d", 0], @"age",
 																   _challengeVO.creatorVO.username, @"username",
-																   _challengeVO.creatorVO.fbID, @"fb_id",
 																   _challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
 			[_subscriberIDs addObject:[NSNumber numberWithInt:_challengeVO.creatorVO.userID]];
 		}
@@ -428,7 +426,6 @@
 																		   [NSString stringWithFormat:@"%d", 0], @"pics",
 																		   [NSString stringWithFormat:@"%d", 0], @"age",
 																		   vo.username, @"username",
-																		   vo.fbID, @"fb_id",
 																		   vo.avatarURL, @"avatar_url", nil]]];
 					[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
 				}
@@ -616,42 +613,43 @@
 		[alertView show];
 		
 	} else {
-//		if ([_subjectName length] == 0)
-//			_subjectName = [[HONAppDelegate defaultSubjects] objectAtIndex:(arc4random() % [[HONAppDelegate defaultSubjects] count])];
-		
+//		NSMutableArray *params = @{@"imgURL" : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
+								
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
 									   [NSString stringWithFormat:@"%d", _volleySubmitType], @"action",
 									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									   [NSString stringWithFormat:@"%d", 1], @"expires",
-									   _subjectName, @"subject",
-									   @"N", @"changedSubject",
-									   @"", @"username",
-									   @"N", @"isPrivate",
-									   @"0", @"challengerID",
-									   @"0", @"fbID", nil];
+									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengerID",
+									   _subjectName, @"subject", nil];
+//									   [NSString stringWithFormat:@"%d", 1], @"expires",
+//									   @"N", @"changedSubject",
+//									   @"", @"username",
+//									   @"N", @"isPrivate",
+//									   @"0", @"challengerID",
+//									   @"0", @"fbID", nil];
+
 		
-		NSString *usernames = @"";
-		if ([_subscribers count] > 0) {
-			for (HONUserVO *vo in _subscribers)
-				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
-		}
-		[params setObject:[usernames substringToIndex:([usernames length] > 0) ? [usernames length] - 1 : 0] forKey:@"usernames"];
-		
-		
-		if (_challengeVO != nil)
-			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+//		NSString *usernames = @"";
+//		if ([_subscribers count] > 0) {
+//			for (HONUserVO *vo in _subscribers)
+//				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
+//		}
+//		[params setObject:[usernames substringToIndex:([usernames length] > 0) ? [usernames length] - 1 : 0] forKey:@"usernames"];
 		
 		
-		if (_volleySubmitType == HONVolleySubmitTypeJoin && ![_subjectName isEqualToString:_challengeVO.subjectName]) {
-			[params setObject:@"Y" forKey:@"changedSubject"];
-			
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:@"Changing the hashtag creates a new Volley."
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
+//		if (_challengeVO != nil)
+//			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+		
+		
+//		if (_volleySubmitType == HONVolleySubmitTypeJoin && ![_subjectName isEqualToString:_challengeVO.subjectName]) {
+//			[params setObject:@"Y" forKey:@"changedSubject"];
+//			
+//			[[[UIAlertView alloc] initWithTitle:@""
+//										message:@"Changing the hashtag creates a new Volley."
+//									   delegate:nil
+//							  cancelButtonTitle:@"OK"
+//							  otherButtonTitles:nil] show];
+//		}
 		
 		_challengeParams = [params copy];
 		NSLog(@"PARAMS:[%@]", _challengeParams);
@@ -737,10 +735,6 @@
 	}
 	
 	NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(_processedImage.size), [HONImagingDepictor totalLuminance:_processedImage]);
-	
-	_usernames = [NSMutableArray array];
-	for (HONUserVO *vo in _subscribers)
-		[_usernames addObject:vo.username];
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];

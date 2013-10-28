@@ -127,6 +127,10 @@ const CGFloat kAvatarDim = 200.0f;
 const BOOL kIsImageCacheEnabled = YES;
 NSString * const kTwilioSMS = @"6475577873";
 
+// network error descriptions
+NSString * const kNetErrorNoConnection = @"The Internet connection appears to be offline.";
+
+
 #if __DEV_BUILD___ == 0
 @interface HONAppDelegate()
 #else
@@ -234,8 +238,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twitter_share"]);
 }
 
-+ (NSRange)ageRange {
-	return (NSMakeRange([[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:0] intValue] * 31536000, [[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:1] intValue] * 31536000));
++ (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds {	
+	return ((isInSeconds) ? NSMakeRange([[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:0] intValue] * 31536000, [[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:1] intValue] * 31536000) : NSMakeRange([[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:0] intValue], [[[[NSUserDefaults standardUserDefaults] objectForKey:@"age_range"] objectAtIndex:1] intValue]));
 }
 
 + (NSString *)s3BucketForType:(NSString *)bucketType {
@@ -252,6 +256,25 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (BOOL)switchEnabledForKey:(NSString *)key {
 	return ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"switches"] objectForKey:key] uppercaseString] isEqualToString:@"YES"]);
+}
+
++ (int)incTotalForCounter:(NSString *)key {
+	NSString *counterName = [NSString stringWithFormat:@"%@_total", [key lowercaseString]];
+	int tot = [[[NSUserDefaults standardUserDefaults] objectForKey:counterName] intValue];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++tot] forKey:counterName];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	counterName = nil;
+	return (tot);
+}
+
++ (int)totalForCounter:(NSString *)key {
+	NSString *counterName = [NSString stringWithFormat:@"%@_total", [key lowercaseString]];
+	int tot = [[[NSUserDefaults standardUserDefaults] objectForKey:counterName] intValue];
+	
+	counterName = nil;
+	return (tot);
 }
 
 + (NSArray *)composeEmotions {
@@ -630,28 +653,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([UIColor colorWithRed:0.204 green:0.373 blue:0.337 alpha:1.0]);
 }
 
-+ (UIColor *)honGrey710Color {
-	return ([UIColor colorWithWhite:0.710 alpha:1.0]);
-}
-
-+ (UIColor *)honGrey635Color {
-	return ([UIColor colorWithWhite:0.635 alpha:1.0]);
-}
-
-+ (UIColor *)honGrey608Color {
-	return ([UIColor colorWithWhite:0.608 alpha:1.0]); //9b9b9b
-}
-
-+ (UIColor *)honGrey518Color {
-	return ([UIColor colorWithWhite:0.518 alpha:1.0]);
-}
-
-+ (UIColor *)honGrey455Color {
-	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
-}
-
-+ (UIColor *)honGrey318Color {
-	return ([UIColor colorWithWhite:0.318 alpha:1.0]); //515151
++ (UIColor *)honPercentGreyscaleColor:(CGFloat)percent {
+	return ([UIColor colorWithWhite:percent alpha:1.0]);
 }
 
 + (UIColor *)honBlueTextColor {
@@ -670,17 +673,17 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]);
 }
 
-
-+(UIColor *)honDebugRedColor {
-	return ([UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33]);
-}
-
-+(UIColor *)honDebugGreenColor {
-	return ([UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.33]);
-}
-
-+(UIColor *)honDebugBlueColor {
-	return ([UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:0.33]);
++ (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent {
+	CGFloat opacity = (percent == 0.0) ? 0.33 : MIN(MAX(0.00, percent), 1.00);
+	
+	if ([[colorName uppercaseString] isEqualToString:@"FUSCHIA"])
+		return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:opacity]);
+		
+	else
+		return ([UIColor colorWithRed:((float)[[colorName uppercaseString] isEqualToString:@"RED"]) green:((float)[[colorName uppercaseString] isEqualToString:@"GREEN"]) blue:((float)[[colorName uppercaseString] isEqualToString:@"BLUE"]) alpha:opacity]);
+	
+	
+	return ([UIColor colorWithWhite:0.0 alpha:opacity]);
 }
 
 
@@ -996,6 +999,7 @@ NSString * const kTwilioSMS = @"6475577873";
 						@"preview_total",
 						@"details_total",
 						@"camera_total",
+						@"join_total",
 						@"profile_total",
 						@"like_total"];
 	
@@ -1503,9 +1507,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)_registerUser {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 1], @"action",
-//							[HONAppDelegate deviceToken], @"token",
-							nil];
+							[NSString stringWithFormat:@"%d", 1], @"action", nil];
 	
 //	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
@@ -1532,11 +1534,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
-				[HONAppDelegate writeUserInfo:userResult];
-				
-//				NSMutableString *avatarURL = [[userResult objectForKey:@"avatar_url"] mutableCopy];
-//				[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"_o" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-//				[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+				[HONAppDelegate writeUserInfo:userResult];				
 				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) {
@@ -1545,14 +1543,17 @@ NSString * const kTwilioSMS = @"6475577873";
 				}
 			}
 			
-			if ([[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue] == 1) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-						
-			} else {
-				[self _initTabs];
-			}
+#if __IGNORE_SUSPENDED__ == 1
+			[self _initTabs];
+#else
+//			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+//						
+//			} else
+//				[self _initTabs];
+#endif
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

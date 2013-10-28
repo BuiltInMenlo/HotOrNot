@@ -16,6 +16,7 @@
 #define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
 #define __RESET_TOTALS__ 0
+#define __IGNORE_SUSPENDED__ 1
 
 
 // api endpts
@@ -79,6 +80,9 @@ const CGFloat kAvatarDim;
 const BOOL kIsImageCacheEnabled;
 extern NSString * const kTwilioSMS;
 
+// network error descriptions
+extern NSString * const kNetErrorNoConnection;
+
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
 
@@ -96,13 +100,15 @@ extern NSString * const kTwilioSMS;
 
 + (NSString *)s3BucketForType:(NSString *)bucketType;
 
-+ (NSRange)ageRange;
++ (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds;
 
 + (int)profileSubscribeThreshold;
 
 + (NSString *)bannerForSection:(int)section;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
++ (int)incTotalForCounter:(NSString *)key;
++ (int)totalForCounter:(NSString *)key;
 
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;
@@ -168,21 +174,15 @@ extern NSString * const kTwilioSMS;
 + (UIColor *)honOrthodoxGreenColor;
 + (UIColor *)honDarkGreenColor;
 
-+ (UIColor *)honGrey710Color;
-+ (UIColor *)honGrey635Color;
-+ (UIColor *)honGrey608Color;
-+ (UIColor *)honGrey518Color;
-+ (UIColor *)honGrey455Color;
-+ (UIColor *)honGrey318Color;
++ (UIColor *)honPercentGreyscaleColor:(CGFloat)percent;
 
 + (UIColor *)honBlueTextColor;
 + (UIColor *)honGreenTextColor;
 + (UIColor *)honGreyTimeColor;
 + (UIColor *)honProfileStatsColor;
 
-+ (UIColor *)honDebugRedColor;
-+ (UIColor *)honDebugGreenColor;
-+ (UIColor *)honDebugBlueColor;
++ (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent;
+
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
@@ -193,4 +193,3 @@ extern NSString * const kTwilioSMS;
 @end
 
 
-// [UIColor colorWithRed:0.761 green:0.340 blue:0.846 alpha:0.5];
