@@ -304,4 +304,22 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         }
         return true;
     }
+    
+    public function purge(){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $user = BIM_Utils::getSessionUser();
+        if( $user && $user->isExtant() ){
+            BIM_Model_User::archiveUser($user->id);
+        }
+        return true;
+    }
+    
+    public function purgeContent(){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $user = BIM_Utils::getSessionUser();
+        if( $user && $user->isExtant() ){
+            $user->purgeContent();
+        }
+        return true;
+    }
 }

@@ -632,27 +632,51 @@ delete from tblUsers where username like "%yoosnapyoo";
      * 
      */
     public static function archiveUser( $ids ){
+        $wantArray = true;
         if( !is_array($ids)){
             $ids = array( $ids );
+            $wantArray = false;
         }
         foreach( $ids as $id ){
             $user = BIM_Model_User::get($id);
-            print_r( array("archiving: ", $user ) );
             $user->archive();
             $user->delete();
             $user->removeFriends();
+            $return[] = $user;
         }
+        
+        if( !$wantArray ){
+            if( $return ){
+                $return = $return[0];
+            } else {
+                $return = null;
+            }
+        }
+        
+        return $return;
     }
     
     public static function archiveByName( $userNames ){
+        $wantArray = true;
         if( !is_array($userNames)){
             $userNames = array( $userNames );
+            $wantArray = false;
         }
-
+        
+        $return = array();
         foreach( $userNames as $name ){
             $user = BIM_Model_User::getByUsername($name);
-            self::archiveUser($user->id);
+            $return[] = self::archiveUser($user->id);
         }
+        
+        if( !$wantArray ){
+            if( $return ){
+                $return = $return[0];
+            } else {
+                $return = null;
+            }
+        }
+        return $return;
     }
     
     public static function blockUser( $ids ){
@@ -682,10 +706,17 @@ delete from tblUsers where username like "%yoosnapyoo";
     }
     
     public function block(){
+        $this->purgeContent();
+        $this->removeFriends();
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->block($this->id);
+    }
+    
+    public function purgeContent(){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $this->purgeFromCache();
         $this->purgeVolleys();
-        $dao->block($this->id);
+        $dao->purgeContent($this->id);
     }
     
     public function getVolleyIds(){

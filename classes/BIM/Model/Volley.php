@@ -329,9 +329,9 @@ class BIM_Model_Volley{
         $vv = self::getVerifyVolley($targetId);
         if( $vv->isNotExtant() ){
     	    $target = BIM_Model_User::get( $targetId );
-    	    if( $target->ageOK() ){
+    	    //if( $target->ageOK() ){
                 $vv = self::createVerifyVolley($targetId);
-    	    }
+    	    //}
         } else if( $imgUrl ){
             $vv->updateImage( $imgUrl );
         }
