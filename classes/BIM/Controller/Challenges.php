@@ -195,13 +195,22 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
             $challenges = new BIM_App_Challenges();
             // get the response hashtag
             $hashTag = empty( $input->subject ) ? '' : $input->subject; 
-            $uv = $challenges->join( $userId, $input->challengeID, $input->imgURL, $hashTag );
+            $volley = BIM_Model_Volley::get( $input->challengeID );
+            if( $volley->isExtant() ){
+                $ptrn = "@$volley->subject\s*:@";
+                $hashTag = trim(preg_replace( $ptrn, '', $hashTag, 1 ));           
+                $uv = $challenges->join( $userId, $input->challengeID, $input->imgURL, $hashTag );
+            }
         }
         if( $uv ){
             return array(
                 'id' => $uv->id
             );
         }
+    }
+    
+    public function create(){
+        return $this->submitChallengeWithUsernames();
     }
     
     public function submitChallengeWithUsernames(){

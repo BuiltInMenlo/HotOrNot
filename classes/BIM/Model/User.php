@@ -731,7 +731,7 @@ delete from tblUsers where username like "%yoosnapyoo";
     }
     
     public static function processImage( $imgPrefix, $bucket = 'hotornot-avatars' ){
-        echo "converting $imgPrefix\n";
+        error_log("converting $imgPrefix");
         $image = self::getImage($imgPrefix);
         if( $image ){
             $conf = BIM_Config::aws();
@@ -782,7 +782,17 @@ delete from tblUsers where username like "%yoosnapyoo";
      * 
      */
     public static function usernameOrEmailExists( $input ){
-        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        return $dao->usernameOrEmailExists( $input );
+        $result = (object) array();
+        if( filter_var( $input->email, FILTER_VALIDATE_EMAIL) ){
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $data = $dao->usernameOrEmailExists( $input );
+            if( $data ){
+                foreach( $data as $row ){
+                    $prop = $row->property;
+                    $result->$prop = $row->value;
+                }
+            }
+        }
+        return $result;
     }
 }

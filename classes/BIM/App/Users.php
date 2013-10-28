@@ -60,7 +60,6 @@ class BIM_App_Users extends BIM_App_Base{
 	public function updateUsernameAvatar($userId, $username, $imgUrl, $birthdate = null, $email = null, $createVerifyVolley = true ) {
         $user = BIM_Model_User::get($userId);
         $user->updateUsernameAvatar( $username, $imgUrl, $birthdate, $email  );
-        //BIM_Jobs_Users::queueProcessProfileImages( $userId );
         if( $createVerifyVolley ){
             BIM_Model_Volley::addVerifVolley($userId, $imgUrl); // will create a verify volley if one does not yet exist
         }
@@ -77,7 +76,6 @@ class BIM_App_Users extends BIM_App_Base{
 	public function updateUsernameAvatarFirstRun( $userId, $username, $imgUrl, $birthdate = null, $email = null, $createVerifyVolley = true, $deviceToken = '' ) {
         $user = BIM_Model_User::get($userId);
         $user->updateUsernameAvatarFirstRun( $username, $imgUrl, $birthdate, $email, $deviceToken  );
-        //BIM_Jobs_Users::queueProcessProfileImages( $userId );
         if( $createVerifyVolley ){
             BIM_Model_Volley::addVerifVolley($userId, $imgUrl); // will create a verify volley if one does not yet exist
         }
@@ -534,18 +532,17 @@ class BIM_App_Users extends BIM_App_Base{
     public function firstRunComplete( $userId ){
         $user = BIM_Model_User::get( $userId );
         if( $user->isExtant() ){
-            $teamVolleyId = BIM_Config::app()->team_volley_id;
             $approves = 0;
             if( ! $user->hasSelfie() ){
-                // flag them 5 times
-                // since they refused to give a selfie
                 $user->updateAbuseCount( 5 );
             } 
             
+            /*
             if( ! $user->ageOK() ){
                 // suspend them if not in correct age range
                 $user->updateAbuseCount( 10000 );
             }
+            */
         }
         return BIM_Model_User::get( $userId );
     }

@@ -14,16 +14,24 @@ class BIM_Push{
         BIM_Push_UrbanAirship_Iphone::sendPush( $workload->push );
     }
     
-    public static function createTimedPush( $push, $time, $jobId = null ){
+    public static function createTimedPush( $time, $jobId = null, $tokens, $msg, $pushType = null, $volleyId = null, $userId = null ){
         $time = new DateTime("@$time");
         $time = $time->format('Y-m-d H:i:s');
+        
+        $params = (object) array(
+            'tokens' => $tokens, 
+            'msg' => $msg, 
+            'type' =>  $pushType, 
+            'volley_id' => $volleyId,
+            'user_id' =>  $userId
+        );
         
         $job = (object) array(
             'nextRunTime' => $time,
             'class' => 'BIM_Push',
             'method' => 'sendTimedPush',
             'name' => 'push',
-            'params' => $push,
+            'params' => $params,
             'is_temp' => true,
         );
         
@@ -38,10 +46,15 @@ class BIM_Push{
     
     public function sendTimedPush( $workload ){
         $push = json_decode($workload->params);
-        self::queuePush( $push );
+        $tokens = $push->tokens ? $push->tokens : array();
+        $msg = $push->msg ? $push->msg : '';
+        $type = !is_null( $push->type ) ? $push->type : null;
+        $volleyId = !is_null( $push->volley_id ) ? $push->volley_id : null;
+        $userId = !is_null( $push->user_id ) ? $push->user_id : null;
+        BIM_Push::send( $tokens, $msg, $type, $volleyId, $userId );
     }
     
-    public static function send( $ids, $msg ){
+    public static function send( $ids, $msg, $type = null, $volleyId = null, $userId = null ){
         if( !is_array($ids) ){
             $ids = array( $ids );
         }
@@ -52,6 +65,19 @@ class BIM_Push{
                 "sound" => "push_01.caf"
             )
         );
+        
+        if( $userId !== null ){
+            $push->user = $userId;
+        }
+        
+        if( $volleyId !== null ){
+            $push->challenge = $volleyId;
+        }
+        
+        if( $type !== null ){
+            $push->type = $type;
+        }
+        
         self::queuePush($push); 
     }
     
@@ -59,14 +85,7 @@ class BIM_Push{
         $user = BIM_Model_User::get($volley->creator->id);
         $msg = "Yo! Your Selfie got a shoutout from Team Volley!";
         if( $user->canPush() && !empty( $user->device_token ) ){
-            $push = (object) array(
-                'device_tokens' => $user->device_token,
-                "aps" => array(
-                    "alert" => $msg,
-                    "sound" => "push_01.caf"
-                )
-            );
-            self::queuePush($push); 
+            self::send($user->device_token, $msg ); 
         }
     }
     
@@ -76,17 +95,10 @@ class BIM_Push{
             $creators[] = $volley->creator->id;
         }
         $users = BIM_Model_User::getMulti($creators);
-        $msg = "Your Selfie was promoted in Volley!";
+        $msg = "Your Volley had made it to the top of the Explore section! Tap or swipe to view.";
         foreach( $users as $user ){
             if( $user->canPush() && !empty( $user->device_token ) ){
-                $push = (object) array(
-                    'device_tokens' => $user->device_token,
-                    "aps" => array(
-                        "alert" => $msg,
-                        "sound" => "push_01.caf"
-                    )
-                );
-                self::queuePush($push); 
+                self::send($user->device_token, $msg ); 
             }
         }
     }
@@ -95,38 +107,19 @@ class BIM_Push{
         $poker = BIM_Model_User::get($pokerId);
         $target = BIM_Model_User::get($targetId);
         $msg = "@$poker->username has poked you!";
-		$push = array(
-	    	"device_tokens" =>  array( $target->device_token ), 
-	    	"type" => "2",
-	    	"aps" =>  array(
-	    		"alert" =>  $msg,
-	    		"sound" =>  "push_01.caf"
-	        )
-	    );
-        self::queuePush($push);
+        $type = 2;
+        self::send($target->device_token, $msg, $type ); 
     }
     
 	public static function sendFlaggedPush( $targetId ){
-
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
-            
-            // Your Volley profile has been flagged
-            
             $msg = "Your Volley profile has been flagged";
             if( $target->isSuspended() ){
                 $msg = "Your Volley profile has been suspended";
             }
-            $push = array(
-                "device_tokens" =>  $target->device_token, 
-                "type" => "3", 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            
-            self::queuePush($push);
+            $type = 3;
+            self::send($target->device_token, $msg, $type ); 
         }
 	}
 	
@@ -138,15 +131,8 @@ class BIM_Push{
             } else {
                 $msg = "Your Volley profile has been verified by another Volley user! Would you like to share Volley with your friends?";
             }
-            $push = array(
-                "device_tokens" => $target->device_token,
-                "type" => 2,
-                "aps" =>  array(
-                    "alert" => $msg,
-                    "sound" => "push_01.caf"
-                )
-            );
-            self::queuePush($push);
+            $type = 2;
+            self::send($target->device_token, $msg, $type ); 
         }
 	}
 	
@@ -171,16 +157,8 @@ class BIM_Push{
         
         if( $deviceTokens ){
             $msg = "A new user just joined Volley, can you verify them? @$target->username";
-            $push = array(
-                "device_tokens" => $deviceTokens, 
-                "type" => "3", 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            
-            self::queuePush($push);
+            $type = 3;
+            self::send($deviceTokens, $msg, $type ); 
         }
 	}
 	
@@ -213,15 +191,8 @@ class BIM_Push{
 		// send push if creator allows it
 		if ($creator->notifications == "Y" && $creator->id != $userId){
             $msg = "$commenter->username has commented on your $volley->subject snap!";
-			$push = array(
-		    	"device_tokens" =>  $deviceTokens, 
-		    	"type" => "3", 
-		    	"aps" =>  array(
-		    		"alert" =>  $msg,
-		    		"sound" =>  "push_01.caf"
-		        )
-		    );
-    	    self::queuePush( $push );
+		    $type = 3;
+            self::send($target->device_token, $msg, $type ); 
 		}
     }
     
@@ -229,53 +200,36 @@ class BIM_Push{
 	    $volley = BIM_Model_Volley::get($volleyId);
 		$liker = BIM_Model_User::get( $likerId );
 		$target = BIM_Model_User::get( $targetId );
-		// @jason liked your Volley #WhatsUp"
 		$msg = "@$liker->username liked your Volley $volley->subject";
 		if( $volley->subject == '#__verifyMe__' ){
 		    $msg = "Your profile selfie has been liked by @$liker->username";
 		}
-		$push = array(
-	    	"device_tokens" =>  $target->device_token, 
-	    	"type" => "1",
-		    "challenge" => $volleyId, 
-	    	"aps" =>  array(
-	    		"alert" =>  $msg,
-	    		"sound" =>  "push_01.caf"
-	        )
-	    );
-	    self::queuePush( $push );
+	    $type = 1;
+        self::send($target->device_token, $msg, $type ); 
     }
     
     public static function doVolleyAcceptNotification( $volleyId, $targetId ){
         $targetUser = BIM_Model_User::get($targetId);
         $volleyObject = BIM_Model_Volley::get($volleyId);
-        $msg = "@$targetUser->username has joined the Volley $volleyObject->subject";
-        
-        $push = array(
-            "type" => "6",
-            "challenge" => $volleyObject->id,
-            "aps" =>  array(
-                "alert" =>  $msg,
-                "sound" =>  "push_01.caf"
-            )
-        );
         
         $time = time() + 86400;
         $time = $time - ( $time % 86400 );
         $secondPushTime = $time + (3600 * 17);
         $thirdPushTime = $secondPushTime + (3600 * 9);
         
+        $msg = "@$targetUser->username has joined the Volley $volleyObject->subject";
+        $pushType = 6;
+        
         $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
         foreach( $users as $user ){
             if( $user->canPush() && ($targetUser->id != $user->id) ){
-                $push["device_tokens"] =  array( $user->device_token );
-                self::queuePush( $push );
+                self::send( $user->device_token, $msg, $pushType, $volleyObject->id );
                 
                 //$jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
-                //self::createTimedPush($push, $secondPushTime, $jobId );
+                //self::createTimedPush( $secondPushTime, $jobId, $user->device_token, $msg, $pushType, $volleyObject->id );
                 
                 //$jobId = join( '_', array('v', $user->id, $volleyObject->id, uniqid(true) ) );
-                //self::createTimedPush($push, $thirdPushTime,  $jobId );
+                //self::createTimedPush( $thirdPushTime, $jobId, $user->device_token, $msg, $pushType, $volleyObject->id );
             }
         }
     }
@@ -288,16 +242,8 @@ class BIM_Push{
         foreach( $targets as $target ){
             if ( $target->isExtant() && $target->notifications == "Y"){
                 $msg = "@$creator->username has just created the Volley $volley->subject";
-                $push = array(
-                    "device_tokens" =>  array( $target->device_token ), 
-                    "type" => "1",
-                    "challenge" => $volleyId,
-                    "aps" =>  array(
-                        "alert" =>  $msg,
-                        "sound" =>  "push_01.caf"
-                    )
-                );
-                self::queuePush( $push );
+                $type = 1;
+                self::send($target->device_token, $msg, $type, $volleyId ); 
             }
         }
     }
@@ -305,101 +251,54 @@ class BIM_Push{
     public static function reVolleyPush( $volleyId, $challengerId ){
         $challenger = BIM_Model_User::get($challengerId);
         // send push if allowed
-        if ($challenger->notifications == "Y"){
+        if ( $challenger->canPush() ){
             $volley = BIM_Model_Volley::get($volleyId);
             $creator = BIM_Model_User::get($volley->creator->id);
-            
             $private = $volley->is_private == 'Y' ? ' private' : '';
             $msg = "@$creator->username has sent you a$private Volley. $volley->subject";
-             
-            $push = array(
-                //"device_tokens" =>  array( '66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035' ), 
-                "device_tokens" =>  array( $challenger->device_token ), 
-                "type" => "1", 
-                "challenge" => $volley->id, 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            self::queuePush( $push );
+            $type = 1;
+            self::send($challenger->device_token, $msg, $type, $volley->id ); 
         }
     }
     
     public static function friendNotification( $userId, $friendId ){
-        // now we perform a search and send out push notification
         $user = BIM_Model_User::get( $userId );
         $friend = BIM_Model_User::get( $friendId );
-        
         $msg = "@$user->username has subscribed to your Volley updates!";
-        $push = array(
-            "device_tokens" => $friend->device_token,
-            "type" => 3,
-            "user" => $user->id, 
-            "aps" =>  array(
-                "alert" => $msg,
-                "sound" => "push_01.caf"
-            )
-        );
-        self::queuePush($push);
+        $type = 3;
+        self::send($friend->device_token, $msg, $type, null, $user->id ); 
     }
     
     public static function friendAcceptedNotification( $userId, $friendId ){
-        // now we perform a search and send out push notification
         $user = BIM_Model_User::get( $userId, true );
         $friend = BIM_Model_User::get( $friendId, true );
-        
         $msg = "$user->username accepted your friend request on Volley!";
         self::send( $friend->device_token, $msg );
     }
     
     public static function volleySignupVerificationPush( $userId ){
-        
         $userIds = BIM_Model_User::getRandomIds( 50, array( $userId ) );
         $users = BIM_Model_User::getMulti($userIds);
-        
         $deviceTokens = array();
         foreach( $users as $user ){
             if( $user->canPush() ){
                 $deviceTokens[] = $user->device_token;
             }
         }
-        
-        $push = array(
-            "device_tokens" => $deviceTokens, 
-            "aps" =>  array(
-                "alert" =>  "$user->username has joined Volley and needs to be checked out",
-                "sound" =>  "push_01.caf"
-            )
-        );
-        
-        self::queuePush($push);
+        $msg = "$user->username has joined Volley and needs to be checked out";
+        self::send($deviceTokens, $msg);
     }
     
     public static function introPush( $userId, $targetId, $pushTime ){
         $user = BIM_Model_User::get($userId);
         $target = BIM_Model_User::get($targetId);
         $msg = "@$user->username has subscribed to your Volleys!";
-        $push = array(
-            "device_tokens" =>  array( $target->device_token ),
-            "aps" =>  array(
-                "alert" =>  $msg,
-                "sound" =>  "push_01.caf"
-            )
-        );
-        self::createTimedPush($push, $pushTime);
+        self::createTimedPush( $pushTime, null, $target->device_token, $msg, null );
     }
     
     public static function selfieReminder( $userId ){
         $user = BIM_Model_User::get($userId);
         $msg = "Volley reminder! Please update your selfie to get verfied. No adults allowed!";
-        $push = array(
-            "device_tokens" => $user->device_token,
-            "aps" =>  array(
-                "alert" => $msg,
-                "sound" => "push_01.caf"
-            )
-        );
-        self::queuePush($push);
+        self::send($user->device_token, $msg);
     }
 }

@@ -29,6 +29,7 @@ class BIM_Model_Volley{
                 'id' => $volley->creator_id,
                 'img' => $volley->creator_img,
                 'score' => $volley->creator_likes,
+                'subject' => $this->subject,
             );
     	    $this->is_celeb = BIM_Utils::isCelebrity( $volley->creator_id );
             // finally get the correct score if necessary
@@ -118,7 +119,6 @@ class BIM_Model_Volley{
      * this function is for updating the various user data in the creator or challengers array
      */
     private static function _updateUser($user,$update){
-        $user->fb_id = $update->fb_id;
         $user->username = $update->username;
         $user->avatar = $update->getAvatarUrl();
         $user->age = $update->age;
@@ -260,7 +260,6 @@ class BIM_Model_Volley{
 		"id"=> "13248",
 		"img"=> "https:\/\/d3j8du2hyvd35p.cloudfront.net\/925a2ae0a711f6c72d456ca2e4ef75d1aaa98e9db45587eb7dec23b5d46f80b3-1382801487.jpg",
 		"score"=> 0,
-		"fb_id"=> "",
 		"username"=> "bimtester7",
 		"avatar"=> "https:\/\/d3j8du2hyvd35p.cloudfront.net\/925a2ae0a711f6c72d456ca2e4ef75d1aaa98e9db45587eb7dec23b5d46f80b3-1382801487Large_640x1136.jpg",
 		"age"=> "1998-10-25 00:00:00"
@@ -282,15 +281,12 @@ class BIM_Model_Volley{
         	"started"=> "1970-01-01 00:00:00",
         	"added"=> "1970-01-01 00:00:00",
         	"updated"=> "1970-01-01 00:00:00",
-        	"expires"=> "-1",
-        	"is_private"=> "N",
         	"is_verify"=> 1,
         	"is_celeb"=> 0,
         	"creator"=> (object) array(
         		"id"=> $target->id,
         		"img"=> $img,
         		"score"=> 0,
-        		"fb_id"=> "",
         		"username"=> $target->username,
         		"avatar"=> $target->getAvatarUrl(),
         		"age"=> $target->age
@@ -301,7 +297,6 @@ class BIM_Model_Volley{
                     'img' => $img,
                     'score' => 0,
                     'joined' => '1970-01-01 00:00:00',
-                	'fb_id' => '',
                     'username' => $target->username,
                     'avatar' => $target->getAvatarUrl(),
                     'age' => $target->age,

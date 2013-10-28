@@ -566,14 +566,9 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	union all
         	(select 'email' as property, email as value from `hotornot-dev`.tblUsers where email = ? limit 1)
         ";
-        $params = array( $input->username, $input->password );
+        $params = array( $input->username, $input->email );
         $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-        $result = (object) array();
-        foreach( $data as $row ){
-            $prop = $row->property;
-            $result->$prop = $row->value;
-        }
-        return $result;
+        return $data;
 	}
 }

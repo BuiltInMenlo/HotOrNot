@@ -1,7 +1,10 @@
 <?php
 require_once 'vendor/autoload.php';
 
-testTwilioCallback();
+$user = BIM_Model_User::get( 13284 );
+echo $user->ageOK();
+
+//testTwilioCallback();
 
 function testnotes(){
 
