@@ -34,3 +34,6 @@
 
 	return (result);
 }
+
+
+CGSize size = [formattedScore sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18]}];

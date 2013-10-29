@@ -12,16 +12,13 @@
 #import "HONCreateSnapButtonView.h"
 
 @interface HONHeaderView : UIView
-- (id)initAsVoteWall;
+- (id)initWithBranding;
 - (id)initWithTitle:(NSString *)title;
 - (id)initAsModalWithTitle:(NSString *)title;
 
-- (void)toggleRefresh:(BOOL)isRefreshing;
-- (void)hideRefreshing;
 - (void)leftAlignTitle;
 - (void)addButton:(UIView *)buttonView;
 
 @property (nonatomic, strong) NSString *title;
-@property(nonatomic, strong) UIButton *refreshButton;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @end

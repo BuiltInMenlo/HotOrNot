@@ -31,7 +31,8 @@
 #import "HONImageLoadingView.h"
 #import "HONEmotionVO.h"
 
-@interface HONChallengeDetailsViewController () <HONHeroFooterViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate, HONBasicParticipantGridViewDelegate>
+
+@interface HONChallengeDetailsViewController () <HONHeroFooterViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate, HONParticipantGridViewDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -70,18 +71,18 @@
 		int len = (diff == min) ? 0 : diff;
 		[mChallenge removeObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(min, len)]];
 		
-//		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 //		NSLog(@"CREATOR[%@] -- CHALLENGERS:[%d]", vo.creatorVO.subjectName, [vo.challengers count]);
 		_challengeVO = vo;
 		_bgImageView = imageView;
 		
-		int cnt = 0;
-		for (HONOpponentVO *vo in _challengeVO.challengers) {
-			NSLog(@"\tCHALLENGER:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", vo.subjectName);
-			
-			if (++cnt == 5)
-				break;
-		}
+//		int cnt = 0;
+//		for (HONOpponentVO *vo in _challengeVO.challengers) {
+//			NSLog(@"\tCHALLENGER:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", vo.subjectName);
+//			
+//			if (++cnt == 5)
+//				break;
+//		}
 		
 		self.view.backgroundColor = [UIColor clearColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -241,7 +242,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (![HONAppDelegate isRetina4Inch] * 88.0) + 500.0 + (kSnapThumbSize.height * ([_challengeVO.challengers count] / 4))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 108.0 + (kHeroVolleyTableCellHeight + (kSnapThumbSize.height * ([_challengeVO.challengers count] / 4) + 1))));
 	_scrollView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
@@ -261,9 +262,9 @@
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
-//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-//	lpGestureRecognizer.minimumPressDuration = 0.25;
-//	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	[self _participantCheck];
 	[self _remakeUI];
@@ -277,12 +278,14 @@
 	[super viewDidAppear:animated];
 	
 	[_bgHolderView addSubview:_bgImageView];
-
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"details_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"details_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if (total == 0) {
+	
+	
+//	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"details_total"] intValue];
+//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"details_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if ([HONAppDelegate incTotalForCounter:@"details"] < 10) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
 		_tutorialImageView.userInteractionEnabled = YES;
@@ -357,38 +360,6 @@
 	_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:kHeroVolleyTableCellHeight forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
 	_participantsGridView.delegate = self;
 	[_contentHolderView addSubview:_participantsGridView];
-	
-	
-//	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kHeroVolleyTableCellHeight, 320.0, kSnapThumbSize.height)];
-//	_gridHolderView.frame = CGRectMake(0.0, kHeroVolleyTableCellHeight, 320.0, kSnapThumbSize.height + (kSnapThumbSize.height * ([_challengeVO.challengers count] / 4)));
-//	[_contentHolderView addSubview:_gridHolderView];
-//	
-//	int cnt = 0;
-//	for (HONOpponentVO *opponentVO in _challengeVO.challengers) {
-//		HONOpponentVO *vo = ([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix]) ? _challengeVO.creatorVO : opponentVO;
-//		
-//		CGPoint pos = CGPointMake(kSnapThumbSize.width * (cnt % 4), kSnapThumbSize.height * (cnt / 4));
-//		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
-//		opponentHolderView.backgroundColor = [HONAppDelegate honDebugColorByName:@"red" atOpacity:nil];
-//		[_gridHolderView addSubview:opponentHolderView];
-//		
-//		UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-//		[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.imagePrefix]] placeholderImage:nil];
-//		[opponentHolderView addSubview:opponentImageView];
-//		
-//		NSLog(@"REPLY:[%d]><[%d]", vo.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
-//		if ((vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
-//			[opponentHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
-//		
-//		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		profileButton.frame = opponentImageView.frame;
-//		[profileButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-//		[profileButton addTarget:self action:@selector(_goUserProfile:) forControlEvents:UIControlEventTouchUpInside];
-//		[profileButton setTag:vo.userID];
-//		[opponentHolderView addSubview:profileButton];
-//		
-//		cnt++;
-//	}
 }
 
 - (void)_makeFooterTabBar {
@@ -434,24 +405,7 @@
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
 		
-		_opponentVO = nil;
-		if (CGRectContainsPoint(_heroImageHolderView.frame, touchPoint))
-			_opponentVO = _heroOpponentVO;
-		
-		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
-			int col = touchPoint.x / kSnapThumbSize.width;
-			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / kSnapThumbSize.height;
-			int index = (row * 4) + col;
-			
-			if (index < _opponentCounter) {
-				if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).imagePrefix isEqualToString:_heroOpponentVO.imagePrefix])
-					_opponentVO = _challengeVO.creatorVO;
-				
-				else
-					_opponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index];
-			}
-		}
-		
+		_opponentVO = (CGRectContainsPoint(_heroImageHolderView.frame, touchPoint)) ? _heroOpponentVO : nil;
 		[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
@@ -556,15 +510,6 @@
 																							@"url"             : @"",
 																							@"mp_event"        : @"Timeline Details",
 																							@"view_controller" : self}];
-	
-	
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-//															 delegate:self
-//													cancelButtonTitle:@"Cancel"
-//											   destructiveButtonTitle:nil
-//													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
-//	[actionSheet setTag:1];
-//	[actionSheet showInView:self.view];
 }
 
 - (void)_goFlagChallenge {
@@ -596,7 +541,6 @@
 }
 
 
-
 #pragma mark - Notifications
 - (void)_refreshAllTabs:(NSNotification *)notification {
 	[self _retrieveChallenge];
@@ -619,7 +563,7 @@
 	}
 	
 	_heroOpponentVO = _challengeVO.creatorVO;
-	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]) && !_challengeVO.isCelebCreated)
+	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]) && !_challengeVO.isCelebCreated && !_challengeVO.isExploreChallenge)
 		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
 }
 
@@ -817,97 +761,97 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
 		if (buttonIndex == 0) {
-//			[self _flagChallenge];
+			[self _flagChallenge];
 		}
 	
-	} else if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-		
-		if (buttonIndex == 0) {
-			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
-				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
-					[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Share Twitter %@", (result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]
-										  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-													  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-					
-					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
-				};
-				
-				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], _challengeVO.subjectName, _challengeVO.creatorVO.username]];
-				[twitterComposeViewController addImage:_heroImageView.image];
-				twitterComposeViewController.completionHandler = completionBlock;
-				
-				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:@"Cannot use Twitter from this device!"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			}
-		
-		} else if (buttonIndex == 1) {
-			NSString *instaURL = @"instagram://app";
-			NSString *instaFormat = @"com.instagram.exclusivegram";
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
-			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-															  avatarImage:[HONImagingDepictor cropImage:_heroImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
-																 username:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-			
-			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
-				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-				_documentInteractionController.UTI = instaFormat;
-				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _challengeVO.subjectName, _challengeVO.creatorVO.username] forKey:@"InstagramCaption"];
-				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
-				
-			} else {
-				[[[UIAlertView alloc] initWithTitle:@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize instagram"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			}
-		}
-	}
+	} //else if (actionSheet.tag == 1) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Share %@", (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+//		
+//		if (buttonIndex == 0) {
+//			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+//				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+//				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
+//					[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Share Twitter %@", (result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]
+//										  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//													  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+//					
+//					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
+//				};
+//				
+//				[twitterComposeViewController setInitialText:[NSString stringWithFormat:[HONAppDelegate twitterShareComment], _challengeVO.subjectName, _challengeVO.creatorVO.username]];
+//				[twitterComposeViewController addImage:_heroImageView.image];
+//				twitterComposeViewController.completionHandler = completionBlock;
+//				
+//				[self presentViewController:twitterComposeViewController animated:YES completion:nil];
+//				
+//			} else {
+//				[[[UIAlertView alloc] initWithTitle:@""
+//											message:@"Cannot use Twitter from this device!"
+//										   delegate:nil
+//								  cancelButtonTitle:@"OK"
+//								  otherButtonTitles:nil] show];
+//			}
+//		
+//		} else if (buttonIndex == 1) {
+//			NSString *instaURL = @"instagram://app";
+//			NSString *instaFormat = @"com.instagram.exclusivegram";
+//			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
+//			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+//															  avatarImage:[HONImagingDepictor cropImage:_heroImageView.image toRect:CGRectMake(0.0, 141.0, 640.0, 853.0)]
+//																 username:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
+//			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+//			
+//			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
+//				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+//				_documentInteractionController.UTI = instaFormat;
+//				_documentInteractionController.delegate = self;
+//				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _challengeVO.subjectName, _challengeVO.creatorVO.username] forKey:@"InstagramCaption"];
+//				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
+//				
+//			} else {
+//				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+//											message:@"This device isn't allowed or doesn't recognize instagram"
+//										   delegate:nil
+//								  cancelButtonTitle:@"OK"
+//								  otherButtonTitles:nil] show];
+//			}
+//		}
+//	}
 }
 
 
-#pragma mark - DocumentInteraction Delegates
-- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [controller name], @"controller", nil]];
-}
-
-- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [controller name], @"controller", nil]];
-}
-
-- (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
-	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [controller name], @"controller", nil]];
-}
-
-- (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
-	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [controller name], @"controller", nil]];
-}
+//#pragma mark - DocumentInteraction Delegates
+//- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
+//	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//									  [controller name], @"controller", nil]];
+//}
+//
+//- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
+//	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//									  [controller name], @"controller", nil]];
+//}
+//
+//- (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
+//	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//									  [controller name], @"controller", nil]];
+//}
+//
+//- (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
+//	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//									  [controller name], @"controller", nil]];
+//}
 
 
 @end

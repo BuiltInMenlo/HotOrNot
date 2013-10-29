@@ -106,6 +106,9 @@
 			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
 			[_tableView reloadData];
+			
+//			[_tableView setContentOffset:CGPointZero animated:NO];
+//			[_tableView setContentInset:UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0)];
 
 //			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
@@ -163,7 +166,7 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	searchButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_nonActive"] forState:UIControlStateNormal];
 	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_Active"] forState:UIControlStateHighlighted];
 	[searchButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];

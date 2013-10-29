@@ -20,12 +20,12 @@
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) NSString *creatorSubjectName;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
-@property (nonatomic, strong) UIImageView *uploadingImageView;
 @property (nonatomic, strong) HONVolleyEmotionsPickerView *subjectsView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *headerBGView;
@@ -43,6 +43,8 @@
 		self.backgroundColor = [UIColor blackColor];
 		
 		_subjectName = subject;
+		_creatorSubjectName = subject;
+		
 		//_previewImage = [HONImagingDepictor scaleImage:image byFactor:0.3333333];
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
 		NSLog(@"NORMAL -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
@@ -68,6 +70,7 @@
 		self.backgroundColor = [UIColor blackColor];;
 		
 		_subjectName = subject;
+		_creatorSubjectName = subject;
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
 		NSLog(@"MIRRORED -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
@@ -110,9 +113,6 @@
 }
 
 - (void)uploadComplete {
-	[_uploadingImageView stopAnimating];
-	[_uploadingImageView removeFromSuperview];
-	
 	[_cancelButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 }
 
@@ -138,23 +138,13 @@
 	_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 	_headerBGView.backgroundColor = [UIColor blackColor];
 	[self addSubview:_headerBGView];
-	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 14.0, 54.0, 14.0)];
-	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
-										   [UIImage imageNamed:@"cameraUpload_002"],
-										   [UIImage imageNamed:@"cameraUpload_003"], nil];
-	_uploadingImageView.animationDuration = 0.5f;
-	_uploadingImageView.animationRepeatCount = 0;
-	_uploadingImageView.alpha = 0.0;
-	[_uploadingImageView startAnimating];
-//	[self addSubview:_uploadingImageView];
-	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -2.0, 180.0, 50.0)];
+		
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -2.0, 280.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_placeholderLabel.textColor = [UIColor whiteColor];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"how are you feeling?" : @"";
-//	[_headerBGView addSubview:_placeholderLabel];
+	[_headerBGView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -253,7 +243,6 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_blackMatteView.alpha = 0.33;
 			_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
-			_uploadingImageView.alpha = 0.0;
 			_placeholderLabel.alpha = 0.0;
 			_subjectTextField.alpha = 0.0;
 			_cancelButton.alpha = 0.0;
@@ -297,14 +286,12 @@
 	
 	_subjectsView.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
+		if (_tutorialImageView != nil)
 			_tutorialImageView.alpha = 1.0;
-		}
 		
 		_blurredImageView.alpha = 1.0;
 		_headerBGView.alpha = 1.0;
 		_blackMatteView.alpha = 0.0;
-		_uploadingImageView.alpha = 1.0;
 		_subjectsView.alpha = 1.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
 		_buttonHolderView.alpha = 1.0;
@@ -326,7 +313,6 @@
 		_blackMatteView.alpha = 0.0;
 		_subjectsView.alpha = 0.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
-		_uploadingImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_subjectsView.hidden = YES;
 		
@@ -345,16 +331,21 @@
 }
 
 #pragma mark - Notifications
-//- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-//}
+- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+	if ([((UITextField *)[notification object]).text length] > 0)
+		_placeholderLabel.text = @"";
+	
+	NSString *enteredCharacter = [_subjectTextField.text substringFromIndex:[_creatorSubjectName length]];
+	
+	if ([[_subjectTextField.text substringToIndex:[_subjectTextField.text length] - 1] isEqualToString:_creatorSubjectName])
+		_subjectTextField.text = [_creatorSubjectName stringByAppendingFormat:@" : #%@", enteredCharacter];
+}
 
 
 #pragma mark - EmotionsPickerView Delegates
 - (void)emotionsPickerView:(HONVolleyEmotionsPickerView *)cameraSubjectsView selectEmotion:(HONEmotionVO *)emotionVO {
-	
-//	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"join_total"] intValue];
-//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"join_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
 	NSLog(@"join_total:[%d]", [HONAppDelegate totalForCounter:@"join"]);
 	
 	if (_isJoinChallenge && [HONAppDelegate totalForCounter:@"join"] == 0) {
@@ -366,10 +357,19 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		_subjectName = ([_subjectName length] == 0) ? emotionVO.hastagName : [NSString stringWithFormat:@"%@ : %@", _subjectName, emotionVO.hastagName];
+		if ([[_subjectTextField.text componentsSeparatedByString:@"#"] count] > 1 + (_isJoinChallenge)) {
+			[[[UIAlertView alloc] initWithTitle:(_isJoinChallenge) ? @"Two emoticons only allowed" : @"One emotion only allowed"
+										message:@""
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
 		
-		_subjectTextField.text = _subjectName;
-		_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+		} else {
+			_subjectName = ([_subjectName length] == 0) ? emotionVO.hastagName : [NSString stringWithFormat:@"%@ : %@", _subjectName, emotionVO.hastagName];
+			
+			_subjectTextField.text = _subjectName;
+			_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
+		}
 	}
 }
 
@@ -378,63 +378,15 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		[self _raiseKeyboard];
-	
-//	} else if (alertView.tag == 1) {
-//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Camera Preview - Create New Volley %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-//		
-//		if (buttonIndex == 0) {
-//			_replyImageView.hidden = YES;
-//			
-//			_subjectName = _tmpSubjectName;
-//			_placeholderLabel.frame = CGRectMake(10.0, -2.0, 180.0, 50.0);
-//			_subjectTextField.frame = _placeholderLabel.frame;
-//			_subjectTextField.text = _subjectName;
-//			
-//		} else {
-//			[self _goSubmit];
-//		}
-//	
-//	} else if (alertView.tag == 2) {
-//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Camera Preview - Create New Volley %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-//		
-//		if (buttonIndex == 0) {
-//			_replyImageView.hidden = YES;
-//			
-//			_subjectName = @"";
-//			_placeholderLabel.frame = CGRectMake(10.0, -2.0, 180.0, 50.0);
-//			_subjectTextField.frame = _placeholderLabel.frame;
-//			
-//			_subjectTextField.text = _subjectName;
-//			_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
-//			
-//		} else {
-//			_subjectTextField.text = _subjectName;
-//			[self _goSubmit];
-//		}
 	}
 }
 
 #pragma mark - TextField Delegates
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//											 selector:@selector(_textFieldTextDidChangeChange:)
-//												 name:UITextFieldTextDidChangeNotification
-//											   object:textField];
-	
-	if (_isJoinChallenge && [HONAppDelegate totalForCounter:@"join"] == 0) {
-		[HONAppDelegate incTotalForCounter:@"join"];
-		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this Volley"
-									message:@""
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	} else {
-		[_subjectName stringByAppendingString:@" : "];
-	}
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -444,7 +396,7 @@
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
 	if ([textField.text isEqualToString:@""])
 		textField.text = @"#";
-	
+
 	if (_tutorialImageView != nil) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_tutorialImageView.alpha = 0.0;
@@ -459,21 +411,9 @@
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-//	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UITextFieldTextDidChangeNotification" object:textField];
-	
-//	if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
-//		textField.text = _subjectName;
-//	
-//	else {
-//		NSArray *hashTags = [textField.text componentsSeparatedByString:@"#"];
-//		
-//		if ([hashTags count] > 2) {
-//			NSString *hashTag = ([[hashTags objectAtIndex:1] hasSuffix:@" "]) ? [[hashTags objectAtIndex:1] substringToIndex:[[hashTags objectAtIndex:1] length] - 1] : [hashTags objectAtIndex:1];
-//			textField.text = [NSString stringWithFormat:@"#%@", hashTag];
-//		}
-//	}
-	
-	_placeholderLabel.text = ([textField.text length] == 0) ? @"how are you feeling?" : @"";
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:@"UITextFieldTextDidChangeNotification"
+												  object:textField];
 	_subjectName = textField.text;
 }
 

@@ -101,7 +101,7 @@
 				[_subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																	   [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 																	   [NSString stringWithFormat:@"%d", 0], @"points",
-																	   [NSString stringWithFormat:@"%d", 0], @"votes",
+																	   [NSString stringWithFormat:@"%d", 0], @"total_votes",
 																	   [NSString stringWithFormat:@"%d", 0], @"pokes",
 																	   [NSString stringWithFormat:@"%d", 0], @"pics",
 																	   [NSString stringWithFormat:@"%d", 0], @"age",

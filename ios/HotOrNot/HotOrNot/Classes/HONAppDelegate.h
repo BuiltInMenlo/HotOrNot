@@ -15,8 +15,8 @@
 
 #define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
+#define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
-#define __IGNORE_SUSPENDED__ 1
 
 
 // api endpts
@@ -46,11 +46,14 @@ extern NSString * const kAPIGetPrivateMessages;
 extern NSString * const kAPICheckNameAndEmail;
 extern NSString * const kAPIUsersFirstRunComplete;
 extern NSString * const kAPISetUserAgeGroup;
+extern NSString * const kAPICreateChallenge;
 extern NSString * const kAPIJoinChallenge;
 extern NSString * const kAPIGetVerifyList;
 extern NSString * const kAPIProcessChallengeImage;
 extern NSString * const kAPIProcessUserImage;
 extern NSString * const kAPISuspendedAccount;
+extern NSString * const kAPIPurgeUser;
+extern NSString * const kAPIPurgeContent;
 
 
 // view heights

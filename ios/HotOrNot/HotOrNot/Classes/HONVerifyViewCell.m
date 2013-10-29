@@ -117,18 +117,18 @@
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
 	[self.contentView addSubview:gradientImageView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(255.0, 210.0, 49.0, 107.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(246.0, 120.0, 74.0, 164.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(0.0, 0.0, 49.0, 49.0);
+	approveButton.frame = CGRectMake(0.0, 0.0, 74.0, 74.0);
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(0.0, 58.0, 49.0, 49.0);
+	dispproveButton.frame = CGRectMake(0.0, 90.0, 74.0, 74.0);
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];

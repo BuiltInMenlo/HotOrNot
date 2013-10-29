@@ -98,21 +98,21 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	_exploreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_exploreButton.frame = CGRectMake(40.0 + kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateDisabled];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_nonActive"] forState:UIControlStateNormal];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Tapped"] forState:UIControlStateHighlighted];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Active"] forState:UIControlStateSelected];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_exploreButton];
 	[_exploreButton setTag:1];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(60.0 + (kTabSize.width * 2.0), 0.0, kTabSize.width, kTabSize.height);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Tapped"] forState:UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateSelected];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_verifyButton];
 	[_verifyButton setTag:2];
 	

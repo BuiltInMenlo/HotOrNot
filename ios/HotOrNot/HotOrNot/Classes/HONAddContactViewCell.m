@@ -50,7 +50,7 @@
 	_userVO = userVO;
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 14.0, 180.0, 20.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.fullName;

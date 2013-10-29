@@ -12,36 +12,26 @@
 #import "HONOpponentVO.h"
 
 
-@protocol HONBasicParticipantGridViewDelegate;
+@protocol HONParticipantGridViewDelegate;
 @interface HONBasicParticipantGridView : UIView {
-//	NSMutableArray *challenges;
-//	
-//	HONChallengeVO *challengeVO;
-//	HONOpponentVO *primaryOpponentVO;
-//	HONOpponentVO *selectedOpponentVO;
+	HONOpponentVO *_heroOpponentVO;
+	NSMutableArray *_challenges;
+	NSMutableArray *_gridItems;
 	
 	UIButton *_profileButton;
-	
 }
-
-
 
 - (id)initAtPos:(int)yPos forChallenge:(HONChallengeVO *)challengeVO asPrimaryOpponent:(HONOpponentVO *)opponentVO;
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO;
 
 - (void)layoutGrid;
-- (void)createItemForParticipant:(HONOpponentVO *)opponentVO;
+- (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO;
 
-@property (nonatomic, assign) id <HONBasicParticipantGridViewDelegate> delegate;
-
-@property (nonatomic, retain) NSMutableArray *challenges;
-@property (nonatomic, retain) HONChallengeVO *challengeVO;
-@property (nonatomic, retain) HONOpponentVO *primaryOpponentVO;
-@property (nonatomic, retain) HONOpponentVO *selectedOpponentVO;
-@property (nonatomic, retain) NSMutableArray *gridOpponents;
+@property (nonatomic, assign) id <HONParticipantGridViewDelegate> delegate;
 @end
 
-@protocol HONBasicParticipantGridViewDelegate
+
+@protocol HONParticipantGridViewDelegate
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)participantGridViewPreviewShowControls:(HONBasicParticipantGridView *)participantGridView;
 @optional

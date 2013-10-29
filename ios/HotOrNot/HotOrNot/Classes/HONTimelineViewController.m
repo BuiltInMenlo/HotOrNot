@@ -67,10 +67,10 @@
 
 @implementation HONTimelineViewController
 
-- (id)initWithFriends {
+- (id)init {
 	if ((self = [super init])) {
 		_isPushView = NO;
-		_timelineType = HONTimelineTypeFriends;
+		_timelineType = HONTimelineTypeHome;
 		
 		[self _registerNotifications];
 	}
@@ -83,19 +83,6 @@
 		_isPushView = YES;
 		_subjectName = subjectName;
 		_timelineType = HONTimelineTypeSubject;
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-
-- (id)initWithUserID:(int)userID {
-	if ((self = [super init])) {
-		_isPushView = YES;
-		_timelineType = HONTimelineTypeSingleUser;
-		_userID = userID;
 		
 		[self _registerNotifications];
 	}
@@ -121,6 +108,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -143,7 +131,7 @@
 	if (_timelineType == HONTimelineTypeSubject)
 		bannerIndex = 1;
 	
-	else if (_timelineType == HONTimelineTypeFriends)
+	else if (_timelineType == HONTimelineTypeHome)
 		bannerIndex = 0;
 	
 	
@@ -186,6 +174,8 @@
 			}
 			
 			[_tableView reloadData];
+//			[_tableView setContentOffset:CGPointZero animated:NO];
+//			[_tableView setContentInset:UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0)];
 		}
 		
 		if (_progressHUD != nil) {
@@ -199,7 +189,6 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 		
-		//[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -361,13 +350,13 @@
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	inviteButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
 	
-	if (_timelineType == HONTimelineTypeFriends)
-		_headerView = [[HONHeaderView alloc] initAsVoteWall];
+	if (_timelineType == HONTimelineTypeHome)
+		_headerView = [[HONHeaderView alloc] initWithBranding];
 		
 	else if (_timelineType == HONTimelineTypeSubject)
 		_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
@@ -612,8 +601,12 @@
 }
 
 - (void)_showProfile:(NSNotification *)notification {
-	if (_timelineType == HONTimelineTypeFriends)
+	if (_timelineType == HONTimelineTypeHome)
 		[self _goProfile];
+}
+
+- (void)_showFirstRun:(NSNotification *)notification {
+	[self _goRegistration];
 }
 
 - (void)_selectedVoteTab:(NSNotification *)notification {
@@ -634,8 +627,6 @@
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
-//	[_refreshButtonView toggleRefresh:YES];
-	
 	if (_timelineType == HONTimelineTypeSingleUser) {
 		if (_username != nil)
 			[self _retrieveUserByUsername];

@@ -23,8 +23,6 @@
 @property (nonatomic) BOOL isSuspended;
 @property (nonatomic, retain) NSDate *birthday;
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) NSString *fbID;
-//@property (nonatomic, retain) NSString *imageURL;
 @property (nonatomic, retain) NSString *avatarURL;
 @property (nonatomic, retain) NSMutableArray *friends;
 

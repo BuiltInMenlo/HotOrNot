@@ -93,12 +93,15 @@ NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
 NSString * const kAPISetUserAgeGroup = @"users/setage";
 NSString * const kAPICheckNameAndEmail = @"users/checkNameAndEmail";
 NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
+NSString * const kAPICreateChallenge = @"challenges/create";
 NSString * const kAPIJoinChallenge = @"challenges/join";
 NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
 NSString * const kAPIMissingImage = @"challenges/missingimage";
 NSString * const kAPIProcessChallengeImage = @"challenges/processimage";
 NSString * const kAPIProcessUserImage = @"users/processimage";
 NSString * const kAPISuspendedAccount = @"users/suspendedaccount";
+NSString * const kAPIPurgeUser = @"users/purge";
+NSString * const kAPIPurgeContent = @"users/purgecontent";
 
 
 // view heights
@@ -109,7 +112,7 @@ const CGFloat kOrthodoxTableCellHeight = 63.0f;
 const CGFloat kHeroVolleyTableCellHeight = 370.0f;
 
 // snap params
-const CGFloat kMinLuminosity = 0.33;
+const CGFloat kMinLuminosity = 0.00;
 const CGFloat kSnapRatio = 1.33333333f;
 const CGFloat kSnapJPEGCompress = 0.400f;
 
@@ -137,23 +140,21 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 @interface HONAppDelegate() <BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
-@property (nonatomic, strong) AVAudioPlayer *mp3Player;
-@property (nonatomic) BOOL isFromBackground;
-@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
-@property (nonatomic, strong) UIActivityViewController *activityViewController;
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic, strong) NSTimer *userTimer;
+@property (nonatomic) BOOL isFromBackground;
 @property (nonatomic) int challengeID;
 @end
 
-@implementation HONAppDelegate
 
+@implementation HONAppDelegate
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
+
 
 + (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data{
     const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
@@ -260,8 +261,8 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 + (int)incTotalForCounter:(NSString *)key {
 	NSString *counterName = [NSString stringWithFormat:@"%@_total", [key lowercaseString]];
-	int tot = [[[NSUserDefaults standardUserDefaults] objectForKey:counterName] intValue];
 	
+	int tot = [[[NSUserDefaults standardUserDefaults] objectForKey:counterName] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++tot] forKey:counterName];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -331,9 +332,8 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 }
 
 + (void)writeUserInfo:(NSDictionary *)userInfo {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil) {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
-	}
 	
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -365,7 +365,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		[friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 														  [NSString stringWithFormat:@"%d", 0], @"points",
-														  [NSString stringWithFormat:@"%d", 0], @"votes",
+														  [NSString stringWithFormat:@"%d", 0], @"total_votes",
 														  [NSString stringWithFormat:@"%d", 0], @"pokes",
 														  [NSString stringWithFormat:@"%d", 0], @"pics",
 														  [NSString stringWithFormat:@"%d", 0], @"age",
@@ -399,7 +399,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		[subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 														  [NSString stringWithFormat:@"%d", 0], @"points",
-														  [NSString stringWithFormat:@"%d", 0], @"votes",
+														  [NSString stringWithFormat:@"%d", 0], @"total_votes",
 														  [NSString stringWithFormat:@"%d", 0], @"pokes",
 														  [NSString stringWithFormat:@"%d", 0], @"pics",
 														  [NSString stringWithFormat:@"%d", 0], @"age",
@@ -688,6 +688,250 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 
 #pragma mark - Data Calls
+- (void)_retrieveConfigJSON {
+	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, kConfigJSON);
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
+	[httpClient postPath:kConfigJSON parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		
+		if (error != nil)
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+		
+		else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			NSMutableArray *ageRange = [NSMutableArray array];
+			for (NSNumber *age in [result objectForKey:@"age_range"])
+				[ageRange addObject:age];
+			
+			NSMutableArray *composeEmotions = [NSMutableArray array];
+			for (NSString *emotion in [result objectForKey:@"compose_emotions"])
+				[composeEmotions addObject:emotion];
+			
+			NSMutableArray *replyEmotions = [NSMutableArray array];
+			for (NSString *emotion in [result objectForKey:@"reply_emotions"])
+				[replyEmotions addObject:emotion];
+			
+			NSMutableArray *subjects = [NSMutableArray array];
+			for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
+				[subjects addObject:hashtag];
+			
+			NSMutableArray *users = [NSMutableArray array];
+			for (NSString *user in [result objectForKey:@"search_users"])
+				[users addObject:user];
+			
+			NSMutableArray *celebs = [NSMutableArray array];
+			for (NSDictionary *celeb in [result objectForKey:@"invite_celebs"])
+				[celebs addObject:celeb];
+			
+			NSMutableArray *populars = [NSMutableArray array];
+			for (NSString *popular in [result objectForKey:@"popular_people"])
+				[populars addObject:popular];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"instagram_share"] forKey:@"instagram_share"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twitter_share"] forKey:@"twitter_share"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [[result objectForKey:@"switches"] objectForKey:@"splash_camera"], @"splash_camera",
+															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
+															  [[result objectForKey:@"switches"] objectForKey:@"profile_invite"], @"profile_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"popular_invite"], @"popular_invite",
+															  [[result objectForKey:@"switches"] objectForKey:@"explore_invite"], @"explore_invite",
+															  
+															  [[result objectForKey:@"switches"] objectForKey:@"background_share"], @"background_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"volley_share"], @"volley_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"verify_share"], @"verify_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"like_share"], @"like_share",
+															  [[result objectForKey:@"switches"] objectForKey:@"profile_share"], @"profile_share",
+															  
+															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
+															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"], @"challenges",
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars",
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"], @"emoticons", nil] forKey:@"s3_buckets"];
+			[[NSUserDefaults standardUserDefaults] setObject:[ageRange copy] forKey:@"age_range"];
+			[[NSUserDefaults standardUserDefaults] setObject:[composeEmotions copy] forKey:@"compose_emotions"];
+			[[NSUserDefaults standardUserDefaults] setObject:[replyEmotions copy] forKey:@"reply_emotions"];
+			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
+			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
+			[[NSUserDefaults standardUserDefaults] setObject:[celebs copy] forKey:@"invite_celebs"];
+			[[NSUserDefaults standardUserDefaults] setObject:[populars copy] forKey:@"popular_people"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
+			
+			if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
+				[self _showOKAlert:@"Update Required"
+					   withMessage:@"Please update Volley to the latest version to use the latest features."];
+			}
+			
+			if (!_isFromBackground)
+				[self _registerUser];
+			
+			else {
+				_isFromBackground = NO;
+				NSString *notificationName;
+				switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
+					case 0:
+						notificationName = @"REFRESH_VOTE_TAB";
+						break;
+						
+					case 1:
+						notificationName = @"REFRESH_DISCOVERY_TAB";
+						break;
+						
+					case 2:
+						notificationName = @"REFRESH_CHALLENGES_TAB";
+						break;
+						
+					case 3:
+						notificationName = @"REFRESH_PROFILE_TAB";
+						break;
+				}
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+			}
+			
+			//			_userTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(_retryUser) userInfo:nil repeats:YES];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], kConfigURL, kConfigJSON, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_registerUser {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 1], @"action", nil];
+	
+	//	NSLog(@"PARAMS:[%@]", params);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			if ([userResult objectForKey:@"id"] != [NSNull null] || [userResult count] > 0) {
+				[HONAppDelegate writeUserInfo:userResult];
+				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+				
+				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"])
+					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"has_info"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}
+			
+#if __IGNORE_SUSPENDED__ == 1
+			[self _initTabs];
+#else
+			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+				
+			} else
+				[self _initTabs];
+#endif
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_enableNotifications {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 4], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							@"Y", @"isNotifications",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			if ([userResult isEqual:[NSNull null]])
+				[HONAppDelegate writeUserInfo:userResult];
+		}
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 - (void)_challengeObjectFromPush:(int)challengeID cancelNextPushes:(BOOL)isCancel {
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", challengeID], @"challengeID", nil];
@@ -807,6 +1051,11 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+}
+
+- (void)_changeTab:(NSNotification *)notification {
+	NSLog(@"CHANGE TAB:[%d]", [[notification object] intValue]);
+	self.tabBarController.selectedIndex = [[notification object] intValue];
 }
 
 
@@ -958,6 +1207,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -1363,298 +1613,32 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 
 #pragma mark - Startup Operations
-- (void)_retrieveConfigJSON {
-	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, kConfigJSON);
-//	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
-	[httpClient postPath:kConfigJSON parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		
-		if (error != nil)
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-		
-		else {
-//			[self _showOKAlert:@"GOT CONFIG" withMessage:@""];
-			
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			
-			NSMutableArray *ageRange = [NSMutableArray array];
-			for (NSNumber *age in [result objectForKey:@"age_range"])
-				[ageRange addObject:age];
-			
-			NSMutableArray *composeEmotions = [NSMutableArray array];
-			for (NSString *emotion in [result objectForKey:@"compose_emotions"])
-				[composeEmotions addObject:emotion];
-			
-			NSMutableArray *replyEmotions = [NSMutableArray array];
-			for (NSString *emotion in [result objectForKey:@"reply_emotions"])
-				[replyEmotions addObject:emotion];
-			
-			NSMutableArray *subjects = [NSMutableArray array];
-			for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
-				[subjects addObject:hashtag];
-			
-			NSMutableArray *users = [NSMutableArray array];
-			for (NSString *user in [result objectForKey:@"search_users"])
-				[users addObject:user];
-			
-			NSMutableArray *celebs = [NSMutableArray array];
-			for (NSDictionary *celeb in [result objectForKey:@"invite_celebs"])
-				[celebs addObject:celeb];
-			
-			NSMutableArray *populars = [NSMutableArray array];
-			for (NSString *popular in [result objectForKey:@"popular_people"])
-				[populars addObject:popular];
-			
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"instagram_share"] forKey:@"instagram_share"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twitter_share"] forKey:@"twitter_share"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"switches"] objectForKey:@"splash_camera"], @"splash_camera",
-															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
-															  [[result objectForKey:@"switches"] objectForKey:@"profile_invite"], @"profile_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"popular_invite"], @"popular_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"explore_invite"], @"explore_invite",
-															  
-															  [[result objectForKey:@"switches"] objectForKey:@"background_share"], @"background_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"volley_share"], @"volley_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"verify_share"], @"verify_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"like_share"], @"like_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"profile_share"], @"profile_share",
-															  
-															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"], @"challenges",
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars",
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"], @"emoticons", nil] forKey:@"s3_buckets"];
-			[[NSUserDefaults standardUserDefaults] setObject:[ageRange copy] forKey:@"age_range"];
-			[[NSUserDefaults standardUserDefaults] setObject:[composeEmotions copy] forKey:@"compose_emotions"];
-			[[NSUserDefaults standardUserDefaults] setObject:[replyEmotions copy] forKey:@"reply_emotions"];
-			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
-			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
-			[[NSUserDefaults standardUserDefaults] setObject:[celebs copy] forKey:@"invite_celebs"];
-			[[NSUserDefaults standardUserDefaults] setObject:[populars copy] forKey:@"popular_people"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
-			
-//			[self _showOKAlert:@"PARSED CONFIG" withMessage:@""];
-			
-			if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
-				[self _showOKAlert:@"Update Required"
-					   withMessage:@"Please update Volley to the latest version to use the latest features."];
-			}
-			
-			if (!_isFromBackground)
-				[self _registerUser];
-			
-			else {
-				_isFromBackground = NO;
-				NSString *notificationName;
-				switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
-					case 0:
-						notificationName = @"REFRESH_VOTE_TAB";
-						break;
-						
-					case 1:
-						notificationName = @"REFRESH_DISCOVERY_TAB";
-						break;
-						
-					case 2:
-						notificationName = @"REFRESH_CHALLENGES_TAB";
-						break;
-						
-					case 3:
-						notificationName = @"REFRESH_PROFILE_TAB";
-						break;
-				}
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-			}
-			
-//			_userTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(_retryUser) userInfo:nil repeats:YES];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], kConfigURL, kConfigJSON, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_registerUser {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 1], @"action", nil];
-	
-//	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			if ([userResult objectForKey:@"id"] != [NSNull null]) {
-				[HONAppDelegate writeUserInfo:userResult];				
-				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-				
-				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) {
-					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-				}
-			}
-			
-#if __IGNORE_SUSPENDED__ == 1
-			[self _initTabs];
-#else
-//			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
-//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
-//				[navigationController setNavigationBarHidden:YES];
-//				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-//						
-//			} else
-//				[self _initTabs];
-#endif
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_enableNotifications {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 4], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							@"Y", @"isNotifications",
-							nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			if ([userResult objectForKey:@"id"] != [NSNull null])
-				[HONAppDelegate writeUserInfo:userResult];
-		}
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-
 - (void)_retryUser {
 	NSLog(@"---RETRY USER [%d]---", (int)[HONAppDelegate infoForUser]);
-//	[self _showOKAlert:@"RETRYING USER" withMessage:(![HONAppDelegate infoForUser]) ? @"NEEDED" : @"NOT NEEDED"];
 	
-	if (![HONAppDelegate infoForUser]) {
+	if (![HONAppDelegate infoForUser])
 		[self _registerUser];
 	
-	} else {
+	else {
 		[_userTimer invalidate];
 		_userTimer = nil;
 	}
 }
 
 - (void)_initTabs {
-	[_bgImageView removeFromSuperview];
-	self.tabBarController.view.hidden = NO;
+	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
-	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController;
-	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
-	discoveryViewController = [[HONExploreViewController alloc] init];
-	challengesViewController = [[HONVerifyViewController alloc] init];
-	
-	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
-	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
-	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	
-	[navigationController1 setNavigationBarHidden:YES animated:NO];
-	[navigationController2 setNavigationBarHidden:YES animated:NO];
-	[navigationController3 setNavigationBarHidden:YES animated:NO];
+	for (UINavigationController *navigationController in navigationControllers) {
+		[navigationController setNavigationBarHidden:YES animated:NO];
 		
-	if ([navigationController1.navigationBar respondsToSelector:@selector(setShadowImage:)])
-		[navigationController1.navigationBar setShadowImage:[[UIImage alloc] init]];
+		if ([navigationController.navigationBar respondsToSelector:@selector(setShadowImage:)])
+			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
+	}
 	
-	if ([navigationController2.navigationBar respondsToSelector:@selector(setShadowImage:)])
-		[navigationController2.navigationBar setShadowImage:[[UIImage alloc] init]];
-	
-	if ([navigationController3.navigationBar respondsToSelector:@selector(setShadowImage:)])
-		[navigationController3.navigationBar setShadowImage:[[UIImage alloc] init]];
-	
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:
-											 navigationController1,
-											 navigationController2,
-											 navigationController3, nil];
+	self.tabBarController.view.hidden = NO;
+	self.tabBarController.viewControllers = navigationControllers;
 }
 
 

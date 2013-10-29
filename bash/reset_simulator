@@ -1,0 +1,26 @@
+#!/bin/bash
+
+wipe_url="http://stage.letsvolley.com/admin/wipe_user.php"
+
+username="snap"
+if [ $1 ]; then
+	username=${1}; fi
+
+
+# store pid of the processes
+simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
+bridge_pid=`ps aux -cj | grep -i "SimulatorBridge" | awk '{print $2}'`
+
+# kill processes gracefully
+printf "Gracefully killing the simulator...\n"
+kill -15 $simulator_pid
+kill -15 $bridge_pid
+
+# call wipe user
+printf "Wiping user %s from db...\n" "${username}"
+curl --http-request POST --silent --data "username=${username}" "${wipe_url}" --output /dev/null 2>&1
+printf "Completed!\n"
+
+
+#-- exit w/o error
+exit 0;

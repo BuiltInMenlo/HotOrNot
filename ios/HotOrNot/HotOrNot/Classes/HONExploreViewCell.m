@@ -44,27 +44,32 @@
 	_lChallengeVO = lChallengeVO;
 	
 	_leftHeroOpponentVO = _lChallengeVO.creatorVO;
-//	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_leftHeroOpponentVO.joinedDate timeIntervalSinceNow]) && !_lChallengeVO.isCelebCreated)
-//		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
+	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_leftHeroOpponentVO.joinedDate timeIntervalSinceNow]) && !_lChallengeVO.isCelebCreated && !_lChallengeVO.isExploreChallenge)
+		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
 	
-	__weak typeof(self) weakSelf = self;
 //	NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_leftHeroOpponentVO.imagePrefix]);
 	
 	_leftHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_leftHolderView];
 	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_leftImageView.image = image;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_leftImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+	};
+	
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftImageView.alpha = 0.0;
 	[_leftHolderView addSubview:_leftImageView];
-	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Medium_320x320.jpg",_leftHeroOpponentVO.imagePrefix]]
-															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-								 weakSelf.leftImageView.image = image;
-								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.leftImageView.alpha = 1.0; } completion:nil];
-							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								 //[weakSelf _reloadLeftImage];
-							 }];
+	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Medium_320x320.jpg",_leftHeroOpponentVO.imagePrefix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						  placeholderImage:nil
+								   success:successBlock
+								   failure:failureBlock];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 6.0);
@@ -94,28 +99,32 @@
 	_rChallengeVO = rChallengeVO;
 	
 	_rightHeroOpponentVO = _rChallengeVO.creatorVO;
-//	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]) && !_rChallengeVO.isCelebCreated)
-//		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
+	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_rightHeroOpponentVO.joinedDate timeIntervalSinceNow]) && !_rChallengeVO.isCelebCreated && !_rChallengeVO.isExploreChallenge)
+		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
 	
 //	NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [NSString stringWithFormat:@"%@Medium_320x320.jpg",_rightHeroOpponentVO.imagePrefix]);
-	
-	__weak typeof(self) weakSelf = self;
 	
 	_rightHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
 //	_rightHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_rightHolderView];
 	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_rightImageView.image = image;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_rightImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+	};
+	
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_rightImageView.alpha = 0.0;
 	[_rightHolderView addSubview:_rightImageView];
-	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Medium_320x320.jpg",_rightHeroOpponentVO.imagePrefix]]
-															cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-						  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-							  weakSelf.rightImageView.image = image;
-							  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rightImageView.alpha = 1.0; } completion:nil];
-						  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-							  //[weakSelf _reloadRightImage];
-						  }];
+	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Medium_320x320.jpg",_rightHeroOpponentVO.imagePrefix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						   placeholderImage:nil
+									success:successBlock
+									failure:failureBlock];
 	
 	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 160.0, 6.0);

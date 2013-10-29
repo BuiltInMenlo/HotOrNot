@@ -146,7 +146,7 @@
 //	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 //												   [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
 //												   [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
-//												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
+//												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"total_votes",
 //												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
 //												   [NSString stringWithFormat:@"%d", 0], @"pics",
 //												   [NSString stringWithFormat:@"%d", 0], @"age",

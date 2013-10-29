@@ -163,6 +163,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 			_emptyImageView.hidden = [_challenges count] > 0;
 			[_tableView reloadData];
+//			[_tableView setContentOffset:CGPointZero animated:NO];
+//			[_tableView setContentInset:UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0)];
 			
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
@@ -314,7 +316,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
+	_tableView.contentInset = UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -483,7 +485,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - Notifications
 - (void)_selectedChallengesTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+//	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 	
 	

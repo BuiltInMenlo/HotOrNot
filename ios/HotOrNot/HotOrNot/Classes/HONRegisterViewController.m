@@ -223,7 +223,7 @@
 							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 							nil];
 	
-//	NSLog(@"PARAMS:[%@]", params);
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -245,7 +245,7 @@
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
-			if ([userResult objectForKey:@"result"] == nil) {
+			if (![[userResult objectForKey:@"result"] isEqual:[NSNull null]]) {
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
@@ -258,14 +258,12 @@
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+				
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				[self _retreiveSubscribees];
-				
-				NSLog(@"AGE RANGE:[%d, %d] <%f>", [HONAppDelegate ageRangeAsSeconds:YES].location, [HONAppDelegate ageRangeAsSeconds:YES].length, [[NSDate date] timeIntervalSinceDate:_datePicker.date]);
-				
-				//if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20) {
 				if (!NSLocationInRange([[NSDate date] timeIntervalSinceDate:_datePicker.date], [HONAppDelegate ageRangeAsSeconds:YES])) {
 					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																		message:[NSString stringWithFormat:@"Volley is intended for young adults %d to %d. You may get flagged by the community.", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length]
@@ -398,6 +396,55 @@
 	}];
 }
 
+- (void)_recreateUser {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 1], @"action", nil];
+	
+//	NSLog(@"PARAMS:[%@]", params);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			if ([userResult objectForKey:@"id"] != [NSNull null] || [userResult count] > 0) {
+				[HONAppDelegate writeUserInfo:userResult];
+				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - View Lifecycle
 - (void)loadView {
@@ -405,9 +452,7 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
-	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -13.0);
 	_headerView.backgroundColor = [UIColor blackColor];
-	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
 	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
@@ -503,7 +548,7 @@
 	[yearDateFormat setDateFormat:@"yyyy-MM-dd"];
 	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	_datePicker.date = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [yearDateFormat dateFromString:@"1970-01-01"] : [yearDateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
+	_datePicker.date = (![[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] || [[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [yearDateFormat dateFromString:@"1970-01-01"] : [yearDateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
 	_datePicker.minimumDate = [yearDateFormat dateFromString:@"1970-01-01"];
 	_datePicker.maximumDate = [NSDate date];
@@ -618,6 +663,9 @@
 	
 	[self.splashImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
 	_filename = @"";
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil)
+		[self _recreateUser];
 	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];

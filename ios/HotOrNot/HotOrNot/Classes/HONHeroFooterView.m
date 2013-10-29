@@ -79,7 +79,7 @@
 		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.text = _challengeVO.subjectName;
+		subjectLabel.text = _opponentVO.subjectName;
 		[self addSubview:subjectLabel];
 		
 		CGSize subjectSize = [subjectLabel.text boundingRectWithSize:CGSizeMake(250.0, 44.0)

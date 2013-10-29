@@ -25,7 +25,7 @@
 #import "HONSubscribeesViewController.h"
 #import "HONUserProfileGridView.h"
 
-@interface HONSnapPreviewViewController () <HONSnapPreviewViewControllerDelegate, HONBasicParticipantGridViewDelegate>
+@interface HONSnapPreviewViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate>
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIButton *closeButton;
@@ -511,25 +511,25 @@
 	[_closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchDown];
 	[_scrollView addSubview:_closeButton];
 	
-	_nameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 29.0, 320.0, 64.0)];
+	_nameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 26.0, 320.0, 64.0)];
 	[_scrollView addSubview:_nameHolderView];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
-	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
-	creatorNameLabel.textColor = [UIColor whiteColor];
-	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = _opponentVO.username;
-	[_nameHolderView addSubview:creatorNameLabel];
+	UILabel *participantLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
+	participantLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:17];
+	participantLabel.textColor = [UIColor whiteColor];
+	participantLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	participantLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	participantLabel.backgroundColor = [UIColor clearColor];
+	participantLabel.text = _opponentVO.username;
+	[_nameHolderView addSubview:participantLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 20.0, 270.0, 23.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 19.0, 270.0, 23.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _challengeVO.subjectName;
+	subjectLabel.text = _opponentVO.subjectName;
 	subjectLabel.hidden = _isVerify;
 	[_nameHolderView addSubview:subjectLabel];
 	
@@ -537,7 +537,7 @@
 		HONEmotionVO *emotionVO = [self _emotionForChallenge:_challengeVO];
 		BOOL isEmotionFound = (emotionVO != nil);
 		
-		creatorNameLabel.frame = CGRectOffset(creatorNameLabel.frame, ((int)isEmotionFound) * 34.0, 0.0);
+		participantLabel.frame = CGRectOffset(participantLabel.frame, ((int)isEmotionFound) * 34.0, 0.0);
 		subjectLabel.frame = CGRectOffset(subjectLabel.frame, ((int)isEmotionFound) * 34.0, 0.0);
 		
 		if (isEmotionFound) {
@@ -557,11 +557,10 @@
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-	upvoteButton.hidden = _isVerify;
 	[_buttonHolderView addSubview:upvoteButton];
 	
 	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profileButton.frame = CGRectMake(118.0, -5.0, 84.0, 84.0);
+	profileButton.frame = CGRectMake(117.0, -5.0, 84.0, 84.0);
 	[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateNormal];
 	[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateHighlighted];
 	profileButton.alpha = 0.33;
@@ -584,7 +583,7 @@
 	
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(74.0, 0.0, 74.0, 74.0);
+	approveButton.frame = CGRectMake(121.0, 0.0, 74.0, 74.0);
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"largeYay_nonActive"] forState:UIControlStateNormal];
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"largeYay_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
@@ -592,7 +591,7 @@
 	[_buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(170.0, 0.0, 74.0, 74.0);
+	dispproveButton.frame = CGRectMake(222.0, 0.0, 74.0, 74.0);
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"largeNay_nonActive"] forState:UIControlStateNormal];
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"largeNay_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];

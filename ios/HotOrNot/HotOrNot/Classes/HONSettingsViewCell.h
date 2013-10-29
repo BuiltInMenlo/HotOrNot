@@ -13,8 +13,5 @@
 @interface HONSettingsViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
 
-- (id)initAsTopCell;
-- (id)initAsMidCell:(NSString *)caption;
-- (void)updateCaption:(NSString *)caption;
-- (void)updateTopCell;
+- (id)initWithCaption:(NSString *)caption;
 @end

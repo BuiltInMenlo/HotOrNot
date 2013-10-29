@@ -53,7 +53,7 @@
 - (id)initAsNewChallenge {
 	NSLog(@"%@ - initAsNewChallenge", [self description]);
 	if ((self = [super init])) {
-		_volleySubmitType = HONVolleySubmitTypeMatch;
+		_volleySubmitType = HONVolleySubmitTypeCreate;
 		
 		_subscribers = [NSMutableArray array];
 		_subscriberIDs = [NSMutableArray array];
@@ -128,12 +128,10 @@
 						[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																			   [NSString stringWithFormat:@"%d", vo.userID], @"id",
 																			   [NSString stringWithFormat:@"%d", 0], @"points",
-																			   [NSString stringWithFormat:@"%d", 0], @"votes",
-																			   [NSString stringWithFormat:@"%d", 0], @"pokes",
+																			   [NSString stringWithFormat:@"%d", 0], @"total_votes",
 																			   [NSString stringWithFormat:@"%d", 0], @"pics",
 																			   [NSString stringWithFormat:@"%d", 0], @"age",
 																			   vo.username, @"username",
-																			   vo.fbID, @"fb_id",
 																			   vo.avatarURL, @"avatar_url", nil]]];
 						[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
 					}
@@ -192,7 +190,7 @@
 //		[s3 putObject:por4];
 		
 	} @catch (AmazonClientException *exception) {
-		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		NSLog(@"AWS FAIL:[%@]", exception.message);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -222,9 +220,9 @@
 		_submitImageView.alpha = 1.0;
 	} completion:nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], (_volleySubmitType == HONVolleySubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges, [_challengeParams objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_volleySubmitType == HONVolleySubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:(_volleySubmitType == HONVolleySubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges parameters:_challengeParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:(_volleySubmitType == HONVolleySubmitTypeCreate) ? kAPICreateChallenge : kAPIJoinChallenge parameters:_challengeParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -397,7 +395,7 @@
 			[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																   [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
 																   [NSString stringWithFormat:@"%d", 0], @"points",
-																   [NSString stringWithFormat:@"%d", 0], @"votes",
+																   [NSString stringWithFormat:@"%d", 0], @"total_votes",
 																   [NSString stringWithFormat:@"%d", 0], @"pokes",
 																   [NSString stringWithFormat:@"%d", 0], @"pics",
 																   [NSString stringWithFormat:@"%d", 0], @"age",
@@ -421,7 +419,7 @@
 					[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																		   [NSString stringWithFormat:@"%d", vo.userID], @"id",
 																		   [NSString stringWithFormat:@"%d", 0], @"points",
-																		   [NSString stringWithFormat:@"%d", 0], @"votes",
+																		   [NSString stringWithFormat:@"%d", 0], @"total_votes",
 																		   [NSString stringWithFormat:@"%d", 0], @"pokes",
 																		   [NSString stringWithFormat:@"%d", 0], @"pics",
 																		   [NSString stringWithFormat:@"%d", 0], @"age",
@@ -569,11 +567,7 @@
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
-	NSLog(@"previewView:changeSubject:[%@]", subject);
-	
-	if (_volleySubmitType == HONVolleySubmitTypeJoin && ![_subjectName isEqualToString:subject])
-		_volleySubmitType = HONVolleySubmitTypeMatch;
-	
+	NSLog(@"previewView:changeSubject:[%@]", subject);	
 	_subjectName = subject;
 }
 
@@ -617,9 +611,9 @@
 								
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
-									   [NSString stringWithFormat:@"%d", _volleySubmitType], @"action",
+//									   [NSString stringWithFormat:@"%d", _volleySubmitType], @"action",
 									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengerID",
+									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengeID",
 									   _subjectName, @"subject", nil];
 //									   [NSString stringWithFormat:@"%d", 1], @"expires",
 //									   @"N", @"changedSubject",
@@ -711,6 +705,17 @@
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
 	NSLog(@"AWS didFailWithError:\n%@", error);
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.mode = MBProgressHUDModeCustomView;
+	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+	[_progressHUD show:NO];
+	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	_progressHUD = nil;
 }
 
 

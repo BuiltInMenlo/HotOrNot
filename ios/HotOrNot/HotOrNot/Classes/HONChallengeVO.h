@@ -22,6 +22,7 @@
 @property (nonatomic) int commentTotal;
 @property (nonatomic) BOOL hasViewed;
 @property (nonatomic) BOOL isCelebCreated;
+@property (nonatomic) BOOL isExploreChallenge;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;

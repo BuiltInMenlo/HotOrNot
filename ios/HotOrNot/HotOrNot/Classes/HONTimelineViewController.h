@@ -13,14 +13,11 @@
 typedef enum {
 	HONTimelineTypeSubject		= 8,	/** Challenges using same hashtag */
 	HONTimelineTypeSingleUser	= 9,	/** Challenges of a single user */
-	HONTimelineTypeFriends		= 10,	/** Challenges involving all friends */
+	HONTimelineTypeHome			= 10,	/** Challenges involving user & following */
 } HONTimelineType;
 
 
 @interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
-
-- (id)initWithFriends;
 - (id)initWithSubject:(NSString *)subjectName;
 - (id)initWithUsername:(NSString *)username;
-- (id)initWithUserID:(int)userID;
 @end

@@ -9,5 +9,4 @@
 #import "HONBasicParticipantGridView.h"
 
 @interface HONUserProfileGridView : HONBasicParticipantGridView
-
 @end

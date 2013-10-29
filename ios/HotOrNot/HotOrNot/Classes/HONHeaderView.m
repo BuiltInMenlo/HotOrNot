@@ -16,7 +16,7 @@
 @implementation HONHeaderView
 @synthesize title = _title;
 
-- (id)initAsVoteWall {
+- (id)initWithBranding {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
@@ -46,11 +46,11 @@
 }
 
 - (id)initAsModalWithTitle:(NSString *)title {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalHeader"]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 29.0, 200.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
 		_titleLabel.textColor = [UIColor whiteColor];
@@ -72,31 +72,8 @@
 	_titleLabel.text = _title;
 }
 
-- (void)toggleRefresh:(BOOL)isRefreshing {
-	(isRefreshing) ? [_activityIndicatorView startAnimating] : [_activityIndicatorView stopAnimating];
-	_refreshButton.hidden = isRefreshing;
-}
-
-- (void)hideRefreshing {
-	[_activityIndicatorView removeFromSuperview];
-	[_refreshButton removeFromSuperview];
-}
-
 - (void)leftAlignTitle {
 	_titleLabel.textAlignment = NSTextAlignmentLeft;
-}
-
-
-- (void)_addRefresh {
-	_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-	_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
-//		[self addSubview:_activityIndicatorView];
-	
-	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-//		[self addSubview:_refreshButton];
 }
 
 

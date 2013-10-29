@@ -11,8 +11,8 @@
 #import "HONChallengeVO.h"
 
 typedef enum {
-	HONVolleySubmitTypeMatch		= 14,	/** Pairs w/ existing or creates new */
-	HONVolleySubmitTypeJoin			= 69	/** Joins an in-progress challenge */
+	HONVolleySubmitTypeCreate	= 0,	/** Creates a new challenge */
+	HONVolleySubmitTypeJoin				/** Joins an in-progress challenge */
 } HONVolleySubmitType;
 
 

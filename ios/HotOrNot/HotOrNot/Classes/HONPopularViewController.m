@@ -233,14 +233,7 @@
 	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];
-	
-//	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
-//	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
-//	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateHighlighted];
-//	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:selectToggleButton];
+	[self.view addSubview:_tableView];	
 }
 
 - (void)viewDidLoad {

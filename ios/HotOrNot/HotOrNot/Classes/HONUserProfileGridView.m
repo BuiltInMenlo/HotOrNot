@@ -11,7 +11,6 @@
 
 
 @interface HONUserProfileGridView ()
-//- (void)layoutGrid;
 @end
 
 @implementation HONUserProfileGridView
@@ -27,35 +26,28 @@
 
 
 - (void)layoutGrid {
-	self.gridOpponents = [NSMutableArray array];
+	_gridItems = [NSMutableArray array];
 	
-	// go thru all challenges if user is creator, add
-	for (HONChallengeVO *vo in self.challenges) {
-		if (self.primaryOpponentVO.userID == vo.creatorVO.userID) {
-			[self.gridOpponents addObject:vo.creatorVO];
-//			NSMutableArray *dataArray = [NSMutableArray array];
-//			[dataArray addObject:vo.creatorVO];
-//			[dataArray addObject:vo];
-//			[_gridOpponents addObject:dataArray];
+	for (HONChallengeVO *vo in _challenges) {
+		if (_heroOpponentVO.userID == vo.creatorVO.userID) {
+			[_gridItems addObject:@{@"challenge"	: vo,
+									@"participant"	: vo.creatorVO}];
 		}
 		
-		// go thru each challenge participant, add if user is one of them
-		for (HONOpponentVO *challenger in vo.challengers) {
-			if (self.primaryOpponentVO.userID == challenger.userID) {
-				[self.gridOpponents addObject:challenger];
-//				NSMutableArray *dataArray = [NSMutableArray new];
-//				[dataArray addObject:challenger];
-//				[dataArray addObject:vo];
-//				[_gridOpponents addObject:dataArray];
-			}
+		for (HONOpponentVO *challenger in vo.challengers)
+			if (_heroOpponentVO.userID == challenger.userID) {
+				[_gridItems addObject:@{@"challenge"	: vo,
+										@"participant"	: challenger}];
 		}
 	}
 	
-	NSLog(@"layoutGrid (SUB) [%d]-> [%d]", [self.challenges count], [self.gridOpponents count]);
+	NSLog(@"%@.layoutGrid withTotal[%d]", [[self class] description], [_gridItems count]);
 	[super layoutGrid];
 }
 
+- (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
+	[super createItemForParticipant:opponentVO fromChallenge:challengeVO];
+}
 
-#pragma mark - Navigation
 
 @end
