@@ -80,6 +80,15 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         ";
         $params = array( $userId );
         $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
+        	update `hotornot-dev`.tblUsers
+        	set total_challenges = 0;
+        	where creator_id = ?
+        ";
+        $params = array( $userId );
+        $this->prepareAndExecute( $sql, $params );
+        
     }
     
     public function getRandomIds( $total = 1, $exclude = array() ){

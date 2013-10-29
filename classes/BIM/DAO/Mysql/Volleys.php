@@ -973,6 +973,30 @@ WHERE is_verify != 1
     }
     
     public function updateExploreIds( $volleyData ){
+        // the call below is to support legacy
+        $this->_updateExploreIdsLegacy($volleyData);
+        
+        $sql = "update `hotornot-dev`.tblChallenges set is_explore = 0";
+        $stmt = $this->prepareAndExecute( $sql );
+        
+        if( !empty( $volleyData ) ){
+            $placeHolders = join(',',array_fill(0, count( $volleyData ), '?') );
+            $params = array();
+            $valueSql = array();
+            foreach( $volleyData as $volley ){
+                $params[] = $volley->id;
+            }
+            $sql = "
+            	update `hotornot-dev`.tblChallenges 
+            	set is_explore = 1
+            	where id in ( $placeHolders )
+            ";
+            $stmt = $this->prepareAndExecute( $sql, $params );
+        }
+        return $volleyData;
+    }
+    
+    private function _updateExploreIdsLegacy( $volleyData ){
         $sql = "delete from `hotornot-dev`.explore_ids";
         $stmt = $this->prepareAndExecute( $sql );
         if( !empty( $volleyData ) ){
@@ -996,9 +1020,10 @@ WHERE is_verify != 1
     }
     
     public function getExploreIds(){
-        $sql = "select id from `hotornot-dev`.explore_ids order by updated desc";
+        $sql = "select id from `hotornot-dev`.tblChallenges where is_explore = 1 order by updated desc";
         $stmt = $this->prepareAndExecute( $sql );
-        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        return $ids;
     }
     
     public function getIdsByCreatorImage( $imgUrl ){

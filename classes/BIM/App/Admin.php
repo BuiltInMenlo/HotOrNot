@@ -194,17 +194,8 @@ class BIM_App_Admin{
         <body>
         ");
         
-        // $volleys = BIM_Model_Volley::getTopVolleysByVotes();
-        $volleys = BIM_Model_Volley::getTopVolleysByVotes( 86400 * 30 );
-        //$rem = array();
-        //$volleyArr = $volleys;
-        //foreach( $volleyArr as $idx => $volley ){
-          //  if( in_array( $volley->id, $volleyIds ) ){
-            //    unset( $volleys[ $volley->id ] );
-            //}
-        //}
-        // $volleys = array_diff( $volleys, $volleyIds );
-        echo "<hr>Top Volleys By Likes - ".count( $volleys )."&nbsp;&nbsp;<a href='#recent'>Most Recent</a><hr>\n";
+        $volleys = BIM_Model_Volley::getMulti( $volleyIds );
+        echo "<hr><a id='current'>Currently Chosen Volleys - ".count( $volleys )."</a>&nbsp;&nbsp;<a href='#recent'>Most Recent</a>&nbsp;&nbsp;<a href='#likes'>By Likes</a><hr>\n";
         
         echo("
         <form method='POST'>
@@ -245,10 +236,59 @@ class BIM_App_Admin{
         echo("
         </table>
         ");
+        // $volleys = BIM_Model_Volley::getTopVolleysByVotes();
+        $volleys = BIM_Model_Volley::getTopVolleysByVotes( 86400 * 30 );
+        //$rem = array();
+        //$volleyArr = $volleys;
+        //foreach( $volleyArr as $idx => $volley ){
+          //  if( in_array( $volley->id, $volleyIds ) ){
+            //    unset( $volleys[ $volley->id ] );
+            //}
+        //}
+        // $volleys = array_diff( $volleys, $volleyIds );
+        echo "<hr><a id='likes'>Top Volleys By Likes - ".count( $volleys )."</a>&nbsp;&nbsp;<a href='#current'>Current</a>&nbsp;&nbsp;<a href='#recent'>Most Recent</a><hr>\n";
+        
+        echo("
+        <table border=1 cellpadding=10>
+        <tr>
+        <th>Volley Id</th>
+        <th>Image</th>
+        <th>Creator</th>
+        <th>Hash Tag</th>
+        <th>Challengers</th>
+        <th>Creation Date</th>
+        <th>Last Updated</th>
+        <th>Display <input type='button' value='clear' onClick='clearAll();'></th>
+        </tr>
+        ");
+        // now get the flag counts for each user
+        foreach( $volleys as $volley ){
+            $creator = $volley->creator;
+            $totalChallengers = count($volley->challengers);
+            $img = $volley->getCreatorImage();
+            $checked = in_array( $volley->id, $volleyIds ) ? ' checked ' : '';
+            if( $volley->isExtant() ){
+                echo "
+                <tr>
+                <td>$volley->id - <input type='button' onClick='shoutout($volley->id);' value='shout out'></td>
+                <td><img src='$img'></td>
+                <td>$creator->username</td>
+                <td>$volley->subject</td>
+                <td>$totalChallengers</td>
+                <td>$volley->added</td>
+                <td>$volley->updated</td>
+                <td><input type='checkbox' $checked name='volleyIds[]' value='$volley->id'></td>
+                </tr>
+                ";
+            }
+        }
+        echo("
+        </table>
+        ");
         
         $v = new BIM_App_Votes();
         $volleys = $v->getChallengesByCreationTime();
-        echo "<hr><a id='recent'>Most Recent Volleys - ".count( $volleys )."</a><hr>\n";
+        echo "<hr><a id='recent'>Most Recent Volleys - ".count( $volleys )."</a>&nbsp;&nbsp;<a href='#current'>Current</a>&nbsp;&nbsp;<a href='#likes'>By Likes</a><hr>\n";
         
         echo("
         <table border=1 cellpadding=10>

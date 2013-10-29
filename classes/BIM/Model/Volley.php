@@ -31,7 +31,9 @@ class BIM_Model_Volley{
                 'score' => $volley->creator_likes,
                 'subject' => $this->subject,
             );
-    	    $this->is_celeb = BIM_Utils::isCelebrity( $volley->creator_id );
+            
+    	    $this->is_explore = $volley->is_explore;
+            $this->is_celeb = BIM_Utils::isCelebrity( $volley->creator_id );
             // finally get the correct score if necessary
             
             $this->creator = $creator;
@@ -467,7 +469,7 @@ class BIM_Model_Volley{
     
     public static function getAllForUser( $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volleyIds = $dao->getAllIdsForUser( $userId );
+        $volleyIds = $dao->getAllIdsForUser( $userId, true );
         return self::getMulti($volleyIds);
     }
     
