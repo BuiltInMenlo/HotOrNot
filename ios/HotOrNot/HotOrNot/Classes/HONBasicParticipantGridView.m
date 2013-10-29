@@ -33,11 +33,8 @@
 
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, kSnapThumbSize.height * (([challenges count] / 4) + 1))])) {
-		_heroOpponentVO = opponentVO;
-//		_selectedOpponentVO = nil;
-		
 		_challenges = [challenges mutableCopy];
-//		_challengeVO = nil;
+		_heroOpponentVO = opponentVO;
 	}
 	
 	return (self);
@@ -46,7 +43,6 @@
 
 #pragma mark - UI Presentation
 - (void)layoutGrid {
-//	_holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbSize.height * (([_gridOpponents count] / 4) + 1))];
 	_holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + 1))];
 	[self addSubview:_holderView];
 	
@@ -66,10 +62,8 @@
 }
 
 - (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-	
-	// switch the challenger spot with the creator if hero is the challenger
 	HONOpponentVO *vo = ([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix]) ? challengeVO.creatorVO : opponentVO;
-	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@Large_640x1136.jpg", [vo.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
+//	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@Large_640x1136.jpg", [vo.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
 	
 	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_participantCounter % 4), kSnapThumbSize.height * (_participantCounter / 4));
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
@@ -97,17 +91,15 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_holderView];
-		NSLog(@"TOUCHPT:[%@]", NSStringFromCGPoint(touchPoint));
+//		NSLog(@"TOUCHPT:[%@]", NSStringFromCGPoint(touchPoint));
 		
 		NSDictionary *dict = [NSDictionary dictionary];
 		if (CGRectContainsPoint(_holderView.frame, touchPoint)) {
 			int row = ((int)(touchPoint.y - _holderView.frame.origin.y) / (kSnapThumbSize.height + 1.0));
 			int col = ((int)touchPoint.x / (kSnapThumbSize.width + 1.0));
-			int idx = row * 4 + col;
+			int idx = (row * 4) + col;
 			
-			CGPoint coords = CGPointMake(col, row);
-			
-			NSLog(@"COORDS FOR CELL:[%d] -> (%d, %d)", idx, (int)coords.x, (int)coords.y);
+			NSLog(@"COORDS FOR CELL:[%d] -> (%d, %d)", idx, col, row);
 			dict = (idx < [_gridItems count]) ? [_gridItems objectAtIndex:idx] : nil;
 		}
 		

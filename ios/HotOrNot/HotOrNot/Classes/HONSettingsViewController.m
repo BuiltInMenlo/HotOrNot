@@ -182,19 +182,10 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Settings"];
-	_headerView.frame = CGRectOffset(_headerView.frame, 0.0, -13.0);
 	_headerView.backgroundColor = [UIColor blackColor];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
-//	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
-//	headerTitleLabel.backgroundColor = [UIColor clearColor];
-//	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-//	headerTitleLabel.textColor = [UIColor whiteColor];
-//	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-//	headerTitleLabel.text = @"Settings";
-//	[_headerView addSubview:headerTitleLabel];
-
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -244,7 +235,7 @@
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 		messageComposeViewController.messageComposeDelegate = self;
 		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]];
 		
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
@@ -314,8 +305,8 @@
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 			messageComposeViewController.messageComposeDelegate = self;
-			//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			//messageComposeViewController.recipients = [NSArray arrayWithObject:@"8882221234"];
+			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]];
 			
 			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 			
@@ -335,8 +326,9 @@
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
-			//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+			//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"foo@bar.com"]];
+			[mailComposeViewController setSubject:[[HONAppDelegate emailInviteFormat] objectForKey:@"subject"]];
+			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[[HONAppDelegate emailInviteFormat] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]] isHTML:NO];
 			[mailComposeViewController.view setTag:0];
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
@@ -351,7 +343,6 @@
 		}
 		
 	} else if (indexPath.row == 4) {
-		
 		[[Mixpanel sharedInstance] track:@"Settings - Change Username"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -361,7 +352,6 @@
 		[self presentViewController:navigationController animated:YES completion:nil];
 	
 	} else if (indexPath.row == 5) {
-		
 		[[Mixpanel sharedInstance] track:@"Settings - Change Email"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -385,7 +375,6 @@
 		}
 	
 	} else if (indexPath.row == 6) {
-		
 		[[Mixpanel sharedInstance] track:@"Settings - Change Birthday"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -409,7 +398,6 @@
 		}
 		
 	} else if (indexPath.row == 7) {
-		
 		[[Mixpanel sharedInstance] track:@"Settings - Delete Volleys"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -423,7 +411,6 @@
 		[alertView show];
 		
 	} else if (indexPath.row == 8) {
-		
 		[[Mixpanel sharedInstance] track:@"Settings - Deactivate"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -437,7 +424,6 @@
 		[alertView show];
 		
 	} else if (indexPath.row == 9) {
-		
 		[[Mixpanel sharedInstance] track:@"Settings - Report Abuse / Bug"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

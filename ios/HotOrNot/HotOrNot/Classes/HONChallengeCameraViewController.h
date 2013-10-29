@@ -16,7 +16,7 @@ typedef enum {
 } HONVolleySubmitType;
 
 
-@interface HONChallengeCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAlertViewDelegate>
+@interface HONChallengeCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initAsNewChallenge;
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
 @end

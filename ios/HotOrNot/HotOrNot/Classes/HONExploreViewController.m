@@ -91,26 +91,12 @@
 			
 			_currChallenges = [NSMutableArray array];
 			_allChallenges = [NSMutableDictionary dictionary];
-//			NSMutableArray *retrievedChallenges = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:serverList];
-				[_currChallenges addObject:challengeVO];
-//				[retrievedChallenges addObject:[NSNumber numberWithInt:challengeVO.challengeID]];
-//				[_allChallenges setObject:challengeVO forKey:[NSString stringWithFormat:@"c_%d", challengeVO.challengeID]];
-			}
 			
-//			for (NSNumber *cID in [HONAppDelegate fillDiscoverChallenges:retrievedChallenges])
-//				[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
-			
-			
+			for (NSDictionary *serverList in parsedLists)
+				[_currChallenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
 			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
 			[_tableView reloadData];
-			
-//			[_tableView setContentOffset:CGPointZero animated:NO];
-//			[_tableView setContentInset:UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0)];
-
-//			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
 		
 		if (_progressHUD != nil) {
@@ -242,17 +228,6 @@
 		[alertView setTag:0];
 		[alertView show];
 	}
-
-	
-//	NSLog(@"refresh:[%d]", [_allChallenges count]);
-//	_currChallenges = [NSMutableArray array];
-//	
-//	if ([_allChallenges count] > 0) {
-//		for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
-//			[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
-//		
-//		[self performSelector:@selector(_doneRefreshing) withObject:nil afterDelay:0.125];
-//	}
 }
 
 - (void)_goCreateChallenge {
@@ -294,7 +269,7 @@
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"explore_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 }
@@ -391,7 +366,7 @@
 	}
 }
 
-- (void)exploreViewCellHidePreview:(HONExploreViewCell *)cell {
+- (void)exploreViewCellShowPreviewControls:(HONExploreViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Explore - Hide Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",

@@ -309,9 +309,9 @@
 		4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C810EA017DE65D900F6EAE9 /* CoreImage.framework */; };
 		4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81A014163337C200AB188B /* UIImage+fixOrientation.m */; };
 		4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C81A016163367F300AB188B /* AVFoundation.framework */; };
-		4C86C43217FF736E007DC458 /* HONSubscribersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43117FF736E007DC458 /* HONSubscribersViewController.m */; };
-		4C86C43517FF990A007DC458 /* HONSubscribeesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43417FF990A007DC458 /* HONSubscribeesViewController.m */; };
-		4C86C43917FFA909007DC458 /* HONSubscribeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43817FFA909007DC458 /* HONSubscribeViewCell.m */; };
+		4C86C43217FF736E007DC458 /* HONFollowersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43117FF736E007DC458 /* HONFollowersViewController.m */; };
+		4C86C43517FF990A007DC458 /* HONFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43417FF990A007DC458 /* HONFollowingViewController.m */; };
+		4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43817FFA909007DC458 /* HONFollowUserViewCell.m */; };
 		4C86F3CE17E9607E003069E7 /* HONCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86F3CD17E9607E003069E7 /* HONCollectionViewFlowLayout.m */; };
 		4C8CBC20179CF36D00C95189 /* friendsButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBC18179CF36D00C95189 /* friendsButton_Active.png */; };
 		4C8CBC21179CF36D00C95189 /* friendsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBC19179CF36D00C95189 /* friendsButton_Active@2x.png */; };
@@ -350,10 +350,6 @@
 		4CA0A6CE1817962E00045594 /* splashText.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6CB1817962E00045594 /* splashText.png */; };
 		4CA0A6CF1817962E00045594 /* splashText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6CC1817962E00045594 /* splashText@2x.png */; };
 		4CA153E6170FA25F000B4510 /* whiteOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA153E5170FA25F000B4510 /* whiteOverlay.png */; };
-		4CA34C4B16F6A3C90000751E /* CartoGothicStd-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C4716F6A3C90000751E /* CartoGothicStd-Bold.otf */; };
-		4CA34C4C16F6A3C90000751E /* CartoGothicStd-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C4816F6A3C90000751E /* CartoGothicStd-BoldItalic.otf */; };
-		4CA34C4D16F6A3C90000751E /* CartoGothicStd-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C4916F6A3C90000751E /* CartoGothicStd-Book.otf */; };
-		4CA34C4E16F6A3C90000751E /* CartoGothicStd-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C4A16F6A3C90000751E /* CartoGothicStd-Italic.otf */; };
 		4CA34C5116F6B08F0000751E /* discoveryBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C4F16F6B08F0000751E /* discoveryBackground.png */; };
 		4CA34C5216F6B08F0000751E /* discoveryBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C5016F6B08F0000751E /* discoveryBackground@2x.png */; };
 		4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */; };
@@ -1017,12 +1013,12 @@
 		4C81A013163337C100AB188B /* UIImage+fixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+fixOrientation.h"; sourceTree = "<group>"; };
 		4C81A014163337C200AB188B /* UIImage+fixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+fixOrientation.m"; sourceTree = "<group>"; };
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		4C86C43017FF736E007DC458 /* HONSubscribersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubscribersViewController.h; sourceTree = "<group>"; };
-		4C86C43117FF736E007DC458 /* HONSubscribersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubscribersViewController.m; sourceTree = "<group>"; };
-		4C86C43317FF990A007DC458 /* HONSubscribeesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubscribeesViewController.h; sourceTree = "<group>"; };
-		4C86C43417FF990A007DC458 /* HONSubscribeesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubscribeesViewController.m; sourceTree = "<group>"; };
-		4C86C43717FFA909007DC458 /* HONSubscribeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubscribeViewCell.h; sourceTree = "<group>"; };
-		4C86C43817FFA909007DC458 /* HONSubscribeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubscribeViewCell.m; sourceTree = "<group>"; };
+		4C86C43017FF736E007DC458 /* HONFollowersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowersViewController.h; sourceTree = "<group>"; };
+		4C86C43117FF736E007DC458 /* HONFollowersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowersViewController.m; sourceTree = "<group>"; };
+		4C86C43317FF990A007DC458 /* HONFollowingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowingViewController.h; sourceTree = "<group>"; };
+		4C86C43417FF990A007DC458 /* HONFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowingViewController.m; sourceTree = "<group>"; };
+		4C86C43717FFA909007DC458 /* HONFollowUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowUserViewCell.h; sourceTree = "<group>"; };
+		4C86C43817FFA909007DC458 /* HONFollowUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowUserViewCell.m; sourceTree = "<group>"; };
 		4C86F3CC17E9607E003069E7 /* HONCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		4C86F3CD17E9607E003069E7 /* HONCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		4C8CBC18179CF36D00C95189 /* friendsButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = friendsButton_Active.png; sourceTree = "<group>"; };
@@ -1077,10 +1073,6 @@
 		4CA0A6CB1817962E00045594 /* splashText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splashText.png; sourceTree = "<group>"; };
 		4CA0A6CC1817962E00045594 /* splashText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "splashText@2x.png"; sourceTree = "<group>"; };
 		4CA153E5170FA25F000B4510 /* whiteOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteOverlay.png; sourceTree = "<group>"; };
-		4CA34C4716F6A3C90000751E /* CartoGothicStd-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CartoGothicStd-Bold.otf"; sourceTree = "<group>"; };
-		4CA34C4816F6A3C90000751E /* CartoGothicStd-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CartoGothicStd-BoldItalic.otf"; sourceTree = "<group>"; };
-		4CA34C4916F6A3C90000751E /* CartoGothicStd-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CartoGothicStd-Book.otf"; sourceTree = "<group>"; };
-		4CA34C4A16F6A3C90000751E /* CartoGothicStd-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CartoGothicStd-Italic.otf"; sourceTree = "<group>"; };
 		4CA34C4F16F6B08F0000751E /* discoveryBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = discoveryBackground.png; sourceTree = "<group>"; };
 		4CA34C5016F6B08F0000751E /* discoveryBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discoveryBackground@2x.png"; sourceTree = "<group>"; };
 		4CA34C5316F6B6550000751E /* HONGenericRowViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGenericRowViewCell.h; sourceTree = "<group>"; };
@@ -1548,10 +1540,6 @@
 			isa = PBXGroup;
 			children = (
 				4CB75CF916FFB3E7001A8738 /* HelveticaNeue.dfont */,
-				4CA34C4716F6A3C90000751E /* CartoGothicStd-Bold.otf */,
-				4CA34C4816F6A3C90000751E /* CartoGothicStd-BoldItalic.otf */,
-				4CA34C4916F6A3C90000751E /* CartoGothicStd-Book.otf */,
-				4CA34C4A16F6A3C90000751E /* CartoGothicStd-Italic.otf */,
 			);
 			name = Fonts;
 			sourceTree = "<group>";
@@ -2252,7 +2240,7 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				4C86C43617FFA8D2007DC458 /* Subscribe */,
+				4C86C43617FFA8D2007DC458 /* Followers / Following */,
 				4C2F6E6017F73F0300F79F1A /* Activities */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C48745C16C056E8007D901B /* Search */,
@@ -2415,17 +2403,17 @@
 			name = Global;
 			sourceTree = "<group>";
 		};
-		4C86C43617FFA8D2007DC458 /* Subscribe */ = {
+		4C86C43617FFA8D2007DC458 /* Followers / Following */ = {
 			isa = PBXGroup;
 			children = (
-				4C86C43717FFA909007DC458 /* HONSubscribeViewCell.h */,
-				4C86C43817FFA909007DC458 /* HONSubscribeViewCell.m */,
-				4C86C43017FF736E007DC458 /* HONSubscribersViewController.h */,
-				4C86C43117FF736E007DC458 /* HONSubscribersViewController.m */,
-				4C86C43317FF990A007DC458 /* HONSubscribeesViewController.h */,
-				4C86C43417FF990A007DC458 /* HONSubscribeesViewController.m */,
+				4C86C43717FFA909007DC458 /* HONFollowUserViewCell.h */,
+				4C86C43817FFA909007DC458 /* HONFollowUserViewCell.m */,
+				4C86C43017FF736E007DC458 /* HONFollowersViewController.h */,
+				4C86C43117FF736E007DC458 /* HONFollowersViewController.m */,
+				4C86C43317FF990A007DC458 /* HONFollowingViewController.h */,
+				4C86C43417FF990A007DC458 /* HONFollowingViewController.m */,
 			);
-			name = Subscribe;
+			name = "Followers / Following";
 			sourceTree = "<group>";
 		};
 		4C86F3CF17E97606003069E7 /* Layouts */ = {
@@ -3239,11 +3227,7 @@
 				4CA485F816EE870000DE0F24 /* genericRowBackground_nonActive.png in Resources */,
 				4CA485F916EE870000DE0F24 /* genericRowBackground_nonActive@2x.png in Resources */,
 				4CDB1553180CBD7C00FD93CB /* followAll_Active.png in Resources */,
-				4CA34C4B16F6A3C90000751E /* CartoGothicStd-Bold.otf in Resources */,
-				4CA34C4C16F6A3C90000751E /* CartoGothicStd-BoldItalic.otf in Resources */,
 				4C25EECE17EF8A3C00F6DBAB /* skipButton_Active@2x.png in Resources */,
-				4CA34C4D16F6A3C90000751E /* CartoGothicStd-Book.otf in Resources */,
-				4CA34C4E16F6A3C90000751E /* CartoGothicStd-Italic.otf in Resources */,
 				4CA34C5116F6B08F0000751E /* discoveryBackground.png in Resources */,
 				4CA34C5216F6B08F0000751E /* discoveryBackground@2x.png in Resources */,
 				4C351CEE16FE754B00BD9498 /* mainBG-568h@2x.png in Resources */,
@@ -3672,7 +3656,7 @@
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */,
-				4C86C43217FF736E007DC458 /* HONSubscribersViewController.m in Sources */,
+				4C86C43217FF736E007DC458 /* HONFollowersViewController.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				4CCED620181F830400D1D673 /* CatmullRomSpline.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
@@ -3692,7 +3676,7 @@
 				4CCA4162181C094300FC9863 /* HONHeroFooterView.m in Sources */,
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4C51173D1623A20D00370D3A /* MPCJSONDataSerializer.m in Sources */,
-				4C86C43517FF990A007DC458 /* HONSubscribeesViewController.m in Sources */,
+				4C86C43517FF990A007DC458 /* HONFollowingViewController.m in Sources */,
 				4C51173E1623A20D00370D3A /* MPCJSONSerializer.m in Sources */,
 				4C51173F1623A20D00370D3A /* MPCSerializedJSONData.m in Sources */,
 				4C5117401623A20D00370D3A /* NSData+MPBase64.m in Sources */,
@@ -3741,7 +3725,7 @@
 				4CCED624181F830400D1D673 /* QuadraticBezierCurve.m in Sources */,
 				4CED1C1A177D46C100A32F2B /* NBPhoneMetaData.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
-				4C86C43917FFA909007DC458 /* HONSubscribeViewCell.m in Sources */,
+				4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
 				4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */,
 				4CC5F89317F9123B00BCA1DE /* AFJSONRequestOperation.m in Sources */,

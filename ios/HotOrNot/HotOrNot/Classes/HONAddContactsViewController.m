@@ -505,7 +505,6 @@
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
-	self.view.frame = CGRectOffset(self.view.frame, 0.0, 20.0);
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";
@@ -514,31 +513,22 @@
 	_selectedInAppContacts = [NSMutableArray array];
 	
 	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteAllButton.frame = CGRectMake(10.0, 13.0, 64.0, 44.0);
+	inviteAllButton.frame = CGRectMake(10.0, 0.0, 64.0, 44.0);
 	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
 	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
 	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
+	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
-	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Friends"];
 	headerView.backgroundColor = [UIColor blackColor];
 	[headerView addButton:inviteAllButton];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
-	
-	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
-	headerTitleLabel.backgroundColor = [UIColor clearColor];
-	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-	headerTitleLabel.textColor = [UIColor whiteColor];
-	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Friends";
-	[headerView addSubview:headerTitleLabel];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];

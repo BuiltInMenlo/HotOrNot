@@ -7,8 +7,6 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import <Social/SLComposeViewController.h>
-#import <Social/SLServiceTypes.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -30,8 +28,8 @@
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
 
-#import "HONSubscribeesViewController.h"
-#import "HONSubscribersViewController.h"
+#import "HONFollowingViewController.h"
+#import "HONFollowersViewController.h"
 
 
 @interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate>
@@ -586,11 +584,11 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"		   : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _userVO.username],
-																							@"image"		   : _avatarImageView.image,
-																							@"url"			   : @"",
-																							@"mp_event"		   : @"Timeline Details",
-																							@"view_controller" : self}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+																							@"image"			: _avatarImageView.image,
+																							@"url"				: @"",
+																							@"mp_event"			: @"User Profile - Share",
+																							@"view_controller"	: self}];
 }
 
 - (void)_goSettings {
@@ -605,13 +603,13 @@
 
 
 - (void)_goSubscribers {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribersViewController alloc] initWithUserID:_userID]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowersViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSubscribees {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribeesViewController alloc] initWithUserID:_userID]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowingViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -731,11 +729,13 @@
 		}
 	}
 	
-	for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-		if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
-			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-			isEmotionFound = YES;
-			break;
+	if (!isEmotionFound) {
+		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
+			if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
+				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+				isEmotionFound = YES;
+				break;
+			}
 		}
 	}
 	
@@ -1006,23 +1006,6 @@
 		}];
 		
 	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		
-		[self dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-			if (buttonIndex == 1) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
-																	object:[NSDictionary dictionaryWithObjectsAndKeys:
-																			[NSString stringWithFormat:[HONAppDelegate instagramShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
-																			[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-																										avatarImage:[HONAppDelegate avatarImage]
-																										   username:[[HONAppDelegate infoForUser] objectForKey:@"name"]], @"image", nil]];
-			}
-		}];
-		
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

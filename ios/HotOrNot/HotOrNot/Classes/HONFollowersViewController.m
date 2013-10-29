@@ -1,5 +1,5 @@
 //
-//  HONSubscribersViewController.m
+//  HONFollowersViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 10/4/13 @ 3:06 PM.
@@ -7,14 +7,14 @@
 //
 
 
-#import "HONSubscribersViewController.h"
+#import "HONFollowersViewController.h"
 #import "HONUserVO.h"
 #import "HONHeaderView.h"
-#import "HONSubscribeViewCell.h"
+#import "HONFollowUserViewCell.h"
 #import "HONUserProfileViewController.h"
 
 
-@interface HONSubscribersViewController () <HONSubscribeViewCellDelegate>
+@interface HONFollowersViewController () <HONFollowUserViewCellDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) NSMutableArray *subscribers;
 @property (nonatomic, strong) NSMutableArray *selectedSubscribers;
@@ -23,7 +23,7 @@
 @end
 
 
-@implementation HONSubscribersViewController
+@implementation HONFollowersViewController
 
 - (id)initWithUserID:(int)userID {
 	if ((self = [super init])) {
@@ -140,9 +140,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
 	self.view.backgroundColor = [UIColor whiteColor];
-	self.view.frame = CGRectOffset(self.view.frame, 0.0, 20.0);
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
@@ -150,19 +148,10 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
-	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Followers"];
 	headerView.backgroundColor = [UIColor blackColor];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
-	
-	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
-	headerTitleLabel.backgroundColor = [UIColor clearColor];
-	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-	headerTitleLabel.textColor = [UIColor whiteColor];
-	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Followers";
-	[headerView addSubview:headerTitleLabel];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
@@ -229,10 +218,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONSubscribeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONFollowUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONSubscribeViewCell alloc] init];
+		cell = [[HONFollowUserViewCell alloc] init];
 	
 	cell.userVO = (HONUserVO *)[_subscribers objectAtIndex:indexPath.row];
 	cell.delegate = self;
@@ -270,7 +259,7 @@
 
 
 #pragma mark - SubscriberCell Delegates
-- (void)subscribeViewCell:(HONSubscribeViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+- (void)followViewCell:(HONFollowUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Subscribers List - %@ User", (isSelected) ? @"Select" : @"Deselect"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

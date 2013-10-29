@@ -189,7 +189,6 @@
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
-	self.view.frame = CGRectOffset(self.view.frame, 0.0, 20.0);
 	
 	_users = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];
@@ -199,31 +198,22 @@
 		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 	
 	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectAllButton.frame = CGRectMake(10.0, 23.0, 74.0, 24.0);
+	selectAllButton.frame = CGRectMake(10.0, 10.0, 74.0, 24.0);
 	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_nonActive"] forState:UIControlStateNormal];
 	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_Active"] forState:UIControlStateHighlighted];
 	[selectAllButton addTarget:self action:@selector(_goSelectAll) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
-	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Search"];
 	headerView.backgroundColor = [UIColor blackColor];
 	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
-	
-	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
-	headerTitleLabel.backgroundColor = [UIColor clearColor];
-	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-	headerTitleLabel.textColor = [UIColor whiteColor];
-	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Search";
-	[headerView addSubview:headerTitleLabel];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
@@ -252,9 +242,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"popular_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[HONAppDelegate incTotalForCounter:@"popular"];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

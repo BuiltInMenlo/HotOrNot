@@ -40,12 +40,11 @@
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];
 	
-	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate cartoGothicBook] fontWithSize:16]}];
+	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16]}];
 	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 33.0, 200.0, size.height)];
-	contentLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	contentLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 	contentLabel.textColor = [HONAppDelegate honBlueTextColor];
 	contentLabel.backgroundColor = [UIColor clearColor];
-	//contentLabel.numberOfLines = 0;
 	contentLabel.text = _commentVO.content;
 	[self addSubview:contentLabel];
 	

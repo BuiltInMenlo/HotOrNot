@@ -231,7 +231,7 @@
 		
 		_headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 18.0, 200.0, 24.0)];
 		_headerLabel.backgroundColor = [UIColor clearColor];
-		_headerLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
+		_headerLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_headerLabel.textColor = [UIColor whiteColor];
 		_headerLabel.text = NSLocalizedString(@"header_register2", nil);
 		[self addSubview:_headerLabel];

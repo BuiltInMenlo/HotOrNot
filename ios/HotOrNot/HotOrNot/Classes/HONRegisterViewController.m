@@ -138,19 +138,12 @@
 }
 
 - (void)_checkUsername {
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = @"";
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							_username, @"username",
-							_email, @"password",
-							nil];
+							_email, @"password", nil];
 	
-//	NSLog(@"PARAMS:[%@]", params);
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPICheckNameAndEmail parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -188,7 +181,7 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = ((BOOL)[[userResult objectForKey:@"result"] intValue]) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+				_progressHUD.labelText = ([[userResult objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -220,8 +213,7 @@
 							_email, @"password",
 							_birthday, @"age",
 							[HONAppDelegate deviceToken], @"token",
-							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
-							nil];
+							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL", nil];
 	
 	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
@@ -245,7 +237,7 @@
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
-			if (![[userResult objectForKey:@"result"] isEqual:[NSNull null]]) {
+			if ([userResult count] != 0) {
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
@@ -264,6 +256,7 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				[self _retreiveSubscribees];
+				
 				if (!NSLocationInRange([[NSDate date] timeIntervalSinceDate:_datePicker.date], [HONAppDelegate ageRangeAsSeconds:YES])) {
 					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																		message:[NSString stringWithFormat:@"Volley is intended for young adults %d to %d. You may get flagged by the community.", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length]
@@ -279,12 +272,13 @@
 						[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 						
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
-//					if ([HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]] < 19)
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 					}];
 				}
 				
 			} else {
+				int errorCode = [[userResult objectForKey:@"result"] intValue];
+				
 				if (_progressHUD == nil)
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 				
@@ -292,12 +286,16 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = ((BOOL)[[userResult objectForKey:@"result"] intValue]) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+				_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Email taken!" : (errorCode == 3) ? @"Username & email taken!" : @"Unknown Error";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 				
-				[_usernameTextField becomeFirstResponder];
+				if (errorCode == 2)
+					[_emailTextField becomeFirstResponder];
+				
+				else
+					[_usernameTextField becomeFirstResponder];
 			}
 		}
 		
@@ -451,17 +449,9 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register for Volley"];
 	_headerView.backgroundColor = [UIColor blackColor];
 	[self.view addSubview:_headerView];
-	
-	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
-	headerTitleLabel.backgroundColor = [UIColor clearColor];
-	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
-	headerTitleLabel.textColor = [UIColor whiteColor];
-	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Register for Volley";
-	[_headerView addSubview:headerTitleLabel];
 	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
@@ -476,7 +466,6 @@
 	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.710];
 	_usernameLabel.backgroundColor = [UIColor clearColor];
-//	_usernameLabel.text = @"Enter username";
 	[self.view addSubview:_usernameLabel];
 	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];

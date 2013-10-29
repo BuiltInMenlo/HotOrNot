@@ -17,7 +17,7 @@ kill -15 $simulator_pid
 kill -15 $bridge_pid
 
 # call wipe user
-printf "Wiping user %s from db...\n" "${username}"
+printf "Wiping user %s from db... " "${username}"
 curl --http-request POST --silent --data "username=${username}" "${wipe_url}" --output /dev/null 2>&1
 printf "Completed!\n"
 

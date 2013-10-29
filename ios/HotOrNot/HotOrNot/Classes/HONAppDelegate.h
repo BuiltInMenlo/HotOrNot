@@ -114,10 +114,10 @@ extern NSString * const kNetErrorNoConnection;
 + (int)totalForCounter:(NSString *)key;
 
 + (NSString *)smsInviteFormat;
-+ (NSString *)emailInviteFormat;
++ (NSDictionary *)emailInviteFormat;
 
-+ (NSString *)twitterShareComment;
-+ (NSString *)instagramShareComment;
++ (NSString *)instagramShareMessageForIndex:(int)index;
++ (NSString *)twitterShareCommentForIndex:(int)index;
 
 + (NSArray *)composeEmotions;
 + (NSArray *)replyEmotions;
@@ -146,9 +146,6 @@ extern NSString * const kNetErrorNoConnection;
 + (int)hasVoted:(int)challengeID;
 + (void)setVote:(int)challengeID forCreator:(BOOL)isCreator;
 
-+ (NSArray *)fillDiscoverChallenges:(NSArray *)challenges;
-+ (NSArray *)refreshDiscoverChallenges;
-
 + (UIViewController *)appTabBarController;
 
 + (BOOL)isPhoneType5s;
@@ -169,20 +166,11 @@ extern NSString * const kNetErrorNoConnection;
 + (UIFont *)helveticaNeueFontBoldItalic;
 + (UIFont *)helveticaNeueFontMedium;
 
-+ (UIFont *)cartoGothicBold;
-+ (UIFont *)cartoGothicBoldItalic;
-+ (UIFont *)cartoGothicBook;
-+ (UIFont *)cartoGothicItalic;
-
-+ (UIColor *)honOrthodoxGreenColor;
-+ (UIColor *)honDarkGreenColor;
-
 + (UIColor *)honPercentGreyscaleColor:(CGFloat)percent;
 
 + (UIColor *)honBlueTextColor;
 + (UIColor *)honGreenTextColor;
 + (UIColor *)honGreyTimeColor;
-+ (UIColor *)honProfileStatsColor;
 
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent;
 

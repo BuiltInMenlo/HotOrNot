@@ -209,7 +209,7 @@
 			[self.delegate timelineItemViewCell:self showPreview:_heroOpponentVO forChallenge:_challengeVO];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		[self.delegate timelineItemViewCellHidePreview:self];
+		[self.delegate timelineItemViewCellShowPreviewControls:self];
 	}
 }
 

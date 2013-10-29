@@ -224,19 +224,19 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 }
 
 + (NSString *)smsInviteFormat {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"]);
 }
 
-+ (NSString *)emailInviteFormat {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"]);
++ (NSDictionary *)emailInviteFormat {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"]);
 }
 
-+ (NSString *)instagramShareComment {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"instagram_share"]);
++ (NSString *)instagramShareMessageForIndex:(int)index { //[0]:Details //[1]:Profile
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index]);
 }
 
-+ (NSString *)twitterShareComment {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twitter_share"]);
++ (NSString *)twitterShareCommentForIndex:(int)index { //[0]:Details //[1]:Profile
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:index]);
 }
 
 + (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds {	
@@ -448,62 +448,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (NSArray *)fillDiscoverChallenges:(NSArray *)challenges {
-	//NSLog(@"challenges:\n%@[%d]", challenges, [challenges count]);
-	
-	// fill up all challenges if first time
-//	if ([challenges count] >= 12) {
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:challenges, @"total", challenges, @"remaining", nil] forKey:@"discover_challenges"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-//	}
-	
-	// send back the 1st or next randomized set
-	return ([HONAppDelegate refreshDiscoverChallenges]);
-}
-
-+ (NSArray *)refreshDiscoverChallenges {
-	//	NSLog(@"allChallenges:\n%@", allChallenges);
-	//	NSLog(@"remainingChallenges:\n%@", remainingChallenges);
-	
-	NSArray *allChallenges = [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"total"];
-	NSMutableArray *remainingChallenges = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"] mutableCopy];
-	NSMutableArray *newChallenges = [NSMutableArray array];
-	
-	if ([allChallenges count] < 16) {
-		for (int i=0; i<[allChallenges count]; i++) {
-			int rnd = arc4random() % [allChallenges count];
-			[newChallenges addObject:[allChallenges objectAtIndex:rnd]];
-		}
-		
-		return (newChallenges);
-	}
-		
-	if ([remainingChallenges count] >= 16) {
-		// loop for new set
-		for (int i=0; i<16; i++) {
-			//NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
-			int rnd = arc4random() % [remainingChallenges count];
-			
-			// pick a random index and remove from pool
-			[newChallenges addObject:[remainingChallenges objectAtIndex:rnd]];
-			[remainingChallenges removeObjectAtIndex:rnd];
-			
-			if ([remainingChallenges count] == 0)
-				break;
-		}
-	}
-	
-	// no more left, repopulate
-	if ([remainingChallenges count] == 0) {
-		for (int i=0; i<[allChallenges count]; i++)
-			[remainingChallenges addObject:[allChallenges objectAtIndex:arc4random() % [allChallenges count]]];
-	}
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:allChallenges, @"total", remainingChallenges, @"remaining", nil] forKey:@"discover_challenges"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	return (newChallenges);
-}
 
 + (UIViewController *)appTabBarController {
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
@@ -628,30 +572,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	return ([UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0]);
 }
 
-+ (UIFont *)cartoGothicBold {
-	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
-}
-
-+ (UIFont *)cartoGothicBoldItalic {
-	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:24.0]);
-}
-
-+ (UIFont *)cartoGothicBook {
-	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
-}
-
-+ (UIFont *)cartoGothicItalic {
-	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
-}
-
-
-+ (UIColor *)honOrthodoxGreenColor {
-	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
-}
-
-+ (UIColor *)honDarkGreenColor {
-	return ([UIColor colorWithRed:0.204 green:0.373 blue:0.337 alpha:1.0]);
-}
 
 + (UIColor *)honPercentGreyscaleColor:(CGFloat)percent {
 	return ([UIColor colorWithWhite:percent alpha:1.0]);
@@ -669,21 +589,8 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
 }
 
-+ (UIColor *)honProfileStatsColor {
-	return ([UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]);
-}
-
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent {
-	CGFloat opacity = (percent == 0.0) ? 0.33 : MIN(MAX(0.00, percent), 1.00);
-	
-	if ([[colorName uppercaseString] isEqualToString:@"FUSCHIA"])
-		return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:opacity]);
-		
-	else
-		return ([UIColor colorWithRed:((float)[[colorName uppercaseString] isEqualToString:@"RED"]) green:((float)[[colorName uppercaseString] isEqualToString:@"GREEN"]) blue:((float)[[colorName uppercaseString] isEqualToString:@"BLUE"]) alpha:opacity]);
-	
-	
-	return ([UIColor colorWithWhite:0.0 alpha:opacity]);
+	return (([[colorName uppercaseString] isEqualToString:@"FUSCHIA"]) ? [UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:MIN(MAX(0.33, percent), 1.00)] : [UIColor colorWithRed:((float)[[colorName uppercaseString] isEqualToString:@"RED"]) green:((float)[[colorName uppercaseString] isEqualToString:@"GREEN"]) blue:((float)[[colorName uppercaseString] isEqualToString:@"BLUE"]) alpha:MIN(MAX(0.33, percent), 1.00)]);
 }
 
 
@@ -702,75 +609,46 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			
-			NSMutableArray *ageRange = [NSMutableArray array];
-			for (NSNumber *age in [result objectForKey:@"age_range"])
-				[ageRange addObject:age];
-			
-			NSMutableArray *composeEmotions = [NSMutableArray array];
-			for (NSString *emotion in [result objectForKey:@"compose_emotions"])
-				[composeEmotions addObject:emotion];
-			
-			NSMutableArray *replyEmotions = [NSMutableArray array];
-			for (NSString *emotion in [result objectForKey:@"reply_emotions"])
-				[replyEmotions addObject:emotion];
-			
-			NSMutableArray *subjects = [NSMutableArray array];
-			for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
-				[subjects addObject:hashtag];
-			
-			NSMutableArray *users = [NSMutableArray array];
-			for (NSString *user in [result objectForKey:@"search_users"])
-				[users addObject:user];
-			
-			NSMutableArray *celebs = [NSMutableArray array];
-			for (NSDictionary *celeb in [result objectForKey:@"invite_celebs"])
-				[celebs addObject:celeb];
-			
-			NSMutableArray *populars = [NSMutableArray array];
-			for (NSString *popular in [result objectForKey:@"popular_people"])
-				[populars addObject:popular];
-			
+						
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sharing_social"] forKey:@"sharing_social"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_sms"] forKey:@"invite_sms"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_email"] forKey:@"invite_email"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"instagram_share"] forKey:@"instagram_share"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twitter_share"] forKey:@"twitter_share"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"switches"] objectForKey:@"splash_camera"], @"splash_camera",
-															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
-															  [[result objectForKey:@"switches"] objectForKey:@"profile_invite"], @"profile_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"popular_invite"], @"popular_invite",
-															  [[result objectForKey:@"switches"] objectForKey:@"explore_invite"], @"explore_invite",
-															  
-															  [[result objectForKey:@"switches"] objectForKey:@"background_share"], @"background_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"volley_share"], @"volley_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"verify_share"], @"verify_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"like_share"], @"like_share",
-															  [[result objectForKey:@"switches"] objectForKey:@"profile_share"], @"profile_share",
-															  
-															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
-															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"], @"challenges",
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars",
-															  [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"], @"emoticons", nil] forKey:@"s3_buckets"];
-			[[NSUserDefaults standardUserDefaults] setObject:[ageRange copy] forKey:@"age_range"];
-			[[NSUserDefaults standardUserDefaults] setObject:[composeEmotions copy] forKey:@"compose_emotions"];
-			[[NSUserDefaults standardUserDefaults] setObject:[replyEmotions copy] forKey:@"reply_emotions"];
-			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
-			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
-			[[NSUserDefaults standardUserDefaults] setObject:[celebs copy] forKey:@"invite_celebs"];
-			[[NSUserDefaults standardUserDefaults] setObject:[populars copy] forKey:@"popular_people"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_hashtags"] forKey:@"search_subjects"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"popular_people"] forKey:@"popular_people"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+//															  [[result objectForKey:@"switches"] objectForKey:@"splash_camera"], @"splash_camera",
+//															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
+//															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
+//															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
+//															  [[result objectForKey:@"switches"] objectForKey:@"profile_invite"], @"profile_invite",
+//															  [[result objectForKey:@"switches"] objectForKey:@"popular_invite"], @"popular_invite",
+//															  [[result objectForKey:@"switches"] objectForKey:@"explore_invite"], @"explore_invite",
+//															  
+//															  [[result objectForKey:@"switches"] objectForKey:@"background_share"], @"background_share",
+//															  [[result objectForKey:@"switches"] objectForKey:@"volley_share"], @"volley_share",
+//															  [[result objectForKey:@"switches"] objectForKey:@"verify_share"], @"verify_share",
+//															  [[result objectForKey:@"switches"] objectForKey:@"like_share"], @"like_share",
+//															  [[result objectForKey:@"switches"] objectForKey:@"profile_share"], @"profile_share",
+//															  
+//															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
+//															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
+//															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
+//															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
+			[[NSUserDefaults standardUserDefaults] setObject:@{@"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
+															   @"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
+															   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
+			[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
+															   @"email"	: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+			[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
+															   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
@@ -826,13 +704,10 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 }
 
 - (void)_registerUser {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 1], @"action", nil];
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
 	
-	//	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -859,9 +734,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"])
 					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"has_info"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
 			}
 			
 #if __IGNORE_SUSPENDED__ == 1
@@ -976,10 +848,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	[self.window addSubview:(UIView *)[notification object]];
 }
 
-- (void)_removeViewFromWindow:(NSNotification *)notification {
-	
-}
-
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (_searchViewController != nil) {
 		[_searchViewController.view removeFromSuperview];
@@ -1007,112 +875,13 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 - (void)_showUserSearchTimeline:(NSNotification *)notification {
 	[_searchViewController.view removeFromSuperview];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
-	
 	
 	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
 	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];
 }
 
-- (void)_pokeUser:(NSNotification *)notification {
-	HONUserVO *vo = (HONUserVO *)[notification object];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Poke User"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
-	
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 6], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-							[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
-							nil];
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil)
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-		
-		else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
 - (void)_changeTab:(NSNotification *)notification {
-	NSLog(@"CHANGE TAB:[%d]", [[notification object] intValue]);
 	self.tabBarController.selectedIndex = [[notification object] intValue];
-}
-
-
-- (void)_sendToTwitter:(NSNotification *)notification {
-	_shareInfo = [notification object];
-	
-	if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-		SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
-		SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
-			[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Twitter %@", [_shareInfo objectForKey:@"mp_event"], (result == SLComposeViewControllerResultDone) ? @"Completed" : @"Canceled"]
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-			
-			[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
-		};
-		
-		NSLog(@"SHARE INFO:[%@]", _shareInfo);
-		[twitterComposeViewController setInitialText:[_shareInfo objectForKey:@"caption"]];
-		[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
-//		[twitterComposeViewController addURL:[_shareInfo objectForKey:@"url"]];
-		twitterComposeViewController.completionHandler = completionBlock;
-		
-		[[_shareInfo objectForKey:@"view_controller"] presentViewController:twitterComposeViewController animated:YES completion:nil];
-		
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@""
-									message:@"Cannot use Twitter from this device!"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
-}
-
-- (void)_sendToInstagram:(NSNotification *)notification {
-	NSString *instaURL = @"instagram://app";
-	NSString *instaFormat = @"com.instagram.exclusivegram";
-	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
-	
-	NSDictionary *dict = [notification object];
-	UIImage *shareImage = [dict objectForKey:@"image"];
-	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-	
-	
-	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
-		//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:instaURL]];
-		
-		_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-		_documentInteractionController.UTI = instaFormat;
-		_documentInteractionController.delegate = self;
-		_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
-		//[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:[HONAppDelegate appTabBarController].view animated:YES];
-		[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.tabBarController.view animated:YES];
-		
-	} else {
-		[self _showOKAlert:NSLocalizedString(@"alert_instagramError_t", nil)
-			   withMessage:NSLocalizedString(@"alert_instagramError_m", nil)];
-	}
 }
 
 - (void)_showShareShelf:(NSNotification *)notification {
@@ -1133,10 +902,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 
 #pragma mark - UI Presentation
-- (void)_dropTabs {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-}
-
 - (void)_showOKAlert:(NSString *)title withMessage:(NSString *)message {
 	[[[UIAlertView alloc] initWithTitle:title
 								message:message
@@ -1145,77 +910,61 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 					  otherButtonTitles:nil] show];
 }
 
-- (void)_showUI {
-	self.tabBarController.view.hidden = NO;
-}
-
-
-#pragma mark - Application Delegates
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	
-//	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-//	NSLog(@"ADID:[%@]\nVENDORID:[%@]\nHMAC:[%@]", [HONAppDelegate advertisingIdentifier], [HONAppDelegate identifierForVendor], [HONAppDelegate hmacToken]);
-	
-	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-	
+- (void)_styleUIAppearance {
 	NSShadow *shadow = [NSShadow new];
 	[shadow setShadowColor:[UIColor clearColor]];
 	[shadow setShadowOffset:CGSizeMake(0.0f, 0.0f)];
 	
 	//[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
-//	[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
-	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
-	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [UIColor whiteColor], NSForegroundColorAttributeName,
-														  shadow, NSShadowAttributeName,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], NSFontAttributeName, nil]];
+	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honPercentGreyscaleColor:0.75]];
+	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
+														   NSShadowAttributeName			: shadow,
+														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20]}];
+	
+	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
+														   NSShadowAttributeName			: shadow,
+														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateNormal];
+	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
+														   NSShadowAttributeName			: shadow,
+														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateHighlighted];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
-	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [UIColor whiteColor], NSForegroundColorAttributeName,
-														  shadow, NSShadowAttributeName,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], NSFontAttributeName, nil] forState:UIControlStateNormal];
-	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [UIColor whiteColor], NSForegroundColorAttributeName,
-														  shadow, NSShadowAttributeName,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], NSFontAttributeName, nil] forState:UIControlStateHighlighted];
 	
 	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
-//	[[UITabBar appearance] setTintColor:[UIColor blackColor]];
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
 	[[UIToolbar appearance] setBarTintColor:[UIColor blackColor]];
-//	[[UIToolbar appearance] setTintColor:[UIColor blackColor]];
 	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];
 	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	
+}
+
+
+#pragma mark - Application Delegates
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
+	
+	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	
-#ifdef FONTS
-	[self _showFonts];
-#endif
-//	[TestFlight takeOff:kTestFlightAppToken];
+#if __DEV_BUILD___ == 1
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[TestFlight takeOff:kTestFlightAppToken];
+#endif
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1228,32 +977,34 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
+		[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
+	NSArray *bannerKeys = @[@"home_banner", @"explore_banner", @"verify_banner"];
+	for (NSString *key in bannerKeys) {
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:key];
+	}
 	
+	NSArray *totalKeys = @[@"background_total",
+						   @"timeline_total",
+						   @"explore_total",
+						   @"exploreRefresh_total",
+						   @"verify_total",
+						   @"verifyRefresh_total",
+						   @"popular_total",
+						   @"verifyAction_total",
+						   @"preview_total",
+						   @"details_total",
+						   @"camera_total",
+						   @"join_total",
+						   @"profile_total",
+						   @"like_total"];
 	
-	NSArray *totals = @[@"background_total",
-						@"timeline_total",
-						@"explore_total",
-						@"exploreRefresh_total",
-						@"verify_total",
-						@"verifyRefresh_total",
-						@"popular_total",
-						@"verifyAction_total",
-						@"preview_total",
-						@"details_total",
-						@"camera_total",
-						@"join_total",
-						@"profile_total",
-						@"like_total"];
-	
-	for (NSString *key in totals) {
+	for (NSString *key in totalKeys) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	}
@@ -1272,7 +1023,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 #endif
 	
 #if __RESET_TOTALS__ == 1
-	for (NSString *key in totals)
+	for (NSString *key in totalKeys)
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1280,16 +1031,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 	
 	if ([HONAppDelegate hasNetwork]) {
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
-		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"])
-			[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"audio_muted"];
-		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
-			[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
-		
-		
 		if (![HONAppDelegate canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
@@ -1335,19 +1076,10 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		self.tabBarController.delegate = self;
 		self.tabBarController.view.hidden = YES;
 		
-//		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
-//			[self performSelector:@selector(_showUI) withObject:nil afterDelay:3.0];
-//		}
-		
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
-		
-		
-		//NSLog(@"DEVICE:[%@]", [UIDevice currentDevice].description);
-		
-		
 		
 		// This prevents the UA Library from registering with UIApplication by default. This will allow
 		// you to prompt your users at a later time. This gives your app the opportunity to explain the
@@ -1383,18 +1115,8 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		// push notifications as mentioned above. When push is enabled at a later time, the registration
 		// will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
 		// set it if you want to add or remove types.
-		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge |
-											 UIRemoteNotificationTypeSound |
-											 UIRemoteNotificationTypeAlert);
-		
-		
-		
-//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 7];
-//		NSLog(@"DEVICE TOKEN:[%@]", deviceID);
-//		
-//		[HONAppDelegate writeDeviceToken:deviceID];
-//		[self _retrieveConfigJSON];
-		
+		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
+				
 		[HONAppDelegate writeDeviceToken:@""];
 		[self _retrieveConfigJSON];
 		
@@ -1403,9 +1125,9 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 			   withMessage:@"This app requires a network connection to work."];
 	}
 	
-	
-	NSLog(@"ADID:[%@]", [HONAppDelegate advertisingIdentifier]);
-//	[self _showOKAlert:@"" withMessage:[HONAppDelegate advertisingIdentifier]];
+#ifdef FONTS
+	[self _showFonts];
+#endif
 	
 	return (YES);
 }
@@ -1676,11 +1398,11 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == 1) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"            : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																								@"image"              : [HONAppDelegate avatarImage],
-																								@"url"                : @"",
-																								@"mp_event"           : @"App Root",
-																								@"view_controller"    : self.tabBarController}];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+																								@"image"			: [HONAppDelegate avatarImage],
+																								@"url"				: @"",
+																								@"mp_event"			: @"App Root",
+																								@"view_controller"	: self.tabBarController}];
 	}
 	
 	else if (alertView.tag == 2) {
@@ -1694,7 +1416,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 				break;
 				
 			case 2:
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 				break;
 		}
 		
@@ -1715,11 +1437,11 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"            : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]],
-																									@"image"              : [HONAppDelegate avatarImage],
-																									@"url"                : @"",
-																									@"mp_event"           : @"App Root",
-																									@"view_controller"    : self.tabBarController}];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+																									@"image"			: [HONAppDelegate avatarImage],
+																									@"url"				: @"",
+																									@"mp_event"			: @"App Root",
+																									@"view_controller"	: self.tabBarController}];
 		}
 		
 	} else if (alertView.tag == 5) {
@@ -1744,6 +1466,8 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
+		NSString *caption = [[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex];
+		
 		if (buttonIndex == 0) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
@@ -1755,7 +1479,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:[_shareInfo objectForKey:@"caption"]];
+				[twitterComposeViewController setInitialText:caption];
 				[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
 //				[twitterComposeViewController addURL:[_shareInfo objectForKey:@"url"]];
 				twitterComposeViewController.completionHandler = completionBlock;
@@ -1783,8 +1507,8 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = instaFormat;
 				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:[HONAppDelegate instagramShareComment], @"#profile", [[HONAppDelegate infoForUser] objectForKey:@"username"]] forKey:@"InstagramCaption"];
-				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.tabBarController.view animated:YES];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:caption forKey:@"InstagramCaption"];
+				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"Not Available"

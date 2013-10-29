@@ -157,7 +157,7 @@
 		[self.delegate exploreViewCellShowPreview:self forChallenge:_lChallengeVO];
 	
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate exploreViewCellHidePreview:self];
+		[self.delegate exploreViewCellShowPreviewControls:self];
 }
 
 - (void)_goRightLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -165,7 +165,7 @@
 		[self.delegate exploreViewCellShowPreview:self forChallenge:_rChallengeVO];
 	
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate exploreViewCellHidePreview:self];
+		[self.delegate exploreViewCellShowPreviewControls:self];
 }
 
 - (void)_goSelectLeft {

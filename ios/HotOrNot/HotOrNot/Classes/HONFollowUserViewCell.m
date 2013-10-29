@@ -1,5 +1,5 @@
 //
-//  HONSubscribeViewCell.m
+//  HONFollowUserViewCell.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 10/4/13 @ 6:55 PM.
@@ -8,14 +8,14 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONSubscribeViewCell.h"
+#import "HONFollowUserViewCell.h"
 
-@interface HONSubscribeViewCell ()
+@interface HONFollowUserViewCell ()
 @property (nonatomic, strong) UIButton *followButton;
 @property (nonatomic, strong) UIButton *checkButton;
 @end
 
-@implementation HONSubscribeViewCell
+@implementation HONFollowUserViewCell
 @synthesize delegate = _delegate;
 @synthesize userVO = _userVO;
 
@@ -56,8 +56,8 @@
 	[avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:17];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 22.0, 130.0, 22.0)];
+	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
@@ -75,14 +75,14 @@
 	_followButton.hidden = YES;
 	_checkButton.hidden = NO;
 	
-	[self.delegate subscribeViewCell:self user:_userVO toggleSelected:YES];
+	[self.delegate followViewCell:self user:_userVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
 	_followButton.hidden = NO;
 	_checkButton.hidden = YES;
 	
-	[self.delegate subscribeViewCell:self user:_userVO toggleSelected:NO];
+	[self.delegate followViewCell:self user:_userVO toggleSelected:NO];
 }
 
 

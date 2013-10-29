@@ -21,7 +21,7 @@
 	_subjectVO = subjectVO;
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 18.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	subjectLabel.textColor = [UIColor blackColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _subjectVO.subjectName;

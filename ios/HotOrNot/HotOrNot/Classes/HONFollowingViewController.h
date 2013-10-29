@@ -1,5 +1,5 @@
 //
-//  HONSubscribeesViewController.h
+//  HONFollowingViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 10/4/13 @ 5:47 PM.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONSubscribeesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONFollowingViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 - (id)initWithUserID:(int)userID;
 @end

@@ -27,8 +27,8 @@
 @property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (readonly, nonatomic, assign) HONVolleySubmitType volleySubmitType;
-@property (nonatomic, strong) NSMutableArray *subscribers;
-@property (nonatomic, strong) NSMutableArray *subscriberIDs;
+//@property (nonatomic, strong) NSMutableArray *subscribers;
+//@property (nonatomic, strong) NSMutableArray *subscriberIDs;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic) int uploadCounter;
@@ -55,8 +55,8 @@
 	if ((self = [super init])) {
 		_volleySubmitType = HONVolleySubmitTypeCreate;
 		
-		_subscribers = [NSMutableArray array];
-		_subscriberIDs = [NSMutableArray array];
+//		_subscribers = [NSMutableArray array];
+//		_subscriberIDs = [NSMutableArray array];
 		_subjectName = @"";
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
@@ -70,8 +70,8 @@
 	if ((self = [super init])) {
 		_volleySubmitType = HONVolleySubmitTypeJoin;
 		
-		_subscribers = [NSMutableArray array];
-		_subscriberIDs = [NSMutableArray array];
+//		_subscribers = [NSMutableArray array];
+//		_subscriberIDs = [NSMutableArray array];
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
 		_selfieAttempts = 0;
@@ -114,31 +114,31 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			[HONAppDelegate writeUserInfo:userResult];
 			
-			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
-				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
-					BOOL isFound = NO;
-					for (NSNumber *userID in _subscriberIDs) {
-						if ([userID intValue] == vo.userID) {
-							isFound = YES;
-							break;
-						}
-					}
-					
-					if (!isFound) {
-						[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			   [NSString stringWithFormat:@"%d", vo.userID], @"id",
-																			   [NSString stringWithFormat:@"%d", 0], @"points",
-																			   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-																			   [NSString stringWithFormat:@"%d", 0], @"pics",
-																			   [NSString stringWithFormat:@"%d", 0], @"age",
-																			   vo.username, @"username",
-																			   vo.avatarURL, @"avatar_url", nil]]];
-						[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
-					}
-				}
-			}
-			
-			[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
+//			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+//				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
+//					BOOL isFound = NO;
+//					for (NSNumber *userID in _subscriberIDs) {
+//						if ([userID intValue] == vo.userID) {
+//							isFound = YES;
+//							break;
+//						}
+//					}
+//					
+//					if (!isFound) {
+//						[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//																			   [NSString stringWithFormat:@"%d", vo.userID], @"id",
+//																			   [NSString stringWithFormat:@"%d", 0], @"points",
+//																			   [NSString stringWithFormat:@"%d", 0], @"total_votes",
+//																			   [NSString stringWithFormat:@"%d", 0], @"pics",
+//																			   [NSString stringWithFormat:@"%d", 0], @"age",
+//																			   vo.username, @"username",
+//																			   vo.avatarURL, @"avatar_url", nil]]];
+//						[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
+//					}
+//				}
+//			}
+//			
+//			[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -156,39 +156,15 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	@try {
-				
-		// preview - full size
-		UIImage *oImage = _processedImage;//(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage;
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:oImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
-//		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
-//		UIImage *gridImage = [HONImagingDepictor scaleImage:exploreImage toSize:CGSizeMake(160.0, 160.0)];
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		
-//		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Small_160x160.jpg", _filename] inBucket:@"hotornot-challenges"];
-//		por1.delegate = self;
-//		por1.contentType = @"image/jpeg";
-//		por1.data = UIImageJPEGRepresentation(gridImage, kSnapJPEGCompress);
-//		[s3 putObject:por1];
-//		
-//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Medium_320x320.jpg", _filename] inBucket:@"hotornot-challenges"];
-//		por2.delegate = self;
-//		por2.contentType = @"image/jpeg";
-//		por2.data = UIImageJPEGRepresentation(exploreImage, kSnapJPEGCompress);
-//		[s3 putObject:por2];
-		
 		_por = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-challenges"];
 		_por.delegate = self;
 		_por.contentType = @"image/jpeg";
 		_por.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		[s3 putObject:_por];
-		
-//		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
-//		por4.delegate = self;
-//		por4.contentType = @"image/jpeg";
-//		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-//		[s3 putObject:por4];
-		
+				
 	} @catch (AmazonClientException *exception) {
 		NSLog(@"AWS FAIL:[%@]", exception.message);
 		
@@ -264,24 +240,13 @@
 			} else {
 				_hasSubmitted = YES;
 				if (_uploadCounter == 1) {
-//					if (_isFirstCamera) {
-//						
-//						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-//																			message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
-//																		   delegate:self
-//																  cancelButtonTitle:@"No"
-//																  otherButtonTitles:@"Yes", nil];
-//						[alertView show];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 						
-//					} else {
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-							
-							if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
-								[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
-						}];
-//					}
+						if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
+					}];
 				}
 			}
 		}
@@ -390,46 +355,46 @@
 
 #pragma mark - UI Presentation
 - (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType {
-	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorVO.userID) {
-			[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																   [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
-																   [NSString stringWithFormat:@"%d", 0], @"points",
-																   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-																   [NSString stringWithFormat:@"%d", 0], @"pokes",
-																   [NSString stringWithFormat:@"%d", 0], @"pics",
-																   [NSString stringWithFormat:@"%d", 0], @"age",
-																   _challengeVO.creatorVO.username, @"username",
-																   _challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
-			[_subscriberIDs addObject:[NSNumber numberWithInt:_challengeVO.creatorVO.userID]];
-		}
-		
-		for (HONOpponentVO *vo in _challengeVO.challengers) {
-			if ([vo.imagePrefix length] > 0 && vo.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-				
-				BOOL isFound = NO;
-				for (NSNumber *userID in _subscriberIDs) {
-					if ([userID intValue] == vo.userID) {
-						isFound = YES;
-						break;
-					}
-				}
-				
-				if (!isFound) {
-					[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																		   [NSString stringWithFormat:@"%d", vo.userID], @"id",
-																		   [NSString stringWithFormat:@"%d", 0], @"points",
-																		   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-																		   [NSString stringWithFormat:@"%d", 0], @"pokes",
-																		   [NSString stringWithFormat:@"%d", 0], @"pics",
-																		   [NSString stringWithFormat:@"%d", 0], @"age",
-																		   vo.username, @"username",
-																		   vo.avatarURL, @"avatar_url", nil]]];
-					[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
-				}
-			}
-		}
-	}
+//	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorVO.userID) {
+//			[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//																   [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
+//																   [NSString stringWithFormat:@"%d", 0], @"points",
+//																   [NSString stringWithFormat:@"%d", 0], @"total_votes",
+//																   [NSString stringWithFormat:@"%d", 0], @"pokes",
+//																   [NSString stringWithFormat:@"%d", 0], @"pics",
+//																   [NSString stringWithFormat:@"%d", 0], @"age",
+//																   _challengeVO.creatorVO.username, @"username",
+//																   _challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
+//			[_subscriberIDs addObject:[NSNumber numberWithInt:_challengeVO.creatorVO.userID]];
+//		}
+//		
+//		for (HONOpponentVO *vo in _challengeVO.challengers) {
+//			if ([vo.imagePrefix length] > 0 && vo.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+//				
+//				BOOL isFound = NO;
+//				for (NSNumber *userID in _subscriberIDs) {
+//					if ([userID intValue] == vo.userID) {
+//						isFound = YES;
+//						break;
+//					}
+//				}
+//				
+//				if (!isFound) {
+//					[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//																		   [NSString stringWithFormat:@"%d", vo.userID], @"id",
+//																		   [NSString stringWithFormat:@"%d", 0], @"points",
+//																		   [NSString stringWithFormat:@"%d", 0], @"total_votes",
+//																		   [NSString stringWithFormat:@"%d", 0], @"pokes",
+//																		   [NSString stringWithFormat:@"%d", 0], @"pics",
+//																		   [NSString stringWithFormat:@"%d", 0], @"age",
+//																		   vo.username, @"username",
+//																		   vo.avatarURL, @"avatar_url", nil]]];
+//					[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
+//				}
+//			}
+//		}
+//	}
 	
 	
     UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
@@ -464,11 +429,11 @@
 	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
 	[_cameraOverlayView introWithTutorial:_isFirstCamera];
 	
-	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
-		[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
-	
-	} else
-		[self _retrieveUser];
+//	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
+//		[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
+//	
+//	} else
+//		[self _retrieveUser];
 }
 
 - (void)_cancelUpload {
@@ -581,7 +546,6 @@
 	_por = nil;
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-//	[self dismissViewControllerAnimated:NO completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
 
@@ -595,7 +559,6 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	//if ([[HONAppDelegate friendsList] count] > 1) {
 	if ([[HONAppDelegate friendsList] count] == 1 && friend_total == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc]
 								  initWithTitle:@"Find Friends"
@@ -607,44 +570,12 @@
 		[alertView show];
 		
 	} else {
-//		NSMutableArray *params = @{@"imgURL" : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
-								
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
-//									   [NSString stringWithFormat:@"%d", _volleySubmitType], @"action",
 									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
 									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengeID",
 									   _subjectName, @"subject", nil];
-//									   [NSString stringWithFormat:@"%d", 1], @"expires",
-//									   @"N", @"changedSubject",
-//									   @"", @"username",
-//									   @"N", @"isPrivate",
-//									   @"0", @"challengerID",
-//									   @"0", @"fbID", nil];
 
-		
-//		NSString *usernames = @"";
-//		if ([_subscribers count] > 0) {
-//			for (HONUserVO *vo in _subscribers)
-//				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
-//		}
-//		[params setObject:[usernames substringToIndex:([usernames length] > 0) ? [usernames length] - 1 : 0] forKey:@"usernames"];
-		
-		
-//		if (_challengeVO != nil)
-//			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-		
-		
-//		if (_volleySubmitType == HONVolleySubmitTypeJoin && ![_subjectName isEqualToString:_challengeVO.subjectName]) {
-//			[params setObject:@"Y" forKey:@"changedSubject"];
-//			
-//			[[[UIAlertView alloc] initWithTitle:@""
-//										message:@"Changing the hashtag creates a new Volley."
-//									   delegate:nil
-//							  cancelButtonTitle:@"OK"
-//							  otherButtonTitles:nil] show];
-//		}
-		
 		_challengeParams = [params copy];
 		NSLog(@"PARAMS:[%@]", _challengeParams);
 		
@@ -781,32 +712,31 @@
 }
 
 
-#pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 1) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-		
-		[[Mixpanel sharedInstance] track:@"Create Volley - Promote Instagram"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		[self performSelector:@selector(_sendToInstagram) withObject:Nil afterDelay:2.0];
-	}
-	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-	}];
-}
-
-- (void)_sendToInstagram {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
-														object:[NSDictionary dictionaryWithObjectsAndKeys:
-																[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _subjectName, [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
-																[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-																							avatarImage:[HONAppDelegate avatarImage]
-																							   username:[[HONAppDelegate infoForUser] objectForKey:@"username"]], @"image", nil]];
-}
-
+//#pragma mark - AlertView Delegates
+//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+//	if (buttonIndex == 1) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+//		
+//		[[Mixpanel sharedInstance] track:@"Create Volley - Promote Instagram"
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+//		
+//		[self performSelector:@selector(_sendToInstagram) withObject:nil afterDelay:2.0];
+//	}
+//	
+//	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+//	}];
+//}
+//
+//- (void)_sendToInstagram {
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
+//														object:[NSDictionary dictionaryWithObjectsAndKeys:
+//																[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _subjectName, [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
+//																[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
+//																							avatarImage:[HONAppDelegate avatarImage]
+//																							   username:[[HONAppDelegate infoForUser] objectForKey:@"username"]], @"image", nil]];
+//}
 
 @end

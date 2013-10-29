@@ -58,7 +58,7 @@
 	[self addSubview:avatarImageView];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:17];
+	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];

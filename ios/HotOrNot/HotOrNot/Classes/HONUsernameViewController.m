@@ -29,7 +29,7 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		_username = [[HONAppDelegate infoForUser] objectForKey:@"name"];
+		_username = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	}
 	
 	return (self);
@@ -62,6 +62,7 @@
 							_username, @"username",
 							nil];
 	
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -78,7 +79,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AAAAAAAAA AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -86,7 +87,7 @@
 				
 				[HONAppDelegate writeUserInfo:userResult];
 				[self dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 				}];
 				
 			} else {
@@ -122,24 +123,15 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 13.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
-	headerView.frame = CGRectOffset(headerView.frame, 0.0, -13.0);
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Username"];
 	headerView.backgroundColor = [UIColor blackColor];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
-	
-	UILabel *headerTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 200.0, 24.0)];
-	headerTitleLabel.backgroundColor = [UIColor clearColor];
-	headerTitleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-	headerTitleLabel.textColor = [UIColor whiteColor];
-	headerTitleLabel.textAlignment = NSTextAlignmentCenter;
-	headerTitleLabel.text = @"Username";
-	[headerView addSubview:headerTitleLabel];
 	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -195,7 +187,16 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _username, @"username", nil]];
 	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	}];
+	
 	[_usernameTextField resignFirstResponder];
+	
+	if ([_usernameTextField.text length] == 0)
+		_usernameTextField.text = _username;
+	
+	_username = _usernameTextField.text;
 	
 	[self _submitUsername];
 }
@@ -216,30 +217,15 @@
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
-	return YES;
+	return (YES);
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	if (textField.tag == 0) {
-//		if ([textField.text isEqualToString:@""])
-//			textField.text = @"@";
-	}
-	
 	return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
-	}];
-	
-	if ([textField.text length] == 0)
-		textField.text = _username;
-	
-	if ([[_username substringToIndex:1] isEqualToString:@"@"])
-		_username = [_username substringFromIndex:1];
 }
 
 @end

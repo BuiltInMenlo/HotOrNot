@@ -299,7 +299,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - View lifecycle
 - (void)loadView {
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor blackColor];
@@ -310,7 +310,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"] * 90.0));
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_banner"] isEqualToString:@"YES"] * 90.0));
 	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
@@ -444,7 +444,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"verify_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 }
@@ -593,20 +593,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}
 }
 
-- (void)verifyViewCellHidePreview:(HONVerifyViewCell *)cell {
+- (void)verifyViewCellShowPreviewControls:(HONVerifyViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-	
-//	if (_snapPreviewViewController != nil) {
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_snapPreviewViewController.view.alpha = 0.0;
-//		} completion:^(BOOL finished) {
-//			[_snapPreviewViewController.view removeFromSuperview];
-//			_snapPreviewViewController = nil;
-//		}];
-//	}
 	
 	[_snapPreviewViewController showControls];
 }
@@ -878,23 +869,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"		   : [NSString stringWithFormat:[HONAppDelegate twitterShareComment], @"#profile", _challengeVO.creatorVO.username],
-																									@"image"		   : [HONAppDelegate avatarImage],
-																									@"url"			   : @"",
-																									@"mp_event"		   : @"Timeline Details",
-																									@"view_controller" : self}];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+																									@"image"			: [HONAppDelegate avatarImage],
+																									@"url"				: @"",
+																									@"mp_event"			: @"Verify - Share",
+																									@"view_controller"	: self}];
 		}
-	
-//	} else if (alertView.tag == 1) {
-//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Take New Avatar %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-//		
-//		if (buttonIndex == 0) {
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:NO completion:nil];
-//		}
 	
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - FAQ %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]

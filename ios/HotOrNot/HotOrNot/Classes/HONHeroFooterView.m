@@ -39,13 +39,15 @@
 			}
 		}
 		
-		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-//			NSLog(@"REPLY EMOTION:[%@]>—<[%@]", vo.hastagName, _opponentVO.subjectName);
-			
-			if ([vo.hastagName isEqualToString:_opponentVO.subjectName]) {
-				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-				isEmotionFound = YES;
-				break;
+		if (!isEmotionFound) {
+			for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
+//				NSLog(@"REPLY EMOTION:[%@]>—<[%@]", vo.hastagName, _opponentVO.subjectName);
+				
+				if ([vo.hastagName isEqualToString:_opponentVO.subjectName]) {
+					emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+					isEmotionFound = YES;
+					break;
+				}
 			}
 		}
 		

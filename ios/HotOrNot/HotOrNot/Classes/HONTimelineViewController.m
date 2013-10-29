@@ -496,7 +496,7 @@
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"timeline2_banner"];
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"home_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 }
@@ -794,7 +794,7 @@
 	}
 }
 
-- (void)timelineItemViewCellHidePreview:(HONTimelineItemViewCell *)cell {
+- (void)timelineItemViewCellShowPreviewControls:(HONTimelineItemViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Timeline - Hide Photo Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",

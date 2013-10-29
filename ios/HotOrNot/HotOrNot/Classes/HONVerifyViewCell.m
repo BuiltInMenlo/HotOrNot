@@ -201,7 +201,7 @@
 		[self.delegate verifyViewCellShowPreview:self forChallenge:_challengeVO];
 		
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate verifyViewCellHidePreview:self];
+		[self.delegate verifyViewCellShowPreviewControls:self];
 }
 
 
