@@ -5,7 +5,6 @@ class BIM_Push_UrbanAirship_Iphone{
     public static function sendPushBatch( $push ){
         $conf = BIM_Config::urbanAirship();
         $pushStr = json_encode($push);
-        print_r( array($push,$pushStr) );
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $conf->api->push_url);
         curl_setopt($ch, CURLOPT_USERPWD, $conf->api->pass_key );
@@ -14,7 +13,6 @@ class BIM_Push_UrbanAirship_Iphone{
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $pushStr);
         $res = curl_exec($ch);
-        print_r( $res."\n" );
         $err_no = curl_errno($ch);
         $err_msg = curl_error($ch);
         $header = curl_getinfo($ch);
@@ -22,7 +20,6 @@ class BIM_Push_UrbanAirship_Iphone{
     }
     
     public static function sendPush( $push ){
-        file_put_contents( '/tmp/push_debug', print_r($push,1) );
         $conf = BIM_Config::urbanAirship();
         if( !is_object($push->device_tokens) && !is_array($push->device_tokens) ){
             $push->device_tokens = array( $push->device_tokens );
@@ -43,6 +40,7 @@ class BIM_Push_UrbanAirship_Iphone{
             $err_msg = curl_error($ch);
             $header = curl_getinfo($ch);
             curl_close($ch);
+            error_log( print_r( array( $push, $push->device_tokens, $res, $err_no, $err_msg, $header ), true ) );
         }
     }
 }

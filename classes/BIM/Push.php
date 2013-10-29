@@ -7,6 +7,7 @@ class BIM_Push{
         	'method' => 'sendQueuedPush',
         	'push' => $push
         );
+        //BIM_Push_UrbanAirship_Iphone::sendPush( $push );
         return BIM_Jobs::queueBackground( $job, 'push' );
     }
     
@@ -90,6 +91,9 @@ class BIM_Push{
     }
     
     public static function pushCreators( $volleys ){
+        if( !is_array($volleys)){
+            $volleys = array( $volleys );
+        }
         $creators = array();
         foreach ($volleys as $volley){
             $creators[] = $volley->creator->id;
@@ -144,14 +148,14 @@ class BIM_Push{
 	public static function sendFirstRunPush( $userIds, $targetId ){
 	    
 	    $userIds[] = $targetId;
-        $users = BIM_Model_User::getMulti($userIds);
+        $users = BIM_Model_User::getMulti($userIds, true);
         $target = $users[ $targetId ];
         unset( $users[ $targetId ] );
         
         $deviceTokens = array();
         foreach( $users as $user ){
             if( $user->canPush() ){
-                $deviceTokens[] = $user->device-token;
+                $deviceTokens[] = $user->device_token;
             }
         }
         
@@ -163,14 +167,14 @@ class BIM_Push{
 	}
 	
     public static function emailVerifyPush( $userId ){
-        $user = new BIM_Model_User( $userId );
+        $user = BIM_Model_User::get( $userId );
         $msg = "Volley on! Your Volley account has been verified!";
         self::send( $user->device_token, $msg );
     }
     
     public static function matchPush( $userId, $friendId ){
-        $user = new BIM_Model_User( $userId );
-        $friend = new BIM_Model_User( $friendId );
+        $user = BIM_Model_User::get( $userId );
+        $friend = BIM_Model_User::get( $friendId );
         $msg = "Your friend $user->username joined Volley!";
         self::send( $friend->device_token, $msg );
     }
@@ -192,7 +196,7 @@ class BIM_Push{
 		if ($creator->notifications == "Y" && $creator->id != $userId){
             $msg = "$commenter->username has commented on your $volley->subject snap!";
 		    $type = 3;
-            self::send($target->device_token, $msg, $type ); 
+            self::send($creator->device_token, $msg, $type ); 
 		}
     }
     
@@ -270,8 +274,8 @@ class BIM_Push{
     }
     
     public static function friendAcceptedNotification( $userId, $friendId ){
-        $user = BIM_Model_User::get( $userId, true );
-        $friend = BIM_Model_User::get( $friendId, true );
+        $user = BIM_Model_User::get( $userId );
+        $friend = BIM_Model_User::get( $friendId );
         $msg = "$user->username accepted your friend request on Volley!";
         self::send( $friend->device_token, $msg );
     }
