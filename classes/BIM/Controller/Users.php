@@ -308,7 +308,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function purge(){
         $input = (object) ($_POST ? $_POST : $_GET);
         $user = BIM_Utils::getSessionUser();
-        if( $user && $user->isExtant() ){
+        if( $user && $user->isExtant() && !$user->isSuspended() ){
             BIM_Model_User::archiveUser($user->id);
         }
         return true;
