@@ -512,8 +512,8 @@ delete from tblUsers where username like "%yoosnapyoo";
         if( $missedKeys ){
             $missedIds = array();
             foreach( $missedKeys as $userKey ){
-                list($prefix,$userId) = explode('_',$userKey);
-                $missedIds[] = $userId;
+                $userId = explode('_',$userKey);
+                $missedIds[] = end($userId);
             }
             $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
             $missingData = $dao->getData($missedIds);

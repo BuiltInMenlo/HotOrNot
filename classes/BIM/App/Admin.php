@@ -6,10 +6,11 @@ class BIM_App_Admin{
         if( !empty( $input->volleyId ) ){
             $volley = BIM_Model_Volley::get( $input->volleyId );
             if( $volley->isExtant() ){
+                $suffix = 'Large_640x1136.jpg';
                 $namePrefix = 'TV_Volley_Image-'.uniqid(true);
-                $name = "{$namePrefix}Large_640x1136.jpg";
+                $name = "{$namePrefix}{$suffix}";
                 $imgUrlPrefix = "https://d1fqnfrnudpaz6.cloudfront.net/$namePrefix";
-                $imgUrl = $volley->creator->img.'Large_640x1136.jpg';
+                $imgUrl = $volley->creator->img.$suffix;
                 
                 BIM_Utils::putImage( $imgUrl, $name );
                 BIM_Utils::processImage($imgUrlPrefix);
@@ -37,6 +38,29 @@ class BIM_App_Admin{
      */
     
     public static function createVolley(){
+        if( !empty( $_FILES['volleys']['tmp_name'] ) ){
+            $volleyImages = $_FILES['volleys']['tmp_name'];
+            if( !is_array($volleyImages) ){
+                $volleyImages = array( $volleyImages );
+            }
+            foreach( $volleyImages as $volleyId => $volleyImagePath ){
+                if( $volleyImagePath ){
+                    $volley = BIM_Model_Volley::get( $volleyId );
+                    $namePrefix = 'TV_Volley_Image-'.uniqid(true);
+                    $name = "{$namePrefix}Large_640x1136.jpg";
+                    $imgUrlPrefix = "https://d1fqnfrnudpaz6.cloudfront.net/$namePrefix";
+                    
+                    //echo("BIM_Utils::putImage( $volleyImagePath, $name )\n");
+                    BIM_Utils::putImage( $volleyImagePath, $name );
+                    //echo("BIM_Utils::processImage(".$volley->creator->img.")\n");
+                    BIM_Utils::processImage($imgUrlPrefix);
+                    //echo "updating image to $imgUrlPrefix\n";
+                    $volley->updateImage($imgUrlPrefix);
+                    $volley->purgeFromCache();
+                }
+            }
+        }
+        
         $input = (object)( $_POST? $_POST : $_GET);
         $teamVolleyId = BIM_Config::app()->team_volley_id;
         
@@ -46,7 +70,7 @@ class BIM_App_Admin{
             BIM_Model_Volley::deleteVolleys( $volleyIds );
         }
         
-        if( !empty( $_FILES['image'] ) && !empty( $input->hashtag ) ){
+        if( !empty( $_FILES['image']['tmp_name'] ) && !empty( $input->hashtag ) ){
             $imagePath = $_FILES['image']['tmp_name'];
             $namePrefix = 'TV_Volley_Image-'.uniqid(true);
             $name = "{$namePrefix}Large_640x1136.jpg";
@@ -104,7 +128,10 @@ class BIM_App_Admin{
                 echo "
                 <tr>
                 <td>$volley->id</td>
-                <td><img src='$img'></td>
+                <td>
+                	<img src='$img'><br>
+					New Volley Image: <input type='file' name='volleys[$volley->id]'>
+                	</td>
                 <td>$creator->username</td>
                 <td>$volley->subject</td>
                 <td>$totalChallengers</td>

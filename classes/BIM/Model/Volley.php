@@ -388,7 +388,8 @@ class BIM_Model_Volley{
     
     public function purgeFromCache(){
         $key = self::makeCacheKeys($this->id);
-        $cache = new BIM_Cache( BIM_Config::cache() );
+        $conf = BIM_Config::cache();
+        $cache = new BIM_Cache( $conf );
         $cache->delete( $key );
     }
     
@@ -543,8 +544,8 @@ class BIM_Model_Volley{
         if( $missedKeys ){
             $missingVolleys = array();
             foreach( $missedKeys as $volleyKey ){
-                list($prefix,$volleyId) = explode('_',$volleyKey);
-                $missingVolleys[] = $volleyId;
+                $volleyId = explode('_',$volleyKey);
+                $missingVolleys[] = end($volleyId);
             }
             $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
             $missingVolleyData = $dao->get($missingVolleys);
