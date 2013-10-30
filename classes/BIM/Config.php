@@ -173,7 +173,7 @@ class BIM_Config{
     }
     
     protected static function bootConfCacheKey( $type = 'live' ){
-        return "volley_boot_conf_$type";
+        return BIM_Utils::makeCacheKeys('volley_boot_conf', $type);
     }
     
     public static function getBootConf( $type = 'live' ){

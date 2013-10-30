@@ -520,20 +520,7 @@ class BIM_Model_Volley{
     }
     
     public static function makeCacheKeys( $ids ){
-        if( $ids ){
-            $return1 = false;
-            if( !is_array( $ids ) ){
-                $ids = array( $ids );
-                $return1 = true;
-            }
-            foreach( $ids as &$id ){
-                $id = "volley_$id";
-            }
-            if( $return1 ){
-                $ids = $ids[0];
-            }
-        }
-        return $ids;
+        return BIM_Utils::makeCacheKeys('volley', $ids);
     }
     
     /** 

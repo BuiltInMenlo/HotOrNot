@@ -323,4 +323,24 @@ class BIM_Utils{
         }
         return (int) $isCeleb;
     }
+    
+    public static function makeCacheKeys( $prefix, $ids ){
+        if( $ids ){
+            $return1 = false;
+            if( !is_array( $ids ) ){
+                $ids = array( $ids );
+                $return1 = true;
+            }
+            if( defined('RELEASE_ID_KEY_PREFIX') ){
+                $prefix = RELEASE_ID_KEY_PREFIX."_$prefix";
+            }
+            foreach( $ids as &$id ){
+                $id = "{$prefix}_{$id}";
+            }
+            if( $return1 ){
+                $ids = $ids[0];
+            }
+        }
+        return $ids;
+    }
 }
