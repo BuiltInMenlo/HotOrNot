@@ -49,7 +49,7 @@ class BIM_Utils{
     public static function getRequest(){
         if( ! self::$request ){
             $c = BIM_Config::app();
-            $cdata = trim(str_replace( $c->base_path, '', $_SERVER['SCRIPT_URL'] ),'/');
+            $cdata = trim(preg_replace( "@$c->base_path@", '', $_SERVER['SCRIPT_URL'] ),'/');
             
             $cdata = explode( '/', $cdata );
             
