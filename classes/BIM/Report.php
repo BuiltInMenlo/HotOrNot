@@ -100,6 +100,15 @@ class BIM_Report{
         $startDate = '2013-09-10 00:00:00';
         $endDate = '2013-09-17 00:00:00';
         $totalUsers = self::getTotalUsers( $startDate, $endDate );
+        $totalVolleys = self::getTotalVolleys($startDate, $endDate);
+        $totalVolleyJoins = self::getTotalVolleyJoins($startDate, $endDate);
+        $totalFlagged = self::getTotalFlagged($startDate, $endDate);
+        $totalVerified = self::getTotalVerified($startDate, $endDate);
+        $avgVolleys = self::getVolleyAverages($startDate, $endDate);
+        $avgFlags = self::getFlagAverages($startDate, $endDate);
+        $avgVerifies = self::getVerifyAverages($startDate, $endDate);
+        $avgLikes = self::getLikeAverages($startDate, $endDate);
+        $totalActiveUsers = self::getActiveUsers($type);
     }
     
 /**
