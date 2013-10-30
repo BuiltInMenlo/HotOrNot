@@ -543,8 +543,8 @@ class BIM_Model_Volley{
         if( $missedKeys ){
             $missingVolleys = array();
             foreach( $missedKeys as $volleyKey ){
-                list($prefix,$volleyId) = explode('_',$volleyKey);
-                $missingVolleys[] = $volleyId;
+                $volleyId = explode('_',$volleyKey);
+                $missingVolleys[] = end($volleyId);
             }
             $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
             $missingVolleyData = $dao->get($missingVolleys);
