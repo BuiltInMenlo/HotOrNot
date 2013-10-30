@@ -1,20 +1,58 @@
 #!/bin/bash
 
 wipe_url="http://stage.letsvolley.com/admin/wipe_user.php"
+#--server_domain=$(echo "${wipe_url}" | sed 's/.*\/\/(.*)\/.*$/\1/g')
 
 username="snap"
 if [ $1 ]; then
 	username=${1}; fi
 
 
-# store pid of the processes
-simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
-bridge_pid=`ps aux -cj | grep -i "SimulatorBridge" | awk '{print $2}'`
+isKill_flg=true
+while getopts "s" optname # --//> there's a '-s'
+	do # --/ loop thru the params
+		case "$optname" in #  -/> set flag based on char
 
-# kill processes gracefully
-printf "Gracefully killing the simulator...\n"
-kill -15 $simulator_pid
-kill -15 $bridge_pid
+		"s") # )-/> passed in '-s'
+			isKill_flg=false
+			;;
+
+		"?") # )-/> anything else
+			echo "Unknown option $OPTARG"
+			exit 1
+			;;
+
+		":") # )-/> no arg
+			echo "No argument value for option $OPTARG"
+			exit 1
+			;;
+
+		*) # )-/> shouldn't occur
+			echo "Unknown error"
+			exit 1
+			;;
+	esac
+done
+
+if $isKill_flg; then # --/> passed in the kill param
+	# store pid of the processes
+	simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
+	bridge_pid=`ps aux -cj | grep -i "SimulatorBridge" | awk '{print $2}'`
+	
+	# kill processes gracefully
+	if [ $simulator_pid ] && [ $bridge_pid ]; then
+		
+		printf "Gracefully killing the simulator...\n"
+		if [ $simulator_pid ]; then # --/> terminate the process
+			kill -15 $simulator_pid; fi
+		
+		if [ $bridge_pid ]; then # --/> terminate the process
+			kill -15 $bridge_pid; fi
+		
+	else # --/> no pid
+		echo "Didn't find the simulator running..."; fi
+fi
+
 
 # call wipe user
 printf "Wiping user %s from db... " "${username}"

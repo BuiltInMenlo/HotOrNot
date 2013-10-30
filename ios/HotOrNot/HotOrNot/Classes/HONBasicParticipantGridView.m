@@ -76,11 +76,11 @@
 	if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
 		[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
 	
-	_profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_profileButton.frame = imageView.frame;
-	_profileButton.hidden = YES;
-	[_profileButton setTag:vo.userID];
-	[imageHolderView addSubview:_profileButton];
+	_previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_previewButton.frame = imageView.frame;
+	[_previewButton addTarget:self action:@selector(_goPreview:) forControlEvents:UIControlEventTouchUpInside];
+	[_previewButton setTag:vo.userID];
+	[imageHolderView addSubview:_previewButton];
 	
 	_participantCounter++;
 	[_cells addObject:imageHolderView];
@@ -101,13 +101,33 @@
 			
 			NSLog(@"COORDS FOR CELL:[%d] -> (%d, %d)", idx, col, row);
 			dict = (idx < [_gridItems count]) ? [_gridItems objectAtIndex:idx] : nil;
+			
+			_selectedChallengeVO = [dict objectForKey:@"challenge"];
+			_selectedOpponentVO = [dict objectForKey:@"participant"];
 		}
 		
 		if (dict != nil)
-			[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+			[self.delegate participantGridView:self showProfile:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
 		
-	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate participantGridViewPreviewShowControls:self];
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+	}
+}
+
+
+#pragma mark - Navigation
+- (void)_goPreview:(id)sender {
+	_selectedOpponentVO = nil;
+	for (NSDictionary *dict in _gridItems) {
+		HONOpponentVO *vo = (HONOpponentVO *)[dict objectForKey:@"participant"];
+		if (vo.userID == [sender tag]) {
+			_selectedOpponentVO = vo;
+			break;
+		}
+	}
+	
+	if (_selectedOpponentVO != nil) {
+		[self.delegate participantGridView:self showPreview:_selectedOpponentVO forChallenge:_selectedChallengeVO];
+	}
 }
 
 @end

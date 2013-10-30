@@ -117,7 +117,7 @@ const CGFloat kSnapRatio = 1.33333333f;
 const CGFloat kSnapJPEGCompress = 0.400f;
 
 // animation params
-const CGFloat kHUDTime = 2.33f;
+const CGFloat kHUDTime = 0.67f;
 const CGFloat kHUDErrorTime = 1.5f;
 const CGFloat kProfileTime = 0.25f;
 
@@ -132,6 +132,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 // network error descriptions
 NSString * const kNetErrorNoConnection = @"The Internet connection appears to be offline.";
+NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
 #if __DEV_BUILD___ == 0
@@ -175,7 +176,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
     NSMutableString *data = [NSMutableString stringWithString:[HONAppDelegate deviceToken]];
 	if( data != nil ){
 	    [data appendString:@"+"];
-	    [data appendString:[HONAppDelegate advertisingIdentifier]];
+	    [data appendString:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
 	    NSString *key = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
 	    hmac = [HONAppDelegate hmacForKey:key AndData:data];
 	    [hmac appendString:@"+"];
@@ -192,12 +193,12 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 }
  
 
-+ (NSString *)advertisingIdentifier {
-	return ([[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
++ (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes {
+	return ((noDashes) ? [[[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""]  : [[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
 }
 
-+ (NSString *)identifierForVendor {
-	return ([[UIDevice currentDevice].identifierForVendor UUIDString]);
++ (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes {
+	return ((noDashes) ? [[[UIDevice currentDevice].identifierForVendor UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""] : [[UIDevice currentDevice].identifierForVendor UUIDString]);
 }
 
 + (NSString *)deviceModel {
@@ -293,16 +294,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 	
 	return ([emotions copy]);
-//	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"reply_emotions"]);
-}
-
-+ (void)offsetSubviewsForIOS7:(UIView *)view {
-	//view.frame = ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]) ? CGRectMake(view.frame.origin.x, 20.0, view.frame.size.width, view.frame.size.height - 20.0) : CGRectOffset(view.frame, 0.0, 0.0);
-	
-	if ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]) {
-		for (UIView *subview in [view subviews])
-			subview.frame = CGRectOffset(subview.frame, 0.0, 0.0);
-	}
 }
 
 + (NSArray *)searchSubjects {
@@ -537,7 +528,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 }
 
 + (NSString *)formattedExpireTime:(int)seconds {
-	
 	int mins = seconds / 60;
 	int hours = mins / 60;
 	
@@ -596,11 +586,12 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
+	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
 	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, kConfigJSON);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
-	[httpClient postPath:kConfigJSON parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:configURLWithTimestamp parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		
 		if (error != nil)
@@ -614,6 +605,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
@@ -623,25 +615,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"popular_people"] forKey:@"popular_people"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
-//			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-//															  [[result objectForKey:@"switches"] objectForKey:@"splash_camera"], @"splash_camera",
-//															  [[result objectForKey:@"switches"] objectForKey:@"background_invite"], @"background_invite",
-//															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_invite"], @"firstrun_invite",
-//															  [[result objectForKey:@"switches"] objectForKey:@"firstrun_subscribe"], @"firstrun_subscribe",
-//															  [[result objectForKey:@"switches"] objectForKey:@"profile_invite"], @"profile_invite",
-//															  [[result objectForKey:@"switches"] objectForKey:@"popular_invite"], @"popular_invite",
-//															  [[result objectForKey:@"switches"] objectForKey:@"explore_invite"], @"explore_invite",
-//															  
-//															  [[result objectForKey:@"switches"] objectForKey:@"background_share"], @"background_share",
-//															  [[result objectForKey:@"switches"] objectForKey:@"volley_share"], @"volley_share",
-//															  [[result objectForKey:@"switches"] objectForKey:@"verify_share"], @"verify_share",
-//															  [[result objectForKey:@"switches"] objectForKey:@"like_share"], @"like_share",
-//															  [[result objectForKey:@"switches"] objectForKey:@"profile_share"], @"profile_share",
-//															  
-//															  [[result objectForKey:@"switches"] objectForKey:@"share_email"], @"share_email",
-//															  [[result objectForKey:@"switches"] objectForKey:@"share_sms"], @"share_sms",
-//															  [[result objectForKey:@"switches"] objectForKey:@"share_instagram"], @"share_instagram",
-//															  [[result objectForKey:@"switches"] objectForKey:@"share_twitter"], @"share_twitter", nil] forKey:@"switches"];
 			[[NSUserDefaults standardUserDefaults] setObject:@{@"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
 															   @"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
 															   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
@@ -670,16 +643,16 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 						break;
 						
 					case 1:
-						notificationName = @"REFRESH_DISCOVERY_TAB";
+						notificationName = @"REFRESH_EXPLORE_TAB";
 						break;
 						
 					case 2:
-						notificationName = @"REFRESH_CHALLENGES_TAB";
+						notificationName = @"REFRESH_VERIFY_TAB";
 						break;
-						
-					case 3:
-						notificationName = @"REFRESH_PROFILE_TAB";
-						break;
+					
+						default:
+							notificationName = @"REFRESH_VOTE_TAB";
+							break;
 				}
 				
 				[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
@@ -848,37 +821,19 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	[self.window addSubview:(UIView *)[notification object]];
 }
 
-- (void)_showSearchTable:(NSNotification *)notification {
-	if (_searchViewController != nil) {
-		[_searchViewController.view removeFromSuperview];
-		_searchViewController = nil;
-	}
-	
-	_searchViewController = [[HONSearchViewController alloc] init];
-	_searchViewController.view.frame = CGRectMake(0.0, 20.0 + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kSearchHeaderHeight));
-	[self.window addSubview:_searchViewController.view];
-}
-
-- (void)_hideSearchTable:(NSNotification *)notification {
-	if (_searchViewController != nil) {
-		[_searchViewController.view removeFromSuperview];
-		_searchViewController = nil;
-	}
-}
-
-- (void)_showSubjectSearchTimeline:(NSNotification *)notification {
-	[_searchViewController.view removeFromSuperview];
-	
-	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:[notification object]] animated:YES];
-}
-
-- (void)_showUserSearchTimeline:(NSNotification *)notification {
-	[_searchViewController.view removeFromSuperview];
-	
-	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];
-}
+//- (void)_showSubjectSearchTimeline:(NSNotification *)notification {
+//	[_searchViewController.view removeFromSuperview];
+//	
+//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
+//	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:[notification object]] animated:YES];
+//}
+//
+//- (void)_showUserSearchTimeline:(NSNotification *)notification {
+//	[_searchViewController.view removeFromSuperview];
+//	
+//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
+//	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];
+//}
 
 - (void)_changeTab:(NSNotification *)notification {
 	self.tabBarController.selectedIndex = [[notification object] intValue];
@@ -898,6 +853,34 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 
 - (void)_initTabBar:(NSNotification *)notification {
 	[self _initTabs];
+}
+
+- (void)_recreateImageSizes:(NSNotification *)notification {
+	NSDictionary *params = @{@"imgURL"	: [notification object]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
 }
 
 
@@ -951,13 +934,12 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_recreateImageSizes:) name:@"RECREATE_IMAGE_SIZES" object:nil];
 	
 #if __DEV_BUILD___ == 1
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
@@ -968,7 +950,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
-	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+	config.idfa = [HONAppDelegate advertisingIdentifierWithoutSeperators:NO];
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
@@ -1016,7 +998,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	
-	for (NSString *key in totals)
+	for (NSString *key in totalKeys)
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1120,6 +1102,9 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 		[HONAppDelegate writeDeviceToken:@""];
 		[self _retrieveConfigJSON];
 		
+		NSLog(@"ADID:[%@]\nVID:[%@]", [HONAppDelegate advertisingIdentifierWithoutSeperators:YES], [HONAppDelegate identifierForVendorWithoutSeperators:YES]);
+		
+		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
 			   withMessage:@"This app requires a network connection to work."];
@@ -1198,7 +1183,6 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 			
 		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			[self _retrieveConfigJSON];
 			//_isFromBackground = NO;
@@ -1234,7 +1218,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
 	UALOG(@"Failed To Register For Remote Notifications With Error: %@", error);
 	
-	if ([[HONAppDelegate advertisingIdentifier] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
+	if ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
 		NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
 		NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", deviceID);
 		
@@ -1291,7 +1275,7 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 			
 			// user profile
 			} else if (pushType == 3) {
-				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil attachedToViewController:YES];
 				userPofileViewController.userID = [[userInfo objectForKey:@"user"] intValue];
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 				[navigationController setNavigationBarHidden:YES];

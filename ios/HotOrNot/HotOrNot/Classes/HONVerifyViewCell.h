@@ -25,7 +25,7 @@
 
 @protocol HONVerifyViewCellDelegate
 - (void)verifyViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
-- (void)verifyViewCellShowPreviewControls:(HONVerifyViewCell *)cell;
+//- (void)verifyViewCellShowPreviewControls:(HONVerifyViewCell *)cell;
 - (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCellDisprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;

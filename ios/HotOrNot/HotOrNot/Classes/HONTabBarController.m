@@ -181,14 +181,17 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	NSString *mpEvent = @"";
 	NSString *notificationName = @"";
+	NSString *totalKey = @"";
+	
 	switch(tabID) {
 		case 0:
 			[_homeButton setSelected:YES];
 			[_verifyButton setSelected:NO];
 			[_exploreButton setSelected:NO];
 			
+			totalKey = @"timeline";
 			mpEvent = @"Tab Bar - Timeline";
-			notificationName = @"SELECTED_VOTE_TAB";
+			notificationName = @"SELECTED_HOME_TAB";
 			break;
 			
 		case 1:
@@ -196,8 +199,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_verifyButton setSelected:NO];
 			[_exploreButton setSelected:YES];
 			
-			mpEvent = @"Tab Bar - Discover";
-			notificationName = @"SELECTED_DISCOVERY_TAB";
+			totalKey = @"explore";
+			mpEvent = @"Tab Bar - Explore";
+			notificationName = @"SELECTED_EXPLORE_TAB";
 			break;
 			
 		case 2:
@@ -207,8 +211,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_verifyButton setSelected:YES];
 			[_exploreButton setSelected:NO];
 			
-			mpEvent = @"Tab Bar - Activity";
-			notificationName = @"SELECTED_CHALLENGES_TAB";
+			totalKey = @"verify";
+			mpEvent = @"Tab Bar - Verify";
+			notificationName = @"SELECTED_VERIFY_TAB";
 			break;
 			
 		default:
@@ -219,6 +224,8 @@ const CGSize kTabSize = {80.0, 50.0};
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[HONAppDelegate incTotalForCounter:totalKey];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
 	[self _updateBadges];
@@ -228,8 +235,6 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	//[self _dropTabs];
 }
 
 - (void)_goProfileAvatar {

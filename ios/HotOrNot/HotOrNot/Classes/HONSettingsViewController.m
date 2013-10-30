@@ -199,7 +199,6 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {

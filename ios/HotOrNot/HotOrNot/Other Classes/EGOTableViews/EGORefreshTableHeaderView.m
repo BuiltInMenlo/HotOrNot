@@ -121,6 +121,8 @@
 		scrollView.contentInset = UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, _headerOffset), kLoadingTheshold + _headerOffset), 0.0f, 0.0f, 0.0f);
 		
 	} else if (scrollView.isDragging) {
+		_isLoading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
+		
 		if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset && scrollView.contentOffset.y < 0.0f + _headerOffset && !_isLoading) {
 			[self setState:EGOOPullRefreshNormal];
 			

@@ -113,7 +113,6 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 
@@ -198,8 +197,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _voterVO.userID, _voterVO.username], @"voter", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_voterVO.username];
 }
 
 

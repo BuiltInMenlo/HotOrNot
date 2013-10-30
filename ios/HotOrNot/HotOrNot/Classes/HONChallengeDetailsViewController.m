@@ -72,7 +72,7 @@
 //		int diff = ([vo.challengers count]) - min;
 //		int len = (diff == min) ? 0 : diff;
 //		[mChallenge removeObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(min, len)]];		
-//		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 //		NSLog(@"CREATOR[%@] -- CHALLENGERS:[%d]", vo.creatorVO.subjectName, [vo.challengers count]);
 //		int cnt = 0;
 //		for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -257,10 +257,6 @@
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.25;
-	[_scrollView addGestureRecognizer:lpGestureRecognizer];
-	
 	[self _participantCheck];
 	[self _remakeUI];
 }
@@ -304,7 +300,7 @@
 	[self _makeFooterTabBar];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(0.0, 98.0, 64.0, 64.0);
+	joinButton.frame = CGRectMake(248.0, (kHeroVolleyTableCellHeight - 72.0) * 0.5, 74.0, 74.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -328,6 +324,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]];
 	};
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
@@ -339,8 +336,20 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
+	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
+	[_heroImageHolderView addSubview:gradientImageView];
 	
-	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:321.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
+	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroImageHolderView.frame.size.width, _heroImageHolderView.frame.size.height);
+	[heroPreviewButton addTarget:self action:@selector(_goHeroPreview) forControlEvents:UIControlEventTouchUpInside];
+	[_heroImageHolderView addSubview:heroPreviewButton];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+	
+	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:kHeroVolleyTableCellHeight - 98.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
 	_heroFooterView.delegate = self;
 	[_contentHolderView addSubview:_heroFooterView];
 }
@@ -399,18 +408,16 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-										  nil]];
+										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 		
 		if (_opponentVO != nil) {
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO forChallenge:_challengeVO asRoot:YES];
-			_snapPreviewViewController.delegate = self;
+			UIView *tagView = [[UIView alloc] initWithFrame:CGRectZero];
+			[tagView setTag:_opponentVO.userID];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+			[self _goUserProfile:tagView];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		[_snapPreviewViewController showControls];
 	}
 }
 
@@ -450,6 +457,18 @@
 }
 
 
+- (void)_goHeroPreview {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_heroOpponentVO forChallenge:_challengeVO asRoot:YES];
+	_snapPreviewViewController.delegate = self;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+}
+
 - (void)_goUserProfile:(id)sender {
 	UIButton *button = (UIButton *)sender;
 	
@@ -468,13 +487,11 @@
 	} completion:^(BOOL finished) {
 	}];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 	userPofileViewController.userID = button.tag;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	
 }
 
 - (void)_goJoinChallenge {
@@ -620,7 +637,7 @@
 	} completion:^(BOOL finished) {
 	}];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 	userPofileViewController.userID = heroOpponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -630,14 +647,15 @@
 
 #pragma mark - GridView Delegates
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:YES];
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:_challengeVO asRoot:YES];
 	_snapPreviewViewController.delegate = self;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
-}
-
-- (void)participantGridViewPreviewShowControls:(HONBasicParticipantGridView *)participantGridView {
-	[_snapPreviewViewController showControls];
 }
 
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -656,7 +674,7 @@
 	} completion:^(BOOL finished) {
 	}];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];

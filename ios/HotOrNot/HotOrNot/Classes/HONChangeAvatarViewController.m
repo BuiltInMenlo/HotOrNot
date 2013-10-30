@@ -66,7 +66,7 @@
 	// NSString *currentTimestamp = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
 	NSString *currentTimestamp = [NSString stringWithFormat:@"%d", (int)[[NSDate date] timeIntervalSince1970]];
     
-	_filename = [NSString stringWithFormat:@"%@-%@", [HONAppDelegate deviceToken], currentTimestamp];
+	_filename = [NSString stringWithFormat:@"%@_%@-%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], currentTimestamp];
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	@try {
@@ -265,29 +265,29 @@
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
 		
 	if ([HONImagingDepictor totalLuminance:image] > kMinLuminosity) {
-		CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
-		CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-		NSArray *features = [detctor featuresInImage:ciImage];
-		
-		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
+//		CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
+//		CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+//		NSArray *features = [detctor featuresInImage:ciImage];
+//		
+//		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
 			[self _uploadPhoto:image];
-			
-		} else {
-			[[Mixpanel sharedInstance] track:@"Change Avatar - Face Detection Failed"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-			
-			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
-										message:@"Please retry taking your selfie photo, good lighting helps!"
-									   delegate:self
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-			
-			[_cameraOverlayView resetControls];
-		}
+//			
+//		} else {
+//			[[Mixpanel sharedInstance] track:@"Change Avatar - Face Detection Failed"
+//								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+//			
+//			[[[UIAlertView alloc] initWithTitle:@"NO SELFIE DETECTED!"
+//										message:@"Please retry taking your selfie photo, good lighting helps!"
+//									   delegate:self
+//							  cancelButtonTitle:@"OK"
+//							  otherButtonTitles:nil] show];
+//			
+//			[_progressHUD hide:YES];
+//			_progressHUD = nil;
+//			
+//			[_cameraOverlayView resetControls];
+//		}
 	
 	} else {
 		[[Mixpanel sharedInstance] track:@"Change Avatar - Photo Luminosity Failed"

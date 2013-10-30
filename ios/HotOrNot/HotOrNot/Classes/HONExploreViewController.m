@@ -52,9 +52,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedDiscoveryTab:) name:@"SELECTED_DISCOVERY_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedExploreTab:) name:@"SELECTED_EXPLORE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_EXPLORE_TAB" object:nil];
 	}
 	
 	return (self);
@@ -75,8 +75,11 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tableView.alpha = 0.0;
+	}];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -99,13 +102,15 @@
 			[_tableView reloadData];
 		}
 		
+		_tableView.alpha = 1.0;
+		[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:NO];
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
-		
-		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [error localizedDescription]);
@@ -161,19 +166,11 @@
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
-	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
 	[self _retrieveChallenges];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -200,7 +197,7 @@
 	} completion:^(BOOL finished) {
 	}];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -299,45 +296,39 @@
 
 
 #pragma mark - Notifications
-- (void)_selectedDiscoveryTab:(NSNotification *)notification {
+- (void)_selectedExploreTab:(NSNotification *)notification {
 	_isRefreshing = YES;
 	[self _retrieveChallenges];
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"explore_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"explore_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 	
-	if (total == 0) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.hidden = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = _tutorialImageView.frame;
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
+//	if (total == 0) {
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.hidden = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		
+//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.frame = _tutorialImageView.frame;
+//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:closeButton];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+//		
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_tutorialImageView.alpha = 1.0;
+//		}];
+//	}
 }
 
-- (void)_refreshDiscoveryTab:(NSNotification *)notification {
-	[self _goRefresh];
-}
-
-
-#pragma mark - UI Presentation
-- (void)_doneRefreshing {
-	[_tableView reloadData];
-	
-	_isRefreshing = NO;
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+- (void)_refreshExploreTab:(NSNotification *)notification {
+	_isRefreshing = YES;
+	[self _retrieveChallenges];
 }
 
 
@@ -366,14 +357,14 @@
 	}
 }
 
-- (void)exploreViewCellShowPreviewControls:(HONExploreViewCell *)cell {
-	[[Mixpanel sharedInstance] track:@"Explore - Hide Detail"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-	
-	[_snapPreviewViewController showControls];
-}
+//- (void)exploreViewCellShowPreviewControls:(HONExploreViewCell *)cell {
+//	[[Mixpanel sharedInstance] track:@"Explore - Hide Detail"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//	
+//	[_snapPreviewViewController showControls];
+//}
 
 - (void)exploreViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;

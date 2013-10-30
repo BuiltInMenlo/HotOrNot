@@ -60,10 +60,9 @@
 
 #pragma mark - Data Calls
 - (void)_addFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"0", @"auto", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID],
+							 @"auto"	: @"0"};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -86,10 +85,9 @@
 }
 
 - (void)_removeFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target", nil];
-	
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID]};
+				
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIRemoveFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -118,10 +116,8 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 1], @"action",
-							username, @"username",
-							nil];
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 1],
+							 @"username"	: username};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -142,10 +138,9 @@
 			
 			_users = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
-				[_users addObject:[HONPopularUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																		[serverList objectForKey:@"id"], @"id",
-																		[serverList objectForKey:@"username"], @"username",
-																		[serverList objectForKey:@"avatar_url"], @"img_url", nil]]];
+				[_users addObject:[HONPopularUserVO userWithDictionary:@{@"id"			: [serverList objectForKey:@"id"],
+																		 @"username"	: [serverList objectForKey:@"username"],
+																		 @"img_url"		: [serverList objectForKey:@"avatar_url"]}]];
 			}
 			
 			if (_progressHUD != nil) {
@@ -228,7 +223,6 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {
@@ -421,7 +415,7 @@
 	
 	NSLog(@"didSelectRowAtIndexPath:[%@]", vo.username);
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil attachedToViewController:YES];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];

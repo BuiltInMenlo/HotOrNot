@@ -69,7 +69,9 @@
 			break;
 	}
 	
-	vo.creatorVO = [HONOpponentVO opponentWithDictionary:[dictionary objectForKey:@"creator"]];
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[dictionary objectForKey:@"creator"]];
+	[dict setObject:[dateFormat stringFromDate:vo.addedDate] forKey:@"joined"];
+	vo.creatorVO = [HONOpponentVO opponentWithDictionary:dict];
 	
 	vo.challengers = [NSMutableArray array];
 	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {

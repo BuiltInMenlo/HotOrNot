@@ -46,6 +46,7 @@
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *whySelfieView;
+@property (nonatomic, strong) NSString *splashImageURL;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) int uploadCounter;
@@ -63,8 +64,11 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
+		_filename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
+		
+		_splashImageURL = [NSString stringWithFormat:@"%@%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"], ([HONAppDelegate isRetina4Inch] ? @"-568h@2x.png" : @"@2x.png")];
 	}
 	
 	return (self);
@@ -88,19 +92,10 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	_uploadCounter = 0;
-	_filename = [NSString stringWithFormat:@"%@-%d",[HONAppDelegate deviceToken], (int)[[NSDate date] timeIntervalSince1970]];
-//	NSLog(@"FILENAME: %@", _filename);
+	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
 	
 	@try {
-//		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
-		
-//		UIImage *oImage = image;
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
-		
-//		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 202.0, 640.0, 450.0)];
-//		UIImage *tImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
-//		tImage = [HONImagingDepictor cropImage:tImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
-		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-avatars"];
@@ -108,12 +103,6 @@
 		por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		por1.delegate = self;
 		[s3 putObject:por1];
-		
-//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
-//		por2.contentType = @"image/jpeg";
-//		por2.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-//		por2.delegate = self;
-//		[s3 putObject:por2];
 		
 	} @catch (AmazonClientException *exception) {
 		[[[UIAlertView alloc] initWithTitle:@"Upload Error"
@@ -138,10 +127,9 @@
 }
 
 - (void)_checkUsername {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							_username, @"username",
-							_email, @"password", nil];
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"username"	: _username,
+							 @"password"	: _email};
 	
 	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail);
@@ -171,7 +159,15 @@
 					_progressHUD = nil;
 				}
 				
-				[self _goCamera];
+				if ([HONAppDelegate switchEnabledForKey:@"firstrun_camera"])
+					[self _goCamera];
+				
+				else {
+					[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+					
+					[self _finalizeUser];
+				}
 				
 			} else {
 				if (_progressHUD == nil)
@@ -206,14 +202,13 @@
 }
 
 - (void)_finalizeUser {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 9], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							_username, @"username",
-							_email, @"password",
-							_birthday, @"age",
-							[HONAppDelegate deviceToken], @"token",
-							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL", nil];
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 9],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"username"	: _username,
+							 @"password"	: _email,
+							 @"age"			: _birthday,
+							 @"token"		: [HONAppDelegate deviceToken],
+							 @"imgURL"		: ([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename]};
 	
 	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
@@ -315,8 +310,7 @@
 }
 
 - (void)_retreiveSubscribees {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -359,8 +353,7 @@
 }
 
 - (void)_finalizeUpload {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL", nil];
+	NSDictionary *params = @{@"imgURL"	: ([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar.png", [HONAppDelegate s3BucketForType:@"avatars"]] : [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -395,8 +388,7 @@
 }
 
 - (void)_recreateUser {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 1], @"action", nil];
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
 	
 //	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
@@ -533,18 +525,18 @@
 	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 258.0);
 	[self.view addSubview:divider3ImageView];
 	
-	NSDateFormatter *yearDateFormat = [[NSDateFormatter alloc] init];
-	[yearDateFormat setDateFormat:@"yyyy-MM-dd"];
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd"];
 	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	_datePicker.date = (![[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] || [[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [yearDateFormat dateFromString:@"1970-01-01"] : [yearDateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
+	_datePicker.date = (![[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] || [[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [dateFormat dateFromString:@"1970-01-01"] : [dateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
-	_datePicker.minimumDate = [yearDateFormat dateFromString:@"1970-01-01"];
+	_datePicker.minimumDate = [dateFormat dateFromString:@"1970-01-01"];
 	_datePicker.maximumDate = [NSDate date];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
 	
-	_birthday = [yearDateFormat stringFromDate:_datePicker.date];
+	_birthday = [dateFormat stringFromDate:_datePicker.date];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = ([HONAppDelegate isRetina4Inch]) ? CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 269.0, 320.0, 53.0) : CGRectMake(257.0, 28.0, 59.0, 24.0);
@@ -580,16 +572,16 @@
 				imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 				
 				UIView *cameraOverlayView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				cameraOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+				cameraOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.65];
 				cameraOverlayView.alpha = 0.0;
 				
 				UIImageView *overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				overlayImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
+				[overlayImageView setImageWithURL:[NSURL URLWithString:_splashImageURL] placeholderImage:nil];
 				overlayImageView.userInteractionEnabled = YES;
 				[cameraOverlayView addSubview:overlayImageView];
 				
 				UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 320.0, 64.0);
+				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (114.0 + (![HONAppDelegate isRetina4Inch] * 30.0)), 320.0, 64.0);
 				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
 				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 				[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
@@ -607,31 +599,37 @@
 				
 			} else {
 				UIImageView *splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				splashImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
+				[splashImageView setImageWithURL:[NSURL URLWithString:_splashImageURL] placeholderImage:nil];
 				splashImageView.userInteractionEnabled = YES;
 				[_tutorialHolderView addSubview:splashImageView];
 				
 				UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 320.0, 64.0);
+				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (114.0 + (![HONAppDelegate isRetina4Inch] * 30.0)), 320.0, 64.0);
 				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
 				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 				[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
 				[_tutorialHolderView addSubview:signupButton];
 				
-				[UIView animateWithDuration:0.33 animations:^(void) {
-					_tutorialHolderView.alpha = 1.0;
-				}];
+				[UIView animateWithDuration:0.33
+								 animations:^(void) {
+									 _tutorialHolderView.alpha = 1.0;}];
+				
+				UIButton *fillFormButton = [UIButton buttonWithType:UIButtonTypeCustom];
+				fillFormButton.frame = CGRectMake(148.0, 205.0, 24.0, 8.0);
+				//fillFormButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"red" atOpacity:0.5];
+				[fillFormButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchUpInside];
+				[_tutorialHolderView addSubview:fillFormButton];
 			}
 		}
 	
 	} else {
 		UIImageView *splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		splashImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
+		[splashImageView setImageWithURL:[NSURL URLWithString:_splashImageURL] placeholderImage:nil];
 		splashImageView.userInteractionEnabled = YES;
 		[_tutorialHolderView addSubview:splashImageView];
 		
 		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 320.0, 64.0);
+		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (114.0 + (![HONAppDelegate isRetina4Inch] * 30.0)), 320.0, 64.0);
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
@@ -641,10 +639,25 @@
 			_tutorialHolderView.alpha = 1.0;
 		}];
 	}
+	
+	
 }
 
 
 #pragma mark - Navigation
+- (void)_goFillForm {
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd"];
+	
+	_usernameTextField.text = @"snap";
+	_emailTextField.text = @"snap@snap.com";
+	_datePicker.date = [dateFormat dateFromString:@"1996-07-10"];
+	
+	_birthdayLabel.text = [dateFormat stringFromDate:_datePicker.date];
+	[self _goCloseSplash];
+}
+
+
 - (void)_goCloseSplash {
 	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -768,7 +781,6 @@
 	
 	} else {
 		_filename = @"";
-		
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
@@ -782,159 +794,11 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_filename = @"";
-	
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[self _finalizeUser];
-	
-//	_whySelfieView = [[UIView alloc] initWithFrame:self.view.frame];
-//	_whySelfieView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-//	_whySelfieView.alpha = 0.0;
-//	[_cameraOverlayView addSubview:_whySelfieView];
-//	
-//	UIImageView *infoImageView = [[UIImageView alloc] initWithFrame:_whySelfieView.frame];
-//	infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x": @"whySelfie"];
-//	[_whySelfieView addSubview:infoImageView];
-//	
-//	UIButton *closeSkipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	closeSkipButton.frame = CGRectMake(40.0, [UIScreen mainScreen].bounds.size.height - 236.0, 240.0, 64.0);
-//	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_nonActive"] forState:UIControlStateNormal];
-//	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_Active"] forState:UIControlStateHighlighted];
-//	[closeSkipButton addTarget:self action:@selector(_goCloseSkip) forControlEvents:UIControlEventTouchUpInside];
-//	[_whySelfieView addSubview:closeSkipButton];
-//	
-//	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	skipButton.frame = CGRectMake(85.0, [UIScreen mainScreen].bounds.size.height - 159.0, 150.0, 24.0);
-//	[skipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_nonActive"] forState:UIControlStateNormal];
-//	[skipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_Active"] forState:UIControlStateHighlighted];
-//	[skipButton addTarget:self action:@selector(_goSkipPhoto) forControlEvents:UIControlEventTouchUpInside];
-//	[_whySelfieView addSubview:skipButton];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_whySelfieView.alpha = 1.0;
-//	}];
-	
-	
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//														message:@"WARNING YOUR PROFILE MAY GET FLAGGED FOR NOT HAVING A SELFIE. VOLLEY USES YOUR SELFIE IMAGE TO KEEP THE COMMUNITY SAFE!\n#NOADULTS"
-//													   delegate:self
-//											  cancelButtonTitle:@"Take Photo"
-//											  otherButtonTitles:@"OK", nil];
-//	[alertView setTag:1];
-//	[alertView show];
 }
-
-//- (void)_goSkipCloseSplash {
-//	[[Mixpanel sharedInstance] track:@"Register - Splash Skip Photo"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	
-//	UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
-//	gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-//	[_cameraOverlayView addSubview:gutterView];
-//	
-//	_tutorialImageView = [[UIImageView alloc] initWithFrame:_cameraOverlayView.frame];
-//	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_1stRun-568h@2x" : @"tutorial_1stRun"];
-//	_tutorialImageView.alpha = 0.0;
-//	[_cameraOverlayView addSubview:_tutorialImageView];
-//	
-//	UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
-//	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-//	[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
-//	[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
-//	takePhotoButton.alpha = 0.0;
-//	[_cameraOverlayView addSubview:takePhotoButton];
-//	
-//	UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
-//	headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
-//	[_cameraOverlayView addSubview:headerBGImageView];
-//	
-//	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	skipButton.frame = CGRectMake(228.0, 10.0, 84.0, 24.0);
-//	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
-//	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
-//	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-//	[_cameraOverlayView addSubview:skipButton];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		takePhotoButton.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
-//	}];
-//	
-//	_whySelfieView = [[UIView alloc] initWithFrame:self.view.frame];
-//	_whySelfieView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-//	_whySelfieView.alpha = 0.0;
-//	[_cameraOverlayView addSubview:_whySelfieView];
-//	
-//	UIImageView *infoImageView = [[UIImageView alloc] initWithFrame:_whySelfieView.frame];
-//	infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"whySelfie-568h@2x": @"whySelfie"];
-//	[_whySelfieView addSubview:infoImageView];
-//	
-//	UIButton *closeSkipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	closeSkipButton.frame = CGRectMake(40.0, [UIScreen mainScreen].bounds.size.height - 236.0, 240.0, 64.0);
-//	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_nonActive"] forState:UIControlStateNormal];
-//	[closeSkipButton setBackgroundImage:[UIImage imageNamed:@"takePhotoNow_Active"] forState:UIControlStateHighlighted];
-//	[closeSkipButton addTarget:self action:@selector(_goCloseSkip) forControlEvents:UIControlEventTouchUpInside];
-//	[_whySelfieView addSubview:closeSkipButton];
-//	
-//	UIButton *stillSkipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	stillSkipButton.frame = CGRectMake(85.0, [UIScreen mainScreen].bounds.size.height - 159.0, 150.0, 24.0);
-//	[stillSkipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_nonActive"] forState:UIControlStateNormal];
-//	[stillSkipButton setBackgroundImage:[UIImage imageNamed:@"stillSkipThis_Active"] forState:UIControlStateHighlighted];
-//	[stillSkipButton addTarget:self action:@selector(_goSkipPhoto) forControlEvents:UIControlEventTouchUpInside];
-//	[_whySelfieView addSubview:stillSkipButton];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_whySelfieView.alpha = 1.0;
-//	}];
-//	
-//	[UIView animateWithDuration:0.5 animations:^(void) {
-//		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, -self.view.frame.size.height * 0.5);
-//		_overlayImageView.alpha = 0.0;
-//	}];
-//}
-
-//- (void)_goSkipPhoto {
-//	[[Mixpanel sharedInstance] track:@"Register - Skip Photo Confirm"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	_filename = @"";
-//	[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
-//	
-//	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-//	
-//	[_usernameTextField becomeFirstResponder];
-//	[_usernameButton setSelected:YES];
-//	
-//	[UIView beginAnimations:nil context:NULL];
-//	[UIView setAnimationDuration:0.5];
-//	[UIView setAnimationDelay:0.33];
-//	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-//	[UIView commitAnimations];
-//	
-//	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-//}
-//
-//- (void)_goCloseSkip {
-//	[[Mixpanel sharedInstance] track:@"Register - Skip Photo Cancel"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_whySelfieView.alpha = 0.0;
-//	} completion:^(BOOL finished) {
-//		[_whySelfieView removeFromSuperview];
-//		_whySelfieView = nil;
-//	}];
-//}
 
 - (void)_goTakePhoto {
 	[[Mixpanel sharedInstance] track:@"Register - Take Photo"
@@ -1163,8 +1027,7 @@
 			NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 			
-//			if ([HONAppDelegate ageForDate:[dateFormat dateFromString:_birthday]] < 19)
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 		}];
 	}];
 }

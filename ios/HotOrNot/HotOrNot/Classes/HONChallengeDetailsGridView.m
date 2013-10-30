@@ -12,7 +12,6 @@
 
 @interface HONChallengeDetailsGridView ()
 @property (nonatomic, retain) HONChallengeVO *challengeVO;
-@property (nonatomic, retain) HONOpponentVO *selectedOpponentVO;
 @end
 
 @implementation HONChallengeDetailsGridView
@@ -50,24 +49,7 @@
 
 - (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
 	[super createItemForParticipant:opponentVO fromChallenge:challengeVO];
-	
-	_profileButton.hidden = NO;
-	[_profileButton addTarget:self action:@selector(_goProfile:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 
-#pragma mark - Navigation
-- (void)_goProfile:(id)sender {
-	_selectedOpponentVO = nil;
-	for (NSDictionary *dict in _gridItems) {
-		HONOpponentVO *vo = (HONOpponentVO *)[dict objectForKey:@"participant"];
-		if (vo.userID == [sender tag]) {
-			_selectedOpponentVO = vo;
-			break;
-		}
-	}
-	
-	if (_selectedOpponentVO != nil)
-		[self.delegate participantGridView:self showProfile:_selectedOpponentVO forChallenge:_challengeVO];
-}
 @end

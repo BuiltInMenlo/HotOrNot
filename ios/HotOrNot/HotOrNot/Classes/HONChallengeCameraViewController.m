@@ -152,7 +152,7 @@
 	
 	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_cancelUpload) userInfo:nil repeats:NO];
 	
-	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	@try {
@@ -586,7 +586,7 @@
 
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
-	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	if (_uploadTimer != nil) {
 		[_uploadTimer invalidate];

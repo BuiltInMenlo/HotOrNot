@@ -61,6 +61,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", imageURL]];
 	};
 	
 	_challengeImageView = [[UIImageView alloc] initWithFrame:frame];
@@ -105,7 +106,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[self _imageLoadFallback];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", avatarURL]];
 	};
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -117,7 +118,7 @@
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
 	[self.contentView addSubview:gradientImageView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(246.0, 120.0, 74.0, 164.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(246.0, 103.0, 74.0, 164.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -198,10 +199,11 @@
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
-		[self.delegate verifyViewCellShowPreview:self forChallenge:_challengeVO];
+		[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
 		
-	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate verifyViewCellShowPreviewControls:self];
+	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+//		[self.delegate verifyViewCellShowPreviewControls:self];
+	}
 }
 
 

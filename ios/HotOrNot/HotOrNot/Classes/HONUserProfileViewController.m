@@ -61,7 +61,7 @@
 @property (nonatomic) int followingCounter;
 @property (nonatomic) BOOL isUser;
 @property (nonatomic) BOOL isFriend;
-
+@property (nonatomic) BOOL usesViewController;
 @property (nonatomic) BOOL isRefreshing;
 @end
 
@@ -69,13 +69,14 @@
 @implementation HONUserProfileViewController
 @synthesize userID = _userID;
 
-- (id)initWithBackground:(UIImageView *)imageView {
+- (id)initWithBackground:(UIImageView *)imageView attachedToViewController:(BOOL)usesViewController {
 	if ((self = [super init])) {
 		_bgImageView = imageView;
 		self.view.backgroundColor = (imageView == nil) ? [UIColor blackColor] : [UIColor clearColor];
 		
 		_isUser = NO;
 		_isFriend = NO;
+		_usesViewController = usesViewController;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
@@ -104,7 +105,6 @@
 							nil];
 	
 	NSLog(@"USER BY ID PARAMS:[%@]", params);
-	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -115,7 +115,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != nil) {
 				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -226,8 +226,7 @@
 			
 			[self _makeUI];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 108.0 + (kHeroVolleyTableCellHeight + (kSnapThumbSize.height * ([_challenges count] / 4) + 1))));
-//			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 660.0 + (kSnapThumbSize.height * ( ( [_challenges count] / 4) + 1) )));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 252.0 + (kHeroVolleyTableCellHeight + (kSnapThumbSize.height * ([_challenges count] / 4) + 1))));
 			[self _makeGrid];
 		}
 		
@@ -380,7 +379,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_verifyButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	_verifyButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
 	
@@ -407,6 +406,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+	NSLog(@":|[%@]|:\tparentVC:[%@]", [self description], [self parentViewController]);
 	
 	[_bgHolderView addSubview:_bgImageView];
 		
@@ -476,10 +477,15 @@
 //			[alertView show];
 //		
 //		} else {
+		
+		if ([self parentViewController] != nil) {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			}];
-//		}
+		
+		} else {
+			[self.view removeFromSuperview];
+		}
 	}
 }
 
@@ -664,7 +670,7 @@
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		[_snapPreviewViewController showControls];
+//		[_snapPreviewViewController showControls];
 	}
 }
 
@@ -709,8 +715,8 @@
 		_heroOpponentVO = newestChallenge.creatorVO;
 	
 	else {
+		NSLog(@"newestChallenge -> opponents:[%d]", [newestChallenge.challengers count]);
 		for (HONOpponentVO *vo in newestChallenge.challengers) {
-			NSLog(@"opponent:[%@]", vo.dictionary);
 			if (_userVO.userID == vo.userID) {
 				_heroOpponentVO = vo;
 				break;
@@ -832,6 +838,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _userVO.avatarURL]];
 	};
 	
 	if (_avatarImageView != nil) {
@@ -936,25 +943,49 @@
 
 #pragma mark - GridView Delegates
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"participantGridView:showPreview:[%@]forChallenge:[%d]", opponentVO.dictionary, challengeVO.challengeID);
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Show Preview%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
+	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:YES];
 	_snapPreviewViewController.delegate = self;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
-- (void)participantGridViewPreviewShowControls:(HONBasicParticipantGridView *)participantGridView {
-	[_snapPreviewViewController showControls];
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"participantGridView:showProfile:[%@]forChallenge:[%d]", opponentVO.dictionary, challengeVO.challengeID);
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
+	
+	if ([HONAppDelegate hasTakenSelfie]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil attachedToViewController:YES];
+		userPofileViewController.userID = opponentVO.userID;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
+														   delegate:self
+												  cancelButtonTitle:@"Cancel"
+												  otherButtonTitles:@"Take Photo", nil];
+		[alertView setTag:2];
+		[alertView show];
+	}
 }
-
-
-//#pragma mark - RefreshTableHeader Delegates
-//- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-//	[self _goRefresh];
-//}
-//
-//- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-//	return (_isRefreshing);
-//}
 
 
 #pragma mark - SnapPreview Delegates

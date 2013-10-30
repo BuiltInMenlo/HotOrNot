@@ -69,9 +69,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		_cells = [NSMutableArray array];
 		_blockCounter = 0;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedChallengesTab:) name:@"SELECTED_CHALLENGES_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVerifyTab:) name:@"SELECTED_VERIFY_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_VERIFY_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -91,46 +91,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser:(int)userID {
-	if ([HONAppDelegate infoForUser]) {
-		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-										[NSString stringWithFormat:@"%d", 5], @"action",
-										[NSString stringWithFormat:@"%d", userID], @"userID",
-										nil];
-		
-		VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			NSError *error = nil;
-			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-				
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-			} else {
-//				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//				//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-//				
-//				HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			}
-			
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-			
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-		}];
-	}
-}
-
 - (void)_retrieveChallenges {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
@@ -163,9 +123,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 			_emptyImageView.hidden = [_challenges count] > 0;
 			[_tableView reloadData];
-//			[_tableView setContentOffset:CGPointZero animated:NO];
-//			[_tableView setContentInset:UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0)];
-			
+
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		}
@@ -306,9 +264,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_isPrivate = NO;
 	
-	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
-	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
 	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_banner"] isEqualToString:@"YES"] * 90.0));
 	_emptyImageView.hidden = YES;
@@ -316,7 +271,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f);
+	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -327,23 +282,18 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
-
-
+	
+	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
-//	UIButton *faqButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	faqButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
-//	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_nonActive"] forState:UIControlStateNormal];
-//	[faqButton setBackgroundImage:[UIImage imageNamed:@"verifyFAQ_Active"] forState:UIControlStateHighlighted];
-//	[faqButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:faqButton];
+	[self _retrieveChallenges];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {
@@ -356,7 +306,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[self _retrieveChallenges];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -370,7 +319,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - Navigation
 - (void)_goProfile {
-		
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
 	[_profileHeaderButtonView toggleSelected:YES];
@@ -384,7 +332,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	} completion:^(BOOL finished) {
 	}];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -484,49 +432,34 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - Notifications
-- (void)_selectedChallengesTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointZero animated:YES];
+- (void)_selectedVerifyTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 	
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verify_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (total == 0) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.hidden = YES;
-		_tutorialImageView.alpha = 0.0;
-		[self.view addSubview:_tutorialImageView];
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = _tutorialImageView.frame;
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
+//	if ([HONAppDelegate totalForCounter:@"verify"] == 0) {
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.hidden = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		[self.view addSubview:_tutorialImageView];
+//		
+//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.frame = _tutorialImageView.frame;
+//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:closeButton];
+//		
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-		
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify FAQ"
-//															message:@"Do you want the see the FAQ about verifying?"
-//														   delegate:self
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:2];
-//		[alertView show];
-
-		
-//		closeButton.backgroundColor = ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) ? [HONAppDelegate honDebugGreenColor] : [HONAppDelegate honDebugRedColor];
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-	}
+//		
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_tutorialImageView.alpha = 1.0;
+//		}];
+//	}
 }
 
-- (void)_refreshChallengesTab:(NSNotification *)notification {
+- (void)_refreshVerifyTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 }
 
@@ -552,7 +485,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		} completion:^(BOOL finished) {
 		}];
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -571,16 +504,28 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 - (void)verifyViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:_challengeVO asRoot:YES];
-		_snapPreviewViewController.delegate = self;
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+		
+		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+		_blurredImageView.alpha = 0.0;
+		[self.view addSubview:_blurredImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blurredImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
+		userPofileViewController.userID = challengeVO.creatorVO.userID;
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -588,19 +533,19 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:5];
+		[alertView setTag:4];
 		[alertView show];
 	}
 }
 
-- (void)verifyViewCellShowPreviewControls:(HONVerifyViewCell *)cell {
-	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-	
-	[_snapPreviewViewController showControls];
-}
+//- (void)verifyViewCellShowPreviewControls:(HONVerifyViewCell *)cell {
+//	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//	
+//	[_snapPreviewViewController showControls];
+//}
 
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
@@ -784,34 +729,23 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
+	HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.row];
+	[cell showTapOverlay];
+	
 	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.row];
-		[cell showTapOverlay];
-	
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+		NSLog(@"didSelectRowAtIndexPath:[%d]\n%@", indexPath.row, challengeVO.dictionary);
 		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-		userPofileViewController.userID = challengeVO.creatorVO.userID;
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
+		_snapPreviewViewController.delegate = self;
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -819,7 +753,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
+		[alertView setTag:5];
 		[alertView show];
 	}
 }

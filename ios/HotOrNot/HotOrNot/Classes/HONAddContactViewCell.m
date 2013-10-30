@@ -30,7 +30,7 @@
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_checkButton.frame = CGRectMake(198.0, 11.0, 104.0, 44.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateHighlighted];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self addSubview:_checkButton];

@@ -235,7 +235,6 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 	
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:0.0];

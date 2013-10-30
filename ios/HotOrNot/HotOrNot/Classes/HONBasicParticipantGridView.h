@@ -18,7 +18,10 @@
 	NSMutableArray *_challenges;
 	NSMutableArray *_gridItems;
 	
-	UIButton *_profileButton;
+	HONOpponentVO *_selectedOpponentVO;
+	HONChallengeVO *_selectedChallengeVO;
+	
+	UIButton *_previewButton;
 }
 
 - (id)initAtPos:(int)yPos forChallenge:(HONChallengeVO *)challengeVO asPrimaryOpponent:(HONOpponentVO *)opponentVO;
@@ -33,7 +36,6 @@
 
 @protocol HONParticipantGridViewDelegate
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-- (void)participantGridViewPreviewShowControls:(HONBasicParticipantGridView *)participantGridView;
-@optional
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+@optional
 @end

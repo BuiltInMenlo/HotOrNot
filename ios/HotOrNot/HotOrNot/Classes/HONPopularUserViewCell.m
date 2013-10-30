@@ -28,7 +28,6 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
-		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_checkButton.frame = CGRectMake(198.0, 11.0, 104.0, 44.0);

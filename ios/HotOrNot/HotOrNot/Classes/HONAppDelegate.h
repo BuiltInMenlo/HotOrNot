@@ -85,6 +85,7 @@ extern NSString * const kTwilioSMS;
 
 // network error descriptions
 extern NSString * const kNetErrorNoConnection;
+extern NSString * const kNetErrorStatusCode404;
 
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
@@ -92,8 +93,8 @@ extern NSString * const kNetErrorNoConnection;
 + (NSMutableString *)hmacToken;
 + (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;
 + (AFHTTPClient *)getHttpClientWithHMAC;
-+ (NSString *)advertisingIdentifier;
-+ (NSString *)identifierForVendor;
++ (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
++ (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
 + (NSString *)deviceModel;
 
 + (NSString *)apiServerPath;
@@ -155,7 +156,6 @@ extern NSString * const kNetErrorNoConnection;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingConfigServer;
 + (NSString *)deviceLocale;
-+ (void)offsetSubviewsForIOS7:(UIView *)view;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)formattedExpireTime:(int)seconds;

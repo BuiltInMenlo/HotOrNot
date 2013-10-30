@@ -73,15 +73,42 @@
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
+	NSLog(@"setChallengeVO");
+	
 	_challengeVO = challengeVO;
-	
 //	_heroOpponentVO = _challengeVO.creatorVO;
-//	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]) && !_challengeVO.isCelebCreated)
+//	
+//	int timeSinceHero = [_heroOpponentVO.joinedDate timeIntervalSinceNow];
+//	int timeSinceFirstParticipant = ([_challengeVO.challengers count] == 0) ? 0 : [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow];
+//	BOOL isHeroNewer = (timeSinceFirstParticipant > timeSinceHero);
+//	
+//	
+//	
+//
+//	
+//	if ([_challengeVO.challengers count] > 0 && isHeroNewer && !_challengeVO.isCelebCreated) {
 //		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+//		
+//	} else {
+//		_heroOpponentVO = _challengeVO.creatorVO;
+//	}
 	
-	_heroOpponentVO = ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]) && !_challengeVO.isCelebCreated) ? _heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0] : _challengeVO.creatorVO;
-	__weak typeof(self) weakSelf = self;
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
 	
+	_heroOpponentVO = _challengeVO.creatorVO;
+	int heroTime = [_heroOpponentVO.joinedDate timeIntervalSinceNow];
+	int participant0Time = -1;
+	
+	if ([_challengeVO.challengers count] > 0) {
+		participant0Time = [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow];
+		
+		if (participant0Time > heroTime && !_challengeVO.isCelebCreated && !_challengeVO.isExploreChallenge)
+			_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+	}
+	
+//	NSLog(@"HERO:[%d][%@]", heroTime, [dateFormat stringFromDate:_heroOpponentVO.joinedDate]);
+//	NSLog(@"OPP1:[%d][%@]", participant0Time, [dateFormat stringFromDate:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate]);
 	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyTableCellHeight)];
 	_heroImageHolderView.clipsToBounds = YES;
 	_heroImageHolderView.backgroundColor = [UIColor blackColor];
@@ -102,7 +129,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[weakSelf _reloadHeroImage];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]];
 	};
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
@@ -127,17 +154,16 @@
 	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
 	[self.contentView addSubview:gradientImageView];
 	
+	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:kHeroVolleyTableCellHeight - 94.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
+	_heroFooterView.delegate = self;
+	[self.contentView addSubview:_heroFooterView];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(0.0, 153.0, 64.0, 64.0);
+	joinButton.frame = CGRectMake(246.0, kHeroVolleyTableCellHeight - 114.0, 74.0, 74.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:joinButton];
-	
-	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:320.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
-	_heroFooterView.delegate = self;
-	[self.contentView addSubview:_heroFooterView];
 	
 	UIImageView *tapHoldImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tapHoldOverlay_nonActive"]];
 	tapHoldImageView.hidden = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0;
@@ -183,22 +209,6 @@
 }
 
 #pragma mark - UI Presentation
-- (void)_reloadHeroImage {
-	__weak typeof(self) weakSelf = self;
-	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, kHeroVolleyTableCellHeight, kHeroVolleyTableCellHeight)];
-	_heroImageView.alpha = 0.0;
-	[_heroImageHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
-																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-										  weakSelf.heroImageView.image = image;
-										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
-									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-										  NSLog(@"%@_l.jpg", weakSelf.challengeVO.creatorVO.imagePrefix);
-									  }];
-}
-
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:self];
@@ -209,7 +219,7 @@
 			[self.delegate timelineItemViewCell:self showPreview:_heroOpponentVO forChallenge:_challengeVO];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		[self.delegate timelineItemViewCellShowPreviewControls:self];
+//		[self.delegate timelineItemViewCellShowPreviewControls:self];
 	}
 }
 

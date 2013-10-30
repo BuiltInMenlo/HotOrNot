@@ -281,7 +281,7 @@
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	bgImageView.backgroundColor = [UIColor blackColor];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:bgImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:bgImageView attachedToViewController:YES];
 	userPofileViewController.userID = ((HONUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];

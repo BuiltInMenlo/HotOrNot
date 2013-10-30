@@ -61,6 +61,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _leftHeroOpponentVO.imagePrefix]];
 	};
 	
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
@@ -116,6 +117,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _rightHeroOpponentVO.imagePrefix]];
 	};
 	
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
@@ -153,19 +155,21 @@
 
 #pragma mark - Navigation
 - (void)_goLeftLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
-	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		[self.delegate exploreViewCellShowPreview:self forChallenge:_lChallengeVO];
 	
-	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate exploreViewCellShowPreviewControls:self];
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+//		[self.delegate exploreViewCellShowPreviewControls:self];
+	}
 }
 
 - (void)_goRightLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
-	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		[self.delegate exploreViewCellShowPreview:self forChallenge:_rChallengeVO];
 	
-	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
-		[self.delegate exploreViewCellShowPreviewControls:self];
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+//		[self.delegate exploreViewCellShowPreviewControls:self];
+	}
 }
 
 - (void)_goSelectLeft {
@@ -196,38 +200,5 @@
 	[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
 }
 
-
-#pragma mark - UI Presentation
-- (void)_reloadLeftImage {
-	__weak typeof(self) weakSelf = self;
-	
-	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 320.0, 320.0)];
-	_leftImageView.alpha = 0.0;
-	[_leftHolderView addSubview:_leftImageView];
-	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _leftHeroOpponentVO.imagePrefix]]
-															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-								 weakSelf.leftImageView.image = image;
-								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.leftImageView.alpha = 1.0; } completion:nil];
-							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-								 NSLog(@"%@_l.jpg", weakSelf.lChallengeVO.creatorVO.imagePrefix);
-							 }];
-}
-
-- (void)_reloadRightImage {
-	__weak typeof(self) weakSelf = self;
-	
-	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 320.0, 320.0)];
-	_rightImageView.alpha = 0.0;
-	[_rightHolderView addSubview:_rightImageView];
-	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _rightHeroOpponentVO.imagePrefix]]
-															cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-						  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-							  weakSelf.rightImageView.image = image;
-							  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rightImageView.alpha = 1.0; } completion:nil];
-						  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-							  NSLog(@"%@_l.jpg", weakSelf.rChallengeVO.creatorVO.imagePrefix);
-						  }];
-}
 
 @end

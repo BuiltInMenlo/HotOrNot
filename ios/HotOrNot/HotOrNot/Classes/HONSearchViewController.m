@@ -468,17 +468,17 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	
-	if (_isUser) {
-		HONUserVO *vo = (_isResults) ? (HONUserVO *)[_results objectAtIndex:indexPath.row] : (HONUserVO *)[_defaultUsers objectAtIndex:indexPath.row];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:vo.username];
-		
-	} else {
-		HONSearchSubjectVO *vo = (HONSearchSubjectVO *)[_results objectAtIndex:indexPath.row];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:vo.subjectName];
-	}
+//	if (_isUser) {
+//		HONUserVO *vo = (_isResults) ? (HONUserVO *)[_results objectAtIndex:indexPath.row] : (HONUserVO *)[_defaultUsers objectAtIndex:indexPath.row];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:vo.username];
+//		
+//	} else {
+//		HONSearchSubjectVO *vo = (HONSearchSubjectVO *)[_results objectAtIndex:indexPath.row];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:vo.subjectName];
+//	}
 }
 
 

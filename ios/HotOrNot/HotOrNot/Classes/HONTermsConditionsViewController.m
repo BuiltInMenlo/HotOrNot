@@ -43,12 +43,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 
-#pragma mark - Navigation
-
-
-#pragma mark - WebView Delegates
 @end

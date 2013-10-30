@@ -25,7 +25,6 @@
 #import "HONCreateSnapButtonView.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
-#import "HONSettingsViewController.h"
 #import "HONHeaderView.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
@@ -34,81 +33,39 @@
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
-#import "HONChangeAvatarViewController.h"
-#import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileViewController.h"
-#import "HONPopularViewController.h"
-#import "HONCollectionViewFlowLayout.h"
 #import "HONChangeAvatarViewController.h"
 
 
 @interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
-@property (readonly, nonatomic, assign) HONTimelineType timelineType;
-@property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONEmptyTimelineView *emptyTimelineView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
-@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *cells;
-@property (nonatomic) BOOL isPushView;
-@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) HONUserVO *userVO;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
-@property (nonatomic) int userID;
+@property (nonatomic) BOOL isRefreshing;
 @end
 
 @implementation HONTimelineViewController
 
 - (id)init {
 	if ((self = [super init])) {
-		_isPushView = NO;
-		_timelineType = HONTimelineTypeHome;
-		
-		[self _registerNotifications];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedHomeTab:) name:@"SELECTED_HOME_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_VOTE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 	}
 	
 	return (self);
-}
-
-- (id)initWithSubject:(NSString *)subjectName {
-	if ((self = [super init])) {
-		_isPushView = YES;
-		_subjectName = subjectName;
-		_timelineType = HONTimelineTypeSubject;
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-- (id)initWithUsername:(NSString *)username {
-	if ((self = [super init])) {
-		_isPushView = YES;
-		_timelineType = HONTimelineTypeSingleUser;
-		_username = username;
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-- (void)_registerNotifications {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"SELECTED_VOTE_TAB" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -126,30 +83,10 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	
-	int bannerIndex = 0;
-	if (_timelineType == HONTimelineTypeSubject)
-		bannerIndex = 1;
-	
-	else if (_timelineType == HONTimelineTypeHome)
-		bannerIndex = 0;
-	
-	
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[params setObject:[NSString stringWithFormat:@"%d", _timelineType] forKey:@"action"];
-	[params setObject:@"N" forKey:@"isPrivate"];
-	
-	// with hastag
-	if (_timelineType == HONTimelineTypeSubject) {
-		[params setObject:_subjectName forKey:@"subjectName"];
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"isPrivate"	: @"N"};
 		
-		// a user's
-	} else if (_timelineType == HONTimelineTypeSingleUser && _username != nil) {
-		[params setObject:_username forKey:@"username"];
-		[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"p"];
-	}
-	
 //	NSLog(@"CHALLENGE PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -167,10 +104,8 @@
 			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil) {
-					if (vo.expireSeconds != 0)
-						[_challenges addObject:vo];
-				}
+				if (vo != nil)
+					[_challenges addObject:vo];
 			}
 			
 			[_tableView reloadData];
@@ -201,86 +136,6 @@
 		
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-	}];
-}
-
-- (void)_retrieveUserByID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 5], @"action",
-							[NSString stringWithFormat:@"%d", _userID], @"userID",
-							nil];
-	
-	//NSLog(@"USER BY ID PARAMS:[%@]", params);
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			_userVO = [HONUserVO userWithDictionary:userResult];
-			_username = _userVO.username;
-			
-			self.navigationController.navigationBar.topItem.title = @"Me";
-			[_tableView reloadData];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_retrieveUserByUsername {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 8], @"action",
-							_username, @"username",
-							nil];
-	
-	NSLog(@"USER BY USERNAME PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			
-			_userVO = [HONUserVO userWithDictionary:userResult];
-			[_tableView reloadData];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
 	}];
 }
 
@@ -339,27 +194,16 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
 	self.view.backgroundColor = [UIColor blackColor];
-	
-	_userVO = nil;
 	
 	_challenges = [NSMutableArray array];
 	_cells = [NSMutableArray array];
-	
-	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	inviteButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsHome_Active"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
-	
-	if (_timelineType == HONTimelineTypeHome)
-		_headerView = [[HONHeaderView alloc] initWithBranding];
-		
-	else if (_timelineType == HONTimelineTypeSubject)
-		_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -375,40 +219,21 @@
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 
-	
+	_headerView = [[HONHeaderView alloc] initWithBranding];
 	[_headerView addButton:inviteButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
 	
-	if (_timelineType == HONTimelineTypeSubject) {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = @"Loading…";
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.taskInProgress = YES;
-	}
-	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
 		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
-	
-	if (_timelineType == HONTimelineTypeSingleUser) {
-		if (_username != nil)
-			[self _retrieveUserByUsername];
 		
-		else
-			[self _retrieveUserByID];
-	}
-	
-	if (!_isPushView) {
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
-			[self _goRegistration];
-	}
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
+		[self _goRegistration];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {
@@ -429,41 +254,11 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)_goProfile {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	[_profileHeaderButtonView toggleSelected:YES];
-	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_goRefresh {
 	_isRefreshing = YES;
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (_timelineType == HONTimelineTypeSingleUser) {
-		if (_username != nil)
-			[self _retrieveUserByUsername];
-	
-		else
-			[self _retrieveUserByID];
-	}
-	
 	[self _retrieveChallenges];
 }
 
@@ -563,13 +358,8 @@
 }
 
 
-
-#pragma mark - UI Presentation
-
-
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 	[self.view addSubview:_tutorialImageView];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -600,42 +390,17 @@
 	}
 }
 
-- (void)_showProfile:(NSNotification *)notification {
-	if (_timelineType == HONTimelineTypeHome)
-		[self _goProfile];
-}
-
 - (void)_showFirstRun:(NSNotification *)notification {
 	[self _goRegistration];
 }
 
-- (void)_selectedVoteTab:(NSNotification *)notification {
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"timeline_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (_timelineType == HONTimelineTypeSingleUser) {
-		if (_username != nil)
-			[self _retrieveUserByUsername];
-		
-		else
-			[self _retrieveUserByID];
-	}
-		
-	
+- (void)_selectedHomeTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 }
 
-- (void)_refreshVoteTab:(NSNotification *)notification {
-	if (_timelineType == HONTimelineTypeSingleUser) {
-		if (_username != nil)
-			[self _retrieveUserByUsername];
-		
-		else
-			[self _retrieveUserByID];
-	}
-		
-	
+- (void)_refreshHomeTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 }
 
@@ -662,7 +427,7 @@
 		} completion:^(BOOL finished) {
 		}];
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
 		userPofileViewController.userID = userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -794,16 +559,16 @@
 	}
 }
 
-- (void)timelineItemViewCellShowPreviewControls:(HONTimelineItemViewCell *)cell {
-	[[Mixpanel sharedInstance] track:@"Timeline - Hide Photo Detail"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-									  nil]];
-	
-	[_snapPreviewViewController showControls];
-}
+//- (void)timelineItemViewCellShowPreviewControls:(HONTimelineItemViewCell *)cell {
+//	[[Mixpanel sharedInstance] track:@"Timeline - Hide Photo Detail"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+//									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
+//									  nil]];
+//	
+//	[_snapPreviewViewController showControls];
+//}
 
 
 #pragma mark - SnapPreview Delegates
@@ -893,7 +658,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
+	return ([_challenges count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -937,18 +702,15 @@
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		switch (buttonIndex) {
-			case 0:{
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:NO]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-				break;}
-				
-			case 1:{
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:YES]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-				break;}
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+					
+		} else if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:YES]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

@@ -11,11 +11,17 @@
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
+//typedef void(^imageLoadComplete_t)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image);
+//typedef void(^imageLoadFailure_t)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error);
+
 @protocol HONSnapPreviewViewControllerDelegate;
 @interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate, UIActionSheetDelegate>
-- (id)initWithChallenge:(HONChallengeVO *)vo asRoot:(BOOL)isFirst;
+- (id)initWithVerifyChallenge:(HONChallengeVO *)vo;
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO asRoot:(BOOL)isFirst;
 - (void)showControls;
+
+//- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+//                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
 @property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;
 @end

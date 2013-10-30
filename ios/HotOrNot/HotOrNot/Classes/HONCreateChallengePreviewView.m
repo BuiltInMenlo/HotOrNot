@@ -113,6 +113,7 @@
 }
 
 - (void)uploadComplete {
+	NSLog(@"uploadComplete");
 	[_cancelButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 }
 
@@ -332,23 +333,26 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
 	if ([((UITextField *)[notification object]).text length] > 0)
 		_placeholderLabel.text = @"";
 	
-	NSString *enteredCharacter = [_subjectTextField.text substringFromIndex:[_creatorSubjectName length]];
-	
-	if ([[_subjectTextField.text substringToIndex:[_subjectTextField.text length] - 1] isEqualToString:_creatorSubjectName])
-		_subjectTextField.text = [_creatorSubjectName stringByAppendingFormat:@" : #%@", enteredCharacter];
+//	NSString *enteredCharacter = [_subjectTextField.text substringFromIndex:[_creatorSubjectName length]];
+//	if ([[_subjectTextField.text substringToIndex:[_subjectTextField.text length] - 1] isEqualToString:_creatorSubjectName])
+//		_subjectTextField.text = [_creatorSubjectName stringByAppendingFormat:@" : #%@", enteredCharacter];
 }
 
 
 #pragma mark - EmotionsPickerView Delegates
 - (void)emotionsPickerView:(HONVolleyEmotionsPickerView *)cameraSubjectsView selectEmotion:(HONEmotionVO *)emotionVO {
+	if ([_subjectTextField.text length])
+		_subjectTextField.text = @"#";
+	
+	
 	NSLog(@"join_total:[%d]", [HONAppDelegate totalForCounter:@"join"]);
 	
-	if (_isJoinChallenge && [HONAppDelegate totalForCounter:@"join"] == 0) {
+	if (_isJoinChallenge && [HONAppDelegate incTotalForCounter:@"join"] == 0) {
 		[HONAppDelegate incTotalForCounter:@"join"];
 		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this Volley"
 									message:@""
@@ -357,7 +361,7 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		if ([[_subjectTextField.text componentsSeparatedByString:@"#"] count] > 1 + (_isJoinChallenge)) {
+		if (([[_subjectTextField.text componentsSeparatedByString:@"#"] count] > 1) + (_isJoinChallenge)) {
 			[[[UIAlertView alloc] initWithTitle:(_isJoinChallenge) ? @"Two emoticons only allowed" : @"One emotion only allowed"
 										message:@""
 									   delegate:nil
@@ -365,7 +369,7 @@
 							  otherButtonTitles:nil] show];
 		
 		} else {
-			_subjectName = ([_subjectName length] == 0) ? emotionVO.hastagName : [NSString stringWithFormat:@"%@ : %@", _subjectName, emotionVO.hastagName];
+			_subjectName = ([_subjectTextField.text length] == 0) ? emotionVO.hastagName : [NSString stringWithFormat:@"%@ : %@", _creatorSubjectName, emotionVO.hastagName];
 			
 			_subjectTextField.text = _subjectName;
 			_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"how are you feeling?" : @"";
@@ -382,6 +386,10 @@
 }
 
 #pragma mark - TextField Delegates
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+	return (YES);
+}
+
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
@@ -394,9 +402,6 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	if ([textField.text isEqualToString:@""])
-		textField.text = @"#";
-
 	if (_tutorialImageView != nil) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_tutorialImageView.alpha = 0.0;
@@ -406,6 +411,10 @@
 			_tutorialImageView = nil;
 		}];
 	}
+	
+//	NSString *enteredCharacter = [_subjectTextField.text substringFromIndex:[_creatorSubjectName length]];
+//	if ([[_subjectTextField.text substringToIndex:[_subjectTextField.text length] - 1] isEqualToString:_creatorSubjectName])
+//		_subjectTextField.text = [_creatorSubjectName stringByAppendingFormat:@" : #%@", enteredCharacter];
 	
 	return (YES);
 }
