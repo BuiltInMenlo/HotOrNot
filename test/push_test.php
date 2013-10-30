@@ -12,6 +12,7 @@ $workload = (object) array(
 $p = new BIM_Push();
 $p->sendTimedPush($workload);
 */
+
 // push tests below
 //BIM_Push::shoutoutPush($volley);
 //BIM_Push::pushCreators($volley);
@@ -21,7 +22,7 @@ $p->sendTimedPush($workload);
 //BIM_Push::emailVerifyPush($user->id);
 //BIM_Push::friendAcceptedNotification($user->id, $challenger->id);
 //BIM_Push::friendNotification($challenger->id, $user->id);
-// BIM_Push::introPush($user->id, $challenger->id, time() + 120 );
+//BIM_Push::introPush($user->id, $challenger->id, time() );
 //BIM_Push::likePush($user->id, $challenger->id, $volley->id);
 //BIM_Push::matchPush($user->id, $challenger->id);
 //BIM_Push::reVolleyPush($volley->id, $challenger->id);

@@ -40,7 +40,6 @@ class BIM_Push_UrbanAirship_Iphone{
             $err_msg = curl_error($ch);
             $header = curl_getinfo($ch);
             curl_close($ch);
-            error_log( print_r( array( $push, $push->device_tokens, $res, $err_no, $err_msg, $header ), true ) );
         }
     }
 }
