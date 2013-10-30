@@ -73,26 +73,7 @@
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
-	NSLog(@"setChallengeVO");
-	
 	_challengeVO = challengeVO;
-//	_heroOpponentVO = _challengeVO.creatorVO;
-//	
-//	int timeSinceHero = [_heroOpponentVO.joinedDate timeIntervalSinceNow];
-//	int timeSinceFirstParticipant = ([_challengeVO.challengers count] == 0) ? 0 : [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow];
-//	BOOL isHeroNewer = (timeSinceFirstParticipant > timeSinceHero);
-//	
-//	
-//	
-//
-//	
-//	if ([_challengeVO.challengers count] > 0 && isHeroNewer && !_challengeVO.isCelebCreated) {
-//		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
-//		
-//	} else {
-//		_heroOpponentVO = _challengeVO.creatorVO;
-//	}
-	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
 	

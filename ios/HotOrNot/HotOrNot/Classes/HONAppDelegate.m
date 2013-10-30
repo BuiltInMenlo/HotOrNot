@@ -50,8 +50,8 @@
 
 
 #if __DEV_BUILD___ == 1
-NSString * const kConfigURL = @"http://stage.letsvolley.com/hotornot";//54.221.205.30";
-NSString * const kConfigJSON = @"boot.json";
+NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
+NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else

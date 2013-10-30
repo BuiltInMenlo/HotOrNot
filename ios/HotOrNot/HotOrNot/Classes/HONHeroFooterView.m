@@ -27,22 +27,33 @@
 		_challengeVO = challengeVO;
 		_opponentVO = heroOpponentVO;
 		
-		float offset = 0.0;
-		NSString *concatSubjects = @"";
+		NSMutableArray *challengeEmotions = [NSMutableArray arrayWithObject:[HONEmotionVO emotionWithDictionary:
+																			 [NSDictionary dictionaryWithObjectsAndKeys:
+																			  [NSString stringWithFormat:@"%d", 0], @"id",
+																			  _challengeVO.creatorVO.subjectName, @"name",
+																			  [NSString stringWithFormat:@"%f", 0.00], @"price",
+																			  [NSString stringWithFormat:@"https://hotornot-emoticons.s3.amazonaws.com/%@2x.png", [_challengeVO.creatorVO.subjectName substringFromIndex:1]], @"img",
+																			  [_challengeVO.creatorVO.subjectName substringFromIndex:1], @"text", nil]]];
 		
-		for (HONEmotionVO *emotionVO in [self _challengeEmotions]) {
+		if ([_challengeVO.challengers count] > 0) {
+			[challengeEmotions addObject:[HONEmotionVO emotionWithDictionary:
+										  [NSDictionary dictionaryWithObjectsAndKeys:
+										   [NSString stringWithFormat:@"%d", 0], @"id",
+										   _opponentVO.subjectName, @"name",
+										   [NSString stringWithFormat:@"%f", 0.00], @"price",
+										   [NSString stringWithFormat:@"https://hotornot-emoticons.s3.amazonaws.com/%@2x.png", [_opponentVO.subjectName substringFromIndex:1]], @"img",
+										   [_opponentVO.subjectName substringFromIndex:1], @"text", nil]]];
+		}
+		
+		float offset = 0.0;
+		for (HONEmotionVO *emotionVO in challengeEmotions) {
+//			NSLog(@"ADD EMOTION:[%@]", emotionVO);
 			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0 + offset, 0.0, 43.0, 43.0)];
 			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
 			[self addSubview:emoticonImageView];
-			
-			concatSubjects = [NSString stringWithFormat:@"%@ : %@", concatSubjects, emotionVO.hastagName];
 			offset += 35.0;
 		}
-		
-		if ([concatSubjects length] == 1 + [_challengeVO.challengers count])
-			concatSubjects = [NSString stringWithFormat:@"%@ : %@", _challengeVO.subjectName, _opponentVO.subjectName];
-		
-		
+						
 		UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 39.0, 250.0, 22.0)];
 		participantsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 		participantsLabel.textColor = [UIColor whiteColor];
@@ -56,16 +67,15 @@
 																	   options:NSStringDrawingTruncatesLastVisibleLine
 																	attributes:@{NSFontAttributeName:participantsLabel.font}
 																	   context:nil].size;
-		
 		participantsLabel.frame = CGRectMake(participantsLabel.frame.origin.x, participantsLabel.frame.origin.y, participantsSize.width, participantsSize.height);
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 61.0, 250.0, 24.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 61.0, 240.0, 24.0)];
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		subjectLabel.shadowOffset =  CGSizeMake(1.0, 1.0);
 		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.text = ([concatSubjects length] >= 3) ? [concatSubjects substringFromIndex:3] : concatSubjects;
+		subjectLabel.text = ([challengeEmotions count] == 1) ? _challengeVO.creatorVO.subjectName : [NSString stringWithFormat:@"%@ : %@", _challengeVO.creatorVO.subjectName, _opponentVO.subjectName];
 		[self addSubview:subjectLabel];
 		
 		CGSize subjectSize = [subjectLabel.text boundingRectWithSize:CGSizeMake(250.0, 44.0)
@@ -159,35 +169,59 @@
 	return (participants);
 }
 
+
+
 - (NSArray *)_challengeEmotions {
+	HONEmotionVO *creatorEmotionVO = [HONEmotionVO emotionWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", 0], @"id",
+																		_challengeVO.creatorVO.subjectName, @"name",
+																		[NSString stringWithFormat:@"%f", 0.00], @"price",
+																		@"", @"img",
+																		[_challengeVO.creatorVO.subjectName substringFromIndex:1], @"text", nil]];
+
+	HONEmotionVO *participantEmotionVO = [HONEmotionVO emotionWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [NSString stringWithFormat:@"%d", 0], @"id",
+																			  _opponentVO.subjectName, @"name",
+																			  [NSString stringWithFormat:@"%f", 0.00], @"price",
+																			  @"", @"img",
+																			  [_opponentVO.subjectName substringFromIndex:1], @"text", nil]];
 	NSMutableArray *foundEmotions = [NSMutableArray array];
+	
+	BOOL hasCreatorEmotion = NO;
+	BOOL hasParticipantEmotion = NO;
 	
 	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
 //		NSLog(@"COMPOSE EMOTION:[%@]>—<[%@]", vo.hastagName, _opponentVO.subjectName);
 		if ([vo.hastagName isEqualToString:_challengeVO.creatorVO.subjectName]) {
 			[foundEmotions addObject:vo];
+			hasCreatorEmotion = YES;
 			break;
 		}
 	}
 	
-	NSLog(@"FOUND CREATOR EMOTION:[%@]", ([foundEmotions count] > 0) ? ((HONEmotionVO *)[foundEmotions objectAtIndex:0]).hastagName : @"");
 	
-//	BOOL isHeroCreator = ([_challengeVO.challengers count] == 0);
+	if ([foundEmotions count] == 0) {
+		[foundEmotions addObject:creatorEmotionVO];
+	}
+	
+//	NSLog(@"CREATOR EMOTION:[%d]:\\[%@]", hasCreatorEmotion, ((HONEmotionVO *)[foundEmotions objectAtIndex:0]).hastagName);
 	
 	if ([_challengeVO.challengers count] > 0) {
-//		HONOpponentVO *participantVO = ((HONOpponentVO *)[_challengeVO.challengers lastObject]);//([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:1]).imagePrefix isEqualToString:_opponentVO.imagePrefix]) ? _challengeVO.creatorVO : _opponentVO;
-		//NSLog(@"TEST:[%@]", participantVO.dictionary);
-		
 		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-//			NSLog(@"REPLY EMOTION:[%@]>—<[%@]", vo.hastagName, ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).subjectName);
-			if ([vo.hastagName isEqualToString:_opponentVO.subjectName])
+			if ([vo.hastagName isEqualToString:_opponentVO.subjectName]) {
 				[foundEmotions addObject:vo];
-			
-			if ([foundEmotions count] > 2)
+				hasParticipantEmotion = YES;
 				break;
+			}
+		}
+		
+		if ([foundEmotions count] == 1) {
+			[foundEmotions addObject:participantEmotionVO];
 		}
 	}
 	
+	
+//	NSLog(@"PARTICIPANT EMOTION:[%d]:\\[%@]", hasParticipantEmotion, ((HONEmotionVO *)[foundEmotions objectAtIndex:1]).hastagName);
 	return([foundEmotions copy]);
 }
 
