@@ -44,7 +44,7 @@ Edit The Boot Configuration
 <?php echo $build; ?> Boot Configuration
 <br>
 <?php if( $confErrMsg ) {?> <span style="color: red;"><b><?php echo $confErrMsg;?></b></span><br><?php }?>
-<textarea rows="25" cols="50" name="<?php echo $build;?>"><?php echo $conf ?></textarea>
+<textarea rows="25" cols="100" name="<?php echo $build;?>"><?php echo $conf ?></textarea>
 </td>
 </tr>
 </table>
