@@ -2,7 +2,7 @@
 require_once 'vendor/autoload.php';
 
 $conf130ErrMsg = '';
-$conf130 = BIM_App_Config::getBootConf( array('type' => '130') );
+$build = BIM_App_Config::getBootConf( array('type' => '130') );
 
 $method = strtolower( $_SERVER['REQUEST_METHOD'] );
 
@@ -14,7 +14,7 @@ if( $method == 'post' ) {
             'type' => '130',
             'data' => $data,
         );
-        $conf130 = $data;
+        $build = $data;
         if( ! BIM_App_Config::saveBootConf( $params ) ){
             $conf130ErrMsg = "Bad input for the 130 boot confg!  Please make sure it is valid JSON!";
         }
@@ -38,7 +38,7 @@ Edit The Boot Configuration
 130 Boot Configuration
 <br>
 <?php if( $conf130ErrMsg ) {?> <span style="color: red;"><b><?php echo $conf130ErrMsg;?></b></span><br><?php }?>
-<textarea rows="25" cols="50" name="130"><?php echo $conf130 ?></textarea>
+<textarea rows="25" cols="50" name="130"><?php echo $build ?></textarea>
 </td>
 </tr>
 </table>
