@@ -388,7 +388,8 @@ class BIM_Model_Volley{
     
     public function purgeFromCache(){
         $key = self::makeCacheKeys($this->id);
-        $cache = new BIM_Cache( BIM_Config::cache() );
+        $conf = BIM_Config::cache();
+        $cache = new BIM_Cache( $conf );
         $cache->delete( $key );
     }
     
