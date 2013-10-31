@@ -245,7 +245,7 @@
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
-	NSLog(@"_scrollView.contentSize:[%@] ", NSStringFromCGSize(_scrollView.contentSize));
+	NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d]", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count]);
 	
 	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, _scrollView.contentSize.height)];
 	_contentHolderView.frame = CGRectOffset(_contentHolderView.frame, 0.0, _scrollView.contentInset.top);

@@ -22,32 +22,32 @@
 @implementation HONHeroFooterView
 @synthesize delegate = _delegate;
 
-- (id)initAtYPos:(int)yPos withChallenge:(HONChallengeVO *)challengeVO andHeroOpponent:(HONOpponentVO *)heroOpponentVO {
+- (id)initAtYPos:(int)yPos withChallenge:(HONChallengeVO *)challengeVO andHeroOpponent:(HONOpponentVO *)
+heroOpponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, 94.0)])) {
-		_challengeVO = challengeVO;
-		_opponentVO = heroOpponentVO;
+		_challengeVO = challengeVO;		_opponentVO = heroOpponentVO;
 		
 		NSMutableArray *challengeEmotions = [NSMutableArray arrayWithObject:[HONEmotionVO emotionWithDictionary:
 																			 [NSDictionary dictionaryWithObjectsAndKeys:
 																			  [NSString stringWithFormat:@"%d", 0], @"id",
-																			  _challengeVO.creatorVO.subjectName, @"name",
+																			  [_challengeVO.creatorVO.subjectName substringFromIndex:1], @"name",
 																			  [NSString stringWithFormat:@"%f", 0.00], @"price",
 																			  [NSString stringWithFormat:@"https://hotornot-emoticons.s3.amazonaws.com/%@2x.png", [_challengeVO.creatorVO.subjectName substringFromIndex:1]], @"img",
-																			  [_challengeVO.creatorVO.subjectName substringFromIndex:1], @"text", nil]]];
+																			  _challengeVO.creatorVO.subjectName, @"text", nil]]];
 		
 		if ([_challengeVO.challengers count] > 0) {
 			[challengeEmotions addObject:[HONEmotionVO emotionWithDictionary:
 										  [NSDictionary dictionaryWithObjectsAndKeys:
 										   [NSString stringWithFormat:@"%d", 0], @"id",
-										   _opponentVO.subjectName, @"name",
+										   [_opponentVO.subjectName substringFromIndex:1], @"name",
 										   [NSString stringWithFormat:@"%f", 0.00], @"price",
 										   [NSString stringWithFormat:@"https://hotornot-emoticons.s3.amazonaws.com/%@2x.png", [_opponentVO.subjectName substringFromIndex:1]], @"img",
-										   [_opponentVO.subjectName substringFromIndex:1], @"text", nil]]];
+										   _opponentVO.subjectName, @"text", nil]]];
 		}
 		
 		float offset = 0.0;
 		for (HONEmotionVO *emotionVO in challengeEmotions) {
-//			NSLog(@"ADD EMOTION:[%@]", emotionVO);
+//			NSLog(@"ADD EMOTION:[%@]", emotionVO.dictionary);
 			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0 + offset, 0.0, 43.0, 43.0)];
 			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
 			[self addSubview:emoticonImageView];

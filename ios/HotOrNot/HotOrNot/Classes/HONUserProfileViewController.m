@@ -126,11 +126,11 @@
 				_isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 				
 				if (!_isUser) {
-//					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
-//					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
+					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
+					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
 					
-					[_verifyButton setBackgroundImage:[UIImage imageNamed:@"verifyIcon_nonActive"] forState:UIControlStateNormal];
-					[_verifyButton setBackgroundImage:[UIImage imageNamed:@"verifyIcon_Active"] forState:UIControlStateHighlighted];
+//					[_verifyButton setBackgroundImage:[UIImage imageNamed:@"verifyIcon_nonActive"] forState:UIControlStateNormal];
+//					[_verifyButton setBackgroundImage:[UIImage imageNamed:@"verifyIcon_Active"] forState:UIControlStateHighlighted];
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 				}
 				
