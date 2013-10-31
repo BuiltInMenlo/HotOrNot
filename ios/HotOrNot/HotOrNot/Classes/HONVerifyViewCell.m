@@ -43,38 +43,6 @@
 	return (self);
 }
 
-- (void)_imageLoadFallback {
-	[_challengeImageView removeFromSuperview];
-	_challengeImageView = nil;
-	
-	CGSize imageSize = ([HONAppDelegate isRetina4Inch]) ? CGSizeMake(426.0, 568.0) : CGSizeMake(360.0, 480.0);
-	NSMutableString *imageURL = [_challengeVO.creatorVO.avatarURL mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	CGRect frame = CGRectMake((imageSize.width - 320.0) * -0.5, -185.0, imageSize.width, imageSize.height);
-	
-//	NSLog(@"VERIFY RELOADING:[%@]", imageURL);
-	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_challengeImageView.image = image;
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_challengeImageView.alpha = 1.0; } completion:nil];
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", imageURL]];
-	};
-	
-	_challengeImageView = [[UIImageView alloc] initWithFrame:frame];
-	_challengeImageView.userInteractionEnabled = YES;
-	_challengeImageView.alpha = 0.0;
-	[_imageHolderView addSubview:_challengeImageView];
-	
-	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-							   placeholderImage:nil
-										success:imageSuccessBlock
-										failure:imageFailureBlock];
-}
-
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
@@ -134,6 +102,10 @@
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:dispproveButton];
+	
+	
+	if (![HONAppDelegate hasTakenSelfie])
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"needSelfieHeroBubble"]]];
 	
 	
 	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kHeroVolleyTableCellHeight - 56.0, 320.0, 53.0)];

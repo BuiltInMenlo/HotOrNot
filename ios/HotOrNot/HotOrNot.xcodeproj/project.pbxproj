@@ -222,6 +222,8 @@
 		4C5C714A1773803D00FA6F51 /* searchToggleA@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71461773803D00FA6F51 /* searchToggleA@2x.png */; };
 		4C5C714B1773803D00FA6F51 /* searchToggleB.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71471773803D00FA6F51 /* searchToggleB.png */; };
 		4C5C714C1773803D00FA6F51 /* searchToggleB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71481773803D00FA6F51 /* searchToggleB@2x.png */; };
+		4C5D4BDC1821F06A0045F0E6 /* needSelfieHeroBubble.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5D4BDA1821F06A0045F0E6 /* needSelfieHeroBubble.png */; };
+		4C5D4BDD1821F06A0045F0E6 /* needSelfieHeroBubble@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5D4BDB1821F06A0045F0E6 /* needSelfieHeroBubble@2x.png */; };
 		4C60AF6B17CCFEF800609792 /* HONVolleyEmotionsPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C60AF6A17CCFEF800609792 /* HONVolleyEmotionsPickerView.m */; };
 		4C60AF7017CD20A600609792 /* previewButttonCamera_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C60AF6C17CD20A500609792 /* previewButttonCamera_Active.png */; };
 		4C60AF7117CD20A600609792 /* previewButttonCamera_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C60AF6D17CD20A500609792 /* previewButttonCamera_Active@2x.png */; };
@@ -900,6 +902,8 @@
 		4C5C71461773803D00FA6F51 /* searchToggleA@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggleA@2x.png"; sourceTree = "<group>"; };
 		4C5C71471773803D00FA6F51 /* searchToggleB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchToggleB.png; sourceTree = "<group>"; };
 		4C5C71481773803D00FA6F51 /* searchToggleB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggleB@2x.png"; sourceTree = "<group>"; };
+		4C5D4BDA1821F06A0045F0E6 /* needSelfieHeroBubble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = needSelfieHeroBubble.png; sourceTree = "<group>"; };
+		4C5D4BDB1821F06A0045F0E6 /* needSelfieHeroBubble@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "needSelfieHeroBubble@2x.png"; sourceTree = "<group>"; };
 		4C60AF6917CCFEF800609792 /* HONVolleyEmotionsPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVolleyEmotionsPickerView.h; sourceTree = "<group>"; };
 		4C60AF6A17CCFEF800609792 /* HONVolleyEmotionsPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVolleyEmotionsPickerView.m; sourceTree = "<group>"; };
 		4C60AF6C17CD20A500609792 /* previewButttonCamera_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previewButttonCamera_Active.png; sourceTree = "<group>"; };
@@ -2327,6 +2331,8 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4C5D4BDA1821F06A0045F0E6 /* needSelfieHeroBubble.png */,
+				4C5D4BDB1821F06A0045F0E6 /* needSelfieHeroBubble@2x.png */,
 				4CCA415C181C091100FC9863 /* replyVolleyOverlay.png */,
 				4CCA415D181C091100FC9863 /* replyVolleyOverlay@2x.png */,
 				4C71BF46181B865A005044F8 /* needSeflieButton_Active.png */,
@@ -3223,6 +3229,7 @@
 				4CA485F916EE870000DE0F24 /* genericRowBackground_nonActive@2x.png in Resources */,
 				4CDB1553180CBD7C00FD93CB /* followAll_Active.png in Resources */,
 				4C25EECE17EF8A3C00F6DBAB /* skipButton_Active@2x.png in Resources */,
+				4C5D4BDC1821F06A0045F0E6 /* needSelfieHeroBubble.png in Resources */,
 				4CA34C5116F6B08F0000751E /* discoveryBackground.png in Resources */,
 				4CA34C5216F6B08F0000751E /* discoveryBackground@2x.png in Resources */,
 				4C351CEE16FE754B00BD9498 /* mainBG-568h@2x.png in Resources */,
@@ -3299,6 +3306,7 @@
 				4C7F634A180B551800A5236B /* tutorial_1stRun.png in Resources */,
 				4C71BF45181B4EDC005044F8 /* Misc Snippets in Resources */,
 				4C41A14F1801276100CE93D2 /* tutorial_home@2x.png in Resources */,
+				4C5D4BDD1821F06A0045F0E6 /* needSelfieHeroBubble@2x.png in Resources */,
 				4CCED5B7181F0D1D00D1D673 /* tabMenu_verifyButton_Tapped.png in Resources */,
 				4C7AD1131762B9310035A62A /* joinButton_Active.png in Resources */,
 				4C7AD1141762B9310035A62A /* joinButton_Active@2x.png in Resources */,

@@ -109,7 +109,7 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGFloat kHeroVolleyTableCellHeight = 370.0f;
+const CGFloat kHeroVolleyTableCellHeight = 330.0f;
 
 // snap params
 const CGFloat kMinLuminosity = 0.00;

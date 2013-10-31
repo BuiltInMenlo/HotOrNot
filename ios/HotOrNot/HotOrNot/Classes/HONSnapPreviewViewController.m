@@ -559,9 +559,23 @@
 	subjectLabel.hidden = _isVerify;
 	[_nameHolderView addSubview:subjectLabel];
 	
+	CGSize heroSize = [participantLabel.text boundingRectWithSize:CGSizeMake(250.0, participantLabel.frame.size.height)
+														 options:NSStringDrawingTruncatesLastVisibleLine
+													  attributes:@{NSFontAttributeName:participantLabel.font}
+														 context:nil].size;
+	participantLabel.frame = CGRectMake(participantLabel.frame.origin.x, participantLabel.frame.origin.y, heroSize.width, heroSize.height);
+	
+	CGSize subjectSize = [subjectLabel.text boundingRectWithSize:CGSizeMake(250.0, subjectLabel.frame.size.height)
+													  options:NSStringDrawingTruncatesLastVisibleLine
+												   attributes:@{NSFontAttributeName:subjectLabel.font}
+													  context:nil].size;
+	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, subjectSize.width, subjectSize.height);
+	
+	BOOL isEmotionFound = NO;
+	
 	if (!_isVerify) {
 		HONEmotionVO *emotionVO = [self _emotionForParticipant:_opponentVO];
-		BOOL isEmotionFound = (emotionVO != nil);
+		isEmotionFound = (emotionVO != nil);
 		
 		participantLabel.frame = CGRectOffset(participantLabel.frame, ((int)isEmotionFound) * 34.0, 0.0);
 		subjectLabel.frame = CGRectOffset(subjectLabel.frame, ((int)isEmotionFound) * 34.0, 0.0);
@@ -573,10 +587,16 @@
 		}
 	}
 	
+	UIButton *profileTextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profileTextButton.frame = CGRectMake(9.0 + (((int)isEmotionFound) * 34.0), 0.0, MAX(heroSize.width, (!_isVerify) ? subjectSize.width : heroSize.width), participantLabel.frame.size.height + (((int)!_isVerify) * subjectLabel.frame.size.height + 2.0));
+	[profileTextButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+	[_nameHolderView addSubview:profileTextButton];
+	
 	
 	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 23.0, 320.0, 74.0)];
 	_buttonHolderView.alpha = 0.0;
 	[_scrollView addSubview:_buttonHolderView];
+	
 	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	upvoteButton.frame = CGRectMake(24.0, 0.0, 74.0, 74.0);
@@ -1005,7 +1025,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Verify user & follow updates", @"Verify user only", nil];
+													otherButtonTitles:@"Verify & follow user", @"Verify user only", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:1];
 	[actionSheet showInView:self.view];

@@ -781,8 +781,10 @@
 	
 	} else {
 		_filename = @"";
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		// selfie pass-thru if simulator
+//		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[self _finalizeUser];
 	}

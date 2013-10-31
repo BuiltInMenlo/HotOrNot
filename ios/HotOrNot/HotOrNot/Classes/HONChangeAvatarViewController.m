@@ -132,7 +132,11 @@
 //				[_cameraOverlayView verifyOverlay:NO];
 				[HONAppDelegate writeUserInfo:userResult];
 				
+				[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
@@ -391,9 +395,6 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[_imagePicker takePicture];
 }

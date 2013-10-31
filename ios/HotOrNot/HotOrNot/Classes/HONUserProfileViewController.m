@@ -79,6 +79,7 @@
 		_usesViewController = usesViewController;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
 	return (self);
@@ -124,11 +125,18 @@
 				_userVO = [HONUserVO userWithDictionary:userResult];
 				_isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 				
-				if (!_isUser)
+				if (!_isUser) {
+//					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
+//					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
+					
+					[_verifyButton setBackgroundImage:[UIImage imageNamed:@"verifyIcon_nonActive"] forState:UIControlStateNormal];
+					[_verifyButton setBackgroundImage:[UIImage imageNamed:@"verifyIcon_Active"] forState:UIControlStateHighlighted];
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
+				}
 				
 				if (isRefresh) {
 					[self _makeAvatarImage];
+					
 					
 					_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 					_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
@@ -226,7 +234,7 @@
 			
 			[self _makeUI];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 252.0 + (kHeroVolleyTableCellHeight + (kSnapThumbSize.height * ([_challenges count] / 4) + 1))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 264.0 + (kHeroVolleyTableCellHeight + (kSnapThumbSize.height * ([_challenges count] / 4) + 1))));
 			[self _makeGrid];
 		}
 		
@@ -379,9 +387,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_verifyButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
+	_verifyButton.frame = CGRectMake(1.0, -2.0, 64.0, 44.0);
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
 	[_headerView addButton:_verifyButton];
@@ -521,7 +527,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Verify user & follow updates", @"Verify user only", [NSString stringWithFormat:@"This user does not look %d to %d", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length], nil];
+													otherButtonTitles:@"Verify & follow user", @"Verify user only", [NSString stringWithFormat:@"This user does not look %d to %d", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length], nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
@@ -702,12 +708,6 @@
 	}
 	
 	[_headerView setTitle:_userVO.username];
-	
-	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 10.0, 11.0);
-	verifiedImageView.hidden = !_userVO.isVerified;
-	[_headerView addButton:verifiedImageView];
-	
 	[self _makeAvatarImage];
 	
 	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];

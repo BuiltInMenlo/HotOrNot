@@ -87,8 +87,7 @@
          <ExecutionAction
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
-               title = "Run Script"
-               scriptText = "#!/bin/bash&#10;&#10;echo &quot;UR A BAWCE!&quot;&#10;&#10;&#10;exit 0;">
+               title = "Run Script">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"

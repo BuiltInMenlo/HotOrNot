@@ -20,7 +20,7 @@
 
 
 @interface HONTimelineItemViewCell() <HONHeroFooterViewDelegate>
-@property (nonatomic, strong) UIView *heroImageHolderView;
+@property (nonatomic, strong) UIView *heroHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
@@ -90,14 +90,14 @@
 	
 //	NSLog(@"HERO:[%d][%@]", heroTime, [dateFormat stringFromDate:_heroOpponentVO.joinedDate]);
 //	NSLog(@"OPP1:[%d][%@]", participant0Time, [dateFormat stringFromDate:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate]);
-	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyTableCellHeight)];
-	_heroImageHolderView.clipsToBounds = YES;
-	_heroImageHolderView.backgroundColor = [UIColor blackColor];
-	[self.contentView addSubview:_heroImageHolderView];
+	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyTableCellHeight)];
+	_heroHolderView.clipsToBounds = YES;
+	_heroHolderView.backgroundColor = [UIColor blackColor];
+	[self.contentView addSubview:_heroHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroImageHolderView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroHolderView];
 	[imageLoadingView startAnimating];
-	[_heroImageHolderView addSubview:imageLoadingView];
+	[_heroHolderView addSubview:imageLoadingView];
 	
 //	NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCHALLENGE DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n", _challengeVO.dictionary);
 //	NSLog(@"HERO DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", _heroOpponentVO.dictionary);
@@ -116,14 +116,14 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
-	[_heroImageHolderView addSubview:_heroImageView];
+	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
 	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	detailsButton.frame = _heroImageHolderView.frame;
+	detailsButton.frame = _heroHolderView.frame;
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:detailsButton];
 	
@@ -146,9 +146,9 @@
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:joinButton];
 	
-	UIImageView *tapHoldImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tapHoldOverlay_nonActive"]];
-	tapHoldImageView.hidden = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0;
-	[self addSubview:tapHoldImageView];
+	UIImageView *heroBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[HONAppDelegate hasTakenSelfie] ? @"tapHoldOverlay_nonActive" : @"needSelfieHeroBubble"]];
+	heroBubbleImageView.hidden = ([HONAppDelegate hasTakenSelfie] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0);
+	[self addSubview:heroBubbleImageView];
 }
 
 
@@ -195,7 +195,7 @@
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:self];
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
-		CGRect creatorFrame = CGRectMake(_heroImageHolderView.frame.origin.x, _heroImageHolderView.frame.origin.y, _heroImageHolderView.frame.size.width, _heroImageHolderView.frame.size.height);
+		CGRect creatorFrame = CGRectMake(_heroHolderView.frame.origin.x, _heroHolderView.frame.origin.y, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
 			[self.delegate timelineItemViewCell:self showPreview:_heroOpponentVO forChallenge:_challengeVO];
 		

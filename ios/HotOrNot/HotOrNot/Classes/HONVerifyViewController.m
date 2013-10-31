@@ -570,7 +570,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Verify user & follow updates", @"Verify user only", nil];
+														otherButtonTitles:@"Verify & follow user", @"Verify user only", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:0];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];

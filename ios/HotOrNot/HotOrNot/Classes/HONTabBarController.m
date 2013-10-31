@@ -58,14 +58,14 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	[self _addCustomTabs];
 	
-	if (![HONAppDelegate hasTakenSelfie]) {
-		_avatarNeededButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_avatarNeededButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - (kTabSize.height + 54.0), 44.0, 44.0);
-		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_nonActive"] forState:UIControlStateNormal];
-		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_Active"] forState:UIControlStateHighlighted];
-		[_avatarNeededButton addTarget:self action:@selector(_goProfileAvatar) forControlEvents:UIControlEventTouchUpInside];
-		[self.view addSubview:_avatarNeededButton];
-	}
+//	if (![HONAppDelegate hasTakenSelfie]) {
+//		_avatarNeededButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_avatarNeededButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - (kTabSize.height + 54.0), 44.0, 44.0);
+//		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_nonActive"] forState:UIControlStateNormal];
+//		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_Active"] forState:UIControlStateHighlighted];
+//		[_avatarNeededButton addTarget:self action:@selector(_goProfileAvatar) forControlEvents:UIControlEventTouchUpInside];
+//		[self.view addSubview:_avatarNeededButton];
+//	}
 	
 //	[self _createPopoverBadge];
 }
