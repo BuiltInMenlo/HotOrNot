@@ -21,7 +21,6 @@
 #import "HONUserVO.h"
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONRefreshButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"

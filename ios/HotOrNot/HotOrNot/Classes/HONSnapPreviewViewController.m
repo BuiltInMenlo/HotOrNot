@@ -606,9 +606,9 @@
 	[_buttonHolderView addSubview:upvoteButton];
 	
 	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profileButton.frame = CGRectMake(117.0, -5.0, 84.0, 84.0);
-	[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateNormal];
-	[profileButton setBackgroundImage:[UIImage imageNamed:@"subscribeButton_nonActive"] forState:UIControlStateHighlighted];
+	profileButton.frame = CGRectMake(122.0, 0.0, 74.0, 74.0);
+	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateHighlighted];
 	profileButton.alpha = 0.33;
 	profileButton.hidden = _isVerify;
 	[_buttonHolderView addSubview:profileButton];

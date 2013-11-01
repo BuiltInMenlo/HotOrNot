@@ -46,7 +46,6 @@
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIImageView *splashImageView;
-@property (nonatomic, strong) UIView *whySelfieView;
 @property (nonatomic, strong) NSString *splashImageURL;
 
 @property (nonatomic) int selfieAttempts;

@@ -18,7 +18,6 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONSnapPreviewViewController.h"
-#import "HONRefreshButtonView.h"
 #import "HONHeroFooterView.h"
 #import "HONChallengeDetailsGridView.h"
 #import "HONUserProfileViewController.h"
