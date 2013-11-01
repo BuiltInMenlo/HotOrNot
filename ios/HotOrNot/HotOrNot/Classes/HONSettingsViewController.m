@@ -17,7 +17,6 @@
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
-#import "HONSearchBarHeaderView.h"
 #import "HONTimelineViewController.h"
 
 @interface HONSettingsViewController ()

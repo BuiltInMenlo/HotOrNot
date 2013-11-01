@@ -15,7 +15,6 @@
 
 #import "HONExploreViewController.h"
 #import "HONCreateSnapButtonView.h"
-#import "HONSearchBarHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONExploreViewCell.h"
@@ -40,11 +39,9 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) NSMutableDictionary *allChallenges;
 @property (nonatomic, strong) NSMutableArray *currChallenges;
-@property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @end
 
@@ -134,7 +131,6 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Explore"];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 285.0)];
@@ -156,13 +152,13 @@
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	searchButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_nonActive"] forState:UIControlStateNormal];
-	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_Active"] forState:UIControlStateHighlighted];
-	[searchButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];
+//	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	searchButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+//	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_nonActive"] forState:UIControlStateNormal];
+//	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_Active"] forState:UIControlStateHighlighted];
+//	[searchButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];
 	
-	[_headerView addButton:searchButton];
+	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
@@ -185,9 +181,6 @@
 #pragma mark - Navigation
 - (void)_goProfile {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	[_profileHeaderButtonView toggleSelected:YES];
-	
 	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];
@@ -197,7 +190,7 @@
 	} completion:^(BOOL finished) {
 	}];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:YES];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -505,7 +498,6 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
 	return (nil);
 }
 

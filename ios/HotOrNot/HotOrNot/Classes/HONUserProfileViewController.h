@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
-- (id)initWithBackground:(UIImageView *)imageView attachedToViewController:(BOOL)usesViewController;
+- (id)initWithBackground:(UIImageView *)imageView;
 @property (nonatomic) int userID;
 @end

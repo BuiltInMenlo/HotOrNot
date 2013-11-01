@@ -11,7 +11,6 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONTabBarController.h"
-#import "HONAlertPopOverView.h"
 #import "HONImagingDepictor.h"
 #import "HONChangeAvatarViewController.h"
 
@@ -24,7 +23,6 @@ const CGSize kTabSize = {80.0, 50.0};
 @property (nonatomic, retain) UIButton *exploreButton;
 @property (nonatomic, retain) UIButton *verifyButton;
 @property (nonatomic, retain) UIButton *avatarNeededButton;
-@property (nonatomic, strong) HONAlertPopOverView *alertPopOverView;
 @end
 
 @implementation HONTabBarController
@@ -34,6 +32,8 @@ const CGSize kTabSize = {80.0, 50.0};
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateTabBarAB:) name:@"UPDATE_TAB_BAR_AB" object:nil];
 	}
 	
 	return (self);
@@ -106,13 +106,14 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_tabHolderView addSubview:_exploreButton];
 	[_exploreButton setTag:1];
 	
+	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(60.0 + (kTabSize.width * 2.0), 0.0, kTabSize.width, kTabSize.height);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Tapped"] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateDisabled];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", verifyTabPrefix]] forState:UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_verifyButton];
 	[_verifyButton setTag:2];
 	
@@ -120,29 +121,29 @@ const CGSize kTabSize = {80.0, 50.0};
 	[self _toggleTabButtonsEnabled:YES];
 }
 
-- (void)_showBadgesWithTotals:(NSDictionary *)dict {
-	[_alertPopOverView setAlerts:dict];
-	_alertPopOverView.alpha = 0.0;
-	[self.view addSubview:_alertPopOverView];
-	
-	[UIView animateWithDuration:0.25 delay:0.67 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-		_alertPopOverView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-}
+//- (void)_showBadgesWithTotals:(NSDictionary *)dict {
+//	[_alertPopOverView setAlerts:dict];
+//	_alertPopOverView.alpha = 0.0;
+//	[self.view addSubview:_alertPopOverView];
+//	
+//	[UIView animateWithDuration:0.25 delay:0.67 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+//		_alertPopOverView.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
+//}
 
-- (void)_hideBadges {
-	[[NSUserDefaults standardUserDefaults] setValue:[[NSUserDefaults standardUserDefaults] objectForKey:@"update_challenges"] forKey:@"local_challenges"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (_alertPopOverView.alpha == 1.0) {
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			_alertPopOverView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_alertPopOverView removeFromSuperview];
-		}];
-	}
-}
+//- (void)_hideBadges {
+//	[[NSUserDefaults standardUserDefaults] setValue:[[NSUserDefaults standardUserDefaults] objectForKey:@"update_challenges"] forKey:@"local_challenges"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+//	
+//	if (_alertPopOverView.alpha == 1.0) {
+//		[UIView animateWithDuration:0.125 animations:^(void) {
+//			_alertPopOverView.alpha = 0.0;
+//		} completion:^(BOOL finished) {
+//			[_alertPopOverView removeFromSuperview];
+//		}];
+//	}
+//}
 
 - (void)_toggleTabButtonsEnabled:(BOOL)isEnabled {
 	if	(isEnabled) {
@@ -160,15 +161,15 @@ const CGSize kTabSize = {80.0, 50.0};
 }
 
 - (void)_createPopoverBadge {
-	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
-		[self _updateBadges];
-
-	[self _showBadgesWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
-								 [NSNumber numberWithInt:arc4random() % 15], @"status",
-								 [NSNumber numberWithInt:arc4random() % 15], @"score",
-								 [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
+//	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
+//	
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
+//		[self _updateBadges];
+//
+//	[self _showBadgesWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
+//								 [NSNumber numberWithInt:arc4random() % 15], @"status",
+//								 [NSNumber numberWithInt:arc4random() % 15], @"score",
+//								 [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
 }
 
 
@@ -205,8 +206,6 @@ const CGSize kTabSize = {80.0, 50.0};
 			break;
 			
 		case 2:
-			[self _hideBadges];
-			
 			[_homeButton setSelected:NO];
 			[_verifyButton setSelected:YES];
 			[_exploreButton setSelected:NO];
@@ -282,6 +281,15 @@ const CGSize kTabSize = {80.0, 50.0};
 		[_avatarNeededButton removeFromSuperview];
 		_avatarNeededButton = nil;
 	}
+}
+
+- (void)_updateTabBarAB:(NSNotification *)notification {
+	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", verifyTabPrefix]] forState:UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateDisabled];
 }
 
 
@@ -363,9 +371,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			
 			//NSLog(@"CHANGES:\n%@", alertTotals);
 			
-			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
-				[self _showBadgesWithTotals:alertTotals];
-			}
+//			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
+//				[self _showBadgesWithTotals:alertTotals];
+//			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

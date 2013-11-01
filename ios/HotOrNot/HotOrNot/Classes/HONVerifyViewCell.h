@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONGenericRowViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
@@ -16,7 +15,6 @@
 @protocol HONVerifyViewCellDelegate;
 @interface HONVerifyViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
-- (id)initAsEvenRow:(BOOL)isEven;
 - (void)showTapOverlay;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;

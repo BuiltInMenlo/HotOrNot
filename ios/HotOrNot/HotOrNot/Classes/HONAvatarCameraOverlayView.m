@@ -19,7 +19,6 @@
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
 @property (nonatomic, strong) UIImageView *verifyImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
-@property (nonatomic, strong) UIImageView *uploadingImageView;
 @end
 
 @implementation HONAvatarCameraOverlayView
@@ -69,25 +68,6 @@
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_captureButton];
-		
-//		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"]];
-//		_infoHolderImageView.frame = [UIScreen mainScreen].bounds;
-//		_infoHolderImageView.userInteractionEnabled = YES;
-//		[self addSubview:_infoHolderImageView];
-//		
-//		UIButton *okInfoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		okInfoButton.frame = _infoHolderImageView.frame;
-//		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
-//		[_infoHolderImageView addSubview:okInfoButton];
-		
-		_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 14.0, 54.0, 14.0)];
-		_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
-											   [UIImage imageNamed:@"cameraUpload_002"],
-											   [UIImage imageNamed:@"cameraUpload_003"], nil];
-		_uploadingImageView.animationDuration = 0.5f;
-		_uploadingImageView.animationRepeatCount = 0;
-		_uploadingImageView.alpha = 0.0;
-//		[self addSubview:_uploadingImageView];
 		
 		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 64.0)];
 		[self addSubview:_submitHolderView];
@@ -170,8 +150,6 @@
 }
 
 - (void)uploadComplete {
-	[_uploadingImageView stopAnimating];
-	_uploadingImageView.alpha = 0.0;
 }
 
 - (void)animateAccept {
@@ -221,9 +199,6 @@
 
 - (void)_goTakePhoto {
 	_captureButton.hidden = YES;
-	
-	_uploadingImageView.alpha = 1.0;
-	[_uploadingImageView startAnimating];
 	
 	_blackMatteView.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {

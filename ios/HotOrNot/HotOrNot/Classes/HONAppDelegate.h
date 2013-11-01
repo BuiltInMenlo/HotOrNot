@@ -109,13 +109,11 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (int)profileSubscribeThreshold;
 
-+ (NSString *)bannerForSection:(int)section;
-
 + (BOOL)switchEnabledForKey:(NSString *)key;
 + (int)incTotalForCounter:(NSString *)key;
 + (int)totalForCounter:(NSString *)key;
 
-+ (NSString *)verifyHeaderMessage;
++ (NSDictionary *)infoForABTab;
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
 + (NSString *)instagramShareMessageForIndex:(int)index;

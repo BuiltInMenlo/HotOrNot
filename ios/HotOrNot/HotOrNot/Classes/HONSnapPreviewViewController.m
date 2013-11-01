@@ -784,7 +784,7 @@
 	} completion:^(BOOL finished) {
 	}];
 	
-	_userProfileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView attachedToViewController:NO];
+	_userProfileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	_userProfileViewController.userID = _opponentVO.userID;
 	[self.view addSubview:_userProfileViewController.view];
 	_hasVisitedProfile = YES;
@@ -1305,7 +1305,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil attachedToViewController:NO];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 		userPofileViewController.userID = opponentVO.userID;
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];

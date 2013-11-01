@@ -61,7 +61,6 @@
 @property (nonatomic) int followingCounter;
 @property (nonatomic) BOOL isUser;
 @property (nonatomic) BOOL isFriend;
-@property (nonatomic) BOOL usesViewController;
 @property (nonatomic) BOOL isRefreshing;
 @end
 
@@ -69,14 +68,13 @@
 @implementation HONUserProfileViewController
 @synthesize userID = _userID;
 
-- (id)initWithBackground:(UIImageView *)imageView attachedToViewController:(BOOL)usesViewController {
+- (id)initWithBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
 		_bgImageView = imageView;
 		self.view.backgroundColor = (imageView == nil) ? [UIColor blackColor] : [UIColor clearColor];
 		
 		_isUser = NO;
 		_isFriend = NO;
-		_usesViewController = usesViewController;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
@@ -969,7 +967,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil attachedToViewController:YES];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 		userPofileViewController.userID = opponentVO.userID;
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];

@@ -33,6 +33,7 @@
 #import "HONAppDelegate.h"
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
+#import "HONFollowTabViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONExploreViewController.h"
 #import "HONImagePickerViewController.h"
@@ -40,7 +41,6 @@
 #import "HONEmotionVO.h"
 #import "HONUserVO.h"
 #import "HONUsernameViewController.h"
-#import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
@@ -143,7 +143,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) HONSearchViewController *searchViewController;
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic, strong) NSTimer *userTimer;
 @property (nonatomic) BOOL isFromBackground;
@@ -225,8 +224,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
 }
 
-+ (NSString *)verifyHeaderMessage {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"verify_msg"]);
++ (NSDictionary *)infoForABTab{
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_AB"] objectAtIndex:(int)[HONAppDelegate switchEnabledForKey:@"verify_tab"]]);
 }
 
 + (NSString *)smsInviteFormat {
@@ -255,10 +254,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (int)profileSubscribeThreshold {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_subscribe"] intValue]);
-}
-
-+ (NSString *)bannerForSection:(int)section {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"section_banners"] objectAtIndex:section]);
 }
 
 + (BOOL)switchEnabledForKey:(NSString *)key {
@@ -459,7 +454,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (BOOL)hasTakenSelfie {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"] isEqualToString:@"NO"]);
+	return (YES);//[[[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"] isEqualToString:@"NO"]);
 }
 
 + (BOOL)hasNetwork {
@@ -605,7 +600,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-						
+			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
@@ -628,9 +623,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															   @"email"	: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 			[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
 															   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
+			
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_TAB_BAR_AB" object:nil];
 			
 			if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
 				[self _showOKAlert:@"Update Required"
@@ -864,6 +864,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_recreateImageSizes:(NSNotification *)notification {
 	NSDictionary *params = @{@"imgURL"	: [notification object]};
 	
+	NSLog(@"IMAGE:[%@]", [notification object]);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -940,8 +941,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
@@ -1066,7 +1065,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-//		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
+		//self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
 		// This prevents the UA Library from registering with UIApplication by default. This will allow
@@ -1281,7 +1280,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			// user profile
 			} else if (pushType == 3) {
-				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil attachedToViewController:YES];
+				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 				userPofileViewController.userID = [[userInfo objectForKey:@"user"] intValue];
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 				[navigationController setNavigationBarHidden:YES];
@@ -1340,7 +1339,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
+									   [[UINavigationController alloc] initWithRootViewController:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? [[HONVerifyViewController alloc] init] : [[HONFollowTabViewController alloc] init]]];
 	
 	for (UINavigationController *navigationController in navigationControllers) {
 		[navigationController setNavigationBarHidden:YES animated:NO];

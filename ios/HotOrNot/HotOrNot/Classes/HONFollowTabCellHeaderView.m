@@ -1,22 +1,23 @@
 //
-//  HONVerifyCellHeaderView.m
+//  HONFollowTabCellHeaderView.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 10/31/13 @ 10:01 PM.
+//  Created by Matt Holcombe on 11/1/13 @ 1:02 PM.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONVerifyCellHeaderView.h"
+#import "HONFollowTabCellHeaderView.h"
 
 
-@interface HONVerifyCellHeaderView ()
+@interface HONFollowTabCellHeaderView ()
 @property (nonatomic, retain) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) NSDictionary *verifyTabInfo;
 @end
 
-@implementation HONVerifyCellHeaderView
+@implementation HONFollowTabCellHeaderView
+
 @synthesize delegate = _delegate;
 
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO {
@@ -25,9 +26,8 @@
 		_opponentVO = opponentVO;
 		
 		_verifyTabInfo = [HONAppDelegate infoForABTab];
-		
-		
-		NSMutableString *avatarURL = [_opponentVO.avatarURL mutableCopy];
+		NSMutableString *avatarURL = [_opponentVO.imagePrefix mutableCopy];
+		[avatarURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 		[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 5.0, 40.0, 40.0)];
@@ -39,6 +39,7 @@
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[avatarURL replaceOccurrencesOfString:@"Small_160x160.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:avatarURL];
 		};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -79,7 +80,6 @@
 - (void)_goProfile {
 	[self.delegate cellHeaderView:self showProfileForUser:_opponentVO];
 }
-
 
 
 @end

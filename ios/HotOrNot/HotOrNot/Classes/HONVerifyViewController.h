@@ -8,7 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-const NSInteger kOlderThresholdSeconds;
-
 @interface HONVerifyViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 @end
