@@ -62,6 +62,7 @@ const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
 const CGFloat kHeroVolleyTableCellHeight;
+const CGFloat kVerifyTableCellHeight;
 
 // snap params
 const CGFloat kMinLuminosity;
@@ -114,9 +115,9 @@ extern NSString * const kNetErrorStatusCode404;
 + (int)incTotalForCounter:(NSString *)key;
 + (int)totalForCounter:(NSString *)key;
 
++ (NSString *)verifyHeaderMessage;
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
-
 + (NSString *)instagramShareMessageForIndex:(int)index;
 + (NSString *)twitterShareCommentForIndex:(int)index;
 

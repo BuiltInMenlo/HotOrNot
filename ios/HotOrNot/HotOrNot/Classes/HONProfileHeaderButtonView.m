@@ -20,9 +20,9 @@
 		
 		_profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_profileButton.frame = CGRectMake(1.0, -1.0, 64.0, 44.0);
-		[_profileButton setBackgroundImage:[UIImage imageNamed:(isVerified) ? @"profileHeaderVerifiedButton_nonActive" : @"profileHeaderNotVerifiedButton_nonActive"] forState:UIControlStateNormal];
-		[_profileButton setBackgroundImage:[UIImage imageNamed:(isVerified) ? @"profileHeaderVerifiedButton_Active" : @"profileHeaderNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
-		[_profileButton setBackgroundImage:[UIImage imageNamed:(isVerified) ? @"profileHeaderVerifiedButton_Active" : @"profileHeaderNotVerifiedButton_Active"] forState:UIControlStateSelected];
+		[_profileButton setBackgroundImage:[UIImage imageNamed:(isVerified) ? @"profileVerifiedButton_nonActive" : @"profileNotVerifiedButton_nonActive"] forState:UIControlStateNormal];
+		[_profileButton setBackgroundImage:[UIImage imageNamed:(isVerified) ? @"profileVerifiedButton_Active" : @"profileNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
+		[_profileButton setBackgroundImage:[UIImage imageNamed:(isVerified) ? @"profileVerifiedButton_Active" : @"profileNotVerifiedButton_Active"] forState:UIControlStateSelected];
 		[_profileButton addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_profileButton];
 		

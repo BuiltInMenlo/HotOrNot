@@ -13,21 +13,23 @@
 
 #import "HONTimelineItemViewCell.h"
 #import "HONImageLoadingView.h"
-#import "HONHeroFooterView.h"
+#import "HONTimelineCreatorHeaderView.h"
+#import "HONTimelineCellFooterView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
 #import "HONOpponentVO.h"
 
 
-@interface HONTimelineItemViewCell() <HONHeroFooterViewDelegate>
+@interface HONTimelineItemViewCell() <HONTimelineHeaderCreatorViewDelegate, HONTimelineCellFooterViewDelegate>//<HONHeroFooterViewDelegate>
 @property (nonatomic, strong) UIView *heroHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) NSMutableArray *voters;
-@property (nonatomic, strong) HONHeroFooterView *heroFooterView;
+@property (nonatomic, strong) HONTimelineCreatorHeaderView *creatorHeaderView;
+@property (nonatomic, strong) HONTimelineCellFooterView *timelineCellFooterView;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
-
+@property (nonatomic, strong) UILabel *likesLabel;
 @end
 
 @implementation HONTimelineItemViewCell
@@ -65,11 +67,13 @@
 			
 			counter++;
 		}
-
-		((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
+		
+		if (index > -1)
+			((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
 	}
 	
-	[_heroFooterView updateLikesCaption:(_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)]];
+	int score = [self _calcScore] + 1;
+	_likesLabel.text = (score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", score];
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
@@ -78,18 +82,16 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
 	
 	_heroOpponentVO = _challengeVO.creatorVO;
-	int heroTime = [_heroOpponentVO.joinedDate timeIntervalSinceNow];
-	int participant0Time = -1;
+//	int heroTime = [_heroOpponentVO.joinedDate timeIntervalSinceNow];
+//	int participant0Time = -1;
+//	
+//	if ([_challengeVO.challengers count] > 0) {
+//		participant0Time = [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow];
+//		
+//		if (participant0Time > heroTime && !_challengeVO.isCelebCreated && !_challengeVO.isExploreChallenge)
+//			_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+//	}
 	
-	if ([_challengeVO.challengers count] > 0) {
-		participant0Time = [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow];
-		
-		if (participant0Time > heroTime && !_challengeVO.isCelebCreated && !_challengeVO.isExploreChallenge)
-			_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
-	}
-	
-//	NSLog(@"HERO:[%d][%@]", heroTime, [dateFormat stringFromDate:_heroOpponentVO.joinedDate]);
-//	NSLog(@"OPP1:[%d][%@]", participant0Time, [dateFormat stringFromDate:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate]);
 	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyTableCellHeight)];
 	_heroHolderView.clipsToBounds = YES;
 	_heroHolderView.backgroundColor = [UIColor blackColor];
@@ -122,6 +124,16 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
+	[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"topFade"]]];
+	
+	UIImageView *gradientFooterImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"lowerInfoBackground"]];
+	gradientFooterImageView.frame = CGRectOffset(gradientFooterImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientFooterImageView.frame.size.height);
+	[self.contentView addSubview:gradientFooterImageView];
+	
+	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
+	creatorHeaderView.delegate = self;
+	[self.contentView addSubview:creatorHeaderView];
+	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = _heroHolderView.frame;
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
@@ -131,16 +143,32 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[self addGestureRecognizer:lpGestureRecognizer];
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
-	[self.contentView addSubview:gradientImageView];
 	
-	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:kHeroVolleyTableCellHeight - 94.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
-	_heroFooterView.delegate = self;
-	[self.contentView addSubview:_heroFooterView];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0, self.frame.size.height - 100.0, 40.0, 16.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_likesLabel.textColor = [UIColor whiteColor];
+	_likesLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	_likesLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	_likesLabel.backgroundColor = [UIColor clearColor];
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
+	[self.contentView addSubview:_likesLabel];
+	
+	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likesButton.frame = CGRectMake(50.0, self.frame.size.height - 104.0, 24.0, 24.0);
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
+	[self.contentView addSubview:likesButton];
+	
+	_timelineCellFooterView = [[HONTimelineCellFooterView alloc] initAtPosY:kHeroVolleyTableCellHeight - 55.0 withChallenge:_challengeVO];
+	_timelineCellFooterView.delegate = self;
+	[self.contentView addSubview:_timelineCellFooterView];
+	
+//	_heroFooterView = [[HONHeroFooterView alloc] initAtYPos:self.frame.size.height - 94.0 withChallenge:_challengeVO andHeroOpponent:_heroOpponentVO];
+//	_heroFooterView.delegate = self;
+//	[self.contentView addSubview:_heroFooterView];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(246.0, kHeroVolleyTableCellHeight - 114.0, 74.0, 74.0);
+	joinButton.frame = CGRectMake(246.0, self.frame.size.height - 114.0, 74.0, 74.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -148,7 +176,7 @@
 	
 	UIImageView *heroBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[HONAppDelegate hasTakenSelfie] ? @"tapHoldOverlay_nonActive" : @"needSelfieHeroBubble"]];
 	heroBubbleImageView.hidden = ([HONAppDelegate hasTakenSelfie] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0);
-	[self addSubview:heroBubbleImageView];
+	[self.commentsLabel addSubview:heroBubbleImageView];
 }
 
 
@@ -217,13 +245,46 @@
 }
 
 
-#pragma mark - HeroFooterView Delegates
-- (void)heroFooterView:(HONHeroFooterView *)heroFooterView showProfile:(HONOpponentVO *)heroOpponentVO {
-	NSLog(@"heroFooterView:showProfile");
+//#pragma mark - HeroFooterView Delegates
+//- (void)heroFooterView:(HONHeroFooterView *)heroFooterView showProfile:(HONOpponentVO *)heroOpponentVO {
+//	NSLog(@"heroFooterView:showProfile");
+//	
+//	[self.delegate timelineItemViewCell:self showProfileForUserID:heroOpponentVO.userID forChallenge:_challengeVO];
+//}
+
+
+#pragma mark - TimelineHeaderCreator Delegates
+- (void)timelineHeaderView:(HONTimelineCreatorHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Header - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"participant", nil]];
 	
-	[self.delegate timelineItemViewCell:self showProfileForUserID:heroOpponentVO.userID forChallenge:_challengeVO];
+	[self.delegate timelineItemViewCell:self showProfileForUserID:opponentVO.userID forChallenge:challengeVO];
 }
 
 
+#pragma mark - TimelineCellFooter Delegates
+- (void)cellFooterView:(HONTimelineCellFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
+	[self _goJoinChallenge];
+}
+
+- (void)cellFooterView:(HONTimelineCellFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO {
+	[self _goDetails];
+}
+
+- (void)cellFooterView:(HONTimelineCellFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[self.delegate timelineItemViewCell:self showProfileForUserID:opponentVO.userID forChallenge:_challengeVO];
+}
+
+#pragma mark - Data Tally
+- (int)_calcScore {
+	int score = _challengeVO.creatorVO.score;
+	for (HONOpponentVO *vo in _challengeVO.challengers)
+		score += vo.score;
+	
+	return (score);
+}
 @end
 

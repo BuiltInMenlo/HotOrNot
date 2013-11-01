@@ -22,8 +22,7 @@
 @implementation HONHeroFooterView
 @synthesize delegate = _delegate;
 
-- (id)initAtYPos:(int)yPos withChallenge:(HONChallengeVO *)challengeVO andHeroOpponent:(HONOpponentVO *)
-heroOpponentVO {
+- (id)initAtYPos:(int)yPos withChallenge:(HONChallengeVO *)challengeVO andHeroOpponent:(HONOpponentVO *)heroOpponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, 94.0)])) {
 		_challengeVO = challengeVO;		_opponentVO = heroOpponentVO;
 		

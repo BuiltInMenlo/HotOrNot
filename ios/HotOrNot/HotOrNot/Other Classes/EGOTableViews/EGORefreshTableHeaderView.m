@@ -53,7 +53,7 @@
 - (id)initWithFrame:(CGRect)frame withScrollView:(UIScrollView *)scrollView includeHeaderOffset:(BOOL)isOffset {
 	if (self = [super initWithFrame:frame]) {
 		_scrollView = scrollView;
-		_headerOffset = isOffset * kHeaderOffset;
+		_headerOffset = isOffset * (kHeaderOffset - 44.0);
 		
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
@@ -123,11 +123,13 @@
 	} else if (scrollView.isDragging) {
 		_isLoading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
 		
-		if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset && scrollView.contentOffset.y < 0.0f + _headerOffset && !_isLoading) {
-			[self setState:EGOOPullRefreshNormal];
-			
-		} else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -kLoadingTheshold - _headerOffset && !_isLoading) {
-			[self setState:EGOOPullRefreshPulling];
+		if (!_isLoading) {
+			if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset && scrollView.contentOffset.y < _headerOffset) {
+				[self setState:EGOOPullRefreshNormal];
+				
+			} else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -kLoadingTheshold - _headerOffset) {
+				[self setState:EGOOPullRefreshPulling];
+			}
 		}
 		
 		if (scrollView.contentInset.top != _headerOffset)
@@ -155,6 +157,16 @@
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.3];
 	scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
+//	scrollView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
+	[UIView commitAnimations];
+	
+	[self setState:EGOOPullRefreshNormal];
+}
+
+- (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView isInitialLoad:(BOOL)isInitial {
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.3];
+	scrollView.contentInset = UIEdgeInsetsMake(_headerOffset * ((int)isInitial), 0.0f, 0.0f, 0.0f);
 	[UIView commitAnimations];
 	
 	[self setState:EGOOPullRefreshNormal];

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wipe_url="http://stage.letsvolley.com/admin/wipe_user.php"
+wipe_url="http://api-stage.letsvolley.com/admin/wipe_user.php"
 #--server_domain=$(echo "${wipe_url}" | sed 's/.*\/\/(.*)\/.*$/\1/g')
 
 username="snap"

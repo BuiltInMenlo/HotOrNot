@@ -110,7 +110,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
@@ -284,7 +284,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Follow"];
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -538,19 +538,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}
 }
 
-//- (void)verifyViewCellShowPreviewControls:(HONVerifyViewCell *)cell {
-//	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-//	
-//	[_snapPreviewViewController showControls];
-//}
-
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Follow%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -566,14 +557,22 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		
 		_indexPath = [_tableView indexPathForCell:tableCell];
 		
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Verify & follow user", @"Verify user only", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:0];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+//		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+//																 delegate:self
+//														cancelButtonTitle:@"Cancel"
+//												   destructiveButtonTitle:nil
+//														otherButtonTitles:@"Verify & follow user", @"Verify user only", nil];
+//		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+//		[actionSheet setTag:0];
+//		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Follow this user?"
+															message:@""
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:8];
+		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -715,7 +714,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 //	return ((indexPath.row == [_challenges count] - 1) ? 329.0 : 282.0);
-	return (kHeroVolleyTableCellHeight + ((int)(indexPath.row == [_challenges count] - 1) * 47.0));
+	return (kVerifyTableCellHeight + ((int)(indexPath.row == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -875,6 +874,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
+		}
+	
+	} else if (alertView.tag == 8) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Follow %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 1) {
+			[self _addFriend:_challengeVO.creatorVO.userID];
 		}
 	}
 }

@@ -37,6 +37,7 @@
 #import "HONChangeAvatarViewController.h"
 
 
+
 @interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -51,6 +52,7 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic) BOOL isRefreshing;
+@property (nonatomic) BOOL isFirstLoad;
 @end
 
 @implementation HONTimelineViewController
@@ -109,8 +111,7 @@
 			}
 			
 			[_tableView reloadData];
-//			[_tableView setContentOffset:CGPointZero animated:NO];
-//			[_tableView setContentInset:UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0)];
+//			[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)];
 		}
 		
 		if (_progressHUD != nil) {
@@ -120,6 +121,8 @@
 		
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView isInitialLoad:_isFirstLoad];
+		_isFirstLoad = NO;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
@@ -136,6 +139,8 @@
 		
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView isInitialLoad:_isFirstLoad];
+		_isFirstLoad = NO;
 	}];
 }
 
@@ -195,6 +200,7 @@
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor blackColor];
+	_isFirstLoad = YES;
 	
 	_challenges = [NSMutableArray array];
 	_cells = [NSMutableArray array];
@@ -395,12 +401,12 @@
 }
 
 - (void)_selectedHomeTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 }
 
 - (void)_refreshHomeTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 }
 
@@ -409,7 +415,7 @@
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Header - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
@@ -559,17 +565,6 @@
 	}
 }
 
-//- (void)timelineItemViewCellShowPreviewControls:(HONTimelineItemViewCell *)cell {
-//	[[Mixpanel sharedInstance] track:@"Timeline - Hide Photo Detail"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-//									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-//									  nil]];
-//	
-//	[_snapPreviewViewController showControls];
-//}
-
 
 #pragma mark - SnapPreview Delegates
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -658,22 +653,30 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count]);
+	return (1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
+	return ([_challenges count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return (nil);
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 5.0)];
+	footerView.backgroundColor = [UIColor greenColor];
+	footerView.alpha = 0.0;
+	
+	return (footerView);
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
 		cell = [[HONTimelineItemViewCell alloc] init];
 		cell.challengeVO = vo;
 	}
@@ -687,11 +690,15 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kHeroVolleyTableCellHeight + ((int)(indexPath.row == [_challenges count] - 1) * 47.0));
+	return (kHeroVolleyTableCellHeight + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	return (0.0);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+	return (5.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

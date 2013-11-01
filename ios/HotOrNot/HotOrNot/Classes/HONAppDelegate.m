@@ -109,7 +109,8 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGFloat kHeroVolleyTableCellHeight = 330.0f;
+const CGFloat kHeroVolleyTableCellHeight = 370.0f;
+const CGFloat kVerifyTableCellHeight = 326.0f;
 
 // snap params
 const CGFloat kMinLuminosity = 0.00;
@@ -222,6 +223,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSString *)twilioSMS {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
+}
+
++ (NSString *)verifyHeaderMessage {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"verify_msg"]);
 }
 
 + (NSString *)smsInviteFormat {
@@ -606,6 +611,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_msg"] forKey:@"verify_msg"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];

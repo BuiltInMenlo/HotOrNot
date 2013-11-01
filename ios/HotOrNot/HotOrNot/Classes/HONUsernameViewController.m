@@ -147,9 +147,9 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 128.0);
-	[self.view addSubview:divider1ImageView];
+	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 128.0);
+	[self.view addSubview:dividerImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);

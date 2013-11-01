@@ -45,6 +45,7 @@
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) UIImageView *splashImageView;
 @property (nonatomic, strong) UIView *whySelfieView;
 @property (nonatomic, strong) NSString *splashImageURL;
 
@@ -598,10 +599,22 @@
 				}];
 				
 			} else {
-				UIImageView *splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				[splashImageView setImageWithURL:[NSURL URLWithString:_splashImageURL] placeholderImage:nil];
-				splashImageView.userInteractionEnabled = YES;
-				[_tutorialHolderView addSubview:splashImageView];
+				void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+					_splashImageView.image = image;
+				};
+				
+				void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_splashImageURL];
+				};
+				
+				
+				_splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+				_splashImageView.userInteractionEnabled = YES;
+				[_tutorialHolderView addSubview:_splashImageView];
+				[_splashImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+										placeholderImage:nil
+												 success:successBlock
+												 failure:failureBlock];
 				
 				UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
 				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (114.0 + (![HONAppDelegate isRetina4Inch] * 30.0)), 320.0, 64.0);
