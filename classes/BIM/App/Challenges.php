@@ -175,7 +175,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         if ( $creator->isExtant() ) {
             $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, array(), $isPrivate, $expires);
             if( $volley->isExtant() ){
-                $this->sendVolleyNotifications($creator, $targetIds, $volley->id );
+                $this->sendVolleyNotifications($creator, array(), $volley->id );
             }
         }
         return $volley;
@@ -183,14 +183,11 @@ class BIM_App_Challenges extends BIM_App_Base{
     
     public function sendVolleyNotifications( $creator, $targetIds, $volleyId ){
         $volley = BIM_Model_Volley::get( $volleyId );
-        if( ! is_array( $targetIds ) ){
-            $targetIds = array( $targetIds );
-        }
-        foreach( $targetIds as $target ){
-            if( !is_object( $target ) ) {
-                $target = BIM_Model_User::get( $target );
-            }
-            if ( $target->isExtant() && $target->notifications == "Y"){
+        $followers = BIM_App_Social::getFollowers( (object) array('userID' => $creator->id ), true );
+        $targetIds = array_keys($followers);
+        $targets = BIM_Model_User::getMulti($targetIds);
+        foreach( $targets as $target ){
+            if ( $target->isExtant() && $target->canPush() ){
                 $this->doNotification( $creator, $target, $volley->id, $volley->subject );
             }
         }

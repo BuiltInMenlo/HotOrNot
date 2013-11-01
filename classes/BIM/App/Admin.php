@@ -15,10 +15,10 @@ class BIM_App_Admin{
                 BIM_Utils::putImage( $imgUrl, $name );
                 BIM_Utils::processImage($imgUrlPrefix);
                 
-                $hashTag = "#shoutout";
-                $volley = BIM_Model_Volley::create( 2394, $hashTag, $imgUrlPrefix );
+                $hashTag = "#shoutout ".$volley->creator->username;
+                $newVolley = BIM_Model_Volley::create( 2394, $hashTag, $imgUrlPrefix );
                 BIM_Push_UrbanAirship_Iphone::shoutoutPush( $volley );
-                print_r( json_encode( $volley ) );
+                print_r( json_encode( $newVolley ) );
             }
         }
     }
