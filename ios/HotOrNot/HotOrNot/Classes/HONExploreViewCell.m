@@ -34,7 +34,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor blackColor];
+		self.backgroundColor = [UIColor whiteColor];
 	}
 	
 	return (self);
@@ -174,7 +174,7 @@
 
 - (void)_goSelectLeft {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 	[self.contentView addSubview:overlayView];
 	
 	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -188,7 +188,7 @@
 
 - (void)_goSelectRight {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 	[self.contentView addSubview:overlayView];
 	
 	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

@@ -109,13 +109,13 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGFloat kHeroVolleyTableCellHeight = 370.0f;
-const CGFloat kVerifyTableCellHeight = 326.0f;
+const CGFloat kHeroVolleyTableCellHeight = 430.0f;
+const CGFloat kHeroVolleyHeroHeight = 346.0;
 
 // snap params
 const CGFloat kMinLuminosity = 0.00;
 const CGFloat kSnapRatio = 1.33333333f;
-const CGFloat kSnapJPEGCompress = 0.400f;
+const CGFloat kSnapJPEGCompress = 0.500f;
 
 // animation params
 const CGFloat kHUDTime = 0.67f;
@@ -568,15 +568,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (UIColor *)honBlueTextColor {
-	return ([UIColor colorWithRed:0.161 green:0.498 blue:1.0 alpha:1.0]);
+	return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:1.0]);
 }
 
-+ (UIColor *)honGreyTimeColor {
-	return ([UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0]);
++ (UIColor *)honBlueTextColorHighlighted {
+	return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:0.5]);
 }
 
 + (UIColor *)honGreenTextColor {
 	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
+}
+
++ (UIColor *)honGreyTextColor {
+	return ([UIColor colorWithWhite:0.600 alpha:1.0]);
+}
+
++ (UIColor *)honDarkGreyTextColor {
+	return ([UIColor colorWithWhite:0.400 alpha:1.0]);
+}
+
++ (UIColor *)honLightGreyTextColor {
+	return ([UIColor colorWithWhite:0.671 alpha:1.0]);
 }
 
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent {
@@ -920,11 +932,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	
-	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
+	[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
-	[[UIToolbar appearance] setBarTintColor:[UIColor blackColor]];
+	[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
 	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];
@@ -1066,6 +1078,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 		//self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
+		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
 		// This prevents the UA Library from registering with UIApplication by default. This will allow

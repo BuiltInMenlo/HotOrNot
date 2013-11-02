@@ -91,8 +91,8 @@
 		
 		UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		likesButton.frame = CGRectMake(290.0, 60.0, 24.0, 24.0);
-		[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
-		[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
+		[likesButton setBackgroundImage:[UIImage imageNamed:([_challengeVO.challengers count] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateNormal];
+		[likesButton setBackgroundImage:[UIImage imageNamed:([_challengeVO.challengers count] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateHighlighted];
 		[self addSubview:likesButton];
 		
 		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 64.0, 40.0, 16.0)];

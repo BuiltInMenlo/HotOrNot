@@ -22,7 +22,7 @@
 
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)])) {
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
+		self.backgroundColor = [UIColor whiteColor];
 		_opponentVO = opponentVO;
 		
 		_verifyTabInfo = [HONAppDelegate infoForABTab];
@@ -53,20 +53,16 @@
 		[self addSubview:avatarButton];
 		
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 5.0, 220.0, 22.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 5.0, 220.0, 16.0)];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12];
 		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		nameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
 		[self addSubview:nameLabel];
 		
-		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 22.0, 240.0, 22.0)];
-		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
-		messageLabel.textColor = [UIColor whiteColor];
-		messageLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		messageLabel.shadowOffset =  CGSizeMake(1.0, 1.0);
+		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 22.0, 240.0, 18.0)];
+		messageLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+		messageLabel.textColor = [HONAppDelegate honBlueTextColor];
 		messageLabel.backgroundColor = [UIColor clearColor];
 		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];
 		[self addSubview:messageLabel];

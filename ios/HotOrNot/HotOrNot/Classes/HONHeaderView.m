@@ -21,7 +21,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];
-		logoImageView.frame = CGRectOffset(logoImageView.frame, 118.0, 20.0);
+		logoImageView.frame = CGRectOffset(logoImageView.frame, 93.0, 20.0);
 		[self addSubview:logoImageView];
 	}
 	
@@ -36,7 +36,7 @@
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-		_titleLabel.textColor = [UIColor whiteColor];
+		_titleLabel.textColor = [UIColor colorWithRed:0.208 green:0.514 blue:0.467 alpha:1.0];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
@@ -47,13 +47,13 @@
 
 - (id)initAsModalWithTitle:(NSString *)title {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)])) {
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalHeader"]]];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header_modal"]]];
 		
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-		_titleLabel.textColor = [UIColor whiteColor];
+		_titleLabel.textColor = [UIColor colorWithRed:0.208 green:0.514 blue:0.467 alpha:1.0];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];

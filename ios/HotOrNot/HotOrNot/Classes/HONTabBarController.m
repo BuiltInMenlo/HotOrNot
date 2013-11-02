@@ -47,6 +47,7 @@ const CGSize kTabSize = {80.0, 50.0};
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

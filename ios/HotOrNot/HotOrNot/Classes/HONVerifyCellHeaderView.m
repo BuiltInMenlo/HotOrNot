@@ -21,7 +21,7 @@
 
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)])) {
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
+		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 		_opponentVO = opponentVO;
 		
 		_verifyTabInfo = [HONAppDelegate infoForABTab];

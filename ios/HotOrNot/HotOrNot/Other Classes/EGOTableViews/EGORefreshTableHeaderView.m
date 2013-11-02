@@ -57,7 +57,7 @@
 		
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
-		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - kLoadingTheshold, 24.0, 24.0);
 		[self addSubview:_activityIndicatorView];
 		

@@ -129,7 +129,7 @@
 	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Username"];
-	headerView.backgroundColor = [UIColor blackColor];
+	headerView.backgroundColor = [UIColor whiteColor];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	

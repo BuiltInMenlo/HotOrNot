@@ -20,7 +20,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		NSLog(@"%@ - init", [self description]);
-		self.view.backgroundColor = [UIColor blackColor];
+		self.view.backgroundColor = [UIColor whiteColor];
 		_isJoinChallenge = NO;
 	}
 	

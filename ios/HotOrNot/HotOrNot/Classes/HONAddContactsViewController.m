@@ -525,7 +525,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Friends"];
-	headerView.backgroundColor = [UIColor blackColor];
+	headerView.backgroundColor = [UIColor whiteColor];
 	[headerView addButton:inviteAllButton];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];

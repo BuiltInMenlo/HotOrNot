@@ -116,8 +116,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	self.view.backgroundColor = [UIColor blackColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Account Suspended"];
 	[self.view addSubview:_headerView];

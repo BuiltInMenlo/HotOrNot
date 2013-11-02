@@ -27,7 +27,7 @@
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
+	timeLabel.textColor = [UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_commentVO.addedDate];

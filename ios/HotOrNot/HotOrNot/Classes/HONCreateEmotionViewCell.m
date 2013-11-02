@@ -24,7 +24,9 @@
 
 - (id)initWithEmotion:(HONEmotionVO *)emotionVO AsEvenRow:(BOOL)isEven {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:(0.15 * isEven)];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRow"]];
+		self.backgroundView.alpha = 0.90 + ((int)isEven * 0.10);
+		
 		_emotionVO = emotionVO;
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 9.0, 44.0, 44.0)];
@@ -33,7 +35,7 @@
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 200.0, 24.0)];
 		label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:19];
-		label.textColor = [UIColor whiteColor];
+		label.textColor = [HONAppDelegate honBlueTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.text = _emotionVO.hastagName;
 		[self.contentView addSubview:label];
@@ -52,7 +54,7 @@
 	_priceImageView.image = [UIImage imageNamed:@"freeButton_Active"];
 	
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 	[self.contentView addSubview:tappedOverlayView];
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {

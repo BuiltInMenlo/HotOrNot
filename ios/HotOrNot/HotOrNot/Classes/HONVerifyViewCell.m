@@ -28,7 +28,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor blackColor];
+		self.backgroundColor = [UIColor whiteColor];
 	}
 	
 	return (self);
@@ -39,7 +39,7 @@
 	
 	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 270.0)];
 	_imageHolderView.clipsToBounds = YES;
-	_imageHolderView.backgroundColor = [UIColor blackColor];
+	_imageHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
@@ -73,22 +73,22 @@
 	
 //	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"topFade"]]];
 //	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-//	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kVerifyTableCellHeight - gradientImageView.frame.size.height);
+//	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 270.0 - gradientImageView.frame.size.height);
 //	[self.contentView addSubview:gradientImageView];
 		
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(250.0, 0.0, 70.0, 270.0)];
-	buttonHolderView.backgroundColor = [UIColor blackColor];
+	buttonHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(0.0, 50.0, 74.0, 74.0);
+	approveButton.frame = CGRectMake(0.0, 50.0, 64.0, 64.0);
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(0.0, 140.0, 74.0, 74.0);
+	dispproveButton.frame = CGRectMake(0.0, 140.0, 64.0, 64.0);
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
@@ -106,7 +106,7 @@
 
 - (void)showTapOverlay {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 	[self.contentView addSubview:tappedOverlayView];
 	
 	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

@@ -71,7 +71,7 @@
 - (id)initWithBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
 		_bgImageView = imageView;
-		self.view.backgroundColor = (imageView == nil) ? [UIColor blackColor] : [UIColor clearColor];
+		self.view.backgroundColor = (imageView == nil) ? [UIColor whiteColor] : [UIColor clearColor];
 		
 		_isUser = NO;
 		_isFriend = NO;
@@ -229,7 +229,7 @@
 			
 			[self _makeUI];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 264.0 + (kHeroVolleyTableCellHeight + (kSnapThumbSize.height * ([_challenges count] / 4) + 1))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 44.0 + ((264.0 + 235.0) + (kSnapThumbSize.height * (([_challenges count] / 4) + 1)))));
 			[self _makeGrid];
 		}
 		
@@ -861,24 +861,24 @@
 	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		inviteButton.frame = CGRectMake(0.0, 0.0, 40.0, 44.0);
-		[inviteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[inviteButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[inviteButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[inviteButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[inviteButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[inviteButton setTitle:@"Invite" forState:UIControlStateNormal];
 		[inviteButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
-		[settingsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[settingsButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
@@ -893,8 +893,8 @@
 	} else {
 		_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
-		[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[_subscribeButton setTitle:(_isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
 		[_subscribeButton addTarget:self action:(_isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -902,16 +902,16 @@
 		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[shareFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
+		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-		[flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateNormal];
-		[flagButton setTitleColor:[UIColor colorWithRed:0.325 green:0.169 blue:0.174 alpha:1.0] forState:UIControlStateHighlighted];
+		[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0] forState:UIControlStateNormal];
+		[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:0.5] forState:UIControlStateHighlighted];
 		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];

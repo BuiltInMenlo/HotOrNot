@@ -205,7 +205,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Search"];
-	headerView.backgroundColor = [UIColor blackColor];
+	headerView.backgroundColor = [UIColor whiteColor];
 	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];

@@ -182,7 +182,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Following"];
-	headerView.backgroundColor = [UIColor blackColor];
+	headerView.backgroundColor = [UIColor whiteColor];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	
@@ -279,7 +279,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	bgImageView.backgroundColor = [UIColor blackColor];
+	bgImageView.backgroundColor = [UIColor whiteColor];
 	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:bgImageView];
 	userPofileViewController.userID = ((HONUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;

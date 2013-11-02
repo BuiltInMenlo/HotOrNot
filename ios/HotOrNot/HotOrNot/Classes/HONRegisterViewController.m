@@ -442,7 +442,7 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register for Volley"];
-	_headerView.backgroundColor = [UIColor blackColor];
+	_headerView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:_headerView];
 	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
@@ -546,7 +546,7 @@
 	[self.view addSubview:submitButton];
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_tutorialHolderView.backgroundColor = [UIColor blackColor];
+	_tutorialHolderView.backgroundColor = [UIColor whiteColor];
 	_tutorialHolderView.alpha = 0.0;
 	[self.view addSubview:_tutorialHolderView];
 }
@@ -610,6 +610,7 @@
 				_splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 				_splashImageView.userInteractionEnabled = YES;
 				[_tutorialHolderView addSubview:_splashImageView];
+				_splashImageView.backgroundColor = [UIColor blackColor];
 				[_splashImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 										placeholderImage:nil
 												 success:successBlock

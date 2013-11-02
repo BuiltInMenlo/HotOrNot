@@ -19,47 +19,39 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)])) {
-//		self.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.33];
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)])) {
+		self.backgroundColor = [UIColor whiteColor];
 		_challengeVO = vo;
 		
-		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
+		[self addSubview:avatarImageView];
 		
-		if (emotionVO != nil) {
-			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-2.0, 1.0, 42.0, 42.0)];
-			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
-			[self addSubview:emoticonImageView];
-		}
-		
-		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + ((int)(emotionVO != nil) * 34.0), 10.0, 150.0, 22.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, 150.0, 18.0)];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		nameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		nameLabel.text = _challengeVO.creatorVO.username;
+		nameLabel.textColor = [HONAppDelegate honBlueTextColor];
+		nameLabel.text = [NSString stringWithFormat:@"%@…", _challengeVO.creatorVO.username];
 		[self addSubview:nameLabel];
 		
-		CGSize size = [nameLabel.text boundingRectWithSize:CGSizeMake(150.0, 22)
+		CGSize size = [nameLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 												   options:NSStringDrawingTruncatesLastVisibleLine
 												attributes:@{NSFontAttributeName:nameLabel.font}
 												   context:nil].size;
 		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, size.height);
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + (size.width + 5.0) + ((int)(emotionVO != nil) * 34.0), 9.0, 240.0, 22.0)];
-		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
-		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		subjectLabel.shadowOffset =  CGSizeMake(1.0, 1.0);
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.text = _challengeVO.subjectName;
-		[self addSubview:subjectLabel];
-		
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		profileButton.frame = nameLabel.frame;
 		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:profileButton];
+		
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (size.width + 3.0), 10.0, 240.0, 18.0)];
+		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
+		subjectLabel.backgroundColor = [UIColor clearColor];
+		subjectLabel.text = _challengeVO.subjectName;
+		[self addSubview:subjectLabel];
 	}
 	
 	return (self);

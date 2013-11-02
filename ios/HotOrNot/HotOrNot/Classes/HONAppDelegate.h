@@ -62,7 +62,7 @@ const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
 const CGFloat kHeroVolleyTableCellHeight;
-const CGFloat kVerifyTableCellHeight;
+const CGFloat kHeroVolleyHeroHeight;
 
 // snap params
 const CGFloat kMinLuminosity;
@@ -168,8 +168,11 @@ extern NSString * const kNetErrorStatusCode404;
 + (UIColor *)honPercentGreyscaleColor:(CGFloat)percent;
 
 + (UIColor *)honBlueTextColor;
++ (UIColor *)honBlueTextColorHighlighted;
 + (UIColor *)honGreenTextColor;
-+ (UIColor *)honGreyTimeColor;
++ (UIColor *)honGreyTextColor;
++ (UIColor *)honDarkGreyTextColor;
++ (UIColor *)honLightGreyTextColor;
 
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent;
 

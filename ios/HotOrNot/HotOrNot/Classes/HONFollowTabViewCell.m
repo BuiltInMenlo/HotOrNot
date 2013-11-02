@@ -29,7 +29,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor blackColor];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyRowBackground"]];
 	}
 	
 	return (self);
@@ -40,7 +40,7 @@
 	
 	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 420.0)];
 	_imageHolderView.clipsToBounds = YES;
-	_imageHolderView.backgroundColor = [UIColor blackColor];
+	_imageHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
@@ -55,7 +55,6 @@
 	NSMutableString *imageURL = [challengeVO.creatorVO.imagePrefix mutableCopy];
 	[imageURL replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
 	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	NSLog(@"IMAGE:[%@]", imageURL);
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
@@ -86,16 +85,16 @@
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(29.0, 0.0, 133.0, 74.0);
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"okButton_nonActive"] forState:UIControlStateNormal];
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"okButton_Active"] forState:UIControlStateHighlighted];
+	approveButton.frame = CGRectMake(29.0, 0.0, 134.0, 74.0);
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"followOKButton_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"followOKButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	dispproveButton.frame = CGRectMake(157.0, 0.0, 133.0, 74.0);
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"noButton_nonActive"] forState:UIControlStateNormal];
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"noButton_Active"] forState:UIControlStateHighlighted];
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"followNoButton_nonActive"] forState:UIControlStateNormal];
+	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"followNoButton_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:dispproveButton];
 	
@@ -111,7 +110,7 @@
 
 - (void)showTapOverlay {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 	[self.contentView addSubview:tappedOverlayView];
 	
 	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

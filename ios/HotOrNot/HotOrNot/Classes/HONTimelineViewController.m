@@ -198,7 +198,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [UIColor blackColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
 	
 	_challenges = [NSMutableArray array];
@@ -309,19 +309,6 @@
 		[alertView setTag:1];
 		[alertView show];
 	}
-}
-
-- (void)_goCloseBanner {
-	[[Mixpanel sharedInstance] track:@"Timeline - Close Banner"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
-	} completion:^(BOOL finished) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"home_banner"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}];
 }
 
 - (void)_goRegistration {
@@ -687,11 +674,13 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 5.0)];
-	footerView.backgroundColor = [UIColor greenColor];
-	footerView.alpha = 0.0;
+//	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 5.0)];
+//	footerView.backgroundColor = [UIColor greenColor];
+//	footerView.alpha = 0.0;
+//	
+//	return (footerView);
 	
-	return (footerView);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -720,7 +709,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-	return (5.0);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

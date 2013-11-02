@@ -25,10 +25,10 @@
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
-@property (nonatomic, strong) UIView *buttonHolderView;
+@property (nonatomic, strong) UIImageView *buttonHolderImageView;
 @property (nonatomic, strong) HONVolleyEmotionsPickerView *subjectsView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) UIView *headerBGView;
+@property (nonatomic, strong) UIImageView *headerBGImageView;
 @property (nonatomic, strong) UIImageView *replyImageView;
 @end
 
@@ -40,7 +40,7 @@
 
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor blackColor];
+		self.backgroundColor = [UIColor whiteColor];
 		_subjectName = subject;
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
@@ -64,7 +64,7 @@
 
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor blackColor];;
+		self.backgroundColor = [UIColor whiteColor];;
 		_subjectName = subject;
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
@@ -100,10 +100,10 @@
 	_placeholderLabel.frame = CGRectMake(10.0 + ((int)_isJoinChallenge) * 25.0, _placeholderLabel.frame.origin.y, _placeholderLabel.frame.size.width - (((int)_isJoinChallenge) * 25.0), _placeholderLabel.frame.size.height);
 	_subjectTextField.frame = _placeholderLabel.frame;
 	
-	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smallReplyArrow_nonActive"]];
+	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyArrow"]];
 	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 5.0, 10.0);
 	_replyImageView.hidden = !_isJoinChallenge;
-	[_headerBGView addSubview:_replyImageView];
+	[_headerBGImageView addSubview:_replyImageView];
 	
 	_creatorSubjectName = (_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
 	_subjectTextField.text = (_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : _subjectName;
@@ -127,7 +127,7 @@
 	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
 	
 	_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
-	_blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+	_blackMatteView.backgroundColor = [UIColor blackColor];
 	_blackMatteView.alpha = 0.0;
 	[self addSubview:_blackMatteView];
 	
@@ -135,68 +135,69 @@
 	_previewBackButton.frame = self.frame;
 	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
-	_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-	_headerBGView.backgroundColor = [UIColor blackColor];
-	[self addSubview:_headerBGView];
+	_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraInputField"]];
+	_headerBGImageView.userInteractionEnabled = YES;
+	[self addSubview:_headerBGImageView];
 		
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, -2.0, 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_placeholderLabel.textColor = [UIColor whiteColor];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"how are you feeling?" : @"";
-	[_headerBGView addSubview:_placeholderLabel];
+	[_headerBGImageView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[UIColor whiteColor]];
+	[_subjectTextField setTextColor:[HONAppDelegate honBlueTextColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.placeholder = @"#";
 	_subjectTextField.text = (_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : _subjectName;
 	_subjectTextField.delegate = self;
-	[_headerBGView addSubview:_subjectTextField];
+	[_headerBGImageView addSubview:_subjectTextField];
 	
 	_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_cancelButton.frame = CGRectMake(248.0, 0.0, 64.0, 44.0);
 	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	_cancelButton.alpha = 0.75;
-	[_headerBGView addSubview:_cancelButton];
+	[_headerBGImageView addSubview:_cancelButton];
 	
 	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0)) AsComposeSubjects:!_isJoinChallenge];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	[self addSubview:_subjectsView];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 50.0, 320.0, 50.0)];
-	_buttonHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-	_buttonHolderView.alpha = 0.0;
-	[self addSubview:_buttonHolderView];
+	_buttonHolderImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 50.0, 320.0, 50.0)];
+	_buttonHolderImageView.image = [UIImage imageNamed:@"sendBackground"];
+	_buttonHolderImageView.userInteractionEnabled = YES;
+	_buttonHolderImageView.alpha = 0.0;
+	[self addSubview:_buttonHolderImageView];
 	
 	UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	retakeButton.frame = CGRectMake(10.0, 3.0, 64.0, 44.0);
 	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_nonActive"] forState:UIControlStateNormal];
 	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_Active"] forState:UIControlStateHighlighted];
 	[retakeButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchDown];
-	[_buttonHolderView addSubview:retakeButton];
+	[_buttonHolderImageView addSubview:retakeButton];
 	
 	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	previewButton.frame = CGRectMake(91.0, 3.0, 64.0, 44.0);
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
 	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
-	[_buttonHolderView addSubview:previewButton];
+	[_buttonHolderImageView addSubview:previewButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(256.0, 3.0, 64.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
+	submitButton.frame = CGRectMake(246.0, 3.0, 74.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraSubmitButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
-	[_buttonHolderView addSubview:submitButton];
+	[_buttonHolderImageView addSubview:submitButton];
 }
 
 
@@ -242,7 +243,7 @@
 		[_subjectTextField resignFirstResponder];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_blackMatteView.alpha = 0.33;
-			_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
+			_buttonHolderImageView.frame = CGRectOffset(_buttonHolderImageView.frame, 0.0, 216.0);
 			_placeholderLabel.alpha = 0.0;
 			_subjectTextField.alpha = 0.0;
 			_cancelButton.alpha = 0.0;
@@ -290,11 +291,11 @@
 			_tutorialImageView.alpha = 1.0;
 		
 		_blurredImageView.alpha = 1.0;
-		_headerBGView.alpha = 1.0;
+		_headerBGImageView.alpha = 1.0;
 		_blackMatteView.alpha = 0.0;
 		_subjectsView.alpha = 1.0;
-		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
-		_buttonHolderView.alpha = 1.0;
+		_buttonHolderImageView.frame = CGRectOffset(_buttonHolderImageView.frame, 0.0, -216.0);
+		_buttonHolderImageView.alpha = 1.0;
 		_cancelButton.alpha = 1.0;
 	}completion:^(BOOL finished) {
 	}];
@@ -309,10 +310,10 @@
 		}
 		
 		_blurredImageView.alpha = 0.0;
-		_headerBGView.alpha = 0.0;
+		_headerBGImageView.alpha = 0.0;
 		_blackMatteView.alpha = 0.0;
 		_subjectsView.alpha = 0.0;
-		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
+		_buttonHolderImageView.frame = CGRectOffset(_buttonHolderImageView.frame, 0.0, 216.0);
 	} completion:^(BOOL finished) {
 		_subjectsView.hidden = YES;
 		

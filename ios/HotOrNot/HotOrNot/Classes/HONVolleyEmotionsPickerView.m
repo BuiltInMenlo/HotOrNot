@@ -27,7 +27,7 @@
 		_emotions = (_isJoinVolley) ? [HONAppDelegate replyEmotions] : [HONAppDelegate composeEmotions];
 		
 		_tableView = [[UITableView alloc] initWithFrame:CGRectOffset(frame, 0.0, -frame.origin.y) style:UITableViewStylePlain];
-		[_tableView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+		[_tableView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.65]];
 		_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 		_tableView.delegate = self;
 		_tableView.dataSource = self;
@@ -77,17 +77,16 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableHeaderHeight)];
-	headerView.backgroundColor = [UIColor colorWithWhite:0.090 alpha:1.0];
+	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 320.0, kOrthodoxTableHeaderHeight)];
 	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:12];
 	label.textColor = [HONAppDelegate honPercentGreyscaleColor:0.318];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (_isJoinVolley) ? @"REPLIES" : @"TRENDING";
-	[headerView addSubview:label];
+	[headerImageView addSubview:label];
 	
-	return (headerView);
+	return (headerImageView);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

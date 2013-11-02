@@ -31,7 +31,7 @@
 		[self addSubview:_staticBGImageView];
 		
 		_greenBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 49.0)];
-		_greenBGImageView.backgroundColor = [UIColor blackColor];
+		_greenBGImageView.backgroundColor = [UIColor whiteColor];
 		_greenBGImageView.userInteractionEnabled = YES;
 		_greenBGImageView.alpha = 0.0;
 		[_staticBGImageView addSubview:_greenBGImageView];

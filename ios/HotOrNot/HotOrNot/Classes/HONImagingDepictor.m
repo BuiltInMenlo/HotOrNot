@@ -28,50 +28,28 @@
 }
 
 + (UIImage *)createImageFromScreen {
-	
-	/*
-	CGImageRef UIGetScreenImage(void);
-	CGImageRef screen = UIGetScreenImage();
-	UIImage* screenImage = [UIImage imageWithCGImage:screen];
-	CGImageRelease(screen);
-	
-	if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
-		CGSize size = CGSizeMake(screenImage.size.width * 0.5, screenImage.size.height * 0.5);
-		
-		UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
-		[screenImage drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
-		UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-		UIGraphicsEndImageContext();
-		
-		return (scaledImage);
-		
-	} else
-		return (screenImage);
-	 */
-	
-	// Create a graphics context with the target size
-    // On iOS 4 and later, use UIGraphicsBeginImageContextWithOptions to take the scale into consideration
-    // On iOS prior to 4, fall back to use UIGraphicsBeginImageContext
     CGSize imageSize = [[UIScreen mainScreen] bounds].size;
     if (NULL != UIGraphicsBeginImageContextWithOptions)
         UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-    else
+    
+	else
         UIGraphicsBeginImageContext(imageSize);
 	
     CGContextRef context = UIGraphicsGetCurrentContext();
 	
     // Iterate over every window from back to front
-    for (UIWindow *window in [[UIApplication sharedApplication] windows])
-    {
-        if (![window respondsToSelector:@selector(screen)] || [window screen] == [UIScreen mainScreen])
-        {
+    for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        if (![window respondsToSelector:@selector(screen)] || [window screen] == [UIScreen mainScreen]) {
             // -renderInContext: renders in the coordinate space of the layer,
             // so we must first apply the layer's geometry to the graphics context
             CGContextSaveGState(context);
+			
             // Center the context around the window's anchor point
             CGContextTranslateCTM(context, [window center].x, [window center].y);
+			
             // Apply the window's transform about the anchor point
             CGContextConcatCTM(context, [window transform]);
+			
             // Offset by the portion of the bounds left of and above the anchor point
             CGContextTranslateCTM(context,
                                   -[window bounds].size.width * [[window layer] anchorPoint].x,
@@ -94,7 +72,7 @@
 }
 
 + (UIImage *)createBlurredScreenShot {
-	return ([[HONImagingDepictor createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
+	return ([[HONImagingDepictor createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:1.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
 }
 
 + (double)totalLuminance:(UIImage *)image {
