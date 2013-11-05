@@ -254,6 +254,26 @@ Small_160x160
         }
     }
     
+    public static function removeDeadLikes(){
+        $sql = "
+            select user_id
+            from `hotornot-dev`.tblUsers as u
+            right join `hotornot-dev`.tblChallengeVotes as v
+                on u.id = v.user_id
+            where u.id is null
+            group by user_id
+        ";
+		$dao = new BIM_DAO_Mysql( BIM_Config::db() );
+		$stmt = $dao->prepareAndExecute($sql);
+		$ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+		foreach( $ids as $id ){
+		    echo "removing $id\n";
+		    $sql = "delete from `hotornot-dev`.tblChallengeVotes where user_id = ?";
+		    $params = array( $id );
+		    $dao->prepareAndExecute($sql,$params);
+		}
+    }
+    
     public static function hashLists(){
         $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
         $docs = $dao->getPhoneLists();

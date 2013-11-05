@@ -29,6 +29,13 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
         
         $sql = "
+        	delete from `hotornot-dev`.tblChallengeVotes
+        	where user_id = ?
+        ";
+        $params = array( $userId );
+        $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
         	delete from `hotornot-dev`.tblChallenges 
         	where creator_id = ?
         ";
@@ -71,6 +78,13 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	) or user_id = ?
         ";
         $params = array( $userId, $userId );
+        $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
+        	delete from `hotornot-dev`.tblChallengeVotes
+        	where user_id = ?
+        ";
+        $params = array( $userId );
         $this->prepareAndExecute( $sql, $params );
         
         $sql = "
