@@ -9,13 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
+#import "HONChallengeVO.h"
 
 @protocol HONTimelineItemViewCellDelegate;
 @interface HONTimelineItemViewCell : UITableViewCell
 
 + (NSString *)cellReuseIdentifier;
 - (id)init;
-- (void)upvoteUser:(int)userID;
+- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO;
 - (void)showTapOverlay;
 - (void)removeTutorialBubble;
 

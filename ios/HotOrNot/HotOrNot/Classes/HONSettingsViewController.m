@@ -590,6 +590,16 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
+			Mixpanel *mixpanel = [Mixpanel sharedInstance];
+			[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+								   @"deactivated"	: @"YES"}];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"is_deactivated"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
 			[self _wipeUser];
 		}
 	

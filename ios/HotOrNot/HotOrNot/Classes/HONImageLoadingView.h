@@ -8,16 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-const NSInteger kTotalDots;
-const CGFloat kDotDimensions;
-const CGFloat kDotSpacing;
-const CGFloat kAnimationTime;
-const CGFloat kDelay;
 
+const CGFloat kAnimationTime;
 
 @interface HONImageLoadingView : UIView
-- (id)initInViewCenter:(UIView *)view;
-- (id)initAtPos:(CGPoint)pos;
+- (id)initInViewCenter:(UIView *)view asLargeLoader:(BOOL)isLarge;
+- (id)initAtPos:(CGPoint)pos asLargeLoader:(BOOL)isLarge;
 
 - (void)startAnimating;
 - (void)stopAnimating;

@@ -35,20 +35,18 @@
 @property (nonatomic, strong) NSString *email;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
-@property (nonatomic, strong) UIView *usernameHolderView;
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UITextField *emailTextField;
 @property (nonatomic, retain) UIButton *usernameButton;
 @property (nonatomic, retain) UIButton *emailButton;
 @property (nonatomic, retain) UIButton *birthdayButton;
-@property (nonatomic, strong) UIView *tutorialHolderView;
 @property (nonatomic, strong) UIDatePicker *datePicker;
 @property (nonatomic, strong) UILabel *birthdayLabel;
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) UIImageView *splashImageView;
+@property (nonatomic, strong) UIView *splashHolderView;
 @property (nonatomic, strong) NSString *splashImageURL;
 
 @property (nonatomic) int selfieAttempts;
@@ -244,19 +242,20 @@
 				[HONAppDelegate writeUserInfo:userResult];
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 				
-				Mixpanel *mixpanel = [Mixpanel sharedInstance];
-				[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
-				[mixpanel.people set:@{@"$email"	: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-									   @"$created"	: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-									   @"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-									   @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"]}];
-				
 				[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 				
+				Mixpanel *mixpanel = [Mixpanel sharedInstance];
+				[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+				[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+									   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+									   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+									   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+									   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
@@ -446,9 +445,6 @@
 	_headerView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:_headerView];
 	
-	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	[self.view addSubview:_usernameHolderView];
-	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, 64.0, 320.0, 64.0);
 	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
@@ -540,10 +536,12 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
-	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_tutorialHolderView.backgroundColor = [UIColor whiteColor];
-	_tutorialHolderView.alpha = 0.0;
-	[self.view addSubview:_tutorialHolderView];
+	UIImageView *splashBGImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	splashBGImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
+	[self.view addSubview:splashBGImageView];
+	
+	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_splashHolderView.alpha = 0.0;
 }
 
 - (void)viewDidLoad {
@@ -553,7 +551,35 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
+	UIImageView *tintImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	tintImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"overlayTint_1stRun-568h@2x" : @"overlayTint_1stRun"];
+	[_splashHolderView addSubview:tintImageView];
+	
+	UIImageView *splashTxtImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	[_splashHolderView addSubview:splashTxtImageView];
+	
 	if ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) {
+		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			splashTxtImageView.image = image;
+		};
+		
+		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			splashTxtImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
+		};
+		
+		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+								  placeholderImage:nil
+										   success:successBlock
+										   failure:failureBlock];
+		
+		
+		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (23.0 + ((int)([HONAppDelegate isRetina4Inch]) * 88.0)), 320.0, 64.0);
+		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
+		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+		[_splashHolderView addSubview:signupButton];
+		
 		if (_isFirstAppearance) {
 			_isFirstAppearance = NO;
 			
@@ -566,99 +592,40 @@
 				imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
 				imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 				
-				UIView *cameraOverlayView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				cameraOverlayView.backgroundColor = TINT_COLOR;
-				cameraOverlayView.alpha = 0.0;
-				
-				UIImageView *overlayImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				[overlayImageView setImageWithURL:[NSURL URLWithString:_splashImageURL] placeholderImage:nil];
-				overlayImageView.userInteractionEnabled = YES;
-				[cameraOverlayView addSubview:overlayImageView];
-				
-				UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (23.0 + ((int)([HONAppDelegate isRetina4Inch]) * 88.0)), 320.0, 64.0);
-				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-				[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-				[cameraOverlayView addSubview:signupButton];
-				
-				imagePickerController.cameraOverlayView = cameraOverlayView;
+				imagePickerController.cameraOverlayView = _splashHolderView;
 				self.splashImagePickerController = imagePickerController;
 				
 				[self presentViewController:self.splashImagePickerController animated:NO completion:^(void) {
 					[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-						cameraOverlayView.alpha = 1.0;
+						_splashHolderView.alpha = 1.0;
 					} completion:^(BOOL finished) {
 					}];
 				}];
 				
 			} else {
-				void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-					_splashImageView.image = image;
-				};
-				
-				void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-					_splashImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
-				};
-				
-				
-				_splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-				_splashImageView.userInteractionEnabled = YES;
-				_splashImageView.backgroundColor = TINT_COLOR;
-				[_tutorialHolderView addSubview:_splashImageView];
-				[_splashImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-										placeholderImage:nil
-												 success:successBlock
-												 failure:failureBlock];
-				
-				UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				//signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (114.0 + (![HONAppDelegate isRetina4Inch] * 30.0)), 320.0, 64.0);
-				signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (23.0 + ((int)([HONAppDelegate isRetina4Inch]) * 88.0)), 320.0, 64.0);
-				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-				[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-				[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-				[_tutorialHolderView addSubview:signupButton];
-				
-				[UIView animateWithDuration:0.33
-								 animations:^(void) {
-									 _tutorialHolderView.alpha = 1.0;}];
+//				_splashHolderView.backgroundColor = [UIColor blackColor];
+				[self.view addSubview:_splashHolderView];
 				
 				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
 				easterEggButton.frame = CGRectMake(152.0, 230.0, 16.0, 8.0);
 				//easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.75];
 				[easterEggButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchDown];
-				[_tutorialHolderView addSubview:easterEggButton];
+				[_splashHolderView addSubview:easterEggButton];
+				
+				[UIView animateWithDuration:0.33 animations:^(void) {
+					_splashHolderView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+				}];
 			}
 		}
 	
 	} else {
-		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			_splashImageView.image = image;
-		};
-		
-		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			_splashImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
-		};
-		
-		UIImageView *splashImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		splashImageView.userInteractionEnabled = YES;
-		splashImageView.backgroundColor = TINT_COLOR;
-		[_tutorialHolderView addSubview:splashImageView];
-		[splashImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-								placeholderImage:nil
-										 success:successBlock
-										 failure:failureBlock];
-		
-		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		//signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (114.0 + (![HONAppDelegate isRetina4Inch] * 30.0)), 320.0, 64.0);
-		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (23.0 + ((int)([HONAppDelegate isRetina4Inch]) * 88.0)), 320.0, 64.0);
-		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
-		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-		[_tutorialHolderView addSubview:signupButton];
+//		_splashHolderView.backgroundColor = [UIColor blackColor];
+		[self.view addSubview:_splashHolderView];
 		
 		[UIView animateWithDuration:0.33 animations:^(void) {
-			_tutorialHolderView.alpha = 1.0;
+			_splashHolderView.alpha = 1.0;
+		} completion:^(BOOL finished) {
 		}];
 	}
 }
@@ -695,13 +662,7 @@
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
 	[UIView setAnimationDelay:0.33];
-	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	[UIView setAnimationDelay:0.33];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
 	[UIView commitAnimations];
 }
 
@@ -867,22 +828,12 @@
 	}];
 }
 
-- (BOOL)_isValidEmail:(NSString *)checkString {
-	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
-	
-	NSString *stricterFilterString = @"^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z‌​]{2,4})$";
-	NSString *laxString = @".+@([A-Za-z0-9]+\\.)+[A-Za-z]{2}[A-Za-z]*";
-	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", (stricterFilter) ? stricterFilterString : laxString];
-	
-	return ([emailTest evaluateWithObject:checkString]);
-}
-
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	int regCheck = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([self _isValidEmail:_emailTextField.text]) * 2) + ((int)(![_birthdayLabel.text isEqualToString:@"What is your birthday?"]) * 4);
+	int regCheck = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_emailTextField.text]) * 2) + ((int)(![_birthdayLabel.text isEqualToString:@"What is your birthday?"]) * 4);
 	
 	if (regCheck == 0) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username, Email or Birthday!"
@@ -976,7 +927,7 @@
 			[self _uploadPhoto:image];
 //			[self dismissViewControllerAnimated:YES completion:^(void) {}];
 			
-			_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 			
 			[_usernameTextField becomeFirstResponder];
 			[_usernameButton setSelected:YES];
@@ -989,12 +940,6 @@
 //				previewImageView.image = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 //				[_cameraOverlayView addSubview:previewImageView];
 //			}];
-			
-			[UIView beginAnimations:nil context:NULL];
-			[UIView setAnimationDuration:0.5];
-			[UIView setAnimationDelay:0.33];
-			_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-			[UIView commitAnimations];
 		
 //		} else {
 //			[[Mixpanel sharedInstance] track:@"Register - Face Detection Failed"
@@ -1133,16 +1078,10 @@
 			_filename = @"";
 			[self.profileImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
 			
-			_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 			
 			[_usernameTextField becomeFirstResponder];
 			[_usernameButton setSelected:YES];
-			
-			[UIView beginAnimations:nil context:NULL];
-			[UIView setAnimationDuration:0.5];
-			[UIView setAnimationDelay:0.33];
-			_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-			[UIView commitAnimations];
 		}
 	
 	} else if (alertView.tag == 2) {

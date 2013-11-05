@@ -42,7 +42,7 @@
 	_imageHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_imageHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView asLargeLoader:NO];
 	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
@@ -68,9 +68,6 @@
 								   failure:failureBlock];
 	
 //	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"topFade"]]];
-//	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-//	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 270.0 - gradientImageView.frame.size.height);
-//	[self.contentView addSubview:gradientImageView];
 		
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(250.0, 0.0, 70.0, 297.0)];
 	buttonHolderView.backgroundColor = [UIColor whiteColor];

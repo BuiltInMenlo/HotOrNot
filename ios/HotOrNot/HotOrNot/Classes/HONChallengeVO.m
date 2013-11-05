@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, challengers, commentTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
+@synthesize challengeID, statusID, status, subjectName, recentLikes, challengers, commentTotal, likesTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -71,13 +71,39 @@
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[dictionary objectForKey:@"creator"]];
 	[dict setObject:[dateFormat stringFromDate:vo.addedDate] forKey:@"joined"];
 	vo.creatorVO = [HONOpponentVO opponentWithDictionary:dict];
+	vo.likesTotal = vo.creatorVO.score;
 	
 	vo.challengers = [NSMutableArray array];
 	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {
-		[vo.challengers addObject:[HONOpponentVO opponentWithDictionary:challenger]];
+		HONOpponentVO *opponentVO = [HONOpponentVO opponentWithDictionary:challenger];
+		[vo.challengers addObject:opponentVO];
+		vo.likesTotal += opponentVO.score;
 	}
 	
-//	NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
+	
+//NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+	NSArray *userLikes = [dictionary objectForKey:@"recent_likes"];
+	if ([dictionary objectForKey:@"recent_likes"] != [NSNull null] && [userLikes count] > 0) {
+		int remaining = vo.likesTotal - [userLikes count];
+//		NSLog(@"%d <) recent_likes:[%@]", vo.challengeID, userLikes);
+		
+		if ([userLikes count] == 3) {
+				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, %@, %@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [NSString stringWithFormat:@"%@, %@, and %@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"]];
+			
+		} else if ([userLikes count] == 2) {
+				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, %@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [NSString stringWithFormat:@"%@ and %@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"]];
+			
+		} else if ([userLikes count] == 1) {
+				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [[userLikes objectAtIndex:0] objectForKey:@"username"];
+			
+		} else
+			vo.recentLikes = @"Be the first to like";
+		
+	} else
+		vo.recentLikes = @"Be the first to like";
+	
+	
+	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
 	
 	return (vo);
 }
@@ -85,6 +111,8 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.status = nil;
+	self.recentLikes = nil;
+	self.challengers = nil;
 	self.subjectName = nil;
 	self.startedDate = nil;
 	self.addedDate = nil;

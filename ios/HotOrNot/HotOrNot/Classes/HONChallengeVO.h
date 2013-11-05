@@ -20,6 +20,7 @@
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic) int commentTotal;
+@property (nonatomic) int likesTotal;
 @property (nonatomic) BOOL hasViewed;
 @property (nonatomic) BOOL isCelebCreated;
 @property (nonatomic) BOOL isExploreChallenge;
@@ -27,7 +28,9 @@
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;
 
+@property (nonatomic, retain) NSString *recentLikes;
 @property (nonatomic, retain) HONOpponentVO *creatorVO;
 @property (nonatomic, retain) NSMutableArray *challengers;
+
 
 @end

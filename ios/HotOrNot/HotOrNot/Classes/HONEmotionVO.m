@@ -11,7 +11,7 @@
 @implementation HONEmotionVO
 
 @synthesize dictionary;
-@synthesize emotionID, emotionName, hastagName, imagePrefix, imageLargeURL, imageSmallURL, price, isFree;
+@synthesize emotionID, emotionName, hastagName, urlPrefix, urlLargeBlue, urlSmallBlue, urlSmallWhite, price, isFree;
 
 + (HONEmotionVO *)emotionWithDictionary:(NSDictionary *)dictionary {
 	HONEmotionVO *vo = [[HONEmotionVO alloc] init];
@@ -20,9 +20,10 @@
 	vo.emotionID = [[dictionary objectForKey:@"id"] intValue];
 	vo.emotionName = [dictionary objectForKey:@"name"];
 	vo.hastagName = [NSString stringWithFormat:@"#%@", vo.emotionName];
-	vo.imagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"emoticons"], vo.emotionName];
-	vo.imageLargeURL = [NSString stringWithFormat:@"%@_large.png", vo.imagePrefix];
-	vo.imageSmallURL = [NSString stringWithFormat:@"%@_small.png", vo.imagePrefix];
+	vo.urlPrefix = [dictionary objectForKey:@"img"];
+	vo.urlLargeBlue = [vo.urlPrefix stringByAppendingString:@"-lg_blue.png"];
+	vo.urlSmallBlue = [vo.urlPrefix stringByAppendingString:@"-sm_blue.png"];
+	vo.urlSmallWhite = [vo.urlPrefix stringByAppendingString:@"-sm_white.png"];
 	vo.price = [[dictionary objectForKey:@"price"] floatValue];
 	vo.isFree = (vo.price == 0.0);
 	
@@ -33,9 +34,10 @@
 	self.dictionary = nil;
 	self.emotionName = nil;
 	self.hastagName = nil;
-	self.imagePrefix = nil;
-	self.imageLargeURL = nil;
-	self.imageSmallURL = nil;
+	self.urlPrefix = nil;
+	self.urlLargeBlue = nil;
+	self.urlSmallBlue = nil;
+	self.urlSmallWhite = nil;
 }
 
 @end

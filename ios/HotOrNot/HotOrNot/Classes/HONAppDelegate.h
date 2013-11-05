@@ -162,6 +162,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (BOOL)canPingConfigServer;
 + (NSString *)deviceLocale;
 
++ (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)formattedExpireTime:(int)seconds;
 + (NSString *)cleanImageURL:(NSString *)imageURL;

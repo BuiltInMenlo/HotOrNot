@@ -52,8 +52,8 @@
 
 
 #pragma mark - Public APIs
-- (void)upvoteUser:(int)userID {
-	[_timelineItemFooterView upvoteUser:userID];
+- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO {
+	[_timelineItemFooterView upvoteUser:userID onChallenge:challengeVO];
 }
 
 - (void)removeTutorialBubble {
@@ -88,7 +88,7 @@
 	_heroHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_heroHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroHolderView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroHolderView asLargeLoader:NO];
 	[imageLoadingView startAnimating];
 	[_heroHolderView addSubview:imageLoadingView];
 	
@@ -97,9 +97,16 @@
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
-		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]];
+		gradientImageView.alpha = 0.0;
+		[_heroHolderView addSubview:gradientImageView];
+		
+		[UIView animateWithDuration:0.5 animations:^(void) {
 			_heroImageView.alpha = 1.0;
-		} completion:nil];
+			gradientImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -114,11 +121,6 @@
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
-	
-//	[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"topFade"]]];
-//	UIImageView *gradientFooterImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"lowerInfoBackground"]];
-//	gradientFooterImageView.frame = CGRectOffset(gradientFooterImageView.frame, 0.0, kHeroVolleyHeroHeight - gradientFooterImageView.frame.size.height);
-//	[self.contentView addSubview:gradientFooterImageView];
 	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = _heroHolderView.frame;

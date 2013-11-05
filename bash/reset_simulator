@@ -58,10 +58,11 @@ fi
 
 # call wipe user
 printf "Wiping user %s from db... " "${username}"
-result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}" --output /dev/null 2>&1)
+result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
+isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 
 #-- check for user json
-if [ $(echo "${result}" | grep total_challenges) ]; then printf "Completed!\n"
+if [ "$isUser" ]; then printf "Completed!\n"
 else printf "Not found!\n"; fi
 
 #-- exit w/o error

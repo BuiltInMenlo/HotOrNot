@@ -38,7 +38,7 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *contentHolderView;
-@property (nonatomic, strong) UIView *heroImageHolderView;
+@property (nonatomic, strong) UIView *heroHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
@@ -305,18 +305,25 @@
 }
 
 - (void)_makeHero {
-	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyHeroHeight)];
-	_heroImageHolderView.clipsToBounds = YES;
-	[_contentHolderView addSubview:_heroImageHolderView];
+	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyHeroHeight)];
+	_heroHolderView.clipsToBounds = YES;
+	[_contentHolderView addSubview:_heroHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroImageHolderView];
-	[_heroImageHolderView addSubview:imageLoadingView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroHolderView asLargeLoader:NO];
+	[_heroHolderView addSubview:imageLoadingView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
+		
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]];
+		gradientImageView.alpha = 0.0;
+		[_heroHolderView addSubview:gradientImageView];
+		
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_heroImageView.alpha = 1.0;
-		} completion:nil];
+			gradientImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -326,16 +333,18 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
-	[_heroImageHolderView addSubview:_heroImageView];
+	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
 	
+	
+	
 	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroImageHolderView.frame.size.width, _heroImageHolderView.frame.size.height);
+	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
 	[heroPreviewButton addTarget:self action:@selector(_goHeroPreview) forControlEvents:UIControlEventTouchUpInside];
-	[_heroImageHolderView addSubview:heroPreviewButton];
+	[_heroHolderView addSubview:heroPreviewButton];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;
@@ -343,7 +352,7 @@
 	
 	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
 	creatorHeaderView.delegate = self;
-	[_heroImageHolderView addSubview:creatorHeaderView];
+	[_heroHolderView addSubview:creatorHeaderView];
 	
 	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kHeroVolleyHeroHeight withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
@@ -419,7 +428,7 @@
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
 		
-		_opponentVO = (CGRectContainsPoint(_heroImageHolderView.frame, touchPoint)) ? _heroOpponentVO : nil;
+		_opponentVO = (CGRectContainsPoint(_heroHolderView.frame, touchPoint)) ? _heroOpponentVO : nil;
 		[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
@@ -448,6 +457,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 	}];
@@ -668,6 +678,7 @@
 }
 
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
@@ -691,7 +702,7 @@
 		[heartImageView removeFromSuperview];
 	}];
 	
-	[_timelineItemFooterView upvoteUser:opponentVO.userID];
+	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:_challengeVO];
 }
 
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {

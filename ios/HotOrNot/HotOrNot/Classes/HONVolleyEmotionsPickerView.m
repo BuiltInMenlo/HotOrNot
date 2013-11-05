@@ -80,7 +80,7 @@
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 320.0, kOrthodoxTableHeaderHeight)];
-	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:12];
+	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 	label.textColor = [HONAppDelegate honPercentGreyscaleColor:0.318];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (_isJoinVolley) ? @"REPLIES" : @"TRENDING";

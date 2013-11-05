@@ -28,11 +28,11 @@
 		
 		_emotionVO = emotionVO;
 		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 9.0, 44.0, 44.0)];
-		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.imageSmallURL] placeholderImage:nil];
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 14.0, 37.0, 37.0)];
+		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.urlLargeBlue] placeholderImage:nil];
 		[self.contentView addSubview:imageView];
 		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 200.0, 24.0)];
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 20.0, 200.0, 24.0)];
 		label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:19];
 		label.textColor = [HONAppDelegate honBlueTextColor];
 		label.backgroundColor = [UIColor clearColor];

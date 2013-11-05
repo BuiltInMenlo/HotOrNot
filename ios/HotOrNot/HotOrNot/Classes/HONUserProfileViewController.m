@@ -779,7 +779,7 @@
 	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(120.0, 85.0, 80.0, 80.0)];
 	[_scrollView addSubview:avatarHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView asLargeLoader:NO];
 	[imageLoadingView startAnimating];
 	[avatarHolderView addSubview:imageLoadingView];
 	

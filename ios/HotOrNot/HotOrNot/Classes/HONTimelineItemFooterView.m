@@ -27,24 +27,23 @@
 		_challengeVO = challengeVO;
 		
 		_likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_likesButton.frame = CGRectMake(6.0, 4.0, 24.0, 24.0);
+		_likesButton.frame = CGRectMake(6.0, 5.0 - ((int)([self _calcScore] == 0)), 24.0, 24.0);
 		[_likesButton setBackgroundImage:[UIImage imageNamed:([self _calcScore] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateNormal];
 		[_likesButton setBackgroundImage:[UIImage imageNamed:([self _calcScore] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateHighlighted];
 		[self addSubview:_likesButton];
 		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(33.0, 9.0, 250.0, 14.0)];
-		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, 10.0, 270.0, 14.0)];
+		_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
 		_likesLabel.textColor = ([self _calcScore] == 0) ? [HONAppDelegate honGreyTextColor] : [HONAppDelegate honDarkGreyTextColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
-		_likesLabel.text = [self _captionForScore];
+		_likesLabel.text = _challengeVO.recentLikes;
 		[self addSubview:_likesLabel];
 		
 		
-		UIView *participantsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 33.0, 320.0, 53.0)];
-		[self addSubview:participantsView];
-		
 		CGFloat offset;
 		NSArray *participants;
+		UIView *participantsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 33.0, 320.0, 53.0)];
+		[self addSubview:participantsView];
 		
 		if ([_challengeVO.challengers count] >= 2) {
 			participants = [NSArray arrayWithObjects:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0], (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:1], nil];
@@ -93,20 +92,29 @@
 		participantsLabel.text = [self _captionForParticipants];
 		[participantsView addSubview:participantsLabel];
 		
-		HONEmotionVO *emotionVO = [self _participantEmotionVO];
-		if (emotionVO != nil && [_challengeVO.challengers count] > 0) {
-			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0 + (offset - 7.0), 18.0, 30.0, 30.0)];
-			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
-			[participantsView addSubview:emoticonImageView];
-		}
 		
-		offset += ((int)(emotionVO != nil) * 21.0);
 		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 24.0, 257.0 - offset, 18.0)];
-		subjectLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 		subjectLabel.text = ((HONOpponentVO *)[_challengeVO.challengers firstObject]).subjectName;
 		[participantsView addSubview:subjectLabel];
+		
+		CGSize size = [subjectLabel.text boundingRectWithSize:CGSizeMake(257.0 - offset, 18.0)
+												   options:NSStringDrawingTruncatesLastVisibleLine
+												attributes:@{NSFontAttributeName:subjectLabel.font}
+												   context:nil].size;
+		subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, size.width, size.height);
+		
+		HONEmotionVO *emotionVO = [self _participantEmotionVO];
+		if (emotionVO != nil) {
+			offset += 6.0;
+			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0 + offset + size.width, 23.0, 18.0, 18.0)];
+//			emoticonImageView.image = [UIImage imageNamed:@"emoticon_blue"];
+			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlSmallBlue] placeholderImage:nil];
+			[participantsView addSubview:emoticonImageView];
+		}
+
 		
 		UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		detailsButton.frame = CGRectMake(0.0, 0.0, participantsView.frame.size.width, participantsView.frame.size.height);
@@ -115,7 +123,7 @@
 
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(257.0, 3.0, 64.0, 44.0);
+		joinButton.frame = CGRectMake(257.0, 5.0, 64.0, 44.0);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -127,7 +135,9 @@
 
 
 #pragma mark - Public APIs
-- (void)upvoteUser:(int)userID {
+- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO; {
+	_challengeVO = challengeVO;
+	
 	if (_challengeVO.creatorVO.userID == userID)
 		_challengeVO.creatorVO.score++;
 	
@@ -147,7 +157,7 @@
 			((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
 	}
 	
-	_likesLabel.text = [self _captionForScore];
+	_likesLabel.text = _challengeVO.recentLikes;
 	[_likesButton setBackgroundImage:[UIImage imageNamed:([self _calcScore] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateNormal];
 	[_likesButton setBackgroundImage:[UIImage imageNamed:([self _calcScore] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateHighlighted];
 }
@@ -179,38 +189,29 @@
 	return (score);
 }
 
-- (NSString *)_captionForScore {
-	int score = _challengeVO.creatorVO.score;
-	for (HONOpponentVO *vo in _challengeVO.challengers)
-		score += vo.score;
-	
-	
-	if (score == 0)
-		return (@"Be the first to like");
-	
-	else
-		return ([NSString stringWithFormat:@"%d", score]);
-}
-
 - (HONEmotionVO *)_participantEmotionVO {
 	HONEmotionVO *emotionVO;
 	
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:_challengeVO.subjectName]) {
-			emotionVO = vo;
-			break;
+	if ([_challengeVO.challengers count] > 0) {
+		for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
+			if ([vo.hastagName isEqualToString:((HONOpponentVO *)[_challengeVO.challengers firstObject]).subjectName]) {
+				emotionVO = vo;
+				break;
+			}
 		}
+		
+		return (emotionVO);
 	}
 	
-	return (emotionVO);
+	return (nil);
 }
 
 - (NSString *)_captionForParticipants {
-	NSString *caption = @"";
-	
 	if ([_challengeVO.challengers count] == 0)
 		return (@"Be the first to reply.");
 	
+	
+	NSString *caption = @"";
 	HONOpponentVO *vo = (HONOpponentVO *)[_challengeVO.challengers firstObject];
 	if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 		caption = @"You";

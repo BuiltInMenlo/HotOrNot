@@ -482,7 +482,7 @@
 
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
-	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	if (_uploadTimer != nil) {
 		[_uploadTimer invalidate];

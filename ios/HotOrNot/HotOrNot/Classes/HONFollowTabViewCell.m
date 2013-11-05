@@ -11,9 +11,9 @@
 #import "HONFollowTabViewCell.h"
 #import "HONOpponentVO.h"
 #import "HONImageLoadingView.h"
-//#import "HONFollowTabCellHeaderView.h"
 
-@interface HONFollowTabViewCell() //<HONFollowTabCellHeaderDelegate>
+
+@interface HONFollowTabViewCell()
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
@@ -42,7 +42,7 @@
 	_imageHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_imageHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView asLargeLoader:NO];
 	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
@@ -67,14 +67,7 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
-//	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"topFade"]]];
-//	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-//	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 420 - gradientImageView.frame.size.height);
-//	[self.contentView addSubview:gradientImageView];
-	
-//	HONFollowTabCellHeaderView *headerView = [[HONFollowTabCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
-//	headerView.delegate = self;
-//	[self.contentView addSubview:headerView];
+//	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]]];
 	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 369.0 - 58.0, 320, 58.0)];
 	[self.contentView addSubview:buttonHolderView];
@@ -139,10 +132,5 @@
 	}
 }
 
-
-//#pragma mark FollowTabCellHeader Delegates
-//- (void)cellHeaderView:(HONFollowTabCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
-//	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
-//}
 
 @end

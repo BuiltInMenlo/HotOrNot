@@ -356,14 +356,14 @@
 	_placeholderLabel.text = @"";
 	
 	NSLog(@"join_total:[%d]", [HONAppDelegate totalForCounter:@"join"]);
-	if (_isJoinChallenge && [HONAppDelegate incTotalForCounter:@"join"] == 0) {
-		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this Volley"
-									message:@""
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	
-	} else
+//	if (_isJoinChallenge && [HONAppDelegate incTotalForCounter:@"join"] == 0) {
+//		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this Volley"
+//									message:@""
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//	
+//	} else
 		_subjectTextField.text = emotionVO.hastagName;//(!_isJoinChallenge) ? emotionVO.hastagName : [NSString stringWithFormat:@"%@%@", _creatorSubjectName, emotionVO.hastagName];
 }
 

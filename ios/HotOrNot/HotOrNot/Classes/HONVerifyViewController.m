@@ -279,7 +279,7 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[_tabInfo objectForKey:@"title"]];
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];

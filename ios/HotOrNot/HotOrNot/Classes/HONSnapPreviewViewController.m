@@ -105,6 +105,8 @@
 		_isFromProfile = NO;
 		
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+		
+		NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCHALLENGE DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n", _challengeVO.dictionary);
 	}
 	
 	return (self);
@@ -178,6 +180,8 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			_challengeVO = [HONChallengeVO challengeWithDictionary:[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]];
+			[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
 		}
 		
 		[self _goClose];
@@ -287,7 +291,7 @@
 	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imageHolderView];
 	
-	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView];
+	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView asLargeLoader:NO];
 	[_imageHolderView addSubview:_imageLoadingView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -509,7 +513,6 @@
 	
 	[self _upvoteChallenge:_opponentVO.userID];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
 	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"like_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"like_total"];

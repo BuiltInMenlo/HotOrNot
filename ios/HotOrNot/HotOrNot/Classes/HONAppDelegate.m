@@ -518,6 +518,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSLocale preferredLanguages] objectAtIndex:0]);
 }
 
++ (BOOL)isValidEmail:(NSString *)checkString {
+	BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
+	
+	NSString *stricterFilterString = @"^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z‌​]{2,4})$";
+	NSString *laxString = @".+@([A-Za-z0-9]+\\.)+[A-Za-z]{2}[A-Za-z]*";
+	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", (stricterFilter) ? stricterFilterString : laxString];
+	
+	return ([emailTest evaluateWithObject:checkString]);
+}
+
+
 + (NSString *)timeSinceDate:(NSDate *)date {
 	NSString *timeSince = @"";
 	
@@ -828,10 +839,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
-- (void)_enableNotifications {
+- (void)_enableNotifications:(BOOL)isEnabled {
 	NSDictionary *params = @{@"action"			: [NSString stringWithFormat:@"%d", 4],
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"isNotifications"	: @"Y"};
+							 @"isNotifications"	: (isEnabled) ? @"Y" : @"N"};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -1030,6 +1041,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
 	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
@@ -1244,44 +1258,54 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 //	[FBAppCall handleDidBecomeActive];
 	
-	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
-		[[Mixpanel sharedInstance] track:@"App Leaving Background"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	if (_isFromBackground) {
+		Mixpanel *mixpanel = [Mixpanel sharedInstance];
+		[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+		[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+							   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+							   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+							   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 		
-		
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
-			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
-			if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE FRIENDS?"
-																	message:@"Get more followers now, tap OK."
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"OK", nil];
-				[alertView setTag:3];
-				[alertView show];
+		if ([HONAppDelegate hasNetwork]) {
+			[[Mixpanel sharedInstance] track:@"App Leaving Background"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			
+			
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
+				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
+				if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE FRIENDS?"
+																		message:@"Get more followers now, tap OK."
+																	   delegate:self
+															  cancelButtonTitle:@"No"
+															  otherButtonTitles:@"OK", nil];
+					[alertView setTag:3];
+					[alertView show];
+				}
+				
+				if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE VOLLEY?"
+																		message:@""
+																	   delegate:self
+															  cancelButtonTitle:@"Cancel"
+															  otherButtonTitles:@"OK", nil];
+					[alertView setTag:4];
+					[alertView show];
+				}
 			}
 			
-			if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE VOLLEY?"
-																	message:@""
-																   delegate:self
-														  cancelButtonTitle:@"Cancel"
-														  otherButtonTitles:@"OK", nil];
-				[alertView setTag:4];
-				[alertView show];
-			}
-		}
-		
-		
-		if (![HONAppDelegate canPingConfigServer]) {
-			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
-				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 			
-		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-			[self _retrieveConfigJSON];
-			_isFromBackground = NO;
+			if (![HONAppDelegate canPingConfigServer]) {
+				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
+					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
+				
+			} else {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				[self _retrieveConfigJSON];
+				_isFromBackground = NO;
+			}
 		}
 	}
 }
@@ -1299,6 +1323,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	[[UAPush shared] registerDeviceToken:deviceToken];
 	
+	Mixpanel *mixpanel = [Mixpanel sharedInstance];
+	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel.people addPushDeviceToken:deviceToken];
+	
 	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
 	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
 	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -1308,23 +1336,30 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[HONAppDelegate writeDeviceToken:deviceID];
 	
 	if ([HONAppDelegate apiServerPath] != nil)
-		[self _enableNotifications];
+		[self _enableNotifications:YES];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
 	UALOG(@"Failed To Register For Remote Notifications With Error: %@", error);
+	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", error.description);
 	
-	if ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
-		NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
-		NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", deviceID);
-		
-		[HONAppDelegate writeDeviceToken:deviceID];
+	NSString *holderToken = ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) ? [NSString stringWithFormat:@"%064d", 0] : @"";
 	
-	} else
-		[HONAppDelegate writeDeviceToken:@""];
+//	Mixpanel *mixpanel = [Mixpanel sharedInstance];
+//	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+//	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
+	
+	[HONAppDelegate writeDeviceToken:holderToken];
+	
+//	if ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
+//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
+//		[HONAppDelegate writeDeviceToken:deviceID];
+//	
+//	} else
+//		[HONAppDelegate writeDeviceToken:@""];
 	
 	if ([HONAppDelegate apiServerPath] != nil)
-		[self _enableNotifications];
+		[self _enableNotifications:NO];
 }
  
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {

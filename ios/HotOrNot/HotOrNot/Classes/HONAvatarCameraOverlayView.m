@@ -9,6 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "HONAvatarCameraOverlayView.h"
+#import "HONImageLoadingView.h"
 #import "HONImagingDepictor.h"
 
 @interface HONAvatarCameraOverlayView () <UIAlertViewDelegate>
@@ -17,7 +18,7 @@
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
-@property (nonatomic, strong) UIImageView *verifyImageView;
+@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIView *blackMatteView;
 @end
 
@@ -88,8 +89,8 @@
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 64.0);
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"avatarSendButton_nonActive"] forState:UIControlStateNormal];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"avatarSendButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 		[_submitHolderView addSubview:submitButton];
 		
@@ -232,25 +233,33 @@
 #pragma mark - UI Presentation
 - (void)_verifyOverlay:(BOOL)isIntro {
 	if (isIntro) {
-		_verifyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
-		_verifyImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
-											[UIImage imageNamed:@"overlayLoader002"],
-											[UIImage imageNamed:@"overlayLoader003"], nil];
-		_verifyImageView.animationDuration = 0.5f;
-		_verifyImageView.animationRepeatCount = 0;
-		_verifyImageView.alpha = 0.0;
-		[_verifyImageView startAnimating];
-		[self addSubview:_verifyImageView];
+		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:[[UIApplication sharedApplication] delegate].window asLargeLoader:YES];
+		_imageLoadingView.alpha = 0.0;
+		[self addSubview:_imageLoadingView];
 		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_verifyImageView.alpha = 1.0;
-		} completion:nil];
+//		_verifyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
+//		_verifyImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
+//											[UIImage imageNamed:@"overlayLoader002"],
+//											[UIImage imageNamed:@"overlayLoader003"], nil];
+//		_verifyImageView.animationDuration = 0.5f;
+//		_verifyImageView.animationRepeatCount = 0;
+//		_verifyImageView.alpha = 0.0;
+//		[_verifyImageView startAnimating];
+//		[self addSubview:_verifyImageView];
+		
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_verifyImageView.alpha = 1.0;
+//		} completion:nil];
 		
 	} else {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_verifyImageView.alpha = 0.0;
-		} completion:nil];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_verifyImageView.alpha = 0.0;
+//		} completion:nil];
 	}
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_imageLoadingView.alpha = ((int)isIntro);
+	} completion:nil];
 }
 
 

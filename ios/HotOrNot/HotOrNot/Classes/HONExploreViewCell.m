@@ -181,7 +181,6 @@
 		[self.delegate exploreViewCellShowPreview:self forChallenge:_lChallengeVO];
 	
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-//		[self.delegate exploreViewCellShowPreviewControls:self];
 	}
 }
 
@@ -190,7 +189,6 @@
 		[self.delegate exploreViewCellShowPreview:self forChallenge:_rChallengeVO];
 	
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-//		[self.delegate exploreViewCellShowPreviewControls:self];
 	}
 }
 

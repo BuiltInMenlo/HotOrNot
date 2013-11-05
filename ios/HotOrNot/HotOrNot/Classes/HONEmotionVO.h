@@ -16,9 +16,10 @@
 @property (nonatomic) int emotionID;
 @property (nonatomic, retain) NSString *emotionName;
 @property (nonatomic, retain) NSString *hastagName;
-@property (nonatomic, retain) NSString *imagePrefix;
-@property (nonatomic, retain) NSString *imageLargeURL;
-@property (nonatomic, retain) NSString *imageSmallURL;
+@property (nonatomic, retain) NSString *urlPrefix;
+@property (nonatomic, retain) NSString *urlLargeBlue;
+@property (nonatomic, retain) NSString *urlSmallBlue;
+@property (nonatomic, retain) NSString *urlSmallWhite;
 @property (nonatomic) CGFloat price;
 @property (nonatomic) BOOL isFree;
 @end
