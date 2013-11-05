@@ -41,7 +41,6 @@ class BIM_Model_Volley{
             
             $challengers = array();
             
-            $allUsers = array( $creator->id => 1 );
             foreach( $volley->challengers as $challenger ){
                 $joined = new DateTime( "@$challenger->joined" );
                 $joined = $joined->format('Y-m-d H:i:s');
@@ -55,13 +54,10 @@ class BIM_Model_Volley{
                     'joined_timestamp' => $challenger->joined,
                 );
                 $this->resolveScore($target);
-                $challengers[] = $target;
-                $allUsers[ $target->id ] = 1;
+                $challengers[] = $target;            
             }
             
             $this->challengers = $challengers;
-            
-            $this->total_users = count( $allUsers );
             
             if( $populateUserData ){
                 $this->populateUsers();
