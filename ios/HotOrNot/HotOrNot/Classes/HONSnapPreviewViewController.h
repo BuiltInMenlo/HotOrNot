@@ -17,8 +17,8 @@
 @protocol HONSnapPreviewViewControllerDelegate;
 @interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate, UIActionSheetDelegate>
 - (id)initWithVerifyChallenge:(HONChallengeVO *)vo;
-- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO asRoot:(BOOL)isFirst;
-- (void)showControls;
+- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (id)initFromProfileWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 
 //- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
 //                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;

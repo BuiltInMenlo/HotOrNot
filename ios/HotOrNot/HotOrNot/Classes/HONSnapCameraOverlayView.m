@@ -22,7 +22,7 @@
 @property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIView *whiteMatteView;
-@property (nonatomic, strong) UIImageView *headerBGImageView;
+@property (nonatomic, strong) UIView *headerBGView;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
@@ -41,9 +41,9 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-		_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
-		_headerBGImageView.frame = CGRectOffset(_headerBGImageView.frame, 0.0, -20.0);
-		[self addSubview:_headerBGImageView];
+		_headerBGView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+		_headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+		[self addSubview:_headerBGView];
 		
 //		UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		flashButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
@@ -91,9 +91,8 @@
 //		_cancelButton.hidden = YES;
 //		_takePhotoButton.hidden = YES;
 		
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_camera-568h@2x" : @"tutorial_camera"];
-		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_camera"]];
+		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 186.0);
 		_tutorialImageView.alpha = 0.0;
 		[self addSubview:_tutorialImageView];
 	
@@ -124,10 +123,6 @@
 	[self addSubview:_takePhotoButton];
 }
 
-- (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
-	//NSLog(@"updateChallengers:[%@]", challengers);
-}
-
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
 	[self addSubview:previewView];
 	
@@ -152,7 +147,7 @@
 	[_infoImageView removeFromSuperview];
 	_infoImageView = nil;
 	
-	_headerBGImageView.hidden = NO;
+	_headerBGView.hidden = NO;
 	_flipButton.hidden = NO;
 	_cancelButton.hidden = NO;
 	_takePhotoButton.hidden = NO;

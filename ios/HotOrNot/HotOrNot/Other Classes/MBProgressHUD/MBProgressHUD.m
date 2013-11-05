@@ -375,7 +375,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	label.textAlignment = NSTextAlignmentCenter;
 	label.opaque = NO;
 	label.backgroundColor = [UIColor clearColor];
-	label.textColor = [UIColor whiteColor];
+//	label.textColor = [UIColor whiteColor];
+	label.textColor = [UIColor grayColor];
 	label.font = self.labelFont;
 	label.text = self.labelText;
 	[self addSubview:label];
@@ -386,7 +387,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	detailsLabel.textAlignment = NSTextAlignmentCenter;
 	detailsLabel.opaque = NO;
 	detailsLabel.backgroundColor = [UIColor clearColor];
-	detailsLabel.textColor = [UIColor whiteColor];
+//	detailsLabel.textColor = [UIColor whiteColor];
+	detailsLabel.textColor = [UIColor grayColor];
 	detailsLabel.numberOfLines = 0;
 	detailsLabel.font = self.detailsLabelFont;
 	detailsLabel.text = self.detailsLabelText;
@@ -401,8 +403,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	if (mode == MBProgressHUDModeIndeterminate &&  !isActivityIndicator) {
 		// Update to indeterminate indicator
 		[indicator removeFromSuperview];
+//		self.indicator = MB_AUTORELEASE([[UIActivityIndicatorView alloc]
+//										 initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge]);
 		self.indicator = MB_AUTORELEASE([[UIActivityIndicatorView alloc]
-										 initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge]);
+										 initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray]);
+
 		[(UIActivityIndicatorView *)indicator startAnimating];
 		[self addSubview:indicator];
 	}
@@ -553,7 +558,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 								roundf((allRect.size.height - size.height) / 2) + self.yOffset, size.width, size.height);
 	float radius = 10.0f;
 	CGContextBeginPath(context);
-	CGContextSetGrayFillColor(context, 0.0f, self.opacity);
+//	CGContextSetGrayFillColor(context, 0.0f, self.opacity);
+	CGContextSetGrayFillColor(context, 0.95f, self.opacity);
 	CGContextMoveToPoint(context, CGRectGetMinX(boxRect) + radius, CGRectGetMinY(boxRect));
 	CGContextAddArc(context, CGRectGetMaxX(boxRect) - radius, CGRectGetMinY(boxRect) + radius, radius, 3 * (float)M_PI / 2, 0, 0);
 	CGContextAddArc(context, CGRectGetMaxX(boxRect) - radius, CGRectGetMaxY(boxRect) - radius, radius, 0, (float)M_PI / 2, 0);
@@ -728,7 +734,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
 		CGFloat endAngle = (2 * (float)M_PI) + startAngle;
 		[processBackgroundPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-		[[UIColor colorWithRed:1 green:1 blue:1 alpha:0.1] set];
+//		[[UIColor colorWithRed:1 green:1 blue:1 alpha:0.1] set];
+		[[UIColor darkGrayColor] set];
 		[processBackgroundPath stroke];
 		// Draw progress
 		UIBezierPath *processPath = [UIBezierPath bezierPath];
@@ -736,12 +743,15 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		processPath.lineWidth = lineWidth;
 		endAngle = (self.progress * 2 * (float)M_PI) + startAngle;
 		[processPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-		[[UIColor whiteColor] set];
+//		[[UIColor whiteColor] set];
+		[[UIColor darkGrayColor] set];
 		[processPath stroke];
 	} else {
 		// Draw background
-		CGContextSetRGBStrokeColor(context, 1.0f, 1.0f, 1.0f, 1.0f); // white
-		CGContextSetRGBFillColor(context, 1.0f, 1.0f, 1.0f, 0.1f); // translucent white
+//		CGContextSetRGBStrokeColor(context, 1.0f, 1.0f, 1.0f, 1.0f); // white
+		CGContextSetRGBStrokeColor(context, 0.0f, 0.0f, 0.0f, 1.0f); // black
+//		CGContextSetRGBFillColor(context, 1.0f, 1.0f, 1.0f, 0.1f); // translucent white
+		CGContextSetRGBFillColor(context, 0.0f, 0.0f, 0.0f, 0.1f); // translucent black
 		CGContextSetLineWidth(context, 2.0f);
 		CGContextFillEllipseInRect(context, circleRect);
 		CGContextStrokeEllipseInRect(context, circleRect);
@@ -750,7 +760,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		CGFloat radius = (allRect.size.width - 4) / 2;
 		CGFloat startAngle = - ((float)M_PI / 2); // 90 degrees
 		CGFloat endAngle = (self.progress * 2 * (float)M_PI) + startAngle;
-		CGContextSetRGBFillColor(context, 1.0f, 1.0f, 1.0f, 1.0f); // white
+//		CGContextSetRGBFillColor(context, 1.0f, 1.0f, 1.0f, 1.0f); // white
+		CGContextSetRGBFillColor(context, 0.0f, 0.0f, 0.0f, 1.0f); // black
 		CGContextMoveToPoint(context, center.x, center.y);
 		CGContextAddArc(context, center.x, center.y, radius, startAngle, endAngle, 0);
 		CGContextClosePath(context);

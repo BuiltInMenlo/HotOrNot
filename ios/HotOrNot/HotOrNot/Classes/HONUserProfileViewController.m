@@ -31,10 +31,11 @@
 #import "HONFollowingViewController.h"
 #import "HONFollowersViewController.h"
 
+//[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0][UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:0.5]
+
 
 @interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
-@property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -44,13 +45,13 @@
 @property (nonatomic, strong) HONUserProfileGridView *profileGridView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIView *avatarHolderView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) UILabel *subscribersLabel;
-@property (nonatomic, strong) UILabel *subscribeesLabel;
-@property (nonatomic, strong) UILabel *volleysLabel;
-@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UILabel *selfiesLabel;
+@property (nonatomic, strong) UILabel *followersLabel;
+@property (nonatomic, strong) UILabel *followingLabel;
+//@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UIButton *followButton;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *challengeImages;
@@ -60,7 +61,7 @@
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) int followingCounter;
 @property (nonatomic) BOOL isUser;
-@property (nonatomic) BOOL isFriend;
+@property (nonatomic) BOOL isFollowing;
 @property (nonatomic) BOOL isRefreshing;
 @end
 
@@ -70,13 +71,12 @@
 
 - (id)initWithBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
-		_bgImageView = imageView;
+		_bgImageView = nil;//imageView;
 		self.view.backgroundColor = (imageView == nil) ? [UIColor whiteColor] : [UIColor clearColor];
 		
 		_isUser = NO;
-		_isFriend = NO;
+		_isFollowing = NO;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
@@ -114,7 +114,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != nil) {
 				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -123,19 +123,21 @@
 				_userVO = [HONUserVO userWithDictionary:userResult];
 				_isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 				
+				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateNormal];
+				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
+				
 				if (!_isUser) {
-					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_nonActive" : @"nonVerifyIcon_nonActive"] forState:UIControlStateNormal];
-					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"verifyIcon_Active" : @"nonVerifyIcon_Active"] forState:UIControlStateHighlighted];
+					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_Active" : @"userNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 				}
 				
 				if (isRefresh) {
 					[self _makeAvatarImage];
 					
-					
-					_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-					_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
-					_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+					_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
+					_followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+					_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
+//					_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 				
 				} else
 					[self _retreiveSubscribees];
@@ -184,7 +186,10 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (_isUser)
+				[HONAppDelegate writeSubscribeeList:result];
 			
 			_followingCounter = [result count];
 			[self _retrieveChallenges];
@@ -196,12 +201,11 @@
 }
 
 - (void)_retrieveChallenges {
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
-	[params setObject:@"N" forKey:@"isPrivate"];
-	[params setObject:_userVO.username forKey:@"username"];
-	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"p"];
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"action"		: [NSString stringWithFormat:@"%d", 9],
+							 @"isPrivate"	: @"N",
+							 @"username"	: _userVO.username,
+							 @"p"			: [NSString stringWithFormat:@"%d", 1]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -214,7 +218,7 @@
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
-			VolleyJSONLog(@"AFNetworking [-] %@: CHALLENGES:[%d]", [[self class] description], [challengesResult count]);
+//			VolleyJSONLog(@"AFNetworking [-] %@: CHALLENGES:[%d]", [[self class] description], [challengesResult count]);
 			_challenges = [NSMutableArray array];
 			
 			for (NSDictionary *serverList in challengesResult) {
@@ -226,11 +230,8 @@
 			
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-			
+
 			[self _makeUI];
-			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 44.0 + ((264.0 + 235.0) + (kSnapThumbSize.height * (([_challenges count] / 4) + 1)))));
-			[self _makeGrid];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -349,6 +350,11 @@
 #pragma mark - Public APIs
 - (void)setUserID:(int)userID {
 	_userID = userID;
+	
+	_isFollowing = [HONAppDelegate isFollowingUser:_userID];
+	[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
+	[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
+	[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 	[self _retrieveUser:NO];
 }
 
@@ -366,14 +372,10 @@
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
-//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-//	lpGestureRecognizer.minimumPressDuration = 0.25;
-//	[_scrollView addGestureRecognizer:lpGestureRecognizer];
-	
-	//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
-	//	_refreshTableHeaderView.delegate = self;
-	//	[_scrollView addSubview:_refreshTableHeaderView];
-	//	[_refreshTableHeaderView refreshLastUpdatedDate];
+//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+//	_refreshTableHeaderView.delegate = self;
+//	[_scrollView addSubview:_refreshTableHeaderView];
+//	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -382,7 +384,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_verifyButton.frame = CGRectMake(1.0, -2.0, 64.0, 44.0);
+	_verifyButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
 	[_headerView addButton:_verifyButton];
@@ -407,9 +409,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
-	NSLog(@":|[%@]|:\tparentVC:[%@]", [self description], [self parentViewController]);
-	
 	[_bgHolderView addSubview:_bgImageView];
 		
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
@@ -418,7 +417,7 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"profile_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if (total == 0 && (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])) {
+	if (total == 0 && _isUser) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.hidden = YES;
@@ -433,7 +432,6 @@
 			_tutorialImageView.alpha = 1.0;
 		}];
 		
-//		closeButton.backgroundColor = ([[[HONAppDelegate infoForUser] objectForKey:@"img_url"] rangeOfString:@"defaultAvatar"].location != NSNotFound) ? [HONAppDelegate honDebugGreenColor] : [HONAppDelegate honDebugRedColor];
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 	}
 }
@@ -450,7 +448,7 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-	if (total == 0 && _userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
+	if (total == 0 && _isUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
@@ -460,15 +458,8 @@
 		[alertView show];
 	
 	} else {
-//		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-//			if (vo.userID == _userVO.userID) {
-//				_isFriend = YES;
-//				break;
-//			}
-//		}
-//		
 //		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-//		if (!_isFriend && total < [HONAppDelegate profileSubscribeThreshold]) {
+//		if (!_isFollowing && total < [HONAppDelegate profileSubscribeThreshold]) {
 //			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 //																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
 //															   delegate:self
@@ -485,6 +476,7 @@
 			}];
 		
 		} else {
+			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 			[self.view removeFromSuperview];
 		}
 	}
@@ -638,43 +630,6 @@
 	}];
 }
 
--(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
-	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
-		
-		HONChallengeVO *challengeVO = nil;
-		HONOpponentVO *opponentVO = nil;
-		
-		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
-			int col = touchPoint.x / (kSnapThumbSize.width + 1.0);
-			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapThumbSize.height + 1.0);
-			
-			int idx = (row * 4) + col;
-			if(idx < [_challengeImages count]){
-				opponentVO = [_challengeImages objectAtIndex:idx][0];
-				challengeVO = [_challengeImages objectAtIndex:idx][1];
-			}
-		}
-		
-		if (opponentVO != nil) {
-			[[Mixpanel sharedInstance] track:@"User Profile - Show Photo Detail"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-											  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent",
-											  nil]];
-			
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:(_userVO.userID != opponentVO.userID)];
-			_snapPreviewViewController.delegate = self;
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
-		}
-		
-	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-//		[_snapPreviewViewController showControls];
-	}
-}
-
 - (void)_goTapHoldAlert {
 	[[[UIAlertView alloc] initWithTitle:@"Tap and hold to view full screen!"
 								message:@""
@@ -693,137 +648,140 @@
 
 #pragma mark - UI Presentation
 - (void)_makeUI {
-	if (!_isUser) {
-		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-			if (vo.userID == _userVO.userID) {
-				_isFriend = YES;
-				break;
-			}
-		}
-	}
-	
 	[_headerView setTitle:_userVO.username];
 	[self _makeAvatarImage];
 	
-	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];
-	if (_userVO.userID == newestChallenge.creatorVO.userID)
-		_heroOpponentVO = newestChallenge.creatorVO;
-	
-	else {
-		NSLog(@"newestChallenge -> opponents:[%d]", [newestChallenge.challengers count]);
-		for (HONOpponentVO *vo in newestChallenge.challengers) {
-			if (_userVO.userID == vo.userID) {
-				_heroOpponentVO = vo;
-				break;
-			}
-		}
-	}
-	
-	
-	HONEmotionVO *emotionVO;
-	BOOL isEmotionFound = NO;
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
-			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-			isEmotionFound = YES;
-			break;
-		}
-	}
-	
-	if (!isEmotionFound) {
-		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-			if ([vo.hastagName isEqualToString:_heroOpponentVO.subjectName]) {
-				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-				isEmotionFound = YES;
-				break;
-			}
-		}
-	}
-	
-	if (isEmotionFound) {
-		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 222.0, 43.0, 43.0)];
-		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
-		[_scrollView addSubview:emoticonImageView];
-	}
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0 + (((int)isEmotionFound) * 32.0), 232.0, 250.0, 22.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-	subjectLabel.textColor = [UIColor whiteColor];
-	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = newestChallenge.subjectName;
-	[_scrollView addSubview:subjectLabel];
-	
-	
 	UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	changeAvatarButton.frame = CGRectMake(123.0, 115.0, 74.0, 74.0);
-	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
-	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
+	changeAvatarButton.frame = CGRectMake(120.0, 85.0, 80.0, 80.0);
+	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_nonActive"] forState:UIControlStateNormal];
+	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_Active"] forState:UIControlStateHighlighted];
 	[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
-	changeAvatarButton.hidden = !([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	changeAvatarButton.hidden = (!_isUser);
 	[_scrollView addSubview:changeAvatarButton];
 	
+	
+//	HONEmotionVO *emotionVO = [self _latestChallengeEmotion];
+//	BOOL isEmotionFound = (emotionVO != nil);
+//	
+//	if (isEmotionFound) {
+//		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 222.0, 43.0, 43.0)];
+//		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
+//		[_scrollView addSubview:emoticonImageView];
+//	}
+//	
+//	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0 + (((int)isEmotionFound) * 32.0), 232.0, 250.0, 22.0)];
+//	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+//	subjectLabel.textColor = [UIColor whiteColor];
+//	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+//	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+//	subjectLabel.backgroundColor = [UIColor clearColor];
+//	subjectLabel.text = ((HONChallengeVO *)[_challenges lastObject]).subjectName;
+//	[_scrollView addSubview:subjectLabel];
+	
+	
+	UIImageView *statsBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileLineBackground"]];
+	statsBGImageView.frame = CGRectOffset(statsBGImageView.frame, 0.0, 180.0);
+	[_scrollView addSubview:statsBGImageView];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 289.0, 260.0, 35.0)];
-	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
-	_subscribersLabel.textColor = [UIColor whiteColor];
-	_subscribersLabel.backgroundColor = [UIColor clearColor];
-	_subscribersLabel.text = [NSString stringWithFormat:@"%@ follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-	[_scrollView addSubview:_subscribersLabel];
+	_selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 196.0, 107.0, 18.0)];
+	_selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	_selfiesLabel.textColor = [HONAppDelegate honGreyTextColor];
+	_selfiesLabel.backgroundColor = [UIColor clearColor];
+	_selfiesLabel.textAlignment = NSTextAlignmentCenter;
+	_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
+	[_scrollView addSubview:_selfiesLabel];
+	
+	_followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, 196.0, 107.0, 18.0)];
+	_followersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	_followersLabel.textColor = [HONAppDelegate honGreyTextColor];
+	_followersLabel.backgroundColor = [UIColor clearColor];
+	_followersLabel.textAlignment = NSTextAlignmentCenter;
+	_followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+	[_scrollView addSubview:_followersLabel];
 
-	_subscribeesLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 336.0, 260.0, 35.0)];
-	_subscribeesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
-	_subscribeesLabel.textColor = [UIColor whiteColor];
-	_subscribeesLabel.backgroundColor = [UIColor clearColor];
-	_subscribeesLabel.text = [NSString stringWithFormat:@"%@ following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
-	[_scrollView addSubview:_subscribeesLabel];
+	_followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 196.0, 107.0, 18.0)];
+	_followingLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	_followingLabel.textColor = [HONAppDelegate honGreyTextColor];
+	_followingLabel.backgroundColor = [UIColor clearColor];
+	_followingLabel.textAlignment = NSTextAlignmentCenter;
+	_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
+	[_scrollView addSubview:_followingLabel];
 
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 384.0, 260.0, 35.0)];
-	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
-	_volleysLabel.textColor = [UIColor whiteColor];
-	_volleysLabel.backgroundColor = [UIColor clearColor];
-	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
-	[_scrollView addSubview:_volleysLabel];
+//	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 432.0, 260.0, 35.0)];
+//	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
+//	_likesLabel.textColor = [HONAppDelegate honGreyTextColor];
+//	_likesLabel.backgroundColor = [UIColor clearColor];
+//	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+//	[_scrollView addSubview:_likesLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 432.0, 260.0, 35.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
-	_likesLabel.textColor = [UIColor whiteColor];
-	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
-	[_scrollView addSubview:_likesLabel];
+	UIButton *followersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	followersButton.frame = _followersLabel.frame;
+	[followersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:followersButton];
 	
-	UIButton *subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	subscribersButton.frame = _subscribersLabel.frame;
-	[subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:subscribersButton];
-	
-	UIButton *subscribeesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	subscribeesButton.frame = _subscribeesLabel.frame;
-	[subscribeesButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:subscribeesButton];
+	UIButton *followingButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	followingButton.frame = _followingLabel.frame;
+	[followingButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:followingButton];
 
 	UIButton *volleysButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	volleysButton.frame = _volleysLabel.frame;
+	volleysButton.frame = _selfiesLabel.frame;
 	[volleysButton addTarget:self action:@selector(_goVolleys) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:volleysButton];
+	
+	if (_isUser) {
+		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		findFriendsButton.frame = CGRectMake(17.0, 246.0, 134.0, 44.0);
+		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
+		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
+		[findFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:findFriendsButton];
+		
+		UIButton *helpButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		helpButton.frame = CGRectMake(171.0, 246.0, 134.0, 44.0);
+		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_nonActive"] forState:UIControlStateNormal];
+		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_Active"] forState:UIControlStateHighlighted];
+		[helpButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:helpButton];
+		
+	} else {
+		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_followButton.frame = CGRectMake(17.0, 246.0, 134.0, 44.0);
+		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
+		[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:_followButton];
+		
+		UIButton *reportButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		reportButton.frame = CGRectMake(171.0, 246.0, 134.0, 44.0);
+		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_nonActive"] forState:UIControlStateNormal];
+		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_Active"] forState:UIControlStateHighlighted];
+		[reportButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:reportButton];
+	}
+	
+	
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 44.0 + (304.0 + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1)))));
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:304.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	_profileGridView.delegate = self;
+	[_scrollView addSubview:_profileGridView];
+	
 	
 	[self _makeFooterBar];
 }
 
 - (void)_makeAvatarImage {
-	NSLog(@"PROFILE LOADING:[%@]", _userVO.avatarURL);
+	NSLog(@"PROFILE LOADING:[%@]", _userVO.dictionary);
 	
-	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 264.0)];
-	_avatarHolderView.clipsToBounds = YES;
-	[_scrollView addSubview:_avatarHolderView];
+	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(120.0, 85.0, 80.0, 80.0)];
+	[_scrollView addSubview:avatarHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_avatarHolderView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView];
 	[imageLoadingView startAnimating];
-	[_avatarHolderView addSubview:imageLoadingView];
+	[avatarHolderView addSubview:imageLoadingView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.image = image;
@@ -833,7 +791,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _userVO.avatarURL]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
 	};
 	
 	if (_avatarImageView != nil) {
@@ -841,88 +799,114 @@
 		_avatarImageView = nil;
 	}
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -122.0, 320.0, 568.0)];
-	[_avatarHolderView addSubview:_avatarImageView];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
+	[avatarHolderView addSubview:_avatarImageView];
 	_avatarImageView.alpha = 0.0;
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapMediumSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							placeholderImage:nil
 									 success:imageSuccessBlock
-									 failure:imageFailureBlock
-	 ];
-}
-
-- (void)_makeGrid {
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:498.0 forChallenges:_challenges asPrimaryOpponent:_heroOpponentVO];
-	_profileGridView.delegate = self;
-	[_scrollView addSubview:_profileGridView];
+									 failure:imageFailureBlock];
 }
 
 - (void)_makeFooterBar {
-	if (_userVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(0.0, 0.0, 40.0, 44.0);
-		[inviteButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[inviteButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[inviteButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		[inviteButton setTitle:@"Invite" forState:UIControlStateNormal];
-		[inviteButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+	CGSize size;
+	NSArray *footerElements;
+	
+	if (_isUser) {
+//		UIButton *addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		addFriendsButton.frame = CGRectMake(0.0, 0.0, 40.0, 44.0);
+//		[addFriendsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+//		[addFriendsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+//		[addFriendsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+//		[addFriendsButton setTitle:@"Add Friends" forState:UIControlStateNormal];
+//		[addFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+//		
+//		size = [addFriendsButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+//															  options:NSStringDrawingTruncatesLastVisibleLine
+//														   attributes:@{NSFontAttributeName:addFriendsButton.titleLabel.font}
+//															  context:nil].size;
+//		addFriendsButton.frame = CGRectMake(addFriendsButton.frame.origin.x, addFriendsButton.frame.origin.y, size.width, size.height);
 		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+											  options:NSStringDrawingTruncatesLastVisibleLine
+										   attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
+											  context:nil].size;
+		shareFooterButton.frame = CGRectMake(shareFooterButton.frame.origin.x, shareFooterButton.frame.origin.y, size.width, size.height);
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
-		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+		[settingsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[settingsButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
 		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+		size = [settingsButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+											  options:NSStringDrawingTruncatesLastVisibleLine
+										   attributes:@{NSFontAttributeName:settingsButton.titleLabel.font}
+											  context:nil].size;
+		settingsButton.frame = CGRectMake(settingsButton.frame.origin.x, settingsButton.frame.origin.y, size.width, size.height);
 		
-		[_footerToolbar setItems:[NSArray arrayWithObjects:
-								  [[UIBarButtonItem alloc] initWithCustomView:inviteButton],
-								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-								  [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
-								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-								  [[UIBarButtonItem alloc] initWithCustomView:settingsButton], nil]];
+		footerElements = @[//[[UIBarButtonItem alloc] initWithCustomView:addFriendsButton],
+//						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+						   [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
+						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+						   [[UIBarButtonItem alloc] initWithCustomView:settingsButton]];
 		
 	} else {
-		_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
-		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		[_subscribeButton setTitle:(_isFriend) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
-		[_subscribeButton addTarget:self action:(_isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-		_subscribeButton.frame = CGRectMake(0.0, 0.0, (_isFriend) ? 64.0 : 47.0, 44.0);
+//		_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
+//		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+//		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+//		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+//		[_subscribeButton setTitle:(_isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
+//		[_subscribeButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+//		size = [_subscribeButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+//											  options:NSStringDrawingTruncatesLastVisibleLine
+//										   attributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}
+//											  context:nil].size;
+//		_subscribeButton.frame = CGRectMake(_subscribeButton.frame.origin.x, _subscribeButton.frame.origin.y, size.width, size.height);
 		
-		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
-		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
-		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		shareButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
+		[shareButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[shareButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+		[shareButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[shareButton setTitle:@"Share" forState:UIControlStateNormal];
+		[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		size = [shareButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+											  options:NSStringDrawingTruncatesLastVisibleLine
+										   attributes:@{NSFontAttributeName:shareButton.titleLabel.font}
+											  context:nil].size;
+		shareButton.frame = CGRectMake(shareButton.frame.origin.x, shareButton.frame.origin.y, size.width, size.height);
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-		[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0] forState:UIControlStateNormal];
-		[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:0.5] forState:UIControlStateHighlighted];
+		[flagButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[flagButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
 		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+		size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+											  options:NSStringDrawingTruncatesLastVisibleLine
+										   attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
+											  context:nil].size;
+		flagButton.frame = CGRectMake(flagButton.frame.origin.x, flagButton.frame.origin.y, size.width, size.height);
 		
-		[_footerToolbar setItems:[NSArray arrayWithObjects:
-								  [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
-								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-								  [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
-								  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-								  [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
+		footerElements = @[//[[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
+//						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+						   [[UIBarButtonItem alloc] initWithCustomView:shareButton],
+						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+						   [[UIBarButtonItem alloc] initWithCustomView:flagButton]];
 	}
+	
+	[_footerToolbar setItems:footerElements];
 }
 
 
@@ -931,7 +915,7 @@
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
@@ -946,7 +930,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
 	
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:YES];
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initFromProfileWithOpponent:opponentVO forChallenge:challengeVO];
 	_snapPreviewViewController.delegate = self;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
@@ -991,7 +975,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -1049,6 +1033,11 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
+			[_followButton setBackgroundImage:[UIImage imageNamed:@"unfollow_nonActive"] forState:UIControlStateNormal];
+			[_followButton setBackgroundImage:[UIImage imageNamed:@"unfollow_Active"] forState:UIControlStateHighlighted];
+			[_followButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_followButton addTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
+			
 			[_subscribeButton setTitle:@"Unfollow" forState:UIControlStateNormal];
 			_subscribeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 			[_subscribeButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -1063,6 +1052,12 @@
 		
 		if (buttonIndex == 1) {
 			[self _removeFriend:_userVO.userID];
+			[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
+			[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
+			[_followButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
+			[_followButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+			
+			
 			[_subscribeButton setTitle:@"Follow" forState:UIControlStateNormal];
 			_subscribeButton.frame = CGRectMake(0.0, 0.0, 47.0, 44.0);
 			[_subscribeButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -1116,6 +1111,71 @@
 			[alertView show];
 		}
 	}
+}
+
+
+#pragma mark - Data Tally
+- (int)_numberOfImagesForGrid {
+	
+	int tot = 0;
+	for (HONChallengeVO *vo in _challenges) {
+		if (_userID == vo.creatorVO.userID)
+			tot++;
+		
+		for (HONOpponentVO *challenger in vo.challengers) {
+			if (_userID == challenger.userID)
+				tot++;
+		}
+	}
+	
+	return (tot);
+}
+
+
+- (HONOpponentVO *)_latestOpponentInChallenge {
+	HONOpponentVO *opponentVO;
+	
+	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];
+	if (_userID == newestChallenge.creatorVO.userID)
+		opponentVO = newestChallenge.creatorVO;
+	
+	else {
+		NSLog(@"newestChallenge -> opponents:[%d]", [newestChallenge.challengers count]);
+		for (HONOpponentVO *vo in newestChallenge.challengers) {
+			if (_userID == vo.userID) {
+				opponentVO = vo;
+				break;
+			}
+		}
+	}
+	
+	return (opponentVO);
+}
+
+- (HONEmotionVO *)_latestChallengeEmotion {
+	HONEmotionVO *emotionVO;
+	HONOpponentVO *opponentVO = [self _latestOpponentInChallenge];
+	
+	BOOL isEmotionFound = NO;
+	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
+		if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
+			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+			isEmotionFound = YES;
+			break;
+		}
+	}
+	
+	if (!isEmotionFound) {
+		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
+			if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
+				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+				isEmotionFound = YES;
+				break;
+			}
+		}
+	}
+	
+	return ((isEmotionFound) ? emotionVO : nil);
 }
 
 

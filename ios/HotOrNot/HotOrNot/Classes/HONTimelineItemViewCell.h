@@ -17,6 +17,7 @@
 - (id)init;
 - (void)upvoteUser:(int)userID;
 - (void)showTapOverlay;
+- (void)removeTutorialBubble;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONTimelineItemViewCellDelegate> delegate;

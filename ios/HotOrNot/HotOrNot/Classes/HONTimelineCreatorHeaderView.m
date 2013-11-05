@@ -24,8 +24,13 @@
 		_challengeVO = vo;
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
-		[avatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:[_challengeVO.creatorVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 		[self addSubview:avatarImageView];
+		
+		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		avatarButton.frame = avatarImageView.frame;
+		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:avatarButton];
 		
 		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, 150.0, 18.0)];
 		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];

@@ -16,6 +16,7 @@
 
 #import "HONFollowTabViewController.h"
 #import "HONFollowTabViewCell.h"
+#import "HONFollowTabCellHeaderView.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
@@ -35,7 +36,7 @@
 
 
 
-@interface HONFollowTabViewController () <HONFollowTabViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
+@interface HONFollowTabViewController () <HONFollowTabCellHeaderDelegate, HONFollowTabViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -110,7 +111,7 @@
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [parsedLists count]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
@@ -258,7 +259,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
 	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_banner"] isEqualToString:@"YES"] * 90.0));
@@ -320,15 +320,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+	[self _addBlur];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -435,8 +427,50 @@
 }
 
 - (void)_refreshVerifyTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_addBlur {
+//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+//	_blurredImageView.alpha = 0.0;
+//	[self.view addSubview:_blurredImageView];
+//	
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_blurredImageView.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
+}
+
+
+#pragma mark - FollowTabCellHeader Delegates
+- (void)cellHeaderView:(HONFollowTabCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Header Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+
+	if ([HONAppDelegate hasTakenSelfie]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	
+		[self _addBlur];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = opponentVO.userID;
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
+															message:NSLocalizedString(@"alert_noSelfie_m", nil)
+														   delegate:self
+												  cancelButtonTitle:@"Cancel"
+												  otherButtonTitles:@"Take Photo", nil];
+		[alertView setTag:4];
+		[alertView show];
+	}
 }
 
 
@@ -452,15 +486,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-		
+		[self _addBlur];
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -488,15 +514,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-		
+		[self _addBlur];
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -532,7 +550,6 @@
 		}
 		
 		_indexPath = [_tableView indexPathForCell:tableCell];
-		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
 															message:@""
 														   delegate:self
@@ -617,7 +634,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -658,7 +675,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return (nil);
+	HONFollowTabCellHeaderView *headerView = [[HONFollowTabCellHeaderView alloc] initWithOpponent:((HONChallengeVO *)[_challenges objectAtIndex:section]).creatorVO];
+	headerView.delegate = self;
+	
+	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -679,11 +699,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (420 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	return (370 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
+	return (50.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -813,9 +833,9 @@
 		
 		if (buttonIndex == 1) {
 			[self _addFriend:_challengeVO.creatorVO.userID];
+			[self _removeUserFromList:_challengeVO.creatorVO.userID];
 		}
 		
-		[self _removeUserFromList:_challengeVO.creatorVO.userID];
 		
 	} else if (alertView.tag == 9) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Follow No %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
@@ -825,9 +845,8 @@
 		
 		if (buttonIndex == 1) {
 			[self _addFriend:_challengeVO.creatorVO.userID];
+			[self _removeUserFromList:_challengeVO.creatorVO.userID];
 		}
-		
-		[self _removeUserFromList:_challengeVO.creatorVO.userID];
 	}
 }
 

@@ -28,8 +28,7 @@
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic, strong) HONTimelineItemFooterView *timelineItemFooterView;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
-@property (nonatomic, strong) UIButton *likesButton;
-@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UIImageView *tutorialImageView;
 @end
 
 @implementation HONTimelineItemViewCell
@@ -41,7 +40,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineBackground"]];
+		self.backgroundColor = [UIColor whiteColor];
+		[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineBackground"]]];
 	}
 	
 	return (self);
@@ -54,6 +54,17 @@
 #pragma mark - Public APIs
 - (void)upvoteUser:(int)userID {
 	[_timelineItemFooterView upvoteUser:userID];
+}
+
+- (void)removeTutorialBubble {
+	if (_tutorialImageView != nil) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}];
+	}
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
@@ -92,14 +103,14 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
 	};
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -126,9 +137,11 @@
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	
-//	UIImageView *heroBubbleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[HONAppDelegate hasTakenSelfie] ? @"tapHoldOverlay_nonActive" : @"needSelfieHeroBubble"]];
-//	heroBubbleImageView.hidden = ([HONAppDelegate hasTakenSelfie] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue] >= 0);
-//	[self.commentsLabel addSubview:heroBubbleImageView];
+	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
+		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
+		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 40.0);
+		[self.contentView addSubview:_tutorialImageView];
+	}
 }
 
 

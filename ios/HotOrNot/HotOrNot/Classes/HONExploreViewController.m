@@ -37,8 +37,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UIImageView *emptySetImgView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) NSMutableDictionary *allChallenges;
-@property (nonatomic, strong) NSMutableArray *currChallenges;
+@property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -87,15 +86,22 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
-			_currChallenges = [NSMutableArray array];
-			_allChallenges = [NSMutableDictionary dictionary];
-			
+			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists)
-				[_currChallenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
+				[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
 			
-			_emptySetImgView.hidden = ([_currChallenges count] > 0);
+			_emptySetImgView.hidden = ([_challenges count] > 0);
+			int searchIndex = arc4random() % MIN(4, [_challenges count] - 1);
+			
+			HONChallengeVO *vo = ([_challenges count] > 0) ? (HONChallengeVO *)[_challenges objectAtIndex:searchIndex] : [HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge"]];
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:vo.dictionary]];
+			vo.challengeID = 0;
+			
+			if ([_challenges count] > 1)
+				[_challenges replaceObjectAtIndex:searchIndex withObject:vo];
+			
 			[_tableView reloadData];
 		}
 		
@@ -128,7 +134,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
+//	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Explore"];
 	
@@ -180,15 +186,8 @@
 #pragma mark - Navigation
 - (void)_goProfile {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+	[self _addBlur];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -324,6 +323,18 @@
 }
 
 
+#pragma mark - UI Presentation
+- (void)_addBlur {
+//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+//	_blurredImageView.alpha = 0.0;
+//	[self.view addSubview:_blurredImageView];
+//	
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_blurredImageView.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
+}
+
 #pragma mark - ExploreViewCell Delegates
 - (void)exploreViewCellShowPreview:(HONExploreViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
@@ -334,7 +345,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO forChallenge:_challengeVO asRoot:YES];
+		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO forChallenge:_challengeVO];
 		_snapPreviewViewController.delegate = self;
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
@@ -349,15 +360,6 @@
 	}
 }
 
-//- (void)exploreViewCellShowPreviewControls:(HONExploreViewCell *)cell {
-//	[[Mixpanel sharedInstance] track:@"Explore - Hide Detail"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-//	
-//	[_snapPreviewViewController showControls];
-//}
-
 - (void)exploreViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
@@ -368,16 +370,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			//.modalTransitionStyle
-		}];
-		
+		[self _addBlur];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
@@ -404,16 +397,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			//.modalTransitionStyle
-		}];
-		
+		[self _addBlur];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
@@ -427,6 +411,10 @@
 		[alertView setTag:3];
 		[alertView show];
 	}
+}
+
+- (void)exploreViewCellShowSearch:(HONExploreViewCell *)cell {
+	[self _goSearch];
 }
 
 
@@ -456,7 +444,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -489,7 +477,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (ceil([_currChallenges count] * 0.5));
+	return (ceil([_challenges count] * 0.5));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -507,10 +495,10 @@
 		cell = [[HONExploreViewCell alloc] init];
 	}
 	
-	cell.lChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2)];
+	cell.lChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2)];
 	
-	if ((indexPath.row * 2) + 1 < [_currChallenges count])
-		cell.rChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2) + 1];
+	if ((indexPath.row * 2) + 1 < [_challenges count])
+		cell.rChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2) + 1];
 	
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -520,7 +508,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 211.0 : 160);
+	return ((indexPath.row == ceil([_challenges count] * 0.5) - 1) ? 211.0 : 160);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -582,36 +570,6 @@
 		}
 	}
 }
-
-
-/*
-#pragma mark - CollectionView DataSource Delegates
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return (ceil([_currChallenges count] * 0.5));
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONExploreViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-//    cell.backgroundColor = (indexPath.row % 2 == 0) ? [UIColor greenColor] : [UIColor redColor];
-	cell.lChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2)];
-	
-	if ((indexPath.row * 2) + 1 < [_currChallenges count])
-		cell.rChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2) + 1];
-	
-	cell.delegate = self;
-	
-    return (cell);
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (CGSizeMake(320.0, (indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 211.0 : 160)); //47
-}
-
-
-#pragma mark - CollectionView Delegates
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (NO);
-}*/
 
 
 @end

@@ -26,7 +26,6 @@
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;
-@property (nonatomic) int expireSeconds;
 
 @property (nonatomic, retain) HONOpponentVO *creatorVO;
 @property (nonatomic, retain) NSMutableArray *challengers;

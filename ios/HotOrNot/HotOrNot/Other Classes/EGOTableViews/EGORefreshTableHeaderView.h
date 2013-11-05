@@ -36,7 +36,6 @@ typedef enum {
 @protocol EGORefreshTableHeaderDelegate;
 @interface EGORefreshTableHeaderView : UIView
 - (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset;
-- (id)initWithFrame:(CGRect)frame withScrollView:(UIScrollView *)scrollView includeHeaderOffset:(BOOL)isOffset;
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView;
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView;
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView;

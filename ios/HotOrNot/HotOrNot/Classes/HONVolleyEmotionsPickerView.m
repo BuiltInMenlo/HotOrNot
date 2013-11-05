@@ -27,7 +27,7 @@
 		_emotions = (_isJoinVolley) ? [HONAppDelegate replyEmotions] : [HONAppDelegate composeEmotions];
 		
 		_tableView = [[UITableView alloc] initWithFrame:CGRectOffset(frame, 0.0, -frame.origin.y) style:UITableViewStylePlain];
-		[_tableView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.65]];
+		[_tableView setBackgroundColor:[UIColor clearColor]];
 		_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 		_tableView.delegate = self;
 		_tableView.dataSource = self;

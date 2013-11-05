@@ -128,6 +128,10 @@ const CGSize kSnapMediumSize = {160.0f, 160.0f};
 const CGSize kSnapLargeSize = {320.0f, 568.0f};
 const CGFloat kAvatarDim = 200.0f;
 
+NSString * const kSnapThumbSuffix = @"Small_160x160.jpg";
+NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
+NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
+
 const BOOL kIsImageCacheEnabled = YES;
 NSString * const kTwilioSMS = @"6475577873";
 
@@ -341,7 +345,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (UIImage *)avatarImage {
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"])
-		return ([UIImage imageNamed:@"defaultAvatar"]);
+		return ([UIImage imageNamed:@"defaultAvatarLarge_640x1136"]);
 	
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
 }
@@ -365,7 +369,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 														  [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
 	}
 	
-	return ([NSArray arrayWithArray:[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
+	return (@[[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
 }
 
 + (void)addFriendToList:(NSDictionary *)friend {
@@ -382,6 +386,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSMutableDictionary *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
 	[userInfo setObject:friends forKey:@"friends"];
 	[HONAppDelegate writeUserInfo:[userInfo copy]];
+}
+
++ (BOOL)isFollowedByUser:(int)userID {
+	BOOL isFollowed = NO;
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
+		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+			if (vo.userID == userID) {
+				isFollowed = YES;
+				break;
+			}
+		}
+	}
+	
+	return (isFollowed);
 }
 
 + (NSArray *)subscribeeList {
@@ -416,6 +434,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[NSUserDefaults standardUserDefaults] setObject:subscribees forKey:@"subscribees"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (BOOL)isFollowingUser:(int)userID {
+	BOOL isFollowing = NO;
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == userID) {
+				isFollowing = YES;
+				break;
+			}
+		}
+	}
+	
+	return (isFollowing);
 }
 
 
@@ -541,6 +573,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([NSString stringWithFormat:@"expires in %ds", seconds]);
 }
 
++ (NSString *)cleanImageURL:(NSString *)imageURL {
+	NSMutableString *imagePrefix = [imageURL mutableCopy];
+	
+	[imagePrefix replaceOccurrencesOfString:[kSnapThumbSuffix substringToIndex:[kSnapThumbSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:[kSnapMediumSuffix substringToIndex:[kSnapMediumSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:[kSnapLargeSuffix substringToIndex:[kSnapLargeSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:@".jpg" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:@".png" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	
+	return ([imagePrefix copy]);
+}
+
 
 + (UIFont *)helveticaNeueFontRegular {
 	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
@@ -589,6 +634,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (UIColor *)honLightGreyTextColor {
 	return ([UIColor colorWithWhite:0.671 alpha:1.0]);
+}
+
++ (UIColor *)honPlaceholderTextColor {
+	return ([UIColor colorWithWhite:0.790 alpha:1.0]);
 }
 
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent {
@@ -641,7 +690,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 			
-			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_TAB_BAR_AB" object:nil];
 			
 			if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
@@ -657,7 +705,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				NSString *notificationName;
 				switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
 					case 0:
-						notificationName = @"REFRESH_VOTE_TAB";
+						notificationName = @"REFRESH_HOME_TAB";
 						break;
 						
 					case 1:
@@ -668,10 +716,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						notificationName = @"REFRESH_VERIFY_TAB";
 						break;
 					
-						default:
-							notificationName = @"REFRESH_VOTE_TAB";
-							break;
+					default:
+						notificationName = @"REFRESH_HOME_TAB";
+						break;
 				}
+				
+				NSLog(@"REFRESHING:[%@]", notificationName);
 				
 				[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 			}
@@ -725,19 +775,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"])
 					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-			}
 			
 #if __IGNORE_SUSPENDED__ == 1
-			[self _initTabs];
+				[self _retreiveSubscribees];
 #else
-			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-				
-			} else
-				[self _initTabs];
+				if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+					[navigationController setNavigationBarHidden:YES];
+					[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+					
+				} else
+					[self _retreiveSubscribees];
 #endif
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -755,12 +805,33 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
+- (void)_retreiveSubscribees {
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIGetSubscribees parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[HONAppDelegate writeSubscribeeList:result];
+			[self _initTabs];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
 - (void)_enableNotifications {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 4], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							@"Y", @"isNotifications",
-							nil];
+	NSDictionary *params = @{@"action"			: [NSString stringWithFormat:@"%d", 4],
+							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"isNotifications"	: @"Y"};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -839,20 +910,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[self.window addSubview:(UIView *)[notification object]];
 }
 
-//- (void)_showSubjectSearchTimeline:(NSNotification *)notification {
-//	[_searchViewController.view removeFromSuperview];
-//	
-//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-//	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:[notification object]] animated:YES];
-//}
-//
-//- (void)_showUserSearchTimeline:(NSNotification *)notification {
-//	[_searchViewController.view removeFromSuperview];
-//	
-//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-//	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];
-//}
-
 - (void)_changeTab:(NSNotification *)notification {
 	self.tabBarController.selectedIndex = [[notification object] intValue];
 }
@@ -860,6 +917,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_showShareShelf:(NSNotification *)notification {
 	_shareInfo = [notification object];
 	
+	NSLog(@"_showShareShelf:[%@]", _shareInfo);
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
@@ -874,9 +932,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_recreateImageSizes:(NSNotification *)notification {
-	NSDictionary *params = @{@"imgURL"	: [notification object]};
+	NSDictionary *params = @{@"imgURL"	: [[notification object] stringByAppendingString:kSnapLargeSuffix]};
 	
-	NSLog(@"IMAGE:[%@]", [notification object]);
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -918,7 +976,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[shadow setShadowOffset:CGSizeMake(0.0f, 0.0f)];
 	
 	//[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
-	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honPercentGreyscaleColor:0.75]];
+	[[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.506 green:0.780 blue:0.725 alpha:1.0]];
 	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
 														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20]}];
@@ -1008,6 +1066,26 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	}
 	
+	NSDictionary *emptyChallenge = @{@"id":@"0",
+									 @"added":@"1970-01-01 00:00:00",
+									 @"challengers":@[],
+									 @"comments":@"0",
+									 @"creator":@{@"age":@"1970-01-01 00:00:00",
+												  @"avatar":@"",
+												  @"id":@"0",
+												  @"img":@"",
+												  @"score":@"0",
+												  @"subject":@"",
+												  @"username":@""},
+									 @"has_viewed":@"N",
+									 @"is_celeb":@"0",
+									 @"is_explore":@"1",
+									 @"is_verify":@"0",
+									 @"started":@"1970-01-01 00:00:00",
+									 @"status":@"0",
+									 @"subject":@"",
+									 @"updated":@"1970-01-01 00:00:00"};
+	[[NSUserDefaults standardUserDefaults] setObject:emptyChallenge	forKey:@"empty_challenge"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	
@@ -1035,9 +1113,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
 		
-		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
-								   withHomepageURI:@"http://www.builtinmenlo.com"
-									  addAppButton:YES];
+//		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
+//								   withHomepageURI:@"http://www.builtinmenlo.com"
+//									  addAppButton:YES];
 		
 		
 		int boot_total = 0;
@@ -1203,7 +1281,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			[self _retrieveConfigJSON];
-			//_isFromBackground = NO;
+			_isFromBackground = NO;
 		}
 	}
 }
@@ -1363,6 +1441,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	self.tabBarController.view.hidden = NO;
 	self.tabBarController.viewControllers = navigationControllers;
+	self.window.backgroundColor = [UIColor clearColor];
 }
 
 
@@ -1462,13 +1541,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		NSLog(@"SHARE INFO:[%@]", _shareInfo);
-		
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == 0) ? @"Twitter" : @"Instagram"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		NSString *caption = [[_shareInfo objectForKey:@"caption"] objectAtIndex:buttonIndex];
 		
 		if (buttonIndex == 0) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
@@ -1481,7 +1556,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:caption];
+				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"caption"] objectAtIndex:0]];
 				[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
 //				[twitterComposeViewController addURL:[_shareInfo objectForKey:@"url"]];
 				twitterComposeViewController.completionHandler = completionBlock;
@@ -1509,7 +1584,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
 				_documentInteractionController.UTI = instaFormat;
 				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:caption forKey:@"InstagramCaption"];
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"caption"] objectAtIndex:1] forKey:@"InstagramCaption"];
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {
@@ -1520,6 +1595,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  otherButtonTitles:nil] show];
 			}
 		}
+		
+		_shareInfo = nil;
 	}
 }
 

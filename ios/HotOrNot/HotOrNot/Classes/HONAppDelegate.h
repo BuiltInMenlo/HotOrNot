@@ -14,7 +14,7 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 0
+#define __ALWAYS_REGISTER__ 1
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
@@ -81,6 +81,10 @@ const CGSize kSnapLargeSize;
 const CGFloat kAvatarDim;
 
 
+extern NSString * const kSnapThumbSuffix;
+extern NSString * const kSnapMediumSuffix;
+extern NSString * const kSnapLargeSuffix;
+
 const BOOL kIsImageCacheEnabled;
 extern NSString * const kTwilioSMS;
 
@@ -138,10 +142,12 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)friendsList;
 + (void)addFriendToList:(NSDictionary *)friend;
 + (void)writeFriendsList:(NSArray *)friends;
++ (BOOL)isFollowedByUser:(int)userID;
 
 + (NSArray *)subscribeeList;
 + (void)addSubscribeeToList:(NSDictionary *)subscribee;
 + (void)writeSubscribeeList:(NSArray *)subscribees;
++ (BOOL)isFollowingUser:(int)userID;
 
 + (int)hasVoted:(int)challengeID;
 + (void)setVote:(int)challengeID forCreator:(BOOL)isCreator;
@@ -158,6 +164,7 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)formattedExpireTime:(int)seconds;
++ (NSString *)cleanImageURL:(NSString *)imageURL;
 
 + (UIFont *)helveticaNeueFontRegular;
 + (UIFont *)helveticaNeueFontLight;
@@ -173,6 +180,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (UIColor *)honGreyTextColor;
 + (UIColor *)honDarkGreyTextColor;
 + (UIColor *)honLightGreyTextColor;
++ (UIColor *)honPlaceholderTextColor;
 
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent;
 

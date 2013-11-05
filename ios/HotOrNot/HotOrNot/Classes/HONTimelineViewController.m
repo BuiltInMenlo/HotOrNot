@@ -59,7 +59,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedHomeTab:) name:@"SELECTED_HOME_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_VOTE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_HOME_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
@@ -198,7 +198,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
+	//self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
 	
 	_challenges = [NSMutableArray array];
@@ -230,15 +230,18 @@
 	[self.view addSubview:_headerView];
 	
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
-		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
-		
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
+		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
+	
+	
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate incTotalForCounter:@"timeline"];
 }
 
 - (void)viewDidUnload {
@@ -260,10 +263,13 @@
 }
 
 - (void)_goRefresh {
-	_isRefreshing = YES;
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[HONAppDelegate incTotalForCounter:@"timeline"];
+	
+	_isRefreshing = YES;
 	[self _retrieveChallenges];
 }
 
@@ -274,15 +280,8 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+	[self _addBlur];
+	[self _removeTutorialBubbles];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -296,6 +295,8 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
+		[self _removeTutorialBubbles];
+		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
@@ -410,13 +411,32 @@
 }
 
 - (void)_selectedHomeTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
 }
 
 - (void)_refreshHomeTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_addBlur {
+//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+//	_blurredImageView.alpha = 0.0;
+//	[self.view addSubview:_blurredImageView];
+//	
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_blurredImageView.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
+}
+
+- (void)_removeTutorialBubbles {
+	for (HONTimelineItemViewCell *cell in _cells) {
+		[cell removeTutorialBubble];
+	}
 }
 
 
@@ -433,15 +453,8 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-		
+		[self _addBlur];
+		[self _removeTutorialBubbles];
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 		userPofileViewController.userID = userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -469,6 +482,8 @@
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[cell showTapOverlay];
+		[self _removeTutorialBubbles];
+		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
@@ -494,15 +509,8 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
 		_challengeVO = challengeVO;
-		_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blurredImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			//.modalTransitionStyle
-		}];
+		[self _addBlur];
+		[self _removeTutorialBubbles];
 		
 		[cell showTapOverlay];
 		
@@ -530,6 +538,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
+	[self _removeTutorialBubbles];
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
@@ -541,6 +550,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
+	[self _removeTutorialBubbles];
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
@@ -556,10 +566,9 @@
 									  nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
+		[self _removeTutorialBubbles];
 		
-		NSLog(@"PREVIEW:[%@]", challengeVO.dictionary);
-		
-		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:YES];
+		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO];
 		_snapPreviewViewController.delegate = self;
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
@@ -586,7 +595,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -638,10 +647,6 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"timeline_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
 	[self _goRefresh];
 }
 

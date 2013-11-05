@@ -16,7 +16,6 @@
 - (void)uploadComplete;
 - (void)animateAccept;
 - (void)resetControls;
-//- (void)verifyOverlay:(BOOL)isIntro;
 
 @property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end

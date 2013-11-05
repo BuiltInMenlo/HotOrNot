@@ -21,16 +21,12 @@
 
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)])) {
-		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
+		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 		_opponentVO = opponentVO;
 		
 		_verifyTabInfo = [HONAppDelegate infoForABTab];
-		
-		
-		NSMutableString *avatarURL = [_opponentVO.avatarURL mutableCopy];
-		[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 5.0, 40.0, 40.0)];
+		//NSLog(@"AVATAR:[%@]", [_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
 		[self addSubview:avatarImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -38,10 +34,10 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[avatarURL replaceOccurrencesOfString:@"Small_160x160.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_opponentVO.avatarURL];
 		};
 		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];
@@ -52,20 +48,27 @@
 		[self addSubview:avatarButton];
 		
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 5.0, 220.0, 22.0)];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 6.0, 220.0, 22.0)];
 		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
 		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		nameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
 		[self addSubview:nameLabel];
 		
-		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 22.0, 240.0, 22.0)];
-		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
-		messageLabel.textColor = [UIColor whiteColor];
-		messageLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		messageLabel.shadowOffset =  CGSizeMake(1.0, 1.0);
+		CGSize size = [nameLabel.text boundingRectWithSize:CGSizeMake(220.0, 22.0)
+												   options:NSStringDrawingTruncatesLastVisibleLine
+												attributes:@{NSFontAttributeName:nameLabel.font}
+												   context:nil].size;
+		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, size.height);
+		
+		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		nameButton.frame = nameLabel.frame;
+		[nameButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:nameButton];
+		
+		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 25.0, 260.0, 18.0)];
+		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+		messageLabel.textColor = [HONAppDelegate honBlueTextColor];
 		messageLabel.backgroundColor = [UIColor clearColor];
 		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];
 		[self addSubview:messageLabel];

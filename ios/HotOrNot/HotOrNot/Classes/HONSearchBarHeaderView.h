@@ -10,7 +10,7 @@
 
 @protocol HONSearchBarHeaderViewDelegate;
 
-@interface HONSearchBarHeaderView : UIView
+@interface HONSearchBarHeaderView : UIView <UITextFieldDelegate>
 - (void)toggleFocus:(BOOL)isFocused;
 - (void)backgroundingReset;
 

@@ -27,11 +27,8 @@
 @property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (readonly, nonatomic, assign) HONVolleySubmitType volleySubmitType;
-//@property (nonatomic, strong) NSMutableArray *subscribers;
-//@property (nonatomic, strong) NSMutableArray *subscriberIDs;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) S3PutObjectRequest *por;
 @property (nonatomic, strong) UIImage *rawImage;
 @property (nonatomic, strong) UIImage *processedImage;
@@ -43,6 +40,7 @@
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL isMainCamera;
 @property (nonatomic) BOOL isFirstCamera;
+@property (nonatomic) BOOL isImageUploaded;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic, strong) NSTimer *uploadTimer;
 @end
@@ -95,62 +93,11 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 5], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-			[HONAppDelegate writeUserInfo:userResult];
-			
-//			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
-//				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
-//					BOOL isFound = NO;
-//					for (NSNumber *userID in _subscriberIDs) {
-//						if ([userID intValue] == vo.userID) {
-//							isFound = YES;
-//							break;
-//						}
-//					}
-//					
-//					if (!isFound) {
-//						[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//																			   [NSString stringWithFormat:@"%d", vo.userID], @"id",
-//																			   [NSString stringWithFormat:@"%d", 0], @"points",
-//																			   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-//																			   [NSString stringWithFormat:@"%d", 0], @"pics",
-//																			   [NSString stringWithFormat:@"%d", 0], @"age",
-//																			   vo.username, @"username",
-//																			   vo.avatarURL, @"avatar_url", nil]]];
-//						[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
-//					}
-//				}
-//			}
-//			
-//			[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-	}];
-}
-
 - (void)_uploadPhotos {
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-	_uploadCounter = 0;
 	
-	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_cancelUpload) userInfo:nil repeats:NO];
+	_isImageUploaded = NO;
+	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_uploadTimeout) userInfo:nil repeats:NO];
 	
 	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
@@ -159,7 +106,7 @@
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		_por = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-challenges"];
+		_por = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@%@", _filename, kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
 		_por.delegate = self;
 		_por.contentType = @"image/jpeg";
 		_por.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
@@ -217,7 +164,7 @@
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			if (_uploadCounter == 1) {
+			if (_isImageUploaded) {
 				[UIView animateWithDuration:0.5 animations:^(void) {
 					_submitImageView.alpha = 0.0;
 				} completion:^(BOOL finished) {
@@ -239,7 +186,7 @@
 				
 			} else {
 				_hasSubmitted = YES;
-				if (_uploadCounter == 1) {
+				if (_isImageUploaded) {
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -320,11 +267,11 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-//	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)viewDidUnload {
@@ -355,50 +302,9 @@
 
 #pragma mark - UI Presentation
 - (void)showImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType {
-//	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorVO.userID) {
-//			[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//																   [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
-//																   [NSString stringWithFormat:@"%d", 0], @"points",
-//																   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-//																   [NSString stringWithFormat:@"%d", 0], @"pokes",
-//																   [NSString stringWithFormat:@"%d", 0], @"pics",
-//																   [NSString stringWithFormat:@"%d", 0], @"age",
-//																   _challengeVO.creatorVO.username, @"username",
-//																   _challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
-//			[_subscriberIDs addObject:[NSNumber numberWithInt:_challengeVO.creatorVO.userID]];
-//		}
-//		
-//		for (HONOpponentVO *vo in _challengeVO.challengers) {
-//			if ([vo.imagePrefix length] > 0 && vo.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-//				
-//				BOOL isFound = NO;
-//				for (NSNumber *userID in _subscriberIDs) {
-//					if ([userID intValue] == vo.userID) {
-//						isFound = YES;
-//						break;
-//					}
-//				}
-//				
-//				if (!isFound) {
-//					[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//																		   [NSString stringWithFormat:@"%d", vo.userID], @"id",
-//																		   [NSString stringWithFormat:@"%d", 0], @"points",
-//																		   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-//																		   [NSString stringWithFormat:@"%d", 0], @"pokes",
-//																		   [NSString stringWithFormat:@"%d", 0], @"pics",
-//																		   [NSString stringWithFormat:@"%d", 0], @"age",
-//																		   vo.username, @"username",
-//																		   vo.avatarURL, @"avatar_url", nil]]];
-//					[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
-//				}
-//			}
-//		}
-//	}
-	
-	
     UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
     imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+	imagePickerController.view.backgroundColor = [UIColor whiteColor];
     imagePickerController.sourceType = sourceType;
     imagePickerController.delegate = self;
     
@@ -414,7 +320,7 @@
     }
 	
     self.imagePickerController = imagePickerController;
-    [self presentViewController:self.imagePickerController animated:YES completion:^(void) {
+    [self presentViewController:self.imagePickerController animated:NO completion:^(void) {
 		if (sourceType == UIImagePickerControllerSourceTypeCamera)
 			[self _showOverlay];
 	}];
@@ -428,23 +334,23 @@
 	_isFirstCamera = (camera_total == 0);
 	self.imagePickerController.cameraOverlayView = _cameraOverlayView;
 	[_cameraOverlayView introWithTutorial:_isFirstCamera];
-	
-//	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
-//		[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
-//	
-//	} else
-//		[self _retrieveUser];
 }
 
+
+#pragma mark - Upload Handling
 - (void)_cancelUpload {
+	_isImageUploaded = NO;
+	[_por.urlConnection cancel];
+	_por = nil;
+}
+
+- (void)_uploadTimeout {
 	if (_uploadTimer != nil) {
 		[_uploadTimer invalidate];
 		_uploadTimer = nil;
 	}
 	
-	_uploadCounter = 0;
-	[_por.urlConnection cancel];
-	_por = nil;
+	[self _cancelUpload];
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -481,9 +387,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	_uploadCounter = 0;
-	[_por.urlConnection cancel];
-	_por = nil;
+	[self _cancelUpload];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -492,10 +396,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	_uploadCounter = 0;
-	[_por.urlConnection cancel];
-	_por = nil;
-	
+	[self _cancelUpload];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
@@ -526,9 +427,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	_uploadCounter = 0;
-	[_por.urlConnection cancel];
-	_por = nil;
+	[self _cancelUpload];
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
@@ -541,10 +440,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	_uploadCounter = 0;
-	[_por.urlConnection cancel];
-	_por = nil;
-	
+	[self _cancelUpload];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
@@ -593,44 +489,42 @@
 		_uploadTimer = nil;
 	}
 	
-	_uploadCounter++;
-	if (_uploadCounter == 1) {
-		if (_submitImageView != nil) {
-			[UIView animateWithDuration:0.5 animations:^(void) {
-				_submitImageView.alpha = 0.0;
-			} completion:^(BOOL finished) {
-				[_submitImageView removeFromSuperview];
-				_submitImageView = nil;
+	_isImageUploaded = YES;;
+	if (_submitImageView != nil) {
+		[UIView animateWithDuration:0.5 animations:^(void) {
+			_submitImageView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_submitImageView removeFromSuperview];
+			_submitImageView = nil;
+		}];
+	}
+	
+	[_previewView uploadComplete];
+	[self _finalizeUpload];
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+		
+	if (_hasSubmitted) {
+//		if (_isFirstCamera) {
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
+//																message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
+//															   delegate:self
+//													  cancelButtonTitle:@"No"
+//													  otherButtonTitles:@"Yes", nil];
+//			[alertView show];
+//		
+//		} else {
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				
+				if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
 			}];
-		}
-		
-		[_previewView uploadComplete];
-		[self _finalizeUpload];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-			
-		if (_hasSubmitted) {
-//			if (_isFirstCamera) {
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-//																	message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
-//																   delegate:self
-//														  cancelButtonTitle:@"No"
-//														  otherButtonTitles:@"Yes", nil];
-//				[alertView show];
-//			
-//			} else {
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-					
-					if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
-				}];
-//			}
-		}
+//		}
 	}
 }
 
@@ -711,32 +605,5 @@
 	}
 }
 
-
-//#pragma mark - AlertView Delegates
-//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-//	if (buttonIndex == 1) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-//		
-//		[[Mixpanel sharedInstance] track:@"Create Volley - Promote Instagram"
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-//		
-//		[self performSelector:@selector(_sendToInstagram) withObject:nil afterDelay:2.0];
-//	}
-//	
-//	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-//	}];
-//}
-//
-//- (void)_sendToInstagram {
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM"
-//														object:[NSDictionary dictionaryWithObjectsAndKeys:
-//																[NSString stringWithFormat:[HONAppDelegate instagramShareComment], _subjectName, [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"caption",
-//																[HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-//																							avatarImage:[HONAppDelegate avatarImage]
-//																							   username:[[HONAppDelegate infoForUser] objectForKey:@"username"]], @"image", nil]];
-//}
 
 @end

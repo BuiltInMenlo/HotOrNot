@@ -412,9 +412,6 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONPopularUserVO *vo = [_users objectAtIndex:indexPath.row];
-	
-	NSLog(@"didSelectRowAtIndexPath:[%@]", vo.username);
-	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];

@@ -32,7 +32,7 @@
 		[_likesButton setBackgroundImage:[UIImage imageNamed:([self _calcScore] > 0) ? @"heartLike_Icon" : @"heartDefault_Icon"] forState:UIControlStateHighlighted];
 		[self addSubview:_likesButton];
 		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, 9.0, 250.0, 14.0)];
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(33.0, 9.0, 250.0, 14.0)];
 		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 		_likesLabel.textColor = ([self _calcScore] == 0) ? [HONAppDelegate honGreyTextColor] : [HONAppDelegate honDarkGreyTextColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
@@ -67,15 +67,15 @@
 			int idx = 0;
 			for (HONOpponentVO *vo in participants) {
 				UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0 + (idx * 35.0), 10.0, 30.0, 30.0)];
-				[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.imagePrefix]] placeholderImage:nil];
+				[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", vo.imagePrefix, kSnapThumbSuffix]] placeholderImage:nil];
 				avatarImageView.userInteractionEnabled = YES;
 				[avatarsHolderView addSubview:avatarImageView];
 				
-				UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				avatarButton.frame = CGRectMake(0.0, 0.0, avatarImageView.frame.size.width, avatarImageView.frame.size.height);
-				[avatarButton addTarget:self action:@selector(_goProfileForParticipant:) forControlEvents:UIControlEventTouchUpInside];
-				[avatarsHolderView addSubview:avatarButton];
-				[avatarButton setTag:idx];
+//				UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//				avatarButton.frame = CGRectMake(0.0, 0.0, avatarImageView.frame.size.width, avatarImageView.frame.size.height);
+//				[avatarButton addTarget:self action:@selector(_goProfileForParticipant:) forControlEvents:UIControlEventTouchUpInside];
+//				[avatarsHolderView addSubview:avatarButton];
+//				[avatarButton setTag:idx];
 				
 				idx++;
 			}
@@ -105,8 +105,14 @@
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
-		subjectLabel.text = ((HONOpponentVO *)[_challengeVO.challengers lastObject]).subjectName; //firstObject
+		subjectLabel.text = ((HONOpponentVO *)[_challengeVO.challengers firstObject]).subjectName;
 		[participantsView addSubview:subjectLabel];
+		
+		UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		detailsButton.frame = CGRectMake(0.0, 0.0, participantsView.frame.size.width, participantsView.frame.size.height);
+		[detailsButton addTarget:self action:([_challengeVO.challengers count] == 0) ? @selector(_goJoinChallenge) : @selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
+		[participantsView addSubview:detailsButton];
+
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		joinButton.frame = CGRectMake(257.0, 3.0, 64.0, 44.0);
@@ -205,7 +211,7 @@
 	if ([_challengeVO.challengers count] == 0)
 		return (@"Be the first to reply.");
 	
-	HONOpponentVO *vo = ([_challengeVO.challengers count] == 1) ? (HONOpponentVO *)[_challengeVO.challengers firstObject] : (HONOpponentVO *)[_challengeVO.challengers lastObject];
+	HONOpponentVO *vo = (HONOpponentVO *)[_challengeVO.challengers firstObject];
 	if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 		caption = @"You";
 	

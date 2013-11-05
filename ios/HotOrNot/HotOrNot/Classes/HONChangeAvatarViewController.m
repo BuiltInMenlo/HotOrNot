@@ -76,7 +76,7 @@
 //		UIImage *oImage = image;
 		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _filename] inBucket:@"hotornot-avatars"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@%@", _filename, kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		por1.delegate = self;
@@ -103,7 +103,7 @@
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									[[HONAppDelegate infoForUser] objectForKey:@"username"], @"username",
-									[NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
+									[NSString stringWithFormat:@"%@/%@%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename, kSnapLargeSuffix], @"imgURL",
 									nil];
 	
 	NSLog(@"PARAMS:[%@]", params);
@@ -129,14 +129,13 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-//				[_cameraOverlayView verifyOverlay:NO];
 				[HONAppDelegate writeUserInfo:userResult];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
@@ -172,8 +171,7 @@
 }
 
 - (void)_finalizeUpload {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL", nil];
+	NSDictionary *params = @{@"imgURL"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -411,7 +409,6 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _finalizeUser];
-//	[_cameraOverlayView verifyOverlay:YES];
 }
 
 
@@ -427,7 +424,7 @@
 		[_cameraOverlayView uploadComplete];
 //		[_cameraOverlayView animateAccept];
 		
-		NSString *avatarURL = [NSString stringWithFormat:@"%@/%@Large_640x1136.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename];
+		NSString *avatarURL = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]];
 		[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		[self _finalizeUpload];
 		[self _finalizeUser];

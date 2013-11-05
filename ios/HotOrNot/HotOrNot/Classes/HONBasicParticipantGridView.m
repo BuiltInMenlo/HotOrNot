@@ -13,7 +13,6 @@
 
 @interface HONBasicParticipantGridView () {
 	UIView *_holderView;
-	NSMutableArray *_cells;
 	int _participantCounter;
 }
 @end
@@ -43,47 +42,66 @@
 
 #pragma mark - UI Presentation
 - (void)layoutGrid {
+	_gridViews = [NSMutableArray array];
+	
 	_holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + 1))];
 	[self addSubview:_holderView];
 	
-	NSLog(@"%@.layoutGrid -> FRAME:[%@]", [[self class] description], NSStringFromCGRect(_holderView.frame));
-	
-	_cells = [NSMutableArray new];
-	
-	// start creating cells
 	_participantCounter = 0;
-	for (NSDictionary *dict in _gridItems)
-		[self createItemForParticipant:[dict objectForKey:@"participant"] fromChallenge:[dict objectForKey:@"challenge"]];
+	for (NSDictionary *dict in _gridItems) {
+		UIView *gridItemView = [self createItemForParticipant:[dict objectForKey:@"participant"] fromChallenge:[dict objectForKey:@"challenge"]];
+		[gridItemView setTag:_participantCounter];
+		
+		[_gridViews addObject:gridItemView];
+		[_holderView addSubview:gridItemView];
+		
+		_participantCounter++;
+	}
 
-//	// attach long tap
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.25;
-	[self addGestureRecognizer:lpGestureRecognizer];
+	// attach long tap
+	_lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	_lpGestureRecognizer.minimumPressDuration = 0.25;
+	[self addGestureRecognizer:_lpGestureRecognizer];
 }
 
-- (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-	HONOpponentVO *vo = ([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix]) ? challengeVO.creatorVO : opponentVO;
-//	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@Large_640x1136.jpg", [vo.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
+- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
+	HONOpponentVO *vo = opponentVO;//([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix]) ? challengeVO.creatorVO : opponentVO;
+//	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@%@",  [vo.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
 	
 	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_participantCounter % 4), kSnapThumbSize.height * (_participantCounter / 4));
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
-	[_holderView addSubview:imageHolderView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-	[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Small_160x160.jpg", vo.imagePrefix]] placeholderImage:nil];
 	[imageHolderView addSubview:imageView];
+	imageView.alpha = 0.0;
 	
-	if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
-		[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		imageView.image = image;
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			imageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+//			if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
+//				[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
+		}];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:vo.imagePrefix];
+	};
+	
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							placeholderImage:nil
+									 success:imageSuccessBlock
+									 failure:imageFailureBlock];
 	
 	_previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_previewButton.frame = imageView.frame;
 	[_previewButton addTarget:self action:@selector(_goPreview:) forControlEvents:UIControlEventTouchUpInside];
-	[_previewButton setTag:vo.userID];
+	[_previewButton setTag:_participantCounter];
 	[imageHolderView addSubview:_previewButton];
 	
-	_participantCounter++;
-	[_cells addObject:imageHolderView];
+	return (imageHolderView);
 }
 
 
@@ -116,15 +134,8 @@
 
 #pragma mark - Navigation
 - (void)_goPreview:(id)sender {
-	_selectedOpponentVO = nil;
-	for (NSDictionary *dict in _gridItems) {
-		HONOpponentVO *vo = (HONOpponentVO *)[dict objectForKey:@"participant"];
-		if (vo.userID == [sender tag]) {
-			_selectedOpponentVO = vo;
-			break;
-		}
-	}
-	
+
+	_selectedOpponentVO = (HONOpponentVO *)[[_gridItems objectAtIndex:[sender tag]] objectForKey:@"participant"];
 	if (_selectedOpponentVO != nil) {
 		[self.delegate participantGridView:self showPreview:_selectedOpponentVO forChallenge:_selectedChallengeVO];
 	}

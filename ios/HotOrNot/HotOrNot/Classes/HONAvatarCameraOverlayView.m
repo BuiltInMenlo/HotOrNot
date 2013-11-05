@@ -39,9 +39,9 @@
 		_irisView.alpha = 0.0;
 		[self addSubview:_irisView];
 		
-		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
-		headerBGImageView.frame = CGRectOffset(headerBGImageView.frame, 0.0, -20.0);
-		[self addSubview:headerBGImageView];
+		UIView *headerBGView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+		[self addSubview:headerBGView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
@@ -50,11 +50,11 @@
 		[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cancelButton];
 		
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
+//		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
+//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
+//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+//		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
 		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
@@ -158,29 +158,6 @@
 	}];
 }
 
-- (void)verifyOverlay:(BOOL)isIntro {
-	if (isIntro) {
-		_verifyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
-		_verifyImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
-											 [UIImage imageNamed:@"overlayLoader002"],
-											 [UIImage imageNamed:@"overlayLoader003"], nil];
-		_verifyImageView.animationDuration = 0.5f;
-		_verifyImageView.animationRepeatCount = 0;
-		_verifyImageView.alpha = 0.0;
-		[_verifyImageView startAnimating];
-		[self addSubview:_verifyImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_verifyImageView.alpha = 1.0;
-		} completion:nil];
-		
-	} else {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_verifyImageView.alpha = 0.0;
-		} completion:nil];
-	}
-}
-
 - (void)resetControls {
 	[self removePreview];
 	
@@ -253,6 +230,28 @@
 
 
 #pragma mark - UI Presentation
+- (void)_verifyOverlay:(BOOL)isIntro {
+	if (isIntro) {
+		_verifyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
+		_verifyImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
+											[UIImage imageNamed:@"overlayLoader002"],
+											[UIImage imageNamed:@"overlayLoader003"], nil];
+		_verifyImageView.animationDuration = 0.5f;
+		_verifyImageView.animationRepeatCount = 0;
+		_verifyImageView.alpha = 0.0;
+		[_verifyImageView startAnimating];
+		[self addSubview:_verifyImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_verifyImageView.alpha = 1.0;
+		} completion:nil];
+		
+	} else {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_verifyImageView.alpha = 0.0;
+		} completion:nil];
+	}
+}
 
 
 #pragma mark - AlertView Delegates

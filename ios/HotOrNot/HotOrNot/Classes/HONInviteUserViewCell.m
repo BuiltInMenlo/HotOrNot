@@ -50,11 +50,8 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	NSMutableString *imageURL = [_userVO.avatarURL mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:imageURL] placeholderImage:nil];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];

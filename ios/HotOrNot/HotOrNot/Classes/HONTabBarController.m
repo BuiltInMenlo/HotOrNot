@@ -29,11 +29,11 @@ const CGSize kTabSize = {80.0, 50.0};
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateTabBarAB:) name:@"UPDATE_TAB_BAR_AB" object:nil];
+		 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateTabBarAB:) name:@"UPDATE_TAB_BAR_AB" object:nil];
 	}
 	
 	return (self);
@@ -167,10 +167,9 @@ const CGSize kTabSize = {80.0, 50.0};
 //	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
 //		[self _updateBadges];
 //
-//	[self _showBadgesWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
-//								 [NSNumber numberWithInt:arc4random() % 15], @"status",
-//								 [NSNumber numberWithInt:arc4random() % 15], @"score",
-//								 [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
+//	[self _showBadgesWithTotals:@{@"status"		: [NSNumber numberWithInt:arc4random() % 15],
+//								  @"score"		: [NSNumber numberWithInt:arc4random() % 15],
+//								  @"comments"	: [NSNumber numberWithInt:arc4random() % 15]}];
 }
 
 
@@ -228,7 +227,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
-	[self _updateBadges];
+//	[self _updateBadges];
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
@@ -294,7 +293,7 @@ const CGSize kTabSize = {80.0, 50.0};
 }
 
 
-#pragma mark - Data Housekeeping
+#pragma mark - Data Tally
 - (void)_updateBadges {
 	NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 													[NSNumber numberWithInt:0], @"status",
@@ -302,10 +301,8 @@ const CGSize kTabSize = {80.0, 50.0};
 													[NSNumber numberWithInt:0], @"comments", nil];
 	
 	
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 3], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									nil];
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 3],
+							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -332,14 +329,10 @@ const CGSize kTabSize = {80.0, 50.0};
 			
 			NSMutableArray *updateChallenges = [NSMutableArray array];
 			for (HONChallengeVO *vo in challenges) {
-				NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-											 [NSNumber numberWithInt:vo.challengeID], @"id",
-											 (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started", @"status",
-											 [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score], @"score",
-											 [NSNumber numberWithInt:vo.commentTotal], @"comments",
-											 nil];
-				
-				[updateChallenges addObject:dict];
+				[updateChallenges addObject: @{@"id"		: [NSNumber numberWithInt:vo.challengeID],
+											   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
+											   @"score"		: [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score],
+											   @"comments"	: [NSNumber numberWithInt:vo.commentTotal]}];
 			}
 			
 			NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];

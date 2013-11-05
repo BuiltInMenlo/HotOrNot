@@ -95,9 +95,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			for (NSDictionary *dict in result) {
-				NSMutableString *avatarURL = [[[dict objectForKey:@"user"] objectForKey:@"avatar_url"] mutableCopy];
-				[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-				
+				NSString *avatarURL = [HONAppDelegate cleanImageURL:[[dict objectForKey:@"user"] objectForKey:@"avatar_url"]];
 				[_subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																	   [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 																	   [NSString stringWithFormat:@"%d", 0], @"points",

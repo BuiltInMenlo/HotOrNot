@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, challengers, commentTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate, expireSeconds;
+@synthesize challengeID, statusID, status, subjectName, challengers, commentTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -27,7 +27,6 @@
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	vo.isCelebCreated = [[dictionary objectForKey:@"is_celeb"] intValue];
 	vo.isExploreChallenge = [[dictionary objectForKey:@"is_explore"] intValue];
-	vo.expireSeconds = [[dictionary objectForKey:@"expires"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

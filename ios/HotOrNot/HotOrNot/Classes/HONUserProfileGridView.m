@@ -17,7 +17,6 @@
 
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initAtPos:yPos forChallenges:challenges asPrimaryOpponent:opponentVO])) {
-		NSLog(@"[%@]", [[self class] description]);
 		[self layoutGrid];
 	}
 	
@@ -43,10 +42,13 @@
 	
 	NSLog(@"%@.layoutGrid withTotal[%d]", [[self class] description], [_gridItems count]);
 	[super layoutGrid];
+	
+	[_lpGestureRecognizer removeTarget:self action:@selector(_goLongPress:)];
+	[self removeGestureRecognizer:_lpGestureRecognizer];
 }
 
-- (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-	[super createItemForParticipant:opponentVO fromChallenge:challengeVO];
+- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
+	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
 }
 
 

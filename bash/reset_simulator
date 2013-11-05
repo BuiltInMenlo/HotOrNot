@@ -42,23 +42,27 @@ if $isKill_flg; then # --/> passed in the kill param
 	# kill processes gracefully
 	if [ $simulator_pid ] && [ $bridge_pid ]; then
 		
-		printf "Gracefully killing the simulator...\n"
+		printf "Gracefully killing the simulator..."
 		if [ $simulator_pid ]; then # --/> terminate the process
 			kill -15 $simulator_pid; fi
 		
 		if [ $bridge_pid ]; then # --/> terminate the process
 			kill -15 $bridge_pid; fi
 		
+		printf " Success!\n"
+		
 	else # --/> no pid
-		echo "Didn't find the simulator running..."; fi
+		printf "Didn't find the simulator running...\n"; fi
 fi
 
 
 # call wipe user
 printf "Wiping user %s from db... " "${username}"
-curl --http-request POST --silent --data "username=${username}" "${wipe_url}" --output /dev/null 2>&1
-printf "Completed!\n"
+result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}" --output /dev/null 2>&1)
 
+#-- check for user json
+if [ $(echo "${result}" | grep total_challenges) ]; then printf "Completed!\n"
+else printf "Not found!\n"; fi
 
 #-- exit w/o error
 exit 0;

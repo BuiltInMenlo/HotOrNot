@@ -50,17 +50,33 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	NSMutableString *avatarURL = [_userVO.avatarURL mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@"Large_640x1136" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	//NSLog(@"AVATAR:[%@]", _userVO.avatarURL);
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
+	avatarImageView.alpha = 0.0;
 	[self addSubview:avatarImageView];
+	
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		avatarImageView.image = image;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
+	};
+	
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						   placeholderImage:nil
+									success:imageSuccessBlock
+									failure:imageFailureBlock];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 22.0, 130.0, 22.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
+	nameLabel.text = _userVO.username;
 	[self addSubview:nameLabel];
 }
 

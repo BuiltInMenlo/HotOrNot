@@ -163,7 +163,7 @@
 		} else {
 			//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], flagResult);
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -249,7 +249,7 @@
 	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 64.0);
 	[_scrollView addSubview:bgImageView];
 	
-	NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d] (%d)", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count], (int)(kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)));
+	//NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d] (%d)", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count], (int)(kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)));
 	
 	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, _scrollView.contentSize.height)];
 	_contentHolderView.frame = CGRectOffset(_contentHolderView.frame, 0.0, _scrollView.contentInset.top);
@@ -275,22 +275,22 @@
 	[super viewDidAppear:animated];
 	[_bgHolderView addSubview:_bgImageView];
 	
-	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = _tutorialImageView.frame;
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
+//	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		
+//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.frame = _tutorialImageView.frame;
+//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:closeButton];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_tutorialImageView.alpha = 1.0;
+//		}];
+//	}
 }
 
 
@@ -310,7 +310,6 @@
 	[_contentHolderView addSubview:_heroImageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroImageHolderView];
-	[imageLoadingView startAnimating];
 	[_heroImageHolderView addSubview:imageLoadingView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -321,21 +320,17 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
 	};
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroImageHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@Large_640x1136.jpg", _heroOpponentVO.imagePrefix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
-	
-//	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
-//	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, kHeroVolleyTableCellHeight - gradientImageView.frame.size.height);
-//	[_heroImageHolderView addSubview:gradientImageView];
 	
 	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroImageHolderView.frame.size.width, _heroImageHolderView.frame.size.height);
@@ -366,8 +361,8 @@
 	
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinFooterButton.frame = CGRectMake(0.0, 0.0, 43.0, 44.0);
-	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[joinFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[joinFooterButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
 	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -380,8 +375,8 @@
 	
 	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[shareFooterButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
 	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -394,8 +389,8 @@
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-	[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0] forState:UIControlStateNormal];
-	[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:9.5] forState:UIControlStateHighlighted];
+	[flagButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[flagButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
 	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -484,7 +479,7 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_heroOpponentVO forChallenge:_challengeVO asRoot:YES];
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_heroOpponentVO forChallenge:_challengeVO];
 	_snapPreviewViewController.delegate = self;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
@@ -497,15 +492,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", userID, @""], @"opponent", nil]];
 	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+	[self _addBlur];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -530,7 +517,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], _heroOpponentVO.subjectName, _heroOpponentVO.username], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], _heroOpponentVO.subjectName, [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], _heroOpponentVO.subjectName, _heroOpponentVO.username], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], _heroOpponentVO.subjectName, _heroOpponentVO.username, [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
 																							@"image"			: _heroImageView.image,
 																							@"url"				: @"",
 																							@"mp_event"			: @"Timeline Details",
@@ -569,6 +556,19 @@
 #pragma mark - Notifications
 - (void)_refreshAllTabs:(NSNotification *)notification {
 	[self _retrieveChallenge];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_addBlur {
+//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+//	_blurredImageView.alpha = 0.0;
+//	[self.view addSubview:_blurredImageView];
+//
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_blurredImageView.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	}];
 }
 
 
@@ -614,15 +614,7 @@
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
 	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+	[self _addBlur];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -634,6 +626,9 @@
 	[self _goJoinChallenge];
 }
 
+- (void)footerView:(HONTimelineItemFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO {
+}
+
 
 #pragma mark - GridView Delegates
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -642,7 +637,7 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:_challengeVO asRoot:YES];
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:_challengeVO];
 	_snapPreviewViewController.delegate = self;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
@@ -655,15 +650,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
+	[self _addBlur];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -694,20 +681,8 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	
-	if (_opponentVO.userID == _challengeVO.creatorVO.userID)
-		_challengeVO.creatorVO.score++;
-	
-	else
-		((HONOpponentVO *)[_challengeVO.challengers lastObject]).score++;
-	
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0)
-		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:(_opponentVO.userID == _challengeVO.creatorVO.userID)];
-	
-	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 4.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 43.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

@@ -29,13 +29,7 @@
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.isSuspended = ((BOOL)[[dictionary objectForKey:@"is_suspended"] intValue]);
 	vo.score = vo.points + vo.votes;
-	
-	NSMutableString *imageURL = [[dictionary objectForKey:@"avatar_url"] mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	[imageURL replaceOccurrencesOfString:@"Large_640x1136Large_640x1136.jpg" withString:@"Large_640x1136.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	vo.avatarURL = [imageURL copy];
-	imageURL = nil;
-	
+	vo.avatarURL = [HONAppDelegate cleanImageURL:[dictionary objectForKey:@"avatar_url"]];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

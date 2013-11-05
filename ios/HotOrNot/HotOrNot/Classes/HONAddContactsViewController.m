@@ -828,9 +828,6 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
-	
-	NSLog(@"didSelectRowAtIndexPath:[%@]", vo.username);
-	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];

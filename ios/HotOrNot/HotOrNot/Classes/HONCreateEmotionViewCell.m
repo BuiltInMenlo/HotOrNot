@@ -24,8 +24,7 @@
 
 - (id)initWithEmotion:(HONEmotionVO *)emotionVO AsEvenRow:(BOOL)isEven {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRow"]];
-		self.backgroundView.alpha = 0.90 + ((int)isEven * 0.10);
+		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.50 + ((int)isEven * 0.15)];
 		
 		_emotionVO = emotionVO;
 		
@@ -34,14 +33,14 @@
 		[self.contentView addSubview:imageView];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 200.0, 24.0)];
-		label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:19];
+		label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:19];
 		label.textColor = [HONAppDelegate honBlueTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.text = _emotionVO.hastagName;
 		[self.contentView addSubview:label];
 		
 		_priceImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"freeButton_nonActive"]];
-		_priceImageView.frame = CGRectOffset(_priceImageView.frame, 245.0, 10.0);
+		_priceImageView.frame = CGRectOffset(_priceImageView.frame, 247.0, 10.0);
 		[self addSubview:_priceImageView];
 	}
 	

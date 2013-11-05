@@ -17,18 +17,22 @@
 	HONOpponentVO *_heroOpponentVO;
 	NSMutableArray *_challenges;
 	NSMutableArray *_gridItems;
+	NSMutableArray *_gridViews;
 	
 	HONOpponentVO *_selectedOpponentVO;
 	HONChallengeVO *_selectedChallengeVO;
 	
 	UIButton *_previewButton;
+	
+	UILongPressGestureRecognizer *_lpGestureRecognizer;
 }
 
 - (id)initAtPos:(int)yPos forChallenge:(HONChallengeVO *)challengeVO asPrimaryOpponent:(HONOpponentVO *)opponentVO;
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO;
 
 - (void)layoutGrid;
-- (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO;
+- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO;
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer;
 
 @property (nonatomic, assign) id <HONParticipantGridViewDelegate> delegate;
 @end

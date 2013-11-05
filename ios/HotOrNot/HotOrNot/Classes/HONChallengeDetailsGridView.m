@@ -47,8 +47,8 @@
 	[super layoutGrid];
 }
 
-- (void)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-	[super createItemForParticipant:opponentVO fromChallenge:challengeVO];
+- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
+	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
 }
 
 

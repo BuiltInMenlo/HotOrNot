@@ -31,8 +31,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-//
-
 #import "EGORefreshTableHeaderView.h"
 
 #define kHeaderOffset 64.0f
@@ -50,30 +48,14 @@
 @implementation EGORefreshTableHeaderView
 @synthesize delegate = _delegate;
 
-- (id)initWithFrame:(CGRect)frame withScrollView:(UIScrollView *)scrollView includeHeaderOffset:(BOOL)isOffset {
-	if (self = [super initWithFrame:frame]) {
-		_scrollView = scrollView;
-		_headerOffset = isOffset * (kHeaderOffset - 44.0);
-		
-		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		
-		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - kLoadingTheshold, 24.0, 24.0);
-		[self addSubview:_activityIndicatorView];
-		
-		[self setState:EGOOPullRefreshNormal];
-	}
-	
-	return (self);
-}
-
 - (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset {
 	if (self = [super initWithFrame:frame]) {
 		_headerOffset = isOffset * kHeaderOffset;
 		
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		self.backgroundColor = [UIColor whiteColor];
 		
-		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - kLoadingTheshold, 24.0, 24.0);
 		[self addSubview:_activityIndicatorView];
 		
@@ -90,14 +72,27 @@
 		case EGOOPullRefreshPulling:
 			[_activityIndicatorView startAnimating];
 			_activityIndicatorView.hidden = NO;
+			
+			if (_activityIndicatorView.alpha < 1.0) {
+				[UIView animateWithDuration:0.25 animations:^(void) {
+					_activityIndicatorView.alpha = 1.0;
+				}];
+			}
 			break;
 			
 		case EGOOPullRefreshNormal:
 			if (_state == EGOOPullRefreshPulling) {
 			}
 			
-			[_activityIndicatorView stopAnimating];
-			_activityIndicatorView.hidden = YES;
+			if (_activityIndicatorView.alpha > 0.0) {
+				[UIView animateWithDuration:0.25 animations:^(void) {
+					_activityIndicatorView.alpha = 0.0;
+				} completion:^(BOOL finished) {
+					[_activityIndicatorView stopAnimating];
+					_activityIndicatorView.hidden = YES;
+				}];
+			}
+			
 			break;
 			
 		case EGOOPullRefreshLoading:

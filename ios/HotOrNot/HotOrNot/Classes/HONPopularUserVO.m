@@ -17,11 +17,8 @@
 	HONPopularUserVO *vo = [[HONPopularUserVO alloc] init];
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
-	vo.username = [dictionary objectForKey:@"username"];
-	
-	NSMutableString *imageURL = [[dictionary objectForKey:@"img_url"] mutableCopy];
-	[imageURL replaceOccurrencesOfString:@".jpg" withString:@"Small_160x160.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imageURL length])];
-	vo.imageURL = imageURL;
+	vo.username = [dictionary objectForKey:@"username"];	
+	vo.imageURL = [HONAppDelegate cleanImageURL:[dictionary objectForKey:@"img_url"]];
 	
 	return (vo);
 }

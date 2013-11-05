@@ -52,14 +52,14 @@
 	_popularUserVO = popularUserVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:_popularUserVO.imageURL] placeholderImage:nil];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 20.0, 200.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"%@", _popularUserVO.username];
+	nameLabel.text = _popularUserVO.username;
 	[self addSubview:nameLabel];
 }
 
