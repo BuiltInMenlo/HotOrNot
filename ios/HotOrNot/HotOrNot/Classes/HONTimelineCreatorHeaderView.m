@@ -24,8 +24,20 @@
 		_challengeVO = vo;
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
-		[avatarImageView setImageWithURL:[NSURL URLWithString:[_challengeVO.creatorVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 		[self addSubview:avatarImageView];
+		
+		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			avatarImageView.image = image;
+		};
+		
+		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_challengeVO.creatorVO.avatarURL];
+		};
+		
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_challengeVO.creatorVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							  placeholderImage:nil
+									   success:successBlock
+									   failure:failureBlock];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		avatarButton.frame = avatarImageView.frame;

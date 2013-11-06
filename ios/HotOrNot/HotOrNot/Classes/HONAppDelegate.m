@@ -49,14 +49,14 @@
 #import "HONSuspendedViewController.h"
 
 
-#if __DEV_BUILD___ == 1
+#if __DEV_BUILD___ == 0
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
 NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
-NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
-NSString * const kConfigJSON = @"boot_200.json";
+NSString * const kConfigURL = @"http://api.letsvolley.com";
+NSString * const kConfigJSON = @"boot_103.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #endif
@@ -148,11 +148,11 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
-#if __DEV_BUILD___ == 0
+//#if __DEV_BUILD___ == 0
 @interface HONAppDelegate()
-#else
-@interface HONAppDelegate() <BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
-#endif
+//#else
+//@interface HONAppDelegate() <BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+//#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
@@ -343,6 +343,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (void)writeUserAvatar:(UIImage *)image {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"avatar_image"];
+	
 	[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:@"avatar_image"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -689,7 +692,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+			//NSLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -1017,7 +1020,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_recreateImageSizes:(NSNotification *)notification {
-	NSDictionary *params = @{@"imgURL"	: [[notification object] stringByAppendingString:kSnapLargeSuffix]};
+	NSDictionary *params = @{@"imgURL"	: [[HONAppDelegate cleanImageURL:[notification object]] stringByAppendingString:kSnapLargeSuffix]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -1113,8 +1116,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_recreateImageSizes:) name:@"RECREATE_IMAGE_SIZES" object:nil];
 	
 #if __DEV_BUILD___ == 1
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 //	[TestFlight takeOff:kTestFlightAppToken];
 #endif

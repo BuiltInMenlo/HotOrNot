@@ -407,8 +407,8 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

@@ -92,8 +92,8 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 		}
@@ -133,8 +133,8 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			NSArray *totals = @[@"background_total",
 								@"timeline_total",
@@ -157,6 +157,8 @@
 			[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"avatar_image"];
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"votes"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
