@@ -208,7 +208,7 @@
 
 - (NSString *)_captionForParticipants {
 	if ([_challengeVO.challengers count] == 0)
-		return (@"Be the first to reply.");
+		return (@"Be the first to reply");
 	
 	
 	NSString *caption = @"";

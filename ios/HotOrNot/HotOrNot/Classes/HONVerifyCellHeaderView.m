@@ -48,8 +48,8 @@
 		[self addSubview:avatarButton];
 		
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 6.0, 220.0, 22.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 5.0, 220.0, 22.0)];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
@@ -59,7 +59,7 @@
 												   options:NSStringDrawingTruncatesLastVisibleLine
 												attributes:@{NSFontAttributeName:nameLabel.font}
 												   context:nil].size;
-		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, size.height);
+		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, nameLabel.frame.size.height);
 		
 		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		nameButton.frame = nameLabel.frame;

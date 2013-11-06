@@ -8,6 +8,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "MBProgressHUD.h"
 #import "UIImage+ImageEffects.h"
 
 #import "HONTabBarController.h"
@@ -17,6 +18,7 @@
 const CGSize kTabSize = {80.0, 50.0};
 
 @interface HONTabBarController ()
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, strong) UIView *tabBarView;
 @property (nonatomic, retain) UIButton *homeButton;
@@ -311,6 +313,16 @@ const CGSize kTabSize = {80.0, 50.0};
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], unsortedChallenges);
@@ -372,6 +384,16 @@ const CGSize kTabSize = {80.0, 50.0};
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 

@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "MBProgressHUD.h"
 
 #import "HONFollowingViewController.h"
 #import "HONUserVO.h"
@@ -15,6 +16,7 @@
 
 
 @interface HONFollowingViewController () <HONFollowUserViewCellDelegate>
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) NSMutableArray *subscribees;
 @property (nonatomic, strong) UITableView *tableView;
@@ -49,14 +51,10 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUser {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 5], @"action",
-							[NSString stringWithFormat:@"%d", _userID], @"userID",
-							nil];
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 5],
+							 @"userID"	: [NSString stringWithFormat:@"%d", _userID]};
 	
-	NSLog(@"USER BY ID PARAMS:[%@]", params);
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -64,6 +62,16 @@
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
@@ -74,14 +82,23 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
 - (void)_retreiveSubscribees {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", _userID], @"userID", nil];
+	NSDictionary *params = @{@"userID"	: [NSString stringWithFormat:@"%d", _userID]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	
 	[httpClient postPath:kAPIGetSubscribees parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -91,10 +108,21 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			for (NSDictionary *dict in result) {
+			NSArray *following = [NSMutableArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
+			for (NSDictionary *dict in following) {
 				NSString *avatarURL = [HONAppDelegate cleanImageURL:[[dict objectForKey:@"user"] objectForKey:@"avatar_url"]];
 				[_subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																	   [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
@@ -113,6 +141,16 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -129,6 +167,16 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
@@ -139,6 +187,16 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -154,6 +212,16 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
@@ -164,6 +232,16 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -279,7 +357,7 @@
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	bgImageView.backgroundColor = [UIColor whiteColor];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:bgImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 	userPofileViewController.userID = ((HONUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];

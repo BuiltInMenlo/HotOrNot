@@ -12,6 +12,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
 
@@ -106,8 +107,7 @@
 									[NSString stringWithFormat:@"%@/%@%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename, kSnapLargeSuffix], @"imgURL",
 									nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -180,6 +180,16 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 //			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
@@ -193,6 +203,8 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -266,13 +278,41 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
 		
+	if (image.imageOrientation != 0)
+		image = [image fixOrientation];
+	
+	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(image.size));
+	
+	UIImage *processedImage;
+	
+	// image is wider than tall (800x600)
+	if (image.size.width > image.size.height) {
+//		_isMainCamera = (_rawImage.size.height > 1000);
+		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(1707.0, 1280.0)] toRect:CGRectMake(374.0, 0.0, 960.0, 1280.0)];//_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
+		
+		// image is taller than wide (600x800)
+	} else if (image.size.width < image.size.height) {
+//		_isMainCamera = (_rawImage.size.width > 1000);
+		processedImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
+	
+	} else
+		processedImage = [UIImage imageWithCGImage:[image CGImage]];
+	
 	if ([HONImagingDepictor totalLuminance:image] > kMinLuminosity) {
+		
+		
+		double lum = [HONImagingDepictor totalLuminance:processedImage];
+		NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(processedImage.size), lum);
+//		NSDictionary *attribs = [[NSUserDefaults standardUserDefaults] objectForKey:@"filter_vals"];
+//		processedImage = (lum <= [[attribs objectForKey:@"luminosity"] floatValue]) ? [[[processedImage brightness:[[attribs objectForKey:@"d_brightness"] floatValue]] contrast:[[attribs objectForKey:@"d_contrast"] floatValue]] saturate:[[attribs objectForKey:@"d_saturation"] floatValue]] : [[[processedImage brightness:[[attribs objectForKey:@"l_brightness"] floatValue]] contrast:[[attribs objectForKey:@"l_contrast"] floatValue]] saturate:[[attribs objectForKey:@"l_saturation"] floatValue]];
+		
+		
 //		CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
 //		CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 //		NSArray *features = [detctor featuresInImage:ciImage];
 //		
 //		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
-			[self _uploadPhoto:image];
+			[self _uploadPhoto:processedImage];
 //			
 //		} else {
 //			[[Mixpanel sharedInstance] track:@"Change Avatar - Face Detection Failed"
@@ -389,7 +429,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Verifying Selfie…";
+	_progressHUD.labelText = @"Loading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;

@@ -27,7 +27,7 @@
 		_emotions = (_isJoinVolley) ? [HONAppDelegate replyEmotions] : [HONAppDelegate composeEmotions];
 		
 		_tableView = [[UITableView alloc] initWithFrame:CGRectOffset(frame, 0.0, -frame.origin.y) style:UITableViewStylePlain];
-		[_tableView setBackgroundColor:[UIColor clearColor]];
+		[_tableView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
 		_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 		_tableView.delegate = self;
 		_tableView.dataSource = self;
@@ -78,12 +78,11 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 320.0, kOrthodoxTableHeaderHeight)];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	label.textColor = [HONAppDelegate honPercentGreyscaleColor:0.318];
+	label.textColor = [HONAppDelegate honGreyTextColor]; //	[HONAppDelegate honPercentGreyscaleColor:0.467]
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (_isJoinVolley) ? @"REPLIES" : @"TRENDING";
+	label.text = (_isJoinVolley) ? @"Reply hashtags" : @"Trending hashtags";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);

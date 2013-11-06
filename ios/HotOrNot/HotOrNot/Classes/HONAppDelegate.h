@@ -14,7 +14,7 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 1
+#define __ALWAYS_REGISTER__ 0
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
@@ -69,6 +69,15 @@ const CGFloat kMinLuminosity;
 const CGFloat kSnapRatio;
 const CGFloat kSnapJPEGCompress;
 
+const CGFloat kSnapLumThreshold;
+const CGFloat kSnapDarkBrightness;
+const CGFloat kSnapDarkContrast;
+const CGFloat kSnapDarkSaturation;
+const CGFloat kSnapLightBrightness;
+const CGFloat kSnapLightContrast;
+const CGFloat kSnapLightSaturation;
+
+
 // animation params
 const CGFloat kHUDTime;
 const CGFloat kHUDErrorTime;
@@ -121,7 +130,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
 + (NSString *)instagramShareMessageForIndex:(int)index;
-+ (NSString *)twitterShareCommentForIndex:(int)index;
++ (NSString *)twitterShareCommentForIndex:(int)index;;
 
 + (NSArray *)composeEmotions;
 + (NSArray *)replyEmotions;

@@ -84,6 +84,16 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
@@ -118,6 +128,8 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [error localizedDescription]);
 		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -288,14 +300,14 @@
 
 #pragma mark - Notifications
 - (void)_selectedExploreTab:(NSNotification *)notification {
-	_isRefreshing = YES;
-	[self _retrieveChallenges];
+//	_isRefreshing = YES;
+//	[self _retrieveChallenges];
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 //	if (total == 0) {
 //		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];

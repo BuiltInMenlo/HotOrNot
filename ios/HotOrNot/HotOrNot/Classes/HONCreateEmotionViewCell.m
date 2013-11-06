@@ -24,7 +24,8 @@
 
 - (id)initWithEmotion:(HONEmotionVO *)emotionVO AsEvenRow:(BOOL)isEven {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.50 + ((int)isEven * 0.15)];
+		//self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5 + ((int)isEven * 0.15)];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRowBackground"]];
 		
 		_emotionVO = emotionVO;
 		

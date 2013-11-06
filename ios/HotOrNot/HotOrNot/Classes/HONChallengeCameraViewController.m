@@ -13,6 +13,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
 
@@ -220,13 +221,22 @@
 							urlPath, @"imgURL",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessChallengeImage);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessChallengeImage, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIProcessChallengeImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
 			
 		} else {
 //			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -253,6 +263,8 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -541,6 +553,18 @@
 	[_progressHUD show:NO];
 	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 	_progressHUD = nil;
+	
+	[_previewView uploadComplete];
+	
+	if (_submitImageView != nil) {
+		[UIView animateWithDuration:0.5 animations:^(void) {
+			_submitImageView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_submitImageView removeFromSuperview];
+			_submitImageView = nil;
+		}];
+	}
+	
 }
 
 
@@ -562,9 +586,14 @@
 	} else if (_rawImage.size.width < _rawImage.size.height) {
 		_isMainCamera = (_rawImage.size.width > 1000);
 		_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
-	}
 	
-	NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(_processedImage.size), [HONImagingDepictor totalLuminance:_processedImage]);
+	} else
+		_processedImage = [UIImage imageWithCGImage:[_rawImage CGImage]];
+	
+	double lum = [HONImagingDepictor totalLuminance:_processedImage];
+	NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(_processedImage.size), lum);
+//	NSDictionary *attribs = [[NSUserDefaults standardUserDefaults] objectForKey:@"filter_vals"];
+//	_processedImage = (lum <= [[attribs objectForKey:@"luminosity"] floatValue]) ? [[[_processedImage brightness:[[attribs objectForKey:@"d_brightness"] floatValue]] contrast:[[attribs objectForKey:@"d_contrast"] floatValue]] saturate:[[attribs objectForKey:@"d_saturation"] floatValue]] : [[[_processedImage brightness:[[attribs objectForKey:@"l_brightness"] floatValue]] contrast:[[attribs objectForKey:@"l_contrast"] floatValue]] saturate:[[attribs objectForKey:@"l_saturation"] floatValue]];
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];

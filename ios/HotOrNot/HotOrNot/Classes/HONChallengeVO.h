@@ -20,6 +20,7 @@
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic) int commentTotal;
+@property (nonatomic) int likersTotal;
 @property (nonatomic) int likesTotal;
 @property (nonatomic) BOOL hasViewed;
 @property (nonatomic) BOOL isCelebCreated;

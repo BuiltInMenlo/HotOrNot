@@ -10,6 +10,7 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "ImageFilter.h"
+#import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 
@@ -27,7 +28,7 @@
 @interface HONSnapPreviewViewController ()
 //@property (nonatomic, copy) imageLoadComplete_t heroCompleteBlock;
 //@property (nonatomic, copy) imageLoadFailure_t heroFailureBlock;
-
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIButton *closeButton;
@@ -106,7 +107,7 @@
 		
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
-		NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCHALLENGE DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n", _challengeVO.dictionary);
+		//NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCHALLENGE DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n", _challengeVO.dictionary);
 	}
 	
 	return (self);
@@ -149,15 +150,35 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
-			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 		}
 		
 		[self _goClose];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -170,13 +191,22 @@
 							_opponentVO.imagePrefix, @"imgURL",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
@@ -188,6 +218,16 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -204,9 +244,19 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
 				[HONAppDelegate writeSubscribeeList:result];
@@ -214,6 +264,16 @@
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -225,12 +285,22 @@
 							[NSString stringWithFormat:@"%d", (int)isApprove], @"approves",
 							nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
 			
 		} else {
 			if (isApprove) {
@@ -252,33 +322,22 @@
 			
 			} else
 				[self _goClose];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-	}];
-}
-
-- (void)_removeUserFromList:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 10], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"targetID",
-							[NSString stringWithFormat:@"%d", -1], @"approves",
-							nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else
-			[self _goClose];
 		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -296,7 +355,8 @@
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		[_imageLoadingView stopAnimating];
-		_imageView.image = image;//[image polaroidish];
+
+		_imageView.image = image;
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -322,7 +382,7 @@
 							   success:successBlock
 							   failure:failureBlock];
 	
-	NSLog(@"%@ --> HERO:[%@] DATA:[%@]\n", (_isVerify) ? @"VERIFY" : @"OPPONENT", _opponentVO.imagePrefix, _opponentVO.dictionary);
+	//NSLog(@"%@ --> HERO:[%@] DATA:[%@]\n", (_isVerify) ? @"VERIFY" : @"OPPONENT", _opponentVO.imagePrefix, _opponentVO.dictionary);
 	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_closeButton.frame = self.view.frame;
@@ -334,25 +394,28 @@
 	[self.view addSubview:headerView];
 	
 	
-	NSLog(@"AVATAR:[%@]", [_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
+	//NSLog(@"AVATAR:[%@]", [_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:[_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[headerView addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 11.0, 250.0, 18.0)];
+	CGSize size;
+	CGFloat maxNameWidth = 110.0;
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 11.0, maxNameWidth, 18.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = (_isVerify) ? _opponentVO.username : [_opponentVO.username stringByAppendingString:@"…"];
 	[headerView addSubview:nameLabel];
 	
-	CGSize size = [nameLabel.text boundingRectWithSize:CGSizeMake(250.0, 19.0)
-											   options:NSStringDrawingTruncatesLastVisibleLine
-											attributes:@{NSFontAttributeName:nameLabel.font}
-											   context:nil].size;
-	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, size.height);
+	size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
+																			 options:NSStringDrawingTruncatesLastVisibleLine
+																		  attributes:@{NSFontAttributeName:nameLabel.font}
+																			 context:nil].size;
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (size.width + 3.0), 10.0, 270.0, 18.0)];
+	nameLabel.text = (_isVerify) ? _opponentVO.username : (size.width >= maxNameWidth) ? _opponentVO.username : [_opponentVO.username stringByAppendingString:@"…"];
+	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), nameLabel.frame.size.height);
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 11.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -360,11 +423,14 @@
 	subjectLabel.hidden = _isVerify;
 	[headerView addSubview:subjectLabel];
 	
-	size = [subjectLabel.text boundingRectWithSize:CGSizeMake(250.0, 19.0)
-										options:NSStringDrawingTruncatesLastVisibleLine
-									 attributes:@{NSFontAttributeName:subjectLabel.font}
-										context:nil].size;
-	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, size.width, size.height);
+	size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
+										   options:NSStringDrawingTruncatesLastVisibleLine
+										attributes:@{NSFontAttributeName:nameLabel.font}
+										   context:nil].size;
+	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(320.0 - (nameLabel.frame.size.width + maxNameWidth), size.width), subjectLabel.frame.size.height);
+	
+	
+	//NSLog(@"NAME:_[%@]_ <|> SUB:_[%@]_", NSStringFromCGSize(nameLabel.frame.size), NSStringFromCGSize(subjectLabel.frame.size));
 	
 //	BOOL isEmotionFound = NO;
 //	if (!_isVerify) {
@@ -381,10 +447,10 @@
 //		subjectLabel.frame = CGRectOffset(subjectLabel.frame, ((int)isEmotionFound) * 34.0, 0.0);
 //	}
 	
-	UIButton *profileTextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profileTextButton.frame = headerView.frame;
-	[profileTextButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:profileTextButton];
+	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profileButton.frame = CGRectMake(0.0, 0.0, nameLabel.frame.origin.x + nameLabel.frame.size.width, headerView.frame.size.height);
+	[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:profileButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(264.0, -3.0, 44.0, 44.0);
@@ -480,8 +546,8 @@
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-	if (_isVerify)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
+//	if (_isVerify)
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 	
 //	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"preview_total"] intValue];
 //	if (![HONAppDelegate isFollowingUser:_userVO.userID] && total < [HONAppDelegate profileSubscribeThreshold]) {
@@ -498,9 +564,10 @@
 }
 
 - (void)_goClose {
-	if (_isVerify)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
+//	if (_isVerify)
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.delegate snapPreviewViewControllerClose:self];
 }
 
@@ -570,7 +637,7 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"yay_format"], _opponentVO.username]
 														message:@""
 													   delegate:self
-											  cancelButtonTitle:@"No"
+											  cancelButtonTitle:@"Cancel"
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 1 : 3];
 	[alertView show];
@@ -585,7 +652,7 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
 														message:@""
 													   delegate:self
-											  cancelButtonTitle:@"No"
+											  cancelButtonTitle:@"Cancel"
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
 	[alertView show];
@@ -700,7 +767,7 @@
 		
 		if (buttonIndex == 1) {
 			[self _addFriend:_challengeVO.creatorVO.userID];
-			[self _removeUserFromList:_challengeVO.creatorVO.userID];
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 		}
 		
 	} else if (alertView.tag == 4) {
@@ -711,7 +778,7 @@
 		
 		if (buttonIndex == 1) {
 			[self _addFriend:_challengeVO.creatorVO.userID];
-			[self _removeUserFromList:_challengeVO.creatorVO.userID];
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 		}
 	
 	} else if (alertView.tag == 5) {

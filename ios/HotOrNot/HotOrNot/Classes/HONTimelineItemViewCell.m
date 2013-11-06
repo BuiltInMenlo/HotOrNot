@@ -141,7 +141,7 @@
 	
 	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 40.0);
+		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, kHeroVolleyTableCellHeight - 143.0);
 		[self.contentView addSubview:_tutorialImageView];
 	}
 }

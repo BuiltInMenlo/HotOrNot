@@ -134,11 +134,12 @@
 
 #pragma mark - Navigation
 - (void)_goPreview:(id)sender {
-
-	_selectedOpponentVO = (HONOpponentVO *)[[_gridItems objectAtIndex:[sender tag]] objectForKey:@"participant"];
-	if (_selectedOpponentVO != nil) {
-		[self.delegate participantGridView:self showPreview:_selectedOpponentVO forChallenge:_selectedChallengeVO];
-	}
+	
+	NSDictionary *dict = [_gridItems objectAtIndex:[sender tag]];
+//	_selectedChallengeVO = (HONChallengeVO *)[dict objectForKey:@"challenge"];
+//	_selectedOpponentVO = (HONOpponentVO *)[dict objectForKey:@"participant"];
+//	if (_selectedChallengeVO != nil && _selectedOpponentVO != nil)
+		[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
 }
 
 @end

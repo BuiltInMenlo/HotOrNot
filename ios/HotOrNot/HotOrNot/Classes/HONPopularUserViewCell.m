@@ -55,7 +55,7 @@
 	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 20.0, 200.0, 20.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 20.0, 170.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];

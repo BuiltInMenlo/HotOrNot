@@ -24,11 +24,9 @@
 	if ((self = [super init])) {
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		[self addSubview:_bgImageView];
-		//self.backgroundView = _bgImageView;
-		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
-		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
-		_chevronImageView.image = [UIImage imageNamed:@"chevron"];
+		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
+		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 20.0);
 		[self addSubview:_chevronImageView];
 	}
 	

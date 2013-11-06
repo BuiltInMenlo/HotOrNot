@@ -12,6 +12,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
@@ -132,8 +133,7 @@
 							 @"username"	: _username,
 							 @"password"	: _email};
 	
-	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPICheckNameAndEmail parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -211,8 +211,7 @@
 							 @"token"		: [HONAppDelegate deviceToken],
 							 @"imgURL"		: ([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]]};
 	
-	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -362,6 +361,16 @@
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
 		} else {
 //			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
@@ -377,6 +386,8 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -389,9 +400,7 @@
 
 - (void)_recreateUser {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
-	
-//	NSLog(@"PARAMS:[%@]", params);
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -441,7 +450,7 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register for Volley"];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register"];
 	_headerView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:_headerView];
 	
@@ -607,8 +616,8 @@
 				[self.view addSubview:_splashHolderView];
 				
 				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				easterEggButton.frame = CGRectMake(152.0, 230.0, 16.0, 8.0);
-				//easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.75];
+				easterEggButton.frame = CGRectMake(154.0, 228.0, 16.0, 8.0);
+//				easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.75];
 				[easterEggButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchDown];
 				[_splashHolderView addSubview:easterEggButton];
 				
@@ -667,7 +676,7 @@
 }
 
 - (void)_goCamera {
-	[[Mixpanel sharedInstance] track:@"Register - Camera"
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Camera %@Available", ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? @"" : @"Not "]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -712,8 +721,8 @@
 		
 		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
 		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		takePhotoButton.alpha = 0.0;
 		[_profileCameraOverlayView addSubview:takePhotoButton];
@@ -792,7 +801,7 @@
 	}];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Verifying Selfie…";
+	_progressHUD.labelText = @"Loading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -918,13 +927,39 @@
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
 	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo:[%f]", [HONImagingDepictor totalLuminance:image]);
 	
+	if (image.imageOrientation != 0)
+		image = [image fixOrientation];
+	
+	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(image.size));
+	
+	UIImage *processedImage;
+	
+	// image is wider than tall (800x600)
+	if (image.size.width > image.size.height) {
+//		_isMainCamera = (_rawImage.size.height > 1000);
+		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(1707.0, 1280.0)] toRect:CGRectMake(374.0, 0.0, 960.0, 1280.0)];//_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
+		
+		// image is taller than wide (600x800)
+	} else if (image.size.width < image.size.height) {
+//		_isMainCamera = (_rawImage.size.width > 1000);
+		processedImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
+	
+	} else
+		processedImage = [UIImage imageWithCGImage:[image CGImage]];
+	
+	
 	if ([HONImagingDepictor totalLuminance:image] > kMinLuminosity) {
 //		CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
 //		CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
 //		NSArray *features = [detctor featuresInImage:ciImage];
 		
+		double lum = [HONImagingDepictor totalLuminance:processedImage];
+		NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(processedImage.size), lum);
+//		NSDictionary *attribs = [[NSUserDefaults standardUserDefaults] objectForKey:@"filter_vals"];
+//		processedImage = (lum <= [[attribs objectForKey:@"luminosity"] floatValue]) ? [[[processedImage brightness:[[attribs objectForKey:@"d_brightness"] floatValue]] contrast:[[attribs objectForKey:@"d_contrast"] floatValue]] saturate:[[attribs objectForKey:@"d_saturation"] floatValue]] : [[[processedImage brightness:[[attribs objectForKey:@"l_brightness"] floatValue]] contrast:[[attribs objectForKey:@"l_contrast"] floatValue]] saturate:[[attribs objectForKey:@"l_saturation"] floatValue]];
+		
 //		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
-			[self _uploadPhoto:image];
+			[self _uploadPhoto:processedImage];
 //			[self dismissViewControllerAnimated:YES completion:^(void) {}];
 			
 			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);

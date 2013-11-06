@@ -63,10 +63,9 @@
 		[self addSubview:gutterView];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 133.0, 94.0, 94.0);
-		//_captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
-		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		_captureButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_captureButton];
 		

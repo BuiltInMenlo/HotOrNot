@@ -32,40 +32,47 @@
 		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:avatarButton];
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, 110.0, 18.0)];
+		
+		CGSize size;
+		CGFloat maxNameWidth = 110.0;
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, maxNameWidth, 18.0)];
 		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
-		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.text = [NSString stringWithFormat:@"%@…", _challengeVO.creatorVO.username];
+		nameLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:nameLabel];
 		
-		CGSize nameSize = [nameLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
-												   options:NSStringDrawingTruncatesLastVisibleLine
-												attributes:@{NSFontAttributeName:nameLabel.font}
-												   context:nil].size;
-		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, nameSize.width, nameSize.height);
+		size = [[_challengeVO.creatorVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
+																							options:NSStringDrawingTruncatesLastVisibleLine
+																						 attributes:@{NSFontAttributeName:nameLabel.font}
+																							context:nil].size;
+		
+		nameLabel.text = (size.width >= maxNameWidth) ? _challengeVO.creatorVO.username : [_challengeVO.creatorVO.username stringByAppendingString:@"…"];
+		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), size.height);
 		
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		profileButton.frame = nameLabel.frame;
 		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:profileButton];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameSize.width + 3.0), 10.0, 125.0, 18.0)];
+		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
+		CGFloat maxSubjectWidth = 320.0 - ((nameLabel.frame.size.width + 90.0) + ((int)(emotionVO != nil) * 22.0));
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 9.0, maxSubjectWidth, 18.0)];
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _challengeVO.subjectName;
 		[self addSubview:subjectLabel];
+		CGSize subjectSize = [subjectLabel.text boundingRectWithSize:CGSizeMake(maxSubjectWidth, 18.0)
+															 options:NSStringDrawingTruncatesLastVisibleLine
+														  attributes:@{NSFontAttributeName:subjectLabel.font}
+															 context:nil].size;
+		subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(maxSubjectWidth, subjectSize.width), 18.0);
 		
-		CGSize subjectSize = [subjectLabel.text boundingRectWithSize:CGSizeMake(125.0, 18.0)
-											options:NSStringDrawingTruncatesLastVisibleLine
-										 attributes:@{NSFontAttributeName:subjectLabel.font}
-											context:nil].size;
-		subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, subjectSize.width, subjectSize.height);
+//		NSLog(@"NAME:_[%@]_ <|> SUB:_[%@]_", NSStringFromCGSize(nameLabel.frame.size), NSStringFromCGSize(subjectLabel.frame.size));
 		
-		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
 		if (emotionVO != nil) {
-			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(subjectLabel.frame.origin.x + subjectSize.width + 6.0, 9.0, 18.0, 18.0)];
+			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(subjectLabel.frame.origin.x + subjectLabel.frame.size.width + 6.0, 10.0, 18.0, 18.0)];
 //			emoticonImageView.image = [UIImage imageNamed:@"emoticon_white"];
 			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlSmallWhite] placeholderImage:nil];
 			[self addSubview:emoticonImageView];

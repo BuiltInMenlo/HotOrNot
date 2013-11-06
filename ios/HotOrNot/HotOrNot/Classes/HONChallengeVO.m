@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, recentLikes, challengers, commentTotal, likesTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
+@synthesize challengeID, statusID, status, subjectName, recentLikes, challengers, commentTotal, likersTotal, likesTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -24,6 +24,7 @@
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.subjectName = ([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"#N/A";
 	vo.commentTotal = [[dictionary objectForKey:@"comments"] intValue];
+	vo.likersTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	vo.isCelebCreated = [[dictionary objectForKey:@"is_celeb"] intValue];
 	vo.isExploreChallenge = [[dictionary objectForKey:@"is_explore"] intValue];
@@ -80,13 +81,24 @@
 		vo.likesTotal += opponentVO.score;
 	}
 	
+	vo.recentLikes = @"Be the first to like";
 	
-//NSLog(@"CHALLENGE:[%@]", vo.dictionary);
+	//NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 	NSArray *userLikes = [dictionary objectForKey:@"recent_likes"];
-	if ([dictionary objectForKey:@"recent_likes"] != [NSNull null] && [userLikes count] > 0) {
-		int remaining = vo.likesTotal - [userLikes count];
-//		NSLog(@"%d <) recent_likes:[%@]", vo.challengeID, userLikes);
+	
+	BOOL isTurdInPunchBowl = NO;
+	for (id element in userLikes) {
+		if (![element isKindOfClass:[NSDictionary class]]) {
+			isTurdInPunchBowl = YES;
+			break;
+		}
+	}
 		
+//	NSLog(@"TURD FOUND:[%d]", isTurdInPunchBowl);
+	if ([userLikes count] > 0 && [dictionary objectForKey:@"recent_likes"] != [NSNull null] && !isTurdInPunchBowl) {
+		int remaining = vo.likersTotal - [userLikes count];
+//		NSLog(@"%d <)|recent_likes:{%@}", vo.challengeID, userLikes);
+
 		if ([userLikes count] == 3) {
 				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, %@, %@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [NSString stringWithFormat:@"%@, %@, and %@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"]];
 			
@@ -98,10 +110,8 @@
 			
 		} else
 			vo.recentLikes = @"Be the first to like";
-		
 	} else
 		vo.recentLikes = @"Be the first to like";
-	
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
 	
