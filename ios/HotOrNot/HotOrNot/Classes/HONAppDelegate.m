@@ -50,14 +50,14 @@
 
 
 #if __DEV_BUILD___ == 0
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
-NSString * const kAPIHost = @"data_api-dev";
-NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
-#else
 NSString * const kConfigURL = @"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_103.json";
 NSString * const kAPIHost = @"data_api";
+NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
+#else
+NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
+NSString * const kConfigJSON = @"boot_matt.json";
+NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #endif
 
@@ -793,7 +793,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_registerUser {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -899,7 +899,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"isNotifications"	: (isEnabled) ? @"Y" : @"N"};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -1422,9 +1422,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
-	
-	if ([HONAppDelegate apiServerPath] != nil)
-		[self _enableNotifications:YES];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
@@ -1565,6 +1562,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.tabBarController.view.hidden = NO;
 	self.tabBarController.viewControllers = navigationControllers;
 	self.window.backgroundColor = [UIColor clearColor];
+	
+	if ([HONAppDelegate apiServerPath] != nil)
+		[self _enableNotifications:YES];
+
 }
 
 

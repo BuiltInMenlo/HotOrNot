@@ -113,18 +113,17 @@
 			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [parsedLists count]);
+			//NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [unsortedChallenges count]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [unsortedChallenges objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedLists) {
+			for (NSDictionary *serverList in unsortedChallenges) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				
-				if (vo != nil) {
-					[_challenges addObject:vo];
-				}
+				[_challenges addObject:vo];
 			}
-
+			
 			_emptyImageView.hidden = [_challenges count] > 0;
 			[_tableView reloadData];
 
@@ -267,24 +266,30 @@
 			
 			
 		} else {
-			if (isApprove) {
-				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyAction_total"] intValue];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyAction_total"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
-																		message:@"Get more subscribers now, tap OK."
-																	   delegate:self
-															  cancelButtonTitle:@"Cancel"
-															  otherButtonTitles:@"OK", nil];
-					[alertView setTag:0];
-					[alertView show];
-					
-				}
-			}
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			[self _goRefresh];
+//			if (isApprove) {
+//				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyAction_total"] intValue];
+//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyAction_total"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
+//				
+//				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
+//					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+//																		message:@"Get more subscribers now, tap OK."
+//																	   delegate:self
+//															  cancelButtonTitle:@"Cancel"
+//															  otherButtonTitles:@"OK", nil];
+//					[alertView setTag:0];
+//					[alertView show];
+//					
+//				}
+//			}
+			
+//			[self _goRefresh];
+			
+			_isRefreshing = YES;
+			[self _retrieveChallenges];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -906,7 +911,7 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
-			[self _addFriend:_challengeVO.creatorVO.userID];
+			//[self _addFriend:_challengeVO.creatorVO.userID];
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 		}
 		

@@ -157,8 +157,8 @@
 			[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"avatar_image"];
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"votes"];
+//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"avatar_image"];
+//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"votes"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
