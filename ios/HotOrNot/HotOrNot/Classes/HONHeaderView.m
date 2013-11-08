@@ -36,7 +36,7 @@
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-		_titleLabel.textColor = [UIColor colorWithRed:0.208 green:0.514 blue:0.467 alpha:1.0];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
@@ -53,7 +53,7 @@
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
-		_titleLabel.textColor = [UIColor colorWithRed:0.208 green:0.514 blue:0.467 alpha:1.0];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];

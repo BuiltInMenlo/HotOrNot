@@ -284,7 +284,9 @@
 				}
 			}
 			
-			[self _goRefresh];
+//			[self _goRefresh];
+			_isRefreshing = YES;
+			[self _retrieveChallenges];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

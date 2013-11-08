@@ -108,7 +108,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in challengesResult) {
@@ -243,6 +243,52 @@
 	}];
 }
 
+- (void)_upvoteChallenge:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 6], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+							[NSString stringWithFormat:@"%d", userID], @"challengerID",
+							_opponentVO.imagePrefix, @"imgURL",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -260,6 +306,7 @@
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
+	_tableView.pagingEnabled = YES;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
@@ -521,6 +568,31 @@
 	}
 }
 
+- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell upvoteCreatorForChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Upvote Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	[self _upvoteChallenge:challengeVO.creatorVO.userID];
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
+	
+	for (HONTimelineItemViewCell *cell in _cells) {
+		if (cell.challengeVO.challengeID == challengeVO.challengeID)
+			[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
+	}
+}
+
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
@@ -755,7 +827,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kSnapTabSize.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	//return (kSnapTabSize.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	return (self.view.frame.size.height);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

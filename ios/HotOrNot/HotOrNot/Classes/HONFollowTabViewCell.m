@@ -39,7 +39,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_imageHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	//_imageHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_imageHolderView];
 	
@@ -47,16 +47,19 @@
 	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
+	//_heroImageView = [[UIImageView alloc] initWithFrame:([HONAppDelegate isRetina4Inch]) ? CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height) : CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
-	_heroImageView.alpha = 0.0;
+	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
 	[_imageHolderView addSubview:_heroImageView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
-		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_heroImageView.alpha = 1.0;
-		} completion:nil];
+		if ([HONAppDelegate isRetina4Inch]) {
+			[UIView animateWithDuration:0.5 animations:^(void) {
+				_heroImageView.alpha = 1.0;
+			} completion:nil];
+		}
 	};
 	
 	//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);
@@ -64,6 +67,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:challengeVO.creatorVO.imagePrefix];
 	};
 	
+//	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapMediumSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil
 								   success:successBlock
@@ -76,7 +80,7 @@
 	headerView.delegate = self;
 	[self.contentView addSubview:headerView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kSnapLargeSize.height - 102.0, 320, 58.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 102.0, 320, 58.0)];
 	[self.contentView addSubview:buttonHolderView];
 
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];

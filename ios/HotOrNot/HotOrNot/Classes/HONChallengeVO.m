@@ -94,11 +94,8 @@
 		}
 	}
 		
-//	NSLog(@"TURD FOUND:[%d]", isTurdInPunchBowl);
 	if ([userLikes count] > 0 && [dictionary objectForKey:@"recent_likes"] != [NSNull null] && !isTurdInPunchBowl) {
 		int remaining = vo.likersTotal - [userLikes count];
-//		NSLog(@"%d <)|recent_likes:{%@}", vo.challengeID, userLikes);
-
 		if ([userLikes count] == 3) {
 				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, %@, %@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [NSString stringWithFormat:@"%@, %@, and %@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"]];
 			
@@ -112,6 +109,10 @@
 			vo.recentLikes = @"Be the first to like";
 	} else
 		vo.recentLikes = @"Be the first to like";
+	
+	
+	vo.recentLikes = (vo.likesTotal == 0) ? @"Be the first to like" : [NSString stringWithFormat:@"%d like%@", vo.likesTotal, (vo.likesTotal != 1) ? @"s" : @""];
+	
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
 	
