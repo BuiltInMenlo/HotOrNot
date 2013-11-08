@@ -85,6 +85,7 @@ const CGFloat kProfileTime;
 
 // image sizes
 const CGSize kSnapThumbSize;
+const CGSize kSnapTabSize;
 const CGSize kSnapMediumSize;
 const CGSize kSnapLargeSize;
 const CGFloat kAvatarDim;
@@ -92,6 +93,7 @@ const CGFloat kAvatarDim;
 
 extern NSString * const kSnapThumbSuffix;
 extern NSString * const kSnapMediumSuffix;
+extern NSString * const kSnapTabSuffix;
 extern NSString * const kSnapLargeSuffix;
 
 const BOOL kIsImageCacheEnabled;

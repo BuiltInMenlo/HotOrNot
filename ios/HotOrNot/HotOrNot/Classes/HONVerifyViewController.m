@@ -742,7 +742,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (300.0 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	//return (300.0 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	return ((kHeroVolleyTableCellHeight - 29.0) + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

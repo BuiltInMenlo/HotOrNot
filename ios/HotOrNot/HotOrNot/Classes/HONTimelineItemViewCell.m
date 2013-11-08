@@ -69,6 +69,7 @@
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
+	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
 	
@@ -83,7 +84,7 @@
 //			_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
 //	}
 	
-	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 346.0)];
+	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroHolderView.clipsToBounds = YES;
 	_heroHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_heroHolderView];
@@ -98,7 +99,7 @@
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]];
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeOverlay"]];
 		gradientImageView.alpha = 0.0;
 		[_heroHolderView addSubview:gradientImageView];
 		
@@ -113,11 +114,11 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
 	};
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -135,7 +136,7 @@
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kHeroVolleyHeroHeight withChallenge:_challengeVO];
+	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:350.0 - 78.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	

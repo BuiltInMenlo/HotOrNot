@@ -218,6 +218,8 @@
 		4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675115F96FA800AA7FCE /* Security.framework */; };
 		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; };
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
+		4C679AAD182C73970055586F /* homeOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C679AAB182C73970055586F /* homeOverlay.png */; };
+		4C679AAE182C73970055586F /* homeOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C679AAC182C73970055586F /* homeOverlay@2x.png */; };
 		4C6893691719EF88005F8D0A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C68936B1719EF88005F8D0A /* Localizable.strings */; };
 		4C6A3E1817669D7400B6CD4D /* HONInviteUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1717669D7400B6CD4D /* HONInviteUserViewCell.m */; };
 		4C6A3E1B1766AD3600B6CD4D /* HONAddContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1A1766AD3500B6CD4D /* HONAddContactViewCell.m */; };
@@ -863,6 +865,8 @@
 		4C62675115F96FA800AA7FCE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4C62675215F96FA800AA7FCE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		4C679AAB182C73970055586F /* homeOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = homeOverlay.png; sourceTree = "<group>"; };
+		4C679AAC182C73970055586F /* homeOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "homeOverlay@2x.png"; sourceTree = "<group>"; };
 		4C68936A1719EF88005F8D0A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C6A3E1617669D7400B6CD4D /* HONInviteUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteUserViewCell.h; sourceTree = "<group>"; };
 		4C6A3E1717669D7400B6CD4D /* HONInviteUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteUserViewCell.m; sourceTree = "<group>"; };
@@ -2088,6 +2092,8 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4C679AAB182C73970055586F /* homeOverlay.png */,
+				4C679AAC182C73970055586F /* homeOverlay@2x.png */,
 				4C9B929A1828892C00A060B2 /* homeFade.png */,
 				4C9B929B1828892C00A060B2 /* homeFade@2x.png */,
 				4C9E3B5D1825AD1B004878F9 /* imageLoader_001.png */,
@@ -3230,6 +3236,7 @@
 				4C48DE9818278E69003CB309 /* doneWhiteButton_nonActive.png in Resources */,
 				4C8FB3F7182485B100B33FD8 /* cameraSubmitButton_nonActive.png in Resources */,
 				4C0396BD17B7038300AECD97 /* backButtonIcon_nonActive@2x.png in Resources */,
+				4C679AAE182C73970055586F /* homeOverlay@2x.png in Resources */,
 				4C9E3B671825AD1B004878F9 /* imageLoader_003.png in Resources */,
 				4C225CC017B83F3C00330EB3 /* divider.png in Resources */,
 				4C225CC117B83F3C00330EB3 /* divider@2x.png in Resources */,
@@ -3249,6 +3256,7 @@
 				4C1BA89917F51DAF006024B2 /* exploreSearch_Active.png in Resources */,
 				4C9B92981828891D00A060B2 /* emoticon_white.png in Resources */,
 				4CAA455C17BE06BF002670A6 /* retakeButton_Active.png in Resources */,
+				4C679AAD182C73970055586F /* homeOverlay.png in Resources */,
 				4C48DE541826F9E4003CB309 /* splashText.png in Resources */,
 				4CAA455D17BE06BF002670A6 /* retakeButton_Active@2x.png in Resources */,
 				4CAA455E17BE06BF002670A6 /* retakeButton_nonActive.png in Resources */,

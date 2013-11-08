@@ -109,7 +109,7 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGFloat kHeroVolleyTableCellHeight = 430.0f;
+const CGFloat kHeroVolleyTableCellHeight = 334.0f;
 const CGFloat kHeroVolleyHeroHeight = 346.0;
 
 // snap params
@@ -132,12 +132,14 @@ const CGFloat kProfileTime = 0.25f;
 
 // image sizes
 const CGSize kSnapThumbSize = {80.0f, 80.0f};
+const CGSize kSnapTabSize = {320.0f, 350.0f};
 const CGSize kSnapMediumSize = {160.0f, 160.0f};
 const CGSize kSnapLargeSize = {320.0f, 568.0f};
 const CGFloat kAvatarDim = 200.0f;
 
 NSString * const kSnapThumbSuffix = @"Small_160x160.jpg";
 NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
+NSString * const kSnapTabSuffix = @"Tab_640x592.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
 const BOOL kIsImageCacheEnabled = YES;

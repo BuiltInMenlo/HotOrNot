@@ -9,11 +9,12 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONFollowTabViewCell.h"
+#import "HONFollowTabCellHeaderView.h"
 #import "HONOpponentVO.h"
 #import "HONImageLoadingView.h"
 
 
-@interface HONFollowTabViewCell()
+@interface HONFollowTabViewCell() <HONFollowTabCellHeaderDelegate>
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
@@ -38,15 +39,15 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 365.0)];
-	_imageHolderView.clipsToBounds = YES;
+	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	//_imageHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView asLargeLoader:NO];
 	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -100.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_heroImageView];
@@ -58,6 +59,7 @@
 		} completion:nil];
 	};
 	
+	//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:challengeVO.creatorVO.imagePrefix];
 	};
@@ -69,9 +71,14 @@
 	
 //	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]]];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 369.0 - 58.0, 320, 58.0)];
-	[self.contentView addSubview:buttonHolderView];
+	HONFollowTabCellHeaderView *headerView = [[HONFollowTabCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
+	headerView.frame = CGRectOffset(headerView.frame, 0.0, 64.0);
+	headerView.delegate = self;
+	[self.contentView addSubview:headerView];
 	
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kSnapLargeSize.height - 102.0, 320, 58.0)];
+	[self.contentView addSubview:buttonHolderView];
+
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	approveButton.frame = CGRectMake(0.0, 0.0, 160.0, 58.0);
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"followOKButton_nonActive"] forState:UIControlStateNormal];
@@ -132,5 +139,15 @@
 	}
 }
 
+
+#pragma mark - FollowTabCellHeader Delegates
+- (void)cellHeaderView:(HONFollowTabCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Header Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	
+	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
+}
 
 @end

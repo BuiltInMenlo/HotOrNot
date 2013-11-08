@@ -755,7 +755,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kHeroVolleyTableCellHeight + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	return (kSnapTabSize.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

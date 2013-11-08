@@ -226,8 +226,8 @@ const CGSize kTabSize = {80.0, 50.0};
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[HONAppDelegate incTotalForCounter:totalKey];
-//
-	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+
+//	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
 //	[self _updateBadges];
 	

@@ -16,7 +16,6 @@
 
 #import "HONFollowTabViewController.h"
 #import "HONFollowTabViewCell.h"
-#import "HONFollowTabCellHeaderView.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
@@ -36,7 +35,7 @@
 
 
 
-@interface HONFollowTabViewController () <HONFollowTabCellHeaderDelegate, HONFollowTabViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
+@interface HONFollowTabViewController () <HONFollowTabViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -303,67 +302,6 @@
 	}];
 }
 
-//- (void)_removeUserFromList:(int)userID {
-//	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-//							[NSString stringWithFormat:@"%d", 10], @"action",
-//							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-//							[NSString stringWithFormat:@"%d", userID], @"targetID",
-//							[NSString stringWithFormat:@"%d", -1], @"approves",
-//							nil];
-//	
-//	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-//	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-//	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//		NSError *error = nil;
-//		if (error != nil) {
-//			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-//
-//			if (_progressHUD == nil)
-//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//			_progressHUD.minShowTime = kHUDTime;
-//			_progressHUD.mode = MBProgressHUDModeCustomView;
-//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-//			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-//			[_progressHUD show:NO];
-//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//			_progressHUD = nil;
-//
-//		} else {
-//			if (isApprove) {
-//				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyAction_total"] intValue];
-//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyAction_total"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
-//				
-//				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-//					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
-//																		message:@"Get more subscribers now, tap OK."
-//																	   delegate:self
-//															  cancelButtonTitle:@"Cancel"
-//															  otherButtonTitles:@"OK", nil];
-//					[alertView setTag:0];
-//					[alertView show];
-//					
-//				}
-//			}
-//			
-//			[self _goRefresh];
-//		}
-//		
-//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-//
-//		if (_progressHUD == nil)
-//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//		_progressHUD.minShowTime = kHUDTime;
-//		_progressHUD.mode = MBProgressHUDModeCustomView;
-//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-//		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-//		[_progressHUD show:NO];
-//		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//		_progressHUD = nil;
-//	}];
-//}
-
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -376,15 +314,17 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
+	//_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
+	_tableView.pagingEnabled = YES;
+	_tableView.rowHeight = self.view.frame.size.height;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
@@ -398,6 +338,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	_tableView.decelerationRate = UIScrollViewDecelerationRateFast;
 }
 
 - (void)viewDidUnload {
@@ -551,35 +492,6 @@
 //		_blurredImageView.alpha = 1.0;
 //	} completion:^(BOOL finished) {
 //	}];
-}
-
-
-#pragma mark - FollowTabCellHeader Delegates
-- (void)cellHeaderView:(HONFollowTabCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Header Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
-
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-		userPofileViewController.userID = opponentVO.userID;
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
-		[alertView show];
-	}
 }
 
 
@@ -769,7 +681,7 @@
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
@@ -784,10 +696,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONFollowTabCellHeaderView *headerView = [[HONFollowTabCellHeaderView alloc] initWithOpponent:((HONChallengeVO *)[_challenges objectAtIndex:section]).creatorVO];
-	headerView.delegate = self;
+//	HONFollowTabCellHeaderView *headerView = [[HONFollowTabCellHeaderView alloc] initWithOpponent:((HONChallengeVO *)[_challenges objectAtIndex:section]).creatorVO];
+//	headerView.delegate = self;
 	
-	return (headerView);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -808,11 +720,14 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (370 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	//return (370 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	//return (kSnapTabSize.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+//	return (kSnapTabSize.height);
+	return (self.view.frame.size.height);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (50.0);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
