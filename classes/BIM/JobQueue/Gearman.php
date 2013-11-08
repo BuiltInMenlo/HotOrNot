@@ -74,6 +74,7 @@ class BIM_JobQueue_Gearman extends BIM_JobQueue{
 				$jobId = uniqid();
                 self::logJobEvent($jobId, $class, $method, 0);
 				call_user_func( $call_data, $workload );
+				BIM_Jobs_Gearman::markJobComplete( $workload );
                 self::logJobEvent($jobId, $class, $method, 1);
 			} else {
 				syslog(LOG_WARNING,"############ method $method() does not exist in class $class. ############");

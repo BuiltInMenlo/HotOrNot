@@ -36,6 +36,11 @@ class BIM_Jobs_Gearman extends BIM_Jobs{
 		}
 	}
 
+	public static function markJobComplete( $job ){
+		$jobsDAO = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+		$jobsDAO->markJobComplete( $job->id );
+	}
+	
 	public function canQueueJob( $handle ){
 		$return = false;
 		$scheduled = $this->isScheduled( $handle );

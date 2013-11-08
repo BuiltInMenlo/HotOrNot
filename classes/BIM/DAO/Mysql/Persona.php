@@ -1,6 +1,20 @@
 <?php
 
 class BIM_DAO_Mysql_Persona extends BIM_DAO_Mysql{
+	public function getPersonaIds( $network = '' ){
+	    $sql = "
+	    	select id from growth.persona
+	    ";
+	    $params = array();
+	    if( $network ){
+	        $sql .= ' where network = ? ';
+	        $params[] = $network;
+	    }
+	    
+		$stmt = $this->prepareAndExecute( $sql, $params );
+		return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+	}
+    
 	public function getData( $name = null, $network = null ){
 	    
 	    $sql = array(); 

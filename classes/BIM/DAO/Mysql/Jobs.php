@@ -22,6 +22,7 @@ class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 			from queue.gearman_jobs
 			where next_run_time <= now()
 				and disabled = 0
+				and (handle = '' or handle is null)
 		";
 		$stmt = $this->prepareAndExecute($sql);
 		
@@ -31,6 +32,16 @@ class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 		return $jobs;
 	}
 
+	public function markJobComplete( $jobId ){
+		$sql = "
+			update queue.gearman_jobs
+			set handle = '' 
+			where id = ?
+		";
+		$params = array( $jobId );
+        $this->prepareAndExecute($sql, $params);
+	}
+	
 	public function updateNextRunTime( $job ){
 
 		$handle = $job->handle;

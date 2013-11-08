@@ -57,17 +57,175 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             }	   
 	   
      */
-    public function follow( $id ){
-        $url = 'http://web.stagram.com/do_follow/';
+    /**
+     * 
+     * @param int $id - id of the target user for the follow
+     * @param string $name - the name of the target user for the follow
+     */
+    public function follow( $id, $name ){
+        $time = time();
+        $url = "http://web.stagram.com/do_follow/?$time";
         $params = array(
             'pk' => $id,
-            't' => mt_rand(5000, 10000)
+            't' => mt_rand(0, 10000)
         );
-        $response = json_decode( $this->post( $url ) );
+        $headers = array(
+        	'Origin: http://web.stagram.com',
+			'X-Requested-With: XMLHttpRequest',
+            'Content-Type: application/x-www-form-urlencoded',
+			"Referer: http://web.stagram.com/n/$name/"
+        );
+
+        $response = $this->post( $url, $params, false, $headers );
+        $response = json_decode( $response );
+        print_r( array($this->persona->name, $name, $response) );
         if( empty( $response->status ) || $response->status != 'OK' ){
-            $msg = "cannot like photo using id : $id with persona: ".$this->persona->username;
-            echo "$msg\n";
+            $msg = "cannot follow user $name using id : $id with persona: ".$this->persona->name;
+            $msg = "$msg ".print_r( $response, 1 );
+            error_log($msg);
             $this->sendWarningEmail( $msg );
+        }
+    }
+    
+    /**
+     * This routine does the following for each persona
+     * 
+     * login
+     * hit feed
+     * generate a random number between 5 - 20
+     * 
+     * get between 10 - 20 images
+     * 
+     * 		get each image on feed pages
+     * 		check to see if we have liked the image
+     * 		if not, then generate a random number to see if we will like it
+     * 
+     * if we exhaust our feed and still have not collected 20 images, 
+     * then we search using a random popular tag and browse that until 
+     * we found all of our images to like.  if we do not find all of them
+     * then we go to the next popular tag and 
+     * repeat until we have found all of the images we want to like
+     * 
+     * once we have found them all
+     * 
+     * or alternatively, we can simply space out the likes that we get over the next week
+     * 
+     * 
+     * h1 - 6(6) workers - 6 likes - nh3,5,7,9,11
+     * h2 - 6(12) workers - 6 likes - nh4,6,8,10,12
+     * h3 - 6(18) workers - 12 likes - nh5,7,9,11
+     * h4 - 6(24) workers - 12 likes - nh6,8,10,12
+     * h5 - 6(30) workers - 18 likes - nh7,9,11,13
+     * h6 - 7(36) workers - 18 likes - nh8,10,12,14
+     * h - 7(42) workers - 24 likes - nh8,10,12,14
+     * h - 7(48) workers - 24 likes - nh8,10,12,14
+     * h - 7(54) workers - 30 likes - nh8,10,12,14
+     * h - 7(60) workers - 30 likes - nh8,10,12,14
+     * h - 7(66) workers - 36 likes - nh8,10,12,14
+     * h12 - 7(72) workers - 36 likes - nh8,10,12,14
+     * 
+     *
+     * page that lists the selfies from webstagram hundreds at a time
+     * 
+     * text
+     * select an IG account
+     * 
+     * top of page will be a set of fields that can be set as  a shoutout
+     * then the list can be browsed and shoutouts sent
+     * 
+     * text field for message
+     * dropdown which account
+     * text field for the number of shoutouts
+     * filter for which users to target (min followers max followers, min following, max following)
+     * 
+     * 
+     * 
+     * 
+     */
+    // generate the job times over the next 2 weeks
+    /*
+     * foreach persona
+     * 
+     * foreach each site
+     * 
+     * generate a random time between now and x seconds from now
+     * 
+     * then resolve the time to the closest minute and use that for job time
+     * 
+     * then create the job
+     * 
+     * the job will be to like the web property id in the job
+     */
+    public static function queueLikeJobs(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+	    $sql = "select name from growth.persona where network = 'instagram'";
+		$stmt = $dao->prepareAndExecute( $sql );
+		$personaNames = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+		
+        $accountNames = array(
+        	'rateselfie',
+        	'shoutoutselfiez',
+            'letsvolley',
+            'volleyapp',
+            'teamvolleyapp',
+            'cutetumblrselfies',
+            'weheartitselfies',
+            'theselfiecontest',
+            'shoutoutselfiecontest',
+            'famousselfies',
+        );
+        $minutes = 1440 * 14;
+        $time = time();
+        
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone('UTC') );
+        foreach( $accountNames as $accountName ){
+            foreach( $personaNames as $name ){
+                $whichMinute = mt_rand( 1, $minutes );
+                $seconds = $whichMinute * 60;
+                $targetDate = $time + $seconds;
+                $date->setTimestamp($targetDate);
+                $targetDate = $date->format('Y-m-d H:i:s');
+                echo "$name, $accountName - $targetDate\n";
+                self::queueHouseFollow($name, $accountName, $targetDate);
+            }
+        }
+    }
+    
+    public static function queueHouseFollow($personaId, $accountName, $targetDate = null ){
+        if( !$targetDate ){
+            $targetDate = new DateTime();
+            $targetDate = $targetDate->format( 'Y-m-d H:i:s' );
+        }
+        $job = (object) array(
+            'nextRunTime' => $targetDate,
+            'class' => 'BIM_Jobs_Growth',
+            'method' => 'doHouseFollow',
+            'name' => 'do_house_follow',
+            'params' => array(
+                'house_account_id' => $accountName,
+                'persona_id' => $personaId
+            ),
+            'is_temp' => true,
+            'disabled' => 1
+        );
+        
+        $j = new BIM_Jobs_Gearman();
+        $j->createJbb($job);
+    }
+    
+    public static function doHouseFollow( $personaId, $houseAccountname ){
+        $me = new self( $personaId );
+        if( $me->handleLogin() ){
+            $url = "http://web.stagram.com/n/$houseAccountname/";
+            $response = $me->get( $url );
+            $ptrn = '@"follow_button_(\w+)"@';
+            $matches = array();
+            preg_match($ptrn, $response, $matches);
+            if( !empty( $matches[1] ) ){
+                $id = $matches[1];
+                $me->follow( $id, $houseAccountname );
+            }
         }
     }
     
@@ -605,8 +763,8 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $data = $dao->getData( null, 'instagram' );
         foreach($data as $persona ){
             self::checkPersona( $persona );
-            $sleep = 0;
-            echo "loaded $persona->username sleeping for $sleep seconds\n";
+            $sleep = 5;
+            echo "checked $persona->username sleeping for $sleep seconds\n";
             sleep($sleep);
         }
     }
@@ -619,24 +777,79 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 $username = $data[0];
                 $persona = (object) array( 'username' => $username);
                 self::checkPersona( $persona );
-                $sleep = 1;
-                echo "loaded $persona->username sleeping for $sleep seconds\n";
+                $sleep = 5;
+                echo "checked $persona->username sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
         }
     }
     
+    public static function loadPersonasInFile( $filename = '' ){
+        $fh = fopen($filename,'rb');
+        while( $line = trim( fgets( $fh ) ) ){
+            $data = explode(':', $line);
+            if( $data ){
+                
+                $personaData = (object) array(
+                'name' => $data[0],
+                'instagram' => (object) array(
+                    	'username' => $data[0],
+                        'password' => $data[1],
+                    )
+                );
+                
+                $persona = new BIM_Growth_Persona( $personaData );
+                $r = new self( $persona );
+                
+                if( !$r->handleLogin() ){
+                    echo "invalid account: ".$persona->instagram->username.",".$persona->instagram->password."\n";
+                } else {
+                    echo "valid account: ".$persona->instagram->username.",".$persona->instagram->password."\n";
+                    self::loadPersona( $personaData );
+                }
+                
+                $sleep = 5;
+                echo "loaded $personaData->name sleeping for $sleep seconds\n";
+                sleep($sleep);
+            }
+        }
+    }
+    
+    public static function loadPersona( $personaData ){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+         /*
+INSERT INTO `persona` 
+(`network`, `email`, `username`, `password`, `name`, `extra`, `enabled`, `type`)
+VALUES
+('instagram', '\'\'', 'Ariannaxoxoluver', 'teamvolleypassword', 'Ariannaxoxoluver', '{}', 1, 'authentic');
+          * 
+          */
+        $sql = "
+            INSERT INTO growth.`persona` 
+            (`network`, `email`, `username`, `password`, `name`, `extra`, `enabled`, `type`)
+            VALUES
+            ('instagram', '', ?, ?, ?, '{}', 1, 'authentic');
+        ";
+        $params = array(
+            $personaData->instagram->username,
+            $personaData->instagram->password,
+            $personaData->name        
+        );
+        $dao->prepareAndExecute( $sql, $params );
+        error_log("loaded $personaData->name\n");
+    }
+    
     public static function checkPersona( $persona ){
-        
         $persona = new BIM_Growth_Persona( $persona->username );
-        $r = new self( $persona );
+        $r = new BIM_Growth_Instagram_Routines( $persona );
         
         if( !$r->handleLogin() ){
+            $persona = null;
             echo "invalid account: ".$persona->instagram->username.",".$persona->instagram->password."\n";
         } else {
             echo "valid account: ".$persona->instagram->username.",".$persona->instagram->password."\n";
-            $r->enablePersona();
         }
+        return $persona;
     }
     
     public static function enablePersonas( $file ){

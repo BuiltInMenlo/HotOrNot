@@ -55,3 +55,4 @@ function process_profile_images( $job, &$config ){ any_job($job, $config); }
 function createcampaign( $job, &$config ){ any_job($job, $config); }
 function process_image( $job, &$config ){ any_job($job, $config); }
 function process_user_image( $job, &$config ){ any_job($job, $config); }
+function do_house_follow( $job, &$config ){ any_job($job, $config); }

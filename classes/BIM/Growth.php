@@ -5,7 +5,7 @@ class BIM_Growth{
     protected $curl = null;
     protected $instagramApiClient = null; 
     protected $twilioApiClient = null; 
-    protected $useProxy = true;
+    protected $useProxy = false;
     
 	public function testProxies( $url ){
 	    
@@ -46,7 +46,7 @@ class BIM_Growth{
         $this->useProxy = $onOff;
     }
     
-    protected function useProxy( $onOff = true ){
+    protected function useProxy( ){
         return $this->useProxy;
     }
     
@@ -114,6 +114,7 @@ class BIM_Growth{
 	
 	public function post( $url, $args = array(), $fullResponse = false, $headers = array() ){
         $queryStr = http_build_query($args);
+        $headers[] = 'Content-Length: '.strlen($queryStr);
         $options = $this->getCurlParams( $headers );
 		$options[CURLOPT_POSTFIELDS] = $queryStr;
 		$options[CURLOPT_POST] = true;
@@ -123,7 +124,6 @@ class BIM_Growth{
 	public function handleRequest( $url, $options, $fullResponse = false ){
 	    
         $ch = curl_init( $url );
-		//$ch = $this->initCurl($url);
 		curl_setopt_array($ch,$options);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		
@@ -131,7 +131,6 @@ class BIM_Growth{
             $proxy = $this->getProxy();
 		    if( $proxy ){
 		        print_r( array( 'USING PROXY', $proxy ) );
-                //print_r( array( "USING PROXY", $proxy ) );
                 curl_setopt($ch, CURLOPT_PROXY, $proxy->host);
                 curl_setopt($ch, CURLOPT_PROXYPORT, $proxy->port);
                 curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
@@ -148,7 +147,6 @@ class BIM_Growth{
 		}
 		curl_close($ch);
 		$response = self::parseResponse( $responseStr );
-		//		return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
 		$response['req_info'] = $data;
 		if( $fullResponse ){
 		    return $response;

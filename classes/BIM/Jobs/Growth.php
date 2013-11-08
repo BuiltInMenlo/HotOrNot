@@ -16,6 +16,14 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         BIM_Growth::createCampaign($workload->data);
     }
     
+    public function doHouseFollow( $workload ){
+        $params = json_decode( $workload->params );
+        BIM_Growth_Webstagram_Routines::doHouseFollow(
+            $params->persona_id, 
+            $params->house_account_id
+        );
+    }
+    
     /**
      * 
      * @param int|string $userId - volley user id
