@@ -134,6 +134,9 @@
 				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateNormal];
 				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
 				
+//				[_verifyButton setBackgroundImage:[UIImage imageNamed:@"userVerifiedButton_nonActive"] forState:UIControlStateNormal];
+//				[_verifyButton setBackgroundImage:[UIImage imageNamed:@"userVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
+				
 				if (!_isUser) {
 					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_Active" : @"userNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
@@ -967,10 +970,16 @@
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-		size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
-											  options:NSStringDrawingTruncatesLastVisibleLine
-										   attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
-											  context:nil].size;
+		
+		if ([HONAppDelegate isIOS7]) {
+			size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+												  options:NSStringDrawingTruncatesLastVisibleLine
+											   attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
+												  context:nil].size;
+			
+		} else
+			size = [shareFooterButton.titleLabel.text sizeWithFont:shareFooterButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		
 		shareFooterButton.frame = CGRectMake(shareFooterButton.frame.origin.x, shareFooterButton.frame.origin.y, size.width, size.height);
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -980,10 +989,16 @@
 		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-		size = [settingsButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
-											  options:NSStringDrawingTruncatesLastVisibleLine
-										   attributes:@{NSFontAttributeName:settingsButton.titleLabel.font}
-											  context:nil].size;
+		
+		if ([HONAppDelegate isIOS7]) {
+			size = [settingsButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+												  options:NSStringDrawingTruncatesLastVisibleLine
+											   attributes:@{NSFontAttributeName:settingsButton.titleLabel.font}
+												  context:nil].size;
+			
+		} else
+			size = [settingsButton.titleLabel.text sizeWithFont:settingsButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		
 		settingsButton.frame = CGRectMake(settingsButton.frame.origin.x, settingsButton.frame.origin.y, size.width, size.height);
 		
 		footerElements = @[//[[UIBarButtonItem alloc] initWithCustomView:addFriendsButton],
@@ -1013,10 +1028,16 @@
 		[shareButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-		size = [shareButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
-											  options:NSStringDrawingTruncatesLastVisibleLine
-										   attributes:@{NSFontAttributeName:shareButton.titleLabel.font}
-											  context:nil].size;
+		
+		if ([HONAppDelegate isIOS7]) {
+			size = [shareButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+												  options:NSStringDrawingTruncatesLastVisibleLine
+											   attributes:@{NSFontAttributeName:shareButton.titleLabel.font}
+												  context:nil].size;
+			
+		} else
+			size = [shareButton.titleLabel.text sizeWithFont:shareButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		
 		shareButton.frame = CGRectMake(shareButton.frame.origin.x, shareButton.frame.origin.y, size.width, size.height);
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1026,10 +1047,16 @@
 		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-		size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
-											  options:NSStringDrawingTruncatesLastVisibleLine
-										   attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
-											  context:nil].size;
+		
+		if ([HONAppDelegate isIOS7]) {
+			size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
+												  options:NSStringDrawingTruncatesLastVisibleLine
+											   attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
+												  context:nil].size;
+			
+		} else
+			size = [flagButton.titleLabel.text sizeWithFont:flagButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		
 		flagButton.frame = CGRectMake(flagButton.frame.origin.x, flagButton.frame.origin.y, size.width, size.height);
 		
 		footerElements = @[//[[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],

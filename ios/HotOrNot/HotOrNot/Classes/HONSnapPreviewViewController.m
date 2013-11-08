@@ -374,10 +374,11 @@
 		}];
 	};
 	
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (kSnapLargeSize.height - self.view.frame.size.height) * -0.5, kSnapLargeSize.width, kSnapLargeSize.height)];
+	//_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (kSnapLargeSize.height - self.view.frame.size.height) * -0.5, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	[_imageHolderView addSubview:_imageView];
 	_imageView.alpha = 0.0;
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil
 							   success:successBlock
 							   failure:failureBlock];
@@ -401,21 +402,25 @@
 	
 	CGSize size;
 	CGFloat maxNameWidth = 110.0;
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 11.0, maxNameWidth, 18.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, maxNameWidth, 18.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	[headerView addSubview:nameLabel];
 	
-	size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
-																			 options:NSStringDrawingTruncatesLastVisibleLine
-																		  attributes:@{NSFontAttributeName:nameLabel.font}
-																			 context:nil].size;
+	if ([HONAppDelegate isIOS7]) {
+		size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
+																				 options:NSStringDrawingTruncatesLastVisibleLine
+																			  attributes:@{NSFontAttributeName:nameLabel.font}
+																				 context:nil].size;
+		
+	} else
+		size = [_opponentVO.username sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	
 	nameLabel.text = (_isVerify) ? _opponentVO.username : (size.width >= maxNameWidth) ? _opponentVO.username : [_opponentVO.username stringByAppendingString:@"…"];
 	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), nameLabel.frame.size.height);
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 11.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 10.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -423,10 +428,15 @@
 	subjectLabel.hidden = _isVerify;
 	[headerView addSubview:subjectLabel];
 	
-	size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
-										   options:NSStringDrawingTruncatesLastVisibleLine
-										attributes:@{NSFontAttributeName:nameLabel.font}
-										   context:nil].size;
+	if ([HONAppDelegate isIOS7]) {
+		size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
+											   options:NSStringDrawingTruncatesLastVisibleLine
+											attributes:@{NSFontAttributeName:nameLabel.font}
+											   context:nil].size;
+		
+	} else
+		size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	
 	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(320.0 - (nameLabel.frame.size.width + maxNameWidth), size.width), subjectLabel.frame.size.height);
 	
 	
@@ -459,57 +469,55 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
 	
-	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 58.0, 320.0, 58.0)];
-	_buttonHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(242.0, [UIScreen mainScreen].bounds.size.height - 145.0, 64.0, 149.0)];
 	_buttonHolderView.alpha = 0.0;
 	[self.view addSubview:_buttonHolderView];
 	
 	
 	if (_isVerify) {
 		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		approveButton.frame = CGRectMake(1.0, 2.0, 159.0, 54.0);
-		[approveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"largeYay_nonActive" : @"overlayFollowButton_nonActive"] forState:UIControlStateNormal];
-		[approveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"largeYay_Active" : @"overlayFollowButton_Active"] forState:UIControlStateHighlighted];
+		approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
+		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
 		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:approveButton];
 		
 		UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dispproveButton.frame = CGRectMake(160.0, 2.0, 159.0, 54.0);
-		[dispproveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"largeNay_nonActive" : @"overlayNoFollowButton_nonActive"] forState:UIControlStateNormal];
-		[dispproveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"largeNay_Active" : @"overlayNoFollowButton_Active"] forState:UIControlStateHighlighted];
+		dispproveButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
+		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 		[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:dispproveButton];
 		
 	} else {
 		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		upvoteButton.frame = CGRectMake(1.0, 3.0, 159.0, 54.0);
+		upvoteButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
 		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 		[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:upvoteButton];
 		
-		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profileButton.frame = CGRectMake(160.0, 3.0, 159.0, 54.0);
-		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
-		[profileButton setBackgroundImage:[UIImage imageNamed:(_isFromProfile) ? @"profileButton_nonActive" : @"profileButton_Active"] forState:UIControlStateHighlighted];
-		profileButton.alpha = 1.0 - (((int)_isFromProfile) * 0.25);
-		[profileButton setTintColor:(_isFromProfile) ? [UIColor darkGrayColor] : [UIColor clearColor]];
-		[_buttonHolderView addSubview:profileButton];
+		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		flagButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
+		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+		flagButton.hidden = _isVerify;
+		[_buttonHolderView addSubview:flagButton];
 		
-		if (!_isFromProfile) {
-			[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		}
+//		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		profileButton.frame = CGRectMake(160.0, 3.0, 159.0, 54.0);
+//		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+//		[profileButton setBackgroundImage:[UIImage imageNamed:(_isFromProfile) ? @"profileButton_nonActive" : @"profileButton_Active"] forState:UIControlStateHighlighted];
+//		profileButton.alpha = 1.0 - (((int)_isFromProfile) * 0.25);
+//		[profileButton setTintColor:(_isFromProfile) ? [UIColor darkGrayColor] : [UIColor clearColor]];
+//		[_buttonHolderView addSubview:profileButton];
+//		
+//		if (!_isFromProfile) {
+//			[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+//		}
 	}
 	
-
-//	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	flagButton.frame = CGRectMake(222.0, 0.0, 74.0, 74.0);
-//	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-//	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-//	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-//	flagButton.hidden = _isVerify;
-//	[_buttonHolderView addSubview:flagButton];
 }
 
 - (void)viewDidLoad {

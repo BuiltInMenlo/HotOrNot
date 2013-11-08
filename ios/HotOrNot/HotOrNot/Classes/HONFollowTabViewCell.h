@@ -23,8 +23,8 @@
 @end
 
 @protocol HONFollowTabViewCellDelegate
-- (void)verifyViewCellShowPreview:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
-- (void)verifyViewCell:(HONFollowTabViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
-- (void)verifyViewCellApprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
-- (void)verifyViewCellDisprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)followViewCellShowPreview:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)followViewCell:(HONFollowTabViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
+- (void)followViewCellApprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)followViewCellDisprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 @end

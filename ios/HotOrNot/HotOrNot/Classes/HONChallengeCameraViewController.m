@@ -30,7 +30,8 @@
 @property (readonly, nonatomic, assign) HONVolleySubmitType volleySubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) S3PutObjectRequest *por;
+@property (nonatomic, strong) S3PutObjectRequest *por1;
+@property (nonatomic, strong) S3PutObjectRequest *por2;
 @property (nonatomic, strong) UIImage *rawImage;
 @property (nonatomic, strong) UIImage *processedImage;
 @property (nonatomic, strong) NSString *filename;
@@ -42,6 +43,7 @@
 @property (nonatomic) BOOL isMainCamera;
 @property (nonatomic) BOOL isFirstCamera;
 @property (nonatomic) BOOL isImageUploaded;
+@property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic, strong) NSTimer *uploadTimer;
 @end
@@ -98,21 +100,29 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	_isImageUploaded = NO;
+	_uploadCounter = 0;
 	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_uploadTimeout) userInfo:nil repeats:NO];
 	
 	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	@try {
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+		UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		_por = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@%@", _filename, kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
-		_por.delegate = self;
-		_por.contentType = @"image/jpeg";
-		_por.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
-		[s3 putObject:_por];
-				
+		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+		_por1.delegate = self;
+		_por1.contentType = @"image/jpeg";
+		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+		[s3 putObject:_por1];
+		
+		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+		_por2.delegate = self;
+		_por2.contentType = @"image/jpeg";
+		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+		[s3 putObject:_por2];
+		
 	} @catch (AmazonClientException *exception) {
 		NSLog(@"AWS FAIL:[%@]", exception.message);
 		
@@ -352,8 +362,13 @@
 #pragma mark - Upload Handling
 - (void)_cancelUpload {
 	_isImageUploaded = NO;
-	[_por.urlConnection cancel];
-	_por = nil;
+	_uploadCounter = 0;
+	
+	[_por1.urlConnection cancel];
+	_por1 = nil;
+	
+	[_por2.urlConnection cancel];
+	_por2 = nil;
 }
 
 - (void)_uploadTimeout {
@@ -501,7 +516,9 @@
 		_uploadTimer = nil;
 	}
 	
-	_isImageUploaded = YES;;
+	_uploadCounter++;
+	_isImageUploaded = (_uploadCounter == 2);
+	
 	if (_submitImageView != nil) {
 		[UIView animateWithDuration:0.5 animations:^(void) {
 			_submitImageView.alpha = 0.0;
@@ -520,23 +537,14 @@
 	}
 		
 	if (_hasSubmitted) {
-//		if (_isFirstCamera) {
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Volley"
-//																message:@"Great! You have just completed your first Volley update, would you like to share Volley with friends on Instagram?"
-//															   delegate:self
-//													  cancelButtonTitle:@"No"
-//													  otherButtonTitles:@"Yes", nil];
-//			[alertView show];
-//		
-//		} else {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-				
-				if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
-			}];
-//		}
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+			
+			if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
+		}];
+
 	}
 }
 

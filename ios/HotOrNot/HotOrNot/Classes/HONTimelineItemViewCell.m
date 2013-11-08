@@ -101,7 +101,7 @@
 		
 		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeOverlay"]];
 		gradientImageView.alpha = 0.0;
-		[_heroHolderView addSubview:gradientImageView];
+//		[_heroHolderView addSubview:gradientImageView];
 		
 		if ([HONAppDelegate isRetina4Inch]) {
 			[UIView animateWithDuration:0.5 animations:^(void) {
@@ -114,13 +114,15 @@
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
+		_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
+		[_heroImageView setImageWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
 	};
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -135,34 +137,35 @@
 	[self addGestureRecognizer:lpGestureRecognizer];
 	
 	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
+	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
-//	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kSnapTabSize.height - 40.0 withChallenge:_challengeVO];
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 104.0 withChallenge:_challengeVO];
+	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 90.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 199.0, 64.0, 149.0)];
+	[self.contentView addSubview:buttonHolderView];
+	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	//joinButton.frame = CGRectMake(244.0, 201.0, 64.0, 64.0);
-	joinButton.frame = CGRectMake(244.0, 301.0, 64.0, 64.0);
+	joinButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:joinButton];
+	[buttonHolderView addSubview:joinButton];
 	
 	_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	_likeButton.frame = CGRectMake(244.0, 269.0, 64.0, 64.0);
-	_likeButton.frame = CGRectMake(244.0, 369.0, 64.0, 64.0);
+	_likeButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Tapped"] forState:UIControlStateSelected];
 	[_likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:_likeButton];
+	[buttonHolderView addSubview:_likeButton];
 	
 	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, kHeroVolleyTableCellHeight - 143.0);
+		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 143.0);
 //		[self.contentView addSubview:_tutorialImageView];
 	}
 }

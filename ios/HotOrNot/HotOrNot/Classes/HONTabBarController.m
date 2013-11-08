@@ -112,11 +112,11 @@ const CGSize kTabSize = {80.0, 50.0};
 	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(60.0 + (kTabSize.width * 2.0), 0.0, kTabSize.width, kTabSize.height);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", verifyTabPrefix]] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateDisabled];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Tapped"]] forState:UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_verifyButton];
 	[_verifyButton setTag:2];
 	
@@ -231,7 +231,8 @@ const CGSize kTabSize = {80.0, 50.0};
 	self.selectedIndex = tabID;
 //	[self _updateBadges];
 	
-//	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+	
+	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
@@ -287,11 +288,11 @@ const CGSize kTabSize = {80.0, 50.0};
 
 - (void)_updateTabBarAB:(NSNotification *)notification {
 	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Tapped", verifyTabPrefix]] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_Active", verifyTabPrefix]] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_nonActive", verifyTabPrefix]] forState:UIControlStateDisabled];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Tapped"]] forState:UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
 }
 
 

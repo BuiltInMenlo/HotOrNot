@@ -497,8 +497,8 @@
 }
 
 
-#pragma mark - VerifyCell Delegates
-- (void)verifyViewCell:(HONFollowTabViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
+#pragma mark - FollowCell Delegates
+- (void)followViewCell:(HONFollowTabViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
@@ -527,7 +527,7 @@
 	}
 }
 
-- (void)verifyViewCellShowPreview:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)followViewCellShowPreview:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	[[Mixpanel sharedInstance] track:@"Follow A/B - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -555,7 +555,7 @@
 	}
 }
 
-- (void)verifyViewCellApprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)followViewCellApprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - OK%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
@@ -592,7 +592,7 @@
 	}
 }
 
-- (void)verifyViewCellDisprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)followViewCellDisprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - No%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]

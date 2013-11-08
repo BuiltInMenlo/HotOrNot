@@ -317,6 +317,7 @@
 			
 			
 		} else {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 		
@@ -512,10 +513,12 @@
 				
 				
 			} else {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 				[self dismissViewControllerAnimated:YES completion:nil];
 			}
 			
 		} else {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 	

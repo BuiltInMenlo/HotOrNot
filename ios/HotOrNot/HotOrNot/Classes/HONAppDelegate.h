@@ -61,7 +61,6 @@ const CGFloat kNavBarHeaderHeight;
 const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
-const CGFloat kHeroVolleyTableCellHeight;
 const CGFloat kHeroVolleyHeroHeight;
 
 // snap params
@@ -69,13 +68,13 @@ const CGFloat kMinLuminosity;
 const CGFloat kSnapRatio;
 const CGFloat kSnapJPEGCompress;
 
-const CGFloat kSnapLumThreshold;
-const CGFloat kSnapDarkBrightness;
-const CGFloat kSnapDarkContrast;
-const CGFloat kSnapDarkSaturation;
-const CGFloat kSnapLightBrightness;
-const CGFloat kSnapLightContrast;
-const CGFloat kSnapLightSaturation;
+//const CGFloat kSnapLumThreshold;
+//const CGFloat kSnapDarkBrightness;
+//const CGFloat kSnapDarkContrast;
+//const CGFloat kSnapDarkSaturation;
+//const CGFloat kSnapLightBrightness;
+//const CGFloat kSnapLightContrast;
+//const CGFloat kSnapLightSaturation;
 
 
 // animation params
@@ -167,6 +166,7 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (BOOL)isPhoneType5s;
 + (BOOL)isRetina4Inch;
++ (BOOL)isIOS7;
 + (BOOL)hasTakenSelfie;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;

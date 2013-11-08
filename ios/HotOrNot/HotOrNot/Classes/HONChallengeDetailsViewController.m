@@ -445,10 +445,15 @@
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	size = [joinFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
-														  options:NSStringDrawingTruncatesLastVisibleLine
-													   attributes:@{NSFontAttributeName:joinFooterButton.titleLabel.font}
-														  context:nil].size;
+	if ([HONAppDelegate isIOS7]) {
+		size = [joinFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
+															  options:NSStringDrawingTruncatesLastVisibleLine
+														   attributes:@{NSFontAttributeName:joinFooterButton.titleLabel.font}
+															  context:nil].size;
+		
+	} else
+		size = [joinFooterButton.titleLabel.text sizeWithFont:joinFooterButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	
 	joinFooterButton.frame = CGRectMake(joinFooterButton.frame.origin.x, joinFooterButton.frame.origin.y, size.width, size.height);
 	
 	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -459,10 +464,15 @@
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
-														   options:NSStringDrawingTruncatesLastVisibleLine
-														attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
-														   context:nil].size;
+	if ([HONAppDelegate isIOS7]) {
+		size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
+															   options:NSStringDrawingTruncatesLastVisibleLine
+															attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
+															   context:nil].size;
+		
+	} else
+		size = [shareFooterButton.titleLabel.text sizeWithFont:shareFooterButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	
 	shareFooterButton.frame = CGRectMake(shareFooterButton.frame.origin.x, shareFooterButton.frame.origin.y, size.width, size.height);
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -473,10 +483,15 @@
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	size = [joinFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
-														  options:NSStringDrawingTruncatesLastVisibleLine
-													   attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
-														  context:nil].size;
+	if ([HONAppDelegate isIOS7]) {
+		size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
+														options:NSStringDrawingTruncatesLastVisibleLine
+													 attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
+														context:nil].size;
+		
+	} else
+		size = [flagButton.titleLabel.text sizeWithFont:flagButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	
 	flagButton.frame = CGRectMake(flagButton.frame.origin.x, flagButton.frame.origin.y, size.width, size.height);
 	
 	UIToolbar *footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];

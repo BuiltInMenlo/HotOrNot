@@ -37,8 +37,8 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 296.0)];
-	//_imageHolderView.clipsToBounds = YES;
+	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 310.0)];
+	_imageHolderView.clipsToBounds = YES;
 	_imageHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_imageHolderView];
 	
@@ -46,7 +46,7 @@
 	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-35.0, -100.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-32.0, -100.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_heroImageView];
@@ -66,22 +66,20 @@
 						  placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
-	
-//	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"topFade"]]];
 		
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(250.0, 0.0, 70.0, 297.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(255.0, 0.0, 65.0, 310.0)];
 	buttonHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(3.0, 58.0, 64.0, 64.0);
+	approveButton.frame = CGRectMake(1.0, 68.0, 64.0, 64.0);
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(3.0, 129.0, 64.0, 64.0);
+	dispproveButton.frame = CGRectMake(1.0, 136.0, 64.0, 64.0);
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
@@ -116,7 +114,7 @@
 }
 
 - (void)_goDisprove {
-	[self.delegate verifyViewCellDisprove:self forChallenge:_challengeVO];
+	[self.delegate verifyViewCellApprove:self forChallenge:_challengeVO];
 }
 
 - (void)_goUserProfile {

@@ -34,8 +34,6 @@
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *email;
-@property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
-@property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UITextField *emailTextField;
 @property (nonatomic, retain) UIButton *usernameButton;
@@ -49,6 +47,8 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *splashHolderView;
 @property (nonatomic, strong) NSString *splashImageURL;
+@property (nonatomic, strong) S3PutObjectRequest *por1;
+@property (nonatomic, strong) S3PutObjectRequest *por2;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) int uploadCounter;
@@ -97,14 +97,22 @@
 	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
 	
 	@try {
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+		UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@%@", _filename, kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
-		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
-		por1.delegate = self;
-		[s3 putObject:por1];
+		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
+		_por1.contentType = @"image/jpeg";
+		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+		_por1.delegate = self;
+		[s3 putObject:_por1];
+		
+		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
+		_por2.contentType = @"image/jpeg";
+		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+		_por2.delegate = self;
+		[s3 putObject:_por2];
 		
 	} @catch (AmazonClientException *exception) {
 		[[[UIAlertView alloc] initWithTitle:@"Upload Error"
@@ -548,7 +556,7 @@
 	
 	UIImageView *splashBGImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	splashBGImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splash-568h@2x" : @"splash"];
-	[self.view addSubview:splashBGImageView];
+	//[self.view addSubview:splashBGImageView];
 	
 	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_splashHolderView.alpha = 0.0;
@@ -574,7 +582,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			splashTxtImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
+			//splashTxtImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
 		};
 		
 		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -926,7 +934,7 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
-	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo:[%f]", [HONImagingDepictor totalLuminance:image]);
+	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo:[%f]", 0.0);
 	
 	if (image.imageOrientation != 0)
 		image = [image fixOrientation];
@@ -1130,7 +1138,7 @@
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	if (_uploadCounter == 1) {
+	if (_uploadCounter == 2) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 		

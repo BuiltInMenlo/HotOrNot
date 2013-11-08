@@ -453,22 +453,25 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	totalSize.width = MAX(totalSize.width, indicatorF.size.width);
 	totalSize.height += indicatorF.size.height;
 	
-//	CGSize labelSize = [label.text sizeWithFont:label.font];
-	CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];
-	labelSize.width = MIN(labelSize.width, maxWidth);
-	totalSize.width = MAX(totalSize.width, labelSize.width);
-	totalSize.height += labelSize.height;
+	CGSize labelSize = [label.text sizeWithFont:label.font];
+//	CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];
+//	labelSize.width = MIN(labelSize.width, maxWidth);
+//	totalSize.width = MAX(totalSize.width, labelSize.width);
+//	totalSize.height += labelSize.height;
 	if (labelSize.height > 0.f && indicatorF.size.height > 0.f) {
 		totalSize.height += kPadding;
 	}
 
 	CGFloat remainingHeight = bounds.size.height - totalSize.height - kPadding - 4 * margin; 
 	CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
-//	CGSize detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
-	CGSize detailsLabelSize = [detailsLabel.text boundingRectWithSize:maxSize
-										 options:NSStringDrawingUsesLineFragmentOrigin
-									  attributes:@{NSFontAttributeName:detailsLabelFont}
-										 context:nil].size;
+	CGSize detailsLabelSize;
+	if ([HONAppDelegate isIOS7]) {
+		detailsLabelSize = [detailsLabel.text boundingRectWithSize:maxSize
+														   options:NSStringDrawingUsesLineFragmentOrigin
+														attributes:@{NSFontAttributeName:detailsLabelFont}
+														   context:nil].size;
+	} else
+		detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
 	
 	totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
 	totalSize.height += detailsLabelSize.height;

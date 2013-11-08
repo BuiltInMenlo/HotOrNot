@@ -96,7 +96,7 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists)

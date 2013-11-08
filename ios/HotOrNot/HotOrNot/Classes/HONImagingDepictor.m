@@ -120,8 +120,12 @@
 + (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor {
 	CATextLayer *layer = [[CATextLayer alloc] init];
 	
-//	CGSize size = [caption sizeWithFont:font constrainedToSize:CGSizeMake(frame.size.width, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	CGSize size = [caption sizeWithAttributes:@{NSFontAttributeName:font}];
+	CGSize size;
+	if ([HONAppDelegate isIOS7])
+		size = [caption sizeWithAttributes:@{NSFontAttributeName:font}];
+	
+	else
+		size = [caption sizeWithFont:font constrainedToSize:CGSizeMake(frame.size.width, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	
 	[layer setString:caption];
 	[layer setFont:CFBridgingRetain(font.fontName)];

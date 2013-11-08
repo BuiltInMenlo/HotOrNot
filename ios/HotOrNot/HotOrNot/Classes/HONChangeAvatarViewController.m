@@ -28,6 +28,8 @@
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) S3PutObjectRequest *por1;
+@property (nonatomic, strong) S3PutObjectRequest *por2;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
@@ -74,14 +76,20 @@
 //		float avatarSize = 200.0;
 //		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
 		
-//		UIImage *oImage = image;
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
-		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@%@", _filename, kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
-		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
-		por1.delegate = self;
-		[s3 putObject:por1];
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+		UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+		
+		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
+		_por1.contentType = @"image/jpeg";
+		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+		_por1.delegate = self;
+		[s3 putObject:_por1];
+		
+		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
+		_por2.contentType = @"image/jpeg";
+		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+		_por2.delegate = self;
+		[s3 putObject:_por2];
 				
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -457,7 +465,7 @@
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	if (_uploadCounter == 1) {
+	if (_uploadCounter == 2) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	

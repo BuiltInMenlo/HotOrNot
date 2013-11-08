@@ -33,7 +33,6 @@
 #import "HONAppDelegate.h"
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
-#import "HONFollowTabViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONExploreViewController.h"
 #import "HONImagePickerViewController.h"
@@ -109,21 +108,20 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGFloat kHeroVolleyTableCellHeight = 334.0f;
 const CGFloat kHeroVolleyHeroHeight = 346.0;
 
 // snap params
 const CGFloat kMinLuminosity = 0.00;
 const CGFloat kSnapRatio = 1.33333333f;
-const CGFloat kSnapJPEGCompress = 0.500f;
+const CGFloat kSnapJPEGCompress = 0.400f;
 
-const CGFloat kSnapLumThreshold = 0.297f;
-const CGFloat kSnapDarkBrightness = 1.720f;
-const CGFloat kSnapDarkContrast = 1.288f;
-const CGFloat kSnapDarkSaturation = 1.38f;
-const CGFloat kSnapLightBrightness = 1.288f;
-const CGFloat kSnapLightContrast = 1.030f;
-const CGFloat kSnapLightSaturation = 1.012f;
+//const CGFloat kSnapLumThreshold = 0.297f;
+//const CGFloat kSnapDarkBrightness = 1.720f;
+//const CGFloat kSnapDarkContrast = 1.288f;
+//const CGFloat kSnapDarkSaturation = 1.38f;
+//const CGFloat kSnapLightBrightness = 1.288f;
+//const CGFloat kSnapLightContrast = 1.030f;
+//const CGFloat kSnapLightSaturation = 1.012f;
 
 // animation params
 const CGFloat kHUDTime = 0.67f;
@@ -132,14 +130,14 @@ const CGFloat kProfileTime = 0.25f;
 
 // image sizes
 const CGSize kSnapThumbSize = {80.0f, 80.0f};
-const CGSize kSnapTabSize = {320.0f, 350.0f};
+const CGSize kSnapTabSize = {320.0f, 480.0f};
 const CGSize kSnapMediumSize = {160.0f, 160.0f};
 const CGSize kSnapLargeSize = {320.0f, 568.0f};
 const CGFloat kAvatarDim = 200.0f;
 
 NSString * const kSnapThumbSuffix = @"Small_160x160.jpg";
 NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
-NSString * const kSnapTabSuffix = @"Tab_640x592.jpg";
+NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
 const BOOL kIsImageCacheEnabled = YES;
@@ -498,6 +496,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
++ (BOOL)isIOS7 {
+	return ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]);
+}
+
 + (BOOL)hasTakenSelfie {
 	return (YES);//[[[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"] isEqualToString:@"NO"]);
 }
@@ -749,7 +751,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				else {
 					_isFromBackground = NO;
-					NSString *notificationName;
+					NSString *notificationName = @"";
 					switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
 						case 0:
 							notificationName = @"REFRESH_HOME_TAB";
@@ -769,8 +771,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					}
 					
 					NSLog(@"REFRESHING:[%@]", notificationName);
-					
-					[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:([HONAppDelegate isRetina4Inch]) ? notificationName : @"" object:nil];
 				}
 //				_userTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(_retryUser) userInfo:nil repeats:YES];
 			
@@ -1077,7 +1078,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[shadow setShadowOffset:CGSizeMake(0.0f, 0.0f)];
 	
 	//[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
-	[[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.506 green:0.780 blue:0.725 alpha:1.0]];
+	
+	if ([HONAppDelegate isIOS7])
+		[[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.506 green:0.780 blue:0.725 alpha:1.0]];
+	
+	else
+		[[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.506 green:0.780 blue:0.725 alpha:1.0]];
+	
 	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
 														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20]}];
@@ -1091,11 +1098,21 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	
-	[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
+	if ([HONAppDelegate isIOS7])
+		[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
+	
+	else
+		[[UITabBar appearance] setTintColor:[UIColor clearColor]];
+	
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
-	[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
+	if ([HONAppDelegate isIOS7])
+		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
+	
+	else
+		[[UIToolbar appearance] setTintColor:[UIColor clearColor]];
+	
 	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];
@@ -1303,7 +1320,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[self _retrieveConfigJSON];
 		
 //		NSLog(@"ADID:[%@]\nVID:[%@]", [HONAppDelegate advertisingIdentifierWithoutSeperators:YES], [HONAppDelegate identifierForVendorWithoutSeperators:YES]);
-		
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -1552,7 +1568,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? [[HONVerifyViewController alloc] init] : [[HONFollowTabViewController alloc] init]]];
+									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	for (UINavigationController *navigationController in navigationControllers) {
 		[navigationController setNavigationBarHidden:YES animated:NO];

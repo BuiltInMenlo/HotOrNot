@@ -119,7 +119,6 @@
 			}
 			
 			[_tableView reloadData];
-//			[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)];
 		}
 		
 		if (_progressHUD != nil) {
@@ -129,7 +128,6 @@
 		
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView isInitialLoad:_isFirstLoad];
 		_isFirstLoad = NO;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -147,7 +145,6 @@
 		
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView isInitialLoad:_isFirstLoad];
 		_isFirstLoad = NO;
 	}];
 }
@@ -301,7 +298,7 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f);
+//	_tableView.contentInset = UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -310,7 +307,7 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 
