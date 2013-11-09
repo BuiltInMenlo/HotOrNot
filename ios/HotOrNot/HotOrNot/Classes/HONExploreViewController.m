@@ -49,6 +49,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedExploreTab:) name:@"SELECTED_EXPLORE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareExploreTab:) name:@"TARE_EXPLORE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_EXPLORE_TAB" object:nil];
 	}
@@ -333,6 +334,9 @@
 	_isRefreshing = YES;
 	[self _retrieveChallenges];
 }
+- (void)_tareExploreTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+}
 
 
 #pragma mark - UI Presentation
@@ -455,15 +459,7 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 }
 
 

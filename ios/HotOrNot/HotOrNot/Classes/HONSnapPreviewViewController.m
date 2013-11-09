@@ -464,8 +464,8 @@
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(264.0, -3.0, 44.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneWhiteButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneWhiteButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
 	
@@ -637,33 +637,40 @@
 }
 
 - (void)_goApprove {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Approve" : @"Follow Yes"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Approve", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"yay_format"], _opponentVO.username]
-														message:@""
-													   delegate:self
-											  cancelButtonTitle:@"Cancel"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 1 : 3];
-	[alertView show];
+	[self _addFriend:_challengeVO.creatorVO.userID];
+	[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+	
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
+	
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"yay_format"], _opponentVO.username]
+//														message:@""
+//													   delegate:self
+//											  cancelButtonTitle:@"Cancel"
+//											  otherButtonTitles:@"Yes", nil];
+//	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 1 : 3];
+//	[alertView show];
 }
 
 - (void)_goDisprove {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Disprove" : @"Follow No"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Disprove", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
-														message:@""
-													   delegate:self
-											  cancelButtonTitle:@"Cancel"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
-	[alertView show];
+	[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
+//														message:@""
+//													   delegate:self
+//											  cancelButtonTitle:@"Cancel"
+//											  otherButtonTitles:@"Yes", nil];
+//	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
+//	[alertView show];
 }
 
 - (void)_goRemoveTutorial {
@@ -746,49 +753,49 @@
 			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
 		}
 		
-	}  else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _addFriend:_challengeVO.creatorVO.userID];
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-		}
-		
-	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-		}
-		
-	} else if (alertView.tag == 3) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Follow Yes %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _addFriend:_challengeVO.creatorVO.userID];
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-		}
-		
-	} else if (alertView.tag == 4) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Follow No %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _addFriend:_challengeVO.creatorVO.userID];
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-		}
-	
+//	}  else if (alertView.tag == 1) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//		
+//		if (buttonIndex == 1) {
+//			[self _addFriend:_challengeVO.creatorVO.userID];
+//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+//		}
+//		
+//	} else if (alertView.tag == 2) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//		
+//		if (buttonIndex == 1) {
+//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+//		}
+//		
+//	} else if (alertView.tag == 3) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Follow Yes %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//		
+//		if (buttonIndex == 1) {
+//			[self _addFriend:_challengeVO.creatorVO.userID];
+//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+//		}
+//		
+//	} else if (alertView.tag == 4) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Follow No %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//		
+//		if (buttonIndex == 1) {
+//			[self _addFriend:_challengeVO.creatorVO.userID];
+//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+//		}
+//	
 	} else if (alertView.tag == 5) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

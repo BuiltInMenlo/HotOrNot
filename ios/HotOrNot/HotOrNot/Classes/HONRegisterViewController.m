@@ -26,7 +26,7 @@
 //#define TINT_COLOR [UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:0.33] [UIColor colorWithRed:0.361 green:0.556 blue:0.517 alpha:0.33]
 
 
-@interface HONRegisterViewController () <AmazonServiceRequestDelegate>
+@interface HONRegisterViewController () //<AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *splashImagePickerController;
 @property (nonatomic, strong) UIImagePickerController *profileImagePickerController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -47,8 +47,8 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *splashHolderView;
 @property (nonatomic, strong) NSString *splashImageURL;
-@property (nonatomic, strong) S3PutObjectRequest *por1;
-@property (nonatomic, strong) S3PutObjectRequest *por2;
+//@property (nonatomic, strong) S3PutObjectRequest *por1;
+//@property (nonatomic, strong) S3PutObjectRequest *por2;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) int uploadCounter;
@@ -90,52 +90,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_uploadPhoto:(UIImage *)image {
-	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-	
-	_uploadCounter = 0;
-	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
-	
-	@try {
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-		UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
-		
-		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
-		
-		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
-		_por1.contentType = @"image/jpeg";
-		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
-		_por1.delegate = self;
-		[s3 putObject:_por1];
-		
-		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
-		_por2.contentType = @"image/jpeg";
-		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
-		_por2.delegate = self;
-		[s3 putObject:_por2];
-		
-	} @catch (AmazonClientException *exception) {
-		[[[UIAlertView alloc] initWithTitle:@"Upload Error"
-									message:exception.message
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-		
-		_filename = @"";
-	}
-}
-
 - (void)_checkUsername {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: _username,
@@ -210,6 +164,68 @@
 	}];
 }
 
+- (void)_uploadPhotos:(UIImage *)image {
+//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	
+	_uploadCounter = 0;
+	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	
+	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
+	
+	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
+	por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+	por1.contentType = @"image/jpeg";
+	
+	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
+	por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+	por2.contentType = @"image/jpeg";
+	
+	NSDictionary *uploadDict = @{@"url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]],
+								 @"pors"	: @[por1, por2]};
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_AVATAR_TO_AWS" object:uploadDict];
+	[self _finalizeUser];
+	
+//	@try {
+//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
+//		
+//		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
+//		_por1.contentType = @"image/jpeg";
+//		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+//		_por1.delegate = self;
+//		[s3 putObject:_por1];
+//		
+//		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
+//		_por2.contentType = @"image/jpeg";
+//		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+//		_por2.delegate = self;
+//		[s3 putObject:_por2];
+//		
+//	} @catch (AmazonClientException *exception) {
+//		[[[UIAlertView alloc] initWithTitle:@"Upload Error"
+//									message:exception.message
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//		
+//		if (_progressHUD == nil)
+//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//		
+//		_progressHUD.minShowTime = kHUDTime;
+//		_progressHUD.mode = MBProgressHUDModeCustomView;
+//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+//		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+//		[_progressHUD show:NO];
+//		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+//		_progressHUD = nil;
+//		
+//		_filename = @"";
+//	}
+}
+
 - (void)_finalizeUser {
 	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 9],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
@@ -262,7 +278,6 @@
 									   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
 									   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
@@ -359,53 +374,53 @@
 	}];
 }
 
-- (void)_finalizeUpload {
-	NSDictionary *params = @{@"imgURL"	: ([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]]};
-	
-	NSLog(@"[:::|:|:::] FINALIZE UPLOAD [:::|:|:::]");
-	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-		}
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[self _finalizeUser];
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
+//- (void)_finalizeUpload {
+//	NSDictionary *params = @{@"imgURL"	: ([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]]};
+//	
+//	NSLog(@"[::|:|::] FINALIZE UPLOAD [::|:|::]");
+//	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);
+//	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+//	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//		NSError *error = nil;
+//		if (error != nil) {
+//			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+//			
+//			if (_progressHUD == nil)
+//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//			_progressHUD.minShowTime = kHUDTime;
+//			_progressHUD.mode = MBProgressHUDModeCustomView;
+//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+//			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+//			[_progressHUD show:NO];
+//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+//			_progressHUD = nil;
+//			
+//		} else {
+////			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+////			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//		}
+//		
+//		if (_progressHUD != nil) {
+//			[_progressHUD hide:YES];
+//			_progressHUD = nil;
+//		}
+//		
+//		[self _finalizeUser];
+//		
+//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+//		
+//		if (_progressHUD == nil)
+//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//		_progressHUD.minShowTime = kHUDTime;
+//		_progressHUD.mode = MBProgressHUDModeCustomView;
+//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+//		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+//		[_progressHUD show:NO];
+//		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+//		_progressHUD = nil;
+//	}];
+//}
 
 - (void)_recreateUser {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
@@ -968,13 +983,11 @@
 //		processedImage = (lum <= [[attribs objectForKey:@"luminosity"] floatValue]) ? [[[processedImage brightness:[[attribs objectForKey:@"d_brightness"] floatValue]] contrast:[[attribs objectForKey:@"d_contrast"] floatValue]] saturate:[[attribs objectForKey:@"d_saturation"] floatValue]] : [[[processedImage brightness:[[attribs objectForKey:@"l_brightness"] floatValue]] contrast:[[attribs objectForKey:@"l_contrast"] floatValue]] saturate:[[attribs objectForKey:@"l_saturation"] floatValue]];
 		
 //		if ([features count] > 0 || [HONAppDelegate isPhoneType5s]) {
-			[self _uploadPhoto:processedImage];
+			[self _uploadPhotos:processedImage];
 //			[self dismissViewControllerAnimated:YES completion:^(void) {}];
-			
-			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-			
-			[_usernameTextField becomeFirstResponder];
-			[_usernameButton setSelected:YES];
+//			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+//			[_usernameTextField becomeFirstResponder];
+//			[_usernameButton setSelected:YES];
 			
 //			[UIView animateWithDuration:0.1 animations:^(void) {
 //				_cameraOverlayView.frame = CGRectOffset(_cameraOverlayView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
@@ -1133,22 +1146,24 @@
 	}
 }
 
-#pragma mark - AWS Delegates
-- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
-	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
-	
-	_uploadCounter++;
-	if (_uploadCounter == 2) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-		
-		[self _finalizeUpload];
-		
-		[HONImagingDepictor writeImageFromWeb:([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-	}
-}
 
-- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"AWS didFailWithError:\n%@", error);
-}
+//#pragma mark - AWS Delegates
+//- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
+//	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+//	
+//	_uploadCounter++;
+//	if (_uploadCounter == 2) {
+//		[_progressHUD hide:YES];
+//		_progressHUD = nil;
+//		
+//		[self _finalizeUpload];
+//		[HONImagingDepictor writeImageFromWeb:([_filename length] == 0) ? [NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+//	}
+//}
+//
+//- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
+//	NSLog(@"AWS didFailWithError:\n%@", error);
+//}
+
+
 @end

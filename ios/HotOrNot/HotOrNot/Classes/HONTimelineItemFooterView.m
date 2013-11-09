@@ -69,18 +69,18 @@
 			[avatarsHolderView addSubview:avatarImageView];
 		}
 		
-		UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 6.0, 257.0 - offset, 15.0)];
-		participantsLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
+		UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 3.0, 257.0 - offset, 19.0)];
+		participantsLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		participantsLabel.textColor = [UIColor whiteColor];
 		participantsLabel.backgroundColor = [UIColor clearColor];
 		participantsLabel.text = [self _captionForParticipants];
 		[self addSubview:participantsLabel];
 		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 20.0, 270.0, 14.0)];
-		_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 19.0, 270.0, 19.0)];
+		_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		_likesLabel.textColor = [UIColor whiteColor];//([self _calcScore] == 0) ? [HONAppDelegate honLightGreyTextColor] : [UIColor whiteColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
-		_likesLabel.text = _challengeVO.recentLikes;
+		_likesLabel.text = [self _captionForScore];
 		[self addSubview:_likesLabel];
 	}
 	
@@ -112,7 +112,7 @@
 	}
 	
 	_challengeVO.likesTotal++;
-	_likesLabel.text = [NSString stringWithFormat:@"%d like%@", [self _calcScore], ([self _calcScore] != 1) ? @"s" : @""];
+	_likesLabel.text = [self _captionForScore];
 }
 
 
@@ -163,17 +163,26 @@
 	if ([_challengeVO.challengers count] == 0)
 		return (@"Be the first to reply");
 	
-	
+	HONOpponentVO *vo;
 	NSString *caption = @"";
-	HONOpponentVO *vo = (HONOpponentVO *)[_challengeVO.challengers firstObject];
-	if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
-		caption = @"You";
 	
-	else
-		caption = vo.username;
-	
+	vo = (HONOpponentVO *)[_challengeVO.challengers firstObject];
+	caption = (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : vo.username;
 	
 	return ([NSString stringWithFormat:@"%@ replied… %d total", caption, [_challengeVO.challengers count]]);
+}
+
+- (NSString *)_captionForScore {
+	int score = [self _calcScore];
+		
+	if (score == 0)
+		return (@"Be the first to like");
+	
+	else if (score > 99)
+		return (@"99+ Likes");
+	
+	else
+		return ([NSString stringWithFormat:@"%d Like%@", score, (score != 1) ? @"s" : @""]);
 }
 
 @end

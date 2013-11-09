@@ -47,9 +47,9 @@
 	[self removeGestureRecognizer:_lpGestureRecognizer];
 }
 
-- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
-}
+//- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
+//	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
+//}
 
 
 @end

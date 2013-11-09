@@ -51,8 +51,8 @@
 	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
 	[_imageHolderView addSubview:_heroImageView];
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]];
-	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 64.0);
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"verifyOverlay-568h@2x" : @"verifyOverlay"];
 	gradientImageView.alpha = 0.0;
 	[_imageHolderView addSubview:gradientImageView];
 	

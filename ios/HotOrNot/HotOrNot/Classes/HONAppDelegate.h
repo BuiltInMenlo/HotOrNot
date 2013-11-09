@@ -18,6 +18,11 @@
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
+typedef enum {
+	HONAWSAvatarUploadTypeAvatar		= 0,	/** Creates a new challenge */
+	HONAWSAvatarUploadTypeChallenge				/** Joins an in-progress challenge */
+} HONAWSAvatarUploadType;
+
 
 // api endpts
 extern NSString * const kConfigURL;
@@ -61,7 +66,6 @@ const CGFloat kNavBarHeaderHeight;
 const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
-const CGFloat kHeroVolleyHeroHeight;
 
 // snap params
 const CGFloat kMinLuminosity;

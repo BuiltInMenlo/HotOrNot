@@ -51,7 +51,6 @@
 	for (NSDictionary *dict in _gridItems) {
 		UIView *gridItemView = [self createItemForParticipant:[dict objectForKey:@"participant"] fromChallenge:[dict objectForKey:@"challenge"]];
 		[gridItemView setTag:_participantCounter];
-		
 		[_gridViews addObject:gridItemView];
 		[_holderView addSubview:gridItemView];
 		
@@ -73,7 +72,7 @@
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
 	[imageHolderView addSubview:imageView];
-	imageView.alpha = 0.0;
+	//imageView.alpha = 0.0;
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
@@ -87,6 +86,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		NSLog(@"FAILED");
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:vo.imagePrefix];
 	};
 	

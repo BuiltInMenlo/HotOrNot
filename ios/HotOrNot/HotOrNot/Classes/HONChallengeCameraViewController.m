@@ -23,7 +23,7 @@
 #import "HONCreateChallengePreviewView.h"
 
 
-@interface HONChallengeCameraViewController () <AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
+@interface HONChallengeCameraViewController () <HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
@@ -97,19 +97,53 @@
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos {
-	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	_isImageUploaded = NO;
 	_uploadCounter = 0;
-	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_uploadTimeout) userInfo:nil repeats:NO];
+//	_uploadTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(_uploadTimeout) userInfo:nil repeats:NO];
 	
 	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	
+	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
+//	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+//	por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+//	por1.contentType = @"image/jpeg";
+//	
+//	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+//	por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+//	por2.contentType = @"image/jpeg";
+//	
+//	NSDictionary *uploadDict = @{@"url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
+//								 @"pors"	: @[por1, por2]};
+//	
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_CHALLENGE_TO_AWS" object:uploadDict];
+//	
+//	[_previewView uploadComplete];
+//	//[self _finalizeUpload];
+//	
+//	if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//		[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
+//			_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
+//			_previewView.delegate = self;
+//			_previewView.isFirstCamera = _isFirstCamera;
+//			_previewView.isJoinChallenge = (_volleySubmitType == HONVolleySubmitTypeJoin);
+//			[_previewView showKeyboard];
+//			
+//			[self.view addSubview:_previewView];
+//		}];
+//	}
+//	
+//	if (_progressHUD != nil) {
+//		[_progressHUD hide:YES];
+//		_progressHUD = nil;
+//	}
+	
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	@try {
-		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-		UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
-		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
 		_por1.delegate = self;
@@ -197,7 +231,7 @@
 				
 			} else {
 				_hasSubmitted = YES;
-				if (_isImageUploaded) {
+//				if (_isImageUploaded) {
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -205,7 +239,7 @@
 						if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
 					}];
-				}
+//				}
 			}
 		}
 		
@@ -572,7 +606,6 @@
 			_submitImageView = nil;
 		}];
 	}
-	
 }
 
 

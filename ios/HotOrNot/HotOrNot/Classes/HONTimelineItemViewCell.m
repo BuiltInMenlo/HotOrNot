@@ -84,7 +84,7 @@
 //			_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
 //	}
 	
-	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_heroHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 //	_heroHolderView.clipsToBounds = YES;
 	_heroHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_heroHolderView];
@@ -99,9 +99,10 @@
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeOverlay"]];
-		gradientImageView.alpha = 0.0;
-//		[_heroHolderView addSubview:gradientImageView];
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"overlayFade-568h@2x" : @"overlayFade"];
+		gradientImageView.alpha = 1.0 - (int)([HONAppDelegate isRetina4Inch]);
+		[_heroHolderView addSubview:gradientImageView];
 		
 		if ([HONAppDelegate isRetina4Inch]) {
 			[UIView animateWithDuration:0.5 animations:^(void) {
@@ -145,7 +146,7 @@
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 199.0, 64.0, 149.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 241.0, 64.0, 137.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -156,7 +157,7 @@
 	[buttonHolderView addSubview:joinButton];
 	
 	_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_likeButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
+	_likeButton.frame = CGRectMake(0.0, 73.0, 64.0, 64.0);
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Tapped"] forState:UIControlStateSelected];

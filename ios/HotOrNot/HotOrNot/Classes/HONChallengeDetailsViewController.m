@@ -42,6 +42,7 @@
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
+@property (nonatomic, strong) UIButton *likeButton;
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
@@ -142,6 +143,51 @@
 		
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_upvoteChallenge:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 6], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+							[NSString stringWithFormat:@"%d", userID], @"challengerID",
+							_challengeVO.creatorVO.imagePrefix, @"imgURL", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			[_timelineItemFooterView upvoteUser:userID onChallenge:_challengeVO];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -306,25 +352,19 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + 108.0 + ((kHeroVolleyHeroHeight + 84.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)))));
-	_scrollView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (350.0 + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineBackground"]];
-	bgImageView.frame = CGRectOffset(bgImageView.frame, 0.0, 64.0);
-	[_scrollView addSubview:bgImageView];
-	
 	//NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d] (%d)", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count], (int)(kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)));
 	
-	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, _scrollView.contentSize.height)];
-	_contentHolderView.frame = CGRectOffset(_contentHolderView.frame, 0.0, _scrollView.contentInset.top);
+	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _scrollView.contentSize.height)];
 	[_scrollView addSubview:_contentHolderView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height + 64.0, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
 	
@@ -374,7 +414,7 @@
 }
 
 - (void)_makeHero {
-	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kHeroVolleyHeroHeight)];
+	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 350.0)];
 	_heroHolderView.clipsToBounds = YES;
 	[_contentHolderView addSubview:_heroHolderView];
 	
@@ -384,7 +424,7 @@
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"homeFade"]];
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"subDetailsBackground"]];
 		gradientImageView.alpha = 0.0;
 		[_heroHolderView addSubview:gradientImageView];
 		
@@ -399,11 +439,11 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
 	};
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -420,27 +460,58 @@
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
+	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[_contentHolderView addSubview:creatorHeaderView];
 	
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kHeroVolleyHeroHeight withChallenge:_challengeVO];
+	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:350.0 - 40.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[_contentHolderView addSubview:_timelineItemFooterView];
+	
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, 350.0 - 149.0, 64.0, 149.0)];
+	[_heroHolderView addSubview:buttonHolderView];
+	
+	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	joinButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
+	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
+	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:joinButton];
+	
+	_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_likeButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
+	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Tapped"] forState:UIControlStateSelected];
+	[_likeButton addTarget:self action:@selector(_goLikeCreator) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:_likeButton];
 }
 
 - (void)_makeParticipantGrid {
-	_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:kHeroVolleyHeroHeight + _timelineItemFooterView.frame.size.height forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
-	_participantsGridView.delegate = self;
-	[_contentHolderView addSubview:_participantsGridView];
+	
+	if ([_challengeVO.challengers count] == 0) {
+		UIButton *firstReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		firstReplyButton.frame = CGRectMake(0.0, 350.0, 320.0, 45.0);
+		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_nonActive"] forState:UIControlStateNormal];
+		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_Active"] forState:UIControlStateHighlighted];
+		[firstReplyButton addTarget:self action:@selector(_goFirstReply) forControlEvents:UIControlEventTouchUpInside];
+		[_contentHolderView addSubview:firstReplyButton];
+	
+	} else {
+		_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:350.0 forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
+		_participantsGridView.delegate = self;
+		[_contentHolderView addSubview:_participantsGridView];
+	}
+	
 }
 
 - (void)_makeFooterTabBar {
 	CGSize size;
 	
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinFooterButton.frame = CGRectMake(0.0, 0.0, 43.0, 44.0);
-	[joinFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[joinFooterButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+	joinFooterButton.frame = CGRectMake(0.0, 1.0, 43.0, 44.0);
+	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -458,8 +529,8 @@
 	
 	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-	[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[shareFooterButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -477,8 +548,8 @@
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-	[flagButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[flagButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+	[flagButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+	[flagButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -603,6 +674,30 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goFirstReply {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - First Reply%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goLikeCreator {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Like Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	[_likeButton removeTarget:self action:@selector(_goLikeCreator) forControlEvents:UIControlEventTouchUpInside];
+	[_likeButton setSelected:YES];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+	[self _upvoteChallenge:_challengeVO.creatorVO.userID];
 }
 
 - (void)_goShareChallenge {
@@ -776,16 +871,7 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
-	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:_challengeVO];
 }
 

@@ -656,15 +656,7 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 }
 
 

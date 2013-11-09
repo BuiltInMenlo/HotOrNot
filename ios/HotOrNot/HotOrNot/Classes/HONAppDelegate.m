@@ -9,6 +9,7 @@
 #import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CommonCrypto/CommonHMAC.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import <Foundation/Foundation.h>
@@ -108,7 +109,6 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGFloat kHeroVolleyHeroHeight = 346.0;
 
 // snap params
 const CGFloat kMinLuminosity = 0.00;
@@ -124,7 +124,7 @@ const CGFloat kSnapJPEGCompress = 0.400f;
 //const CGFloat kSnapLightSaturation = 1.012f;
 
 // animation params
-const CGFloat kHUDTime = 0.67f;
+const CGFloat kHUDTime = 0.5f;
 const CGFloat kHUDErrorTime = 1.5f;
 const CGFloat kProfileTime = 0.25f;
 
@@ -149,16 +149,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 //#if __DEV_BUILD___ == 0
-@interface HONAppDelegate()
+@interface HONAppDelegate() <AmazonServiceRequestDelegate>
 //#else
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
 //#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
+@property (nonatomic, strong) NSString *imageURL;
 @property (nonatomic, strong) NSTimer *userTimer;
 @property (nonatomic) BOOL isFromBackground;
+@property (readonly, nonatomic, assign) HONAWSAvatarUploadType avatarUploadType;
 @property (nonatomic) int challengeID;
+@property (nonatomic) BOOL hasWrittenImage;
 @end
 
 
@@ -639,11 +642,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (UIColor *)honBlueTextColor {
-	return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:1.0]);
+	return ([UIColor colorWithRed:0.141 green:0.271 blue:0.925 alpha:1.0]);
+	//return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:1.0]);
 }
 
 + (UIColor *)honBlueTextColorHighlighted {
-	return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:0.5]);
+	return ([UIColor colorWithRed:0.580 green:0.729 blue:0.973 alpha:1.0]);
+//	return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:0.5]);
 }
 
 + (UIColor *)honGreenTextColor {
@@ -770,8 +775,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							break;
 					}
 					
-					NSLog(@"REFRESHING:[%@]", notificationName);
-					[[NSNotificationCenter defaultCenter] postNotificationName:([HONAppDelegate isRetina4Inch]) ? notificationName : @"" object:nil];
+					if ([HONAppDelegate isRetina4Inch]) {
+						NSLog(@"REFRESHING:[%@]", notificationName);
+						[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+					}
 				}
 //				_userTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(_retryUser) userInfo:nil repeats:YES];
 			
@@ -1022,6 +1029,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[self _initTabs];
 }
 
+- (void)_playOverlayAnimation:(NSNotification *)notification {
+	UIImageView *animationImageView = [notification object];
+	animationImageView.frame = CGRectOffset(animationImageView.frame, ([UIScreen mainScreen].bounds.size.width - animationImageView.frame.size.width) * 0.5, ([UIScreen mainScreen].bounds.size.height - animationImageView.frame.size.height) * 0.5);
+	[self.window addSubview:animationImageView];
+	
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		animationImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[animationImageView removeFromSuperview];
+	}];
+}
+
 - (void)_recreateImageSizes:(NSNotification *)notification {
 	NSDictionary *params = @{@"imgURL"	: [[HONAppDelegate cleanImageURL:[notification object]] stringByAppendingString:kSnapLargeSuffix]};
 	
@@ -1061,6 +1080,75 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		_progressHUD = nil;
 	}];
 }
+
+- (void)_uploadAvatarToAWS:(NSNotification *)notification {
+	NSDictionary *dict = [notification object];
+	_imageURL = [dict objectForKey:@"url"];
+	
+	if ([_imageURL length] > 0) {
+		_avatarUploadType = HONAWSAvatarUploadTypeAvatar;
+		_hasWrittenImage = NO;
+		
+		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
+		
+		@try {
+			NSArray *putObjectRequests = [dict objectForKey:@"pors"];
+			for (S3PutObjectRequest *por in putObjectRequests) {
+				por.delegate = self;
+				[s3 putObject:por];
+			}
+			
+		} @catch (AmazonClientException *exception) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		}
+	}
+}
+
+- (void)_uploadChallengeToAWS:(NSNotification *)notification {
+	NSDictionary *dict = [notification object];
+	_imageURL = [dict objectForKey:@"url"];
+	
+	if ([_imageURL length] > 0) {
+		_avatarUploadType = HONAWSAvatarUploadTypeChallenge;
+		_hasWrittenImage = NO;
+		
+		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+		
+		@try {
+			NSArray *putObjectRequests = [dict objectForKey:@"pors"];
+			for (S3PutObjectRequest *por in putObjectRequests) {
+				por.delegate = self;
+				[s3 putObject:por];
+			}
+			
+		} @catch (AmazonClientException *exception) {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+		}
+	}
+}
+
 
 
 #pragma mark - UI Presentation
@@ -1133,6 +1221,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_recreateImageSizes:) name:@"RECREATE_IMAGE_SIZES" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_uploadAvatarToAWS:) name:@"UPLOAD_AVATAR_TO_AWS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_uploadChallengeToAWS:) name:@"UPLOAD_CHALLENGE_TO_AWS" object:nil];
 	
 #if __DEV_BUILD___ == 1
 //	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
@@ -1596,6 +1687,48 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"Font Names = %@", names);
 	}
 }
+
+
+#pragma mark - AWS Delegates
+- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
+	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+	
+	if (!_hasWrittenImage) {
+		_hasWrittenImage = YES;
+		
+		NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImageURL:_imageURL]};
+		VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);
+		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+		[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			if (error != nil) {
+				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+				
+			} else {
+				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		}];
+	}
+	
+	if (_avatarUploadType == HONAWSAvatarUploadTypeAvatar) {
+		[HONImagingDepictor writeImageFromWeb:_imageURL withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		
+	} else if (_avatarUploadType == HONAWSAvatarUploadTypeChallenge) {
+		
+	}
+}
+
+- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
+	NSLog(@"AWS didFailWithError:\n%@", error);
+	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+}
+
 
 #pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {

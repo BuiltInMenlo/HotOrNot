@@ -152,13 +152,13 @@ const CGSize kTabSize = {80.0, 50.0};
 	if	(isEnabled) {
 		for (UIButton *button in _tabHolderView.subviews) {
 			if (button.tag != -1)
-				[button addTarget:self action:@selector(_goTabButton:) forControlEvents:UIControlEventTouchUpInside];
+				[button addTarget:self action:@selector(_goTabButton:event:) forControlEvents:UIControlEventTouchUpInside];
 		}
 		
 	} else {
 		for (UIButton *button in _tabHolderView.subviews) {
 			if (button.tag != -1)
-				[button removeTarget:self action:@selector(_goTabButton:) forControlEvents:UIControlEventTouchUpInside];
+				[button removeTarget:self action:@selector(_goTabButton:event:) forControlEvents:UIControlEventTouchUpInside];
 		}
 	}
 }
@@ -176,15 +176,18 @@ const CGSize kTabSize = {80.0, 50.0};
 
 
 #pragma mark - Navigation
-- (void)_goTabButton:(id)sender {
+- (void)_goTabButton:(id)sender event:(UIEvent *)event {
 	int tabID = [sender tag];
 	
-	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
-	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
+	UITouch *touch = [[event allTouches] anyObject];
 	
 	NSString *mpEvent = @"";
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";
+	
+	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
+	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
+
 	
 	switch(tabID) {
 		case 0:
@@ -193,8 +196,8 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_exploreButton setSelected:NO];
 			
 			totalKey = @"timeline";
-			mpEvent = @"Tab Bar - Timeline";
-			notificationName = @"SELECTED_HOME_TAB";
+			mpEvent = @"Timeline";
+			notificationName = @"_HOME_TAB";
 			break;
 			
 		case 1:
@@ -203,8 +206,8 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_exploreButton setSelected:YES];
 			
 			totalKey = @"explore";
-			mpEvent = @"Tab Bar - Explore";
-			notificationName = @"SELECTED_EXPLORE_TAB";
+			mpEvent = @"Explore";
+			notificationName = @"_EXPLORE_TAB";
 			break;
 			
 		case 2:
@@ -213,24 +216,29 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_exploreButton setSelected:NO];
 			
 			totalKey = @"verify";
-			mpEvent = @"Tab Bar - Verify";
-			notificationName = @"SELECTED_VERIFY_TAB";
+			mpEvent = @"Verify";
+			notificationName = @"_VERIFY_TAB";
 			break;
 			
 		default:
 			break;
 	}
 	
-	[[Mixpanel sharedInstance] track:mpEvent
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	if (touch.tapCount == 1) {
+		mpEvent = [@"Tab Bar - " stringByAppendingString:mpEvent];
+		notificationName = [@"SELECTED" stringByAppendingString:notificationName];
+		
+	} else {
+		mpEvent = [@"Tab Bar Double Tap - " stringByAppendingString:mpEvent];
+		notificationName = [@"TARE" stringByAppendingString:notificationName];
+	}
+		
+	[[Mixpanel sharedInstance] track:mpEvent properties:@{@"user"	: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]}];
 	
 	[HONAppDelegate incTotalForCounter:totalKey];
 
-//	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
-//	[self _updateBadges];
-	
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];

@@ -870,14 +870,14 @@
 	
 	if (_isUser) {
 		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		findFriendsButton.frame = CGRectMake(17.0, 246.0, 134.0, 44.0);
+		findFriendsButton.frame = CGRectMake(0.0, 232.0, 320.0, 45.0);
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
 		[findFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:findFriendsButton];
 		
 		UIButton *helpButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		helpButton.frame = CGRectMake(171.0, 246.0, 134.0, 44.0);
+		helpButton.frame = CGRectMake(171.0, 278.0, 320.0, 45.0);
 		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_nonActive"] forState:UIControlStateNormal];
 		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_Active"] forState:UIControlStateHighlighted];
 		[helpButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
@@ -885,14 +885,17 @@
 		
 	} else {
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_followButton.frame = CGRectMake(17.0, 246.0, 134.0, 44.0);
-		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
-		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
+		_followButton.frame = CGRectMake(0.0, 233.0, 320.0, 45.0);
+//		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
+//		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
+
 		[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:_followButton];
 		
 		UIButton *reportButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		reportButton.frame = CGRectMake(171.0, 246.0, 134.0, 44.0);
+		reportButton.frame = CGRectMake(0.0, 278.0, 320.0, 45.0);
 		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_nonActive"] forState:UIControlStateNormal];
 		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_Active"] forState:UIControlStateHighlighted];
 		[reportButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
@@ -900,8 +903,8 @@
 	}
 	
 	
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 44.0 + (304.0 + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1)))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:304.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (323.0 + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:323.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
 	_profileGridView.delegate = self;
 	[_scrollView addSubview:_profileGridView];
 	
@@ -965,8 +968,8 @@
 		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[shareFooterButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
@@ -984,8 +987,8 @@
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
-		[settingsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[settingsButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
@@ -1023,8 +1026,8 @@
 		
 		UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[shareButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+		[shareButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[shareButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[shareButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[shareButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
@@ -1042,8 +1045,8 @@
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-		[flagButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[flagButton setTitleColor:[HONAppDelegate honGreyTextColor] forState:UIControlStateHighlighted];
+		[flagButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
+		[flagButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
@@ -1134,15 +1137,7 @@
 		snapPreviewViewController = nil;
 	}
 	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 }
 
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {

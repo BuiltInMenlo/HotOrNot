@@ -228,8 +228,11 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _dropKeyboardAndRemove:NO];
-	if ([_subjectTextField.text length] > 0) {
-		_subjectName = _subjectTextField.text;
+	if ([_subjectTextField.text length] > 0 || _isJoinChallenge) {
+		
+		if (!_isJoinChallenge)
+			_subjectName = _subjectTextField.text;
+		
 		[self.delegate previewView:self changeSubject:_subjectName];
 		
 		int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];

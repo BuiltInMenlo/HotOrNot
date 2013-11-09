@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONChangeAvatarViewController : UIViewController
+@interface HONChangeAvatarViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end

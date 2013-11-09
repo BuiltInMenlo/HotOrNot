@@ -46,7 +46,7 @@
 	[self.contentView addSubview:_leftHolderView];
 	
 	if (_lChallengeVO.challengeID == 0) {
-		_leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchIcon"]];
+		_leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchTile"]];
 		_leftImageView.alpha = 0.0;
 		[_leftHolderView addSubview:_leftImageView];
 		
@@ -73,7 +73,7 @@
 	[self.contentView addSubview:_rightHolderView];
 	
 	if (_rChallengeVO.challengeID == 0) {
-		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchIcon"]];
+		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchTile"]];
 		_rightImageView.alpha = 0.0;
 		[_rightHolderView addSubview:_rightImageView];
 		

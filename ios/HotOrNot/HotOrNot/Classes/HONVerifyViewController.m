@@ -69,6 +69,7 @@
 		_tabInfo = [HONAppDelegate infoForABTab];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVerifyTab:) name:@"SELECTED_VERIFY_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareVerifyTab:) name:@"TARE_VERIFY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_VERIFY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
@@ -218,7 +219,7 @@
 			
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
 				[HONAppDelegate writeSubscribeeList:result];
@@ -266,27 +267,8 @@
 			
 			
 		} else {
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			
-//			if (isApprove) {
-//				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyAction_total"] intValue];
-//				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyAction_total"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
-//				
-//				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-//					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
-//																		message:@"Get more subscribers now, tap OK."
-//																	   delegate:self
-//															  cancelButtonTitle:@"Cancel"
-//															  otherButtonTitles:@"OK", nil];
-//					[alertView setTag:0];
-//					[alertView show];
-//					
-//				}
-//			}
-			
-//			[self _goRefresh];
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -308,12 +290,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-//	self.view.backgroundColor = [UIColor whiteColor];
-	
-	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_banner"] isEqualToString:@"YES"] * 90.0));
-	_emptyImageView.hidden = YES;
-	[self.view addSubview:_emptyImageView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -329,6 +305,11 @@
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
+	
+	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, 64.0);
+	_emptyImageView.hidden = YES;
+	[_tableView addSubview:_emptyImageView];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	_headerView = [[HONHeaderView alloc] initWithTitle:[_tabInfo objectForKey:@"title"]];
@@ -424,20 +405,6 @@
 	}
 }
 
-- (void)_goCloseBanner {
-	[[Mixpanel sharedInstance] track:@"Verify A/B - Close Banner"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
-		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, -90.0);
-	} completion:^(BOOL finished) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"verify_banner"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}];
-}
-
 - (void)_goAddContacts {
 	[[Mixpanel sharedInstance] track:@"Verify A/B - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -481,6 +448,10 @@
 - (void)_refreshVerifyTab:(NSNotification *)notification {
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	[self _retrieveChallenges];
+}
+
+- (void)_tareVerifyTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointZero animated:YES];
 }
 
 
@@ -576,19 +547,45 @@
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Follow%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:8];
-		[alertView show];
+		[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+		[self _addFriend:_challengeVO.creatorVO.userID];
+		
+		UITableViewCell *tableCell;
+		for (HONFollowTabViewCell *cell in _cells) {
+			if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+				tableCell = (UITableViewCell *)cell;
+				break;
+			}
+		}
+		
+		for (HONChallengeVO *vo in _challenges) {
+			if (_challengeVO.challengeID == vo.challengeID) {
+				[_challenges removeObject:vo];
+				break;
+			}
+		}
+		
+		[_tableView beginUpdates];
+		NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
+		[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+		[_tableView endUpdates];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
+		_emptyImageView.hidden = [_challenges count] > 0;
+		
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"Cancel"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:8];
+//		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -610,13 +607,36 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:9];
-		[alertView show];
+		[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+		
+		UITableViewCell *tableCell;
+		for (HONFollowTabViewCell *cell in _cells) {
+			if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+				tableCell = (UITableViewCell *)cell;
+				break;
+			}
+		}
+		
+		for (HONChallengeVO *vo in _challenges) {
+			if (_challengeVO.challengeID == vo.challengeID) {
+				[_challenges removeObject:vo];
+				break;
+			}
+		}
+		
+		[_tableView beginUpdates];
+		NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
+		[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+		[_tableView endUpdates];
+		
+		_emptyImageView.hidden = [_challenges count] > 0;
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"Cancel"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:9];
+//		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -691,19 +711,45 @@
 - (void)followViewCellApprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - OK%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:8];
-		[alertView show];
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"Cancel"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:8];
+//		[alertView show];
+		
+		[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+		[self _addFriend:_challengeVO.creatorVO.userID];
+		
+		UITableViewCell *tableCell;
+		for (HONFollowTabViewCell *cell in _cells) {
+			if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+				tableCell = (UITableViewCell *)cell;
+				break;
+			}
+		}
+		
+		for (HONChallengeVO *vo in _challenges) {
+			if (_challengeVO.challengeID == vo.challengeID) {
+				[_challenges removeObject:vo];
+				break;
+			}
+		}
+		
+		[_tableView beginUpdates];
+		NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
+		[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+		[_tableView endUpdates];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
+		_emptyImageView.hidden = [_challenges count] > 0;
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -725,13 +771,36 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[_tabInfo objectForKey:@"nay_format"]
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:9];
-		[alertView show];
+		[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+		
+		UITableViewCell *tableCell;
+		for (HONFollowTabViewCell *cell in _cells) {
+			if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+				tableCell = (UITableViewCell *)cell;
+				break;
+			}
+		}
+		
+		for (HONChallengeVO *vo in _challenges) {
+			if (_challengeVO.challengeID == vo.challengeID) {
+				[_challenges removeObject:vo];
+				break;
+			}
+		}
+		
+		[_tableView beginUpdates];
+		NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
+		[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+		[_tableView endUpdates];
+		
+		_emptyImageView.hidden = [_challenges count] > 0;
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[_tabInfo objectForKey:@"nay_format"]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"Cancel"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:9];
+//		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -770,15 +839,7 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 5.0, [UIScreen mainScreen].bounds.size.height - 130.0);
-	[self.view addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		heartImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[heartImageView removeFromSuperview];
-	}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 }
 
 
@@ -860,9 +921,12 @@
 	return (40.0 * ((int)[HONAppDelegate switchEnabledForKey:@"verify_tab"]));
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
-}
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+//	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
+//	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+//	[imageView setImageWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+//}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
@@ -1048,66 +1112,66 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	
-	} else if (alertView.tag == 8) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-			[self _addFriend:_challengeVO.creatorVO.userID];
-						
-			UITableViewCell *tableCell;
-			for (HONFollowTabViewCell *cell in _cells) {
-				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-					tableCell = (UITableViewCell *)cell;
-					break;
-				}
-			}
-			
-			for (HONChallengeVO *vo in _challenges) {
-				if (_challengeVO.challengeID == vo.challengeID) {
-					[_challenges removeObject:vo];
-					break;
-				}
-			}
-			
-			[_tableView beginUpdates];
-			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
-			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-			[_tableView endUpdates];
-		}
-		
-	} else if (alertView.tag == 9) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-			
-			UITableViewCell *tableCell;
-			for (HONFollowTabViewCell *cell in _cells) {
-				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-					tableCell = (UITableViewCell *)cell;
-					break;
-				}
-			}
-			
-			for (HONChallengeVO *vo in _challenges) {
-				if (_challengeVO.challengeID == vo.challengeID) {
-					[_challenges removeObject:vo];
-					break;
-				}
-			}
-			
-			[_tableView beginUpdates];
-			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
-			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-			[_tableView endUpdates];
-		}
+//	} else if (alertView.tag == 8) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//		
+//		if (buttonIndex == 1) {
+//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+//			[self _addFriend:_challengeVO.creatorVO.userID];
+//						
+//			UITableViewCell *tableCell;
+//			for (HONFollowTabViewCell *cell in _cells) {
+//				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+//					tableCell = (UITableViewCell *)cell;
+//					break;
+//				}
+//			}
+//			
+//			for (HONChallengeVO *vo in _challenges) {
+//				if (_challengeVO.challengeID == vo.challengeID) {
+//					[_challenges removeObject:vo];
+//					break;
+//				}
+//			}
+//			
+//			[_tableView beginUpdates];
+//			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
+//			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+//			[_tableView endUpdates];
+//		}
+//		
+//	} else if (alertView.tag == 9) {
+//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+//		
+//		if (buttonIndex == 1) {
+//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+//			
+//			UITableViewCell *tableCell;
+//			for (HONFollowTabViewCell *cell in _cells) {
+//				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+//					tableCell = (UITableViewCell *)cell;
+//					break;
+//				}
+//			}
+//			
+//			for (HONChallengeVO *vo in _challenges) {
+//				if (_challengeVO.challengeID == vo.challengeID) {
+//					[_challenges removeObject:vo];
+//					break;
+//				}
+//			}
+//			
+//			[_tableView beginUpdates];
+//			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
+//			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+//			[_tableView endUpdates];
+//		}
 	}
 }
 
