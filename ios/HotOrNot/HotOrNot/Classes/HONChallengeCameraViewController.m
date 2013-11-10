@@ -120,10 +120,14 @@
 //	NSDictionary *uploadDict = @{@"url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
 //								 @"pors"	: @[por1, por2]};
 //	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_CHALLENGE_TO_AWS" object:uploadDict];
-//	
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:uploadDict];
+//
 //	[_previewView uploadComplete];
-//	//[self _finalizeUpload];
+//	
+//	if (_progressHUD != nil) {
+//		[_progressHUD hide:YES];
+//		_progressHUD = nil;
+//	}
 //	
 //	if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 //		[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
@@ -135,11 +139,6 @@
 //			
 //			[self.view addSubview:_previewView];
 //		}];
-//	}
-//	
-//	if (_progressHUD != nil) {
-//		[_progressHUD hide:YES];
-//		_progressHUD = nil;
 //	}
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
@@ -209,14 +208,14 @@
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			if (_isImageUploaded) {
+//			if (_isImageUploaded) {
 				[UIView animateWithDuration:0.5 animations:^(void) {
 					_submitImageView.alpha = 0.0;
 				} completion:^(BOOL finished) {
 					[_submitImageView removeFromSuperview];
 					_submitImageView = nil;
 				}];
-			}
+//			}
 			
 			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				if (_progressHUD == nil)
@@ -563,7 +562,10 @@
 	}
 	
 	[_previewView uploadComplete];
-	[self _finalizeUpload];
+	
+	if (_isImageUploaded)
+		[self _finalizeUpload];
+	
 	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];

@@ -123,7 +123,7 @@
 			
 			NSArray *following = [NSMutableArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
 			for (NSDictionary *dict in following) {
-				NSString *avatarURL = [HONAppDelegate cleanImageURL:[[dict objectForKey:@"user"] objectForKey:@"avatar_url"]];
+				NSString *avatarURL = [HONAppDelegate cleanImagePrefixURL:[[dict objectForKey:@"user"] objectForKey:@"avatar_url"]];
 				[_subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																	   [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 																	   [NSString stringWithFormat:@"%d", 0], @"points",
@@ -306,6 +306,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

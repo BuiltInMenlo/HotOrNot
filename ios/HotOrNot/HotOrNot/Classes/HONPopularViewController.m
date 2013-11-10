@@ -26,6 +26,8 @@
 @interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
+@property (nonatomic, strong) NSMutableArray *addUsers;
+@property (nonatomic, strong) NSMutableArray *removeUsers;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
@@ -234,6 +236,8 @@
 	
 	_users = [NSMutableArray array];
 	_selectedUsers = [NSMutableArray array];
+	_addUsers = [NSMutableArray array];
+	_removeUsers = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
@@ -338,11 +342,34 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[_selectedUsers removeAllObjects];
-	for (NSDictionary *dict in [HONAppDelegate popularPeople])
-		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+	[_removeUsers removeAllObjects];
+//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+//	
+//	for (HONPopularUserViewCell *cell in _cells)
+//		[cell toggleSelected:YES];
+
 	
-	for (HONPopularUserViewCell *cell in _cells)
-		[cell toggleSelected:YES];
+	// delselect all
+//	if ([_addUsers count] == [_users count]) {
+//		[_addUsers removeAllObjects];
+//		
+//		for (HONPopularUserVO *vo in _users)
+//			[_removeUsers addObject:vo];
+//		
+//		for (HONPopularUserViewCell *cell in _cells)
+//			[cell toggleSelected:NO];
+//	
+//	} else {
+		[_removeUsers removeAllObjects];
+		for (HONPopularUserVO *vo in _users) {
+			[_selectedUsers addObject:vo];
+			[_addUsers addObject:vo];
+		}
+		
+		for (HONPopularUserViewCell *cell in _cells)
+			[cell toggleSelected:YES];
+//	}
 }
 
 

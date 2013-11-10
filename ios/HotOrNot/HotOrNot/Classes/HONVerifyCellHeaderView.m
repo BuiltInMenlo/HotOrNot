@@ -61,8 +61,8 @@
 //												   context:nil].size;
 //		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, nameLabel.frame.size.height);
 		
-		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 18.0, 260.0, 16.0)];
-		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 18.0, 260.0, 19.0)];
+		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 		messageLabel.textColor = [HONAppDelegate honBlueTextColor];
 		messageLabel.backgroundColor = [UIColor clearColor];
 		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];

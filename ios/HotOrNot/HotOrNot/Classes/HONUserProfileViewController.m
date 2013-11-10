@@ -587,7 +587,7 @@
 //		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
 //		if (!_isFollowing && total < [HONAppDelegate profileSubscribeThreshold]) {
 //			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//																message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
+//																message:[NSString stringWithFormat:@"Want to subscribe to %@'s updates?", _userVO.username]
 //															   delegate:self
 //													  cancelButtonTitle:@"No"
 //													  otherButtonTitles:@"Yes", nil];
@@ -654,7 +654,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
+														message:[NSString stringWithFormat:@"You will receive Volley updates from %@", _userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -669,7 +669,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will no longer receive Volley updates from @%@", _userVO.username]
+														message:[NSString stringWithFormat:@"You will no longer receive Volley updates from %@", _userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -778,7 +778,8 @@
 
 #pragma mark - Notifications
 - (void)_refreshProfile:(NSNotification *)notification {
-	[self _goRefresh];
+	//[self _goRefresh];
+	[self _retrieveUser:YES];
 }
 
 
@@ -787,15 +788,7 @@
 	[_headerView setTitle:_userVO.username];
 	[self _makeAvatarImage];
 	
-	UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	changeAvatarButton.frame = CGRectMake(120.0, 85.0, 80.0, 80.0);
-	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_nonActive"] forState:UIControlStateNormal];
-	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_Active"] forState:UIControlStateHighlighted];
-	[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
-	changeAvatarButton.hidden = (!_isUser);
-	[_scrollView addSubview:changeAvatarButton];
-	
-	
+		
 //	HONEmotionVO *emotionVO = [self _latestChallengeEmotion];
 //	BOOL isEmotionFound = (emotionVO != nil);
 //	
@@ -870,14 +863,14 @@
 	
 	if (_isUser) {
 		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		findFriendsButton.frame = CGRectMake(0.0, 232.0, 320.0, 45.0);
+		findFriendsButton.frame = CGRectMake(0.0, 233.0, 320.0, 45.0);
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
 		[findFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:findFriendsButton];
 		
 		UIButton *helpButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		helpButton.frame = CGRectMake(171.0, 278.0, 320.0, 45.0);
+		helpButton.frame = CGRectMake(0.0, 279.0, 320.0, 45.0);
 		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_nonActive"] forState:UIControlStateNormal];
 		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_Active"] forState:UIControlStateHighlighted];
 		[helpButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
@@ -886,16 +879,16 @@
 	} else {
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_followButton.frame = CGRectMake(0.0, 233.0, 320.0, 45.0);
-//		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
-//		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
+		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
+//		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
+//		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
 
 		[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:_followButton];
 		
 		UIButton *reportButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		reportButton.frame = CGRectMake(0.0, 278.0, 320.0, 45.0);
+		reportButton.frame = CGRectMake(0.0, 279.0, 320.0, 45.0);
 		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_nonActive"] forState:UIControlStateNormal];
 		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_Active"] forState:UIControlStateHighlighted];
 		[reportButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
@@ -913,7 +906,7 @@
 }
 
 - (void)_makeAvatarImage {
-	NSLog(@"AVATAR LOADING:[%@]", _userVO.avatarURL);
+	NSLog(@"AVATAR LOADING:[%@]", [_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
 	
 	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(120.0, 85.0, 80.0, 80.0)];
 	[_scrollView addSubview:avatarHolderView];
@@ -945,6 +938,14 @@
 							placeholderImage:nil
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];
+	
+	UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	changeAvatarButton.frame = CGRectMake(120.0, 85.0, 80.0, 80.0);
+	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_nonActive"] forState:UIControlStateNormal];
+	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_Active"] forState:UIControlStateHighlighted];
+	[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
+	changeAvatarButton.hidden = (!_isUser);
+	[_scrollView addSubview:changeAvatarButton];
 }
 
 - (void)_makeFooterBar {
@@ -956,7 +957,7 @@
 //		addFriendsButton.frame = CGRectMake(0.0, 0.0, 40.0, 44.0);
 //		[addFriendsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 //		[addFriendsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-//		[addFriendsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+//		[addFriendsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 //		[addFriendsButton setTitle:@"Add Friends" forState:UIControlStateNormal];
 //		[addFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 //		
@@ -970,7 +971,7 @@
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
@@ -989,7 +990,7 @@
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
 		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 		
@@ -1015,7 +1016,7 @@
 //		_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
 //		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 //		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-//		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+//		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 //		[_subscribeButton setTitle:(_isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
 //		[_subscribeButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 //		size = [_subscribeButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
@@ -1028,7 +1029,7 @@
 		shareButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 		[shareButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[shareButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[shareButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[shareButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
@@ -1047,7 +1048,7 @@
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 		[flagButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 		[flagButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 		

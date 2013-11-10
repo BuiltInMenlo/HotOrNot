@@ -15,6 +15,7 @@
 
 @interface HONTimelineItemFooterView ()
 @property (nonatomic, retain) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) UILabel *participantsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @end
 
@@ -69,19 +70,30 @@
 			[avatarsHolderView addSubview:avatarImageView];
 		}
 		
-		UILabel *participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 3.0, 257.0 - offset, 19.0)];
-		participantsLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-		participantsLabel.textColor = [UIColor whiteColor];
-		participantsLabel.backgroundColor = [UIColor clearColor];
-		participantsLabel.text = [self _captionForParticipants];
-		[self addSubview:participantsLabel];
+		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 3.0, 257.0 - offset, 19.0)];
+		_participantsLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+		_participantsLabel.textColor = [UIColor whiteColor];
+		_participantsLabel.backgroundColor = [UIColor clearColor];
+		_participantsLabel.text = [self _captionForParticipants];
+		[self addSubview:_participantsLabel];
 		
 		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 19.0, 270.0, 19.0)];
 		_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-		_likesLabel.textColor = [UIColor whiteColor];//([self _calcScore] == 0) ? [HONAppDelegate honLightGreyTextColor] : [UIColor whiteColor];
+		_likesLabel.textColor = [UIColor whiteColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
 		_likesLabel.text = [self _captionForScore];
 		[self addSubview:_likesLabel];
+		
+		if ([self _calcScore] == 0 && [_challengeVO.challengers count] == 0) {
+			_participantsLabel.frame = CGRectOffset(_participantsLabel.frame, 0.0, 7.0);
+			_participantsLabel.text = @"Be the first to reply & like";
+			_likesLabel.hidden = YES;
+		}
+		
+		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		joinButton.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:joinButton];
 	}
 	
 	return (self);
@@ -91,6 +103,10 @@
 #pragma mark - Public APIs
 - (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO; {
 	_challengeVO = challengeVO;
+	
+	_participantsLabel.text = [self _captionForParticipants];
+	_participantsLabel.frame = CGRectMake(_participantsLabel.frame.origin.x, 3.0, _participantsLabel.frame.size.width, _participantsLabel.frame.size.height);
+	_likesLabel.hidden = NO;
 	
 	if (_challengeVO.creatorVO.userID == userID)
 		_challengeVO.creatorVO.score++;

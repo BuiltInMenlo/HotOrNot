@@ -29,7 +29,7 @@
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.isSuspended = ((BOOL)[[dictionary objectForKey:@"is_suspended"] intValue]);
 	vo.score = vo.points + vo.votes;
-	vo.avatarURL = [HONAppDelegate cleanImageURL:[dictionary objectForKey:@"avatar_url"]];
+	vo.avatarURL = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"avatar_url"]];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

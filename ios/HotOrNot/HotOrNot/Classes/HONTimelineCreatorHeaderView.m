@@ -48,7 +48,7 @@
 		CGSize size;
 		CGFloat maxNameWidth = 110.0;
 		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, maxNameWidth, 18.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:nameLabel];

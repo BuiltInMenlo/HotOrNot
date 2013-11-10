@@ -261,6 +261,7 @@
 //	for (HONUserVO *vo in _selectedSubscribers)
 //		[self _addFriend:vo.userID];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

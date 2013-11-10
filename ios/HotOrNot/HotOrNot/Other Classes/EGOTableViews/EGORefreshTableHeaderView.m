@@ -158,15 +158,6 @@
 	[self setState:EGOOPullRefreshNormal];
 }
 
-- (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView isInitialLoad:(BOOL)isInitial {
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.3];
-	scrollView.contentInset = UIEdgeInsetsMake(_headerOffset * ((int)isInitial), 0.0f, 0.0f, 0.0f);
-	[UIView commitAnimations];
-	
-	[self setState:EGOOPullRefreshNormal];
-}
-
 
 #pragma mark - Dealloc
 - (void)dealloc {

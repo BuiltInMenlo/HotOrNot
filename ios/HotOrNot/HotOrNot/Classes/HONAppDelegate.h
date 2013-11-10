@@ -13,15 +13,10 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 1
+#define __DEV_BUILD___ 0
 #define __ALWAYS_REGISTER__ 0
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
-
-typedef enum {
-	HONAWSAvatarUploadTypeAvatar		= 0,	/** Creates a new challenge */
-	HONAWSAvatarUploadTypeChallenge				/** Joins an in-progress challenge */
-} HONAWSAvatarUploadType;
 
 
 // api endpts
@@ -180,7 +175,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)formattedExpireTime:(int)seconds;
-+ (NSString *)cleanImageURL:(NSString *)imageURL;
++ (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 
 + (UIFont *)helveticaNeueFontRegular;
 + (UIFont *)helveticaNeueFontLight;

@@ -21,8 +21,8 @@
 	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.username = [dictionary objectForKey:@"username"];
 	
-	vo.imagePrefix = [HONAppDelegate cleanImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
-	vo.avatarURL = [HONAppDelegate cleanImageURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : [NSString stringWithFormat:@"%@.jpg", vo.imagePrefix]];
+	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
+	vo.avatarURL = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : [NSString stringWithFormat:@"%@.jpg", vo.imagePrefix]];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];

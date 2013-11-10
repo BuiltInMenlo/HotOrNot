@@ -104,14 +104,24 @@
 				[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
 			
 			_emptySetImgView.hidden = ([_challenges count] > 0);
-			int searchIndex = arc4random() % MIN(4, [_challenges count] - 1);
+			int inviteIndex = arc4random() % MIN(4, [_challenges count]);
+			int searchIndex = arc4random() % MIN(4, [_challenges count]);
+			while (searchIndex == inviteIndex)
+				searchIndex = arc4random() % MIN(4, [_challenges count]);
 			
-			HONChallengeVO *vo = ([_challenges count] > 0) ? (HONChallengeVO *)[_challenges objectAtIndex:searchIndex] : [HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge"]];
-			[_challenges addObject:[HONChallengeVO challengeWithDictionary:vo.dictionary]];
-			vo.challengeID = 0;
+			NSLog(@"INVITE:[%d] SEARCH:[%d]", inviteIndex, searchIndex);
+			HONChallengeVO *inviteVO = ([_challenges count] > 0) ? (HONChallengeVO *)[_challenges objectAtIndex:inviteIndex] : [HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]];
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:inviteVO.dictionary]];
+			inviteVO.challengeID = -1;
 			
-			if ([_challenges count] > 1)
-				[_challenges replaceObjectAtIndex:searchIndex withObject:vo];
+			HONChallengeVO *searchVO = ([_challenges count] > 0) ? (HONChallengeVO *)[_challenges objectAtIndex:searchIndex] : [HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]];
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:searchVO.dictionary]];
+			searchVO.challengeID = 0;
+			
+			if ([_challenges count] > 1) {
+				[_challenges replaceObjectAtIndex:inviteIndex withObject:inviteVO];
+				[_challenges replaceObjectAtIndex:searchIndex withObject:searchVO];
+			}
 			
 			[_tableView reloadData];
 		}
@@ -252,35 +262,22 @@
 	}
 }
 
-- (void)_goSearch {
-	[[Mixpanel sharedInstance] track:@"Explore - Search"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_goCloseBanner {
-	[[Mixpanel sharedInstance] track:@"Explore - Close Banner"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
-	} completion:^(BOOL finished) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"explore_banner"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}];
-}
-
 - (void)_goAddContacts {
 	[[Mixpanel sharedInstance] track:@"Explore - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSearch {
+	[[Mixpanel sharedInstance] track:@"Explore - Search"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -427,6 +424,10 @@
 		[alertView setTag:3];
 		[alertView show];
 	}
+}
+
+- (void)exploreViewCellShowInvite:(HONExploreViewCell *)cell {
+	[self _goAddContacts];
 }
 
 - (void)exploreViewCellShowSearch:(HONExploreViewCell *)cell {

@@ -49,7 +49,7 @@
 		
 		
 		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(42.0, 2.0, 220.0, 19.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];

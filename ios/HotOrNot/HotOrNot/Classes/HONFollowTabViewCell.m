@@ -48,24 +48,29 @@
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_heroImageView.userInteractionEnabled = YES;
-	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
 	[_imageHolderView addSubview:_heroImageView];
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"verifyOverlay-568h@2x" : @"verifyOverlay"];
-	gradientImageView.alpha = 0.0;
-	[_imageHolderView addSubview:gradientImageView];
-	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		//_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
+		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
 		_heroImageView.image = image;
-		if ([HONAppDelegate isRetina4Inch]) {
-			[UIView animateWithDuration:0.5 animations:^(void) {
+		
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"verifyOverlay-568h@2x" : @"verifyOverlay"];
+		gradientImageView.alpha = 0.0;
+		[_imageHolderView addSubview:gradientImageView];
+		
+//		if ([HONAppDelegate isRetina4Inch]) {
+			[UIView animateWithDuration:0.25 animations:^(void) {
 				gradientImageView.alpha = 1.0;
 				_heroImageView.alpha = 1.0;
-			} completion:nil];
+			} completion:^(BOOL finished) {
+				[imageLoadingView stopAnimating];
+				[imageLoadingView removeFromSuperview];
+			}];
 		
-		} else
-			gradientImageView.alpha = 1.0;
+//		} else
+//			gradientImageView.alpha = 1.0;
 	};
 	
 	//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);

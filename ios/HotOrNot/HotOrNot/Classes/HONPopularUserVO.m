@@ -18,7 +18,7 @@
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];	
-	vo.imageURL = [HONAppDelegate cleanImageURL:[dictionary objectForKey:@"img_url"]];
+	vo.imageURL = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
 	
 	return (vo);
 }

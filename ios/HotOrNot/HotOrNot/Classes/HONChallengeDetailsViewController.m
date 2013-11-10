@@ -352,7 +352,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (350.0 + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (324.0 + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
@@ -384,22 +384,22 @@
 	[super viewDidAppear:animated];
 	[_bgHolderView addSubview:_bgImageView];
 	
-//	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
-//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
-//		_tutorialImageView.userInteractionEnabled = YES;
-//		_tutorialImageView.alpha = 0.0;
-//		
-//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		closeButton.frame = _tutorialImageView.frame;
-//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:closeButton];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
-//	}
+	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = _tutorialImageView.frame;
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
 }
 
 
@@ -414,7 +414,7 @@
 }
 
 - (void)_makeHero {
-	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 350.0)];
+	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 324.0)];
 	_heroHolderView.clipsToBounds = YES;
 	[_contentHolderView addSubview:_heroHolderView];
 	
@@ -443,7 +443,7 @@
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -464,11 +464,11 @@
 	creatorHeaderView.delegate = self;
 	[_contentHolderView addSubview:creatorHeaderView];
 	
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:350.0 - 40.0 withChallenge:_challengeVO];
+	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:324.0 - 40.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[_contentHolderView addSubview:_timelineItemFooterView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, 350.0 - 149.0, 64.0, 149.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, 324.0 - 196.0, 64.0, 142.0)];
 	[_heroHolderView addSubview:buttonHolderView];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -479,7 +479,7 @@
 	[buttonHolderView addSubview:joinButton];
 	
 	_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_likeButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
+	_likeButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Tapped"] forState:UIControlStateSelected];
@@ -491,14 +491,14 @@
 	
 	if ([_challengeVO.challengers count] == 0) {
 		UIButton *firstReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		firstReplyButton.frame = CGRectMake(0.0, 350.0, 320.0, 45.0);
+		firstReplyButton.frame = CGRectMake(0.0, 324.0, 320.0, 45.0);
 		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_nonActive"] forState:UIControlStateNormal];
 		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_Active"] forState:UIControlStateHighlighted];
 		[firstReplyButton addTarget:self action:@selector(_goFirstReply) forControlEvents:UIControlEventTouchUpInside];
 		[_contentHolderView addSubview:firstReplyButton];
 	
 	} else {
-		_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:350.0 forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
+		_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:324.0 forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
 		_participantsGridView.delegate = self;
 		[_contentHolderView addSubview:_participantsGridView];
 	}
@@ -512,7 +512,7 @@
 	joinFooterButton.frame = CGRectMake(0.0, 1.0, 43.0, 44.0);
 	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -531,7 +531,7 @@
 	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -550,7 +550,7 @@
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 	[flagButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
 	[flagButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
+	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
 	

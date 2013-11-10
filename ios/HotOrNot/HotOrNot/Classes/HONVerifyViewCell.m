@@ -48,14 +48,17 @@
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-32.0, -100.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
-	_heroImageView.alpha = 0.0;
 	[_imageHolderView addSubview:_heroImageView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
 		_heroImageView.image = image;
-		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
 			_heroImageView.alpha = 1.0;
-		} completion:nil];
+		} completion:^(BOOL finished) {
+			[imageLoadingView stopAnimating];
+			[imageLoadingView removeFromSuperview];
+		}];
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {

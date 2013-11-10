@@ -168,7 +168,7 @@
 //	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	_uploadCounter = 0;
-	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
@@ -186,8 +186,8 @@
 	NSDictionary *uploadDict = @{@"url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]],
 								 @"pors"	: @[por1, por2]};
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_AVATAR_TO_AWS" object:uploadDict];
 	[self _finalizeUser];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:uploadDict];
 	
 //	@try {
 //		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
@@ -638,13 +638,13 @@
 			} else {
 //				_splashHolderView.backgroundColor = [UIColor blackColor];
 				[self.view addSubview:_splashHolderView];
-				
+#if __DEV_BUILD___ == 1
 				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				easterEggButton.frame = CGRectMake(154.0, 228.0, 16.0, 8.0);
+				easterEggButton.frame = CGRectMake(154.0, 16.0, 16.0, 8.0);
 //				easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.75];
 				[easterEggButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchDown];
 				[_splashHolderView addSubview:easterEggButton];
-				
+#endif
 				[UIView animateWithDuration:0.33 animations:^(void) {
 					_splashHolderView.alpha = 1.0;
 				} completion:^(BOOL finished) {
@@ -815,6 +815,12 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Loading…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	_irisView = [[UIView alloc] initWithFrame:_profileCameraOverlayView.frame];
 	_irisView.backgroundColor = [UIColor blackColor];
 	_irisView.alpha = 0.0;
@@ -824,13 +830,7 @@
 		_irisView.alpha = 1.0;
 	}];
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Loading…";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[self.profileImagePickerController takePicture];
+	[self.profileImagePickerController performSelector:@selector(takePicture) withObject:nil afterDelay:0.25];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

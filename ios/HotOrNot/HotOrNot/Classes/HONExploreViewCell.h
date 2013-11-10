@@ -23,6 +23,7 @@
 
 @protocol HONExploreViewCellDelegate
 - (void)exploreViewCellShowPreview:(HONExploreViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)exploreViewCellShowInvite:(HONExploreViewCell *)cell;
 - (void)exploreViewCellShowSearch:(HONExploreViewCell *)cell;
 - (void)exploreViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO;
 - (void)exploreViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO;

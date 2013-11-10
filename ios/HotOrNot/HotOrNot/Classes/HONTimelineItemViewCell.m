@@ -97,6 +97,8 @@
 //	NSLog(@"HERO DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", _heroOpponentVO.dictionary);
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		//_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
+		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
 		_heroImageView.image = image;
 		
 		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -104,13 +106,15 @@
 		gradientImageView.alpha = 1.0 - (int)([HONAppDelegate isRetina4Inch]);
 		[_heroHolderView addSubview:gradientImageView];
 		
-		if ([HONAppDelegate isRetina4Inch]) {
-			[UIView animateWithDuration:0.5 animations:^(void) {
+//		if ([HONAppDelegate isRetina4Inch]) {
+			[UIView animateWithDuration:0.25 animations:^(void) {
 				_heroImageView.alpha = 1.0;
 				gradientImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
+				[imageLoadingView stopAnimating];
+				[imageLoadingView removeFromSuperview];
 			}];
-		}
+//		}
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -121,7 +125,7 @@
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_heroImageView.userInteractionEnabled = YES;
-	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
+//	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
 	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil
@@ -166,8 +170,13 @@
 	
 	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 143.0);
-//		[self.contentView addSubview:_tutorialImageView];
+		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 128.0);
+		_tutorialImageView.alpha = 0.0;
+		[self.contentView addSubview:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
 	}
 }
 

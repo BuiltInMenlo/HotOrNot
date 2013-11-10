@@ -120,6 +120,20 @@
 			}
 			
 			[_tableView reloadData];
+			
+			if ([_challenges count] > 0) {
+				void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {};
+				void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
+				
+				for (int i=0; i<MIN(5, [_challenges count]); i++) {
+					HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:i];
+					UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+					[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+										  placeholderImage:nil
+												   success:successBlock
+												   failure:failureBlock];
+				}
+			}
 		}
 		
 		if (_progressHUD != nil) {
@@ -299,7 +313,7 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-//	_tableView.contentInset = UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f);
+	_tableView.contentInset = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
