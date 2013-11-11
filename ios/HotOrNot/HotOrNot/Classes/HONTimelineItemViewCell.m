@@ -53,6 +53,7 @@
 
 #pragma mark - Public APIs
 - (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
 	[_timelineItemFooterView upvoteUser:userID onChallenge:challengeVO];
 }
 

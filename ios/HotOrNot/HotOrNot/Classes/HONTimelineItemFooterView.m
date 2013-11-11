@@ -108,10 +108,10 @@
 	_participantsLabel.frame = CGRectMake(_participantsLabel.frame.origin.x, 3.0, _participantsLabel.frame.size.width, _participantsLabel.frame.size.height);
 	_likesLabel.hidden = NO;
 	
-	if (_challengeVO.creatorVO.userID == userID)
-		_challengeVO.creatorVO.score++;
+//	if (_challengeVO.creatorVO.userID == userID)
+//		_challengeVO.creatorVO.score++;
 	
-	else {
+//	else {
 		int index = -1;
 		int counter = 0;
 		for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -125,9 +125,9 @@
 		
 		if (index > -1)
 			((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
-	}
+//	}
 	
-	_challengeVO.likesTotal++;
+//	_challengeVO.likesTotal++;
 	_likesLabel.text = [self _captionForScore];
 }
 

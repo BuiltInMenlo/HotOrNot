@@ -29,7 +29,7 @@
 #import "UAirship.h"
 #import "UAPush.h"
 #import "UAAnalytics.h"
-
+#import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
 #import "HONTabBarController.h"
@@ -325,6 +325,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"popular_people"]);
 }
 
++ (NSRange)rangeForImageQueue {
+	return (NSRangeFromString([[NSUserDefaults standardUserDefaults] objectForKey:@"image_queue"]));;
+}
+
 
 + (void)writeDeviceToken:(NSString *)token {
 	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
@@ -360,6 +364,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		return ([UIImage imageNamed:@"defaultAvatarLarge_640x1136"]);
 	
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
+}
+
++ (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag {
+	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
+	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) { };
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
+	
+	for (int i=0; i<range.length - range.location; i++) {
+		NSLog(@"s+ArT_l0Ad. --> (#%02d) \"%@\"", (range.location + i), [urls objectAtIndex:i]);
+		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+		[imageView setTag:range.location + i];
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						 placeholderImage:nil
+								  success:successBlock
+								  failure:failureBlock];
+	}
 }
 
 + (int)ageForDate:(NSDate *)date {
@@ -463,6 +485,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
++ (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO {
+	for (HONOpponentVO *vo in challengeVO.challengers) {
+		if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+			return (YES);
+	}
+	
+	return ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorVO.userID);
+}
+
+
 + (int)hasVoted:(int)challengeID {
 	NSArray *voteArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"votes"];
 	
@@ -475,11 +507,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (0);
 }
 
-+ (void)setVote:(int)challengeID forCreator:(BOOL)isCreator {
-	NSMutableArray *voteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-	[voteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
++ (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
+	NSMutableArray *upvoteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"upvotes"] mutableCopy];
+	NSDictionary *dict = @{@"challenge_id"		: [NSString stringWithFormat:@"%d", challengeVO.challengeID],
+						   @"participant_id"	: [NSString stringWithFormat:@"%d", opponentVO.userID]};
 	
-	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
+//	[upvoteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
+//	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
+	
+	[upvoteArray addObject:dict];
+	[[NSUserDefaults standardUserDefaults] setObject:upvoteArray forKey:@"upvotes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -699,7 +736,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+			NSLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -718,6 +755,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
+				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_msg"] forKey:@"verify_msg"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
@@ -741,6 +779,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
+				
+				NSLog(@"RANGE:[%@]", NSStringFromRange([HONAppDelegate rangeForImageQueue]));
 				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_TAB_BAR_AB" object:nil];
 				
@@ -1001,6 +1041,32 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
+- (void)_updateChallenge:(int)challengeID asSeen:(BOOL)hasSeen {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 6], @"action",
+							[NSString stringWithFormat:@"%d",challengeID], @"challengeID",
+							(hasSeen) ? @"Y" : @"N", @"hasSeen",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"], params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSLog(@"AFNetworking HONChallengesViewController: %@", result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+	}];
+}
+
+
 #pragma mark - Notifications
 - (void)_addViewToWindow:(NSNotification *)notification {
 	[self.window addSubview:(UIView *)[notification object]];
@@ -1079,6 +1145,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
+- (void)_updateChallengeAsSeen:(NSNotification *)notification {
+	[self _updateChallenge:[[[notification object] objectForKey:@"id"] intValue] asSeen:[[[notification object] objectForKey:@"seen"] isEqualToString:@"Y"]];
+}
+
 
 - (void)_uploadImagesToAWS:(NSNotification *)notification {
 	
@@ -1115,81 +1185,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	}
 }
-
-//- (void)_uploadAvatarToAWS:(NSNotification *)notification {
-//	NSDictionary *dict = [notification object];
-//	_imageURL = [dict objectForKey:@"url"];
-//	
-//	if ([_imageURL length] > 0) {
-//		_avatarUploadType = HONAWSAvatarUploadTypeAvatar;
-//		_awsUploadCounter = 0;
-//		
-//		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
-//		
-//		@try {
-//			NSArray *putObjectRequests = [dict objectForKey:@"pors"];
-//			for (S3PutObjectRequest *por in putObjectRequests) {
-//				NSString *url = [NSString stringWithFormat:@"%@", por.url];
-//				
-//				por.delegate = self;
-//				por.requestTag = [NSString stringWithFormat:@"%@|%@", por.bucket, ([url rangeOfString:kSnapLargeSuffix].location < [url length]) ? kSnapLargeSuffix : kSnapTabSuffix];
-//				[s3 putObject:por];
-//			}
-//			
-//		} @catch (AmazonClientException *exception) {
-//			if (_progressHUD == nil)
-//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//			
-//			_progressHUD.minShowTime = kHUDTime;
-//			_progressHUD.mode = MBProgressHUDModeCustomView;
-//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-//			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-//			[_progressHUD show:NO];
-//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//			_progressHUD = nil;
-//			
-//			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-//		}
-//	}
-//}
-//
-//- (void)_uploadChallengeToAWS:(NSNotification *)notification {
-//	NSDictionary *dict = [notification object];
-//	_imageURL = [dict objectForKey:@"url"];
-//	
-//	if ([_imageURL length] > 0) {
-//		_avatarUploadType = HONAWSAvatarUploadTypeChallenge;
-//		_awsUploadCounter = 0;
-//		
-//		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-//		
-//		@try {
-//			NSArray *putObjectRequests = [dict objectForKey:@"pors"];
-//			for (S3PutObjectRequest *por in putObjectRequests) {
-//				NSString *url = [NSString stringWithFormat:@"%@", por.url];
-//				
-//				por.requestTag = [NSString stringWithFormat:@"%@|%@", por.bucket, ([url rangeOfString:kSnapLargeSuffix].location < [url length]) ? kSnapLargeSuffix : kSnapTabSuffix];
-//				por.delegate = self;
-//				[s3 putObject:por];
-//			}
-//			
-//		} @catch (AmazonClientException *exception) {
-//			if (_progressHUD == nil)
-//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//			
-//			_progressHUD.minShowTime = kHUDTime;
-//			_progressHUD.mode = MBProgressHUDModeCustomView;
-//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-//			_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-//			[_progressHUD show:NO];
-//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//			_progressHUD = nil;
-//		}
-//	}
-//}
-
 
 
 #pragma mark - UI Presentation
@@ -1264,11 +1259,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_recreateImageSizes:) name:@"RECREATE_IMAGE_SIZES" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_uploadImagesToAWS:) name:@"UPLOAD_IMAGES_TO_AWS" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_uploadChallengeToAWS:) name:@"UPLOAD_CHALLENGE_TO_AWS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateChallengeAsSeen:) name:@"UPDATE_CHALLENGE_AS_SEEN" object:nil];
 	
 #if __DEV_BUILD___ == 1
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 //	[TestFlight takeOff:kTestFlightAppToken];
 #endif
@@ -1280,88 +1275,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
 	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
-		[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
-	
-	NSArray *bannerKeys = @[@"home_banner", @"explore_banner", @"verify_banner"];
-	for (NSString *key in bannerKeys) {
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
-			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:key];
-	}
-	
-	NSArray *totalKeys = @[@"background_total",
-						   @"timeline_total",
-						   @"explore_total",
-						   @"exploreRefresh_total",
-						   @"verify_total",
-						   @"verifyRefresh_total",
-						   @"popular_total",
-						   @"verifyAction_total",
-						   @"preview_total",
-						   @"details_total",
-						   @"camera_total",
-						   @"join_total",
-						   @"profile_total",
-						   @"like_total"];
-	
-	for (NSString *key in totalKeys) {
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
-	}
-	
-	NSDictionary *emptyChallengeWithIDMinus1 = @{@"id":@"-1",
-												 @"added":@"1970-01-01 00:00:00",
-												 @"challengers":@[],
-												 @"comments":@"0",
-												 @"creator":@{@"age":@"1970-01-01 00:00:00",
-															  @"avatar":@"",
-															  @"id":@"0",
-															  @"img":@"",
-															  @"score":@"0",
-															  @"subject":@"",
-															  @"username":@""},
-												 @"has_viewed":@"N",
-												 @"is_celeb":@"0",
-												 @"is_explore":@"1",
-												 @"is_verify":@"0",
-												 @"started":@"1970-01-01 00:00:00",
-												 @"status":@"0",
-												 @"subject":@"",
-												 @"updated":@"1970-01-01 00:00:00"};
-	
-	NSDictionary *emptyChallengeWithIDZero = @{@"id":@"0",
-											   @"added":@"1970-01-01 00:00:00",
-											   @"challengers":@[],
-											   @"comments":@"0",
-											   @"creator":@{@"age":@"1970-01-01 00:00:00",
-															@"avatar":@"",
-															@"id":@"0",
-															@"img":@"",
-															@"score":@"0",
-															@"subject":@"",
-															@"username":@""},
-											   @"has_viewed":@"N",
-											   @"is_celeb":@"0",
-											   @"is_explore":@"1",
-											   @"is_verify":@"0",
-											   @"started":@"1970-01-01 00:00:00",
-											   @"status":@"0",
-											   @"subject":@"",
-											   @"updated":@"1970-01-01 00:00:00"};
-	
-	
-	[[NSUserDefaults standardUserDefaults] setObject:emptyChallengeWithIDMinus1	forKey:@"empty_challenge_-1"];
-	[[NSUserDefaults standardUserDefaults] setObject:emptyChallengeWithIDZero forKey:@"empty_challenge_0"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	
@@ -1371,6 +1284,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	for (NSString *key in totalKeys)
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 #endif
@@ -1520,13 +1435,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground) {
+		
 		Mixpanel *mixpanel = [Mixpanel sharedInstance];
 		[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
-		[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-							   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-							   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-							   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
+//		[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+//							   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+//							   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+//							   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+//							   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 		
 		if ([HONAppDelegate hasNetwork]) {
 			[[Mixpanel sharedInstance] track:@"App Leaving Background"
@@ -1738,7 +1654,95 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if ([HONAppDelegate apiServerPath] != nil)
 		[self _enableNotifications:YES];
+}
 
+- (void)_establishUserDefaults {
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
+		[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"upvotes"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"upvotes"];
+	
+	NSArray *bannerKeys = @[@"home_banner", @"explore_banner", @"verify_banner"];
+	for (NSString *key in bannerKeys) {
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:key];
+	}
+	
+	NSArray *totalKeys = @[@"boot_total",
+						   @"@background_total",
+						   @"timeline_total",
+						   @"explore_total",
+						   @"exploreRefresh_total",
+						   @"verify_total",
+						   @"verifyRefresh_total",
+						   @"popular_total",
+						   @"verifyAction_total",
+						   @"preview_total",
+						   @"details_total",
+						   @"camera_total",
+						   @"join_total",
+						   @"profile_total",
+						   @"like_total"];
+	
+	for (NSString *key in totalKeys) {
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	}
+	
+	NSDictionary *emptyInviteChallenge = @{@"id":@"-1",
+										   @"added":@"1970-01-01 00:00:00",
+										   @"challengers":@[],
+										   @"comments":@"0",
+										   @"creator":@{@"age":@"1970-01-01 00:00:00",
+														@"avatar":@"",
+														@"id":@"0",
+														@"img":@"",
+														@"score":@"0",
+														@"subject":@"",
+														@"username":@"",
+														@"joined":@"1970-01-01 00:00:00"},
+										   @"has_viewed":@"N",
+										   @"is_celeb":@"0",
+										   @"is_explore":@"1",
+										   @"is_verify":@"0",
+										   @"started":@"1970-01-01 00:00:00",
+										   @"status":@"0",
+										   @"subject":@"",
+										   @"updated":@"1970-01-01 00:00:00"};
+	
+	NSDictionary *emptySearchChallenge = @{@"id":@"0",
+										   @"added":@"1970-01-01 00:00:00",
+										   @"challengers":@[],
+										   @"comments":@"0",
+										   @"creator":@{@"age":@"1970-01-01 00:00:00",
+														@"avatar":@"",
+														@"id":@"0",
+														@"img":@"",
+														@"score":@"0",
+														@"subject":@"",
+														@"username":@"",
+														@"joined":@"1970-01-01 00:00:00"},
+										   @"has_viewed":@"N",
+										   @"is_celeb":@"0",
+										   @"is_explore":@"1",
+										   @"is_verify":@"0",
+										   @"started":@"1970-01-01 00:00:00",
+										   @"status":@"0",
+										   @"subject":@"",
+										   @"updated":@"1970-01-01 00:00:00"};
+	
+	[[NSUserDefaults standardUserDefaults] setObject:emptyInviteChallenge forKey:@"empty_challenge_-1"];
+	[[NSUserDefaults standardUserDefaults] setObject:emptySearchChallenge forKey:@"empty_challenge_0"];
 }
 
 
@@ -1756,7 +1760,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
-//	NSLog(@"\nAWS didCompleteWithResponse:\n[%@] - %@", tag, request.url);
+	NSLog(@"\nAWS didCompleteWithResponse:\n[%@] - %@", tag, request.url);
 	
 	if ([[tag objectAtIndex:1] isEqualToString:kSnapLargeSuffix]) {
 		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
@@ -1771,10 +1775,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			} else {
 				VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-				
-//				if (_avatarUploadType == HONAWSAvatarUploadTypeAvatar) {
-//				if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) {
-//				}
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1793,7 +1793,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"AWS didFailWithError:\n%@", error);
+	NSLog(@"AWS didFailWithError:\n%@", [error description]);
 	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
 	
 	if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) {

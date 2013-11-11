@@ -50,8 +50,11 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
+@property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
 @property (nonatomic) BOOL isRefreshing;
+@property (nonatomic) BOOL isScrollingDown;
 @property (nonatomic) BOOL isFirstLoad;
+@property (nonatomic) int imageQueueLocation;
 @end
 
 @implementation HONTimelineViewController
@@ -62,6 +65,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareHomeTab:) name:@"TARE_HOME_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_HOME_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshLikeCount:) name:@"REFRESH_LIKE_COUNT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
@@ -109,30 +113,34 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [challengesResult count]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil)
+				//if (![HONAppDelegate switchEnabledForKey:@"dissolving_timeline"] && !vo.hasViewed)
 					[_challenges addObject:vo];
 			}
 			
 			[_tableView reloadData];
 			
-			if ([_challenges count] > 0) {
-				void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {};
-				void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
+			if ([_challenges count] > 0 && _imageQueueLocation < [_challenges count]) {
+				int cnt = 0;
+				NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
+				NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
 				
-				for (int i=0; i<MIN(5, [_challenges count]); i++) {
-					HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:i];
-					UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-					[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-										  placeholderImage:nil
-												   success:successBlock
-												   failure:failureBlock];
+				for (int i=queueRange.location; i<queueRange.length; i++) {
+					[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+					
+					cnt++;
+					_imageQueueLocation++;
+					
+					if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_challenges count])
+						break;
+					
 				}
+				[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
 			}
 		}
 		
@@ -282,7 +290,14 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
+			for (HONTimelineItemViewCell *cell in _cells) {
+				if (cell.challengeVO.challengeID == _challengeVO.challengeID)
+					[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -302,18 +317,20 @@
 
 
 
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
 	//self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
 	
+	_imageQueueLocation = 0;
 	_challenges = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f);
+	//_tableView.contentInset = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -321,7 +338,6 @@
 	_tableView.pagingEnabled = YES;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
@@ -524,8 +540,20 @@
 }
 
 - (void)_refreshHomeTab:(NSNotification *)notification {
+	NSLog(@"_refreshHomeTab");
+	
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
+}
+
+- (void)_refreshLikeCount:(NSNotification *)notification {
+	_challengeVO = [HONChallengeVO challengeWithDictionary:[notification object]];
+	
+	for (HONTimelineItemViewCell *cell in _cells) {
+		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+			[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
+		}
+	}
 }
 
 - (void)_tareHomeTab:(NSNotification *)notification {
@@ -554,7 +582,7 @@
 
 #pragma mark - TimelineItemCell Delegates
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -585,7 +613,8 @@
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell upvoteCreatorForChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
+	_opponentVO = _challengeVO.creatorVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Upvote Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -594,15 +623,10 @@
 	
 	[self _upvoteChallenge:challengeVO.creatorVO.userID];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-	
-	for (HONTimelineItemViewCell *cell in _cells) {
-		if (cell.challengeVO.challengeID == challengeVO.challengeID)
-			[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
-	}
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Join Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -635,15 +659,16 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
+//		_challengeVO = challengeVO;
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		_challengeVO = challengeVO;
+//		_challengeVO = challengeVO;
 		[self _addBlur];
 		[self _removeTutorialBubbles];
 		
 		[cell showTapOverlay];
 		
-		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView];
+		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:challengeDetailsViewController];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
@@ -684,7 +709,7 @@
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Photo Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
@@ -715,7 +740,7 @@
 
 #pragma mark - SnapPreview Delegates
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	if (snapPreviewViewController != nil) {
@@ -732,7 +757,7 @@
 }
 
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	if (snapPreviewViewController != nil) {
@@ -768,6 +793,7 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	_isRefreshing = YES;
 	[self _goRefresh];
 }
 
@@ -777,11 +803,16 @@
 
 
 #pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+//NSLog(@"scrollViewWillEndDragging:withVelocity:[%@]targetContentOffset:[%@]", NSStringFromCGPoint(velocity), NSStringFromCGPoint(*targetContentOffset));
+	_timelineScrollDirection = (velocity.y > 0.0) ? HONTimelineScrollDirectionDown : HONTimelineScrollDirectionUp;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
@@ -848,6 +879,38 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (nil);
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
+	NSLog(@"tableView:didEndDisplayingCell:[%@]forRowAtIndexPath:[%d]", NSStringFromCGPoint(cell.frame.origin), indexPath.section);
+	
+//	if (_isScrollingDown) {
+	if (_timelineScrollDirection == HONTimelineScrollDirectionDown) {
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
+		NSDictionary *params = @{@"id"		: [NSString stringWithFormat:@"%d", vo.challengeID],
+								 @"seen"	: ([HONAppDelegate isChallengeParticipant:vo] || [HONAppDelegate hasVoted:vo.challengeID]) ? @"N" : @"Y"};
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_CHALLENGE_AS_SEEN" object:params];
+		
+		
+		if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_challenges count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {
+			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
+			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
+			
+			int cnt = 0;
+			NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
+			for (int i=queueRange.location; i<queueRange.length; i++) {
+				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+				
+				cnt++;
+				_imageQueueLocation++;
+				if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_challenges count])
+					break;
+				
+			}
+			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
+		}
+	}
 }
 
 

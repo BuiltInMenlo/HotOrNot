@@ -97,31 +97,72 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+//			VolleyJSONLog(@"AFNetworking [-] %@: EXPLORE TOT:%@", [[self class] description], parsedLists);
 			
-			_challenges = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedLists)
-				[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
+//			NSMutableArray *orgChallenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 2];
+			_challenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 2];
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
+			
+			for (NSDictionary *serverList in parsedLists) {
+				if (serverList != nil)
+					[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
+			}
+//			[orgChallenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
+			
+			NSLog(@"TOT PRE SWAP:[%d]", [_challenges count]);
+			[_challenges exchangeObjectAtIndex:2 withObjectAtIndex:0];
+			[_challenges exchangeObjectAtIndex:7 withObjectAtIndex:1];
+
+//			[_challenges exchangeObjectAtIndex:(arc4random() % MIN(4, [_challenges count])) withObjectAtIndex:0];
+//			[_challenges exchangeObjectAtIndex:(arc4random() % MAX(6, [_challenges count] - 6)) + 4 withObjectAtIndex:1];
+			NSLog(@"TOT POST SWAP:[%d]", [_challenges count]);
+			
+//			[_challenges insertObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]] atIndex:2];
+//			[_challenges insertObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]] atIndex:7];
+			
+//			int totItems = [orgChallenges count];
+//			for (int i=0; i<totItems; i++) {
+//				int rnd = arc4random() % [orgChallenges count];
+//				NSLog(@"POS[%d] -=\\> RND:[%d]", i, rnd);
+//				
+//				[_challenges addObject:[orgChallenges objectAtIndex:rnd]];
+//				[orgChallenges removeObjectAtIndex:rnd];
+//				
+//				if ([orgChallenges count] == 0)
+//					break;
+//			}
+			
+//			_challenges = [orgChallenges mutableCopy];
 			
 			_emptySetImgView.hidden = ([_challenges count] > 0);
-			int inviteIndex = arc4random() % MIN(4, [_challenges count]);
-			int searchIndex = arc4random() % MIN(4, [_challenges count]);
-			while (searchIndex == inviteIndex)
-				searchIndex = arc4random() % MIN(4, [_challenges count]);
+//			for (NSDictionary *serverList in parsedLists)
+//				[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
 			
-			NSLog(@"INVITE:[%d] SEARCH:[%d]", inviteIndex, searchIndex);
-			HONChallengeVO *inviteVO = ([_challenges count] > 0) ? (HONChallengeVO *)[_challenges objectAtIndex:inviteIndex] : [HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]];
-			[_challenges addObject:[HONChallengeVO challengeWithDictionary:inviteVO.dictionary]];
-			inviteVO.challengeID = -1;
+//			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
+//			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
+//			
+//			NSMutableArray *swapVOs = [NSMutableArray arrayWithArray:_challenges];
+//			NSMutableArray *swapIndexes = [NSMutableArray array];
+//			for (int i=0; i<[_challenges count]; i++)
+//				[swapIndexes addObject:[NSNumber numberWithInt:i]];
+//			
+//			int swapIndex = [swapVOs count] - 1;
+//			for (int i=0; i<[_challenges count]; i--) {
+//				int rnd = arc4random() % [swapIndexes count];
+//				
+//				[_challenges exchangeObjectAtIndex:i withObjectAtIndex:swapIndex];
+//				[swapIndexes removeObjectAtIndex:i];
+//			}
 			
-			HONChallengeVO *searchVO = ([_challenges count] > 0) ? (HONChallengeVO *)[_challenges objectAtIndex:searchIndex] : [HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]];
-			[_challenges addObject:[HONChallengeVO challengeWithDictionary:searchVO.dictionary]];
-			searchVO.challengeID = 0;
-			
-			if ([_challenges count] > 1) {
-				[_challenges replaceObjectAtIndex:inviteIndex withObject:inviteVO];
-				[_challenges replaceObjectAtIndex:searchIndex withObject:searchVO];
-			}
+//			int searchSwapIndex = arc4random() % MIN(0, [swapVOs count]);
+//			[swapVOs removeObjectAtIndex:searchSwapIndex];
+//
+//			int inviteSwapIndex = arc4random() % MIN(0, [swapVOs count]);
+//			[swapVOs removeObjectAtIndex:inviteSwapIndex];
+						
+//			[_challenges replaceObjectAtIndex:inviteIndex withObject:inviteVO];
+//			[_challenges replaceObjectAtIndex:searchIndex withObject:searchVO];
 			
 			[_tableView reloadData];
 		}
@@ -479,7 +520,7 @@
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 

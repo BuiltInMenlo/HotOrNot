@@ -133,7 +133,7 @@
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
-//	NSLog(@"egoRefreshScrollViewDidEndDragging INSET:[%@]", NSStringFromUIEdgeInsets(scrollView.contentInset));
+	NSLog(@"egoRefreshScrollViewDidEndDragging INSET:[%@]", NSStringFromUIEdgeInsets(scrollView.contentInset));
 	
 	if (scrollView.contentOffset.y <= -kLoadingTheshold - _headerOffset && !_isLoading) {
 		[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];

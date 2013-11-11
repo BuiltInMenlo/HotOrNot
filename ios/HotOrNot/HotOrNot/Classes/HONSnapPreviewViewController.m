@@ -210,7 +210,10 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			_challengeVO = [HONChallengeVO challengeWithDictionary:[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]];
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:result];
 			[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
 		}
 		

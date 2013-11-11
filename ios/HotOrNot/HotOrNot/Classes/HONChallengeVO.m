@@ -69,9 +69,14 @@
 			break;
 	}
 	
-	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[dictionary objectForKey:@"creator"]];
-	[dict setObject:[dateFormat stringFromDate:vo.addedDate] forKey:@"joined"];
-	vo.creatorVO = [HONOpponentVO opponentWithDictionary:dict];
+//	NSLog(@"CHALLENGE:(%d)[%@]\n]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[\n%@", vo.challengeID, vo.dictionary, [dictionary objectForKey:@"creator"]);
+	
+	
+	
+	NSMutableDictionary *creator = [NSMutableDictionary dictionaryWithDictionary:[dictionary objectForKey:@"creator"]];
+	[creator setValue:[dictionary objectForKey:@"added"] forKey:@"joined"];
+//	[creator setObject:[dateFormat stringFromDate:vo.addedDate] forKey:@"joined"];
+	vo.creatorVO = [HONOpponentVO opponentWithDictionary:creator];
 	vo.likesTotal = vo.creatorVO.score;
 	
 	vo.challengers = [NSMutableArray array];
@@ -83,7 +88,6 @@
 	
 	vo.recentLikes = @"Be the first to like";
 	
-	//NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 	NSArray *userLikes = [dictionary objectForKey:@"recent_likes"];
 	
 	BOOL isTurdInPunchBowl = NO;

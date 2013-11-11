@@ -10,6 +10,7 @@
 
 #import "MBProgressHUD.h"
 #import "HONChallengeVO.h"
+#import "HONOpponentVO.h"
 #import "AFHTTPClient.h"
 
 
@@ -17,6 +18,12 @@
 #define __ALWAYS_REGISTER__ 0
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
+
+
+typedef enum {
+	HONTimelineScrollDirectionDown	= 0,	/** Challenges using same hashtag */
+	HONTimelineScrollDirectionUp,			/** Challenges of a single user */
+} HONTimelineScrollDirection;
 
 
 // api endpts
@@ -140,12 +147,15 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)inviteCelebs;
 + (NSArray *)popularPeople;
 
++ (NSRange)rangeForImageQueue;
+
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 + (UIImage *)avatarImage;
++ (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 + (int)ageForDate:(NSDate *)date;
 
 + (NSArray *)friendsList;
@@ -159,7 +169,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (BOOL)isFollowingUser:(int)userID;
 
 + (int)hasVoted:(int)challengeID;
-+ (void)setVote:(int)challengeID forCreator:(BOOL)isCreator;
++ (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO;
++ (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO;
 
 + (UIViewController *)appTabBarController;
 

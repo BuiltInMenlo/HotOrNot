@@ -182,8 +182,14 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				_challengeVO = [HONChallengeVO challengeWithDictionary:result];
+			
 			[_timelineItemFooterView upvoteUser:userID onChallenge:_challengeVO];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:_challengeVO.dictionary];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -439,6 +445,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
 	};
 	
+	NSLog(@"CREATOR IMG:[%@]", [_challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapTabSuffix]);
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
@@ -747,6 +754,14 @@
 	[self _retrieveChallenge];
 }
 
+- (void)_refreshLikeCount:(NSNotification *)notification {
+//	HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:[notification object]];
+//	if (_challengeVO.challengeID == challengeVO.challengeID) {
+//		_challengeVO = challengeVO;
+//		[_timelineItemFooterView upvoteUser:challengeVO.creatorVO.userID onChallenge:challengeVO];
+//	}
+}
+
 
 #pragma mark - UI Presentation
 - (void)_addBlur {
@@ -857,14 +872,14 @@
 }
 
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+//	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
 	if (_snapPreviewViewController != nil) {
 		[_snapPreviewViewController.view removeFromSuperview];
@@ -872,7 +887,7 @@
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:_challengeVO];
+	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:challengeVO];
 }
 
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -900,7 +915,7 @@
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 

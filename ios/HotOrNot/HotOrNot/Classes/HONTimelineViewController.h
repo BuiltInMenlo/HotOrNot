@@ -10,14 +10,5 @@
 #import "HONChallengeVO.h"
 
 
-//typedef enum {
-//	HONTimelineTypeSubject		= 8,	/** Challenges using same hashtag */
-//	HONTimelineTypeSingleUser	= 9,	/** Challenges of a single user */
-//	HONTimelineTypeHome			= 10,	/** Challenges involving user & following */
-//} HONTimelineType;
-
-
 @interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
-//- (id)initWithSubject:(NSString *)subjectName;
-//- (id)initWithUsername:(NSString *)username;
 @end
