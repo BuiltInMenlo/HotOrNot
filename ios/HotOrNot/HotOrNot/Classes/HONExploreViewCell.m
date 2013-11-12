@@ -41,7 +41,7 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	NSLog(@"lChallengeID:[%d]", _lChallengeVO.challengeID);
+	NSLog(@"lChallenge:[%d] (%@)", _lChallengeVO.challengeID, lChallengeVO.subjectName);
 	
 	_leftHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftHolderView.clipsToBounds = YES;
@@ -85,7 +85,7 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	NSLog(@"rChallengeID:[%d]", _rChallengeVO.challengeID);
+	NSLog(@"rChallenge:[%d] (%@)", _rChallengeVO.challengeID, _rChallengeVO.subjectName);
 	
 	_rightHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
 	_rightHolderView.clipsToBounds = YES;

@@ -264,6 +264,7 @@
 }
 
 - (void)_upvoteChallenge:(int)userID {
+	NSLog(@"imgURL:[%@]", _opponentVO.imagePrefix);
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 6], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -272,7 +273,7 @@
 							_opponentVO.imagePrefix, @"imgURL",
 							nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -613,8 +614,10 @@
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell upvoteCreatorForChallenge:(HONChallengeVO *)challengeVO {
-//	_challengeVO = challengeVO;
-	_opponentVO = _challengeVO.creatorVO;
+	_challengeVO = challengeVO;
+	_opponentVO = challengeVO.creatorVO;
+	
+	NSLog(@"upvoteCreatorForChallenge:[%@]", _opponentVO.dictionary);
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Upvote Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:

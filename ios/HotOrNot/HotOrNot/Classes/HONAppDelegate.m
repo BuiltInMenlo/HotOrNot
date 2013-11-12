@@ -1262,8 +1262,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateChallengeAsSeen:) name:@"UPDATE_CHALLENGE_AS_SEEN" object:nil];
 	
 #if __DEV_BUILD___ == 1
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 //	[TestFlight takeOff:kTestFlightAppToken];
 #endif
@@ -1297,6 +1297,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] synchronize];
 #endif
 
+	[self _establishUserDefaults];
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![HONAppDelegate canPingConfigServer]) {
@@ -1436,8 +1437,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (_isFromBackground) {
 		
-		Mixpanel *mixpanel = [Mixpanel sharedInstance];
-		[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+//		Mixpanel *mixpanel = [Mixpanel sharedInstance];
+//		[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
 //		[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 //							   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 //							   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
@@ -1519,9 +1520,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSString *holderToken = ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) ? [NSString stringWithFormat:@"%064d", 0] : @"";
 	
-//	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-//	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
-//	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
+	Mixpanel *mixpanel = [Mixpanel sharedInstance];
+	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[HONAppDelegate writeDeviceToken:holderToken];
 	
@@ -1532,8 +1533,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	} else
 //		[HONAppDelegate writeDeviceToken:@""];
 	
-	if ([HONAppDelegate apiServerPath] != nil)
-		[self _enableNotifications:NO];
+//	if ([HONAppDelegate apiServerPath] != nil)
+//		[self _enableNotifications:NO];
 }
  
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1717,7 +1718,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										   @"is_verify":@"0",
 										   @"started":@"1970-01-01 00:00:00",
 										   @"status":@"0",
-										   @"subject":@"",
+										   @"subject":@"__#INVITE__",
 										   @"updated":@"1970-01-01 00:00:00"};
 	
 	NSDictionary *emptySearchChallenge = @{@"id":@"0",
@@ -1738,11 +1739,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										   @"is_verify":@"0",
 										   @"started":@"1970-01-01 00:00:00",
 										   @"status":@"0",
-										   @"subject":@"",
+										   @"subject":@"__#SEARCH__",
 										   @"updated":@"1970-01-01 00:00:00"};
 	
 	[[NSUserDefaults standardUserDefaults] setObject:emptyInviteChallenge forKey:@"empty_challenge_-1"];
 	[[NSUserDefaults standardUserDefaults] setObject:emptySearchChallenge forKey:@"empty_challenge_0"];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 

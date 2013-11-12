@@ -220,6 +220,8 @@
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
+			NSLog(@"_addFriend");
+			
 			if (result != nil)
 				[HONAppDelegate writeSubscribeeList:result];
 		}
@@ -483,9 +485,6 @@
 }
 
 - (void)_removeCellForChallenge:(HONChallengeVO *)challengeVO {
-	[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
-	[self _addFriend:challengeVO.creatorVO.userID];
-	
 	UITableViewCell *tableCell;
 	for (HONFollowTabViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == challengeVO.challengeID) {
