@@ -18,7 +18,7 @@ class BIM_Growth{
     		$options = $this->getCurlParams();
     		$options[CURLOPT_TIMEOUT] = 30;
     		$options[CURLOPT_CONNECTTIMEOUT] = 30;
-    		curl_setopt_array($ch, $options );
+    		curl_setopt_array($ch, $options);
     		
     		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
             curl_setopt($ch, CURLOPT_PROXY, $host);

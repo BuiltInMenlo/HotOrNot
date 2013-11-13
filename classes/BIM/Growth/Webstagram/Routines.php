@@ -174,7 +174,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             'shoutoutselfiecontest',
             'famousselfies',
         );
-        $minutes = 1440 * 14;
+        $minutes = 1440 * 10;
         $time = time();
         
         $date = new DateTime();
@@ -190,6 +190,51 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 self::queueHouseFollow($name, $accountName, $targetDate);
             }
         }
+    }
+    
+    public static function queueBlastJobs(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+	    $sql = "select name from growth.persona where network = 'instagram'";
+		$stmt = $dao->prepareAndExecute( $sql );
+		$personaNames = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+		
+        $minutes = 1440 * 1;
+        $time = time();
+        
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone('UTC') );
+        foreach( $personaNames as $name ){
+            for($n = 0; $n < 10; $n++ ){
+                $whichMinute = mt_rand( 1, $minutes );
+                $seconds = $whichMinute * 60;
+                $targetDate = $time + $seconds;
+                $date->setTimestamp($targetDate);
+                $targetDate = $date->format('Y-m-d H:i:s');
+                echo "$name - $targetDate\n";
+                self::queueHouseFollow($name, $targetDate);
+            }
+        }
+    }
+    
+    public static function queueBlastJob($personaId, $targetDate = null ){
+        if( !$targetDate ){
+            $targetDate = new DateTime();
+            $targetDate = $targetDate->format( 'Y-m-d H:i:s' );
+        }
+        $job = (object) array(
+            'nextRunTime' => $targetDate,
+            'class' => 'BIM_Jobs_Growth',
+            'method' => 'doBlastJob',
+            'name' => 'do_blast_job',
+            'params' => array(
+                'persona_id' => $personaId
+            ),
+            'is_temp' => true,
+            'disabled' => 1
+        );
+        
+        $j = new BIM_Jobs_Gearman();
+        $j->createJbb($job);
     }
     
     public static function queueHouseFollow($personaId, $accountName, $targetDate = null ){
@@ -212,6 +257,317 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         
         $j = new BIM_Jobs_Gearman();
         $j->createJbb($job);
+    }
+    
+    /**
+     * generate a random tag
+     * generate a unique image
+     * post the unique image with the tag in the caption
+     * find a random user from one of our tags
+     * drop a comment with the tag
+     */
+    public static function doBlastJob( $personaId ){
+        $me = new self( $personaId );
+        //if( $me->handleLogin() ){
+            $tag = self::getUniqueTag();
+            
+            //$caption = self::getRandomCaption( $tag );
+            //$pic = self::getUniqueMedia();
+            //$me->postMedia( $pic, $caption );
+            
+            $comment = self::getRandomComment( $tag );
+            $user = self::getRandomUser();
+            
+            $me->commentOnLatestPhoto( $user->url, $comment );
+            print_r( array( "commented on photo",$tag,$comment,$user ) );
+            
+        //}
+    }
+
+    public static function getRandomUser(){
+        $randomUser = null;
+        $attempts = 0;
+        while( !$randomUser && $attempts++ < 100 ){
+            $time = time() - mt_rand(0, 86400 * 60);
+            $selfieUrl = "http://web.stagram.com/tag/selfie/?npk=$time";
+            
+            echo "getting $selfieUrl\n";
+            
+            $g = new BIM_Growth_Webstagram();
+            $response = $g->get( $selfieUrl );
+            $users = self::getUsersFromText($response);
+            foreach( $users as $user ){
+                if( self::canDoPing( $user->id ) ){
+                    $randomUser = $user;
+                    break;
+                }
+            }
+            if( !$randomUser ){
+                $sleep = 5;
+                error_log("sleeping for $sleep seconds") ;
+                sleep( $sleep );
+            }
+        }
+        
+        return $randomUser;
+    }
+    
+    // returns a unique 6 letter string
+    public static function getRandomComment( $tag = '' ){
+        $comments = array(
+            'Wnna shoutout?',
+            'Wanna shoutout?',
+            'shoutout?',
+            's4s?',
+            'wanna host a game?',
+            'host a game?',
+            'wanna play?',
+            'play?',
+            'host?',
+            'share?',
+            'share for share?',
+            'shoutout for shoutout?',
+            'wanna shout?',
+            'give me a shoutout?',
+            'want a shoutout?',
+            'gimme a shoutout?',
+            'shoutout?!',
+            'i <3 shoutouts',
+            'shoutout selfie?',
+            'selife shoutout?',
+            'selfie?',
+            'selfie shoutout >>',
+            'shoutout selfie >>',
+            'host selfie game?',
+            'Wnna shoutout >>',
+            'Wanna shoutout >>>',
+            'shoutout >>',
+            's4s >>',
+            'wanna host a game >>',
+            'host a game >>',
+            'wanna play >>',
+            'play >>',
+            'host >>',
+            'share >>',
+            'share me ?? >>',
+            'share? >>',
+            'share4share? >>',
+            'follow? >>',
+            'want a shoutout or follow??',
+        );
+        $idx = array_rand( $comments );
+        $comment = $comments[$idx]." $tag";
+        return $comment;
+    }
+    
+    // returns a unique 6 letter string
+    public static function getUniqueTag(){
+        $tags = array(
+            '#finotx',
+            '#cenoux',
+            '#eijluy',
+            '#dntuvw',
+            '#adegtz',
+            '#aehuwx',
+            '#kmrsyz',
+            '#behlqx',
+            '#cfmqrw',
+            '#fjkouw',
+            '#fgmpqu',
+            '#dfijlr',
+            '#bdpsuy',
+            '#abfkrx',
+            '#klprvx',
+            '#ahlnrt',
+            '#ceilqz',
+            '#cknosy',
+            '#acqrty',
+            '#lpqstw',
+            '#akouvw',
+            '#cdgiqy',
+            '#cfgkru',
+            '#hikovw',
+            '#adfjnv',
+            '#finopy',
+            '#hjnvyz',
+            '#gmtvwx',
+            '#dkpruw',
+            '#dmorsy',
+            '#dhlnps',
+            '#cikosy',
+            '#bcmtvy',
+            '#bcjnpu',
+            '#cfpuvx',
+            '#anoqvw',
+            '#aefxyz',
+            '#hkmuvx',
+            '#ckmnqu',
+            '#eitwxy',
+            '#abchst',
+            '#bfnpqs',
+            '#dhijvy',
+            '#cefuxz',
+            '#kostyz',
+            '#bcgoux',
+            '#ekmnqs',
+            '#bgjlmq',
+            '#abfmry',
+            '#ejopwz',
+            '#abgknq',
+            '#chpruw',
+            '#ikqvwy',
+            '#abgmrs',
+            '#ehjnqy',
+            '#fgjtwx',
+            '#hjmtxz',
+            '#bfpqst',
+            '#egipwx',
+            '#joqtuv',
+            '#ackmsx',
+            '#bemrwx',
+            '#choqtv',
+            '#acilty',
+            '#dhjsty',
+            '#flmowy',
+            '#dgoxyz',
+            '#dhilpq',
+            '#ceiouz',
+            '#fjklwx',
+            '#bcenot',
+            '#dghqsx',
+            '#cemqrz',
+            '#mtuwxy',
+            '#cfghpt',
+            '#fkpvxy',
+            '#fpstwz',
+            '#fglnpz',
+            '#dgoqvw',
+            '#ghiqrv',
+            '#cjknqu',
+            '#aghlnt',
+            '#hilnpq',
+            '#bdlmpt',
+            '#acilqy',
+            '#cfmsuw',
+            '#hiklou',
+            '#nopqyz',
+            '#himnvx',
+            '#afjknu',
+            '#aegjux',
+            '#iklprw',
+            '#ilowxz',
+            '#aejruz',
+            '#bioquy',
+            '#bfhjlp',
+            '#befjoz',
+            '#fnptyz',
+            '#hijmvy',
+            '#cdfqsu',
+            '#bejlns',
+            '#deilpw',
+            '#bcdjvz',
+            '#dghkxz',
+            '#bklstx',
+            '#bcdgps',
+            '#dehnty',
+            '#achknq',
+            '#achkvy',
+            '#klprwx',
+            '#dgkqrz',
+            '#cfiuyz',
+            '#bcnosz',
+            '#fgiqty',
+            '#hjktwz',
+            '#egkmsw',
+            '#aejqvw',
+            '#hlntvz',
+            '#behntz',
+            '#bejrsu',
+            '#krtvwy',
+            '#adjlpt',
+            '#eilnxy',
+            '#dmpqsy',
+            '#hjrtwz',
+            '#eknrst',
+            '#dfnqry',
+            '#fhkosy',
+            '#gkmotz',
+            '#ghkmvw',
+            '#dhikrw',
+            '#bkmopv',
+            '#aefipz',
+            '#begqru',
+            '#hiloqw',
+            '#ehsuvy',
+            '#amoptu',
+            '#ejoqxy',
+            '#bklswz',
+            '#cdfkou',
+            '#abfimw',
+            '#efipqv',
+            '#djlquv',
+            '#hnoqvz',
+            '#ahikpv',
+            '#afkoqv',
+            '#amqrst',
+            '#aceouy',
+            '#bemovx',
+            '#fikoqs',
+            '#acdeoy',
+            '#klnxyz',
+            '#egmqst',
+            '#cgnosy',
+            '#hoprty',
+            '#cgptwx',
+            '#egjkuy',
+            '#abdlst',
+            '#hlnouy',
+            '#abghoq',
+            '#abjlqs',
+            '#acdkqr',
+            '#hjmsvw',
+            '#enoqyz',
+            '#chjopw',
+            '#djqsuw',
+            '#aeikrt',
+            '#bmpqtz',
+            '#aefjoy',
+            '#afgwyz',
+            '#gnopyz',
+            '#gnpuvw',
+            '#hjmnsy',
+            '#efgimr',
+            '#aostvx',
+            '#achqry',
+            '#abimoq',
+            '#begijv',
+            '#ahjmrv',
+            '#eklprz',
+            '#cehiot',
+            '#cjlmuy',
+            '#cfjpux',
+            '#eqruwy',
+            '#dginqr',
+            '#airsvy',
+            '#jpstxz',
+            '#klpvwy',
+            '#afiksz',
+            '#bcgqrx',
+            '#abemnt',
+            '#abfjxz',
+            '#dghsxy',
+            '#cdekmy',
+        );
+        
+        /**
+        $str = str_split('abcdefghijklmnopqrstuvwxyz');
+        $tag = array_rand( $str, 6 );
+        foreach( $tag as &$char ){
+            $char = $str[$char];
+        }
+        $tag = join('',$tag);
+        **/
+        return $tags[ array_rand( $tags ) ];
     }
     
     public static function doHouseFollow( $personaId, $houseAccountname ){
@@ -587,19 +943,27 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         return $ids;
     }
     
-    public function canPing( $id ){
+    public static function canDoPing( $id ){
         $canPing = false;
-        list( $imageId, $userId ) = explode( '_', $id, 2 );
-        if( $imageId && $userId ){
-            $dao = new BIM_DAO_Mysql_Growth_Webstagram( BIM_Config::db() );
-            $timeSpan = 86400 * 7;
-            $currentTime = time();
-            $lastContact = $dao->getLastContact( $userId );
-            if( ($currentTime - $lastContact) >= $timeSpan ){
-                $canPing = true;
+        $data = explode( '_', $id );
+        if( $data ){
+            print_r( $data );
+            $userId = empty( $data[1] ) ? $data[0] : $data[1];
+            if( $userId ){
+                $dao = new BIM_DAO_Mysql_Growth_Webstagram( BIM_Config::db() );
+                $timeSpan = 86400 * 7;
+                $currentTime = time();
+                $lastContact = $dao->getLastContact( $userId );
+                if( ($currentTime - $lastContact) >= $timeSpan ){
+                    $canPing = true;
+                }
             }
         }
         return $canPing;
+    }
+    
+    public function canPing( $id ){
+        return self::canDoPing($id);
     }
     
     public function isLoggedIn( $html ){
@@ -698,7 +1062,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         }
     }
     
-    public function commentOnLatestPhoto( $pageUrl ){
+    public function commentOnLatestPhoto( $pageUrl, $message = '' ){
         $ids = array();
         $response = $this->get( $pageUrl );
         
@@ -707,8 +1071,10 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         preg_match($ptrn, $response, $matches);
         if( isset( $matches[1] ) ){
             $id = $matches[1];
-            $inviteText = BIM_Config::inviteMsgs();            
-            $message = $inviteText['instagram'];
+            if( !$message ){
+                $inviteText = BIM_Config::inviteMsgs();
+                $message = $inviteText['instagram'];
+            }
             $message = preg_replace('/\[\[USERNAME\]\]/', $this->persona->name, $message);
             $this->submitComment($id, $message);
             $sleep = 5;
@@ -904,11 +1270,11 @@ VALUES
         $g = new BIM_Growth_Webstagram();
         $attempts = 0;
         while( $selfieUrl && $attempts < 3 ){
-            @unlink('/tmp/cookies_BIM_Growth_Webstagram.txt');
+            //@unlink('/tmp/cookies_BIM_Growth_Webstagram.txt');
             echo "getting $selfieUrl\n";
             $response = $g->get( $selfieUrl );
             self::_findShoutOuts( $response );
-            $oldSelfieurl = $selfieUrl;
+            $oldSelfieUrl = $selfieUrl;
             $selfieUrl = self::getNextSelfieUrl($response);
             
             $msg = '';
@@ -916,7 +1282,7 @@ VALUES
             
             if( !$selfieUrl ){
                 $attempts++;
-                $selfieUrl = $oldSelfieurl;
+                $selfieUrl = $oldSelfieUrl;
                 $sleep = 30;
                 $msg = " could not find selfie url at $selfieUrl";
             }

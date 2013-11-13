@@ -16,6 +16,11 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         BIM_Growth::createCampaign($workload->data);
     }
     
+    public function doBlastJob( $workload ){
+        $params = json_decode( $workload->params );
+        BIM_Growth_Webstagram_Routines::doBlastJob( $params->persona_id );
+    }
+    
     public function doHouseFollow( $workload ){
         $params = json_decode( $workload->params );
         BIM_Growth_Webstagram_Routines::doHouseFollow(
