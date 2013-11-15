@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SelfieClub!</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-16">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="kik-more" content="selfieclubapp.com">
+		<meta name="kik-prefer" content="true">
+		<meta name="description" content="Share SelfieClub!">
+		
+		<link rel="kik-icon" href="./ico_volley.png">
+		<!-- <link rel="shortcut icon" href="./favicon.ico"> -->
+		<link rel="stylesheet" href="./styles.css">
+		
+		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
+		<script src="http://zeptojs.com/zepto.min.js"></script>
+		<script>
+			//var msg_str="‚≠êÔ∏è‚≠êÔ∏è‚≠êÔ∏èOK so here are the rules to @selfieclub‚≠êÔ∏è‚≠êÔ∏è‚≠êÔ∏è\n\n#1: Invite your friends with cute looking selfies to join.\n\n#2: Share the image below on IG,OR  include: join the selfieclub app @selfieclub in a post on IG, twitter, vine.\n\n#3: Send your best selfie pic and IG on kik and...\n\n#4 We share your best selfie to ALL our members Ì†ΩÌ±çÌ†ΩÌ±çÌ†ΩÌ±ç\n\nOk?";
+			
+			var redirect_url="http://taps.io/JVcQ";
+			var ig_handle="http://selfieclubapp.com/"
+			var title_str = "‚≠êÔ∏è‚≠êÔ∏è‚≠êÔ∏èOK so here are the rules to @selfieclub‚≠êÔ∏è‚≠êÔ∏è‚≠ê";
+			var msg_str="#1: Invite your friends with cute looking selfies to join.\n\n#2: Share the image below on IG, OR  include: join the selfieclub app @selfieclub in a post on IG, twitter, vine.\n\n#3: Send your best selfie pic and IG on kik and...\n\n#4 We share your best selfie to ALL our members Ì†ΩÌ±çÌ†ΩÌ±çÌ†ΩÌ±ç\n\nOk?";
+			var msg_html = msg_str.replace(/\n/g, '<br />');
+			var img_url="http://selfieclubapp.com/kik/share_612x612.png";
+			
+			var usernames = "";
+			
+			function sendTextToUser(username) {
+				cards.kik.send(username, {
+					title : title_str,
+					text  : msg_str,
+					big   : false,
+					data  : { text : msg_str }
+				});
+			}
+		
+			function sendImageToUser(username) {
+				cards.kik.send(username, {
+					title : '',
+					text  : '',
+					pic   : img_url,
+					big   : true ,
+					data  : { pic : img_url }
+				});
+			}
+			
+			function sendVideoToUser(username) {
+				cards.kik.send(username, {
+					title : '',
+					text  : '',
+					video : 'http://www.youtube.com/watch?v=cSXHHuutCEE&autoplay=1',
+					big   : true ,
+					data  : { pic : img_url }
+				});
+			}
+			
+			function sendTextImageToUser(username) {
+				cards.kik.send(username, {
+					title : title_str,
+					text  : msg_str,
+					pic   : img_url,
+					big   : false ,
+					data  : { text : msg_str, pic : img_url }
+				});
+			}
+		
+		
+			$(function () {				
+				$('#divTitle').text(title_str);
+				$('#divMessage').append(msg_html);
+				$('#divImage').append("<img src='./card_640x1136.png' width='320' height='568' />");
+				
+				$('#divSendto').hide();
+				$('#divDebug').hide();
+				
+				
+				// received kik
+				if (cards.kik.message) {// web app was opened from Kik message
+					//cards.open(redirect_url);
+					cards.open("http://www.youtube.com/embed/Gyf1kjaUZCo?autoplay=1");
+				
+				}
+				// show user picker
+				/*cards.kik.pickUsers(function (users) {
+					if (!users) // action was cancelled by user
+						return;
+					
+					users.forEach(function (user) {
+						usernames += user.username + ', ';
+						
+						// send 
+						//sendTextToUser(user.username);
+						sendImageToUser(user.username);
+					});
+					
+					//$('#divSendto').text(usernames.substring(0, usernames.length - 2));
+					//$('#divSendto').show();
+				});
+				*/
+				$('#divImage').click(function () {
+					//sendTextToUser('');
+					sendImageToUser('');
+					
+					return (false);
+					
+					
+					/*cards.kik.pickUsers(function (users) {
+						if (!users) // action was cancelled by user
+							return;
+
+						users.forEach(function (user) {
+							usernames += user.username + ', ';
+
+							// send 
+							//sendTextToUser(user.username);
+							sendImageToUser(user.username);
+						});
+
+						//$('#divSendto').text(usernames.substring(0, usernames.length - 2));
+						//$('#divSendto').show();
+					});
+					
+					return (false);
+					*/
+				});
+				
+				$('#form').submit(function () {
+					//sendTextToUser('');
+					//sendImageToUser('');
+					
+					cards.kik.send('selfieclub, aishaincali', {
+						title : '',
+						text  : '',
+						pic   : img_url,
+						big   : true ,
+						data  : { pic : img_url }
+					});
+					
+					return (false);
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<!-- message input -->
+		<div id="divContent">
+			<!-- <div id="divTitle"></div> -->
+			<!-- <div id="divMessage"></div> -->
+			<div id="divImage"></div>
+			<!-- <form id="form"><input type="submit" value="Send" /></form> -->
+		</div>
+
+		<!-- view message -->
+		<div id="divSendto"></div>
+		<div id="divDebug"></div>
+	</body>
+</html>
