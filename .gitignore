@@ -4,3 +4,7 @@ aws/
 php/api-shane/bin/gearman/admin/config.php
 php/api-shane/classes/BIM/Config/Dynamic.php
 *.xcuserdata*
+
+*.xcuserstate
+
+ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata/Gullinbursti.xcuserdatad/UserInterfaceState.xcuserstate
