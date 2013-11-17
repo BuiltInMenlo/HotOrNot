@@ -67,7 +67,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
+<<<<<<< HEAD
 	<string>19522</string>
+=======
+	<string>19505</string>
+>>>>>>> 74548961c409941e2932f387f64c2527946d3079
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
