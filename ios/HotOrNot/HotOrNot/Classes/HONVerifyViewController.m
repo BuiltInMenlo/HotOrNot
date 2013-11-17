@@ -114,7 +114,7 @@
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSString stringWithFormat:@"TOTAL:[%d]", [unsortedChallenges count]]);
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [unsortedChallenges objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];

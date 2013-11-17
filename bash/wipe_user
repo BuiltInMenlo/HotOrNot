@@ -1,0 +1,57 @@
+#!/bin/bash
+
+api_endpt="admin/wipe_user.php"
+#--server_domain=$(echo "${wipe_url}" | sed 's/.*\/\/(.*)\/.*$/\1/g')
+
+
+if [ ! ${!#} ]; then
+	exit 0;
+else
+	username="${!#}"; fi
+
+
+isStage_flg=false
+while getopts "s" optname # --//> there's a '-s'
+	do # --/ loop thru the params
+		case "$optname" in #  -/> set flag based on char
+
+		"s") # )-/> passed in '-s'
+			isStage_flg=true
+			;;
+
+		"?") # )-/> anything else
+			echo "Unknown option $OPTARG"
+			exit 1;
+			;;
+
+		":") # )-/> no arg
+			echo "No argument value for option $OPTARG"
+			exit 1;
+			;;
+
+		*) # )-/> shouldn't occur
+			echo "Unknown error"
+			exit 1;
+			;;
+	esac
+done
+
+ # --/> use stage 
+if $isStage_flg; then api_subdomain="admin-stage"
+else api_subdomain="130"; fi
+
+wipe_url="http://${api_subdomain}.letsvolley.com/${api_endpt}"
+
+
+# call wipe user
+printf "Wiping user %s from %s... " "${username}" "${api_subdomain}"
+result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
+isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
+
+#-- check for user json
+if [ "$isUser" ]; then printf "Completed!\n"
+else printf "Not found!\n"; fi
+
+
+#-- exit w/o error
+exit 0;

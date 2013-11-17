@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+	<head>
+		<!-- Card info -->
+		<title>SelfieClub by Volley</title>
+		<meta name="description" content="Join SELFIECLUB and blah blah">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="kik-prefer" content="true">
+		<link rel="kik-icon" href="/img/icon.png">
+
+		<!-- Styles -->
+		<link rel="stylesheet" href="http://cdn.kik.com/app/1/default.css">
+		<link rel="stylesheet" href="/css/styles.css">
+	</head>
+
+	<body>
+		<!-- Pages -->
+		<div class="app-page" data-page="home">
+			<div class="app-topbar">
+				<div class="app-title">Home page</div>
+			</div>
+			<div class="app-content">
+				<div class="app-section">
+					<div class="app-button" data-target="page2">Go to Page 2</div>
+					<div class="app-button" data-target="page3">Go to Page 3</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="app-page" data-page="page2">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Page 2</div>
+			</div>
+			<div class="app-content">
+				Page 2 is lonely
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="page3">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Page 3</div>
+			</div>
+			<div class="app-content">
+				Page 3 is lonely
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script src="/zerver/MyAPI.js"></script>
+		<script src="http://zeptojs.com/zepto.min.js"></script>
+		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
+		<script src="http://cdn.kik.com/app/1/app.js"></script>
+		<script src="/js/main.js"></script>
+		
+		
+		<script>
+			function write (str) {
+				document.documentElement.appendChild(
+					document.createTextNode(str)
+				);
+			}
+			MyAPI.getStuff('Hello from browser', function (str) {
+				write(str);
+			}).error(function (err) {
+				write('ERROR: ' + err);
+			});
+		</script>
+	</body>
+</html>

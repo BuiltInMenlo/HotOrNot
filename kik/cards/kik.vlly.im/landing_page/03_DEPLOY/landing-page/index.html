@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+	<head>
+		<!-- Card info -->
+		<title>SelfieClub by Volley</title>
+		<meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+		<meta http-equiv="EXPIRES" content="0">
+		<meta http-equiv="PRAGMA" content="NO-CACHE">
+			
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-16">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="kik-more" content="kik.vlly.im">
+		<meta name="kik-prefer" content="true">
+		<meta name="description" content="Join SelfieClub by Volley">
+		
+		<link rel="canonical" href="https://nodejsmodules.org/pkg/zerver">
+		<!-- <link rel="kik-icon" href="/favicon.ico"> -->
+		<link rel="kik-icon" href="/images/ico_volley.png">
+		<link rel="icon" type="text/png" href="/images/icon_200x200.png">
+
+		<!-- // styles // -->
+		<link rel="stylesheet" type="text/css" href="http://cdn.kik.com/app/1/default.css" />
+		<link rel="stylesheet" type="text/css" href="/css/main.css" />
+		
+		<!-- overrriding kik's default styles -->
+		<style rel="stylesheet" type="text/css">
+			.app-clickblocker {
+				background:transparent;
+			}
+		
+			.app-topbar {
+				height:50px;
+				background:rgba(0, 0, 0, 0.33);
+				color:#FFF;
+				font-weight:600;
+			}
+			
+			.app-page {
+				background-color: ##1454E2;
+				background-image:url('/images/background.png');
+				background-repeat:no-repeat;
+			}
+			
+			.app-content, .app-section, .app-list, .app-list>label {
+				background-color: transparent;
+				background: transparent;
+			}
+			
+			.app-section, .app-content .app-button, .app-input, .app-list>li, .app-list>li.app-button {
+				border-color:transparent;
+				margin:0;
+				padding:0;
+			}
+			
+			#divLandingPage_content {
+				text-align: center;
+			}
+
+			#divLandingPage_content .app-button {
+				display:block;
+				float:left;
+				vertical-align: middle;
+				width:202px;
+				height:202px;
+				margin-bottom: 42px;
+				margin-right: 42px;
+/*				background-color:rgba(5, 26, 71, 0.675);*/
+/*				-webkit-border-radius:20px;*/
+/*				color:#FFF;*/
+			}
+			
+			#divLandingPage_content>#divContentWrapper {
+				position:relative;
+				margin: 0 auto; 
+				width: 640px;
+				top:270px;
+			}
+			
+		</style>
+		
+		<script>
+			var _tsq = _tsq || [];
+				_tsq.push(["setAccountName", "volley"]);
+				_tsq.push(["fireHit", "kik.vlly.im", []]);
+			
+			(function() {
+				function z(){
+					var s = document.createElement("script");
+						s.type = "text/javascript";
+						s.async = "async";
+						s.src = window.location.protocol + "//cdn.tapstream.com/static/js/tapstream.js";
+					
+					var x = document.getElementsByTagName("script")[0];
+						x.parentNode.insertBefore(s, x);
+				}
+				
+				if (window.attachEvent)
+					window.attachEvent("onload", z);
+				else
+					window.addEventListener("load", z, false);
+			})();
+		</script>
+	</head>
+
+	<body><div id="divWrapper">
+		<!-- // pages // -->
+		<div class="app-page" data-page="landing_page">
+			<div class="app-topbar">
+				<div class="app-title">Landing page</div>
+			</div>
+			<div class="app-content" id="divLandingPage_content">
+				<div id="divHomeShareButton"></div>
+				<div id="divContentWrapper">
+					<div id="divBubble"><img src="/images/alert.png" width="640" height="88" /></div>
+					<div class="app-section">
+						<div class="app-button" data-target="invite_to_join"><img src="/images/inviteButton.png" width="201" height="201" /></div>
+						<div class="app-button" data-target="meet_people"><img src="/images/meetPeopleButton.png" width="201" height="201" /></div>
+					</div>
+					<div class="app-section">
+						<div class="app-button" data-target="follow_us"><img src="/images/followButton.png" width="201" height="201" /></div>
+						<div class="app-button" data-target="rules"><img src="/images/rulesButton.png" width="201" height="201" /></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="app-page" data-page="invite_to_join">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Invite to Join</div>
+			</div>
+			<div class="app-content">
+				<span class="spnTODO"><h4>TODO:</h4> Add app card sharing CTA to this button.</span>
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="meet_people">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Meet People</div>
+			</div>
+			<div class="app-content">
+				<span class="spnTODO"><h4>TODO:</h4> Bring in Volley viewer from verify app card.</span>
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="follow_us">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Follow us</div>
+			</div>
+			<div class="app-content">
+				<p>Twitter: @selfieclub</p>
+				<p>Instagram:@selfieclub</p>
+				<p>KIK: Selfieclub</p>
+				<p>Web: kik.volley.im</p>
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="rules">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Rules</div>
+			</div>
+			<div class="app-content">
+				<ol>
+					<li>Cute Selfies Only</li>
+					<li>No Haters</li>
+					<li>No Adults or Creeps</li>
+					<li>Share w/ 10 Friends</li>
+					<li>Submit Your Selfie for Shoutout</li>
+				<ol>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.touchSwipe.js"></script>
+		
+		<script src="/zerver/MyAPI.js"></script>
+		<script src="http://zeptojs.com/zepto.min.js"></script>
+		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
+		<script src="http://cdn.kik.com/app/1/app.js"></script>
+		<script src="/js/main.js"></script>
+		
+		<script>
+		</script>
+		
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-30531077-4', 'kik.vlly.im');
+			ga('send', 'pageview');
+			
+			if (cards.kik) {
+				//cards.metrics.enableGoogleAnalytics('UA-30531077-4', 'chatcard.co');
+				cards.metrics.enableGoogleAnalytics();
+			}
+		</script>
+	<div id="divWrapper"></body>
+</html>

@@ -1,16 +1,40 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>SelfieClub</title>
+		<title>Share to Join</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-16">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<meta name="kik-more" content="selfieclubapp.com">
 		<meta name="kik-prefer" content="true">
-		<meta name="description" content="Join SelfieClub">
+		<meta name="description" content="Share to join SelfieClub!">
 		
 		<link rel="kik-icon" href="./ico_volley.png">
 		<!-- <link rel="shortcut icon" href="./favicon.ico"> -->
 		<link rel="stylesheet" href="./styles.css">
+		
+		<script>
+			var _tsq = _tsq || [];
+			_tsq.push(["setAccountName", "volley"]);
+			_tsq.push(["fireHit", "selfieclubapp.im", []]);
+
+			(function() {
+				function z() {
+					var s = document.createElement("script");
+						s.type = "text/javascript";
+						s.async = "async";
+						s.src = window.location.protocol + "//cdn.tapstream.com/static/js/tapstream.js";
+					
+					var x = document.getElementsByTagName("script")[0];
+						x.parentNode.insertBefore(s, x);
+				}
+				
+				if (window.attachEvent)
+					window.attachEvent("onload", z);
+				
+				else
+					window.addEventListener("load", z, false);
+			})();
+		</script>
 		
 		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
 		<script src="http://zeptojs.com/zepto.min.js"></script>
@@ -174,5 +198,21 @@
 
 		<!-- view message -->
 		<div id="divDebug"></div>
+		
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})
+			(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+			
+			ga('create', 'UA-30531077-4', 'selfieclubapp.im');
+			ga('send', 'pageview');
+			
+			if(cards.kik) {
+				//cards.metrics.enableGoogleAnalytics('UA-30531077-4', 'chatcard.co');
+				cards.metrics.enableGoogleAnalytics();
+			}
+		</script>
+		
 	</body>
 </html>

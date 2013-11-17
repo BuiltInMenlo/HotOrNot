@@ -66,7 +66,7 @@ NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley
 //NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
 //NSString * const kMixPanelToken = @"de3e67b68e6b8bf0344ca58573733ee5"; // Soft Launch II
 NSString * const kFacebookAppID = @"600550136636754";
-NSString * const kTestFlightAppToken = @"139f9073-a4d0-4ecd-9bb8-462a10380218";
+NSString * const kTestFlightAppToken = @"68bcb8c2-c40e-4e3b-afdc-5d14a89eb4a0";
 NSString * const kHockeyAppToken = @"b784de80afa5c65803e0f3d8035cd725";
 
 //api endpts
@@ -148,11 +148,11 @@ NSString * const kNetErrorNoConnection = @"The Internet connection appears to be
 NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), got 404";
 
 
-//#if __DEV_BUILD___ == 0
+#if __APPSTORE_BUILD__ == 0
+@interface HONAppDelegate() <AmazonServiceRequestDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+#else
 @interface HONAppDelegate() <AmazonServiceRequestDelegate>
-//#else
-//@interface HONAppDelegate() <BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
-//#endif
+#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
@@ -1261,11 +1261,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_uploadImagesToAWS:) name:@"UPLOAD_IMAGES_TO_AWS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateChallengeAsSeen:) name:@"UPDATE_CHALLENGE_AS_SEEN" object:nil];
 	
-#if __DEV_BUILD___ == 1
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
+
+#if __APPSTORE_BUILD__ == 0
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-//	[TestFlight takeOff:kTestFlightAppToken];
+	[TestFlight takeOff:kTestFlightAppToken];
 #endif
 	
 	TSConfig *config = [TSConfig configWithDefaults];
@@ -1982,7 +1983,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-#if __DEV_BUILD___ == 1
+#if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 #ifndef CONFIGURATION_AppStore

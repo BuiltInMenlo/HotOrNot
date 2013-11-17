@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+	<head>
+		<!-- Card info -->
+		<title>SelfieClub by Volley</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-16">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="kik-more" content="kik.vlly.im">
+		<meta name="kik-prefer" content="true">
+		<meta name="description" content="Join SelfieClub by Volley">
+		
+		<link rel="kik-icon" href="./images/ico_volley.png">
+
+
+		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+		<link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+		<link href="http://cdn.kik.com/app/1/default.css" rel="stylesheet" />
+		<link href="./css/main.css" type="text/css" rel="stylesheet" />
+
+		<!-- Styles -->
+		<link rel="stylesheet" href="http://cdn.kik.com/app/1/default.css">
+		<link rel="stylesheet" href="/css/styles.css">
+	</head>
+
+	<body>
+		<!-- Pages -->
+		<div class="app-page" data-page="home">
+			<div class="app-topbar">
+				<div class="app-title">Landing page</div>
+			</div>
+			<div class="app-content">
+				<div class="app-section">
+					<div class="app-button" data-target="page2">Invite to Join</div>
+					<div class="app-button" data-target="page3">Meet People</div>
+					<div class="app-button" data-target="page5">Follow Us</div>
+					<div class="app-button" data-target="page5">Rules</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="app-page" data-page="page2">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Invite to Join</div>
+			</div>
+			<div class="app-content">
+				<span class="spnTODO"><h4>TODO:</h4> Add app card sharing CTA to this button.</span>
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="page3">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Meet People</div>
+			</div>
+			<div class="app-content">
+				<span class="spnTODO"><h4>TODO:</h4> Bring in Volley viewer from verify app card.</span>
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="page4">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Follow us</div>
+			</div>
+			<div class="app-content">
+				<p>Twitter: @selfieclub</p>
+				<p>Instagram:@selfieclub</p>
+				<p>KIK: Selfieclub</p>
+				<p>Web: kik.volley.im</p>
+			</div>
+		</div>
+		
+		<div class="app-page" data-page="page5">
+			<div class="app-topbar">
+				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-title">Rules</div>
+			</div>
+			<div class="app-content">
+				<ol>
+					<li>Cute Selfies Only</li>
+					<li>No Haters</li>
+					<li>No Adults or Creeps</li>
+					<li>Share w/ 10 Friends</li>
+					<li>Submit Your Selfie for Shoutout</li>
+				<ol>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script src="/zerver/MyAPI.js"></script>
+		<script src="http://zeptojs.com/zepto.min.js"></script>
+		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
+		<script src="http://cdn.kik.com/app/1/app.js"></script>
+		<script src="/js/main.js"></script>
+		
+		
+		<script>
+			function write (str) {
+				document.documentElement.appendChild(
+					document.createTextNode(str)
+				);
+			}
+			MyAPI.getStuff('Hello from browser', function (str) {
+				write(str);
+			}).error(function (err) {
+				write('ERROR: ' + err);
+			});
+		</script>
+	</body>
+</html>
