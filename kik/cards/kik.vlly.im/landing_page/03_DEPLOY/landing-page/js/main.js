@@ -33,14 +33,6 @@
 			});
 		});
 		
-		cards.kik.send('', {
-			title : '',
-			text  : '',
-			pic   : 'http://kik.vlly.im/images/share_612x612.png',
-			big   : true,
-			data  : { pic : 'http://kik.vlly.im/images/share_612x612.png' }
-		});
-		
 		//$('#divWrapper').click
 	});
 
