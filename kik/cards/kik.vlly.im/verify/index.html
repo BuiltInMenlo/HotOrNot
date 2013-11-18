@@ -14,26 +14,10 @@
 		<link rel="kik-icon" href="./images/ico_volley.png">
 
 
-		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
-		<link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
-		<link href="http://cdn.kik.com/app/1/default.css" rel="stylesheet" />
-		<link href="./css/main.css" type="text/css" rel="stylesheet" />
+        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+        <link href="./css/main.css" type="text/css" rel="stylesheet" />
         
-		<style type="text/css" rel="stylesheet" media="screen">
-			.app-ios .app-topbar .app-button.blue {
-				height:26px;
-				background-image:linear-gradient(#4e80ab0,#4583b74%,#407fb512%,#3c79af27%,#225e9a85%,#205a9696%,#1b5288100%);
-				border:1px solid rgba(0, 0, 0, 0.7);
-				-webkit-border-radius:5px;
-				border-radius:5px;
-				-webkit-border-image:none;
-				-webkit-box-shadow:0 1px 0 rgba(42,51,58,0.5);
-				box-shadow:0 1px 0 rgba(42,51,58,0.5);
-				line-height:26px;
-				padding:0 9px;
-			}
-		</style>
-
 		<script>
 			var _tsq = _tsq || [];
 				_tsq.push(["setAccountName", "volley"]);
@@ -319,7 +303,7 @@
 							divImgs_obj.css("height", (img_tot * IMG_HEIGHT) +'px');
 							
 							
-							// 	$('#divDebug').show();
+							//$('#divDebug').show();
 							$('#txtDebug').append("\n" + img_arr.length +"\n");
 							
 							doLoadImages();
@@ -343,8 +327,6 @@
 						
 						divImgs_obj = $('#divImgs');
 						divImgs_obj.swipe(swipeOptions);
-						
-						alert ('swipeOptions: ['+swipeOptions+']');
 
 						cards.ready(function () {
 							//if (cards.kik.message) {// web app was opened from Kik message

@@ -33,39 +33,67 @@
 			.app-topbar {
 				height:50px;
 				background:rgba(0, 0, 0, 0.33);
+				background-image:none;
 				color:#FFF;
 				font-weight:600;
+				border:none;
+			}
+			
+			.app-topbar .app-button.left {
+				color:#0f0;
+			}
+			
+			.app-android .app-topbar, .app-ios .app-topbar {
+				background-image:none;
+				-webkit-box-shadow:none;
+				box-shadow:none;
 			}
 			
 			.app-page {
-				background-color: ##1454E2;
+				background-color:transparent;
+				display: table;
+				position: absolute;
+				height: 100%;
+				width: 100%;
+			}
+			
+			#divLandingPage_page {
 				background-image:url('/images/background.png');
+				background-repeat:no-repeat;
+			}
+			
+			#divInviteToJoin_page, #divMeetPeople_page, #divFollowUs_page, #divRules_page {
+				background-image:url('/images/subBackground.png');
 				background-repeat:no-repeat;
 			}
 			
 			.app-content, .app-section, .app-list, .app-list>label {
 				background-color: transparent;
 				background: transparent;
+				color:#FFF;
 			}
 			
-			.app-section, .app-content .app-button, .app-input, .app-list>li, .app-list>li.app-button {
+			.app-page, .app-section, .app-content .app-button, .app-input, .app-list>li, .app-list>li.app-button {
 				border-color:transparent;
 				margin:0;
 				padding:0;
+				color:#FFF;
 			}
 			
-			#divLandingPage_content {
-				text-align: center;
+			.app-content {
+				text-align:center;
+				font-size:16px;
+				font-weight:bold;
 			}
-
+			
 			#divLandingPage_content .app-button {
 				display:block;
 				float:left;
 				vertical-align: middle;
-				width:202px;
-				height:202px;
-				margin-bottom: 42px;
-				margin-right: 42px;
+				width:101px;
+				height:101px;
+				margin-bottom: 21px;
+				margin-right: 21px;
 /*				background-color:rgba(5, 26, 71, 0.675);*/
 /*				-webkit-border-radius:20px;*/
 /*				color:#FFF;*/
@@ -74,8 +102,16 @@
 			#divLandingPage_content>#divContentWrapper {
 				position:relative;
 				margin: 0 auto; 
-				width: 640px;
-				top:270px;
+				width: 320px;
+				top:135px;
+			}
+			
+			#divFollowUs_content, #divRules_content {
+				position: relative;
+				top: 100px;
+				margin-left: auto;
+				margin-right: auto;
+				vertical-align:middle;
 			}
 			
 		</style>
@@ -102,33 +138,54 @@
 					window.addEventListener("load", z, false);
 			})();
 		</script>
+		
+		<!-- AddThis Smart Layers BEGIN -->
+		<!-- Go to http://www.addthis.com/get/smart-layers to customize -->
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52892a09525dc541"></script>;
+		<script type="text/javascript">
+		  addthis.layers({
+		    'theme' : 'dark',
+		    'share' : {
+		      'position' : 'left',
+		      'numPreferredServices' : 3,
+		      'services' : 'twitter,facebook,tumblr,hackernews,myspace,qzone,vk'
+		    }, 
+		    'follow' : {
+		      'services' : [
+		        {'service': 'twitter', 'id': 'selfieclub'},
+		        {'service': 'instagram', 'id': 'selfieclub'},
+		      ]
+		    }  
+		  });
+		</script>
+		<!-- AddThis Smart Layers END -->
 	</head>
 
 	<body><div id="divWrapper">
 		<!-- // pages // -->
-		<div class="app-page" data-page="landing_page">
+		<div class="app-page" data-page="landing_page" id="divLandingPage_page">
 			<div class="app-topbar">
 				<div class="app-title">Landing page</div>
 			</div>
 			<div class="app-content" id="divLandingPage_content">
 				<div id="divHomeShareButton"></div>
 				<div id="divContentWrapper">
-					<div id="divBubble"><img src="/images/alert.png" width="640" height="88" /></div>
+					<div id="divBubble"><img src="/images/alert.png" width="320" height="44" /></div>
 					<div class="app-section">
-						<div class="app-button" data-target="invite_to_join"><img src="/images/inviteButton.png" width="201" height="201" /></div>
-						<div class="app-button" data-target="meet_people"><img src="/images/meetPeopleButton.png" width="201" height="201" /></div>
+						<div id="divInviteButton" class="app-button" data-target=""><img src="/images/inviteButton.png" width="101" height="101" /></div>
+						<div class="app-button" data-target="meet_people"><img src="/images/meetPeopleButton.png" width="101" height="101" /></div>
 					</div>
 					<div class="app-section">
-						<div class="app-button" data-target="follow_us"><img src="/images/followButton.png" width="201" height="201" /></div>
-						<div class="app-button" data-target="rules"><img src="/images/rulesButton.png" width="201" height="201" /></div>
+						<div class="app-button" data-target="follow_us"><img src="/images/followButton.png" width="101" height="101" /></div>
+						<div class="app-button" data-target="rules"><img src="/images/rulesButton.png" width="101" height="101" /></div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="app-page" data-page="invite_to_join">
+		<div class="app-page" data-page="invite_to_join" id="divInviteToJoin_page">
 			<div class="app-topbar">
-				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-button left" data-back="true"><img src="/images/backButton.png" width="44" height="44" /></div>
 				<div class="app-title">Invite to Join</div>
 			</div>
 			<div class="app-content">
@@ -136,9 +193,9 @@
 			</div>
 		</div>
 		
-		<div class="app-page" data-page="meet_people">
+		<div class="app-page" data-page="meet_people" id="divMeetPeople_page">
 			<div class="app-topbar">
-				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-button left" data-back="true"><img src="/images/backButton.png" width="44" height="44" /></div>
 				<div class="app-title">Meet People</div>
 			</div>
 			<div class="app-content">
@@ -146,36 +203,34 @@
 			</div>
 		</div>
 		
-		<div class="app-page" data-page="follow_us">
+		<div class="app-page" data-page="follow_us" id="divFollowUs_page">
 			<div class="app-topbar">
-				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-button left" data-back="true"><img src="/images/backButton.png" width="44" height="44" /></div>
 				<div class="app-title">Follow us</div>
 			</div>
-			<div class="app-content">
-				<p>Twitter: @selfieclub</p>
-				<p>Instagram:@selfieclub</p>
-				<p>KIK: Selfieclub</p>
-				<p>Web: kik.volley.im</p>
+			<div class="app-content" id="divFollowUs_content">
+				<p>Twitter: <a href="https://twitter.com/selfieclub">@selfieclub</a></p>
+				<p>Instagram: <a href="http://instagram.com/selfieclub">@selfieclub</a></p>
+				<p>KIK: <a href="#">Selfieclub</a></p>
+				<p>Web: <a href="http://kik.vlly.im/">kik.vlly.im</a></p>
 			</div>
 		</div>
 		
-		<div class="app-page" data-page="rules">
+		<div class="app-page" data-page="rules" id="divRules_page">
 			<div class="app-topbar">
-				<div class="app-button left" data-back="true">Back</div>
+				<div class="app-button left" data-back="true"><img src="/images/backButton.png" width="44" height="44" /></div>
 				<div class="app-title">Rules</div>
 			</div>
-			<div class="app-content">
-				<ol>
-					<li>Cute Selfies Only</li>
-					<li>No Haters</li>
-					<li>No Adults or Creeps</li>
-					<li>Share w/ 10 Friends</li>
-					<li>Submit Your Selfie for Shoutout</li>
-				<ol>
+			<div class="app-content" id="divRules_content">
+				<p>#1. Cute Selfies Only</p>
+				<p>#2. No Haters</p>
+				<p>#3. No Adults or Creeps</p>
+				<p>#4. Share w/ 10 Friends</p>
+				<p>#5. Submit Your Selfie for Shoutout</p>
 			</div>
 		</div>
 
-		<!-- Scripts -->
+		<!-- scripts -->
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.touchSwipe.js"></script>
 		
@@ -198,9 +253,10 @@
 			ga('send', 'pageview');
 			
 			if (cards.kik) {
-				//cards.metrics.enableGoogleAnalytics('UA-30531077-4', 'chatcard.co');
+				//cards.metrics.enableGoogleAnalytics('UA-30531077-4', 'kik.vlly.im');
 				cards.metrics.enableGoogleAnalytics();
+				
 			}
 		</script>
-	<div id="divWrapper"></body>
+	</div></body>
 </html>

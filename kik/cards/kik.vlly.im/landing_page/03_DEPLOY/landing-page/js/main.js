@@ -19,50 +19,53 @@
 		// }).error(function (err) {
 		// 	write('ERROR: ' + err);
 		// });
+		
+		write('Hello from {landing_page}');
+		$('#divInviteButton').click(function () {
+			alert('HoGe PiYo');
+			
+			cards.kik.send('', {
+				title : '',
+				text  : '',
+				pic   : 'http://kik.vlly.im/images/share_612x612.png',
+				big   : true,
+				data  : { pic : 'http://kik.vlly.im/images/share_612x612.png' }
+			});
+		});
+		
+		cards.kik.send('', {
+			title : '',
+			text  : '',
+			pic   : 'http://kik.vlly.im/images/share_612x612.png',
+			big   : true,
+			data  : { pic : 'http://kik.vlly.im/images/share_612x612.png' }
+		});
+		
+		//$('#divWrapper').click
 	});
 
 	App.populator('invite_to_join', function (page) {
 		// put stuff here
 		
-		MyAPI.getStuff('Hello from [invite_to_join]', function (str) {
-			write(str);
-			
-		}).error(function (err) {
-			write('ERROR: ' + err);
-		});
+		write('Hello from {invite_to_join}');
 	});
 
 	App.populator('meet_people', function (page) {
 		// put stuff here
 		
-		MyAPI.getStuff('Hello from [meet_people]', function (str) {
-			write(str);
-			
-		}).error(function (err) {
-			write('ERROR: ' + err);
-		});
+		write('Hello from {meet_people}');
 	});
 	
 	App.populator('follow_us', function (page) {
 		// put stuff here
 		
-		MyAPI.getStuff('Hello from [follow_us]', function (str) {
-			write(str);
-			
-		}).error(function (err) {
-			write('ERROR: ' + err);
-		});
+		write('Hello from {follow_us}');
 	});
 	
 	App.populator('rules', function (page) {
 		// put stuff here
 		
-		MyAPI.getStuff('Hello from [rules]', function (str) {
-			write(str);
-			
-		}).error(function (err) {
-			write('ERROR: ' + err);
-		});
+		write('Hello from {rules}');
 	});
 
 	try {
@@ -75,7 +78,7 @@
 
 
 function write(str) {
-	MyAPI.getStuff('Hello from ['+str+']', function (str) {
+	MyAPI.getStuff('MyAPI says ['+str+']', function (str) {
 		
 	}).error(function (err) {
 		write('ERROR: ' + err);
