@@ -4,6 +4,64 @@ class BIM_Report{
     // get the top 50 users that have been suspended
     // and get the top 50 that are about to be suspended
     
+    public static function usersThatFlag(){
+        $sql = "
+        	select u.id, u.img_url, count(*) as flags 
+        	from `hotornot-dev`.tblUsers as u join `hotornot-dev`.tblFlaggedUserApprovals as f on u.id = f.user_id 
+        	where f.added > unix_timestamp('2013-10-30 18:00:00') 
+        	group by u.id 
+        	order by flags desc
+        	limit 200
+        ";
+        
+        
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $stmt = $dao->prepareAndExecute( $sql );
+        $userData = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        
+        echo("
+        <html>
+        <head>
+        </head>
+        <body>
+        <table border=1 cellpadding=10>
+        <tr>
+        <th>Image</th>
+        <th>Username</th>
+        <th>Age</th>
+        <th>Flags</th>
+        </tr>
+        ");
+        // now get the flag counts for each user
+        foreach( $userData as $data ){
+            
+            $user = BIM_Model_User::get( $data->id );
+            //if( preg_match('/default/i', $user->img_url) || !$user->img_url ) continue;
+            
+            $img = preg_replace('/\.jpg/','', $user->img_url );
+            $img = preg_replace('/Large_640x1136/','', $img );
+            $img = "{$img}Small_160x160.jpg";
+            
+            $datetime1 = new DateTime();
+            $datetime2 = new DateTime($user->age);
+            $interval = $datetime1->diff($datetime2);
+            $age = $interval->y;
+            echo "
+            <tr>
+            <td><img src='$img'></td>
+            <td>$user->username</td>
+            <td>$age</td>
+            <td>$data->flags</td>
+            </tr>
+            ";
+        }
+        echo("
+        </table>
+        </body>
+        </html>
+        ");
+    }
+    
     public static function carlosDanger(){
         echo("
         <html>

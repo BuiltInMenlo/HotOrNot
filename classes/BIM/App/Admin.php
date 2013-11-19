@@ -321,4 +321,139 @@ class BIM_App_Admin{
         exit;
     }
     
+    public static function getSearchUserForm(){
+        return "
+<html>
+<head>
+    <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'>
+    <script src='http://code.jquery.com/jquery-1.9.1.js'></script>
+	<script src='http://code.jquery.com/ui/1.10.3/jquery-ui.js'></script>
+</head>
+<body>
+<form method=post>
+Find a user: <input type='text' name='search' size='75'> <input type='submit' value='Get User'>
+</form>
+</body>
+</html>
+        ";
+    }
+    
+    public static function getEditUserForm( $user, $errors = null ){
+        $date = new DateTime( $user->age );
+        $date = $date->format('m/d/Y');
+        
+        $image = $user->getAvatarUrl();
+            $image = preg_replace('/\.jpg/','', $user->img_url );
+            $image = preg_replace('/Large_640x1136/','', $image );
+            $image = "{$image}Small_160x160.jpg";
+        
+        return "
+<html>
+<head>
+    <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'>
+	<script src='http://code.jquery.com/jquery-1.9.1.js'></script>
+	<script src='http://code.jquery.com/ui/1.10.3/jquery-ui.js'></script>
+</head>
+<body>
+<h4>
+Editing: $user->username - id: $user->id
+</h4>
+<form method=post>
+Username: <input type='text' name='user[username]' size='50' value='$user->username'>
+<br><br>
+Email: <input type='text' name='user[email]' size='50' value='$user->username'>
+<br><br>
+Birthdate: <input id='age' type='text' name='user[age]' size='50' value='$date'>
+<div id='datepicker'></div>
+<script>
+$( '#datepicker' ).datepicker();
+$( '#datepicker' ).datepicker('setDate', '$date' );
+$( '#datepicker' ).datepicker('option','showOtherMonths' );
+$( '#datepicker' ).datepicker('option','stepMonths' );
+$( '#datepicker' ).datepicker('option','onSelect', function(text,o){ $('#age').val(text) } );
+</script>
+<br><br>
+Avatar Image: <input type='file' name='avatar' size='50'>
+<br>
+<img src='$image'>
+</form>
+</body>
+</html>
+        ";
+    }
+    
+    public static function validateUserData( $input ){
+        $errors = (object) array('ok' => true, 'fields' => (object) array() );
+        if( !empty( $input->username ) ){
+            if( BIM_Model_User::usernameExists( $input->username ) ){
+                $errors->fields->username = $input->username;
+            }
+        }
+        
+        if( !empty( $input->email ) ){
+            if( !filter_var( $input->email, FILTER_VALIDATE_EMAIL) 
+                || BIM_Model_User::emailExists( $input->username ) )
+            {
+                $errors->fields->email = $input->email;
+            }
+        }
+        
+        if( !empty( $input->age ) ){
+            // make sure the date is valid
+            $date = date_parse( $input->age );
+            if( empty($date['month']) || empty($date['day']) ||  empty( $date['year'] ) ){
+                $errors->fields->age = $input->age;
+            } else if( !checkdate( $date['month'], $date['day'], $date['year'] ) ){
+                $errors->fields->age = $input->age;
+            }
+        }
+        
+        // check that the birthdate is a valid date
+        return $errors;
+    }
+    
+    public static function updateUser( $user, $update ){
+        $setSql = array();
+        $params = array();
+        if( !empty( $update->username ) ){
+            $setSql[] = "username = ?";
+            $params[] = $update->username;
+        }
+        
+        if( !empty( $update->email ) ){
+            $setSql[] = "email = ?";
+            $params[] = $update->email;
+        }
+        
+        if( !empty( $update->age ) ){
+            $setSql[] = "age = ?";
+            $d = new DateTime( $update->age );
+            $age = $d->getTimestamp();
+            $params[] = $age;
+        }
+        
+        if( !empty( $update->img_url ) ){
+            $setSql[] = "img_url = ?";
+            $params[] = $update->img_url;
+        }
+        
+        $params[] = $user->id;
+        
+        $setsql = join(',', $setSql );
+        
+        $sql = "update `hotornot-dev`.tblUsers set $setSql where id = ?";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $stmt = $dao->prepareAndExecute( $sql, $params );
+        
+    }
+    
+    public static function handleUserImage( $imgPath ){
+        $suffix = 'Large_640x1136.jpg';
+        $namePrefix = 'profile-'.uniqid(true);
+        $name = "{$namePrefix}{$suffix}";
+        $imgUrlPrefix = "https://d3j8du2hyvd35p.cloudfront.net/$namePrefix";
+        BIM_Utils::putImage( $imgPath, $name, 'hotornot-avatars' );
+        BIM_Utils::processImage( $imgUrlPrefix );
+    }
+    
 }
