@@ -2844,6 +2844,11 @@
 			attributes = {
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
+				TargetAttributes = {
+					4C62652415F96C7100AA7FCE = {
+						DevelopmentTeam = 9549ESJ5ZU;
+					};
+				};
 			};
 			buildConfigurationList = 4C62651F15F96C7100AA7FCE /* Build configuration list for PBXProject "HotOrNot" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -3508,8 +3513,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "51C60898-A032-4AC2-899E-634086B1F934";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "51C60898-A032-4AC2-899E-634086B1F934";
+				PROVISIONING_PROFILE = "D3DB50CB-B50B-4635-B604-046F1F8D2CD7";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D3DB50CB-B50B-4635-B604-046F1F8D2CD7";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3543,8 +3548,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "924CEF2D-6F10-4BE4-A508-1D4AD151DB6C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "924CEF2D-6F10-4BE4-A508-1D4AD151DB6C";
+				PROVISIONING_PROFILE = "F1BA7D4F-96DB-423D-8BD8-CB2B3CDEB50C";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F1BA7D4F-96DB-423D-8BD8-CB2B3CDEB50C";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
@@ -3556,6 +3561,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Other\\ Frameworks",
@@ -3573,6 +3580,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Volley;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
 				WRAPPER_EXTENSION = app;
@@ -3583,6 +3591,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Other\\ Frameworks",
@@ -3600,6 +3610,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Volley;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
 				WRAPPER_EXTENSION = app;

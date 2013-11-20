@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Volley</string>
+	<string>Selfieclub</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
@@ -32,7 +32,7 @@
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>com.builtinmenlo.volley</string>
+	<string>com.builtinmenlo.selfieclub</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -67,11 +67,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-<<<<<<< HEAD
-	<string>19522</string>
-=======
-	<string>19505</string>
->>>>>>> 74548961c409941e2932f387f64c2527946d3079
+	<string>19525</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>

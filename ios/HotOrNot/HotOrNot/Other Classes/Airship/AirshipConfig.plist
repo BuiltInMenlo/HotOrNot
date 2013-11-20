@@ -5,12 +5,12 @@
 	<key>inProduction</key>
 	<true/>
 	<key>developmentAppKey</key>
-	<string>8pnbIf6vTnmzkeFWvHjcnQ</string>
+	<string>zouE6v02Qe-JJS6uKMkKjQ</string>
 	<key>developmentAppSecret</key>
-	<string>xT4DbYZcQ7WFMsjFUO0BKw</string>
+	<string>ZZGEBtnLQB2d6fiFdigNVw</string>
 	<key>productionAppKey</key>
-	<string>YouZb954TnGZa1IJSjX1lg</string>
+	<string>dPvBDEnwSOaK0sFZaVWrmg</string>
 	<key>productionAppSecret</key>
-	<string>hS4wzh6dQTmsdTV_hKgelw</string>
+	<string>bCInFQpIQzaDyFluwMLVDQ</string>
 </dict>
 </plist>

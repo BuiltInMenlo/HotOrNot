@@ -1266,12 +1266,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
 	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-<<<<<<< HEAD
 	[TestFlight takeOff:kTestFlightAppToken];
-=======
->>>>>>> 74548961c409941e2932f387f64c2527946d3079
 #endif
-	[TestFlight takeOff:kTestFlightAppToken];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
