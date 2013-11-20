@@ -31,27 +31,16 @@ body {
 	position:fixed;
 	top:0;
 	width:320px;
-	height:99px;
+	height:114px;
 	z-index:3;
 }
 
-#divAppStoreBadge {
-	position: absolute;
-	bottom: 102px;
-	left: 5px;
-	margin: 0 auto;
-	padding: 0;
-	width: 129px;
-	height: 44px;
-	z-index:2;
-}
-
-#spnShare {
+#spnRefresh {
 	position:fixed;
 	top:0;
 	right:0;
-	width:54px;
-	height:48px;
+	width:44px;
+	height:44px;
 	z-index:4;
 }
 
@@ -65,10 +54,6 @@ body {
 }
 
 #divImgs  {
-	/*hor - 
-	float:left;
-	display:inline;*/
-	
 	display:block;
 	
 	-webkit-transition-property: -webkit-transform;
@@ -77,15 +62,9 @@ body {
 	padding:0px;
 	margin:0px;
 	
-	/* hor -
-	width:5120px;
-	height:568px;
-	*/
-	
 	width:320px;
 	height:9088px;
 	
-	/*apply a transfor to kick in the hardware acceleration.  Without this, the first time we add the transform you get odd rendering of the divs (half missing) */
 	-webkit-transform: translate3d(0px,0px,0px); 
 }
 
@@ -96,9 +75,6 @@ body {
 	width:320px;
 	height:568px;
 	
-	/*opacity:0.5;*/
-	
-	/*apply a transfor to kick in the hardware acceleration.  Without this, the first time we add the transform you get odd rendering of the divs (half missing) */
 	-webkit-transform: translate3d(0px,0px,0px); 
 }
 
@@ -118,6 +94,42 @@ body {
 	width: 64px;
 	height: 64px;
 }
+
+#divFooter {
+	display: inline;
+	position: absolute;
+	bottom: 5px;
+	width:310px;
+	height:44px;
+	margin: 0 auto;
+	margin-left:5px;
+	z-index:2;
+}
+
+#spnKikButton {
+	float:left;
+}
+
+#spnAppStoreBadge {
+	float:right;
+}
+
+#divCheckmark {
+	position: fixed;
+	width:114px;
+	height:114px;
+	left:103px;
+	z-index:666;
+}
+
+#divOverlay {
+	position:fixed;
+	top:0px;
+	z-index:1066;
+	width:320px;
+	height:568px;
+}
+
 
 #divDebug {
 	position: fixed;
@@ -145,6 +157,6 @@ body {
 	display: none;
 	width:0;
 	height:0;
-	margin 0 auto;
+	margin: 0 auto;
 	padding:0;
 }

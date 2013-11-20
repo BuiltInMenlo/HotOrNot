@@ -32,13 +32,9 @@
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>landing-page/index_20131116-142400.html</string>
-		</dict>
-		<dict>
-			<key>filename</key>
 			<string>landing-page/index.html</string>
 			<key>lastUsed</key>
-			<date>2013-11-17T10:34:51Z</date>
+			<date>2013-11-19T00:39:18Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -88,81 +84,51 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>9</integer>
 				<key>line</key>
-				<integer>132</integer>
+				<integer>125</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>141</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>27</integer>
-				<key>line</key>
-				<integer>132</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>132</integer>
-			</dict>
+			<integer>21</integer>
 		</dict>
 		<key>landing-page/css/main.css</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>26</integer>
+				<integer>8</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>12</integer>
+			<integer>37</integer>
 		</dict>
 		<key>landing-page/index.html</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>24</integer>
+				<integer>16</integer>
 				<key>line</key>
-				<integer>66</integer>
+				<integer>173</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>55</integer>
+			<integer>0</integer>
 		</dict>
 		<key>landing-page/js/main.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>18</integer>
-				<key>line</key>
 				<integer>5</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>landing-page/zerver/MyAPI.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
 				<key>line</key>
-				<integer>3</integer>
+				<integer>33</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -174,13 +140,12 @@
 	<array>
 		<string>landing-page/css/cdn.kik.com_app_1_default.css</string>
 		<string>landing-page/index.html</string>
-		<string>landing-page/css/main.css</string>
 		<string>landing-page/js/main.js</string>
-		<string>landing-page/zerver/MyAPI.js</string>
+		<string>landing-page/css/main.css</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{3, 272}, {1152, 580}}</string>
+	<string>{{31, 84}, {1146, 784}}</string>
 </dict>
 </plist>
