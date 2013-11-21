@@ -51,14 +51,14 @@
 
 #if __DEV_BUILD___ == 0
 NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_103.json";
+NSString * const kConfigJSON = @"boot_sc0001.json";
 NSString * const kAPIHost = @"data_api";
-NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
-#else
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
-NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
+#else
+NSString * const kConfigURL = @"http://api.letsvolley.com";
+NSString * const kConfigJSON = @"boot_sc0001.json";
+NSString * const kAPIHost = @"data_api-dev";
+NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #endif
 
 
@@ -786,7 +786,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
 					[self _showOKAlert:@"Update Required"
-						   withMessage:@"Please update Volley to the latest version to use the latest features."];
+						   withMessage:@"Please update Selfieclub to the latest version to use the latest features."];
 				}
 				
 				if (!_isFromBackground)
@@ -1327,8 +1327,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 //		if (boot_total == 5) {
 //			UIAlertView *alertView = [[UIAlertView alloc]
-//									  initWithTitle:@"Rate Volley"
-//									  message:@"Why not rate Volley in the app store!"
+//									  initWithTitle:@"Rate Selfieclub"
+//									  message:@"Why not rate Selfieclub in the app store!"
 //									  delegate:self
 //									  cancelButtonTitle:nil
 //									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
@@ -1465,7 +1465,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				}
 				
 				if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE VOLLEY?"
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE SELFIECLUB?"
 																		message:@""
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
@@ -1573,7 +1573,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			// user verified
 			else if (pushType == 2) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:@"Awesome! You have been Volley Verified! Would you like to share Volley with your friends?"//[userInfo objectForKey:@"aps"]
+																	message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"//[userInfo objectForKey:@"aps"]
 																   delegate:self
 														  cancelButtonTitle:@"No"
 														  otherButtonTitles:@"Yes", nil];

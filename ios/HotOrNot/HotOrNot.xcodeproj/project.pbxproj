@@ -3579,7 +3579,7 @@
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/Mixpanel",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Volley;
+				PRODUCT_NAME = Selfieclub;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
@@ -3609,7 +3609,7 @@
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/Mixpanel",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Volley;
+				PRODUCT_NAME = Selfieclub;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";

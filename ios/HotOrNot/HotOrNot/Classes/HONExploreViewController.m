@@ -272,7 +272,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"

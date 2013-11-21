@@ -311,7 +311,7 @@
 		
 		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 		if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
 																message:@"Get more subscribers now, tap OK."
 															   delegate:self
 													  cancelButtonTitle:@"No"
@@ -326,13 +326,16 @@
 		}
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:1];
-		[alertView show];
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"No"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:1];
+//		[alertView show];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+		[self dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
@@ -530,7 +533,7 @@
 			
 			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
 														  cancelButtonTitle:@"No"

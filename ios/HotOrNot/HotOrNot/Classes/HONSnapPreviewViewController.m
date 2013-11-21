@@ -312,7 +312,7 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Selfieclub with your friends?"
 																		message:@"Get more subscribers now, tap OK."
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
@@ -597,7 +597,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"like_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Selfieclub with your friends?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
@@ -645,7 +645,9 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	[self _addFriend:_challengeVO.creatorVO.userID];
+	if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+		[self _addFriend:_challengeVO.creatorVO.userID];
+	
 	[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 	
 	
@@ -757,7 +759,9 @@
 //										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 //		
 //		if (buttonIndex == 1) {
-//			[self _addFriend:_challengeVO.creatorVO.userID];
+//			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+//				[self _addFriend:_challengeVO.creatorVO.userID];
+//		
 //			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 //		}
 //		
@@ -778,7 +782,9 @@
 //										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 //		
 //		if (buttonIndex == 1) {
-//			[self _addFriend:_challengeVO.creatorVO.userID];
+//			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+//				[self _addFriend:_challengeVO.creatorVO.userID];
+//		
 //			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 //		}
 //		
@@ -789,7 +795,9 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
-			[self _addFriend:_challengeVO.creatorVO.userID];
+			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+				[self _addFriend:_challengeVO.creatorVO.userID];
+			
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 		}
 

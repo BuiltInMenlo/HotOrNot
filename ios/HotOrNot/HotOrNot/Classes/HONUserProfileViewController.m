@@ -575,7 +575,7 @@
 - (void)_goDone {
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
 	if (total == 0 && _isUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Volley?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -654,7 +654,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive Volley updates from %@", _userVO.username]
+														message:[NSString stringWithFormat:@"You will receive Selfieclub updates from %@", _userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -669,7 +669,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will no longer receive Volley updates from %@", _userVO.username]
+														message:[NSString stringWithFormat:@"You will no longer receive Selfieclub updates from %@", _userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];

@@ -10,19 +10,11 @@
 			<key>expanded</key>
 			<true/>
 			<key>name</key>
-			<string>_bkup</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>verify/_bkup</string>
-		</dict>
-		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
 			<string>css</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>selected</key>
+			<true/>
 			<key>sourceDirectory</key>
 			<string>verify/css</string>
 		</dict>
@@ -38,9 +30,7 @@
 			<key>filename</key>
 			<string>verify/index.html</string>
 			<key>lastUsed</key>
-			<date>2013-11-19T03:59:44Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2013-11-19T07:54:13Z</date>
 		</dict>
 		<dict>
 			<key>name</key>
@@ -58,16 +48,6 @@
 			<key>sourceDirectory</key>
 			<string>verify/json</string>
 		</dict>
-		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>selfies</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>verify/selfies</string>
-		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>200</integer>
@@ -78,28 +58,28 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>126</integer>
+				<integer>129</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>111</integer>
+			<integer>108</integer>
 		</dict>
 		<key>verify/index.html</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>10</integer>
+				<integer>57</integer>
 				<key>line</key>
-				<integer>383</integer>
+				<integer>9</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>372</integer>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>

@@ -112,19 +112,19 @@
 //		_challengeVO.creatorVO.score++;
 	
 //	else {
-		int index = -1;
-		int counter = 0;
-		for (HONOpponentVO *vo in _challengeVO.challengers) {
-			if (vo.userID == userID) {
-				index = counter;
-				break;
-			}
-			
-			counter++;
-		}
-		
-		if (index > -1)
-			((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
+//		int index = -1;
+//		int counter = 0;
+//		for (HONOpponentVO *vo in _challengeVO.challengers) {
+//			if (vo.userID == userID) {
+//				index = counter;
+//				break;
+//			}
+//			
+//			counter++;
+//		}
+//		
+//		if (index > -1)
+//			((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
 //	}
 	
 //	_challengeVO.likesTotal++;

@@ -114,7 +114,7 @@
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSString stringWithFormat:@"TOTAL:[%d]", [unsortedChallenges count]]);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [unsortedChallenges objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
@@ -412,7 +412,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Volley with your friends?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Selfieclub with your friends?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -609,8 +609,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
+		if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+			[self _addFriend:challengeVO.creatorVO.userID];
+		
 		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
-		[self _addFriend:challengeVO.creatorVO.userID];
 
 		[self _removeCellForChallenge:challengeVO];
 		
@@ -737,9 +739,10 @@
 //		[alertView setTag:8];
 //		[alertView show];
 		
-		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
-		[self _addFriend:challengeVO.creatorVO.userID];
+		if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+			[self _addFriend:challengeVO.creatorVO.userID];
 		
+		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
 		[self _removeCellForChallenge:challengeVO];
 				
 	} else {
@@ -993,7 +996,9 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 0) {
-			[self _addFriend:_challengeVO.creatorVO.userID];
+			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+				[self _addFriend:_challengeVO.creatorVO.userID];
+			
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 		
 		} else if (buttonIndex == 1) {
@@ -1109,9 +1114,11 @@
 //										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 //		
 //		if (buttonIndex == 1) {
+//			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
+//				[self _addFriend:_challengeVO.creatorVO.userID];
+//		
 //			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-//			[self _addFriend:_challengeVO.creatorVO.userID];
-//						
+//
 //			UITableViewCell *tableCell;
 //			for (HONFollowTabViewCell *cell in _cells) {
 //				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {

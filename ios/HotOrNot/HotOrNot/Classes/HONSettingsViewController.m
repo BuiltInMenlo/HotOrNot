@@ -40,7 +40,7 @@
 					  NSLocalizedString(@"settings_changeUsername", nil),
 					  @"Change Email",
 					  @"Change Birthday",
-					  @"Delete all my Volleys",
+					  @"Delete all my Selfies",
 					  @"Deactivate Account",
 					  @"Report Abuse or Bugs",
 					  @"Terms & Conditions"];
@@ -373,7 +373,7 @@
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
+			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
 			[mailComposeViewController setSubject:@"Change My Email Address"];
 			[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
 			[mailComposeViewController.view setTag:1];
@@ -397,7 +397,7 @@
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:3];
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
+			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
 			[mailComposeViewController setSubject:@"Change My Birthday"];
 			[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your birthday change here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
 			
@@ -416,7 +416,7 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Remove all your volleys?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Remove all your selfies?"
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -446,7 +446,7 @@
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:4];
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@letsvolley.com"]];
+			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
 			[mailComposeViewController setSubject:@"Report Abuse / Bug"];
 			[mailComposeViewController setMessageBody:@"" isHTML:NO];
 			

@@ -518,7 +518,7 @@
 	if ([[HONAppDelegate friendsList] count] == 1 && friend_total == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc]
 								  initWithTitle:@"Find Friends"
-								  message:@"Volley is more fun with friends! Find some now?"
+								  message:@"Selfieclub is more fun with friends! Find some now?"
 								  delegate:self
 								  cancelButtonTitle:@"Yes"
 								  otherButtonTitles:@"No", nil];

@@ -910,7 +910,7 @@
 	
 	} else if (regCheck == 5) {
 		[[[UIAlertView alloc] initWithTitle:@"No email!"
-									message:@"You need to enter a valid email address to use Volley"
+									message:@"You need to enter a valid email address to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

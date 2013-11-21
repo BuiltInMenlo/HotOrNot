@@ -508,7 +508,7 @@
 	}];
 	
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find & invite friends to Volley?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find & invite friends to Selfieclub?"
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"

@@ -74,8 +74,8 @@
 "settings_changeUsername" = "Change Username";
 "settings_support" = "Support";
 "settings_privacy" = "Privacy Policy";
-"profile_snap" = "%@ Volley";
-"profile_snaps" = "%@ Volleys";
+"profile_snap" = "%@ Selfie";
+"profile_snaps" = "%@ Selfies";
 "profile_vote" = "%@ vote";
 "profile_votes" = "%@ likes";
 "profile_point" = "%@ rating";
@@ -83,7 +83,7 @@
 
 "userPlaceholder" = "@username";
 
-"invite_email" = "Come Snap @me on Volley!";
+"invite_email" = "Come Snap @me on Selfieclub!";
 
 
 "alert_yes" = "Yes";
@@ -91,15 +91,15 @@
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
 "alert_connectionError_t" = "Connection Error";
-"alert_connectionError_m" = "Could not connect to Volley initialization servers, please try again.";
+"alert_connectionError_m" = "Could not connect to Selfieclub initialization servers, please try again.";
 "alert_instagramError_t" = "Not Available";
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
 "alert_upgrade_t" = "Upgrade Needed";
-"alert_upgrade_m" = "Please update to the latest version from the App Store to continue playing Volley.";
-"alert_rateApp_t" = "Rate Volley";
-"alert_rateApp_m" = "Why not rate Volley in the app store!";
+"alert_upgrade_m" = "Please update to the latest version from the App Store to continue using Selfieclub.";
+"alert_rateApp_t" = "Rate Selfieclub";
+"alert_rateApp_m" = "Why not rate Selfieclub in the app store!";
 "alert_rateApp_no" = "No Thanks";
 "alert_rateApp_later" = "Ask Me Later";
 "alert_rateApp_store" = "Visit App Store";

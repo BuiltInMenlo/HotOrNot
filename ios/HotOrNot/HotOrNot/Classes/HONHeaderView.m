@@ -21,7 +21,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];
-		logoImageView.frame = CGRectOffset(logoImageView.frame, 93.0, 20.0);
+		logoImageView.frame = CGRectOffset(logoImageView.frame, 88.0, 20.0);
 		[self addSubview:logoImageView];
 	}
 	

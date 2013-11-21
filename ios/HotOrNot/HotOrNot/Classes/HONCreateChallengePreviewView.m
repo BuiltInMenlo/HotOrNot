@@ -360,7 +360,7 @@
 	
 	NSLog(@"join_total:[%d]", [HONAppDelegate totalForCounter:@"join"]);
 //	if (_isJoinChallenge && [HONAppDelegate incTotalForCounter:@"join"] == 0) {
-//		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this Volley"
+//		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this selfie"
 //									message:@""
 //								   delegate:nil
 //						  cancelButtonTitle:@"OK"
