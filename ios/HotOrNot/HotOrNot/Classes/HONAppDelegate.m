@@ -55,8 +55,8 @@ NSString * const kConfigJSON = @"boot_sc0001.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #else
-NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0001.json";
+NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
+NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #endif
@@ -1250,6 +1250,23 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
+	
+	NSArray *totalKeys = @[@"boot_total",
+						   @"@background_total",
+						   @"timeline_total",
+						   @"explore_total",
+						   @"exploreRefresh_total",
+						   @"verify_total",
+						   @"verifyRefresh_total",
+						   @"popular_total",
+						   @"verifyAction_total",
+						   @"preview_total",
+						   @"details_total",
+						   @"camera_total",
+						   @"join_total",
+						   @"profile_total",
+						   @"like_total"];
+	
 	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];

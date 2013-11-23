@@ -27,7 +27,7 @@
 #import "HONHeaderView.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
-#import "HONPopularViewController.h"
+#import "HONSubscribeViewController.h"
 #import "HONVerifyAccountViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
@@ -67,7 +67,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshLikeCount:) name:@"REFRESH_LIKE_COUNT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopular:) name:@"SHOW_POPULAR" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubscribes:) name:@"SHOW_SUBSCRIBES" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 	}
 	
@@ -523,12 +523,10 @@
 	}
 }
 
-- (void)_showPopular:(NSNotification *)notification {
-	if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+- (void)_showSubscribes:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribeViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_showFirstRun:(NSNotification *)notification {

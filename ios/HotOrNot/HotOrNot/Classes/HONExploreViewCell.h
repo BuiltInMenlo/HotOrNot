@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "HONChallengeVO.h"
-
+#import "HONUserVO.h"
 
 @protocol HONExploreViewCellDelegate;
 @interface HONExploreViewCell : UITableViewCell
@@ -25,6 +25,7 @@
 - (void)exploreViewCellShowPreview:(HONExploreViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)exploreViewCellShowInvite:(HONExploreViewCell *)cell;
 - (void)exploreViewCellShowSearch:(HONExploreViewCell *)cell;
+- (void)exploreViewCell:(HONExploreViewCell *)cell showProfile:(HONOpponentVO *)opponentVO;;
 - (void)exploreViewCell:(HONExploreViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO;
 - (void)exploreViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO;
 @end

@@ -315,7 +315,7 @@
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
-	_tableView.pagingEnabled = (![HONAppDelegate switchEnabledForKey:@"verify_tab"]);
+	_tableView.pagingEnabled = YES;//(![HONAppDelegate switchEnabledForKey:@"verify_tab"]);
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
@@ -517,7 +517,6 @@
 			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
 			[_tableView endUpdates];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
 			_emptyImageView.hidden = [_challenges count] > 0;
 		}
 	}
@@ -616,6 +615,7 @@
 
 		[self _removeCellForChallenge:challengeVO];
 		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
 //		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
 //															message:@""
 //														   delegate:self
@@ -661,6 +661,17 @@
 		[alertView setTag:7];
 		[alertView show];
 	}
+}
+
+- (void)verifyViewCellSkip:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Skip%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	[self _removeCellForChallenge:challengeVO];
 }
 
 
@@ -744,6 +755,7 @@
 		
 		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
 		[self _removeCellForChallenge:challengeVO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
 				
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -884,11 +896,12 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	//return (300.0 + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
+	return (self.view.frame.size.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 	return (([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 310.0 : self.view.frame.size.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (0.0);
 	return (40.0 * ((int)[HONAppDelegate switchEnabledForKey:@"verify_tab"]));
 }
 

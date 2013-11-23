@@ -27,6 +27,7 @@
 		_verifyTabInfo = [HONAppDelegate infoForABTab];
 		//NSLog(@"AVATAR:[%@]", [_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
+		avatarImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:avatarImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

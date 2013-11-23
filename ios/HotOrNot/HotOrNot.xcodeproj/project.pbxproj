@@ -571,6 +571,7 @@
 		4CED1C1C177D46C100A32F2B /* NBPhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C12177D46C100A32F2B /* NBPhoneNumber.m */; };
 		4CED1C1D177D46C100A32F2B /* NBPhoneNumberDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C15177D46C100A32F2B /* NBPhoneNumberDesc.m */; };
 		4CED1C1E177D46C100A32F2B /* NBPhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C17177D46C100A32F2B /* NBPhoneNumberUtil.m */; };
+		4CED33BD1840070900282A19 /* HONSubscribeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED33BC1840070900282A19 /* HONSubscribeViewController.m */; };
 		4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1C95161A238C00C54FBF /* CoreData.framework */; };
 		4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */; };
 		4CEEFC5E17E14A200006A640 /* tabMenu_homeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEEFC4C17E14A200006A640 /* tabMenu_homeButton_Active.png */; };
@@ -822,7 +823,7 @@
 		4C60AF6D17CD20A500609792 /* previewButttonCamera_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "previewButttonCamera_Active@2x.png"; sourceTree = "<group>"; };
 		4C60AF6E17CD20A600609792 /* previewButttonCamera_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previewButttonCamera_nonActive.png; sourceTree = "<group>"; };
 		4C60AF6F17CD20A600609792 /* previewButttonCamera_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "previewButttonCamera_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* Volley.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Volley.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* Selfieclub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selfieclub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1345,6 +1346,8 @@
 		4CED1C15177D46C100A32F2B /* NBPhoneNumberDesc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBPhoneNumberDesc.m; sourceTree = "<group>"; };
 		4CED1C16177D46C100A32F2B /* NBPhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBPhoneNumberUtil.h; sourceTree = "<group>"; };
 		4CED1C17177D46C100A32F2B /* NBPhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBPhoneNumberUtil.m; sourceTree = "<group>"; };
+		4CED33BB1840070900282A19 /* HONSubscribeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSubscribeViewController.h; sourceTree = "<group>"; };
+		4CED33BC1840070900282A19 /* HONSubscribeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSubscribeViewController.m; sourceTree = "<group>"; };
 		4CEE1C95161A238C00C54FBF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HotOrNotModel.xcdatamodel; sourceTree = "<group>"; };
 		4CEEFC4C17E14A200006A640 /* tabMenu_homeButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMenu_homeButton_Active.png; sourceTree = "<group>"; };
@@ -1450,6 +1453,8 @@
 				4C56864E177CCF7B004E570F /* HONAddContactsViewController.m */,
 				4C48745616BF0E36007D901B /* HONSearchBarHeaderView.h */,
 				4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */,
+				4CED33BB1840070900282A19 /* HONSubscribeViewController.h */,
+				4CED33BC1840070900282A19 /* HONSubscribeViewController.m */,
 			);
 			name = "Popular / Invite";
 			sourceTree = "<group>";
@@ -1806,7 +1811,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* Volley.app */,
+				4C62652515F96C7100AA7FCE /* Selfieclub.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2833,7 +2838,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* Volley.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* Selfieclub.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -3354,6 +3359,7 @@
 				4C9B92491828127100A060B2 /* ImageFilter.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */,
+				4CED33BD1840070900282A19 /* HONSubscribeViewController.m in Sources */,
 				4C86C43217FF736E007DC458 /* HONFollowersViewController.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
@@ -3513,8 +3519,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "D3DB50CB-B50B-4635-B604-046F1F8D2CD7";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D3DB50CB-B50B-4635-B604-046F1F8D2CD7";
+				PROVISIONING_PROFILE = "90C70471-F920-46CC-817D-F237BEB382B6";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "90C70471-F920-46CC-817D-F237BEB382B6";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s";
@@ -3548,8 +3554,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "F1BA7D4F-96DB-423D-8BD8-CB2B3CDEB50C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F1BA7D4F-96DB-423D-8BD8-CB2B3CDEB50C";
+				PROVISIONING_PROFILE = "2C99EAC6-B25C-44B4-B436-60EA3DFEE823";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2C99EAC6-B25C-44B4-B436-60EA3DFEE823";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;

@@ -291,6 +291,9 @@
 					
 					if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
+					
+					if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBSCRIBES" object:nil];
 				}];
 				
 			} else {

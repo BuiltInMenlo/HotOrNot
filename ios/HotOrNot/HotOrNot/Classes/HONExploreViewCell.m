@@ -151,7 +151,8 @@
 		[overlayView removeFromSuperview];
 	}];
 	
-	[self.delegate exploreViewCell:self selectLeftChallenge:_lChallengeVO];
+	//[self.delegate exploreViewCell:self selectLeftChallenge:_lChallengeVO];
+	[self.delegate exploreViewCell:self showProfile:_lChallengeVO.creatorVO];
 }
 
 - (void)_goSelectRight {
@@ -165,7 +166,8 @@
 		[overlayView removeFromSuperview];
 	}];
 	
-	[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
+	//[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
+	[self.delegate exploreViewCell:self showProfile:_rChallengeVO.creatorVO];
 }
 
 - (void)_goInvite {

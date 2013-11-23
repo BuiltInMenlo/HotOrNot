@@ -122,7 +122,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != nil) {
 				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -257,7 +257,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [challengesResult count]);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			_challenges = [NSMutableArray array];
 			

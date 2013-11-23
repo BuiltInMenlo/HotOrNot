@@ -26,4 +26,5 @@
 - (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCellDisprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)verifyViewCellSkip:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 @end

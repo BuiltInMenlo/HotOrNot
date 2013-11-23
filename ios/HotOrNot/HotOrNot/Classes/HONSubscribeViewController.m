@@ -1,8 +1,8 @@
 //
-//  HONPopularViewController.m
+//  HONSubscribeViewController.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 7/8/13 @ 5:02 PM.
+//  Created by Matt Holcombe on 11/22/2013 @ 13:41 .
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
@@ -11,7 +11,8 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONPopularViewController.h"
+
+#import "HONSubscribeViewController.h"
 #import "HONPopularUserViewCell.h"
 #import "HONPopularUserVO.h"
 #import "HONHeaderView.h"
@@ -22,26 +23,22 @@
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 
-
-@interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
+@interface HONSubscribeViewController () <HONPopularUserViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *addUsers;
 @property (nonatomic, strong) NSMutableArray *removeUsers;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 
-@implementation HONPopularViewController
+@implementation HONSubscribeViewController
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Popular People - Open"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		
 	}
 	
 	return (self);
@@ -109,7 +106,7 @@
 - (void)_removeFriend:(int)userID {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"target"	: [NSString stringWithFormat:@"%d", userID]};
-				
+	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIRemoveFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -181,7 +178,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedUsers);
+			//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedUsers);
 			
 			_users = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
@@ -255,7 +252,7 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Search"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Follow"];
 	headerView.backgroundColor = [UIColor whiteColor];
 	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
@@ -269,7 +266,7 @@
 	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];	
+	[self.view addSubview:_tableView];
 }
 
 - (void)viewDidLoad {
@@ -286,8 +283,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
-	[HONAppDelegate incTotalForCounter:@"popular"];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -326,13 +321,13 @@
 		}
 		
 	} else {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:1];
-//		[alertView show];
+		//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
+		//															message:@""
+		//														   delegate:self
+		//												  cancelButtonTitle:@"No"
+		//												  otherButtonTitles:@"Yes", nil];
+		//		[alertView setTag:1];
+		//		[alertView show];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:nil];
@@ -346,33 +341,33 @@
 	
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
-//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
-//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
-//	
-//	for (HONPopularUserViewCell *cell in _cells)
-//		[cell toggleSelected:YES];
-
+	//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+	//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+	//
+	//	for (HONPopularUserViewCell *cell in _cells)
+	//		[cell toggleSelected:YES];
+	
 	
 	// delselect all
-//	if ([_addUsers count] == [_users count]) {
-//		[_addUsers removeAllObjects];
-//		
-//		for (HONPopularUserVO *vo in _users)
-//			[_removeUsers addObject:vo];
-//		
-//		for (HONPopularUserViewCell *cell in _cells)
-//			[cell toggleSelected:NO];
-//	
-//	} else {
-		[_removeUsers removeAllObjects];
-		for (HONPopularUserVO *vo in _users) {
-			[_selectedUsers addObject:vo];
-			[_addUsers addObject:vo];
-		}
-		
-		for (HONPopularUserViewCell *cell in _cells)
-			[cell toggleSelected:YES];
-//	}
+	//	if ([_addUsers count] == [_users count]) {
+	//		[_addUsers removeAllObjects];
+	//
+	//		for (HONPopularUserVO *vo in _users)
+	//			[_removeUsers addObject:vo];
+	//
+	//		for (HONPopularUserViewCell *cell in _cells)
+	//			[cell toggleSelected:NO];
+	//
+	//	} else {
+	[_removeUsers removeAllObjects];
+	for (HONPopularUserVO *vo in _users) {
+		[_selectedUsers addObject:vo];
+		[_addUsers addObject:vo];
+	}
+	
+	for (HONPopularUserViewCell *cell in _cells)
+		[cell toggleSelected:YES];
+	//	}
 }
 
 
@@ -413,23 +408,6 @@
 }
 
 
-#pragma mark - SearchBar Delegates
-- (void)searchBarHeaderFocus:(HONSearchBarHeaderView *)searchBarHeaderView {
-}
-
-- (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView {
-	_users = [NSMutableArray array];
-	for (NSDictionary *dict in [HONAppDelegate popularPeople])
-		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
-	
-	[_tableView reloadData];
-}
-
-- (void)searchBarHeader:(HONSearchBarHeaderView *)searchBarHeaderView enteredSearch:(NSString *)searchQuery {
-	[self _retrieveUsers:searchQuery];
-}
-
-
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([_users count]);
@@ -440,10 +418,15 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
-	_searchHeaderView.delegate = self;
+	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	label.textColor = [HONAppDelegate honGreyTextColor]; //	[HONAppDelegate honPercentGreyscaleColor:0.467]
+	label.backgroundColor = [UIColor clearColor];
+	label.text = @"Follow popular people";
+	[headerImageView addSubview:label];
 	
-	return (_searchHeaderView);
+	return (headerImageView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -479,7 +462,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kSearchHeaderHeight);
+	return (kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -514,7 +497,7 @@
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 			}];
 		}
-	
+		
 	} else if (alertView.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -551,7 +534,7 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 			[self dismissViewControllerAnimated:YES completion:nil];
 		}
-	
+		
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

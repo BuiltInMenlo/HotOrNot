@@ -18,7 +18,7 @@
 			<key>filename</key>
 			<string>share/index_dev.html</string>
 			<key>lastUsed</key>
-			<date>2013-11-18T04:40:07Z</date>
+			<date>2013-11-22T20:21:31Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -56,14 +56,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>17</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>53</integer>
+				<integer>47</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>32</integer>
+			<integer>42</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
