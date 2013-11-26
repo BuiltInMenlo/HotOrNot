@@ -427,7 +427,7 @@
 		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 10.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.backgroundColor = [UIColor greenColor];
+		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _opponentVO.subjectName;
 		subjectLabel.hidden = _isVerify;
 		[headerView addSubview:subjectLabel];

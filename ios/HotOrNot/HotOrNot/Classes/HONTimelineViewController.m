@@ -368,7 +368,9 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+#if __ALWAYS_SUGGEST__ == 1
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+#endif
 }
 
 - (void)viewDidUnload {
