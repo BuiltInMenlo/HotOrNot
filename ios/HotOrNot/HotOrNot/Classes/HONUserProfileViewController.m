@@ -575,7 +575,7 @@
 - (void)_goDone {
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
 	if (total == 0 && _isUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -654,7 +654,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive Selfieclub updates from %@", _userVO.username]
+														message:[NSString stringWithFormat:@"You will receive %@ updates from %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", _userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -669,7 +669,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will no longer receive Selfieclub updates from %@", _userVO.username]
+														message:[NSString stringWithFormat:@"You will no longer receive %@ updates from %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", _userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -896,8 +896,8 @@
 	}
 	
 	
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (323.0 + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:323.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (324.0 + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:324.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
 	_profileGridView.delegate = self;
 	[_scrollView addSubview:_profileGridView];
 	
@@ -981,8 +981,8 @@
 											   attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
 												  context:nil].size;
 			
-		} else
-			size = [shareFooterButton.titleLabel.text sizeWithFont:shareFooterButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		} //else
+//			size = [shareFooterButton.titleLabel.text sizeWithFont:shareFooterButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
 		shareFooterButton.frame = CGRectMake(shareFooterButton.frame.origin.x, shareFooterButton.frame.origin.y, size.width, size.height);
 		
@@ -1000,8 +1000,8 @@
 											   attributes:@{NSFontAttributeName:settingsButton.titleLabel.font}
 												  context:nil].size;
 			
-		} else
-			size = [settingsButton.titleLabel.text sizeWithFont:settingsButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		} //else
+//			size = [settingsButton.titleLabel.text sizeWithFont:settingsButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
 		settingsButton.frame = CGRectMake(settingsButton.frame.origin.x, settingsButton.frame.origin.y, size.width, size.height);
 		
@@ -1039,8 +1039,8 @@
 											   attributes:@{NSFontAttributeName:shareButton.titleLabel.font}
 												  context:nil].size;
 			
-		} else
-			size = [shareButton.titleLabel.text sizeWithFont:shareButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		} //else
+//			size = [shareButton.titleLabel.text sizeWithFont:shareButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
 		shareButton.frame = CGRectMake(shareButton.frame.origin.x, shareButton.frame.origin.y, size.width, size.height);
 		
@@ -1058,8 +1058,8 @@
 											   attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
 												  context:nil].size;
 			
-		} else
-			size = [flagButton.titleLabel.text sizeWithFont:flagButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		} //else
+//			size = [flagButton.titleLabel.text sizeWithFont:flagButton.titleLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
 		flagButton.frame = CGRectMake(flagButton.frame.origin.x, flagButton.frame.origin.y, size.width, size.height);
 		

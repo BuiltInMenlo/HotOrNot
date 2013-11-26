@@ -59,8 +59,8 @@
 																							 attributes:@{NSFontAttributeName:nameLabel.font}
 																								context:nil].size;
 			
-		} else
-			size = [nameLabel.text sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		} //else
+//			size = [nameLabel.text sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
 		nameLabel.text = (size.width >= maxNameWidth) ? _challengeVO.creatorVO.username : [_challengeVO.creatorVO.username stringByAppendingString:@"…"];
 		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), size.height);
@@ -85,8 +85,8 @@
 												   options:NSStringDrawingTruncatesLastVisibleLine
 												attributes:@{NSFontAttributeName:subjectLabel.font}
 												   context:nil].size;
-		} else
-			size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(maxSubjectWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		} //else
+//			size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(maxSubjectWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
 		subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(maxSubjectWidth, size.width), 18.0);
 		

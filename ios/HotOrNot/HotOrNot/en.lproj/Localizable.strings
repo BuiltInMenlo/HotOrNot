@@ -7,14 +7,13 @@
 */
 
 
-"hud_connectionError" = "No connection found!";
+//"hud_connectionError" = "No connection found!";
 "hud_loadError" = "Problem loading data!";
 "hud_dlFailed" = "Download failed";
 "hud_submitFailed" = "Failed submission";
 "hud_refresh" = "Refreshing…";
 "hud_loading" = "Loading…";
 "hud_submitComment" = "Submitting comment…";
-"hud_uploadPhoto" = "Uploading photo…";
 "hud_uploadFail" = "Upload error";
 "hud_usernameNotFound" = "Username not found!";
 "hud_checkUsername" = "Checking username…";
@@ -27,83 +26,50 @@
 "hud_sent" = "   Sent   ";
 
 "header_restricted" = "restricted access";
-"header_register" = "Enter a username";
-"header_register2" = "Take your profile picture";
-"header_register3" = "Preview photo";
-"header_findFriends" = "Find Friends";
-"header_inviteFriends" = "Invite Friends";
-"header_inviteCelebs" = "Invite Celebrities";
-"header_home" = "Vote";
-"header_activity" = "Messages";
-"header_discover" = "Discover";
-"header_profile" = "Profile";
-"header_settings" = "Settings";
-"header_username" = "Username";
-"header_create" = "";
-"header_preview" = "Preview";
 
-"search_placeHolder" = "Search for people or tags";
-"search_snap" = "1 snap";
-"search_snaps" = "%d snaps";
+//"search_placeHolder" = "Search for people or tags";
+//"search_snap" = "1 snap";
+//"search_snaps" = "%d snaps";
 
 "restricted_caption" = "";
 "restricted_inviteCode" = "Enter invite code";
 
-"register_username" = "Please enter a username";
-"register_caption1" = "";
-"register_caption2" = "";
+//"register_username" = "Please enter a username";
+//"register_caption1" = "";
+//"register_caption2" = "";
 
-"timeline_snapAt" = "snap @%@";
-"timeline_like" = "%d Like";
-"timeline_likes" = "%d Likes";
-"timeline_0comments" = "Comment";
-"timeline_1comment" = "%d Comment";
-"timeline_comments" = "%d Comments";
-"timeline_99comments" = "99+ Comments";
-"timeline_trade" = "tap here to trade pics";
+//"timeline_snapAt" = "snap @%@";
+//"timeline_like" = "%d Like";
+//"timeline_likes" = "%d Likes";
+//"timeline_0comments" = "Comment";
+//"timeline_1comment" = "%d Comment";
+//"timeline_comments" = "%d Comments";
+//"timeline_99comments" = "99+ Comments";
 
 "voters_caption" = "@%@ liked this";
 
-"activity_waiting" = "You are waiting…";
-"activity_waiting_f" = "You are waiting… (F)";
+//"activity_waiting" = "You are waiting…";
+//"activity_waiting_f" = "You are waiting… (F)";
 
-"settings_notifications" = "Notifications";
-"settings_myPhotos" = "My Photos";
-"settings_inviteSMS" = "Invite Friends via SMS";
-"settings_inviteEmail" = "Invite Friends via Email";
-"settings_changeUsername" = "Change Username";
-"settings_support" = "Support";
-"settings_privacy" = "Privacy Policy";
-"profile_snap" = "%@ Selfie";
-"profile_snaps" = "%@ Selfies";
-"profile_vote" = "%@ vote";
-"profile_votes" = "%@ likes";
-"profile_point" = "%@ rating";
-"profile_points" = "%@ rating";
-
-"userPlaceholder" = "@username";
-
-"invite_email" = "Come Snap @me on Selfieclub!";
-
+//"settings_myPhotos" = "My Photos";
+//"settings_inviteSMS" = "Invite Friends via SMS";
+//"settings_inviteEmail" = "Invite Friends via Email";
+//"settings_changeUsername" = "Change Username";
+//"settings_support" = "Support";
+//"settings_privacy" = "Privacy Policy";
 
 "alert_yes" = "Yes";
 "alert_no" = "No";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
 "alert_connectionError_t" = "Connection Error";
-"alert_connectionError_m" = "Could not connect to Selfieclub initialization servers, please try again.";
+"alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
 "alert_instagramError_t" = "Not Available";
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
-"alert_upgrade_t" = "Upgrade Needed";
-"alert_upgrade_m" = "Please update to the latest version from the App Store to continue using Selfieclub.";
-"alert_rateApp_t" = "Rate Selfieclub";
-"alert_rateApp_m" = "Why not rate Selfieclub in the app store!";
 "alert_rateApp_no" = "No Thanks";
 "alert_rateApp_later" = "Ask Me Later";
 "alert_rateApp_store" = "Visit App Store";
-"alert_poke_t" = "";
-"alert_poke_m" = "";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";

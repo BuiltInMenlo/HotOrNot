@@ -152,7 +152,7 @@
 	
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
 	if (sticker != nil) {
-		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 120.0, 94.0, 94.0)];
+		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 184.0, 94.0, 94.0)];
 		[stickerImageView setImageWithURL:[NSURL URLWithString:[sticker objectForKey:@"img"]] placeholderImage:nil];
 		[self.contentView addSubview:stickerImageView];
 		

@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONGenericAvatarViewCell.h"
 #import "HONPopularUserVO.h"
 
-#define kStatsPosY	170.0
 
 @protocol HONSuggestedFollowViewCellDelegate;
 @interface HONSuggestedFollowViewCell : UITableViewCell

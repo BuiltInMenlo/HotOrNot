@@ -312,7 +312,7 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Selfieclub with your friends?"
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																		message:@"Get more subscribers now, tap OK."
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
@@ -404,7 +404,7 @@
 	[headerView addSubview:avatarImageView];
 	
 	CGSize size;
-	CGFloat maxNameWidth = 110.0;
+	CGFloat maxNameWidth = (_isVerify) ? 260.0 : 110.0;
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, maxNameWidth, 18.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 	nameLabel.textColor = [UIColor whiteColor];
@@ -417,31 +417,32 @@
 																			  attributes:@{NSFontAttributeName:nameLabel.font}
 																				 context:nil].size;
 		
-	} else
-		size = [_opponentVO.username sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	} //else
+//		size = [_opponentVO.username sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	
 	nameLabel.text = (_isVerify) ? _opponentVO.username : (size.width >= maxNameWidth) ? _opponentVO.username : [_opponentVO.username stringByAppendingString:@"…"];
 	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), nameLabel.frame.size.height);
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 10.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-	subjectLabel.textColor = [UIColor whiteColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _opponentVO.subjectName;
-	subjectLabel.hidden = _isVerify;
-	[headerView addSubview:subjectLabel];
-	
-	if ([HONAppDelegate isIOS7]) {
-		size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
-											   options:NSStringDrawingTruncatesLastVisibleLine
-											attributes:@{NSFontAttributeName:nameLabel.font}
-											   context:nil].size;
+	if (!_isVerify) {
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 10.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
+		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		subjectLabel.textColor = [UIColor whiteColor];
+		subjectLabel.backgroundColor = [UIColor greenColor];
+		subjectLabel.text = _opponentVO.subjectName;
+		subjectLabel.hidden = _isVerify;
+		[headerView addSubview:subjectLabel];
 		
-	} else
-		size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	
-	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(320.0 - (nameLabel.frame.size.width + maxNameWidth), size.width), subjectLabel.frame.size.height);
-	
+		if ([HONAppDelegate isIOS7]) {
+			size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
+												   options:NSStringDrawingTruncatesLastVisibleLine
+												attributes:@{NSFontAttributeName:nameLabel.font}
+												   context:nil].size;
+			
+		} //else
+//		size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		
+		subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(320.0 - (nameLabel.frame.size.width + maxNameWidth), size.width), subjectLabel.frame.size.height);
+	}
 	
 	//NSLog(@"NAME:_[%@]_ <|> SUB:_[%@]_", NSStringFromCGSize(nameLabel.frame.size), NSStringFromCGSize(subjectLabel.frame.size));
 	
@@ -507,20 +508,7 @@
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 		flagButton.hidden = _isVerify;
 		[_buttonHolderView addSubview:flagButton];
-		
-//		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		profileButton.frame = CGRectMake(160.0, 3.0, 159.0, 54.0);
-//		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
-//		[profileButton setBackgroundImage:[UIImage imageNamed:(_isFromProfile) ? @"profileButton_nonActive" : @"profileButton_Active"] forState:UIControlStateHighlighted];
-//		profileButton.alpha = 1.0 - (((int)_isFromProfile) * 0.25);
-//		[profileButton setTintColor:(_isFromProfile) ? [UIColor darkGrayColor] : [UIColor clearColor]];
-//		[_buttonHolderView addSubview:profileButton];
-//		
-//		if (!_isFromProfile) {
-//			[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-//		}
 	}
-	
 }
 
 - (void)viewDidLoad {
@@ -597,7 +585,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"like_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE Selfieclub with your friends?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"

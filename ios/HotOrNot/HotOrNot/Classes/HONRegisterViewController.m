@@ -70,7 +70,7 @@
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
 		
-		_splashImageURL = [NSString stringWithFormat:@"%@%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"], ([HONAppDelegate isRetina4Inch] ? @"-568h@2x.png" : @"@2x.png")];
+		_splashImageURL = [NSString stringWithFormat:@"%@%@@@2x.png", [[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"], [NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"_%@-568h" : @"_%@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"volley" : @"selfieclub"]];
 	}
 	
 	return (self);
@@ -282,18 +282,16 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				[self _retreiveSubscribees];
-	
+				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-					[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-					
+//				[self.parentViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 					
 					if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 					
 					if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBSCRIBES" object:nil];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 				}];
 				
 			} else {
@@ -600,7 +598,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			//splashTxtImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"splashText-568h@2x" : @"splashText"];
+			splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"volley" : @"selfieclub"]];
 		};
 		
 		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -913,7 +911,7 @@
 	
 	} else if (regCheck == 5) {
 		[[[UIAlertView alloc] initWithTitle:@"No email!"
-									message:@"You need to enter a valid email address to use Selfieclub"
+									message:[NSString stringWithFormat:@"You need to enter a valid email address to use %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

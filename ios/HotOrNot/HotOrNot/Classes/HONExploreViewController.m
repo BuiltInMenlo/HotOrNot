@@ -28,6 +28,7 @@
 #import "HONPopularViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
+#import "HONSuggestedFollowViewController.h"
 
 
 @interface HONExploreViewController ()<HONExploreViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
@@ -99,7 +100,7 @@
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@: EXPLORE TOT:%@", [[self class] description], parsedLists);
 			
-			_challenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 2];
+			_challenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 3];
 			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
 			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
 			
@@ -111,8 +112,8 @@
 			NSLog(@"TOT PRE SWAP:[%d]", [_challenges count]);
 			[_challenges exchangeObjectAtIndex:2 withObjectAtIndex:0];
 			[_challenges exchangeObjectAtIndex:7 withObjectAtIndex:1];
-
-			NSLog(@"TOT POST SWAP:[%d]", [_challenges count]);
+			
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-2"]]];
 			
 			_emptySetImgView.hidden = ([_challenges count] > 0);
 			[_tableView reloadData];
@@ -196,7 +197,9 @@
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = _tutorialImageView.frame;
+		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 374.0 : 331.0, 320.0, 64.0);
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
@@ -206,10 +209,6 @@
 			_tutorialImageView.alpha = 1.0;
 		}];
 	}
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
 }
 
 - (void)viewDidUnload {
@@ -242,7 +241,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -289,6 +288,16 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSuggested {
+	[[Mixpanel sharedInstance] track:@"Explore - Suggested Follow"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -426,6 +435,10 @@
 
 - (void)exploreViewCellShowSearch:(HONExploreViewCell *)cell {
 	[self _goSearch];
+}
+
+- (void)exploreViewCellShowSuggested:(HONExploreViewCell *)cell {
+	[self _goSuggested];
 }
 
 - (void)exploreViewCell:(HONExploreViewCell *)cell showProfile:(HONOpponentVO *)opponentVO {

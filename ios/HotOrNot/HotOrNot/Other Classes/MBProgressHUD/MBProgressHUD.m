@@ -453,7 +453,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	totalSize.width = MAX(totalSize.width, indicatorF.size.width);
 	totalSize.height += indicatorF.size.height;
 	
-	CGSize labelSize = ([HONAppDelegate isIOS7]) ? [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}] :[label.text sizeWithFont:label.font];
+	CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];//([HONAppDelegate isIOS7]) ? [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}] :[label.text sizeWithFont:label.font];
 	labelSize.width = MIN(labelSize.width, maxWidth);
 	totalSize.width = MAX(totalSize.width, labelSize.width);
 	totalSize.height += labelSize.height;
@@ -469,8 +469,8 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 														   options:NSStringDrawingUsesLineFragmentOrigin
 														attributes:@{NSFontAttributeName:detailsLabelFont}
 														   context:nil].size;
-	} else
-		detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
+	} //else
+//		detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
 	
 	totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
 	totalSize.height += detailsLabelSize.height;

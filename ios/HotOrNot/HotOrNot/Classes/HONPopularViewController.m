@@ -311,7 +311,7 @@
 		
 		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 		if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																message:@"Get more subscribers now, tap OK."
 															   delegate:self
 													  cancelButtonTitle:@"No"
@@ -533,7 +533,7 @@
 			
 			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
 														  cancelButtonTitle:@"No"

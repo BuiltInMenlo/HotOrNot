@@ -34,10 +34,10 @@
 	if ((self = [super init])) {
 		
 		_captions = @[@"Help",
-					  NSLocalizedString(@"settings_notifications", nil),
-					  NSLocalizedString(@"settings_inviteSMS", nil),
-					  NSLocalizedString(@"settings_inviteEmail", nil),
-					  NSLocalizedString(@"settings_changeUsername", nil),
+					  @"Notifications",
+					  @"Invite Friends via SMS",
+					  @"Invite Friends via Email",
+					  @"Change Username",
 					  @"Change Email",
 					  @"Change Birthday",
 					  @"Delete all my Selfies",

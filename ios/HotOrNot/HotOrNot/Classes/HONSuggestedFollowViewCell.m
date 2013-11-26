@@ -11,14 +11,20 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSuggestedFollowViewCell.h"
+#import "HONImageLoadingView.h"
 #import "HONUserVO.h"
 
 
 @interface HONSuggestedFollowViewCell ()
 @property (nonatomic, strong) UIButton *followButton;
 @property (nonatomic, strong) UIButton *checkButton;
+@property (nonatomic, strong) UILabel *selfiesLabel;
+@property (nonatomic, strong) UILabel *followersLabel;
+@property (nonatomic, strong) UILabel *followingLabel;
 @property (nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic) int totalFollowing;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) NSArray *challengeOverlays;
 @end
 
 @implementation HONSuggestedFollowViewCell
@@ -49,6 +55,30 @@
 		[_followButton setBackgroundImage:[UIImage imageNamed:@"suggestedFollowOffButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_followButton];
+		
+		_selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 170.0, 107.0, 18.0)];
+		_selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		_selfiesLabel.textColor = [HONAppDelegate honGreyTextColor];
+		_selfiesLabel.backgroundColor = [UIColor clearColor];
+		_selfiesLabel.textAlignment = NSTextAlignmentCenter;
+		_selfiesLabel.text = @"0 Selfies";
+		[self.contentView addSubview:_selfiesLabel];
+		
+		_followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, 170.0, 107.0, 18.0)];
+		_followersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		_followersLabel.textColor = [HONAppDelegate honGreyTextColor];
+		_followersLabel.backgroundColor = [UIColor clearColor];
+		_followersLabel.textAlignment = NSTextAlignmentCenter;
+		_followersLabel.text = @"0 Followers";
+		[self.contentView addSubview:_followersLabel];
+		
+		_followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 170.0, 107.0, 18.0)];
+		_followingLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		_followingLabel.textColor = [HONAppDelegate honGreyTextColor];
+		_followingLabel.backgroundColor = [UIColor clearColor];
+		_followingLabel.textAlignment = NSTextAlignmentCenter;
+		_followingLabel.text = @"0 Following";
+		[self.contentView addSubview:_followingLabel];
 	}
 	
 	return (self);
@@ -56,12 +86,8 @@
 
 - (void)setPopularUserVO:(HONPopularUserVO *)popularUserVO {
 	_popularUserVO = popularUserVO;
-		
-	UIView *blueView = [[UIView alloc] initWithFrame:CGRectMake(6.0, 5.0, 33.0, 33.0)];
-	blueView.backgroundColor = [HONAppDelegate honBlueTextColor];
-	[self.contentView addSubview:blueView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 6.0, 31.0, 31.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 5.0, 33.0, 33.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[self.contentView addSubview:avatarImageView];
 	
@@ -71,6 +97,16 @@
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _popularUserVO.username;
 	[self.contentView addSubview:nameLabel];
+	
+	for (int i=0; i<2; i++) {
+		UIImageView *borderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedFollowChallengeBorder"]];
+		borderImageView.frame = CGRectOffset(borderImageView.frame, 15.0 + (i * (kSnapThumbSize.width + 15.0)), 58.0);
+		[self.contentView addSubview:borderImageView];
+		
+		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:borderImageView asLargeLoader:NO];
+		[imageLoadingView startAnimating];
+		[borderImageView addSubview:imageLoadingView];
+	}
 	
 	[self _retrieveUser];
 }
@@ -100,26 +136,6 @@
 			
 			if ([userResult objectForKey:@"id"] != nil) {
 				_userVO = [HONUserVO userWithDictionary:userResult];
-				
-//				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-//				[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-//				
-//				UILabel *selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, kStatsPosY, 107.0, 18.0)];
-//				selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
-//				selfiesLabel.textColor = [HONAppDelegate honGreyTextColor];
-//				selfiesLabel.backgroundColor = [UIColor clearColor];
-//				selfiesLabel.textAlignment = NSTextAlignmentCenter;
-//				selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
-//				[self.contentView addSubview:selfiesLabel];
-//				
-//				UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, kStatsPosY, 107.0, 18.0)];
-//				followersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
-//				followersLabel.textColor = [HONAppDelegate honGreyTextColor];
-//				followersLabel.backgroundColor = [UIColor clearColor];
-//				followersLabel.textAlignment = NSTextAlignmentCenter;
-//				followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-//				[self.contentView addSubview:followersLabel];
-
 				[self _retreiveSubscribees];
 				
 			} else {
@@ -150,7 +166,7 @@
 		} else {
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			[self _makeStatsWithFollowingTotal:[result count]];
+			_totalFollowing = [result count];
 			[self _retrieveChallenges];
 		}
 		
@@ -204,12 +220,18 @@
 					}
 				}
 				
-				UIView *challengeImageView = [self _challengeImageForPrefix:imgPrefix];
-				challengeImageView.frame = CGRectOffset(challengeImageView.frame, 15.0 + (cnt * (kSnapThumbSize.width + 15.0)), 58.0);
+				UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0 + (cnt * (kSnapThumbSize.width + 15.0)), 58.0, kSnapThumbSize.width, kSnapThumbSize.height)];
+				[challengeImageView setImageWithURL:[NSURL URLWithString:[imgPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 				[self.contentView addSubview:challengeImageView];
+				
+				UIImageView *borderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedFollowChallengeBorder"]];
+				borderImageView.frame = challengeImageView.frame;
+				[self.contentView addSubview:borderImageView];
 				
 				cnt++;
 			}
+			
+			[self _makeStats];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -235,47 +257,22 @@
 
 
 #pragma mark - UI Presentation
-- (void)_makeStatsWithFollowingTotal:(int)following {
+- (UIImageView *)_challengeImageForPrefix:(NSString *)imagePrefix {
+	
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 1.0, kSnapThumbSize.width - 2.0, kSnapThumbSize.height - 2.0)];
+	[challengeImageView setImageWithURL:[NSURL URLWithString:[imagePrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+//	[borderImageView addSubview:challengeImageView];
+	
+	return (challengeImageView);
+}
+
+- (void)_makeStats {
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	UILabel *selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, kStatsPosY, 107.0, 18.0)];
-	selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
-	selfiesLabel.textColor = [HONAppDelegate honGreyTextColor];
-	selfiesLabel.backgroundColor = [UIColor clearColor];
-	selfiesLabel.textAlignment = NSTextAlignmentCenter;
-	selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
-	[self.contentView addSubview:selfiesLabel];
-	
-	UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, kStatsPosY, 107.0, 18.0)];
-	followersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
-	followersLabel.textColor = [HONAppDelegate honGreyTextColor];
-	followersLabel.backgroundColor = [UIColor clearColor];
-	followersLabel.textAlignment = NSTextAlignmentCenter;
-	followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-	[self.contentView addSubview:followersLabel];
-	
-	UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, kStatsPosY, 107.0, 18.0)];
-	followingLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
-	followingLabel.textColor = [HONAppDelegate honGreyTextColor];
-	followingLabel.backgroundColor = [UIColor clearColor];
-	followingLabel.textAlignment = NSTextAlignmentCenter;
-	followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:following]]];
-	[self.contentView addSubview:followingLabel];
-
+	_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
+	_followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+	_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_totalFollowing]]];
 }
-
-- (UIView *)_challengeImageForPrefix:(NSString *)imagePrefix {
-	
-	UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width + 2.0, kSnapThumbSize.height + 2.0)];
-	bgView.backgroundColor = [HONAppDelegate honBlueTextColor];
-	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 1.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-	[challengeImageView setImageWithURL:[NSURL URLWithString:[imagePrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
-	[bgView addSubview:challengeImageView];
-	
-	return (bgView);
-}
-
 
 @end

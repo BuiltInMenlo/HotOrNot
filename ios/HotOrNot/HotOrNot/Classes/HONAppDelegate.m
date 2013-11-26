@@ -745,7 +745,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+//			VOLLEY_JSON_LOG(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -790,13 +790,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 				
-				NSLog(@"RANGE:[%@]", NSStringFromRange([HONAppDelegate rangeForImageQueue]));
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_TAB_BAR_AB" object:nil];
 				
 				if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
 					[self _showOKAlert:@"Update Required"
-						   withMessage:@"Please update Selfieclub to the latest version to use the latest features."];
+						   withMessage:[NSString stringWithFormat:@"Please update %@ to the latest version to use the latest features.", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]];
 				}
 				
 				if (!_isFromBackground)
@@ -1303,24 +1301,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //									  addAppButton:YES];
 		
 		
-		int boot_total = 0;
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+//		int boot_total = 0;
+//		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+//		
+//		else {
+//			boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
+//		}
 		
-		else {
-			boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
-		}
-		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+//		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 		
 //		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
 		
 //		if (boot_total == 5) {
 //			UIAlertView *alertView = [[UIAlertView alloc]
-//									  initWithTitle:@"Rate Selfieclub"
-//									  message:@"Why not rate Selfieclub in the app store!"
+//									  initWithTitle:[NSString stringWithFormat:@"Rate %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+//									  message:[NSString stringWithFormat:@"Why not rate %@ in the app store!", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 //									  delegate:self
 //									  cancelButtonTitle:nil
 //									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
@@ -1408,9 +1406,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
 //		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"background_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[HONAppDelegate incTotalForCounter:@"background"];
+	
+//	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
+//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"background_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 }
@@ -1429,7 +1429,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground) {
-		
 //		Mixpanel *mixpanel = [Mixpanel sharedInstance];
 //		[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
 //		[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
@@ -1445,8 +1444,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
-				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
-				if (total == 1 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
+				if ([HONAppDelegate totalForCounter:@"background"] == 2 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
 					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE FRIENDS?"
 																		message:@"Get more followers now, tap OK."
 																	   delegate:self
@@ -1456,8 +1454,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					[alertView show];
 				}
 				
-				if (total == 3 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SHARE SELFIECLUB?"
+				if ([HONAppDelegate totalForCounter:@"background"] == 4 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"VOLLEY" : @"SELFIECLUB"]
 																		message:@""
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
@@ -1571,7 +1569,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			// user verified
 			else if (pushType == 2) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"//[userInfo objectForKey:@"aps"]
+																	message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																   delegate:self
 														  cancelButtonTitle:@"No"
 														  otherButtonTitles:@"Yes", nil];
@@ -1657,7 +1655,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_establishUserDefaults {
-#if __ALWAYS_REGISTER__ == 1
 	NSArray *totalKeys = @[@"boot_total",
 						   @"@background_total",
 						   @"timeline_total",
@@ -1673,37 +1670,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"join_total",
 						   @"profile_total",
 						   @"like_total"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-	
-	for (NSString *key in totalKeys)
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
-#endif
-	
-#if __RESET_TOTALS__ == 1
-	NSArray *totalKeys = @[@"boot_total",
-						   @"@background_total",
-						   @"timeline_total",
-						   @"explore_total",
-						   @"exploreRefresh_total",
-						   @"verify_total",
-						   @"verifyRefresh_total",
-						   @"popular_total",
-						   @"verifyAction_total",
-						   @"preview_total",
-						   @"details_total",
-						   @"camera_total",
-						   @"join_total",
-						   @"profile_total",
-						   @"like_total"];
-	
-	for (NSString *key in totalKeys)
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
-#endif
-	
 	
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
@@ -1727,26 +1693,34 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:key];
 	}
 	
-	NSArray *totalKeys = @[@"boot_total",
-						   @"@background_total",
-						   @"timeline_total",
-						   @"explore_total",
-						   @"exploreRefresh_total",
-						   @"verify_total",
-						   @"verifyRefresh_total",
-						   @"popular_total",
-						   @"verifyAction_total",
-						   @"preview_total",
-						   @"details_total",
-						   @"camera_total",
-						   @"join_total",
-						   @"profile_total",
-						   @"like_total"];
-	
 	for (NSString *key in totalKeys) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	}
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+	
+	NSDictionary *emptySuggestedChallenge = @{@"id":@"-2",
+											  @"added":@"1970-01-01 00:00:00",
+											  @"challengers":@[],
+											  @"comments":@"0",
+											  @"creator":@{@"age":@"1970-01-01 00:00:00",
+														   @"avatar":@"",
+														   @"id":@"0",
+														   @"img":@"",
+														   @"score":@"0",
+														   @"subject":@"",
+														   @"username":@"",
+														   @"joined":@"1970-01-01 00:00:00"},
+											  @"has_viewed":@"N",
+											  @"is_celeb":@"0",
+											  @"is_explore":@"1",
+											  @"is_verify":@"0",
+											  @"started":@"1970-01-01 00:00:00",
+											  @"status":@"0",
+											  @"subject":@"__#INVITE__",
+											  @"updated":@"1970-01-01 00:00:00"};
 	
 	NSDictionary *emptyInviteChallenge = @{@"id":@"-1",
 										   @"added":@"1970-01-01 00:00:00",
@@ -1790,8 +1764,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										   @"subject":@"__#SEARCH__",
 										   @"updated":@"1970-01-01 00:00:00"};
 	
+	[[NSUserDefaults standardUserDefaults] setObject:emptySuggestedChallenge forKey:@"empty_challenge_-2"];
 	[[NSUserDefaults standardUserDefaults] setObject:emptyInviteChallenge forKey:@"empty_challenge_-1"];
 	[[NSUserDefaults standardUserDefaults] setObject:emptySearchChallenge forKey:@"empty_challenge_0"];
+	
+#if __ALWAYS_REGISTER__ == 1
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
+	
+	for (NSString *key in totalKeys)
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+#endif
+	
+#if __RESET_TOTALS__ == 1
+	for (NSString *key in totalKeys)
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+#endif
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }

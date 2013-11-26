@@ -67,7 +67,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshLikeCount:) name:@"REFRESH_LIKE_COUNT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubscribes:) name:@"SHOW_SUBSCRIBES" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showHomeTutorial:) name:@"SHOW_HOME_TUTORIAL" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 	}
@@ -368,15 +368,11 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBSCRIBES" object:nil];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 }
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
 }
 
 
@@ -444,18 +440,32 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-//	[[Mixpanel sharedInstance] track:@"Start First Run"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
+	[[Mixpanel sharedInstance] track:@"Start First Run"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:^(void) {
-	}];
+	UINavigationController *navigationController;
+//	if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"]) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBSCRIBES" object:nil];
+//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:NO completion:^(void) {
+//			UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+//			[navigationController2 setNavigationBarHidden:YES];
+//			[navigationController presentViewController:navigationController2 animated:NO completion:^(void) {
+//			}];
+//		}];
+	
+//	} else {
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:^(void) {
+		}];
+//	}
 }
 
 - (void)_goVerify {
@@ -493,7 +503,7 @@
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find & invite friends to Selfieclub?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Find & invite friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
@@ -508,10 +518,10 @@
 	}
 }
 
-- (void)_showSubscribes:(NSNotification *)notification {
+- (void)_showSuggestedFollowing:(NSNotification *)notification {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_showFirstRun:(NSNotification *)notification {

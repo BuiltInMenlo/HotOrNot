@@ -91,7 +91,7 @@
 //		_cancelButton.hidden = YES;
 //		_takePhotoButton.hidden = YES;
 		
-		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_camera"]];
+		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"tutorial_camera_volley" : @"tutorial_camera_selfieclub"]];
 		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 186.0);
 		_tutorialImageView.alpha = 0.0;
 		[self addSubview:_tutorialImageView];

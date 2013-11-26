@@ -20,7 +20,7 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
-		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];
+		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"headerLogo_volley" : @"headerLogo_selfieclub"]];
 		logoImageView.frame = CGRectOffset(logoImageView.frame, 88.0, 20.0);
 		[self addSubview:logoImageView];
 	}

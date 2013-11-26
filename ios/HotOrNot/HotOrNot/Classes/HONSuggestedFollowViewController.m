@@ -251,7 +251,7 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Follow"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Suggested"];
 	headerView.backgroundColor = [UIColor whiteColor];
 //	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
@@ -305,14 +305,13 @@
 		
 		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 		if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																message:@"Get more subscribers now, tap OK."
 															   delegate:self
 													  cancelButtonTitle:@"No"
 													  otherButtonTitles:@"OK", nil];
 			[alertView setTag:0];
 			[alertView show];
-			
 			
 		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
@@ -517,7 +516,7 @@
 			
 			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE your friends to Selfieclub?"
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
 														  cancelButtonTitle:@"No"

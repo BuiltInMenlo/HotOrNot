@@ -36,4 +36,8 @@
 }
 
 
+// ios7
 CGSize size = [formattedScore sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18]}];
+
+// ios6
+CGSize size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(maxSubjectWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];

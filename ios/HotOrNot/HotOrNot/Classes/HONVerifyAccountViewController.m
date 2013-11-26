@@ -178,7 +178,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																		 message:@"Really!? Selfieclub is more fun with friends!"
+																		 message:[NSString stringWithFormat:@"Really!? %@ is more fun with friends!", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 																		delegate:self
 															cancelButtonTitle:@"Cancel"
 															otherButtonTitles:@"Yes, I'm Sure", nil];

@@ -47,7 +47,22 @@
 	_leftHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_leftHolderView];
 	
-	if (_lChallengeVO.challengeID == -1) {
+	if (_lChallengeVO.challengeID == -2) {
+		_leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"friendsTile"]];
+		_leftImageView.alpha = 0.0;
+		[_leftHolderView addSubview:_leftImageView];
+		
+		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		selectButton.frame = _leftHolderView.frame;
+		[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
+		[selectButton addTarget:self action:@selector(_goSuggested) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:selectButton];
+		
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_leftImageView.alpha = 1.0;
+		} completion:nil];
+		
+	} else if (_lChallengeVO.challengeID == -1) {
 		_leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"friendsTile"]];
 		_leftImageView.alpha = 0.0;
 		[_leftHolderView addSubview:_leftImageView];
@@ -91,9 +106,24 @@
 	_rightHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_rightHolderView];
 	
-	if (_rChallengeVO.challengeID == -1) {
+	if (_rChallengeVO.challengeID == -2) {
 		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"friendsTile"]];
-		_rightImageView.alpha = 0.0;
+//		_rightImageView.alpha = 0.0;
+		[_rightHolderView addSubview:_rightImageView];
+		
+		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		selectButton.frame = _rightHolderView.frame;
+		[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
+		[selectButton addTarget:self action:@selector(_goSuggested) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:selectButton];
+		
+//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//			_leftImageView.alpha = 1.0;
+//		} completion:nil];
+		
+	} else if (_rChallengeVO.challengeID == -1) {
+		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"friendsTile"]];
+//		_rightImageView.alpha = 0.0;
 		[_rightHolderView addSubview:_rightImageView];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -104,7 +134,7 @@
 		
 	} else if (_rChallengeVO.challengeID == 0) {
 		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchTile"]];
-		_rightImageView.alpha = 0.0;
+//		_rightImageView.alpha = 0.0;
 		[_rightHolderView addSubview:_rightImageView];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -113,9 +143,9 @@
 		[selectButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:selectButton];
 		
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_rightImageView.alpha = 1.0;
-		} completion:nil];
+//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//			_rightImageView.alpha = 1.0;
+//		} completion:nil];
 		
 	} else {
 		[self _populateCellWithHero:_rChallengeVO.creatorVO isLeftSide:NO];
@@ -176,6 +206,10 @@
 
 - (void)_goSearch {
 	[self.delegate exploreViewCellShowSearch:self];
+}
+
+- (void)_goSuggested {
+	[self.delegate exploreViewCellShowSuggested:self];
 }
 
 
