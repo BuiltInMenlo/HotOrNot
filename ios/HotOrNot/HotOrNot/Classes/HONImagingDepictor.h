@@ -16,6 +16,8 @@
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key;
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key;
 
++ (UIImage *)defaultShareImage;
+
 + (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor;
 + (void)flipLayer:(CALayer *)layer horizontally:(BOOL)xAxisFlipped;
 

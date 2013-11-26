@@ -74,9 +74,9 @@
 - (void)_retrieveChallenges {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tableView.alpha = 0.0;
-	}];
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_tableView.alpha = 0.0;
+//	}];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -99,7 +99,6 @@
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@: EXPLORE TOT:%@", [[self class] description], parsedLists);
 			
-//			NSMutableArray *orgChallenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 2];
 			_challenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 2];
 			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
 			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
@@ -108,62 +107,14 @@
 				if (serverList != nil)
 					[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
 			}
-//			[orgChallenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
 			
 			NSLog(@"TOT PRE SWAP:[%d]", [_challenges count]);
 			[_challenges exchangeObjectAtIndex:2 withObjectAtIndex:0];
 			[_challenges exchangeObjectAtIndex:7 withObjectAtIndex:1];
 
-//			[_challenges exchangeObjectAtIndex:(arc4random() % MIN(4, [_challenges count])) withObjectAtIndex:0];
-//			[_challenges exchangeObjectAtIndex:(arc4random() % MAX(6, [_challenges count] - 6)) + 4 withObjectAtIndex:1];
 			NSLog(@"TOT POST SWAP:[%d]", [_challenges count]);
 			
-//			[_challenges insertObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]] atIndex:2];
-//			[_challenges insertObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]] atIndex:7];
-			
-//			int totItems = [orgChallenges count];
-//			for (int i=0; i<totItems; i++) {
-//				int rnd = arc4random() % [orgChallenges count];
-//				NSLog(@"POS[%d] -=\\> RND:[%d]", i, rnd);
-//				
-//				[_challenges addObject:[orgChallenges objectAtIndex:rnd]];
-//				[orgChallenges removeObjectAtIndex:rnd];
-//				
-//				if ([orgChallenges count] == 0)
-//					break;
-//			}
-			
-//			_challenges = [orgChallenges mutableCopy];
-			
 			_emptySetImgView.hidden = ([_challenges count] > 0);
-//			for (NSDictionary *serverList in parsedLists)
-//				[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
-			
-//			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
-//			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
-//			
-//			NSMutableArray *swapVOs = [NSMutableArray arrayWithArray:_challenges];
-//			NSMutableArray *swapIndexes = [NSMutableArray array];
-//			for (int i=0; i<[_challenges count]; i++)
-//				[swapIndexes addObject:[NSNumber numberWithInt:i]];
-//			
-//			int swapIndex = [swapVOs count] - 1;
-//			for (int i=0; i<[_challenges count]; i--) {
-//				int rnd = arc4random() % [swapIndexes count];
-//				
-//				[_challenges exchangeObjectAtIndex:i withObjectAtIndex:swapIndex];
-//				[swapIndexes removeObjectAtIndex:i];
-//			}
-			
-//			int searchSwapIndex = arc4random() % MIN(0, [swapVOs count]);
-//			[swapVOs removeObjectAtIndex:searchSwapIndex];
-//
-//			int inviteSwapIndex = arc4random() % MIN(0, [swapVOs count]);
-//			[swapVOs removeObjectAtIndex:inviteSwapIndex];
-						
-//			[_challenges replaceObjectAtIndex:inviteIndex withObject:inviteVO];
-//			[_challenges replaceObjectAtIndex:searchIndex withObject:searchVO];
-			
 			[_tableView reloadData];
 		}
 		
@@ -236,6 +187,25 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	
+	NSLog(@"EXPLORE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"verify"]);
+	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = _tutorialImageView.frame;
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -347,25 +317,6 @@
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
-	
-//	if (total == 0) {
-//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
-//		_tutorialImageView.userInteractionEnabled = YES;
-//		_tutorialImageView.hidden = YES;
-//		_tutorialImageView.alpha = 0.0;
-//		
-//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		closeButton.frame = _tutorialImageView.frame;
-//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:closeButton];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-//		
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
-//	}
 }
 
 - (void)_refreshExploreTab:(NSNotification *)notification {
@@ -425,7 +376,8 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
 		[self _addBlur];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		
@@ -452,7 +404,8 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
 		[self _addBlur];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+		//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		

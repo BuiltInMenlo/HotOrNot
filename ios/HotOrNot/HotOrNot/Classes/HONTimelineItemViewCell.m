@@ -104,14 +104,13 @@
 		
 		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"overlayFade-568h@2x" : @"overlayFade"];
-		gradientImageView.alpha = 1.0 - (int)([HONAppDelegate isRetina4Inch]);
 		[_heroHolderView addSubview:gradientImageView];
 		
 //		if ([HONAppDelegate isRetina4Inch]) {
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				_heroImageView.alpha = 1.0;
-				gradientImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
+				gradientImageView.alpha = 1.0;
 				[imageLoadingView stopAnimating];
 				[imageLoadingView removeFromSuperview];
 			}];
@@ -151,6 +150,20 @@
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	
+	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
+	if (sticker != nil) {
+		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 120.0, 94.0, 94.0)];
+		[stickerImageView setImageWithURL:[NSURL URLWithString:[sticker objectForKey:@"img"]] placeholderImage:nil];
+		[self.contentView addSubview:stickerImageView];
+		
+		UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		stickerButton.frame = stickerImageView.frame;
+		stickerButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.5];
+		[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
+		[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:stickerButton];
+	}
+	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 241.0, 64.0, 137.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
@@ -169,16 +182,16 @@
 	[_likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:_likeButton];
 	
-	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
-		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 128.0);
-		_tutorialImageView.alpha = 0.0;
-		[self.contentView addSubview:_tutorialImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
+//	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
+//		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
+//		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 128.0);
+//		_tutorialImageView.alpha = 0.0;
+//		[self.contentView addSubview:_tutorialImageView];
+//		
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_tutorialImageView.alpha = 1.0;
+//		}];
+//	}
 }
 
 
@@ -225,6 +238,12 @@
 - (void)_goScore {
 	[self.delegate timelineItemViewCell:self showVoters:_challengeVO];
 }
+
+- (void)_goStickerProfile:(id)sender {
+	UIButton *button = (UIButton *)sender;
+	[self.delegate timelineItemViewCell:self showProfileForUserID:button.tag forChallenge:_challengeVO];
+}
+
 
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {

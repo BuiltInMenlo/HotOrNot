@@ -143,6 +143,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)composeEmotions;
 + (NSArray *)replyEmotions;
 
++ (NSDictionary *)stickerForSubject:(NSString *)subject;
+
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 + (NSArray *)inviteCelebs;

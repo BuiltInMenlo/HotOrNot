@@ -56,7 +56,7 @@
 		
 		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"verifyOverlay-568h@2x" : @"verifyOverlay"];
-		gradientImageView.alpha = 0.0;
+//		gradientImageView.alpha = 0.0;
 		[_imageHolderView addSubview:gradientImageView];
 		
 		//		if ([HONAppDelegate isRetina4Inch]) {

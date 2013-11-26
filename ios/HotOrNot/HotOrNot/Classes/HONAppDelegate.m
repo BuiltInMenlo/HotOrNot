@@ -309,6 +309,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([emotions copy]);
 }
 
++ (NSDictionary *)stickerForSubject:(NSString *)subject {
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"stickers"]) {
+		if ([[dict objectForKey:@"hashtag"] isEqualToString:subject])
+			return (dict);
+	}
+	
+	return (nil);
+}
+
 + (NSArray *)searchSubjects {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"search_subjects"]);
 }
@@ -373,7 +382,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
 	
 	for (int i=0; i<range.length - range.location; i++) {
-		NSLog(@"s+ArT_l0Ad. --> (#%02d) \"%@\"", (range.location + i), [urls objectAtIndex:i]);
+//		NSLog(@"s+ArT_l0Ad. --> (#%02d) \"%@\"", (range.location + i), [urls objectAtIndex:i]);
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
 		[imageView setTag:range.location + i];
@@ -762,6 +771,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"stickers"] forKey:@"stickers"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_hashtags"] forKey:@"search_subjects"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
@@ -1021,7 +1031,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengeResult);
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] withBackground:nil]];
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] withBackground:nil]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
 			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 		}
@@ -1079,7 +1090,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_showShareShelf:(NSNotification *)notification {
 	_shareInfo = [notification object];
 	
-	NSLog(@"_showShareShelf:[%@]", _shareInfo);
+//	NSLog(@"_showShareShelf:[%@]", _shareInfo);
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
@@ -1151,6 +1162,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 - (void)_uploadImagesToAWS:(NSNotification *)notification {
+	NSLog(@"_uploadImagesToAWS:[%@]", [notification object]);
 	
 	NSDictionary *dict = [notification object];
 	if ([[dict objectForKey:@"url"] length] > 0) {
@@ -1251,23 +1263,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
-	NSArray *totalKeys = @[@"boot_total",
-						   @"@background_total",
-						   @"timeline_total",
-						   @"explore_total",
-						   @"exploreRefresh_total",
-						   @"verify_total",
-						   @"verifyRefresh_total",
-						   @"popular_total",
-						   @"verifyAction_total",
-						   @"preview_total",
-						   @"details_total",
-						   @"camera_total",
-						   @"join_total",
-						   @"profile_total",
-						   @"like_total"];
-	
-	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
@@ -1294,26 +1289,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//config.secureUdid = @"<SecureUDID value goes here>";
 	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	
-#if __ALWAYS_REGISTER__ == 1
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-	
-	for (NSString *key in totalKeys)
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
-#endif
-	
-#if __RESET_TOTALS__ == 1
-	for (NSString *key in totalKeys)
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
-#endif
 
 	[self _establishUserDefaults];
 	
@@ -1530,6 +1505,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
+	
+	if ([HONAppDelegate apiServerPath] != nil && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"N"])
+		[self _enableNotifications:YES];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
@@ -1543,6 +1521,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[HONAppDelegate writeDeviceToken:holderToken];
+	
+	if ([HONAppDelegate apiServerPath] != nil && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"])
+		[self _enableNotifications:NO];
 	
 //	if ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
 //		NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
@@ -1671,11 +1652,60 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.tabBarController.viewControllers = navigationControllers;
 	self.window.backgroundColor = [UIColor clearColor];
 	
-	if ([HONAppDelegate apiServerPath] != nil)
-		[self _enableNotifications:YES];
+//	if ([HONAppDelegate apiServerPath] != nil)
+//		[self _enableNotifications:YES];
 }
 
 - (void)_establishUserDefaults {
+#if __ALWAYS_REGISTER__ == 1
+	NSArray *totalKeys = @[@"boot_total",
+						   @"@background_total",
+						   @"timeline_total",
+						   @"explore_total",
+						   @"exploreRefresh_total",
+						   @"verify_total",
+						   @"verifyRefresh_total",
+						   @"popular_total",
+						   @"verifyAction_total",
+						   @"preview_total",
+						   @"details_total",
+						   @"camera_total",
+						   @"join_total",
+						   @"profile_total",
+						   @"like_total"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
+	
+	for (NSString *key in totalKeys)
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
+#endif
+	
+#if __RESET_TOTALS__ == 1
+	NSArray *totalKeys = @[@"boot_total",
+						   @"@background_total",
+						   @"timeline_total",
+						   @"explore_total",
+						   @"exploreRefresh_total",
+						   @"verify_total",
+						   @"verifyRefresh_total",
+						   @"popular_total",
+						   @"verifyAction_total",
+						   @"preview_total",
+						   @"details_total",
+						   @"camera_total",
+						   @"join_total",
+						   @"profile_total",
+						   @"like_total"];
+	
+	for (NSString *key in totalKeys)
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+#endif
+	
+	
+	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
 	
@@ -1945,7 +1975,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			NSString *instaFormat = @"com.instagram.exclusivegram";
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
 			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-															  avatarImage:[HONImagingDepictor cropImage:[_shareInfo objectForKey:@"image"] toRect:CGRectMake(0.0, 41.0, 640.0, 853.0)]
+															  avatarImage:[_shareInfo objectForKey:@"image"]
 																 username:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
 			
@@ -2011,3 +2041,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 #endif
 @end
+
+
+
+// containsSubstring = ([string rangeOfString:@"bla"].location == NSNotFound);

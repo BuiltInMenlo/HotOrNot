@@ -27,7 +27,7 @@
 #import "HONHeaderView.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
-#import "HONSubscribeViewController.h"
+#import "HONSuggestedFollowViewController.h"
 #import "HONVerifyAccountViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
@@ -68,6 +68,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshLikeCount:) name:@"REFRESH_LIKE_COUNT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubscribes:) name:@"SHOW_SUBSCRIBES" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showHomeTutorial:) name:@"SHOW_HOME_TUTORIAL" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 	}
 	
@@ -113,7 +114,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [challengesResult count]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [challengesResult count]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in challengesResult) {
@@ -366,7 +367,8 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[HONAppDelegate incTotalForCounter:@"timeline"];
+	
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBSCRIBES" object:nil];
 }
 
 - (void)viewDidUnload {
@@ -450,17 +452,6 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
-	_tutorialImageView.userInteractionEnabled = YES;
-	_tutorialImageView.hidden = YES;
-	_tutorialImageView.alpha = 0.0;
-	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = _tutorialImageView.frame;
-	[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-	[_tutorialImageView addSubview:closeButton];
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:^(void) {
@@ -501,12 +492,6 @@
 
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
-	[self.view addSubview:_tutorialImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tutorialImageView.alpha = 1.0;
-	}];
-	
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find & invite friends to Selfieclub?"
 															message:@""
@@ -524,7 +509,7 @@
 }
 
 - (void)_showSubscribes:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSubscribeViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -557,6 +542,29 @@
 
 - (void)_tareHomeTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+}
+
+- (void)_showHomeTutorial:(NSNotification *)notification {
+	NSLog(@"TIMELINE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"verify"]);
+	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 0) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 374.0 : 331.0, 320.0, 64.0);
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
 }
 
 
@@ -664,12 +672,13 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
 //		_challengeVO = challengeVO;
-		[self _addBlur];
-		[self _removeTutorialBubbles];
+//		[self _addBlur];
+//		[self _removeTutorialBubbles];
 		
-		[cell showTapOverlay];
+//		[cell showTapOverlay];
 		
-		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView];
+//		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView];
+		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:challengeDetailsViewController];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
@@ -899,7 +908,7 @@
 			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
 			
 			int cnt = 0;
-			NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
+			//NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
 			for (int i=queueRange.location; i<queueRange.length; i++) {
 				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
 				

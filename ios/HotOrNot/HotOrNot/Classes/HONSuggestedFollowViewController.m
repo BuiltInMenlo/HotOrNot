@@ -1,5 +1,5 @@
 //
-//  HONSubscribeViewController.m
+//  HONSuggestedFollowViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 11/22/2013 @ 13:41 .
@@ -12,18 +12,17 @@
 #import "UIImageView+AFNetworking.h"
 
 
-#import "HONSubscribeViewController.h"
-#import "HONPopularUserViewCell.h"
+#import "HONSuggestedFollowViewController.h"
+#import "HONSuggestedFollowViewCell.h"
 #import "HONPopularUserVO.h"
 #import "HONHeaderView.h"
-#import "HONSearchBarHeaderView.h"
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 
-@interface HONSubscribeViewController () <HONPopularUserViewCellDelegate>
+@interface HONSuggestedFollowViewController () <HONSuggestedFollowViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *addUsers;
@@ -34,7 +33,7 @@
 @end
 
 
-@implementation HONSubscribeViewController
+@implementation HONSuggestedFollowViewController
 
 - (id)init {
 	if ((self = [super init])) {
@@ -240,11 +239,11 @@
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
 		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 	
-	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectAllButton.frame = CGRectMake(10.0, 10.0, 74.0, 24.0);
-	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_nonActive"] forState:UIControlStateNormal];
-	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_Active"] forState:UIControlStateHighlighted];
-	[selectAllButton addTarget:self action:@selector(_goSelectAll) forControlEvents:UIControlEventTouchUpInside];
+//	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	selectAllButton.frame = CGRectMake(10.0, 10.0, 74.0, 24.0);
+//	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_nonActive"] forState:UIControlStateNormal];
+//	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_Active"] forState:UIControlStateHighlighted];
+//	[selectAllButton addTarget:self action:@selector(_goSelectAll) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -254,7 +253,7 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Follow"];
 	headerView.backgroundColor = [UIColor whiteColor];
-	[headerView addButton:selectAllButton];
+//	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	
@@ -332,6 +331,8 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:nil];
 	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
 }
 
 - (void)_goSelectAll {
@@ -365,22 +366,22 @@
 		[_addUsers addObject:vo];
 	}
 	
-	for (HONPopularUserViewCell *cell in _cells)
+	for (HONSuggestedFollowViewCell *cell in _cells)
 		[cell toggleSelected:YES];
 	//	}
 }
 
 
-#pragma mark - PopularUserViewCell Delegates
-- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected {
+#pragma mark - SuggestedViewCell Delegates
+- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONPopularUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - %@elect%@", (isSelected) ? @"Des" : @"S", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
+										  [NSString stringWithFormat:@"%d - @%@", userVO.userID, userVO.username], @"celeb", nil]];
 		
 		if (isSelected) {
-			[_selectedUsers addObject:popularUserVO];
+			[_selectedUsers addObject:userVO];
 			
 		} else {
 			NSMutableArray *removeVOs = [NSMutableArray array];
@@ -426,14 +427,14 @@
 	label.text = @"Follow popular people";
 	[headerImageView addSubview:label];
 	
-	return (headerImageView);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONSuggestedFollowViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONPopularUserViewCell alloc] init];
+		cell = [[HONSuggestedFollowViewCell alloc] init];
 	
 	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
 	cell.popularUserVO = vo;
@@ -458,11 +459,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return (206.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -508,7 +509,7 @@
 			for (NSDictionary *dict in [HONAppDelegate popularPeople])
 				[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
 			
-			for (HONPopularUserViewCell *cell in _cells)
+			for (HONSuggestedFollowViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
 			for (HONPopularUserVO *vo in _selectedUsers)

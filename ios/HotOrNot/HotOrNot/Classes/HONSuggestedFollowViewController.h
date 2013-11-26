@@ -1,5 +1,5 @@
 //
-//  HONSubscribeViewController.h
+//  HONSuggestedFollowViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 11/22/2013 @ 13:41 .
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONSubscribeViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONSuggestedFollowViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
 @end

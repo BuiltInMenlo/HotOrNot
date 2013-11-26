@@ -75,6 +75,10 @@
 	return ([[HONImagingDepictor createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:1.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
 }
 
++ (UIImage *)defaultShareImage {
+	return ([UIImage imageNamed:@"share_defaultTemplate"]);
+}
+
 + (double)totalLuminance:(UIImage *)image {
 	unsigned char* pixels = [image rgbaPixels];
 	
@@ -247,7 +251,8 @@
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 612.0, 612.0)];
 	canvasView.backgroundColor = [UIColor blackColor];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -102.0, 612.0, 816.0)];
+	//UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -237.0, 612.0, 1086.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (612.0 - avatar.size.height) * 0.5, avatar.size.width, avatar.size.height)];
 	avatarImageView.image = avatar;
 	[canvasView addSubview:avatarImageView];
 	

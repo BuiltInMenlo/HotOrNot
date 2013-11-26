@@ -59,11 +59,12 @@
 
 @implementation HONChallengeDetailsViewController
 
-- (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
+//- (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
+- (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		
 		_challengeVO = vo;
-		_bgImageView = imageView;
+//		_bgImageView = imageView;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -388,7 +389,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[_bgHolderView addSubview:_bgImageView];
+//	[_bgHolderView addSubview:_bgImageView];
 	
 	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)];
@@ -431,13 +432,12 @@
 		_heroImageView.image = image;
 		
 		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"subDetailsBackground"]];
-		gradientImageView.alpha = 0.0;
 		[_heroHolderView addSubview:gradientImageView];
 		
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_heroImageView.alpha = 1.0;
-			gradientImageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
+			gradientImageView.alpha = 1.0;
 		}];
 	};
 	
