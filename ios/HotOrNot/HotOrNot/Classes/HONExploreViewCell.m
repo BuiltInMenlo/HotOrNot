@@ -48,7 +48,7 @@
 	[self.contentView addSubview:_leftHolderView];
 	
 	if (_lChallengeVO.challengeID == -2) {
-		_leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"friendsTile"]];
+		_leftImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedTile"]];
 		_leftImageView.alpha = 0.0;
 		[_leftHolderView addSubview:_leftImageView];
 		
@@ -107,7 +107,7 @@
 	[self.contentView addSubview:_rightHolderView];
 	
 	if (_rChallengeVO.challengeID == -2) {
-		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"friendsTile"]];
+		_rightImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedTile"]];
 //		_rightImageView.alpha = 0.0;
 		[_rightHolderView addSubview:_rightImageView];
 		
@@ -172,10 +172,10 @@
 
 - (void)_goSelectLeft {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
-	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	[self.contentView addSubview:overlayView];
 	
-	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		overlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[overlayView removeFromSuperview];
@@ -187,16 +187,16 @@
 
 - (void)_goSelectRight {
 	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
-	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	[self.contentView addSubview:overlayView];
 	
-	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		overlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[overlayView removeFromSuperview];
 	}];
 	
-	//[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
+	[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
 	[self.delegate exploreViewCell:self showProfile:_rChallengeVO.creatorVO];
 }
 

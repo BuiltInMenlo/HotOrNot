@@ -298,7 +298,17 @@
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			for (HONTimelineItemViewCell *cell in _cells) {
 				if (cell.challengeVO.challengeID == _challengeVO.challengeID)
-					[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
+					[cell updateChallenge:_challengeVO];
+			}
+			
+			int cnt = 0;
+			for (HONChallengeVO *vo in _challenges) {
+				if (vo.challengeID == _challengeVO.challengeID) {
+					[_challenges replaceObjectAtIndex:cnt withObject:_challengeVO];
+					break;
+				}
+				
+				cnt++;
 			}
 		}
 		
@@ -340,6 +350,7 @@
 	_tableView.pagingEnabled = YES;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
@@ -361,14 +372,12 @@
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
 		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
-	
-	
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-#if __ALWAYS_SUGGEST__ == 1
+#if __FORCE_SUGGEST__ == 1
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 #endif
 }
@@ -407,6 +416,7 @@
 	
 	[self _addBlur];
 	[self _removeTutorialBubbles];
+	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -446,28 +456,13 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	UINavigationController *navigationController;
-//	if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"]) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBSCRIBES" object:nil];
-//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:NO completion:^(void) {
-//			UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-//			[navigationController2 setNavigationBarHidden:YES];
-//			[navigationController presentViewController:navigationController2 animated:NO completion:^(void) {
-//			}];
-//		}];
-	
-//	} else {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:^(void) {
-		}];
-//	}
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:^(void) {}];
 }
 
 - (void)_goVerify {
@@ -547,7 +542,8 @@
 	
 	for (HONTimelineItemViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-			[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
+			[cell updateChallenge:_challengeVO];
+//			[cell upvoteUser:_challengeVO.creatorVO.userID onChallenge:_challengeVO];
 		}
 	}
 }
@@ -566,8 +562,8 @@
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 374.0 : 331.0, 320.0, 64.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
@@ -680,8 +676,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-//		_challengeVO = challengeVO;
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
 //		_challengeVO = challengeVO;
 //		[self _addBlur];
@@ -689,11 +684,9 @@
 		
 //		[cell showTapOverlay];
 		
-//		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView];
-		HONChallengeDetailsViewController *challengeDetailsViewController = [[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:challengeDetailsViewController];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO]];
 		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -774,7 +767,8 @@
 	
 	for (HONTimelineItemViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == challengeVO.challengeID)
-			[cell upvoteUser:opponentVO.userID onChallenge:_challengeVO];
+			[cell updateChallenge:_challengeVO];
+//			[cell upvoteUser:opponentVO.userID onChallenge:_challengeVO];
 	}
 }
 

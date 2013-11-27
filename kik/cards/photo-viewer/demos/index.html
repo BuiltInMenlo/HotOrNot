@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Photo Viewer Demo With App.js</title>
+<style>
+iframe {
+	border: 0;
+	width: 100%;
+	height: 100%;
+}
+.back {
+	position: absolute;
+	bottom: 80px;
+	left: 38px;
+	width: 115px;
+	height: 35px;
+}
+.back:active {
+	background: url(img/back-button-active.png);
+}
+#wrapper {
+	position: relative;
+	margin: 0px auto;
+	width: 295px;
+	height: 463px;
+	padding: 108px 25px 115px 29px;
+	background: url(img/galaxy-nexus.png);
+}
+</style>
+</head>
+<body>
+<div id="wrapper">
+	<iframe src="basic.html" border="none"></iframe>
+	<a href="#" class="back"></a>
+</div>
+<script>
+(function () {
+	var iframe = document.querySelector('iframe');
+	var back = document.querySelector('.back');
+	function isMobile() {
+		if (navigator.userAgent.match(/Android/i)
+			|| navigator.userAgent.match(/webOS/i)
+			|| navigator.userAgent.match(/iPhone/i)
+			|| navigator.userAgent.match(/iPad/i)
+			|| navigator.userAgent.match(/iPod/i)
+			|| navigator.userAgent.match(/BlackBerry/i)
+			|| navigator.userAgent.match(/Windows Phone/i)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	if (isMobile()) {
+		window.location.replace('basic.html');
+	}
+	back.onclick = function () {
+		var w = iframe.contentWindow;
+		if (w && w.App) w.App.back();
+		else iframe.contentWindow.history.back();
+	}
+	// TODO: Add phantom limb support to simulate touch events?
+	// https://github.com/brian-c/phantom-limb/
+}())
+</script>
+</body>
+</html>

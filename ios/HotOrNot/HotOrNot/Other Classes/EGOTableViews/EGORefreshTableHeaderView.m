@@ -57,6 +57,7 @@
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - kLoadingTheshold, 24.0, 24.0);
+		[_activityIndicatorView startAnimating];
 		[self addSubview:_activityIndicatorView];
 		
 		[self setState:EGOOPullRefreshNormal];
@@ -71,33 +72,33 @@
 	switch (aState) {
 		case EGOOPullRefreshPulling:
 			[_activityIndicatorView startAnimating];
-			_activityIndicatorView.hidden = NO;
+//			_activityIndicatorView.hidden = NO;
 			
-			if (_activityIndicatorView.alpha < 1.0) {
-				[UIView animateWithDuration:0.25 animations:^(void) {
-					_activityIndicatorView.alpha = 1.0;
-				}];
-			}
+//			if (_activityIndicatorView.alpha < 1.0) {
+//				[UIView animateWithDuration:0.25 animations:^(void) {
+//					_activityIndicatorView.alpha = 1.0;
+//				}];
+//			}
 			break;
 			
 		case EGOOPullRefreshNormal:
 			if (_state == EGOOPullRefreshPulling) {
 			}
 			
-			if (_activityIndicatorView.alpha > 0.0) {
-				[UIView animateWithDuration:0.25 animations:^(void) {
-					_activityIndicatorView.alpha = 0.0;
-				} completion:^(BOOL finished) {
-					[_activityIndicatorView stopAnimating];
-					_activityIndicatorView.hidden = YES;
-				}];
-			}
+//			if (_activityIndicatorView.alpha > 0.0) {
+//				[UIView animateWithDuration:0.25 animations:^(void) {
+//					_activityIndicatorView.alpha = 0.0;
+//				} completion:^(BOOL finished) {
+//					[_activityIndicatorView stopAnimating];
+//					_activityIndicatorView.hidden = YES;
+//				}];
+//			}
 			
 			break;
 			
 		case EGOOPullRefreshLoading:
 			[_activityIndicatorView startAnimating];
-			_activityIndicatorView.hidden = NO;
+//			_activityIndicatorView.hidden = NO;
 			break;
 			
 		default:
@@ -110,12 +111,15 @@
 
 #pragma mark - ScrollView Methods
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"egoRefreshScrollViewDidScroll OFFSET:[%f] INSET:[%@]", -scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"egoRefreshScrollViewDidScroll OFFSET:[%f] INSET:[%@] STATE:[%d]", -scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _state);
 	
 	if (_state == EGOOPullRefreshLoading) {
 		scrollView.contentInset = UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, _headerOffset), kLoadingTheshold + _headerOffset), 0.0f, 0.0f, 0.0f);
-		
-	} else if (scrollView.isDragging) {
+	
+	} else if (_state == EGOOPullRefreshNormal)
+		scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
+	
+	else if (scrollView.isDragging) {
 		_isLoading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
 		
 		if (!_isLoading) {
@@ -133,26 +137,25 @@
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
-	NSLog(@"egoRefreshScrollViewDidEndDragging INSET:[%@]", NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"egoRefreshScrollViewDidEndDragging OFFSET:[%@] INSET:[%@] LOADING:[%d]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), _isLoading);
 	
 	if (scrollView.contentOffset.y <= -kLoadingTheshold - _headerOffset && !_isLoading) {
 		[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];
 		
 		[self setState:EGOOPullRefreshLoading];
 		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:0.2];
+		[UIView setAnimationDuration:0.33];
 		scrollView.contentInset = UIEdgeInsetsMake(kLoadingTheshold + _headerOffset, 0.0f, 0.0f, 0.0f);
 		[UIView commitAnimations];
 	}
 }
 
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView {
-//	NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading INSET:[%@]", NSStringFromUIEdgeInsets(scrollView.contentInset));
+	NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading OFFSET:[%@] INSET:[%@]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset));
 	
 	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.3];
+	[UIView setAnimationDuration:0.2];
 	scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
-//	scrollView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
 	[UIView commitAnimations];
 	
 	[self setState:EGOOPullRefreshNormal];

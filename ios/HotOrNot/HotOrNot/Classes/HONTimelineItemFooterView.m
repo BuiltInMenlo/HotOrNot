@@ -101,7 +101,8 @@
 
 
 #pragma mark - Public APIs
-- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO; {
+//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO; {
+- (void)updateChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	_participantsLabel.text = [self _captionForParticipants];

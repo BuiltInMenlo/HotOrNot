@@ -15,12 +15,15 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 0
-#define __ALWAYS_SUGGEST__ 0
-#define __RESET_TOTALS__ 0
+/** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
+#define __FORCE_REGISTER__ 0
+#define __FORCE_SUGGEST__ 0
 #define __IGNORE_SUSPENDED__ 0
+#define __RESET_TOTALS__ 0
 
+/** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 #define __APPSTORE_BUILD__ 0
+/** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
 typedef enum {
@@ -76,15 +79,6 @@ const CGFloat kOrthodoxTableCellHeight;
 const CGFloat kMinLuminosity;
 const CGFloat kSnapRatio;
 const CGFloat kSnapJPEGCompress;
-
-//const CGFloat kSnapLumThreshold;
-//const CGFloat kSnapDarkBrightness;
-//const CGFloat kSnapDarkContrast;
-//const CGFloat kSnapDarkSaturation;
-//const CGFloat kSnapLightBrightness;
-//const CGFloat kSnapLightContrast;
-//const CGFloat kSnapLightSaturation;
-
 
 // animation params
 const CGFloat kHUDTime;
@@ -177,6 +171,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO;
 + (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO;
 
++ (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID;
+
 + (UIViewController *)appTabBarController;
 
 + (BOOL)isPhoneType5s;
@@ -193,6 +189,10 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)formattedExpireTime:(int)seconds;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 
++ (UIFont *)cartoGothicBold;
++ (UIFont *)cartoGothicBoldItalic;
++ (UIFont *)cartoGothicBook;
++ (UIFont *)cartoGothicItalic;
 + (UIFont *)helveticaNeueFontRegular;
 + (UIFont *)helveticaNeueFontLight;
 + (UIFont *)helveticaNeueFontBold;

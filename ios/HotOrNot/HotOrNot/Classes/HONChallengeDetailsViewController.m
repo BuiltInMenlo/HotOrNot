@@ -189,7 +189,8 @@
 			if (result != nil)
 				_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			
-			[_timelineItemFooterView upvoteUser:userID onChallenge:_challengeVO];
+			//[_timelineItemFooterView upvoteUser:userID onChallenge:_challengeVO];
+			[_timelineItemFooterView updateChallenge:_challengeVO];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:_challengeVO.dictionary];
 		}
 		
@@ -349,8 +350,8 @@
 - (void)loadView {
 	[super loadView];
 	
-	_bgHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-	[self.view addSubview:_bgHolderView];
+//	_bgHolderView = [[UIView alloc] initWithFrame:self.view.frame];
+//	[self.view addSubview:_bgHolderView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -360,6 +361,8 @@
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (324.0 + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
+	_scrollView.contentOffset = CGPointZero;
+	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
@@ -381,6 +384,9 @@
 	
 	[self _participantCheck];
 	[self _remakeUI];
+	
+	_isRefreshing = NO;
+	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 }
 
 - (void)viewDidLoad {
@@ -872,7 +878,7 @@
 }
 
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-//	_challengeVO = challengeVO;
+	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
@@ -887,7 +893,8 @@
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:challengeVO];
+//	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:challengeVO];
+	[_timelineItemFooterView updateChallenge:_challengeVO];
 }
 
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {

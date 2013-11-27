@@ -15,7 +15,8 @@
 @protocol HONTimelineItemFooterViewDelegate;
 @interface HONTimelineItemFooterView : UIView
 - (id)initAtPosY:(CGFloat)yPos withChallenge:(HONChallengeVO *)challengeVO;
-- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO;
+//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO;
+- (void)updateChallenge:(HONChallengeVO *)challengeVO;
 
 @property (nonatomic, assign) id <HONTimelineItemFooterViewDelegate> delegate;
 @end

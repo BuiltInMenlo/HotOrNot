@@ -310,7 +310,7 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? UIEdgeInsetsMake(44.0f, 0.0f, 0.0f, 0.0f) : UIEdgeInsetsMake(-20.0, 0.0f, 0.0f, 0.0f);
+//	_tableView.contentInset = ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f) : UIEdgeInsetsMake(-20.0, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -319,7 +319,7 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];//([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
@@ -348,8 +348,8 @@
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 374.0 : 331.0, 320.0, 64.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_okButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		

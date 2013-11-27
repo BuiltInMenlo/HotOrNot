@@ -52,9 +52,11 @@
 
 
 #pragma mark - Public APIs
-- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO {
+//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO {
+- (void)updateChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	[_timelineItemFooterView upvoteUser:userID onChallenge:challengeVO];
+//	[_timelineItemFooterView upvoteUser:userID onChallenge:challengeVO];
+	[_timelineItemFooterView updateChallenge:_challengeVO];
 }
 
 - (void)removeTutorialBubble {
@@ -152,13 +154,12 @@
 	
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
 	if (sticker != nil) {
-		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 184.0, 94.0, 94.0)];
-		[stickerImageView setImageWithURL:[NSURL URLWithString:[sticker objectForKey:@"img"]] placeholderImage:nil];
+		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 183.0, 94.0, 94.0)];
+		[stickerImageView setImageWithURL:[NSURL URLWithString:[[sticker objectForKey:@"img"] stringByAppendingString:@"_188x188.png"]] placeholderImage:nil];
 		[self.contentView addSubview:stickerImageView];
 		
 		UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		stickerButton.frame = stickerImageView.frame;
-		stickerButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.5];
 		[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
 		[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:stickerButton];
@@ -198,16 +199,16 @@
 #pragma mark - Navigation
 - (void)_goDetails {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _heroHolderView.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	[self.contentView addSubview:tappedOverlayView];
 	
-	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
-	
-	[UIView animateWithDuration:0.125 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		tappedOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
 	}];
+	
+	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
 }
 
 - (void)_goJoinChallenge {

@@ -473,10 +473,9 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(243.0, [UIScreen mainScreen].bounds.size.height - 145.0, 64.0, 135.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - (159.0 + ((_isVerify && [HONAppDelegate switchEnabledForKey:@"verify_tab"]) * 86.0)), 64.0, 196.0)];
 	_buttonHolderView.alpha = 0.0;
 	[self.view addSubview:_buttonHolderView];
-	
 	
 	if (_isVerify) {
 		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -487,11 +486,18 @@
 		[_buttonHolderView addSubview:approveButton];
 		
 		UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dispproveButton.frame = CGRectMake(0.0, 69.0, 64.0, 64.0);
+		dispproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
 		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 		[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:dispproveButton];
+		
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		moreButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+		[moreButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+		[_buttonHolderView addSubview:moreButton];
 		
 	} else {
 		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -502,7 +508,7 @@
 		[_buttonHolderView addSubview:upvoteButton];
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flagButton.frame = CGRectMake(0.0, 69.0, 64.0, 64.0);
+		flagButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
 		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
@@ -658,6 +664,15 @@
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
 	[alertView show];
+}
+
+- (void)_goSkip {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Skip", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	[self _goClose];
 }
 
 - (void)_goRemoveTutorial {

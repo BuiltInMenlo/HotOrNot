@@ -49,7 +49,7 @@
 #import "HONSuspendedViewController.h"
 
 
-#if __DEV_BUILD___ == 0
+#if __DEV_BUILD___ == 0 || __APPSTORE_BUILD == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_sc0001.json";
 NSString * const kAPIHost = @"data_api";
@@ -62,12 +62,10 @@ NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #endif
 
 
-//NSString * const kMixPanelToken = @"d93069ad5b368c367c3adc020cce8021"; // Focus Group I
-//NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
-//NSString * const kMixPanelToken = @"de3e67b68e6b8bf0344ca58573733ee5"; // Soft Launch II
 NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kTestFlightAppToken = @"68bcb8c2-c40e-4e3b-afdc-5d14a89eb4a0";
 NSString * const kHockeyAppToken = @"b784de80afa5c65803e0f3d8035cd725";
+NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 
 //api endpts
 NSString * const kAPIChallenges = @"Challenges.php";
@@ -114,14 +112,6 @@ const CGFloat kOrthodoxTableCellHeight = 63.0f;
 const CGFloat kMinLuminosity = 0.00;
 const CGFloat kSnapRatio = 1.33333333f;
 const CGFloat kSnapJPEGCompress = 0.400f;
-
-//const CGFloat kSnapLumThreshold = 0.297f;
-//const CGFloat kSnapDarkBrightness = 1.720f;
-//const CGFloat kSnapDarkContrast = 1.288f;
-//const CGFloat kSnapDarkSaturation = 1.38f;
-//const CGFloat kSnapLightBrightness = 1.288f;
-//const CGFloat kSnapLightContrast = 1.030f;
-//const CGFloat kSnapLightSaturation = 1.012f;
 
 // animation params
 const CGFloat kHUDTime = 0.5f;
@@ -242,18 +232,50 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)smsInviteFormat {
+//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
+//	NSString *kikName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"];
+//	NSString *igName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"];
+//	
+//	NSString *inviteFormat = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+//	inviteFormat = [inviteFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:kikName];
+//	inviteFormat = [inviteFormat stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:igName];
+//	
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"]);
 }
 
 + (NSDictionary *)emailInviteFormat {
+//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
+//	NSString *kikName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"];
+//	NSString *twName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"];
+//	
+//	NSString *subjectFormat = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+//	
+//	NSString *bodyFormat = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+//	bodyFormat = [bodyFormat stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:twName];
+//	bodyFormat = [bodyFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:kikName];
+//	
+//	return (@{@"subject"	: subjectFormat,
+//			  @"body"		: bodyFormat});
+	
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"]);
 }
 
 + (NSString *)instagramShareMessageForIndex:(int)index { //[0]:Details //[1]:Profile
+//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
+//	NSString *igName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"];
+//	
+//	NSString *message = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+//	message = [message stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:igName];
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index]);
 }
 
 + (NSString *)twitterShareCommentForIndex:(int)index { //[0]:Details //[1]:Profile
+//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
+//	NSString *twName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"];
+//	
+//	NSString *message = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:index] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+//	message = [message stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:twName];
+//	
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:index]);
 }
 
@@ -529,6 +551,28 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++ (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID {
+	return (@{@"id"			:[NSString stringWithFormat:@"%d", challengeID],
+			  @"added"		: @"1970-01-01 00:00:00",
+			  @"challengers": @[],
+			  @"comments"	: @"0",
+			  @"creator"	: @{@"age"		:@"1970-01-01 00:00:00",
+								@"avatar"	:@"",
+								@"id"		:@"0",
+								@"img"		:@"",
+								@"score"	:@"0",
+								@"subject"	:@"",
+								@"username"	:@"",
+								@"joined"	:@"1970-01-01 00:00:00"},
+			  @"has_viewed"	: @"N",
+			  @"is_celeb"	: @"0",
+			  @"is_explore"	: @"1",
+			  @"is_verify"	: @"0",
+			  @"started"	: @"1970-01-01 00:00:00",
+			  @"status"		: @"0",
+			  @"subject"	: @"__#INVITE__",
+			  @"updated"	: @"1970-01-01 00:00:00"});
+}
 
 + (UIViewController *)appTabBarController {
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
@@ -660,6 +704,22 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
++ (UIFont *)cartoGothicBold {
+	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
+}
+
++ (UIFont *)cartoGothicBoldItalic {
+	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:24.0]);
+}
+
++ (UIFont *)cartoGothicBook {
+	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
+}
+
++ (UIFont *)cartoGothicItalic {
+	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
+}
+
 + (UIFont *)helveticaNeueFontRegular {
 	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
 }
@@ -745,7 +805,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VOLLEY_JSON_LOG(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -768,6 +828,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_msg"] forKey:@"verify_msg"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"branding"] forKey:@"branding"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
@@ -777,16 +838,33 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"popular_people"] forKey:@"popular_people"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
-																   @"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
-																   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
-																   @"email"	: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
-																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
+				[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
+																   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
+																   @"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
+																   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
+																   @"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
+				
+//				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"        : [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
+//																   @"email"        : [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+//				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"        : [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
+//																   @"twitter"        : [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
+//				
 				
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				
+				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceNameTokensInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
+																   @"email"	: @{@"subject"	: [self _replaceNameTokensInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"]],
+																				@"body"		: [self _replaceNameTokensInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"]]}} forKey:@"invite_formats"];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"		: @[[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:0]],
+																						[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:1]]],
+																   @"twitter"		: @[[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:0]],
+																						[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:1]]]} forKey:@"share_formats"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				
 				
 				NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 				
@@ -1088,7 +1166,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_showShareShelf:(NSNotification *)notification {
 	_shareInfo = [notification object];
 	
-//	NSLog(@"_showShareShelf:[%@]", _shareInfo);
+	NSLog(@"_showShareShelf:[%@]", _shareInfo);
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
@@ -1272,22 +1350,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateChallengeAsSeen:) name:@"UPDATE_CHALLENGE_AS_SEEN" object:nil];
 	
 
-#if __APPSTORE_BUILD__ == 0
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
-	
-	[TestFlight takeOff:kTestFlightAppToken];
-#endif
-	
-	TSConfig *config = [TSConfig configWithDefaults];
-	config.collectWifiMac = NO;
-	config.idfa = [HONAppDelegate advertisingIdentifierWithoutSeperators:NO];
-	//config.odin1 = @"<ODIN-1 value goes here>";
-	//config.openUdid = @"<OpenUDID value goes here>";
-	//config.secureUdid = @"<SecureUDID value goes here>";
-	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-
 	[self _establishUserDefaults];
 	
 	if ([HONAppDelegate hasNetwork]) {
@@ -1296,26 +1358,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
 		
-//		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
-//								   withHomepageURI:@"http://www.builtinmenlo.com"
-//									  addAppButton:YES];
+		[HONAppDelegate incTotalForCounter:@"boot"];
 		
-		
-//		int boot_total = 0;
-//		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
-//			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-//		
-//		else {
-//			boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-//			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
-//		}
-		
-//		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
-//			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+		[self _initThirdPartySDKs];
 		
 //		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
-		
-//		if (boot_total == 5) {
+//		if ([HONAppDelegate totalForCounter:@"boot"] == 5) {
 //			UIAlertView *alertView = [[UIAlertView alloc]
 //									  initWithTitle:[NSString stringWithFormat:@"Rate %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 //									  message:[NSString stringWithFormat:@"Why not rate %@ in the app store!", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
@@ -1326,10 +1374,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //			[alertView show];
 //		}
 		
-		[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+		
 		[[Mixpanel sharedInstance] track:@"App Boot"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+										  [NSString stringWithFormat:@"%d", [HONAppDelegate totalForCounter:@"boot"]], @"boot_total", nil]];
 		
 		
 		self.tabBarController = [[HONTabBarController alloc] init];
@@ -1338,48 +1387,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-		//self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
+//		self.window.rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
 		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
-		// This prevents the UA Library from registering with UIApplication by default. This will allow
-		// you to prompt your users at a later time. This gives your app the opportunity to explain the
-		// benefits of push or allows users to turn it on explicitly in a settings screen.
-		//
-		// If you just want everyone to immediately be prompted for push, you can
-		// leave this line out.
-//		[UAPush setDefaultPushEnabledValue:NO];
-		
-		// Set log level for debugging config loading (optional)
-		// It will be set to the value in the loaded config upon takeOff
-		[UAirship setLogLevel:UALogLevelNone];
-		
-		// Populate AirshipConfig.plist with your app's info from https://go.urbanairship.com
-		// or set runtime properties here.
-		UAConfig *config = [UAConfig defaultConfig];
-		
-		// You can then programatically override the plist values:
-		// config.developmentAppKey = @"YourKey";
-		// etc.
-		
-		// Call takeOff (which creates the UAirship singleton)
-		[UAirship takeOff:config];
-		
-		// Print out the application configuration for debugging (optional)
-		UA_LDEBUG(@"Config:\n%@", [config description]);
-		
-		// Set the icon badge to zero on startup (optional)
-		[[UAPush shared] resetBadge];
-		
-		// Set the notification types required for the app (optional). With the default value of push set to no,
-		// UAPush will record the desired remote notification types, but not register for
-		// push notifications as mentioned above. When push is enabled at a later time, the registration
-		// will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
-		// set it if you want to add or remove types.
-		[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
-				
-		[HONAppDelegate writeDeviceToken:@""];
+		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
+		
 		
 //		NSLog(@"ADID:[%@]\nVID:[%@]", [HONAppDelegate advertisingIdentifierWithoutSeperators:YES], [HONAppDelegate identifierForVendorWithoutSeperators:YES]);
 		
@@ -1403,14 +1417,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
-//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-	
 	[HONAppDelegate incTotalForCounter:@"background"];
-	
-//	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"background_total"] intValue];
-//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"background_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 }
@@ -1641,6 +1648,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	for (UINavigationController *navigationController in navigationControllers) {
 		[navigationController setNavigationBarHidden:YES animated:NO];
+//		[navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
 		
 		if ([navigationController.navigationBar respondsToSelector:@selector(setShadowImage:)])
 			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
@@ -1656,7 +1664,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)_establishUserDefaults {
 	NSArray *totalKeys = @[@"boot_total",
-						   @"@background_total",
+						   @"background_total",
 						   @"timeline_total",
 						   @"explore_total",
 						   @"exploreRefresh_total",
@@ -1671,6 +1679,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"profile_total",
 						   @"like_total"];
 	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
@@ -1701,74 +1711,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 	
-	NSDictionary *emptySuggestedChallenge = @{@"id":@"-2",
-											  @"added":@"1970-01-01 00:00:00",
-											  @"challengers":@[],
-											  @"comments":@"0",
-											  @"creator":@{@"age":@"1970-01-01 00:00:00",
-														   @"avatar":@"",
-														   @"id":@"0",
-														   @"img":@"",
-														   @"score":@"0",
-														   @"subject":@"",
-														   @"username":@"",
-														   @"joined":@"1970-01-01 00:00:00"},
-											  @"has_viewed":@"N",
-											  @"is_celeb":@"0",
-											  @"is_explore":@"1",
-											  @"is_verify":@"0",
-											  @"started":@"1970-01-01 00:00:00",
-											  @"status":@"0",
-											  @"subject":@"__#INVITE__",
-											  @"updated":@"1970-01-01 00:00:00"};
-	
-	NSDictionary *emptyInviteChallenge = @{@"id":@"-1",
-										   @"added":@"1970-01-01 00:00:00",
-										   @"challengers":@[],
-										   @"comments":@"0",
-										   @"creator":@{@"age":@"1970-01-01 00:00:00",
-														@"avatar":@"",
-														@"id":@"0",
-														@"img":@"",
-														@"score":@"0",
-														@"subject":@"",
-														@"username":@"",
-														@"joined":@"1970-01-01 00:00:00"},
-										   @"has_viewed":@"N",
-										   @"is_celeb":@"0",
-										   @"is_explore":@"1",
-										   @"is_verify":@"0",
-										   @"started":@"1970-01-01 00:00:00",
-										   @"status":@"0",
-										   @"subject":@"__#INVITE__",
-										   @"updated":@"1970-01-01 00:00:00"};
-	
-	NSDictionary *emptySearchChallenge = @{@"id":@"0",
-										   @"added":@"1970-01-01 00:00:00",
-										   @"challengers":@[],
-										   @"comments":@"0",
-										   @"creator":@{@"age":@"1970-01-01 00:00:00",
-														@"avatar":@"",
-														@"id":@"0",
-														@"img":@"",
-														@"score":@"0",
-														@"subject":@"",
-														@"username":@"",
-														@"joined":@"1970-01-01 00:00:00"},
-										   @"has_viewed":@"N",
-										   @"is_celeb":@"0",
-										   @"is_explore":@"1",
-										   @"is_verify":@"0",
-										   @"started":@"1970-01-01 00:00:00",
-										   @"status":@"0",
-										   @"subject":@"__#SEARCH__",
-										   @"updated":@"1970-01-01 00:00:00"};
-	
-	[[NSUserDefaults standardUserDefaults] setObject:emptySuggestedChallenge forKey:@"empty_challenge_-2"];
-	[[NSUserDefaults standardUserDefaults] setObject:emptyInviteChallenge forKey:@"empty_challenge_-1"];
-	[[NSUserDefaults standardUserDefaults] setObject:emptySearchChallenge forKey:@"empty_challenge_0"];
-	
-#if __ALWAYS_REGISTER__ == 1
+	for (int i=-2; i<=0; i++)
+		[[NSUserDefaults standardUserDefaults] setObject:[HONAppDelegate emptyChallengeDictionaryWithID:i] forKey:[NSString stringWithFormat:@"empty_challenge_%d", i]];
+		
+#if __FORCE_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	
@@ -1776,9 +1722,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 #endif
 	
 #if __RESET_TOTALS__ == 1
@@ -1787,6 +1731,71 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)_initUrbanAirship {
+	/** This prevents the UA Library from registering with UIApplication by default. This will allow
+	 ** you to prompt your users at a later time. This gives your app the opportunity to explain the
+	 ** benefits of push or allows users to turn it on explicitly in a settings screen.
+	 **
+	 ** If you just want everyone to immediately be prompted for push, you can leave this line out.
+	 **/
+//	[UAPush setDefaultPushEnabledValue:NO];
+	
+	/** Set log level for debugging config loading (optional) - it will be set to the value in the loaded config upon takeOff **/
+	[UAirship setLogLevel:UALogLevelNone];
+	
+	/** Populate AirshipConfig.plist with your app's info from https://go.urbanairship.com or set runtime properties here. **/
+	UAConfig *config = [UAConfig defaultConfig];
+	
+	/** You can then programatically override the plist values, etc.: **/
+//	config.developmentAppKey = @"YourKey";
+	
+	/** Call takeOff (which creates the UAirship singleton) **/
+	[UAirship takeOff:config];
+	
+	/** Print out the application configuration for debugging (optional) **/
+	UA_LDEBUG(@"Config:\n%@", [config description]);
+	
+	/** Set the icon badge to zero on startup (optional) **/
+	[[UAPush shared] resetBadge];
+	
+	/** Set the notification types required for the app (optional).
+	 ** With the default value of push set to no,
+	 ** UAPush will record the desired remote notification types, but not register for
+	 ** push notifications as mentioned above. When push is enabled at a later time, the registration
+	 ** will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
+	 ** set it if you want to add or remove types.
+	 **/
+	[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
+	
+	
+	[HONAppDelegate writeDeviceToken:@""];
+}
+
+- (void)_initThirdPartySDKs {
+#if __APPSTORE_BUILD__ == 0
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
+	
+	[TestFlight takeOff:kTestFlightAppToken];
+#endif
+	
+	
+	TSConfig *config = [TSConfig configWithDefaults];
+	config.collectWifiMac = NO;
+	config.idfa = [HONAppDelegate advertisingIdentifierWithoutSeperators:NO];
+	//config.odin1 = @"<ODIN-1 value goes here>";
+	//config.openUdid = @"<OpenUDID value goes here>";
+	//config.secureUdid = @"<SecureUDID value goes here>";
+	[TSTapstream createWithAccountName:@"volley" developerSecret:kTapStreamSecretKey config:config];
+	
+	
+	[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+	
+//	[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.selfieclub"
+//							   withHomepageURI:@"http://www.builtinmenlo.com"
+//								  addAppButton:YES];
 }
 
 
@@ -1798,6 +1807,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
 		NSLog(@"Font Names = %@", names);
 	}
+}
+
+
+#pragma mark - Data Manip
+- (NSString *)_replaceNameTokensInFormat:(NSString *)format {
+	NSString *replaceFormat = [format stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]];
+	replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"]];
+	replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"]];
+	replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"]];
+	
+	return (replaceFormat);
 }
 
 
