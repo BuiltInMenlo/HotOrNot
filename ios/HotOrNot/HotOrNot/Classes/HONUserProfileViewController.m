@@ -255,14 +255,14 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [challengesResult count]);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [result count]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [result objectAtIndex:0]);
 			_challenges = [NSMutableArray array];
 			
-			for (NSDictionary *serverList in challengesResult) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+			for (NSDictionary *dict in result) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 				
 				if (vo != nil)
 					[_challenges addObject:vo];

@@ -58,7 +58,7 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -74,20 +74,25 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			_userVO = [HONUserVO userWithDictionary:result];
 			
-			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+			NSMutableArray *users = [NSMutableArray arrayWithCapacity:[[result objectForKey:@"friends"] count]];
+			for (NSDictionary *dict in [result objectForKey:@"friends"])
+				[users addObject:[dict objectForKey:@"user"]];
 			
-			_userVO = [HONUserVO userWithDictionary:userResult];
-//			NSArray *friends = [userResult objectForKey:@"friends"];
-//			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], users);
 			
-			NSArray *friends = [NSMutableArray arrayWithArray:[[userResult objectForKey:@"friends"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
-			
-			for (NSDictionary *dict in friends)
-				[_subscribers addObject:[HONUserVO userWithDictionary:[dict objectForKey:@"user"]]];
-			
+			for (NSDictionary *dict in [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
+				[_subscribers addObject:[HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+																		@"points"		: @"0",
+																		@"total_votes"	: @"0",
+																		@"pokes"		: @"0",
+																		@"pics"			: @"0",
+																		@"age"			: @"0",
+																		@"username"		: [dict objectForKey:@"username"],
+																		@"fb_id"		: @"",
+																		@"avatar_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
 			[_tableView reloadData];
 		}
 		

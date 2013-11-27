@@ -292,6 +292,9 @@
 					
 					if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+					
+					else
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
 				}];
 				
 			} else {

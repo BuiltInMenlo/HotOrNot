@@ -9,6 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONPopularUserViewCell.h"
+#import "HONImagingDepictor.h"
 
 @interface HONPopularUserViewCell()
 @property (nonatomic, strong) UIButton *followButton;
@@ -52,8 +53,32 @@
 	_popularUserVO = popularUserVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+	avatarImageView.alpha = 0.0;
 	[self addSubview:avatarImageView];
+	
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		avatarImageView.image = image;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_popularUserVO.imageURL];
+		
+		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						   placeholderImage:nil
+									success:imageSuccessBlock
+									failure:imageFailureBlock];
+	
+//	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 20.0, 170.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];

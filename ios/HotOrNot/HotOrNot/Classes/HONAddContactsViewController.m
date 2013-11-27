@@ -92,14 +92,14 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+			NSArray *result = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
-			for (NSDictionary *serverList in parsedUsers) {
+			for (NSDictionary *dict in result) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-															   [serverList objectForKey:@"id"], @"id",
-															   [serverList objectForKey:@"username"], @"username",
-															   [serverList objectForKey:@"avatar_url"], @"avatar_url",
+															   [dict objectForKey:@"id"], @"id",
+															   [dict objectForKey:@"username"], @"username",
+															   [dict objectForKey:@"avatar_url"], @"avatar_url",
 															   @"", @"points",
 															   @"", @"total_votes",
 															   @"", @"pokes",
@@ -168,14 +168,14 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+			NSArray *result = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
-			for (NSDictionary *serverList in parsedUsers) {
+			for (NSDictionary *dict in result) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-															   [serverList objectForKey:@"id"], @"id",
-															   [serverList objectForKey:@"username"], @"username",
-															   [serverList objectForKey:@"avatar_url"], @"avatar_url",
+															   [dict objectForKey:@"id"], @"id",
+															   [dict objectForKey:@"username"], @"username",
+															   [dict objectForKey:@"avatar_url"], @"avatar_url",
 															   @"", @"points",
 															   @"", @"total_votes",
 															   @"", @"pokes",

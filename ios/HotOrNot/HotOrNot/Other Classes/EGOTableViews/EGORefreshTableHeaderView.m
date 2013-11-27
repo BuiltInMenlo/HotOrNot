@@ -151,7 +151,7 @@
 }
 
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView {
-	NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading OFFSET:[%@] INSET:[%@]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading OFFSET:[%@] INSET:[%@]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset));
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.2];

@@ -15,6 +15,9 @@
 
 #import "HONImagingDepictor.h"
 
+
+#define kSnapRatio 1.853125
+
 @implementation HONImagingDepictor
 
 + (UIImage *)createImageFromView:(UIView *)view {
@@ -77,6 +80,30 @@
 
 + (UIImage *)defaultShareImage {
 	return ([UIImage imageNamed:@"share_defaultTemplate"]);
+}
+
++ (UIImage *)defaultAvatarImageAtSize:(CGSize)size {
+	UIImage *lImage = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"default_avatar"]];
+	float scale = (kSnapLargeSize.width / size.width);
+	
+	if (CGSizeEqualToSize(size, kSnapLargeSize))
+		return (lImage);
+	
+	else if (CGSizeEqualToSize(size, kSnapTabSize))
+		return ([HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:lImage toSize:CGSizeMake(kSnapTabSize.width, kSnapTabSize.width * kSnapRatio)] toRect:CGRectMake(0.0, ((kSnapTabSize.height / scale) - kSnapTabSize.height) * 0.5, kSnapTabSize.width, kSnapTabSize.height)]);
+	
+	else if (CGSizeEqualToSize(size, kSnapMediumSize))
+		return ([HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:lImage toSize:CGSizeMake(kSnapMediumSize.width, kSnapMediumSize.width * kSnapRatio)] toRect:CGRectMake(0.0, ((kSnapLargeSize.height / scale) - kSnapMediumSize.height) * 0.5, kSnapMediumSize.width, kSnapMediumSize.height)]);
+	
+	else if (CGSizeEqualToSize(size, kSnapThumbSize))
+		return ([HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:lImage toSize:CGSizeMake(kSnapThumbSize.width, kSnapThumbSize.width * kSnapRatio)] toRect:CGRectMake(0.0, ((kSnapLargeSize.height / scale) - kSnapThumbSize.height) * 0.5, kSnapThumbSize.width, kSnapThumbSize.height)]);
+	
+	else {
+		CGPoint sizeRatio = CGPointMake((kSnapLargeSize.width / size.width), (kSnapLargeSize.height / size.height));
+		CGSize scaledSize = CGSizeMake(kSnapLargeSize.width * sizeRatio.x, kSnapLargeSize.height * sizeRatio.y);
+		
+		return ([HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:lImage toSize:scaledSize] toRect:CGRectMake((MAX(scaledSize.width, size.width) - MIN(scaledSize.width, size.width) * 0.5), (MAX(scaledSize.height, size.height) - MIN(scaledSize.height, size.height) * 0.5), size.width, size.height)]);
+	}
 }
 
 + (double)totalLuminance:(UIImage *)image {

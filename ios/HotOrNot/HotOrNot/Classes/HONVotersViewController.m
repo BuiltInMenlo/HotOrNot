@@ -80,14 +80,13 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
+			NSArray *result = [[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error] sortedArrayUsingDescriptors:
 											[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 			
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedList);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			_voters = [NSMutableArray new];
-			for (NSDictionary *serverList in parsedLists) {
-				HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
+			for (NSDictionary *dict in result) {
+				HONVoterVO *vo = [HONVoterVO voterWithDictionary:dict];
 				
 				if (vo != nil)
 					[_voters addObject:vo];

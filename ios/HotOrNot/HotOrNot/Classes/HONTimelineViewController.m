@@ -112,13 +112,13 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [challengesResult count]);
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [result count]);
 			
 			_challenges = [NSMutableArray array];
-			for (NSDictionary *serverList in challengesResult) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+			for (NSDictionary *dict in result) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 				
 				//if (![HONAppDelegate switchEnabledForKey:@"dissolving_timeline"] && !vo.hasViewed)
 					[_challenges addObject:vo];
@@ -377,6 +377,8 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
+	[HONAppDelegate incTotalForCounter:@"timeline"];
+	
 #if __FORCE_SUGGEST__ == 1
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 #endif
@@ -553,15 +555,14 @@
 }
 
 - (void)_showHomeTutorial:(NSNotification *)notification {
-	NSLog(@"TIMELINE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"verify"]);
-	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 0) {
+	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 374.0 : 331.0, 320.0, 64.0);
+		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];

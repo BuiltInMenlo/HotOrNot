@@ -17,7 +17,7 @@
 #define __DEV_BUILD___ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 #define __FORCE_REGISTER__ 0
-#define __FORCE_SUGGEST__ 0
+#define __FORCE_SUGGEST__ 1
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 

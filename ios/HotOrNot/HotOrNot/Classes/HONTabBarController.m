@@ -333,16 +333,16 @@ const CGSize kTabSize = {80.0, 50.0};
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], unsortedChallenges);
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], result);
 			
 			int statusChanges = 0;
 			int voteChanges = 0;
 			int commentChanges = 0;
 			
 			NSMutableArray *challenges = [NSMutableArray array];
-			for (NSDictionary *serverList in unsortedChallenges) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+			for (NSDictionary *dict in result) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 				
 				if (vo != nil)// && (vo.statusID == 1 && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
 					[challenges addObject:vo];

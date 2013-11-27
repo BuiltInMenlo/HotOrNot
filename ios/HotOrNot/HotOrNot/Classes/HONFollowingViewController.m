@@ -119,21 +119,24 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			NSArray *following = [NSMutableArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
+			NSMutableArray *users = [NSMutableArray arrayWithCapacity:[result count]];
+			for (NSDictionary *dict in result)
+				[users addObject:[dict objectForKey:@"user"]];
+			
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], users);
+			NSArray *following = [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			for (NSDictionary *dict in following) {
-				NSString *avatarURL = [HONAppDelegate cleanImagePrefixURL:[[dict objectForKey:@"user"] objectForKey:@"avatar_url"]];
 				[_subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																	   [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
+																	   [NSString stringWithFormat:@"%d", [[dict objectForKey:@"id"] intValue]], @"id",
 																	   [NSString stringWithFormat:@"%d", 0], @"points",
 																	   [NSString stringWithFormat:@"%d", 0], @"total_votes",
 																	   [NSString stringWithFormat:@"%d", 0], @"pokes",
 																	   [NSString stringWithFormat:@"%d", 0], @"pics",
 																	   [NSString stringWithFormat:@"%d", 0], @"age",
-																	   [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
+																	   [dict objectForKey:@"username"], @"username",
 																	   @"", @"fb_id",
-																	   avatarURL, @"avatar_url", nil]]];
+																	   [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]], @"avatar_url", nil]]];
 			}
 			
 			[_tableView reloadData];

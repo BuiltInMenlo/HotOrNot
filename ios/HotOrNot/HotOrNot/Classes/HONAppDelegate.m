@@ -345,7 +345,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSArray *)searchUsers {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"]);
+	return ([NSMutableArray arrayWithArray:[[[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username"
+																																																  ascending:YES
+																																																   selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
 }
 
 + (NSArray *)inviteCelebs {
@@ -398,7 +400,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag {
-	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
+//	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) { };
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
@@ -805,7 +807,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+			//VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -875,10 +877,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   withMessage:[NSString stringWithFormat:@"Please update %@ to the latest version to use the latest features.", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]];
 				}
 				
-				if (!_isFromBackground)
+				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
+				
+				if (!_isFromBackground) {
 					[self _registerUser];
 				
-				else {
+				} else {
 					_isFromBackground = NO;
 					NSString *notificationName = @"";
 					switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {

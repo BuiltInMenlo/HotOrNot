@@ -97,16 +97,16 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: EXPLORE TOT:%@", [[self class] description], parsedLists);
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: EXPLORE TOT:%@", [[self class] description], result);
 			
-			_challenges = [NSMutableArray arrayWithCapacity:[parsedLists count] + 3];
+			_challenges = [NSMutableArray arrayWithCapacity:[result count] + 3];
 			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
 			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
 			
-			for (NSDictionary *serverList in parsedLists) {
-				if (serverList != nil)
-					[_challenges addObject:[HONChallengeVO challengeWithDictionary:serverList]];
+			for (NSDictionary *dict in result) {
+				if (dict != nil)
+					[_challenges addObject:[HONChallengeVO challengeWithDictionary:dict]];
 			}
 			
 			NSLog(@"TOT PRE SWAP:[%d]", [_challenges count]);
@@ -197,7 +197,7 @@
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 374.0 : 331.0, 320.0, 64.0);
+		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];

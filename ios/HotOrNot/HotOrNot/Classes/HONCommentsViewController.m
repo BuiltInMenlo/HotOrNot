@@ -78,12 +78,12 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			_comments = [NSMutableArray new];
-			for (NSDictionary *serverList in parsedLists) {
-				HONCommentVO *vo = [HONCommentVO commentWithDictionary:serverList];
+			for (NSDictionary *dict in result) {
+				HONCommentVO *vo = [HONCommentVO commentWithDictionary:dict];
 				
 				if (vo != nil)
 					[_comments addObject:vo];

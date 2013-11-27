@@ -179,15 +179,14 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:NO]]]];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedUsers);
+			NSArray *result = [NSArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			_users = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedUsers) {
-				[_users addObject:[HONPopularUserVO userWithDictionary:@{@"id"			: [serverList objectForKey:@"id"],
-																		 @"username"	: [serverList objectForKey:@"username"],
-																		 @"img_url"		: [serverList objectForKey:@"avatar_url"]}]];
+			for (NSDictionary *dict in result) {
+				[_users addObject:[HONPopularUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+																		 @"username"	: [dict objectForKey:@"username"],
+																		 @"img_url"		: [dict objectForKey:@"avatar_url"]}]];
 			}
 			
 			if (_progressHUD != nil) {
@@ -201,7 +200,7 @@
 					_progressHUD = nil;
 					
 					_users = [NSMutableArray array];
-					for (NSDictionary *dict in [HONAppDelegate popularPeople])
+					for (NSDictionary *dict in [HONAppDelegate searchUsers])
 						[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 					
 				} else {
@@ -240,7 +239,7 @@
 	_removeUsers = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
-	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+	for (NSDictionary *dict in [HONAppDelegate searchUsers])
 		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 	
 	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -346,7 +345,7 @@
 	
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
-//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+//	for (NSDictionary *dict in [HONAppDelegate searchUsers])
 //		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
 //	
 //	for (HONPopularUserViewCell *cell in _cells)
@@ -419,7 +418,7 @@
 
 - (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView {
 	_users = [NSMutableArray array];
-	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+	for (NSDictionary *dict in [HONAppDelegate searchUsers])
 		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
 	
 	[_tableView reloadData];
@@ -522,7 +521,7 @@
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
-			for (NSDictionary *dict in [HONAppDelegate popularPeople])
+			for (NSDictionary *dict in [HONAppDelegate searchUsers])
 				[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
 			
 			for (HONPopularUserViewCell *cell in _cells)

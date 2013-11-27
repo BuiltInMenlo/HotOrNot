@@ -13,6 +13,7 @@
 #import "HONSuggestedFollowViewCell.h"
 #import "HONImageLoadingView.h"
 #import "HONUserVO.h"
+#import "HONImagingDepictor.h"
 
 
 @interface HONSuggestedFollowViewCell ()
@@ -88,8 +89,28 @@
 	_popularUserVO = popularUserVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 5.0, 33.0, 33.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[self.contentView addSubview:avatarImageView];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		avatarImageView.image = image;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
+		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						   placeholderImage:nil
+									success:imageSuccessBlock
+									failure:imageFailureBlock];
+	
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 11.0, 170.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
@@ -190,15 +211,15 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [challengesResult count]);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [result count]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [result objectAtIndex:0]);
 			_challenges = [NSMutableArray array];
 			
 			int cnt = 0;
-			for (NSDictionary *serverList in challengesResult) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+			for (NSDictionary *dict in result) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 				
 				if (cnt == 2)
 					break;
