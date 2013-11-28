@@ -16,7 +16,7 @@
 #import "HONImagingDepictor.h"
 
 
-#define kSnapRatio 1.853125
+const CGFloat kSnapRatio = 1.853125;
 
 @implementation HONImagingDepictor
 

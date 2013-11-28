@@ -196,7 +196,7 @@
 		[overlayView removeFromSuperview];
 	}];
 	
-	[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
+//	[self.delegate exploreViewCell:self selectRightChallenge:_rChallengeVO];
 	[self.delegate exploreViewCell:self showProfile:_rChallengeVO.creatorVO];
 }
 

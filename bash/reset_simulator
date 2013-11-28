@@ -1,6 +1,17 @@
 #!/bin/bash
 
-wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
+#// dev //
+#-- wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
+
+#// avicii - staging //#
+#-- http://api-dev.letsvolley.com/admin/wipe_user.php
+
+#// avicii - live //#
+#-- http://130.letsvolley.com/admin/wipe_user.php
+#-- http://130.letsvolley.com/admin/wipe_user.php
+
+
+wipe_url="http://api-dev.letsvolley.com/admin/wipe_user.php"
 #--server_domain=$(echo "${wipe_url}" | sed 's/.*\/\/(.*)\/.*$/\1/g')
 
 username="snap"
@@ -57,7 +68,7 @@ fi
 
 
 # call wipe user
-printf "Wiping user %s from db... " "${username}"
+printf "Wiping %s from api-dev.letsvolley... " "${username}"
 result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
 isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 

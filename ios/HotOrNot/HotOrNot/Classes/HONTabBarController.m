@@ -197,7 +197,7 @@ const CGSize kTabSize = {80.0, 50.0};
 			
 			totalKey = @"timeline";
 			mpEvent = @"Timeline";
-			notificationName = @"_HOME_TAB";
+			notificationName = @"HOME_TAB";
 			break;
 			
 		case 1:
@@ -207,7 +207,7 @@ const CGSize kTabSize = {80.0, 50.0};
 			
 			totalKey = @"explore";
 			mpEvent = @"Explore";
-			notificationName = @"_EXPLORE_TAB";
+			notificationName = @"EXPLORE_TAB";
 			break;
 			
 		case 2:
@@ -217,16 +217,16 @@ const CGSize kTabSize = {80.0, 50.0};
 			
 			totalKey = @"verify";
 			mpEvent = @"Verify";
-			notificationName = @"_VERIFY_TAB";
+			notificationName = @"VERIFY_TAB";
 			break;
 			
 		default:
 			break;
 	}
 	
+	notificationName = [@"SELECTED_" stringByAppendingString:notificationName];
 	if (touch.tapCount == 1) {
 		mpEvent = [@"Tab Bar - " stringByAppendingString:mpEvent];
-		notificationName = [@"SELECTED" stringByAppendingString:notificationName];
 		
 	} else {
 		mpEvent = [@"Tab Bar Double Tap - " stringByAppendingString:mpEvent];

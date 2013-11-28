@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+
+const CGFloat kSnapRatio;
+
+
 @interface HONImagingDepictor : NSObject
 + (UIImage *)createImageFromView:(UIView *)view;
 + (UIImage *)createImageFromScreen;

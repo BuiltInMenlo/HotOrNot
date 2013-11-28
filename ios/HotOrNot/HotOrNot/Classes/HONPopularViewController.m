@@ -320,8 +320,8 @@
 			
 			
 		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-			[self dismissViewControllerAnimated:YES completion:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 		
 	} else {
@@ -332,10 +332,10 @@
 //												  otherButtonTitles:@"Yes", nil];
 //		[alertView setTag:1];
 //		[alertView show];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-		[self dismissViewControllerAnimated:YES completion:nil];
 	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goSelectAll {
@@ -542,13 +542,13 @@
 				
 				
 			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-				[self dismissViewControllerAnimated:YES completion:nil];
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//				[self dismissViewControllerAnimated:YES completion:nil];
 			}
 			
 		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-			[self dismissViewControllerAnimated:YES completion:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 	
 	} else if (alertView.tag == 2) {

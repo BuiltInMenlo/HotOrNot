@@ -89,12 +89,12 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveChallenges {
+- (void)_rebuildChallenges {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"action"		: [NSString stringWithFormat:@"%d", 10],
 							 @"isPrivate"	: @"N"};
-		
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
+	
+	VolleyJSONLog(@"%@ _rebuildChallenges—/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -114,7 +114,87 @@
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [result count]);
+			VolleyJSONLog(@"AFNetworking [-] EED ME !! TOTAL:[%@]: %d", [[self class] description], [result count]);
+			
+			_challenges = [NSMutableArray array];
+			for (NSDictionary *dict in result) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+				
+				//if (![HONAppDelegate switchEnabledForKey:@"dissolving_timeline"] && !vo.hasViewed)
+				[_challenges addObject:vo];
+			}
+			
+			NSLog(@"[_challenges count]: (%d)", [_challenges count]);
+			
+//			if ([_challenges count] > 0 && _imageQueueLocation < [_challenges count]) {
+//				int cnt = 0;
+//				NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
+//				NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
+//				
+//				for (int i=queueRange.location; i<queueRange.length; i++) {
+//					[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+//					
+//					cnt++;
+//					_imageQueueLocation++;
+//					
+//					if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_challenges count])
+//						break;
+//					
+//				}
+//				[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
+//			}
+		}
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		_isFirstLoad = NO;
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+		
+		_isFirstLoad = NO;
+	}];
+}
+
+- (void)_retrieveChallenges {
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"isPrivate"	: @"N"};
+		
+	VolleyJSONLog(@"%@ _retrieveChallenges—/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"], params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@: FEED TOTAL %d", [[self class] description], [result count]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *dict in result) {
@@ -335,6 +415,7 @@
 	[super loadView];
 	//self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
+	_isRefreshing = NO;
 	
 	_imageQueueLocation = 0;
 	_challenges = [NSMutableArray array];
@@ -491,10 +572,6 @@
 			_tutorialImageView.alpha = 0.0;
 		}
 	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}
 	}];
 }
 
@@ -528,14 +605,22 @@
 }
 
 - (void)_selectedHomeTab:(NSNotification *)notification {
+	NSLog(@"_selectedHomeTab");
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	//[self _retrieveChallenges];
+	
+	if (_tutorialImageView != nil) {
+		[_tutorialImageView removeFromSuperview];
+		_tutorialImageView = nil;
+	}
 }
 
 - (void)_refreshHomeTab:(NSNotification *)notification {
-	NSLog(@"_refreshHomeTab");
+//	NSLog(@"_refreshHomeTab");
 	
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	if (_tableView.contentOffset.y < 150.0)
+		[_tableView setContentOffset:CGPointZero animated:YES];
+	
 	[self _retrieveChallenges];
 }
 
@@ -570,7 +655,7 @@
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 		
-		[UIView animateWithDuration:0.25 animations:^(void) {
+		[UIView animateWithDuration:0.33 animations:^(void) {
 			_tutorialImageView.alpha = 1.0;
 		}];
 	}

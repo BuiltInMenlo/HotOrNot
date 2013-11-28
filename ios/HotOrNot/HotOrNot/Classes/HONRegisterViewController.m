@@ -176,11 +176,11 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
-	por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
 	por1.contentType = @"image/jpeg";
 	
 	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
-	por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
 	por2.contentType = @"image/jpeg";
 	
 	NSDictionary *uploadDict = @{@"url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]],
@@ -194,13 +194,13 @@
 //		
 //		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
 //		_por1.contentType = @"image/jpeg";
-//		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+//		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
 //		_por1.delegate = self;
 //		[s3 putObject:_por1];
 //		
 //		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
 //		_por2.contentType = @"image/jpeg";
-//		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+//		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
 //		_por2.delegate = self;
 //		[s3 putObject:_por2];
 //		
@@ -285,7 +285,7 @@
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 //				[self.parentViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 					
 					if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
@@ -645,7 +645,7 @@
 #if __DEV_BUILD___ == 1
 				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
 				easterEggButton.frame = CGRectMake(154.0, 16.0, 16.0, 8.0);
-//				easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.75];
+				easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.875];
 				[easterEggButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchDown];
 				[_splashHolderView addSubview:easterEggButton];
 #endif

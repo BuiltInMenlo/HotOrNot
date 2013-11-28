@@ -36,6 +36,11 @@ while getopts "s" optname # --//> there's a '-s'
 	esac
 done
 
+
+
+
+
+
  # --/> use stage 
 if $isStage_flg; then api_subdomain="admin-stage"
 else api_subdomain="130"; fi
@@ -55,3 +60,15 @@ else printf "Not found!\n"; fi
 
 #-- exit w/o error
 exit 0;
+
+
+
+
+#// dev
+#-- http://api-stage.letsvolley.com/admin/wipe_user.php
+
+#// staging / avicii
+#-- http://api-dev.letsvolley.com/admin/wipe_user.php
+
+#// live
+#-- http://130.letsvolley.com/admin/wipe_user.php

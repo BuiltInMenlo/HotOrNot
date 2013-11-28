@@ -72,33 +72,38 @@
 	switch (aState) {
 		case EGOOPullRefreshPulling:
 			[_activityIndicatorView startAnimating];
-//			_activityIndicatorView.hidden = NO;
 			
-//			if (_activityIndicatorView.alpha < 1.0) {
-//				[UIView animateWithDuration:0.25 animations:^(void) {
-//					_activityIndicatorView.alpha = 1.0;
-//				}];
-//			}
+			if (_activityIndicatorView.alpha < 1.0) {
+				[UIView animateWithDuration:0.25 animations:^(void) {
+					_activityIndicatorView.alpha = 1.0;
+				}];
+			}
 			break;
 			
 		case EGOOPullRefreshNormal:
 			if (_state == EGOOPullRefreshPulling) {
 			}
 			
-//			if (_activityIndicatorView.alpha > 0.0) {
-//				[UIView animateWithDuration:0.25 animations:^(void) {
-//					_activityIndicatorView.alpha = 0.0;
-//				} completion:^(BOOL finished) {
-//					[_activityIndicatorView stopAnimating];
-//					_activityIndicatorView.hidden = YES;
-//				}];
-//			}
+			[_activityIndicatorView stopAnimating];
+			
+			if (_activityIndicatorView.alpha > 0.0) {
+				[UIView animateWithDuration:0.25 animations:^(void) {
+					_activityIndicatorView.alpha = 0.0;
+				} completion:^(BOOL finished) {
+					[_activityIndicatorView stopAnimating];
+				}];
+			}
 			
 			break;
 			
 		case EGOOPullRefreshLoading:
-			[_activityIndicatorView startAnimating];
-//			_activityIndicatorView.hidden = NO;
+			if (_activityIndicatorView.alpha < 1.0) {
+				[UIView animateWithDuration:0.25 animations:^(void) {
+					_activityIndicatorView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+					[_activityIndicatorView startAnimating];
+				}];
+			}
 			break;
 			
 		default:
@@ -119,17 +124,20 @@
 	} else if (_state == EGOOPullRefreshNormal)
 		scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
 	
-	else if (scrollView.isDragging) {
+	if (scrollView.isDragging) {
+		[_activityIndicatorView startAnimating];
 		_isLoading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
 		
-		if (!_isLoading) {
-			if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset && scrollView.contentOffset.y < _headerOffset) {
+//		if (!_isLoading) {
+			NSLog(@"egoRefreshScrollViewDidScroll STATE:[%d] contentOffset:[%f] kLoadingTheshold:[%f] _headerOffset:[%f]", _state, scrollView.contentOffset.y, kLoadingTheshold, _headerOffset);
+			
+			if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset) { //&& scrollView.contentOffset.y < _headerOffset) {
 				[self setState:EGOOPullRefreshNormal];
 				
-			} else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -kLoadingTheshold - _headerOffset) {
+			} else if (scrollView.contentOffset.y < -kLoadingTheshold - _headerOffset) {
 				[self setState:EGOOPullRefreshPulling];
 			}
-		}
+//		}
 		
 		if (scrollView.contentInset.top != _headerOffset)
 			scrollView.contentInset = UIEdgeInsetsMake(_headerOffset, 0.0f, 0.0f, 0.0f);
@@ -137,9 +145,9 @@
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
-//	NSLog(@"egoRefreshScrollViewDidEndDragging OFFSET:[%@] INSET:[%@] LOADING:[%d]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), _isLoading);
+	NSLog(@"egoRefreshScrollViewDidEndDragging OFFSET:[%@] INSET:[%@] LOADING:[%d]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), _isLoading);
 	
-	if (scrollView.contentOffset.y <= -kLoadingTheshold - _headerOffset && !_isLoading) {
+	if (scrollView.contentOffset.y <= -kLoadingTheshold - _headerOffset) {// && !_isLoading) {
 		[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];
 		
 		[self setState:EGOOPullRefreshLoading];
@@ -147,6 +155,9 @@
 		[UIView setAnimationDuration:0.33];
 		scrollView.contentInset = UIEdgeInsetsMake(kLoadingTheshold + _headerOffset, 0.0f, 0.0f, 0.0f);
 		[UIView commitAnimations];
+		
+	} else {
+		[self setState:EGOOPullRefreshNormal];
 	}
 }
 

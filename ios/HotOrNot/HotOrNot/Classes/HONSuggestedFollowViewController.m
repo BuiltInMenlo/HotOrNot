@@ -236,8 +236,8 @@
 			[alertView show];
 			
 		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-			[self dismissViewControllerAnimated:YES completion:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 		
 	} else {
@@ -249,9 +249,12 @@
 		//		[alertView setTag:1];
 		//		[alertView show];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-		[self dismissViewControllerAnimated:YES completion:nil];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//		[self dismissViewControllerAnimated:YES completion:nil];
 	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
 }
@@ -360,7 +363,7 @@
 	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
 	cell.popularUserVO = vo;
 	cell.delegate = self;
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	BOOL isFound = NO;
 	for (HONUserVO *userVO in [HONAppDelegate subscribeeList]) {
@@ -448,14 +451,17 @@
 				
 				
 			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-				[self dismissViewControllerAnimated:YES completion:nil];
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//				[self dismissViewControllerAnimated:YES completion:nil];
 			}
 			
 		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-			[self dismissViewControllerAnimated:YES completion:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+		[self dismissViewControllerAnimated:YES completion:nil];
 		
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]

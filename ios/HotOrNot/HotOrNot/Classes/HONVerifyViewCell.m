@@ -98,19 +98,19 @@
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
-	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:dispproveButton];
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:skipButton];
 	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
-	[moreButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:moreButton];
+	UIButton *disaproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	disaproveButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
+	[disaproveButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+	[disaproveButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+	[disaproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:disaproveButton];
 	
 	
 	if (![HONAppDelegate hasTakenSelfie])

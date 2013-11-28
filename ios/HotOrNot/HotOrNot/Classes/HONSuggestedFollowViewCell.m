@@ -296,4 +296,5 @@
 	_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_totalFollowing]]];
 }
 
+
 @end

@@ -50,20 +50,20 @@
 
 
 #if __DEV_BUILD___ == 0 || __APPSTORE_BUILD == 1
-NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0001.json";
+NSString * const kConfigURL = @"http://api-dev.letsvolley.com"; //http://api-stage.letsvolley.com
+NSString * const kConfigJSON = @"boot_volley.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #else
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
+NSString * const kConfigURL = @"http://api-dev.letsvolley.com";
+NSString * const kConfigJSON = @"boot_volley.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #endif
 
 
 NSString * const kFacebookAppID = @"600550136636754";
-NSString * const kTestFlightAppToken = @"68bcb8c2-c40e-4e3b-afdc-5d14a89eb4a0";
+NSString * const kTestFlightAppToken = @"a6addd92-ada9-4e47-918f-dde2c01958f7";//@"68bcb8c2-c40e-4e3b-afdc-5d14a89eb4a0";
 NSString * const kHockeyAppToken = @"b784de80afa5c65803e0f3d8035cd725";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 
@@ -110,8 +110,8 @@ const CGFloat kOrthodoxTableCellHeight = 63.0f;
 
 // snap params
 const CGFloat kMinLuminosity = 0.00;
-const CGFloat kSnapRatio = 1.33333333f;
-const CGFloat kSnapJPEGCompress = 0.400f;
+//const CGFloat kSnapRatio = 1.33333333f;
+//const CGFloat kSnapJPEGCompress = 0.667f;
 
 // animation params
 const CGFloat kHUDTime = 0.5f;
@@ -333,7 +333,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSDictionary *)stickerForSubject:(NSString *)subject {
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"stickers"]) {
-		if ([[dict objectForKey:@"hashtag"] isEqualToString:subject])
+		if ([[[dict objectForKey:@"hashtag"] lowercaseString] isEqualToString:[subject lowercaseString]])
 			return (dict);
 	}
 	
@@ -552,6 +552,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] setObject:upvoteArray forKey:@"upvotes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
+
++ (CGFloat)compressJPEGPercentage {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
+}
+
 
 + (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID {
 	return (@{@"id"			:[NSString stringWithFormat:@"%d", challengeID],
@@ -807,7 +812,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -827,9 +832,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_msg"] forKey:@"verify_msg"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"branding"] forKey:@"branding"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
@@ -851,9 +856,34 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"        : [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
 //																   @"twitter"        : [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
 //				
+//				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
+				
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				
+				
+//				NSMutableArray *verifyAB = [NSMutableArray array];
+//				for (int i=0; i<2; i++) {
+//					NSMutableDictionary *dict = [[result objectForKey:@"verify_AB"] objectAtIndex:0]; //-> 0 == 3btn –][– 1 == 2btn verify
+//					NSLog(@"verify a/b :[%@]", dict);
+//					
+//					NSLog(@"cta_txt:[%@]", [dict objectForKey:@"cta_txt"]);
+//					NSLog(@"yay_format:[%@]", [dict objectForKey:@"yay_format"]);
+//					NSLog(@"nay_format:[%@]", [dict objectForKey:@"nay_format"]);
+//					
+//					[dict setObject:[self _replaceNameTokensInFormat:[dict objectForKey:@"cta_txt"]] forKey:@"cta_txt"];
+//					NSLog(@"cta_txt:[%@]", [dict objectForKey:@"cta_txt"]);
+//					
+//					[dict setObject:[self _replaceNameTokensInFormat:[dict objectForKey:@"yay_format"]] forKey:@"yay_format"];
+//					NSLog(@"yay_format:[%@]", [dict objectForKey:@"yay_format"]);
+//					
+//					[dict setObject:[self _replaceNameTokensInFormat:[dict objectForKey:@"nay_format"]] forKey:@"nay_format"];
+//					NSLog(@"nay_format:[%@]", [dict objectForKey:@"nay_format"]);
+//					
+//					[verifyAB addObject:dict];
+//				}
 				
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceNameTokensInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
@@ -1172,7 +1202,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSLog(@"_showShareShelf:[%@]", _shareInfo);
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-															 delegate:self
+															 delegate:nil
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
@@ -1646,6 +1676,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_initTabs {
+	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
@@ -1816,11 +1847,39 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Data Manip
 - (NSString *)_replaceNameTokensInFormat:(NSString *)format {
-	NSString *replaceFormat = [format stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]];
-	replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"]];
-	replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"]];
-	replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"]];
+	NSString *replaceFormat = [NSString stringWithString:format];
+	NSLog(@"format :|: _{{APP_NAME}}_ -/> [%@]", format);
 	
+	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
+	NSLog(@"appName :|: _{{APP_NAME}}_ -/> [%@]", appName);
+	
+	NSString *igName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"];
+	NSLog(@"igName :|: _{{IG_NAME}}_ -/> [%@]", igName);
+	
+	NSString *kikName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"];
+	NSLog(@"replaceFormat :|: _{{KIK_NAME}}_ -/> [%@]", kikName);
+	
+	NSString *twName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"];
+	NSLog(@"twName :|: _{{TW_NAME}}_ -/> [%@]", twName);
+	
+	
+	NSLog(@"replaceFormat:[%@] */> .]:[. _{{APP_NAME}}_ -/> [%@]", replaceFormat, appName);
+//	if ([format rangeOfString:appName].location != NSNotFound)
+		replaceFormat = [format stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+	
+	NSLog(@"replaceFormat[%@] */>  .]:[. _{{IG_NAME}}_ -/> [%@]", replaceFormat, igName);
+//	if ([format rangeOfString:igName].location != NSNotFound)
+		replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:igName];
+	
+	NSLog(@"replaceFormat[%@] */>  .]:[. _{{KIK_NAME}}_ -/> [%@]", replaceFormat, kikName);
+//	if ([format rangeOfString:kikName].location != NSNotFound)
+		replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:kikName];
+	
+	NSLog(@"replaceFormat[%@] */>   .]:[. _{{TW_NAME}}_ -/> [%@]", replaceFormat, twName);
+//	if ([format rangeOfString:twName].location != NSNotFound)
+		replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:twName];
+	
+	NSLog(@"replaceFormat[%@]", replaceFormat);
 	return (replaceFormat);
 }
 

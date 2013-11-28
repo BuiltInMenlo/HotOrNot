@@ -292,7 +292,7 @@
 	
 	cell.userVO = (HONUserVO *)[_subscribers objectAtIndex:indexPath.row];
 	cell.delegate = self;
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
 }

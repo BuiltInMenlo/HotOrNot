@@ -339,26 +339,6 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	if ([HONAppDelegate incTotalForCounter:@"verify"] == 1) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
 }
 
 - (void)viewDidUnload {
@@ -462,8 +442,33 @@
 
 #pragma mark - Notifications
 - (void)_selectedVerifyTab:(NSNotification *)notification {
+	NSLog(@"_selectedVerifyTab");
+	
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 //	[self _retrieveChallenges];
+	
+	if ([HONAppDelegate incTotalForCounter:@"verify"] == 1) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+	}
+	
+	
+	if (_tutorialImageView != nil) {
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			_tutorialImageView.alpha = 1.0;
+		}];
+	}
 }
 
 - (void)_refreshVerifyTab:(NSNotification *)notification {
@@ -648,13 +653,21 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:9];
-		[alertView show];
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:nil
+														otherButtonTitles:@"Yes", nil];
+		[actionSheet setTag:1];
+		[actionSheet showInView:self.view];
+		
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"Cancel"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:9];
+//		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -1036,8 +1049,9 @@
 							  otherButtonTitles:nil] show];
 			
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-			
 		}
+		
+		[self _removeCellForChallenge:_challengeVO];
 	}
 }
 

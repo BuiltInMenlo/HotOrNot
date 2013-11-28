@@ -122,7 +122,7 @@
 			_progressHUD = nil;
 			
 		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != nil) {
 				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -142,7 +142,7 @@
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 				}
 
-				if (isRefresh) {
+//				if (isRefresh) {
 					[self _makeAvatarImage];
 					
 					_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
@@ -150,7 +150,7 @@
 					_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
 //					_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 				
-				} else
+//				} else
 					[self _retreiveSubscribees];
 			
 			} else {
@@ -206,7 +206,7 @@
 			_progressHUD = nil;
 			
 		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [result count]);
 			
 			if (_isUser)
 				[HONAppDelegate writeSubscribeeList:result];
@@ -554,10 +554,6 @@
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-		
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 	}
 }
@@ -599,6 +595,7 @@
 		if ([self parentViewController] != nil) {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 			}];
 		
 		} else {

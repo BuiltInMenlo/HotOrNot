@@ -645,8 +645,8 @@
 	if ([_selectedInAppContacts count] > 0)
 		[self _sendFriendRequests];
 	
-	if ([_selectedNonAppContacts count] > 0)
-		[self _sendInvites];
+//	if ([_selectedNonAppContacts count] > 0)
+//		[self _sendInvites];
 	
 	if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
@@ -899,8 +899,8 @@
 		if ([_selectedInAppContacts count] > 0)
 			[self _sendFriendRequests];
 		
-		if ([_selectedNonAppContacts count] > 0)
-			[self _sendInvites];
+//		if ([_selectedNonAppContacts count] > 0)
+//			[self _sendInvites];
 		
 		if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];

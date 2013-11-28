@@ -325,8 +325,6 @@
 			
 			} else
 				[self _goClose];
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -485,19 +483,19 @@
 		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:approveButton];
 		
-		UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dispproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-		[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-		[_buttonHolderView addSubview:dispproveButton];
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+		[_buttonHolderView addSubview:skipButton];
 		
-		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
-		[moreButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-		[_buttonHolderView addSubview:moreButton];
+		UIButton *disapproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		disapproveButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
+		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+		[disapproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
+		[_buttonHolderView addSubview:disapproveButton];
 		
 	} else {
 		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -544,6 +542,8 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
+	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n%@\n\n", _opponentVO.username);
+	
 	[[Mixpanel sharedInstance] track:@"Volley Preview - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -569,8 +569,8 @@
 }
 
 - (void)_goClose {
-//	if (_isVerify)
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
+	if (_isVerify)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.delegate snapPreviewViewControllerClose:self];
@@ -626,8 +626,10 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
 													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes, flag user", nil];
+											  cancelButtonTitle:@"Nevermind"//@"No"
+											  otherButtonTitles:@"Yes, flag 'em!t", nil];
+//											  otherButtonTitles:@"Yes, kick 'em out", nil];
+//											  otherButtonTitles:@"Yes, flag user", nil];
 	
 	[alertView setTag:0];
 	[alertView show];
@@ -657,13 +659,27 @@
 }
 
 - (void)_goDisprove {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
-														message:@""
-													   delegate:self
-											  cancelButtonTitle:@"Cancel"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
-	[alertView show];
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Flag Sheet"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
+															 delegate:self
+													cancelButtonTitle:@"Cancel"//@"Nevermind"//@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Yes", nil];
+	[actionSheet setTag:0];
+	[actionSheet showInView:self.view];
+	
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
+//														message:@""
+//													   delegate:self
+//											  cancelButtonTitle:@"Cancel"
+//											  otherButtonTitles:@"Yes", nil];
+//	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
+//	[alertView show];
 }
 
 - (void)_goSkip {
@@ -671,6 +687,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
 	
 	[self _goClose];
 }
@@ -738,6 +755,26 @@
 	}
 	
 	return (emotionVO);
+}
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Flag Sheet %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 0) {
+			[self _goClose];
+			
+		} else if (buttonIndex == 1) {
+			[self _flagUser:_opponentVO.userID];
+			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
+		}
+	}
 }
 
 

@@ -189,26 +189,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-	NSLog(@"EXPLORE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"verify"]);
-	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
+	
 }
 
 - (void)viewDidUnload {
@@ -318,6 +299,31 @@
 
 #pragma mark - Notifications
 - (void)_selectedExploreTab:(NSNotification *)notification {
+	NSLog(@"_selectedExploreTab");
+	
+	NSLog(@"EXPLORE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"verify"]);
+	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
+		_tutorialImageView.userInteractionEnabled = YES;
+		_tutorialImageView.alpha = 0.0;
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:closeButton];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+		
+		if (_tutorialImageView != nil) {
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_tutorialImageView.alpha = 1.0;
+			}];
+		}
+	}
+	
 //	_isRefreshing = YES;
 //	[self _retrieveChallenges];
 	
@@ -326,6 +332,8 @@
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
+	
+	
 }
 
 - (void)_refreshExploreTab:(NSNotification *)notification {

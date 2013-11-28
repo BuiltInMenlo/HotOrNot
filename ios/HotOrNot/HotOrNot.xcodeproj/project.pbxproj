@@ -857,7 +857,7 @@
 		4C60AF6D17CD20A500609792 /* previewButttonCamera_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "previewButttonCamera_Active@2x.png"; sourceTree = "<group>"; };
 		4C60AF6E17CD20A600609792 /* previewButttonCamera_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previewButttonCamera_nonActive.png; sourceTree = "<group>"; };
 		4C60AF6F17CD20A600609792 /* previewButttonCamera_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "previewButttonCamera_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C62652515F96C7100AA7FCE /* Selfieclub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selfieclub.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62652515F96C7100AA7FCE /* Volley.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Volley.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1903,7 +1903,7 @@
 		4C62652615F96C7100AA7FCE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4C62652515F96C7100AA7FCE /* Selfieclub.app */,
+				4C62652515F96C7100AA7FCE /* Volley.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2973,7 +2973,7 @@
 			);
 			name = HotOrNot;
 			productName = HotOrNot;
-			productReference = 4C62652515F96C7100AA7FCE /* Selfieclub.app */;
+			productReference = 4C62652515F96C7100AA7FCE /* Volley.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -3759,7 +3759,7 @@
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/Mixpanel",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Selfieclub;
+				PRODUCT_NAME = Volley;
 				PROVISIONING_PROFILE = "90C70471-F920-46CC-817D-F237BEB382B6";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";
@@ -3789,7 +3789,7 @@
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/Mixpanel",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Selfieclub;
+				PRODUCT_NAME = Volley;
 				PROVISIONING_PROFILE = "2C99EAC6-B25C-44B4-B436-60EA3DFEE823";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv6 armv7";

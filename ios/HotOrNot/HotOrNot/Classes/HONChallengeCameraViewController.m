@@ -110,11 +110,11 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 //	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
-//	por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+//	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
 //	por1.contentType = @"image/jpeg";
 //	
 //	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
-//	por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+//	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.80);
 //	por2.contentType = @"image/jpeg";
 //	
 //	NSDictionary *uploadDict = @{@"url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
@@ -147,13 +147,13 @@
 		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
 		_por1.delegate = self;
 		_por1.contentType = @"image/jpeg";
-		_por1.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
+		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
 		[s3 putObject:_por1];
 		
 		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
 		_por2.delegate = self;
 		_por2.contentType = @"image/jpeg";
-		_por2.data = UIImageJPEGRepresentation(tabImage, kSnapJPEGCompress * 0.80);
+		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
 		[s3 putObject:_por2];
 		
 	} @catch (AmazonClientException *exception) {
