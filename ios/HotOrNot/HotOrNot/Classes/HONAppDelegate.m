@@ -923,11 +923,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							notificationName = @"REFRESH_HOME_TAB";
 							break;
 							
-						case 1:
-							notificationName = @"REFRESH_EXPLORE_TAB";
-							break;
+//						case 1:
+//							notificationName = @"REFRESH_EXPLORE_TAB";
+//							break;
 							
-						case 2:
+						case 1:
 							notificationName = @"REFRESH_VERIFY_TAB";
 							break;
 						
@@ -1200,7 +1200,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSLog(@"_showShareShelf:[%@]", _shareInfo);
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
-															 delegate:nil
+															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
@@ -1363,63 +1363,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-}
-
-- (void)_handlePush:(NSDictionary *)pushInfo {
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
-		NSLog(@"_handlePush:[%d]", [UIApplication sharedApplication].applicationState);
-		
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-			// sms sound
-			//AudioServicesPlaySystemSound(1007);
-			//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-			
-			if ([pushInfo objectForKey:@"type"] == nil) {
-				[self _showOKAlert:@""
-					   withMessage:[[pushInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			}
-			
-		} else {
-			int pushType = [[pushInfo objectForKey:@"type"] intValue];
-			
-			if (pushType == HONPushTypeShowChallengeDetails)
-				[self _challengeObjectFromPush:[[pushInfo objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
-			
-			// user verified
-			else if (pushType == HONPushTypeUserVerified) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes", nil];
-				[alertView setTag:1];
-				[alertView show];
-				
-			// user profile
-			} else if (pushType == HONPushTypeShowUserProfile) {
-				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
-				userPofileViewController.userID = [[pushInfo objectForKey:@"user"] intValue];
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-				
-			// find friends
-			} else if (pushType == HONPushTypeShowAddContacts) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-				
-			// settings
-			} else if (pushType == HONPushTypeShowSettings) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-				
-			} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
-				[self _challengeObjectFromPush:[[pushInfo objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
-			}
-		}
-	}
 }
 
 
@@ -1639,7 +1582,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
+//									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	for (UINavigationController *navigationController in navigationControllers) {

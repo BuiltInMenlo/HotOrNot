@@ -66,7 +66,9 @@
 
 
 - (void)toggleSelected:(BOOL)isSelected {
+	_inviteButton.alpha = (int)!isSelected;
 	_inviteButton.hidden = isSelected;
+	
 	_checkButton.hidden = !isSelected;
 }
 
@@ -74,14 +76,22 @@
 #pragma mark - Navigation
 - (void)_goInvite {
 	_checkButton.hidden = NO;
-	_inviteButton.hidden = YES;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_inviteButton.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_inviteButton.hidden = YES;
+	}];
 	
 	[self.delegate addContactViewCell:self user:_userVO toggleSelected:YES];
 }
 
 - (void)_goUninvite {
-	_checkButton.hidden = YES;
 	_inviteButton.hidden = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_inviteButton.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		_checkButton.hidden = YES;
+	}];
 	
 	[self.delegate addContactViewCell:self user:_userVO toggleSelected:NO];
 }

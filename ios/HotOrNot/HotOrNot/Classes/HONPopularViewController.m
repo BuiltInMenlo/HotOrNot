@@ -334,6 +334,7 @@
 //		[alertView show];
 	}
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }

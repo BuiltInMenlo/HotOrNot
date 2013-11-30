@@ -219,24 +219,23 @@
 	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(image.size));
 	
 	UIImage *processedImage;
+	float ratio = image.size.width / image.size.height;
 	
 	// image is wider than tall (800x600)
-	if (image.size.width > image.size.height) {
-//		_isMainCamera = (_rawImage.size.height > 1000);
-		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(1707.0, 1280.0)] toRect:CGRectMake(374.0, 0.0, 960.0, 1280.0)];//_processedImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
+	if (ratio > 1.0) {
+		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(1280.0 * ratio, 1280.0)] toRect:CGRectMake(((1280.0 * ratio) - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
 		
-		// image is taller than wide (600x800)
-	} else if (image.size.width < image.size.height) {
-//		_isMainCamera = (_rawImage.size.width > 1000);
-		processedImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
+	// image is taller than wide (600x800)
+	} else if (ratio < 1.0) {
+		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 960.0 / ratio)] toRect:CGRectMake(0.0, ((960.0 / ratio) - 1280.0) * 0.5, 960.0, 1280.0)];
 	
-	} else
-		processedImage = [UIImage imageWithCGImage:[image CGImage]];
+	} else {
+		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(1280.0, 1280.0)] toRect:CGRectMake((1280.0 - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
+	}
 	
-	if ([HONImagingDepictor totalLuminance:image] > [HONAppDelegate minSnapLuminosity]) {
+	double lum = [HONImagingDepictor totalLuminance:processedImage];
+	if (lum > [HONAppDelegate minSnapLuminosity]) {
 		
-		
-		double lum = [HONImagingDepictor totalLuminance:processedImage];
 		NSLog(@"PROCESSED IMAGE:[%@][%f]", NSStringFromCGSize(processedImage.size), lum);
 //		NSDictionary *attribs = [[NSUserDefaults standardUserDefaults] objectForKey:@"filter_vals"];
 //		processedImage = (lum <= [[attribs objectForKey:@"luminosity"] floatValue]) ? [[[processedImage brightness:[[attribs objectForKey:@"d_brightness"] floatValue]] contrast:[[attribs objectForKey:@"d_contrast"] floatValue]] saturate:[[attribs objectForKey:@"d_saturation"] floatValue]] : [[[processedImage brightness:[[attribs objectForKey:@"l_brightness"] floatValue]] contrast:[[attribs objectForKey:@"l_contrast"] floatValue]] saturate:[[attribs objectForKey:@"l_saturation"] floatValue]];

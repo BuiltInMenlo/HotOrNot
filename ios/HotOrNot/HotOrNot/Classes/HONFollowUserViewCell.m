@@ -32,7 +32,7 @@
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_checkButton.frame = CGRectMake(212.0, 10.0, 104.0, 44.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateHighlighted];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self addSubview:_checkButton];
@@ -86,22 +86,32 @@
 }
 
 - (void)toggleSelected:(BOOL)isSelected {
+	_followButton.alpha = (int)!isSelected;
 	_followButton.hidden = isSelected;
+	
 	_checkButton.hidden = !isSelected;
 }
 
 
 #pragma mark - Navigation
 - (void)_goFollow {
-	_followButton.hidden = YES;
 	_checkButton.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_followButton.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_followButton.hidden = YES;
+	}];
 	
 	[self.delegate followViewCell:self user:_userVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
 	_followButton.hidden = NO;
-	_checkButton.hidden = YES;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_followButton.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		_checkButton.hidden = YES;
+	}];
 	
 	[self.delegate followViewCell:self user:_userVO toggleSelected:NO];
 }

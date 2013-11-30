@@ -18,6 +18,8 @@
 #import "HONChangeAvatarViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONAddContactsViewController.h"
+#import "HONPopularViewController.h"
+#import "HONSuggestedFollowViewController.h"
 #import "HONFAQViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONPopularViewController.h"
@@ -691,13 +693,18 @@
 }
 
 - (void)_goInviteFriends {
-	[[Mixpanel sharedInstance] track:@"User Profile - Find Friends"
+	[[Mixpanel sharedInstance] track:@"User Profile - Find People"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Find Friends", @"Search", @"Suggested People", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:1];
+	[actionSheet showInView:self.view];
 }
 
 - (void)_goShare {
@@ -811,6 +818,21 @@
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	if (_selfiesLabel) {
+		[_selfiesLabel removeFromSuperview];
+		_selfiesLabel = nil;
+	}
+	
+	if (_followersLabel) {
+		[_followersLabel removeFromSuperview];
+		_followersLabel = nil;
+	}
+	
+	if (_followingLabel) {
+		[_followingLabel removeFromSuperview];
+		_followingLabel = nil;
+	}
 	
 	_selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 196.0, 107.0, 18.0)];
 	_selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
@@ -1263,6 +1285,19 @@
 			[alertView setTag:2];
 			[alertView show];
 		}
+		
+	} else if (actionSheet.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Find People %@", (buttonIndex == 0) ? @"Contacts" : (buttonIndex == 1) ? @"Search" : (buttonIndex == 2) ? @"Suggested" : @"Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		NSArray *viewControllers = @[[[HONAddContactsViewController alloc] init],
+									 [[HONPopularViewController alloc] init],
+									 [[HONSuggestedFollowViewController alloc] init]];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[viewControllers objectAtIndex:buttonIndex]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
