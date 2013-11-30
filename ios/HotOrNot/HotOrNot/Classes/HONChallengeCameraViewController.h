@@ -11,9 +11,9 @@
 #import "HONChallengeVO.h"
 
 typedef enum {
-	HONVolleySubmitTypeCreate	= 0,	/** Creates a new challenge */
-	HONVolleySubmitTypeJoin				/** Joins an in-progress challenge */
-} HONVolleySubmitType;
+	HONSelfieSubmitTypeCreate	= 0,	/** Creates a new challenge */
+	HONSelfieSubmitTypeReply			/** Joins an in-progress challenge */
+} HONSelfieSubmitType;
 
 
 @interface HONChallengeCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>

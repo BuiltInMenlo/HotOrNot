@@ -14,7 +14,7 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 0
+#define __DEV_BUILD___ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 #define __FORCE_REGISTER__ 0
@@ -31,6 +31,15 @@ typedef enum {
 	HONTimelineScrollDirectionDown	= 0,	/** Challenges using same hashtag */
 	HONTimelineScrollDirectionUp,			/** Challenges of a single user */
 } HONTimelineScrollDirection;
+
+typedef enum {
+	HONPushTypeShowChallengeDetails	= 1,			/** Brings up the challenge details modal **/
+	HONPushTypeUserVerified,						/** Shows alert **/
+	HONPushTypeShowUserProfile,						/** Brings up a user's profile **/
+	HONPushTypeShowAddContacts,						/** Brings up the invite contacts modal **/
+	HONPushTypeShowSettings,						/** Brings up the settings modal **/
+	HONPushTypeShowChallengeDetailsIgnoringPushes	/** Brings up the challenge details modal, ignoring next pushes **/
+} HONPushType;
 
 
 // api endpts
@@ -76,10 +85,6 @@ const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
 
-// snap params
-const CGFloat kMinLuminosity;
-//const CGFloat kSnapJPEGCompress;
-
 // animation params
 const CGFloat kHUDTime;
 const CGFloat kHUDErrorTime;
@@ -118,7 +123,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)apiServerPath;
 + (NSString *)customerServiceURL;
 + (NSDictionary *)s3Credentials;
-+ (NSString *)twilioSMS;
++ (NSTimeInterval)timeoutInterval;
 
 + (NSString *)s3BucketForType:(NSString *)bucketType;
 
@@ -130,6 +135,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (int)incTotalForCounter:(NSString *)key;
 + (int)totalForCounter:(NSString *)key;
 
++ (CGFloat)minSnapLuminosity;
 + (NSDictionary *)infoForABTab;
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;

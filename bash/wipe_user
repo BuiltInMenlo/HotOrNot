@@ -1,7 +1,6 @@
 #!/bin/bash
 
 api_endpt="admin/wipe_user.php"
-#--server_domain=$(echo "${wipe_url}" | sed 's/.*\/\/(.*)\/.*$/\1/g')
 
 
 if [ ! ${!#} ]; then
@@ -43,13 +42,13 @@ done
 
  # --/> use stage 
 if $isStage_flg; then api_subdomain="admin-stage"
-else api_subdomain="130"; fi
+else api_subdomain="admin"; fi
 
 wipe_url="http://${api_subdomain}.letsvolley.com/${api_endpt}"
 
 
 # call wipe user
-printf "Wiping user %s from %s... " "${username}" "${api_subdomain}"
+printf "Wiping user '%s' from (%s.letsvolley)... " "${username}" "${api_subdomain}"
 result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
 isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 
@@ -72,3 +71,5 @@ exit 0;
 
 #// live
 #-- http://130.letsvolley.com/admin/wipe_user.php
+#-- http://admin.letsvolley.com/admin/wipe_user.php
+

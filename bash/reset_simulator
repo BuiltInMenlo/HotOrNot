@@ -1,18 +1,17 @@
 #!/bin/bash
 
-#// dev //
+#// dev //#
 #-- wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
 
 #// avicii - staging //#
-#-- http://api-dev.letsvolley.com/admin/wipe_user.php
+#-- wipe_url="http://api-dev.letsvolley.com/admin/wipe_user.php"
 
-#// avicii - live //#
-#-- http://130.letsvolley.com/admin/wipe_user.php
-#-- http://130.letsvolley.com/admin/wipe_user.php
+#// live //#
+#-- wipe_url="http://130.letsvolley.com/admin/wipe_user.php"
 
 
-wipe_url="http://api-dev.letsvolley.com/admin/wipe_user.php"
-#--server_domain=$(echo "${wipe_url}" | sed 's/.*\/\/(.*)\/.*$/\1/g')
+wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
+tier_name=$(echo "${wipe_url}" | cut -d \/ -f 3 | cut -d \. -f1)
 
 username="snap"
 if [ $1 ]; then
@@ -62,19 +61,20 @@ if $isKill_flg; then # --/> passed in the kill param
 		
 		printf " Success!\n"
 		
-	else # --/> no pid
+	else # --/> no pID
 		printf "Didn't find the simulator running...\n"; fi
 fi
 
 
 # call wipe user
-printf "Wiping %s from api-dev.letsvolley... " "${username}"
+printf "Wiping '%s' from tier (%s)... " "${username}" "${tier_name}"
 result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
 isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 
-#-- check for user json
+#-- check for user JSON
 if [ "$isUser" ]; then printf "Completed!\n"
 else printf "Not found!\n"; fi
+
 
 #-- exit w/o error
 exit 0;

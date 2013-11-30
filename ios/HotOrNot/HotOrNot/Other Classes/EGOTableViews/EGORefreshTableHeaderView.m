@@ -116,7 +116,7 @@
 
 #pragma mark - ScrollView Methods
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"egoRefreshScrollViewDidScroll OFFSET:[%f] INSET:[%@] STATE:[%d]", -scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _state);
+//	NSLog(@"egoRefreshScrollViewDidScroll STATE:[%d] contentOffset:[%f] kLoadingTheshold:[%f] _headerOffset:[%f]", _state, scrollView.contentOffset.y, kLoadingTheshold, _headerOffset);
 	
 	if (_state == EGOOPullRefreshLoading) {
 		scrollView.contentInset = UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, _headerOffset), kLoadingTheshold + _headerOffset), 0.0f, 0.0f, 0.0f);
@@ -129,8 +129,6 @@
 		_isLoading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
 		
 //		if (!_isLoading) {
-			NSLog(@"egoRefreshScrollViewDidScroll STATE:[%d] contentOffset:[%f] kLoadingTheshold:[%f] _headerOffset:[%f]", _state, scrollView.contentOffset.y, kLoadingTheshold, _headerOffset);
-			
 			if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -kLoadingTheshold - _headerOffset) { //&& scrollView.contentOffset.y < _headerOffset) {
 				[self setState:EGOOPullRefreshNormal];
 				
@@ -145,7 +143,7 @@
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
-	NSLog(@"egoRefreshScrollViewDidEndDragging OFFSET:[%@] INSET:[%@] LOADING:[%d]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), _isLoading);
+//	NSLog(@"egoRefreshScrollViewDidEndDragging OFFSET:[%@] INSET:[%@] LOADING:[%d]", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromUIEdgeInsets(scrollView.contentInset), _isLoading);
 	
 	if (scrollView.contentOffset.y <= -kLoadingTheshold - _headerOffset) {// && !_isLoading) {
 		[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];

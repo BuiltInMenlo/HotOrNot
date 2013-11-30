@@ -41,3 +41,10 @@ CGSize size = [formattedScore sizeWithAttributes:@{NSFontAttributeName:[[HONAppD
 
 // ios6
 CGSize size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(maxSubjectWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+
+
+
+
+// test api url
+http://api.letsvolley.com/api/matt/Users.php?action=5&userID=11456
+http://api-stage.letsvolley.com/api/matt/Users.php?action=5&userID=11456

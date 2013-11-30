@@ -235,19 +235,16 @@
 			[alertView setTag:0];
 			[alertView show];
 			
-		} else {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 		
 	} else {
-		//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
-		//															message:@""
-		//														   delegate:self
-		//												  cancelButtonTitle:@"No"
-		//												  otherButtonTitles:@"Yes", nil];
-		//		[alertView setTag:1];
-		//		[alertView show];
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"No"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:1];
+//		[alertView show];
 		
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 //		[self dismissViewControllerAnimated:YES completion:nil];
@@ -266,24 +263,24 @@
 	
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
-	//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
-	//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
-	//
-	//	for (HONPopularUserViewCell *cell in _cells)
-	//		[cell toggleSelected:YES];
-	
-	
-	// delselect all
-	//	if ([_addUsers count] == [_users count]) {
-	//		[_addUsers removeAllObjects];
-	//
-	//		for (HONPopularUserVO *vo in _users)
-	//			[_removeUsers addObject:vo];
-	//
-	//		for (HONPopularUserViewCell *cell in _cells)
-	//			[cell toggleSelected:NO];
-	//
-	//	} else {
+//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+//
+//	for (HONPopularUserViewCell *cell in _cells)
+//		[cell toggleSelected:YES];
+
+
+// delselect all
+//	if ([_addUsers count] == [_users count]) {
+//		[_addUsers removeAllObjects];
+//
+//		for (HONPopularUserVO *vo in _users)
+//			[_removeUsers addObject:vo];
+//
+//		for (HONPopularUserViewCell *cell in _cells)
+//			[cell toggleSelected:NO];
+//
+//	} else {
 	[_removeUsers removeAllObjects];
 	for (HONPopularUserVO *vo in _users) {
 		[_selectedUsers addObject:vo];
@@ -292,7 +289,7 @@
 	
 	for (HONSuggestedFollowViewCell *cell in _cells)
 		[cell toggleSelected:YES];
-	//	}
+//	}
 }
 
 
@@ -346,7 +343,7 @@
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	label.textColor = [HONAppDelegate honGreyTextColor]; //	[HONAppDelegate honPercentGreyscaleColor:0.467]
+	label.textColor = [HONAppDelegate honGreyTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = @"Follow popular people";
 	[headerImageView addSubview:label];
@@ -450,14 +447,7 @@
 				[alertView show];
 				
 				
-			} else {
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//				[self dismissViewControllerAnimated:YES completion:nil];
 			}
-			
-		} else {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];

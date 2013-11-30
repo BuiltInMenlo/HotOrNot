@@ -50,20 +50,20 @@
 
 
 #if __DEV_BUILD___ == 0 || __APPSTORE_BUILD == 1
-NSString * const kConfigURL = @"http://api-dev.letsvolley.com"; //http://api-stage.letsvolley.com
-NSString * const kConfigJSON = @"boot_volley.json";
+NSString * const kConfigURL = @"http://api.letsvolley.com";
+NSString * const kConfigJSON = @"boot_sc0001.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #else
-NSString * const kConfigURL = @"http://api-dev.letsvolley.com";
-NSString * const kConfigJSON = @"boot_volley.json";
+NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
+NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #endif
 
 
 NSString * const kFacebookAppID = @"600550136636754";
-NSString * const kTestFlightAppToken = @"a6addd92-ada9-4e47-918f-dde2c01958f7";//@"68bcb8c2-c40e-4e3b-afdc-5d14a89eb4a0";
+NSString * const kTestFlightAppToken = @"a6addd92-ada9-4e47-918f-dde2c01958f7";
 NSString * const kHockeyAppToken = @"b784de80afa5c65803e0f3d8035cd725";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 
@@ -109,9 +109,7 @@ const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
 
 // snap params
-const CGFloat kMinLuminosity = 0.00;
 //const CGFloat kSnapRatio = 1.33333333f;
-//const CGFloat kSnapJPEGCompress = 0.667f;
 
 // animation params
 const CGFloat kHUDTime = 0.5f;
@@ -139,14 +137,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <AmazonServiceRequestDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+@interface HONAppDelegate() <AmazonServiceRequestDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate, UAPushNotificationDelegate>
 #else
-@interface HONAppDelegate() <AmazonServiceRequestDelegate>
+@interface HONAppDelegate() <AmazonServiceRequestDelegate, UAPushNotificationDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
-@property (nonatomic, strong) NSTimer *userTimer;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic) int challengeID;
 @property (nonatomic) BOOL awsUploadCounter;
@@ -223,8 +220,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAJVS6Y36AQCMRWLQQ", @"key", @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
 }
 
-+ (NSString *)twilioSMS {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
++ (NSTimeInterval)timeoutInterval {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeout_interval"] doubleValue]);
+}
+
++ (CGFloat)minSnapLuminosity {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_luminosity"] floatValue]);
 }
 
 + (NSDictionary *)infoForABTab{
@@ -410,7 +411,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
 		[imageView setTag:range.location + i];
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
 								  failure:failureBlock];
@@ -829,11 +830,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 				[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"branding"] forKey:@"branding"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
@@ -851,49 +854,48 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
 																   @"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
 				
-//				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"        : [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
-//																   @"email"        : [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
-//				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"        : [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
-//																   @"twitter"        : [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
-//				
-//				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
-				
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-				
-				
+//				[[NSUserDefaults standardUserDefaults] synchronize];
 //				NSMutableArray *verifyAB = [NSMutableArray array];
-//				for (int i=0; i<2; i++) {
-//					NSMutableDictionary *dict = [[result objectForKey:@"verify_AB"] objectAtIndex:0]; //-> 0 == 3btn –][– 1 == 2btn verify
+//				for (NSMutableDictionary *dict in [result objectForKey:@"verify_AB"]) {
 //					NSLog(@"verify a/b :[%@]", dict);
-//					
+//
 //					NSLog(@"cta_txt:[%@]", [dict objectForKey:@"cta_txt"]);
 //					NSLog(@"yay_format:[%@]", [dict objectForKey:@"yay_format"]);
 //					NSLog(@"nay_format:[%@]", [dict objectForKey:@"nay_format"]);
-//					
-//					[dict setObject:[self _replaceNameTokensInFormat:[dict objectForKey:@"cta_txt"]] forKey:@"cta_txt"];
+//
+//					[dict setObject:[self _replaceBrandingInFormat:[dict objectForKey:@"cta_txt"]] forKey:@"cta_txt"];
 //					NSLog(@"cta_txt:[%@]", [dict objectForKey:@"cta_txt"]);
 //					
-//					[dict setObject:[self _replaceNameTokensInFormat:[dict objectForKey:@"yay_format"]] forKey:@"yay_format"];
+//					[dict setObject:[self _replaceBrandingInFormat:[dict objectForKey:@"yay_format"]] forKey:@"yay_format"];
 //					NSLog(@"yay_format:[%@]", [dict objectForKey:@"yay_format"]);
 //					
-//					[dict setObject:[self _replaceNameTokensInFormat:[dict objectForKey:@"nay_format"]] forKey:@"nay_format"];
+//					[dict setObject:[self _replaceBrandingInFormat:[dict objectForKey:@"nay_format"]] forKey:@"nay_format"];
 //					NSLog(@"nay_format:[%@]", [dict objectForKey:@"nay_format"]);
 //					
 //					[verifyAB addObject:dict];
 //				}
+
+//				[[NSUserDefaults standardUserDefaults] setObject:verifyAB forKey:@"verify_AB"];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
 				
 				
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceNameTokensInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
-																   @"email"	: @{@"subject"	: [self _replaceNameTokensInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"]],
-																				@"body"		: [self _replaceNameTokensInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"]]}} forKey:@"invite_formats"];
+//				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceBrandingInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
+//																   @"email"	: @{@"subject"	: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"]],
+//																				@"body"		: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"]]}} forKey:@"invite_formats"];
+//				
+//				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:0]],
+//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:1]]],
+//																   @"twitter"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:0]],
+//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:1]]]} forKey:@"share_formats"];
 				
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"		: @[[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:0]],
-																						[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:1]]],
-																   @"twitter"		: @[[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:0]],
-																						[self _replaceNameTokensInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:1]]]} forKey:@"share_formats"];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
+																   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
+																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
+
+				
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				
@@ -909,12 +911,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
 				
-				if (!_isFromBackground) {
+				if (!_isFromBackground)
 					[self _registerUser];
 				
-				} else {
+				else {
 					_isFromBackground = NO;
 					NSString *notificationName = @"";
+					
 					switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
 						case 0:
 							notificationName = @"REFRESH_HOME_TAB";
@@ -933,13 +936,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							break;
 					}
 					
-					if ([HONAppDelegate isRetina4Inch]) {
-						NSLog(@"REFRESHING:[%@]", notificationName);
-						[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-					}
+					NSLog(@"REFRESHING:[%@]", notificationName);
+					[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 				}
-//				_userTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(_retryUser) userInfo:nil repeats:YES];
-			
 			}
 		}
 		
@@ -1123,7 +1122,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIChallengeObject parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -1139,10 +1138,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengeResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] withBackground:nil]];
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:result]]];
 			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 		}
@@ -1282,8 +1280,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		
 		@try {
-			NSArray *putObjectRequests = [dict objectForKey:@"pors"];
-			for (S3PutObjectRequest *por in putObjectRequests) {
+			for (S3PutObjectRequest *por in [dict objectForKey:@"pors"]) {
 				NSString *url = [NSString stringWithFormat:@"%@", por.url];
 				
 				por.delegate = self;
@@ -1303,7 +1300,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			if ([[dict objectForKey:@"url"] rangeOfString:@"hotornot-challenges"].location != NSNotFound)
+				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		}
 	}
 }
@@ -1365,6 +1363,63 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+}
+
+- (void)_handlePush:(NSDictionary *)pushInfo {
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
+		NSLog(@"_handlePush:[%d]", [UIApplication sharedApplication].applicationState);
+		
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+			// sms sound
+			//AudioServicesPlaySystemSound(1007);
+			//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+			
+			if ([pushInfo objectForKey:@"type"] == nil) {
+				[self _showOKAlert:@""
+					   withMessage:[[pushInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+			}
+			
+		} else {
+			int pushType = [[pushInfo objectForKey:@"type"] intValue];
+			
+			if (pushType == HONPushTypeShowChallengeDetails)
+				[self _challengeObjectFromPush:[[pushInfo objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
+			
+			// user verified
+			else if (pushType == HONPushTypeUserVerified) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"Yes", nil];
+				[alertView setTag:1];
+				[alertView show];
+				
+			// user profile
+			} else if (pushType == HONPushTypeShowUserProfile) {
+				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+				userPofileViewController.userID = [[pushInfo objectForKey:@"user"] intValue];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				
+			// find friends
+			} else if (pushType == HONPushTypeShowAddContacts) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				
+			// settings
+			} else if (pushType == HONPushTypeShowSettings) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				
+			} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
+				[self _challengeObjectFromPush:[[pushInfo objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
+			}
+		}
+	}
 }
 
 
@@ -1461,13 +1516,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-//	[FBSettings publishInstall:kFacebookAppID];
 	[FBAppEvents activateApp];
-	
-	// Set the icon badge to zero on resume (optional)
 	[[UAPush shared] resetBadge];
-	
-//	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground) {
 //		Mixpanel *mixpanel = [Mixpanel sharedInstance];
@@ -1553,7 +1603,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	UALOG(@"Failed To Register For Remote Notifications With Error: %@", error);
 	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", error.description);
 	
-	NSString *holderToken = ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) ? [NSString stringWithFormat:@"%064d", 0] : @"";
+	NSString *holderToken = [[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"];
 	
 	Mixpanel *mixpanel = [Mixpanel sharedInstance];
 	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
@@ -1563,118 +1613,29 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if ([HONAppDelegate apiServerPath] != nil && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"])
 		[self _enableNotifications:NO];
-	
-//	if ([[HONAppDelegate advertisingIdentifierWithoutSeperators:NO] isEqualToString:@"DAE17C43-B4AD-4039-9DD4-7635420126C0"]) {
-//		NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
-//		[HONAppDelegate writeDeviceToken:deviceID];
-//	
-//	} else
-//		[HONAppDelegate writeDeviceToken:@""];
-	
-//	if ([HONAppDelegate apiServerPath] != nil)
-//		[self _enableNotifications:NO];
 }
  
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	UALOG(@"Received remote notification: %@", userInfo);
 	
-	// Get application state for iOS4.x+ devices, otherwise assume active
-	UIApplicationState appState = UIApplicationStateActive;
-	if ([application respondsToSelector:@selector(applicationState)]) {
-		appState = application.applicationState;
-	}
+	[[UAPush shared] handleNotification:userInfo applicationState:application.applicationState];
 	
-	[[UAPush shared] handleNotification:userInfo applicationState:appState];
-	[[UAPush shared] resetBadge]; // zero badge after push received
-	
-	NSLog(@"alert:(%d)[%@]", [[userInfo objectForKey:@"type"] intValue], [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
-	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
-		if (!_isFromBackground) {
-			// sms sound
-//			AudioServicesPlaySystemSound(1007);
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-			
-			if ([userInfo objectForKey:@"type"] == nil) {
-				[self _showOKAlert:@""
-					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			}
-			
-		} else {
-			int pushType = [[userInfo objectForKey:@"type"] intValue];
-			
-			// somone joined your volley
-			if (pushType == 1)
-				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
-			
-			// user verified
-			else if (pushType == 2) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes", nil];
-				[alertView setTag:1];
-				[alertView show];
-			
-			// user profile
-			} else if (pushType == 3) {
-				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
-				userPofileViewController.userID = [[userInfo objectForKey:@"user"] intValue];
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-			
-			// find friends
-			} else if (pushType == 4) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-			
-			// settings
-			} else if (pushType == 5) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-			
-			} else if (pushType == 6) {
-				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
-			}
-			
-		}
-	}
+	if (application.applicationState != UIApplicationStateBackground)
+		[[UAPush shared] resetBadge]; // zero badge after push received
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     UA_LINFO(@"Received remote notification (in appDelegate): %@", userInfo);
 	
-    // Optionally provide a delegate that will be used to handle notifications received while the app is running
-    // [UAPush shared].pushNotificationDelegate = your custom push delegate class conforming to the UAPushNotificationDelegate protocol
-	
     // Reset the badge after a push is received in a active or inactive state
-    if (application.applicationState != UIApplicationStateBackground) {
-        [[UAPush shared] resetBadge];
-    }
+	if (application.applicationState != UIApplicationStateBackground)
+		[[UAPush shared] resetBadge];
 	
-    completionHandler(UIBackgroundFetchResultNoData);
+	completionHandler(UIBackgroundFetchResultNoData);
 }
-
-
 
 
 #pragma mark - Startup Operations
-- (void)_retryUser {
-	NSLog(@"---RETRY USER [%d]---", (int)[HONAppDelegate infoForUser]);
-	
-	if (![HONAppDelegate infoForUser])
-		[self _registerUser];
-	
-	else {
-		[_userTimer invalidate];
-		_userTimer = nil;
-	}
-}
-
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
@@ -1803,7 +1764,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	 ** set it if you want to add or remove types.
 	 **/
 	[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
-	
+	[UAPush shared].pushNotificationDelegate = self;
 	
 	[HONAppDelegate writeDeviceToken:@""];
 }
@@ -1834,53 +1795,155 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-#pragma mark - Debug Calls
-- (void)_showFonts {
-	for (NSString *familyName in [UIFont familyNames]) {
-		NSLog(@"Font Family Name = %@", familyName);
-		
-		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
-		NSLog(@"Font Names = %@", names);
+#pragma mark - Data Manip
+- (NSString *)_replaceBrandingInFormat:(NSString *)format {
+	NSString *replaceFormat = [NSString stringWithString:format];
+	NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nformat:[%@]", replaceFormat);
+	
+	NSDictionary *brandingDict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])];
+//	NSDictionary *tokenDict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] lastObject];
+	NSArray *branding = @[@{@"token"	: [brandingDict objectForKey:@"app_token"],
+							@"name"		: [brandingDict objectForKey:@"app_name"]},
+						  @{@"token"	: [brandingDict objectForKey:@"ig_token"],
+							@"name"		: [brandingDict objectForKey:@"ig_name"]},
+						  @{@"token"	: [brandingDict objectForKey:@"kik_token"],
+							@"name"		: [brandingDict objectForKey:@"kik_name"]},
+						  @{@"token"	: [brandingDict objectForKey:@"tw_token"],
+							@"name"		: [brandingDict objectForKey:@"tw_name"]}];
+	
+	for (NSDictionary *dict in branding) {
+		if ([replaceFormat rangeOfString:[dict objectForKey:@"token"]].location != NSNotFound) {
+			replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:[dict objectForKey:@"token"] withString:[dict objectForKey:@"name"]];
+			NSLog(@"replaceFormat -/> [%@]", replaceFormat);
+		}
 	}
+		
+	return (replaceFormat);
 }
 
 
-#pragma mark - Data Manip
-- (NSString *)_replaceNameTokensInFormat:(NSString *)format {
-	NSString *replaceFormat = [NSString stringWithString:format];
-	NSLog(@"format :|: _{{APP_NAME}}_ -/> [%@]", format);
+#pragma mark - UAPushNotification Delegates
+- (void)receivedForegroundNotification:(NSDictionary *)notification {
+	NSLog(@"receivedForegroundNotification:[%@]", notification);
 	
-	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
-	NSLog(@"appName :|: _{{APP_NAME}}_ -/> [%@]", appName);
+	if ([[notification objectForKey:@"type"] intValue] == HONPushTypeUserVerified) {
+		NSString *brandName = ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub";
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", brandName, brandName]
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
 	
-	NSString *igName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"];
-	NSLog(@"igName :|: _{{IG_NAME}}_ -/> [%@]", igName);
+	} else
+		[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
+}
+
+- (void)receivedForegroundNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+	NSLog(@"receivedForegroundNotification:fetchCompletionHandler:[%@]", notification);
+	completionHandler(UIBackgroundFetchResultNoData);
 	
-	NSString *kikName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"];
-	NSLog(@"replaceFormat :|: _{{KIK_NAME}}_ -/> [%@]", kikName);
+	if ([[notification objectForKey:@"type"] intValue] == HONPushTypeUserVerified) {
+		NSString *brandName = ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub";
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", brandName, brandName]
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
+		
+	} else
+		[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
+}
+
+- (void)receivedBackgroundNotification:(NSDictionary *)notification {
+	NSLog(@"receivedBackgroundNotification:[%@]", notification);
+}
+
+- (void)receivedBackgroundNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+	NSLog(@"receivedBackgroundNotification:fetchCompletionHandler:[%@]", notification);
+	completionHandler(UIBackgroundFetchResultNoData);
+}
+
+- (void)launchedFromNotification:(NSDictionary *)notification {
+	NSLog(@"launchedFromNotification:[%@]", notification);
 	
-	NSString *twName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"];
-	NSLog(@"twName :|: _{{TW_NAME}}_ -/> [%@]", twName);
+	int pushType = [[notification objectForKey:@"type"] intValue];
+	if (pushType == HONPushTypeShowChallengeDetails)
+		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
 	
+	else if (pushType == HONPushTypeUserVerified) {
+		NSString *brandName = ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub";
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", brandName, brandName]
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
+		
+	} else if (pushType == HONPushTypeShowUserProfile) {
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (pushType == HONPushTypeShowAddContacts) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (pushType == HONPushTypeShowSettings) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
+		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
+	}
+}
+
+- (void)launchedFromNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+	NSLog(@"launchedFromNotification:fetchCompletionHandler:[%@]", notification);
+	completionHandler(UIBackgroundFetchResultNoData);
 	
-	NSLog(@"replaceFormat:[%@] */> .]:[. _{{APP_NAME}}_ -/> [%@]", replaceFormat, appName);
-//	if ([format rangeOfString:appName].location != NSNotFound)
-		replaceFormat = [format stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
+	int pushType = [[notification objectForKey:@"type"] intValue];
+	if (pushType == HONPushTypeShowChallengeDetails)
+		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
 	
-	NSLog(@"replaceFormat[%@] */>  .]:[. _{{IG_NAME}}_ -/> [%@]", replaceFormat, igName);
-//	if ([format rangeOfString:igName].location != NSNotFound)
-		replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:igName];
-	
-	NSLog(@"replaceFormat[%@] */>  .]:[. _{{KIK_NAME}}_ -/> [%@]", replaceFormat, kikName);
-//	if ([format rangeOfString:kikName].location != NSNotFound)
-		replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:kikName];
-	
-	NSLog(@"replaceFormat[%@] */>   .]:[. _{{TW_NAME}}_ -/> [%@]", replaceFormat, twName);
-//	if ([format rangeOfString:twName].location != NSNotFound)
-		replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:twName];
-	
-	NSLog(@"replaceFormat[%@]", replaceFormat);
-	return (replaceFormat);
+	else if (pushType == HONPushTypeUserVerified) {
+		NSString *brandName = ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub";
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Awesome! You have been %@ Verified! Would you like to share %@ with your friends?", brandName, brandName]
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
+		
+	} else if (pushType == HONPushTypeShowUserProfile) {
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (pushType == HONPushTypeShowAddContacts) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (pushType == HONPushTypeShowSettings) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
+		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
+	}
 }
 
 
@@ -1923,7 +1986,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"AWS didFailWithError:\n%@", [error description]);
 	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
 	
-	if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) {
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.mode = MBProgressHUDModeCustomView;
+	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+	[_progressHUD show:NO];
+	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	_progressHUD = nil;
+	
+	if ([[tag firstObject] isEqualToString:@"hotornot-avatars"]) {
 		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	}
@@ -1954,11 +2027,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == 1) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
-																								@"image"			: [HONAppDelegate avatarImage],
-																								@"url"				: @"",
-																								@"mp_event"			: @"App Root",
-																								@"view_controller"	: self.tabBarController}];
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Notification - Verified Invite %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
+																									@"image"			: [HONAppDelegate avatarImage],
+																									@"url"				: @"",
+																									@"mp_event"			: @"App Root",
+																									@"view_controller"	: self.tabBarController}];
+		}
 	}
 	
 	else if (alertView.tag == 2) {
@@ -2106,6 +2185,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+#pragma mark - Debug Calls
+- (void)_showFonts {
+	for (NSString *familyName in [UIFont familyNames]) {
+		NSLog(@"Font Family Name = %@", familyName);
+		
+		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+		NSLog(@"Font Names = %@", names);
+	}
+}
+
+
 #if __APPSTORE_BUILD__ == 0
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
@@ -2113,11 +2203,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
 //		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
 #endif
-	return nil;
+	return (nil);
 }
 #endif
 @end
 
-
-
-// containsSubstring = ([string rangeOfString:@"bla"].location == NSNotFound);
