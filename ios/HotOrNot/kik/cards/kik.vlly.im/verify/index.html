@@ -1,0 +1,514 @@
+
+<!DOCTYPE HTML>
+<html>
+    <head>  
+        <title>SelfieClub</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-16">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="kik-more" content="api-stage.letsvolley.com">
+		<meta name="kik-prefer" content="true">
+		<meta name="description" content="Join SelfieClub">
+		
+		<link rel="kik-icon" href="./images/ico_volley.png">
+
+
+        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+        <link href="./css/main.css" type="text/css" rel="stylesheet" />
+        
+		<script>
+			var _tsq = _tsq || [];
+				_tsq.push(["setAccountName", "volley"]);
+				_tsq.push(["fireHit", "kik.vlly.im", []]);
+			
+			(function() {
+				function z(){
+					var s = document.createElement("script");
+						s.type = "text/javascript";
+						s.async = "async";
+						s.src = window.location.protocol + "//cdn.tapstream.com/static/js/tapstream.js";
+					
+					var x = document.getElementsByTagName("script")[0];
+						x.parentNode.insertBefore(s, x);
+				}
+				
+				if (window.attachEvent)
+					window.attachEvent("onload", z);
+				else
+					window.addEventListener("load", z, false);
+			})();
+		</script>
+		
+		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
+		<script src="http://zeptojs.com/zepto.min.js"></script>
+		
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="./js/jquery.touchSwipe.js"></script>
+		<script type="text/javascript" src="./js/main.js"></script>
+    </head>
+    <body>
+		<div class="container">
+			
+			<script id='code_1'>
+				var decodeHtmlEntity = function(str) {
+					return (str.replace(/&#(\d+);/g, function(match, dec) {
+						return (String.fromCharCode(dec));
+					}));
+				};
+			
+				var encodeHtmlEntity = function(str) {
+					var buf = [];
+					for (var i=str.length-1; i>=0; i--) {
+						buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
+					}
+				
+					return (buf.join(''));
+				};
+			
+			
+				var img_arr = {};
+				var swipe_obj = {};
+				
+				var IMG_WIDTH = 320;
+				var IMG_HEIGHT = 568;
+				var img_ind = 0;
+				var img_tot = 16;
+				var speed = 32;
+				var ease_mult = 0.005;
+				
+				var divImgs_obj;
+				
+				var swipeOptions = {
+					triggerOnTouchEnd	: true,	
+					swipeStatus			: swipeStatus,
+					allowPageScroll		: "no",
+					threshold			: 56		
+				}
+				
+				var uni_char = "\u1F447";
+				var shareImg_url="http://kik.vlly.im/verify/images/share-03_612x612.png";
+				var tapsIO_url = "http://taps.io/JWPA";
+				
+				
+				/**
+				* Catch each phase of the swipe.
+				* move : we drag the div.
+				* cancel : we animate back to where we were
+				* end : we animate to the next image
+				*/			
+				
+				/*** VERTICAL **** */
+				function swipeStatus(event, phase, direction, distance) {
+					//If we are moving before swipe, and we are going Lor R in X mode, or U or D in Y mode then drag.
+					if (phase=="move") {
+						var duration = 0;
+						
+						if (direction == "up")
+							scrollImages((IMG_HEIGHT * img_ind) + distance, duration, true);//scrollImagesVertically((IMG_HEIGHT * img_ind) + distance, duration, true);//scrollImagesVertically((IMG_HEIGHT * img_ind) + distance, duration);
+						
+						else if (direction == "down")
+							scrollImages((IMG_HEIGHT * img_ind) - distance, duration, true);//scrollImagesVertically((IMG_HEIGHT * img_ind) - distance, duration);
+					}
+					
+					else if (phase == "cancel") {
+						if (direction == "up")
+							scrollImages(IMG_HEIGHT * img_ind, speed, true);//scrollImagesVertically(IMG_HEIGHT * img_ind, speed);
+					}		
+					
+					else if (phase =="end") {
+						if (direction == "down")
+							previousImage(true)
+							
+						else if (direction == "up")			
+							nextImage(true)
+					}
+				}
+				
+				
+				
+				function previousImage(isVertical) {
+					img_ind = Math.max(img_ind - 1, 0);
+					//$('#divDebug').text("previousImage -> img_ind:["+ img_ind +"]");
+					
+					scrollImages(IMG_HEIGHT * img_ind, speed, isVertical);
+				}
+			
+				function nextImage(isVertical) {
+					img_ind = Math.min(img_ind + 1, img_tot - 1);
+					//$('#divDebug').text("nextImage -> img_ind:["+ img_ind +"]");
+					
+					scrollImages(IMG_HEIGHT * img_ind, speed, isVertical);
+				}
+				
+				
+				/**
+				* Manually update the position of the imgs on drag
+				*/
+				function scrollImages(distance, duration, isVertical) {
+					divImgs_obj.css("-webkit-transition-duration", (duration * ease_mult).toFixed(1) +"s");
+					
+					//inverse the number we set in the css
+					var value = ((distance < 0) ? "" : "-") + Math.abs(distance).toString();
+					var trans_coords = (isVertical) ? "0px,"+ value +"px,0px" : value +"px,0px,0px"
+					divImgs_obj.css("-webkit-transform", "translate3d("+ trans_coords +")");
+				}
+				
+				function doPopulateImageArray() {
+					img_arr = Array(
+						{
+							"title" : "e4d4271ae6004a648a017aaa92c8d5265406538ddd67b7881f774619c6e8e3ec-1383269904Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/e4d4271ae6004a648a017aaa92c8d5265406538ddd67b7881f774619c6e8e3ec-1383269904Large_640x1136.jpg"
+						}, {
+							"title" : "57227b1e9330327de24979618b1709216d3ec4f231043e58a972c87b5636d6af-1383217309Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/57227b1e9330327de24979618b1709216d3ec4f231043e58a972c87b5636d6af-1383217309Large_640x1136.jpg"
+						}, {
+							"title" : "-1383222235Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/-1383222235Large_640x1136.jpg"
+						}, {
+							"title" : "-1383224823Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/-1383224823Large_640x1136.jpg"
+						}, {
+							"title" : "f6c46121cd2b41977931593594f35520ad6b84a6f79aa1889c5ebc1cf40e44b5-1383246644Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/f6c46121cd2b41977931593594f35520ad6b84a6f79aa1889c5ebc1cf40e44b5-1383246644Large_640x1136.jpg"
+						}, {
+							"title" : "84a366e1b59e63a4a3d480682cca095235e452018d3c86f2f50d8b8bd502b064-1383245903Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/84a366e1b59e63a4a3d480682cca095235e452018d3c86f2f50d8b8bd502b064-1383245903Large_640x1136.jpg"
+						}, {
+							"title" : "302f02e78a5bb58c21389d8bea9539cb01bfce0275a78310f5df187e84cfb60f-1383247730Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/302f02e78a5bb58c21389d8bea9539cb01bfce0275a78310f5df187e84cfb60f-1383247730Large_640x1136.jpg"
+						}, {
+							"title" : "c2dca5c394fa193eb9d9036a166c751653ae6e963e0309381897dda68bd07f34-1383247833Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/c2dca5c394fa193eb9d9036a166c751653ae6e963e0309381897dda68bd07f34-1383247833Large_640x1136.jpg"
+						}, {
+							"title" : "64369f25f4ef38fcf16828fc0a9d471ae528e2db4c03284651eada92101ce28b-1383249869Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/64369f25f4ef38fcf16828fc0a9d471ae528e2db4c03284651eada92101ce28b-1383249869Large_640x1136.jpg"
+						}, {
+							"title" : "22db7e83640ac7349afd5281e4619b205cf645c03c0e3c83c7e524f90f08d571-1383252508Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/22db7e83640ac7349afd5281e4619b205cf645c03c0e3c83c7e524f90f08d571-1383252508Large_640x1136.jpg"
+						}, {
+							"title" : "2422f41cd6493d62556bff243b24c61e96114bcc12f5a924006b95f3531fa5dd-1383259685Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/2422f41cd6493d62556bff243b24c61e96114bcc12f5a924006b95f3531fa5dd-1383259685Large_640x1136.jpg"
+						}, {
+							"title" : "0f80b9ea9e7e5408e73439a62517cf33959569b0d89e49b92c167c2a34bcd45c-1383253344Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/0f80b9ea9e7e5408e73439a62517cf33959569b0d89e49b92c167c2a34bcd45c-1383253344Large_640x1136.jpg"
+						}, {
+							"title" : "-1383260189Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/-1383260189Large_640x1136.jpg"
+						}, {
+							"title" : "9d8cc5553fd745a5824b4339a677d37533b5ffb2f6db3e78ed82e84ae19a3ed7-1383256554Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/9d8cc5553fd745a5824b4339a677d37533b5ffb2f6db3e78ed82e84ae19a3ed7-1383256554Large_640x1136.jpg"
+						}, {
+							"title" : "59ae9c1b670493ca0242ce8c8285989bafeaaaee36ff684f81fc18a7c6e80e7b-1383264064Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/59ae9c1b670493ca0242ce8c8285989bafeaaaee36ff684f81fc18a7c6e80e7b-1383264064Large_640x1136.jpg"
+						}, {
+							"title" : "1d87eb776b539af8c204bd915afa523c2e12ec0ab84e7c76915e1ff1d228a46e-1383265244Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/1d87eb776b539af8c204bd915afa523c2e12ec0ab84e7c76915e1ff1d228a46e-1383265244Large_640x1136.jpg"
+						}, {
+							"title" : "f304693e3660dee8cbb644836532a4eb4bce2060be9581a61416f3e16e2be697-1383311470Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/f304693e3660dee8cbb644836532a4eb4bce2060be9581a61416f3e16e2be697-1383311470Large_640x1136.jpg"
+						}, {
+							"title" : "d208381548df80e835f667d1dfb084466001b5d4572819a6b1e20f0234807daf-1383266586Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/d208381548df80e835f667d1dfb084466001b5d4572819a6b1e20f0234807daf-1383266586Large_640x1136.jpg"
+						}, {
+							"title" : "533b329dc1b4fbcf31e044b6687304399d6df977ecb38871d5de71746a91a444-1383268151Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/533b329dc1b4fbcf31e044b6687304399d6df977ecb38871d5de71746a91a444-1383268151Large_640x1136.jpg"
+						}, {
+							"title" : "f6751f34966a87566325409e457f812c279e9b9731267504d89aaebcefbf9aa0-1383268583Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/f6751f34966a87566325409e457f812c279e9b9731267504d89aaebcefbf9aa0-1383268583Large_640x1136.jpg"
+						}, {
+							"title" : "-1383268755Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/-1383268755Large_640x1136.jpg"
+						}, {
+							"title" : "73368993966ab675a40c7578cb2be3f65dbc8293f3b4ae0129ccb96eebaee233-1383277370Large_640x1136",
+							"url" : "https://d3j8du2hyvd35p.cloudfront.net/73368993966ab675a40c7578cb2be3f65dbc8293f3b4ae0129ccb96eebaee233-1383277370Large_640x1136.jpg"
+						}
+					);
+					
+					img_tot = img_arr.length;
+					divImgs_obj.css("height", (img_tot * IMG_HEIGHT) +'px');
+					
+					doLoadImages();
+				}
+				
+				function doRefreshImages() {
+					for (var i=0; i<img_arr.length; i++) {
+						divImgs_obj.remove('divImg_'+ i);	 
+					}
+					
+					divImgs_obj.css("-webkit-transform", "translate3d(0px,0px,0px)");
+					
+					img_arr = Array();
+					$.getJSON("http://api-stage.letsvolley.com/api/matt/challenges/getselfies", function (result) {
+					 	for (var i=0; i<result.length; i++) {
+							img_arr[i] = {
+								"username" : result[i].creator.username,
+								"avatar"   : result[i].creator.img.replace('.jpg', 'Thumb_160x160.jpg'),
+								"url"      : result[i].creator.img.replace('.jpg', 'Large_640x1136.jpg')
+							};	
+						}
+						
+						img_tot = img_arr.length;
+						divImgs_obj.css("height", (img_tot * IMG_HEIGHT) +'px');
+						
+						doLoadImages();
+					});
+				}
+				
+				function doLoadImages() {
+					divImgs_obj.hide();
+					for (var i=0; i<img_arr.length; i++) {
+						//showDebugWithAppenedText(img_arr[i]['url']);
+					    divImgs_obj.append("\n\t\t\t\t\t\t<div id='divImg_"+ i +"'><img src='"+ img_arr[i]['url'] +"' width='"+ IMG_WIDTH +"' height='"+ IMG_HEIGHT +"' /></div>");
+					}
+					divImgs_obj.show();
+				}
+				
+				function sendCardToUser(title_str, msg_str, img_url, username, isLarge) {
+					//$('#divSendto').text(username);
+					
+					title_str = (typeof title_str !== 'undefined' || title_str.length == 0) ? title_str : '';
+					msg_str = (typeof msg_str !== 'undefined' || msg_str.length == 0) ? msg_str : '';
+					img_url = (typeof img_url !== 'undefined' || img_url.length == 0) ? img_url : '';
+					isLarge = (typeof isLarge !== 'undefined') ? isLarge : false;
+					
+					isLarge = (title_str == '');
+					
+					cards.kik.send(username, {
+						title : title_str,
+						text  : msg_str,
+						big   : isLarge,
+						pic   : img_url,
+						data  : { title : title_str, text : msg_str, pic : img_url }
+					});
+					
+					//title_str = (title_str.length == 0) ? ' ' : title_str;
+					//msg_str = (msg_str.length == 0) ? ' ' : msg_str;
+				}
+				
+				function goPickerWithImage() {
+					cards.kik.pickUsers(function (users) {
+						if (!users) // action was cancelled by user
+							return;
+
+						users.forEach(function (user) {
+							usernames += user.username + ', ';
+						});
+					});
+				}
+				
+				function showDebugWithAppenedText(txt) {
+					$('#divDebug').show();
+				 	$('#txtDebug').append(txt +"\n");
+				}
+				
+				
+				function getCookie(c_name) {
+					var c_value = document.cookie;
+					var c_start = c_value.indexOf(" " + c_name + "=");
+					if (c_start == -1) {
+						c_start = c_value.indexOf(c_name + "=");
+					}
+					
+					if (c_start == -1) {
+						c_value = null;
+					
+					} else {
+						c_start = c_value.indexOf("=", c_start) + 1;
+						var c_end = c_value.indexOf(";", c_start);
+						if (c_end == -1) {
+							c_end = c_value.length;
+						}
+						
+						c_value = unescape(c_value.substring(c_start,c_end));
+					}
+					
+					return c_value;
+				}
+
+				function setCookie(c_name,value,exdays) {
+					var exdate=new Date();
+					exdate.setDate(exdate.getDate() + exdays);
+					var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+					document.cookie=c_name + "=" + c_value;
+				}
+
+				function checkCookie() {
+					var username=getCookie("username");
+					if (username!=null && username!="") {
+						$("#divOverlay").hide();
+					
+					} else {
+						setCookie("username","hoge_piyo",365);
+					}
+				}
+				
+				
+				$(function () {
+					(function() {
+						$('#divDebug').hide();
+						$("#divCheckmark").hide();
+						
+						checkCookie();
+						
+						divImgs_obj = $('#divImgs');
+						
+						$.getJSON("./json/config.json", function (result) {
+							IMG_WIDTH = result.img_width;
+							IMG_HEIGHT = result.img_height;
+							speed = result.slide_speed;
+							ease_mult = result.slide_ease;
+							
+							shareImg_url = result.share_img;
+							tapsIO_url = result.taps_io;
+
+							swipe_obj = {
+								triggerOnTouchEnd	: true,	
+								swipeStatus			: swipeStatus,
+								allowPageScroll		: "no",
+								threshold			: result.drag_threshold
+							};
+						});
+						
+						img_arr = Array();
+						$.getJSON("http://api-stage.letsvolley.com/api/matt/challenges/getselfies", function (result) {
+						 	for (var i=0; i<result.length; i++) {
+								img_arr[i] = {
+									"username" : result[i].creator.username,
+									"avatar"   : result[i].creator.img.replace('.jpg', 'Thumb_160x160.jpg'),
+									"url"      : result[i].creator.img.replace('.jpg', 'Large_640x1136.jpg')
+								};	
+							}
+							
+							img_tot = img_arr.length;
+							divImgs_obj.css("height", (img_tot * IMG_HEIGHT) +'px');
+							
+							doLoadImages();
+						});
+						
+						//doPopulateImageArray();
+						
+						// |\}._.-+-._.+-._.-+-._.-+-._.-+-._.-\'/)»
+						
+						var vp_width = $(window).width();
+						var vp_height = $(window).height();
+						
+						
+						$('#divButtonHolder').css({
+						  bottom: (vp_height - 376).toString() +'px'
+						});
+						
+						$('#divCheckmark').css("bottom", ((vp_height - 114) * 0.5).toString() +'px');
+						
+						divImgs_obj.swipe(swipeOptions);
+
+						cards.ready(function () {
+							//if (cards.kik.message) {// web app was opened from Kik message
+								//cards.open(redirect_url);
+								//cards.open("http://www.youtube.com/embed/Gyf1kjaUZCo?autoplay=1");
+							//}
+						});
+
+						
+						$('#spnRefresh').click(function () {
+							location.reload();
+						});
+						
+						$('#spnKikButton').click(function () {
+							var msg_str = $('#hidUTF_1F447').val() + $('#hidUTF_1F447').val() +" TAP TO JOIN "+ $('#hidUTF_1F447').val() + $('#hidUTF_1F447').val();
+							sendCardToUser('', '', img_arr[img_ind]['url'], '');
+						});						
+						
+						$('#imgBtnDn').mousedown(function () {
+							$("#imgBtnDn").attr('src', "./images/dn_Active.png");
+							nextImage(true);
+							
+							return (false);
+						});
+						
+						$('#imgBtnDn').mouseup(function () {
+							$("#imgBtnDn").attr('src', "./images/dn_nonActive.png");
+							
+							return (false);
+						});
+						
+						$('#imgBtnUp').mousedown(function () {
+							$("#imgBtnUp").attr('src', "./images/up_Active.png");
+							
+							// sendCardToUser($('#hidUTF_1F48B').val() +" SELFIECLUB "+ $('#hidUTF_1F48B').val(), "Check out this selfie I just verified. Tap here to join the Selfie Club", img_arr[img_ind]['url'], '');
+							$("#divCheckmark").show();
+							$("#divCheckmark").fadeOut("slow");
+							
+							nextImage(true);
+							
+							return (false);
+						});
+
+						$('#imgBtnUp').mouseup(function () {
+							$("#imgBtnUp").attr('src', "./images/up_nonActive.png");
+
+							return (false);
+						});
+						
+						$('#divOverlay').click(function () {
+							$("#divOverlay").fadeOut();
+						});
+					})();
+				});
+			</script>
+			
+			<div id="divContent">
+				<div id="divHeader">
+					<img src="./images/header.png" width="320" height="99" />
+					<span id="spnRefresh"><img src="./images/refreshButton.png" width="44" height="44" /></span>
+				</div>
+				<div id="divImageHolder">
+					<div id="divImgs"></div>
+				</div>
+				<div id="divButtonHolder">
+					<img id="imgBtnUp" src="./images/up_nonActive.png" width="64" height="64" />
+					<img id="imgBtnDn" src="./images/dn_nonActive.png" width="64" height="64" />
+				</div>
+				<div id="divFooter">
+					<span id="spnKikButton"><img src="./images/kikButton.png" width="104" height="44" /></span>
+					<span id="spnAppStoreBadge"><a href="http://taps.io/JXJA" />
+						<img src="./images/badge.png" width="129" height="44" alt="Get it on the App Store!" border="0" />
+					</a></span>
+				</div>
+				<div id="divCheckmark"><img id="imgCheckmark" src="./images/largeCheck.png" width="114" height="114" /></div>
+				<div id="divOverlay"><img src="./images/firstRunOverlay.png" width="320" height="568" /></div>
+			</div>
+		</div>
+		<div id="divDebug"><textarea id="txtDebug" cols="45" rows="8"></textarea></div>
+		
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-30531077-4', 'kik.vlly.im');
+			ga('send', 'pageview');
+			
+			if (cards.kik) {
+				//cards.metrics.enableGoogleAnalytics('UA-30531077-4', 'chatcard.co');
+				cards.metrics.enableGoogleAnalytics();
+			}
+		</script>
+		
+		<div id="divChars">
+			<!-- // U+00020 [ ] (Non-breaking space) -->
+			<input type="hidden" id="hidUTF_nbsp" value="&nbsp;" />
+			
+			<!-- // U+1F48B [������] (Kiss Mark) // -->
+			<input type="hidden" id="hidUTF_128071" value="&#128071;" />
+			<input type="hidden" id="hidUTF_1F447" value="&#x1F447;" />
+			<input type="hidden" id="hidUTFChar_hex" value="0xF09F9187" />
+			
+			<!-- // U+1F447 [������] (White Down Pointing Backhand Index) // -->
+			<input type="hidden" id="hidUTF_128139" value="&#128139;" />
+			<input type="hidden" id="hidUTF_1F48B" value="&#x1F48B;" />
+		</div>
+   </body>
+</html>

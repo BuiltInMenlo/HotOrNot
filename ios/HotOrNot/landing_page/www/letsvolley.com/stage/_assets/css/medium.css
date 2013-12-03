@@ -1,0 +1,10 @@
+@media screen and (min-width:800px) {	
+	/* --- Secondary Content
+	-------------------------------------------------------*/
+
+	#secondary_content {}
+
+		#secondary_content .phones {
+			width: 50%;
+		}
+}

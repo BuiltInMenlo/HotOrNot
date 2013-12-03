@@ -1,0 +1,80 @@
+#!/bin/bash
+
+#// dev //#
+#-- wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
+
+#// avicii - staging //#
+#-- wipe_url="http://api-dev.letsvolley.com/admin/wipe_user.php"
+
+#// live //#
+#-- wipe_url="http://130.letsvolley.com/admin/wipe_user.php"
+
+
+wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
+tier_name=$(echo "${wipe_url}" | cut -d \/ -f 3 | cut -d \. -f1)
+
+username="snap"
+if [ $1 ]; then
+	username=${1}; fi
+
+
+isKill_flg=true
+while getopts "s" optname # --//> there's a '-s'
+	do # --/ loop thru the params
+		case "$optname" in #  -/> set flag based on char
+
+		"s") # )-/> passed in '-s'
+			isKill_flg=false
+			;;
+
+		"?") # )-/> anything else
+			echo "Unknown option $OPTARG"
+			exit 1
+			;;
+
+		":") # )-/> no arg
+			echo "No argument value for option $OPTARG"
+			exit 1
+			;;
+
+		*) # )-/> shouldn't occur
+			echo "Unknown error"
+			exit 1
+			;;
+	esac
+done
+
+if $isKill_flg; then # --/> passed in the kill param
+	# store pid of the processes
+	simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
+	bridge_pid=`ps aux -cj | grep -i "SimulatorBridge" | awk '{print $2}'`
+	
+	# kill processes gracefully
+	if [ $simulator_pid ] && [ $bridge_pid ]; then
+		
+		printf "Gracefully killing the simulator..."
+		if [ $simulator_pid ]; then # --/> terminate the process
+			kill -15 $simulator_pid; fi
+		
+		if [ $bridge_pid ]; then # --/> terminate the process
+			kill -15 $bridge_pid; fi
+		
+		printf " Success!\n"
+		
+	else # --/> no pID
+		printf "Didn't find the simulator running...\n"; fi
+fi
+
+
+# call wipe user
+printf "Wiping '%s' from tier (%s)... " "${username}" "${tier_name}"
+result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
+isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
+
+#-- check for user JSON
+if [ "$isUser" ]; then printf "Completed!\n"
+else printf "Not found!\n"; fi
+
+
+#-- exit w/o error
+exit 0;

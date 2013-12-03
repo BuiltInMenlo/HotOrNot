@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Kik App Tester</title>
+		<link rel="kik-icon" href="ico_volley.png">
+		<!-- only open in Kik -->
+		<!-- <meta name="kik-prefer" content="true"> -->
+		
+		<!-- this will make it look pretty, i promise -->
+		<link rel="stylesheet" href="./styles.css">
+
+		<script src="http://cdn.kik.com/cards/0/cards.js"></script>
+		<script src="http://zeptojs.com/zepto.min.js"></script>
+		<script>
+			$(function () {
+				// send kik -- submitted with card
+				$('#form').submit(function () {
+					var messageText = $('#input').val();
+					cards.kik.send({
+						title : 'Incoming Message!' ,
+						text  : 'This will self-destruct 3 seconds after opening.' ,
+						data  : { text : messageText }
+					});
+					return false;
+				});
+
+				// receive kik
+				if (cards.kik.message) { // web app was opened from Kik message
+					$('#message').text(cards.kik.message.text); // show message
+					/*setTimeout(function () {
+						$('#message').hide(); // destroy message after 3 seconds
+					}, 3000);
+					*/
+				}
+				
+				cards.kik.pickUsers(function (users) {
+					if ( !users ) {
+						// action was cancelled by user
+						return;
+					}
+					var usernames = "";
+					users.forEach(function (user) {
+						usernames += user.username + '<br />\n';
+						/*
+						typeof user.username  === 'string'; // true
+						typeof user.fullName  === 'string'; // true
+						typeof user.firstName === 'string'; // true
+						typeof user.lastName  === 'string'; // true
+						typeof user.pic	   === 'string'; // true
+						typeof user.thumbnail === 'string'; // true
+						*/
+					});
+					
+					$('#message').text(usernames);
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<!-- message input -->
+		<form id="form">
+			<input id="input" placeholder="Enter a message">
+			<input type="submit" value="Send">
+		</form>
+
+		<!-- view message -->
+		<div id="message"></div>
+	</body>
+</html>

@@ -1,0 +1,6 @@
+.DS_Store
+*~
+*.kate-swp
+builds
+photo-viewer.zip
+mobile

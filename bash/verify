@@ -1,0 +1,10 @@
+#!/bin/bash
+
+form_data='action=10&approves=1&targetID=13289&userID=16862'
+user_agent='Selfieclub/20112 (iPhone Simulator; iOS 7.0.3; Scale/2.00)'
+hmac_token='acddb81e376fd9d55d01da4fe4fbd4eac21eb74d2f0df27b8f18b6877f90c03c+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF+BF3C5708-8F87-4B78-8F0D-125C2C78127B'
+
+curl --request POST "http://api.letsvolley.com/sc0001/Users.php" --user-agent "${user_agent}" --header "${hmac_token}" --header "Content-Type:application/x-www-form-urlencoded; charset=utf-8" --data-urlencode "${form_data}" --location
+
+
+exit 0;

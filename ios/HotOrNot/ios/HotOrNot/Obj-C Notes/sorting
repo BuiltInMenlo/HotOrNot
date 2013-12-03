@@ -1,0 +1,27 @@
+// sorted by date
+NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
+
+// sorted by name
+NSArray *parsedLists = [NSArray arrayWithArray:[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+
+
+
++ (NSArray *)searchUsers {
+//	NSMutableArray *list = [[[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"] mutableCopy];
+	NSArray *list = [NSMutableArray arrayWithArray:[[[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+	
+	NSMutableArray *ref = [NSMutableArray arrayWithCapacity:[list count]];
+	
+	for (int i=0; i<[list count]; i++)
+		[ref addObject:[NSNumber numberWithInt:i]];
+	
+	for (int i=[ref count] - 1; i>=0; i--)
+		[ref exchangeObjectAtIndex:i withObjectAtIndex:[[ref objectAtIndex:((int)arc4random() % [ref count])] intValue]];
+	
+//	NSMutableArray *rndList = [NSMutableArray arrayWithCapacity:[list count]];
+//	for (int i=0; i<[list count]; i++)
+//		[list exchangeObjectAtIndex:i withObjectAtIndex:[[ref objectAtIndex:i] intValue]];
+//		[rndList addObject:[list objectAtIndex:[[ref objectAtIndex:i] intValue]]];
+	
+	return (list);
+}

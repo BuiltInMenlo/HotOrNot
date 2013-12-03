@@ -1,0 +1,38 @@
+Need to add this to the push message where it says challenge_payload:
+"challenge":{"id":"CHALLENGE_ID", "subject":"SUBJECT_NAME", "creator":"CREATOR_NAME", "challenger":"CHALLENGER_NAME"} 
+
+So complete push message would look like:
+'{"device_tokens": ["3b0dda3bb65860a488c461c3b8fed94738cab970aa93e2f1bc17e123e7de4f6f"], "type":"1", "challenge":{"id":"4321", "subject":"#howDoILook", "creator":"jasontester2204", "challenger":"flatula"}, "aps": {"alert": "@jasontester2204 has sent you a #howDoILook Volley!", "sound": "push_01.caf"}}'
+
+
+
+Challenges.php:
+==================================================
+acceptChallengeAsDefaultUser (helper function)
+	- change type param from 1 to 3
+
+action=1 (submitMatchingChallenge)
+	- change type param from 1 to 3
+
+action=4 (acceptChallenge)
+	- change type param from 1 to 3
+
+action=9 (submitChallengeWithChallenger)
+	- add challenge_payload to message
+
+action=7 (submitChallengeWithUsername)
+	- add challenge_payload to message
+	
+
+Comments.php:
+==================================================
+action=2 (submitCommentForChallenge) - for both creator and challenger pushes
+	- change type param from 1 to 3
+	
+
+Votes.php:
+==================================================
+action=6 (upvoteChallenge)
+	- change type param from 1 to 3 - for both creator and challenger pushes
+	
+	
