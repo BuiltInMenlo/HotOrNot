@@ -35,7 +35,7 @@
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
-#import "HONAlertsViewController.h"
+#import "HONExploreViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONChallengeVO.h"
 #import "HONEmotionVO.h"

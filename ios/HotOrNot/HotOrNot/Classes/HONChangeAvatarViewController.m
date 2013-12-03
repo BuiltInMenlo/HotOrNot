@@ -224,9 +224,7 @@
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
 	
 	[self _uploadPhotos:processedImage];
-	
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-	}];
+	[self dismissViewControllerAnimated:NO completion:^(void) {}];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

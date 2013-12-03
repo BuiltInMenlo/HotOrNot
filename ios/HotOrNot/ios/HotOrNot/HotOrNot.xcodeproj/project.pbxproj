@@ -420,7 +420,7 @@
 		4CA0A6C818173CF400045594 /* freeButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6C418173CF400045594 /* freeButton_nonActive.png */; };
 		4CA0A6C918173CF400045594 /* freeButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6C518173CF400045594 /* freeButton_nonActive@2x.png */; };
 		4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */; };
-		4CA4859E16E920D700DE0F24 /* HONAlertsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA4859D16E920D700DE0F24 /* HONAlertsViewController.m */; };
+		4CA4859E16E920D700DE0F24 /* HONExploreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA4859D16E920D700DE0F24 /* HONExploreViewController.m */; };
 		4CA485A116E920EF00DE0F24 /* HONExploreViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA485A016E920EF00DE0F24 /* HONExploreViewCell.m */; };
 		4CA485C516EC109A00DE0F24 /* tabMenuBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485B316EC109A00DE0F24 /* tabMenuBackground@2x.png */; };
 		4CA485CA16EC190600DE0F24 /* createChallengeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485C616EC18FF00DE0F24 /* createChallengeButton_Active.png */; };
@@ -1145,8 +1145,8 @@
 		4CA0A6C518173CF400045594 /* freeButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "freeButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CA34C5316F6B6550000751E /* HONGenericRowViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGenericRowViewCell.h; sourceTree = "<group>"; };
 		4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGenericRowViewCell.m; sourceTree = "<group>"; };
-		4CA4859C16E920D700DE0F24 /* HONAlertsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertsViewController.h; sourceTree = "<group>"; };
-		4CA4859D16E920D700DE0F24 /* HONAlertsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAlertsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4CA4859C16E920D700DE0F24 /* HONExploreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONExploreViewController.h; sourceTree = "<group>"; };
+		4CA4859D16E920D700DE0F24 /* HONExploreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONExploreViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CA4859F16E920EF00DE0F24 /* HONExploreViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONExploreViewCell.h; sourceTree = "<group>"; };
 		4CA485A016E920EF00DE0F24 /* HONExploreViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONExploreViewCell.m; sourceTree = "<group>"; };
 		4CA485B316EC109A00DE0F24 /* tabMenuBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabMenuBackground@2x.png"; sourceTree = "<group>"; };
@@ -1655,8 +1655,8 @@
 			children = (
 				4CA4859F16E920EF00DE0F24 /* HONExploreViewCell.h */,
 				4CA485A016E920EF00DE0F24 /* HONExploreViewCell.m */,
-				4CA4859C16E920D700DE0F24 /* HONAlertsViewController.h */,
-				4CA4859D16E920D700DE0F24 /* HONAlertsViewController.m */,
+				4CA4859C16E920D700DE0F24 /* HONExploreViewController.h */,
+				4CA4859D16E920D700DE0F24 /* HONExploreViewController.m */,
 			);
 			name = Notifications;
 			sourceTree = "<group>";
@@ -3601,7 +3601,7 @@
 				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
-				4CA4859E16E920D700DE0F24 /* HONAlertsViewController.m in Sources */,
+				4CA4859E16E920D700DE0F24 /* HONExploreViewController.m in Sources */,
 				4C1BA89317F3C0D3006024B2 /* HONPopularUserVO.m in Sources */,
 				4CA485A116E920EF00DE0F24 /* HONExploreViewCell.m in Sources */,
 				4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */,

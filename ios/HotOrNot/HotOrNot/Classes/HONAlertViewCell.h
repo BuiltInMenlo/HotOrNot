@@ -11,17 +11,17 @@
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 
-@protocol HONExploreViewCellDelegate;
+@protocol HONAlertItemViewCellDelegate;
 @interface HONExploreViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, retain) HONChallengeVO *lChallengeVO;
 @property (nonatomic, retain) HONChallengeVO *rChallengeVO;
 
-@property (nonatomic, assign) id <HONExploreViewCellDelegate> delegate;
+@property (nonatomic, assign) id <HONAlertItemViewCellDelegate> delegate;
 @end
 
-@protocol HONExploreViewCellDelegate
+@protocol HONAlertItemViewCellDelegate
 - (void)exploreViewCellShowPreview:(HONExploreViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)exploreViewCellShowInvite:(HONExploreViewCell *)cell;
 - (void)exploreViewCellShowSearch:(HONExploreViewCell *)cell;

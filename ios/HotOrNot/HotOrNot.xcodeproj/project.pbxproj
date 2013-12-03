@@ -43,6 +43,7 @@
 		4C0FB64517D2E2A70064389B /* cameraReTakeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0FB64117D2E2A70064389B /* cameraReTakeButton_Active@2x.png */; };
 		4C0FB64617D2E2A70064389B /* cameraReTakeButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0FB64217D2E2A70064389B /* cameraReTakeButton_nonActive.png */; };
 		4C0FB64717D2E2A70064389B /* cameraReTakeButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0FB64317D2E2A70064389B /* cameraReTakeButton_nonActive@2x.png */; };
+		4C106066184D916100B361A6 /* HONAlertItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C106065184D916100B361A6 /* HONAlertItemViewCell.m */; };
 		4C11AA38182DF20B005A876B /* overlayFade-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C11AA35182DF20B005A876B /* overlayFade-568h@2x.png */; };
 		4C11AA39182DF20B005A876B /* overlayFade.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C11AA36182DF20B005A876B /* overlayFade.png */; };
 		4C11AA3A182DF20B005A876B /* overlayFade@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C11AA37182DF20B005A876B /* overlayFade@2x.png */; };
@@ -678,6 +679,8 @@
 		4C0FB64117D2E2A70064389B /* cameraReTakeButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraReTakeButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0FB64217D2E2A70064389B /* cameraReTakeButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraReTakeButton_nonActive.png; sourceTree = "<group>"; };
 		4C0FB64317D2E2A70064389B /* cameraReTakeButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraReTakeButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4C106064184D916100B361A6 /* HONAlertItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertItemViewCell.h; sourceTree = "<group>"; };
+		4C106065184D916100B361A6 /* HONAlertItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlertItemViewCell.m; sourceTree = "<group>"; };
 		4C11AA35182DF20B005A876B /* overlayFade-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "overlayFade-568h@2x.png"; sourceTree = "<group>"; };
 		4C11AA36182DF20B005A876B /* overlayFade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = overlayFade.png; sourceTree = "<group>"; };
 		4C11AA37182DF20B005A876B /* overlayFade@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "overlayFade@2x.png"; sourceTree = "<group>"; };
@@ -1650,15 +1653,17 @@
 			name = Home;
 			sourceTree = "<group>";
 		};
-		4C32B9A415FAB5FA0023A0EE /* Notifications */ = {
+		4C32B9A415FAB5FA0023A0EE /* Alerts */ = {
 			isa = PBXGroup;
 			children = (
 				4CA4859F16E920EF00DE0F24 /* HONAlertViewCell.h */,
 				4CA485A016E920EF00DE0F24 /* HONAlertViewCell.m */,
 				4CA4859C16E920D700DE0F24 /* HONAlertsViewController.h */,
 				4CA4859D16E920D700DE0F24 /* HONAlertsViewController.m */,
+				4C106064184D916100B361A6 /* HONAlertItemViewCell.h */,
+				4C106065184D916100B361A6 /* HONAlertItemViewCell.m */,
 			);
-			name = Notifications;
+			name = Alerts;
 			sourceTree = "<group>";
 		};
 		4C32B9A515FAB60A0023A0EE /* Create Challenge */ = {
@@ -2493,7 +2498,7 @@
 			isa = PBXGroup;
 			children = (
 				4C32B9A315FAB5F00023A0EE /* Home */,
-				4C32B9A415FAB5FA0023A0EE /* Notifications */,
+				4C32B9A415FAB5FA0023A0EE /* Alerts */,
 				4C32B99815FA6F4C0023A0EE /* Verify */,
 			);
 			name = Tabs;
@@ -3575,6 +3580,7 @@
 				4CBE874C16371D24004084DF /* HONTermsConditionsViewController.m in Sources */,
 				4CED1C1E177D46C100A32F2B /* NBPhoneNumberUtil.m in Sources */,
 				4C9B928F18287AED00A060B2 /* UIImage+MPAverageColor.m in Sources */,
+				4C106066184D916100B361A6 /* HONAlertItemViewCell.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4C8CBC51179CFAA600C95189 /* TSTapstream.m in Sources */,
