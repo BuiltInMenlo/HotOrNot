@@ -24,7 +24,6 @@
 @property (nonatomic, strong) UIView *heroHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
-@property (nonatomic, strong) UIButton *likeButton;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic, strong) HONTimelineItemFooterView *timelineItemFooterView;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
@@ -48,14 +47,10 @@
 }
 
 
-#pragma mark - Data Calls
-
-
 #pragma mark - Public APIs
-//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO {
 - (void)updateChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-//	[_timelineItemFooterView upvoteUser:userID onChallenge:challengeVO];
+	
 	[_timelineItemFooterView updateChallenge:_challengeVO];
 }
 
@@ -106,7 +101,7 @@
 		
 		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"overlayFade-568h@2x" : @"overlayFade"];
-		[_heroHolderView addSubview:gradientImageView];
+//		[_heroHolderView addSubview:gradientImageView];
 		
 //		if ([HONAppDelegate isRetina4Inch]) {
 			[UIView animateWithDuration:0.25 animations:^(void) {
@@ -139,16 +134,39 @@
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:detailsButton];
 	
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"captionBackground"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 24.0, 0.0, 24.0)]];
+	[self.contentView addSubview:subjectBGImageView];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 280.0, subjectBGImageView.frame.size.height)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:22];
+	subjectLabel.textColor = [UIColor whiteColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.textAlignment = NSTextAlignmentCenter;
+	subjectLabel.text = _challengeVO.subjectName;
+	[subjectBGImageView addSubview:subjectLabel];
+	
+	float maxWidth = 280.0;
+	CGSize size = [[NSString stringWithFormat:@"  %@  ", subjectLabel.text] boundingRectWithSize:CGSizeMake(maxWidth, 44.0)
+																						 options:NSStringDrawingTruncatesLastVisibleLine
+																					  attributes:@{NSFontAttributeName:subjectLabel.font}
+																						 context:nil].size;
+	if (size.width > maxWidth)
+		size = CGSizeMake(maxWidth + 15.0, size.height);
+	
+	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 2.0, size.width, subjectLabel.frame.size.height);
+	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), (5.0 + ([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5), size.width, 44.0);
+	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[self addGestureRecognizer:lpGestureRecognizer];
+	
 	
 	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 90.0 withChallenge:_challengeVO];
+	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 106.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	
@@ -164,35 +182,6 @@
 		[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:stickerButton];
 	}
-	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 241.0, 64.0, 137.0)];
-	[self.contentView addSubview:buttonHolderView];
-	
-	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:joinButton];
-	
-	_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_likeButton.frame = CGRectMake(0.0, 73.0, 64.0, 64.0);
-	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
-	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Tapped"] forState:UIControlStateSelected];
-	[_likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:_likeButton];
-	
-//	if ([HONAppDelegate totalForCounter:@"timeline"] == 0) {
-//		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_home"]];
-//		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, 128.0);
-//		_tutorialImageView.alpha = 0.0;
-//		[self.contentView addSubview:_tutorialImageView];
-//		
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
-//	}
 }
 
 
@@ -226,9 +215,6 @@
 }
 
 - (void)_goLike {
-	[_likeButton removeTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-	[_likeButton setSelected:YES];
-	
 	[self.delegate timelineItemViewCell:self upvoteCreatorForChallenge:_challengeVO];
 }
 
@@ -288,6 +274,10 @@
 #pragma mark - TimelineItemFooter Delegates
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
 	[self _goJoinChallenge];
+}
+
+- (void)footerView:(HONTimelineItemFooterView *)cell likeChallenge:(HONChallengeVO *)challengeVO {
+	[self _goLike];
 }
 
 - (void)footerView:(HONTimelineItemFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO {

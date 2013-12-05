@@ -12,8 +12,16 @@
 #import "HONOpponentVO.h"
 
 
+typedef enum {
+	HONParticipantGridViewTypeDetails = 0,
+	HONParticipantGridViewTypeProfile,
+	HONParticipantGridViewTypeUsersProfile
+} HONParticipantGridViewType;
+
+
 @protocol HONParticipantGridViewDelegate;
 @interface HONBasicParticipantGridView : UIView {
+	HONParticipantGridViewType _participantGridViewType;
 	HONOpponentVO *_heroOpponentVO;
 	NSMutableArray *_challenges;
 	NSMutableArray *_gridItems;
@@ -22,6 +30,7 @@
 	HONOpponentVO *_selectedOpponentVO;
 	HONChallengeVO *_selectedChallengeVO;
 	
+	UIView *_holderView;
 	UIButton *_previewButton;
 	
 	UILongPressGestureRecognizer *_lpGestureRecognizer;
@@ -31,8 +40,8 @@
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO;
 
 - (void)layoutGrid;
+- (void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer;
 - (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO;
--(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer;
 
 @property (nonatomic, assign) id <HONParticipantGridViewDelegate> delegate;
 @end
@@ -41,5 +50,7 @@
 @protocol HONParticipantGridViewDelegate
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+
 @optional
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 @end

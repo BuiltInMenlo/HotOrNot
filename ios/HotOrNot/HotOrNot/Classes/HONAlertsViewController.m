@@ -2,7 +2,7 @@
 //  HONAlertsViewController.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 03.07.13.
+//  Created by Matt Holcombe on 12/02/2013 @ 20:17 .
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
@@ -10,45 +10,50 @@
 #import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
-#import "UIImageView+AFNetworking.h"
-#import "UIImage+ImageEffects.h"
 
 #import "HONAlertsViewController.h"
-#import "HONCreateSnapButtonView.h"
-#import "HONImagePickerViewController.h"
-#import "HONTimelineViewController.h"
-#import "HONAlertViewCell.h"
-#import "HONImagingDepictor.h"
+#import "HONAlertItemVO.h"
+#import "HONChallengeVO.h"
+#import "HONUserVO.h"
 #import "HONHeaderView.h"
-#import "HONProfileHeaderButtonView.h"
-#import "HONChallengeDetailsViewController.h"
-#import "HONImagingDepictor.h"
+#import "HONCreateSnapButtonView.h"
+#import "HONAlertItemViewCell.h"
 #import "HONUserProfileViewController.h"
+#import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
-#import "HONPopularViewController.h"
+#import "HONImagePickerViewController.h"
 #import "HONAddContactsViewController.h"
-#import "HONChangeAvatarViewController.h"
-#import "HONSuggestedFollowViewController.h"
+#import "HONImagingDepictor.h"
 
 
-@interface HONAlertsViewController ()<HONAlertViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
-@property (nonatomic, strong) UITableView *tableView;
+@interface HONAlertsViewController () <HONAlertItemViewCellDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) NSMutableArray *alertItems;
+@property (nonatomic, strong) NSMutableArray *cells;
+@property (nonatomic, strong) NSMutableArray *headers;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) UIImageView *emptySetImgView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
-@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic) BOOL isRefreshing;
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) HONUserVO *userVO;
 @end
+
 
 @implementation HONAlertsViewController
 
 - (id)init {
 	if ((self = [super init])) {
+		_alertItems = [NSMutableArray array];
+		_isRefreshing = NO;
+		
+		[self _retrieveAlerts];
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedExploreTab:) name:@"SELECTED_EXPLORE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareExploreTab:) name:@"TARE_EXPLORE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -72,16 +77,73 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveChallenges {
-	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
+- (void)_retrieveAlerts {
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_tableView.alpha = 0.0;
-//	}];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIDiscover parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIGetActivity parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] TOTAL ALERTS: %d", [result count]);
+			
+			_alertItems = [NSMutableArray array];
+			for (NSDictionary *dict in result) {
+				if (dict != nil)
+					[_alertItems addObject:[HONAlertItemVO alertWithDictionary:dict]];
+			}
+			
+			
+			_emptySetImageView.hidden = ([_alertItems count] > 0);
+			[_tableView reloadData];
+		}
+		
+		[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:NO];
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrieveChallengeForID:(int)challengeID {
+	NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", challengeID]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIChallengeObject parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -97,40 +159,16 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: EXPLORE TOT:%@", [[self class] description], result);
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			_challenges = [NSMutableArray arrayWithCapacity:[result count] + 3];
-			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-1"]]];
-			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_0"]]];
 			
-			for (NSDictionary *dict in result) {
-				if (dict != nil)
-					[_challenges addObject:[HONChallengeVO challengeWithDictionary:dict]];
-			}
 			
-			NSLog(@"TOT PRE SWAP:[%d]", [_challenges count]);
-			[_challenges exchangeObjectAtIndex:2 withObjectAtIndex:0];
-			[_challenges exchangeObjectAtIndex:7 withObjectAtIndex:1];
-			
-			[_challenges addObject:[HONChallengeVO challengeWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"empty_challenge_-2"]]];
-			
-			_emptySetImgView.hidden = ([_challenges count] > 0);
-			[_tableView reloadData];
-		}
-		
-		_tableView.alpha = 1.0;
-		[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:NO];
-		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -141,23 +179,73 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrieveUserWithID:(int)userID {
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 5],
+							 @"userID"	: [NSString stringWithFormat:@"%d", userID]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
-		_isRefreshing = NO;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			if ([userResult objectForKey:@"id"] != nil) {
+				_userVO = [HONUserVO userWithDictionary:userResult];
+			
+				
+				
+			} else {
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = @"User not found!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if ([error.description isEqualToString:kNetErrorNoConnection]) {
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = @"No network connection!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+		}
+		
 	}];
 }
 
 
-#pragma mark - View Lifecycle
+#pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-//	self.view.backgroundColor = [UIColor whiteColor];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Explore"];
-	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
-	_emptySetImgView.hidden = YES;
-	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -166,39 +254,59 @@
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.scrollsToTop = NO;
+	_tableView.pagingEnabled = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];//([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-//	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	searchButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-//	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_nonActive"] forState:UIControlStateNormal];
-//	[searchButton setBackgroundImage:[UIImage imageNamed:@"exploreSearch_Active"] forState:UIControlStateHighlighted];
-//	[searchButton addTarget:self action:@selector(_goSearch) forControlEvents:UIControlEventTouchUpInside];
+	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
+	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
+	_emptySetImageView.hidden = YES;
+	[_tableView addSubview:_emptySetImageView];
 	
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Alerts"];
+	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
-	[self _retrieveChallenges];
+	[self _retrieveAlerts];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	
 }
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
+}
+
 
 #pragma mark - Navigation
 - (void)_goProfile {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
 	[self _addBlur];
@@ -209,33 +317,25 @@
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Discover - Refresh"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+- (void)_challengeDetails {
+	[[Mixpanel sharedInstance] track:@"Verify A/B - Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_isRefreshing = YES;
-	[self _retrieveChallenges];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"exploreRefresh_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"exploreRefresh_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
-															message:@"Get more subscribers now, tap OK."
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
-		[alertView show];
-	}
+	[self _addBlur];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Create Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Create Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
@@ -248,39 +348,52 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:1];
+		[alertView setTag:3];
+		[alertView show];
+	}
+}
+
+- (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Verify A/B - Refresh"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_isRefreshing = YES;
+	[self _retrieveAlerts];
+	
+	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyRefresh_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyRefresh_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+															message:@"Get more subscribers now, tap OK."
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"OK", nil];
+		[alertView setTag:0];
 		[alertView show];
 	}
 }
 
 - (void)_goAddContacts {
-	[[Mixpanel sharedInstance] track:@"Explore - Invite Friends"
+	[[Mixpanel sharedInstance] track:@"Verify A/B - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goSearch {
-	[[Mixpanel sharedInstance] track:@"Explore - Search"
+- (void)_goVolleyCamera {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_goSuggested {
-	[[Mixpanel sharedInstance] track:@"Explore - Suggested Follow"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:=_challengeVO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goRemoveTutorial {
@@ -324,26 +437,23 @@
 		}
 	}
 	
-//	_isRefreshing = YES;
-//	[self _retrieveChallenges];
+	_isRefreshing = YES;
+	[self _retrieveAlerts];
 	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
-	
+	//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	//	_progressHUD.minShowTime = kHUDTime;
+	//	_progressHUD.taskInProgress = YES;
 }
 
 - (void)_refreshExploreTab:(NSNotification *)notification {
 	_isRefreshing = YES;
-	[self _retrieveChallenges];
+	[self _retrieveAlerts];
 }
 - (void)_tareExploreTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 }
-
 
 #pragma mark - UI Presentation
 - (void)_addBlur {
@@ -357,142 +467,147 @@
 //	}];
 }
 
-#pragma mark - ExploreViewCell Delegates
-- (void)exploreViewCellShowPreview:(HONAlertViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
+- (void)_removeCellForAlertItem:(HONAlertItemVO *)alertItemVO {
+	UITableViewCell *tableCell;
+	for (HONAlertItemViewCell *cell in _cells) {
+		if (cell.alertItemVO.alertID == alertItemVO.alertID) {
+			tableCell = (UITableViewCell *)cell;
+			[_cells removeObject:tableCell];
+			break;
+		}
+	}
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	//	NSLog(@"TABLECELL:[%@]", ((HONFollowTabViewCell *)tableCell).challengeVO.creatorVO.username);
 	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO forChallenge:_challengeVO];
-		_snapPreviewViewController.delegate = self;
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+	int ind = -1;
+	for (HONAlertItemVO *vo in _alertItems) {
+		ind++;
 		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:2];
-		[alertView show];
+		if (vo.alertID == vo.alertID) {
+			[_alertItems removeObject:vo];
+			break;
+		}
+	}
+	
+	//	NSLog(@"CHALLENGE:(%d)[%@]", ind, challengeVO.creatorVO.username);
+	
+	if (tableCell != nil) {
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:ind];
+		
+		if (indexPath != nil) {
+			[_tableView beginUpdates];
+			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+			[_tableView endUpdates];
+			
+			_emptySetImageView.hidden = [_alertItems count] > 0;
+		}
 	}
 }
 
-- (void)exploreViewCell:(HONAlertViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return (1);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return ([_alertItems count]);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	return (nil);
+}
+
+- (UITableViewCell *)tableView :(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	NSLog(@"cellForRowAtIndexPath[%d]", indexPath.section);
+	
+	if (cell == nil)
+		cell = [[HONAlertItemViewCell alloc] init];
+	
+	cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.section];
+	cell.delegate = self;
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (49.0 + (([_alertItems count] > 9 && indexPath.section == [_alertItems count] - 1) * 51.0));
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (0.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (nil);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
+		
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	}
+}
+
+
+#pragma mark - AlertViewCell Delegates
+- (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO {
+	NSLog(@"alertItemViewCell:[%@]", alertItemVO.dictionary);
+	
+	UIViewController *viewController;
+	UINavigationController *navigationController;
+	
+	if (alertItemVO.triggerType == HONPushTypeShowChallengeDetails) {
 		[self _addBlur];
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO]];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = alertItemVO.userID;
+		viewController = userPofileViewController;
+		
+	} else if (alertItemVO.triggerType == HONPushTypeUserVerified) {
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = alertItemVO.userID;
+		viewController = userPofileViewController;
+	
+	} else if (alertItemVO.triggerType == HONPushTriggerUserProfileType) {
+		[self _addBlur];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = alertItemVO.userID;
+		viewController = userPofileViewController;
+		
+	} else if (alertItemVO.triggerType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
+		[self _addBlur];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = alertItemVO.userID;
+		viewController = userPofileViewController;
+	}
+	
+	
+	if (viewController != nil) {
+		navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
 		[navigationController setNavigationBarHidden:YES];
 		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:3];
-		[alertView show];
 	}
 }
 
-- (void)exploreViewCell:(HONAlertViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-		
-		[self _addBlur];
-		//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:3];
-		[alertView show];
-	}
-}
-
-- (void)exploreViewCellShowInvite:(HONAlertViewCell *)cell {
-	[self _goAddContacts];
-}
-
-- (void)exploreViewCellShowSearch:(HONAlertViewCell *)cell {
-	[self _goSearch];
-}
-
-- (void)exploreViewCellShowSuggested:(HONAlertViewCell *)cell {
-	[self _goSuggested];
-}
-
-- (void)exploreViewCell:(HONAlertViewCell *)cell showProfile:(HONOpponentVO *)opponentVO {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"challenge", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
-	userPofileViewController.userID = opponentVO.userID;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-}
-
-
-#pragma mark - SnapPreview Delegates
-- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
-}
-
-- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
-}
-
-- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-}
 
 
 #pragma mark - RefreshTableHeader Delegates
@@ -514,102 +629,6 @@
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
-
-#pragma mark - TableView DataSource Delegates
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (ceil([_challenges count] * 0.5));
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return (nil);
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONAlertViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-	
-	if (cell == nil) {
-		cell = [[HONAlertViewCell alloc] init];
-	}
-	
-	cell.lChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2)];
-	
-	if ((indexPath.row * 2) + 1 < [_challenges count])
-		cell.rChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2) + 1];
-	
-	cell.delegate = self;
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-	return (cell);
-}
-
-
-#pragma mark - TableView Delegates
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == ceil([_challenges count] * 0.5) - 1) ? 211.0 : 160);
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
-}
-
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
-}
-
-
-#pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			
-		}
-	
-	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Create Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
-	
-	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Show Detail Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
-	
-	} else if (alertView.tag == 3) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Select Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
-	}
-}
 
 
 @end

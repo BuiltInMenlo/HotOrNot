@@ -44,7 +44,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) UIImageView *emptyImageView;
+@property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -126,7 +126,7 @@
 //					break;
 			}
 			
-			_emptyImageView.hidden = [_challenges count] > 0;
+			_emptySetImageView.hidden = [_challenges count] > 0;
 			[_tableView reloadData];
 
 			_isRefreshing = NO;
@@ -323,10 +323,10 @@
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, 58.0);
-	_emptyImageView.hidden = YES;
-	[_tableView addSubview:_emptyImageView];
+	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
+	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
+	_emptySetImageView.hidden = YES;
+	[_tableView addSubview:_emptySetImageView];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	_headerView = [[HONHeaderView alloc] initWithTitle:[_tabInfo objectForKey:@"title"]];
@@ -526,7 +526,7 @@
 			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
 			[_tableView endUpdates];
 			
-			_emptyImageView.hidden = [_challenges count] > 0;
+			_emptySetImageView.hidden = [_challenges count] > 0;
 		}
 	}
 }

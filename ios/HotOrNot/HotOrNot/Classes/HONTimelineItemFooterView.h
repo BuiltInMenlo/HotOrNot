@@ -15,7 +15,6 @@
 @protocol HONTimelineItemFooterViewDelegate;
 @interface HONTimelineItemFooterView : UIView
 - (id)initAtPosY:(CGFloat)yPos withChallenge:(HONChallengeVO *)challengeVO;
-//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO;
 - (void)updateChallenge:(HONChallengeVO *)challengeVO;
 
 @property (nonatomic, assign) id <HONTimelineItemFooterViewDelegate> delegate;
@@ -24,6 +23,7 @@
 
 @protocol HONTimelineItemFooterViewDelegate
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO;
+- (void)footerView:(HONTimelineItemFooterView *)cell likeChallenge:(HONChallengeVO *)challengeVO;
 - (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 @optional
 - (void)footerView:(HONTimelineItemFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO;

@@ -18,6 +18,7 @@
 
 - (id)initAtPos:(int)yPos forChallenge:(HONChallengeVO *)challengeVO asPrimaryOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initAtPos:yPos forChallenge:challengeVO asPrimaryOpponent:opponentVO])) {
+		_participantGridViewType = HONParticipantGridViewTypeDetails;
 		_challengeVO = challengeVO;
 		
 		[self layoutGrid];
@@ -47,9 +48,29 @@
 	[super layoutGrid];
 }
 
-//- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-//	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
-//}
-
+- (void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_holderView];
+//		NSLog(@"TOUCHPT:[%@]", NSStringFromCGPoint(touchPoint));
+		
+		NSDictionary *dict = [NSDictionary dictionary];
+		if (CGRectContainsPoint(_holderView.frame, touchPoint)) {
+			int row = ((int)(touchPoint.y - _holderView.frame.origin.y) / (kSnapThumbSize.height + 1.0));
+			int col = ((int)touchPoint.x / (kSnapThumbSize.width + 1.0));
+			int idx = (row * 4) + col;
+			
+			NSLog(@"COORDS FOR CELL:[%d] -> (%d, %d)", idx, col, row);
+			dict = (idx < [_gridItems count]) ? [_gridItems objectAtIndex:idx] : nil;
+			
+			_selectedChallengeVO = [dict objectForKey:@"challenge"];
+			_selectedOpponentVO = [dict objectForKey:@"participant"];
+		}
+		
+		if (dict != nil)
+			[self.delegate participantGridView:self showProfile:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+	}
+}
 
 @end

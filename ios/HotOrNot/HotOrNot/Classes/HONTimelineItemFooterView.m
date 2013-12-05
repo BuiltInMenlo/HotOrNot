@@ -16,90 +16,39 @@
 @interface HONTimelineItemFooterView ()
 @property (nonatomic, retain) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UILabel *participantsLabel;
-@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UIButton *likeButton;
 @end
 
 @implementation HONTimelineItemFooterView
 @synthesize delegate = _delegate;
 
 - (id)initAtPosY:(CGFloat)yPos withChallenge:(HONChallengeVO *)challengeVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, 40.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, 56.0)])) {
 		_challengeVO = challengeVO;
 //		self.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.5];
 		
-		CGFloat offset;
-		NSArray *participants;
-		
-		if ([_challengeVO.challengers count] >= 2) {
-			participants = [NSArray arrayWithObjects:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0], (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:1], nil];
-			offset = 60.0;
-		
-		} else if ([_challengeVO.challengers count] == 1) {
-			participants = [NSArray arrayWithObjects:(HONOpponentVO *)[_challengeVO.challengers firstObject], nil];
-			offset = 40.0;
-		
-		} else {
-			participants = [NSArray array];
-			offset = 40.0;
-		}
-		
-		UIView *view = [[UIView alloc] initWithFrame:CGRectMake(offset - 1.0, 0.0, 2.0, 40.0)];
-		view.backgroundColor = [UIColor orangeColor];
-		[self addSubview:view];
-		
-		UIView *avatarsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 5.0, 55.0, 51.0)];
-		avatarsHolderView.clipsToBounds = YES;
-		[self addSubview:avatarsHolderView];
-		
-		if ([_challengeVO.challengers count] > 0) {
-			int idx = 0;
-			for (HONOpponentVO *vo in participants) {
-				UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0 + (idx * 35.0), 0.0, 30.0, 30.0)];
-				[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", vo.imagePrefix, kSnapThumbSuffix]] placeholderImage:nil];
-				avatarImageView.userInteractionEnabled = YES;
-				[avatarsHolderView addSubview:avatarImageView];
-				
-				UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				avatarButton.frame = avatarImageView.frame;
-				[avatarButton addTarget:self action:@selector(_goProfileForParticipant:) forControlEvents:UIControlEventTouchUpInside];
-				[avatarsHolderView addSubview:avatarButton];
-				[avatarButton setTag:idx];
-				
-				idx++;
-			}
-		
-		} else {
-			UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 30.0, 30.0)];
-			avatarImageView.image = [UIImage imageNamed:@"noReply"];
-			[avatarsHolderView addSubview:avatarImageView];
-		}
-		
-		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 3.0, 257.0 - offset, 19.0)];
+		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 26.0, 200.0, 19.0)];
 		_participantsLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		_participantsLabel.textColor = [UIColor whiteColor];
 		_participantsLabel.backgroundColor = [UIColor clearColor];
-//		_participantsLabel.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.5];
 		_participantsLabel.text = [self _captionForParticipants];
 		[self addSubview:_participantsLabel];
 		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0 + offset, 19.0, 270.0, 19.0)];
-		_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-		_likesLabel.textColor = [UIColor whiteColor];
-		_likesLabel.backgroundColor = [UIColor clearColor];
-//		_likesLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5];
-		_likesLabel.text = [self _captionForScore];
-		[self addSubview:_likesLabel];
-		
-		if ([self _calcScore] == 0 && [_challengeVO.challengers count] == 0) {
-			_participantsLabel.frame = CGRectOffset(_participantsLabel.frame, 0.0, 7.0);
-			_participantsLabel.text = @"Be the first to reply & like";
-			_likesLabel.hidden = YES;
-		}
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+		joinButton.frame = CGRectMake(214.0, 0.0, 44.0, 44.0);
+		[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
+		[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:joinButton];
+		
+		_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_likeButton.frame = CGRectMake(266.0, 0.0, 44.0, 44.0);
+		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_nonActive"] forState:UIControlStateNormal];
+		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_Active"] forState:UIControlStateHighlighted];
+		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_Tapped"] forState:UIControlStateSelected];
+		[_likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_likeButton];
 	}
 	
 	return (self);
@@ -107,35 +56,10 @@
 
 
 #pragma mark - Public APIs
-//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO; {
 - (void)updateChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	_participantsLabel.text = [self _captionForParticipants];
-	_participantsLabel.frame = CGRectMake(_participantsLabel.frame.origin.x, 3.0, _participantsLabel.frame.size.width, _participantsLabel.frame.size.height);
-	_likesLabel.hidden = NO;
-	
-//	if (_challengeVO.creatorVO.userID == userID)
-//		_challengeVO.creatorVO.score++;
-	
-//	else {
-//		int index = -1;
-//		int counter = 0;
-//		for (HONOpponentVO *vo in _challengeVO.challengers) {
-//			if (vo.userID == userID) {
-//				index = counter;
-//				break;
-//			}
-//			
-//			counter++;
-//		}
-//		
-//		if (index > -1)
-//			((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
-//	}
-	
-//	_challengeVO.likesTotal++;
-	_likesLabel.text = [self _captionForScore];
 }
 
 
@@ -146,6 +70,13 @@
 
 - (void)_goJoinChallenge {
 	[self.delegate footerView:self joinChallenge:_challengeVO];
+}
+
+- (void)_goLike {
+	[_likeButton removeTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+	[_likeButton setSelected:YES];
+	
+	[self.delegate footerView:self likeChallenge:_challengeVO];
 }
 
 - (void)_goProfileForParticipant:(id)sender {
@@ -183,29 +114,33 @@
 }
 
 - (NSString *)_captionForParticipants {
-	if ([_challengeVO.challengers count] == 0)
-		return (@"Be the first to reply");
-	
-	HONOpponentVO *vo;
-	NSString *caption = @"";
-	
-	vo = (HONOpponentVO *)[_challengeVO.challengers firstObject];
-	caption = (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : vo.username;
-	
-	return ([NSString stringWithFormat:@"%@ replied… %d total", caption, [_challengeVO.challengers count]]);
-}
-
-- (NSString *)_captionForScore {
 	int score = [self _calcScore];
-		
-	if (score == 0)
-		return (@"Be the first to like");
+	int challengers = [_challengeVO.challengers count];
 	
-	else if (score > 99)
-		return (@"99+ Likes");
+	if (challengers == 0 && score == 0)
+		return (@"Be the first to like & reply");
+	
+	
+	NSString *caption = @"";
+	if (challengers > 0) {
+		caption = [NSString stringWithFormat:@"%d repl%@ ", challengers, (challengers == 1) ? @"y" : @"ies"];
+		
+		if (score > 0)
+			caption = [caption stringByAppendingString:@"& "];
+	
+	} else
+		caption = @"Be the first to reply… ";
+	
+	
+	if (score > 0)
+		caption = [caption stringByAppendingString:[NSString stringWithFormat:@"%d like%@", score, (score == 1) ? @"" : @"s"]];
 	
 	else
-		return ([NSString stringWithFormat:@"%d Like%@", score, (score != 1) ? @"s" : @""]);
+		caption = @"Be the first to like";
+	
+	
+	return (caption);
 }
+
 
 @end

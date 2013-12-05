@@ -47,17 +47,22 @@
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
+#import "HONAlertsViewController.h"
 
 
-#if __DEV_BUILD___ == 0 || __APPSTORE_BUILD == 1
+#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";//@"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_matt.json";//@"boot_sc0001.json";
 NSString * const kAPIHost = @"data_api";
-NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
 NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-dev";
+#endif
+
+#if __APPSTORE_BUILD__ == 1
+NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
+#else
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #endif
 
@@ -100,6 +105,8 @@ NSString * const kAPIProcessUserImage = @"users/processimage";
 NSString * const kAPISuspendedAccount = @"users/suspendedaccount";
 NSString * const kAPIPurgeUser = @"users/purge";
 NSString * const kAPIPurgeContent = @"users/purgecontent";
+NSString * const kAPIGetActivity = @"users/getactivity";
+NSString * const kAPIDeleteImage = @"challenges/deleteimage";
 
 
 // view heights
@@ -107,6 +114,7 @@ const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
+const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // snap params
 //const CGFloat kSnapRatio = 1.33333333f;
@@ -1595,7 +1603,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
-//									   [[UINavigationController alloc] initWithRootViewController:[[HONExploreViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	for (UINavigationController *navigationController in navigationControllers) {
@@ -1753,12 +1761,30 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Data Manip
 - (NSArray *)_colorsFromJSON:(NSArray *)tintJSON {
+//	unsigned int outVal;
+//	NSScanner* scanner = [NSScanner scannerWithString:@"0x01FFFFAB"];
+//	[scanner scanHexInt:&outVal];
+	
+	unsigned int rDec;
+	unsigned int gDec;
+	unsigned int bDec;
+	NSScanner *scanner;
 	NSMutableArray *colors = [NSMutableArray arrayWithCapacity:[tintJSON count]];
-	for (NSDictionary *dict in tintJSON)
-		[colors addObject:@[[NSNumber numberWithFloat:[[dict objectForKey:@"r"] floatValue]],
-							[NSNumber numberWithFloat:[[dict objectForKey:@"g"] floatValue]],
-							[NSNumber numberWithFloat:[[dict objectForKey:@"b"] floatValue]],
+	for (NSDictionary *dict in tintJSON) {
+		scanner = [NSScanner scannerWithString:[@"0x" stringByAppendingString:[[[dict objectForKey:@"rgb"] substringFromIndex:1] substringWithRange:NSMakeRange(0, 2)]]];
+		[scanner scanHexInt:&rDec];
+		
+		scanner = [NSScanner scannerWithString:[@"0x" stringByAppendingString:[[[dict objectForKey:@"rgb"] substringFromIndex:1] substringWithRange:NSMakeRange(2, 2)]]];
+		[scanner scanHexInt:&gDec];
+
+		scanner = [NSScanner scannerWithString:[@"0x" stringByAppendingString:[[[dict objectForKey:@"rgb"] substringFromIndex:1] substringWithRange:NSMakeRange(4, 2)]]];
+		[scanner scanHexInt:&bDec];
+		
+		[colors addObject:@[[NSNumber numberWithFloat:rDec / 255.0],
+							[NSNumber numberWithFloat:gDec / 255.0],
+							[NSNumber numberWithFloat:bDec / 255.0],
 							[NSNumber numberWithFloat:[[dict objectForKey:@"a"] floatValue]]]];
+	}
 	return ([colors copy]);
 }
 

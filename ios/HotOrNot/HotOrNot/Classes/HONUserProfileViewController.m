@@ -26,6 +26,7 @@
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 #import "HONUserProfileGridView.h"
+#import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
@@ -39,6 +40,8 @@
 
 @interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -100,7 +103,7 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser:(BOOL)isRefresh {
+- (void)_retrieveUser {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 5],
 							 @"userID"	: [NSString stringWithFormat:@"%d", _userID]};
 	
@@ -127,9 +130,6 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != nil) {
-				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-				[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-				
 				_userVO = [HONUserVO userWithDictionary:userResult];
 				_isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 				
@@ -143,17 +143,8 @@
 					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_Active" : @"userNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 				}
-
-//				if (isRefresh) {
-					[self _makeAvatarImage];
-					
-					_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
-					_followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
-					_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
-//					_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 				
-//				} else
-					[self _retreiveSubscribees];
+				[self _retreiveSubscribees];
 			
 			} else {
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -180,7 +171,6 @@
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 		}
-		
 	}];
 }
 
@@ -269,10 +259,6 @@
 				if (vo != nil)
 					[_challenges addObject:vo];
 			}
-			
-			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-			_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
 			
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
@@ -474,6 +460,57 @@
 	}];
 }
 
+- (void)_removeChallengeWithID:(int)challengeID usingImagePrefix:(NSString *)imagePrefix {
+	NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", challengeID],
+							 @"imgURL"	: imagePrefix};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDeleteImage, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIDeleteImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil) {
+				for (UIImageView *imageView in _gridHolderView.subviews)
+					[imageView removeFromSuperview];
+				
+				[_gridHolderView removeFromSuperview];
+				_gridHolderView = nil;
+				
+				[self _retrieveUser];
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - Public APIs
 - (void)setUserID:(int)userID {
@@ -483,7 +520,7 @@
 	[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
 	[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
 	[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-	[self _retrieveUser:NO];
+	[self _retrieveUser];
 }
 
 #pragma mark - View lifecycle
@@ -601,7 +638,7 @@
 			}];
 		
 		} else {
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+//			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 			[self.view removeFromSuperview];
 		}
 	}
@@ -618,15 +655,13 @@
 }
 
 - (void)_goRefresh {
-	[self _retrieveUser:YES];
-	
 	for (UIImageView *imageView in _gridHolderView.subviews)
 		[imageView removeFromSuperview];
 	
 	[_gridHolderView removeFromSuperview];
 	_gridHolderView = nil;
 	
-	[self _retrieveChallenges];
+	[self _retrieveUser];
 }
 
 - (void)_goVerify {
@@ -782,14 +817,18 @@
 
 #pragma mark - Notifications
 - (void)_refreshProfile:(NSNotification *)notification {
-	//[self _goRefresh];
-	[self _retrieveUser:YES];
+	[self _retrieveUser];
 }
 
 
 #pragma mark - UI Presentation
 - (void)_makeUI {
 	[_headerView setTitle:_userVO.username];
+	
+	for (UIView *view in _scrollView.subviews)
+		[view removeFromSuperview];
+	
+	
 	[self _makeAvatarImage];
 	
 		
@@ -900,9 +939,6 @@
 		_followButton.frame = CGRectMake(0.0, 233.0, 320.0, 45.0);
 		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_nonActive" : @"followUser_nonActive"] forState:UIControlStateNormal];
 		[_followButton setBackgroundImage:[UIImage imageNamed:(_isFollowing) ? @"unfollow_Active" : @"followUser_Active"] forState:UIControlStateHighlighted];
-//		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
-//		[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
-
 		[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:_followButton];
 		
@@ -1149,6 +1185,24 @@
 	}
 }
 
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Remove Selfie%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
+	
+	_challengeVO = challengeVO;
+	_opponentVO = opponentVO;
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete your selfie?"
+														message:@""
+													   delegate:self
+											  cancelButtonTitle:@"Cancel"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:1];
+	[alertView show];
+}
+
 
 #pragma mark - SnapPreview Delegates
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -1191,6 +1245,15 @@
 		}];
 		
 	} else if (alertView.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Remove Selfie %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 1) {
+			[self _removeChallengeWithID:_challengeVO.challengeID usingImagePrefix:_opponentVO.imagePrefix];
+		}
+		
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

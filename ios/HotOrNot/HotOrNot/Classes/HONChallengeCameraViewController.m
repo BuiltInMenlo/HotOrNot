@@ -199,12 +199,12 @@
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			[UIView animateWithDuration:0.5 animations:^(void) {
-				_submitImageView.alpha = 0.0;
-			} completion:^(BOOL finished) {
-				[_submitImageView removeFromSuperview];
-				_submitImageView = nil;
-			}];
+//			[UIView animateWithDuration:0.5 animations:^(void) {
+//				_submitImageView.alpha = 0.0;
+//			} completion:^(BOOL finished) {
+//				[_submitImageView removeFromSuperview];
+//				_submitImageView = nil;
+//			}];
 			
 			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				if (_progressHUD == nil)
@@ -219,13 +219,17 @@
 				
 			} else {
 				_hasSubmitted = YES;
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				
+				if (_isUploadComplete) {
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 					
-//					if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
-				}];
+//						if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
+//							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
+					}];
+				}
 			}
 		}
 		
@@ -245,11 +249,7 @@
 }
 
 - (void)_finalizeUpload {
-	
-	NSString *urlPath = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							urlPath, @"imgURL",
-							nil];
+	NSDictionary *params = @{@"imgURL"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessChallengeImage, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -270,19 +270,7 @@
 			
 		} else {
 //			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			
-//			if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//				[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
-//					_previewView = (_isPreviewMirrored) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage];
-//					_previewView.delegate = self;
-//					_previewView.isFirstCamera = _isFirstCamera;
-//					_previewView.isJoinChallenge = (_selfieSubmitType == HONSelfieSubmitTypeReply);
-//					[_previewView showKeyboard];
-//					
-//					[self.view addSubview:_previewView];
-//				}];
-//			}
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);			
 		}
 		
 		if (_progressHUD != nil) {
@@ -445,7 +433,7 @@
 	
 	[self _cancelUpload];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 	}];
@@ -532,7 +520,7 @@
 
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
-	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
 	_isUploadComplete = (_uploadCounter == 2);
@@ -559,7 +547,8 @@
 		
 	if (_hasSubmitted) {
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			
 //			if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])

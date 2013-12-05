@@ -14,7 +14,7 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD___ 1
+#define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 #define __FORCE_REGISTER__ 0
@@ -51,6 +51,16 @@ typedef enum {
 	HONSnapOverlayTintLime			/** R:10.5% G:68.5% B:17.3% @ 33% - Lime Color **/
 } HONSnapOverlayTint;
 
+
+// Push types
+typedef enum {
+	HONPushTriggerChallengeDetailsType =	1,
+	HONPushTriggerVerifyAlertDetailsType,
+	HONPushTriggerUserProfileType,
+	HONPushTriggerAddContactsType
+} HONPushTriggerType;
+
+
 // api endpts
 extern NSString * const kConfigURL;
 extern NSString * const kConfigJSON;
@@ -86,6 +96,8 @@ extern NSString * const kAPIProcessUserImage;
 extern NSString * const kAPISuspendedAccount;
 extern NSString * const kAPIPurgeUser;
 extern NSString * const kAPIPurgeContent;
+extern NSString * const kAPIGetActivity;
+extern NSString * const kAPIDeleteImage;
 
 
 // view heights
@@ -93,6 +105,7 @@ const CGFloat kNavBarHeaderHeight;
 const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
+const CGFloat kDetailsHeroImageHeight;
 
 // animation params
 const CGFloat kHUDTime;

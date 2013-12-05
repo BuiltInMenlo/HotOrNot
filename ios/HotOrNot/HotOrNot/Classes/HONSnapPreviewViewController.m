@@ -492,8 +492,8 @@
 		
 		UIButton *disapproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		disapproveButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
-		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 		[disapproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:disapproveButton];
 		

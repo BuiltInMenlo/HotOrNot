@@ -17,6 +17,8 @@
 
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initAtPos:yPos forChallenges:challenges asPrimaryOpponent:opponentVO])) {
+		_participantGridViewType = (opponentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONParticipantGridViewTypeUsersProfile : HONParticipantGridViewTypeProfile;
+		
 		[self layoutGrid];
 	}
 	
@@ -43,13 +45,38 @@
 	NSLog(@"%@.layoutGrid withTotal[%d]", [[self class] description], [_gridItems count]);
 	[super layoutGrid];
 	
-	[_lpGestureRecognizer removeTarget:self action:@selector(_goLongPress:)];
-	[self removeGestureRecognizer:_lpGestureRecognizer];
+//	[_lpGestureRecognizer removeTarget:self action:@selector(goLongPress:)];
+//	[self removeGestureRecognizer:_lpGestureRecognizer];
 }
 
 //- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
 //	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
 //}
 
+
+- (void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_holderView];
+		NSLog(@"TOUCHPT:[%@]", NSStringFromCGPoint(touchPoint));
+		
+		NSDictionary *dict = [NSDictionary dictionary];
+		if (CGRectContainsPoint(_holderView.frame, touchPoint)) {
+			int row = ((int)(touchPoint.y - _holderView.frame.origin.y) / (kSnapThumbSize.height + 1.0));
+			int col = ((int)touchPoint.x / (kSnapThumbSize.width + 1.0));
+			int idx = (row * 4) + col;
+			
+			NSLog(@"COORDS FOR CELL:[%d] -> (%d, %d)", idx, col, row);
+			dict = (idx < [_gridItems count]) ? [_gridItems objectAtIndex:idx] : nil;
+			
+			_selectedChallengeVO = [dict objectForKey:@"challenge"];
+			_selectedOpponentVO = [dict objectForKey:@"participant"];
+		}
+		
+		if (dict != nil)
+			[self.delegate participantGridView:self removeParticipantItem:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+	}
+}
 
 @end

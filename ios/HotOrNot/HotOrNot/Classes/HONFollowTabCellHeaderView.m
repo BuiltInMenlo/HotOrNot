@@ -26,7 +26,7 @@
 		_opponentVO = opponentVO;
 		
 		_verifyTabInfo = [HONAppDelegate infoForABTab];
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
 		avatarImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:avatarImageView];
 		
@@ -49,30 +49,30 @@
 		[self addSubview:avatarButton];
 		
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(42.0, 2.0, 220.0, 19.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
-		[self addSubview:nameLabel];
-		
+//		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(42.0, 2.0, 220.0, 19.0)];
+//		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+//		nameLabel.backgroundColor = [UIColor clearColor];
+//		nameLabel.textColor = [UIColor whiteColor];
+//		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
+//		[self addSubview:nameLabel];
+//		
 //		CGSize size = [nameLabel.text boundingRectWithSize:CGSizeMake(220.0, 22.0)
 //												   options:NSStringDrawingTruncatesLastVisibleLine
 //												attributes:@{NSFontAttributeName:nameLabel.font}
 //												   context:nil].size;
 //		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, nameLabel.frame.size.height);
 		
-		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(42.0, 19.0, 240.0, 19.0)];
-		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 15.0, 240.0, 17.0)];
+		messageLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		messageLabel.textColor = [UIColor whiteColor];
 		messageLabel.backgroundColor = [UIColor clearColor];
 		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];
 		[self addSubview:messageLabel];
 		
-		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nameButton.frame = nameLabel.frame;
-		[nameButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:nameButton];
+//		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		nameButton.frame = nameLabel.frame;
+//		[nameButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:nameButton];
 	}
 	
 	return (self);

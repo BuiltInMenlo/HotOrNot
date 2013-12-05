@@ -8,6 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIImageView+AFNetworking.h"
+
+#import "HONAlertItemVO.h"
+
+@protocol HONAlertItemViewCellDelegate;
 @interface HONAlertItemViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+
+@property (nonatomic, assign) id <HONAlertItemViewCellDelegate> delegate;
+@property (nonatomic, retain) HONAlertItemVO *alertItemVO;
+@end
+
+
+@protocol HONAlertItemViewCellDelegate
+- (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO;
 @end

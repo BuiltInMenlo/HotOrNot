@@ -42,7 +42,6 @@
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
-@property (nonatomic, strong) UIButton *likeButton;
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
@@ -189,7 +188,6 @@
 			if (result != nil)
 				_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			
-			//[_timelineItemFooterView upvoteUser:userID onChallenge:_challengeVO];
 			[_timelineItemFooterView updateChallenge:_challengeVO];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:_challengeVO.dictionary];
 		}
@@ -360,7 +358,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (324.0 + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (kDetailsHeroImageHeight + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
 	_scrollView.contentOffset = CGPointZero;
 	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.pagingEnabled = NO;
@@ -427,7 +425,7 @@
 }
 
 - (void)_makeHero {
-	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 324.0)];
+	_heroHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kDetailsHeroImageHeight)];
 	_heroHolderView.clipsToBounds = YES;
 	[_contentHolderView addSubview:_heroHolderView];
 	
@@ -461,6 +459,27 @@
 								   failure:failureBlock];
 	
 	
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"captionBackground"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 24.0, 0.0, 24.0)]];
+	[_heroHolderView addSubview:subjectBGImageView];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 280.0, subjectBGImageView.frame.size.height)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:22];
+	subjectLabel.textColor = [UIColor whiteColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.textAlignment = NSTextAlignmentCenter;
+	subjectLabel.text = _challengeVO.subjectName;
+	[subjectBGImageView addSubview:subjectLabel];
+	
+	float maxWidth = 280.0;
+	CGSize size = [[NSString stringWithFormat:@"  %@  ", subjectLabel.text] boundingRectWithSize:CGSizeMake(maxWidth, 44.0)
+																						 options:NSStringDrawingTruncatesLastVisibleLine
+																					  attributes:@{NSFontAttributeName:subjectLabel.font}
+																						 context:nil].size;
+	if (size.width > maxWidth)
+		size = CGSizeMake(maxWidth + 15.0, size.height);
+	
+	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 2.0, size.width, subjectLabel.frame.size.height);
+	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), 44.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5), size.width, 44.0);
 	
 	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
@@ -476,41 +495,23 @@
 	creatorHeaderView.delegate = self;
 	[_contentHolderView addSubview:creatorHeaderView];
 	
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:324.0 - 40.0 withChallenge:_challengeVO];
+	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kDetailsHeroImageHeight - 56.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[_contentHolderView addSubview:_timelineItemFooterView];
-	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, 324.0 - 196.0, 64.0, 142.0)];
-	[_heroHolderView addSubview:buttonHolderView];
-	
-	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:joinButton];
-	
-	_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_likeButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
-	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-	[_likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Tapped"] forState:UIControlStateSelected];
-	[_likeButton addTarget:self action:@selector(_goLikeCreator) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:_likeButton];
 }
 
 - (void)_makeParticipantGrid {
 	
 	if ([_challengeVO.challengers count] == 0) {
 		UIButton *firstReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		firstReplyButton.frame = CGRectMake(0.0, 324.0, 320.0, 45.0);
+		firstReplyButton.frame = CGRectMake(0.0, kDetailsHeroImageHeight, 320.0, 45.0);
 		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_nonActive"] forState:UIControlStateNormal];
 		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_Active"] forState:UIControlStateHighlighted];
 		[firstReplyButton addTarget:self action:@selector(_goFirstReply) forControlEvents:UIControlEventTouchUpInside];
 		[_contentHolderView addSubview:firstReplyButton];
 	
 	} else {
-		_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:324.0 forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
+		_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:kDetailsHeroImageHeight forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
 		_participantsGridView.delegate = self;
 		[_contentHolderView addSubview:_participantsGridView];
 	}
@@ -705,9 +706,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
-	[_likeButton removeTarget:self action:@selector(_goLikeCreator) forControlEvents:UIControlEventTouchUpInside];
-	[_likeButton setSelected:YES];
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 	[self _upvoteChallenge:_challengeVO.creatorVO.userID];
 }
@@ -814,7 +812,7 @@
 }
 
 
-#pragma mark - HeroFooterView Delegates
+#pragma mark - TimelineItemFooterView Delegates
 - (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -836,6 +834,10 @@
 }
 
 - (void)footerView:(HONTimelineItemFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO {
+}
+
+- (void)footerView:(HONTimelineItemFooterView *)cell likeChallenge:(HONChallengeVO *)challengeVO {
+	[self _goLikeCreator];
 }
 
 

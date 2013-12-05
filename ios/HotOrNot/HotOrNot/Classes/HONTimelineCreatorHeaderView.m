@@ -23,7 +23,7 @@
 		//self.backgroundColor = [UIColor whiteColor];
 		_challengeVO = vo;
 		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
 		[self addSubview:avatarImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -47,11 +47,20 @@
 		
 		CGSize size;
 		CGFloat maxNameWidth = 120.0;
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, maxNameWidth, 18.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(46.0, 14.0, maxNameWidth, 18.0)];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.backgroundColor = [UIColor clearColor];
+		nameLabel.text = _challengeVO.creatorVO.username;
 		[self addSubview:nameLabel];
+		
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(254.0, 17.0, 50.0, 14.0)];
+		timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+		timeLabel.textAlignment = NSTextAlignmentRight;
+		timeLabel.textColor = [UIColor whiteColor];
+		timeLabel.backgroundColor = [UIColor clearColor];
+		timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
+		[self addSubview:timeLabel];
 		
 		if ([HONAppDelegate isIOS7]) {
 			size = [[_challengeVO.creatorVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
@@ -62,14 +71,15 @@
 		} //else
 //			size = [nameLabel.text sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		
-		nameLabel.text = (size.width >= maxNameWidth) ? _challengeVO.creatorVO.username : [_challengeVO.creatorVO.username stringByAppendingString:@"…"];
-		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), size.height);
+//		nameLabel.text = (size.width >= maxNameWidth) ? _challengeVO.creatorVO.username : [_challengeVO.creatorVO.username stringByAppendingString:@"…"];
+//		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), size.height);
 		
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		profileButton.frame = nameLabel.frame;
 		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:profileButton];
 		
+		/*
 		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
 		CGFloat maxSubjectWidth = 320.0 - ((nameLabel.frame.size.width + 90.0) + ((int)(emotionVO != nil) * 22.0));
 		
@@ -98,6 +108,7 @@
 			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlSmallWhite] placeholderImage:nil];
 			[self addSubview:emoticonImageView];
 		}
+		*/
 	}
 	
 	return (self);

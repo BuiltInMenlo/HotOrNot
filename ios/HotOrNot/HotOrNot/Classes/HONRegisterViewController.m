@@ -549,7 +549,7 @@
 				} completion:^(BOOL finished) {
 				}];
 				
-#if __DEV_BUILD___ == 1
+#if __DEV_BUILD__ == 1
 				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
 				easterEggButton.frame = CGRectMake(154.0, 16.0, 16.0, 8.0);
 				easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.875];
@@ -640,25 +640,25 @@
 		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
 		[_profileCameraOverlayView addSubview:_tintedMatteView];
 		
-		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_profileCameraOverlayView addSubview:headerBGView];
 		
 		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flipButton.frame = CGRectMake(-2.0, 0.0, 44.0, 44.0);
+		flipButton.frame = CGRectMake(3.0, 3.0, 44.0, 44.0);
 		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		[_profileCameraOverlayView addSubview:flipButton];
 		
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(138.0, 0.0, 44.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-		[_profileCameraOverlayView addSubview:cameraRollButton];
-
-		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 142.0, 320.0, 142.0)];
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(228.0, 3.0, 84.0, 44.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+		[_profileCameraOverlayView addSubview:skipButton];
+		
+		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 141.0, 320.0, 141.0)];
 		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_profileCameraOverlayView addSubview:gutterView];
 		
@@ -668,26 +668,27 @@
 		[_profileCameraOverlayView addSubview:_tutorialImageView];
 		
 		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_changeTintButton.frame = CGRectMake(20.0, [UIScreen mainScreen].bounds.size.height - 100.0, 74.0, 74.0);
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
+		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_nonActive"] forState:UIControlStateNormal];
+		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_Active"] forState:UIControlStateHighlighted];
 		[_changeTintButton addTarget:self action:@selector(_goChangeTint) forControlEvents:UIControlEventTouchUpInside];
 		[_profileCameraOverlayView addSubview:_changeTintButton];
 		
 		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 119.0, 94.0, 94.0);
+		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 118.0, 94.0, 94.0);
 		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
 		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
 		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		takePhotoButton.alpha = 0.0;
 		[_profileCameraOverlayView addSubview:takePhotoButton];
 		
-		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(228.0, 0.0, 84.0, 44.0);
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_nonActive"] forState:UIControlStateNormal];
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"skipThis_Active"] forState:UIControlStateHighlighted];
-		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-		[_profileCameraOverlayView addSubview:skipButton];
+		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraRollButton.frame = CGRectMake(249.0, [UIScreen mainScreen].bounds.size.height - 42.0, 64.0, 44.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
+		[_profileCameraOverlayView addSubview:cameraRollButton];
+		
 		
 //		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		cancelButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height + 300.0, 106.0, 24.0);

@@ -12,7 +12,6 @@
 
 
 @interface HONBasicParticipantGridView () {
-	UIView *_holderView;
 	int _participantCounter;
 }
 @end
@@ -58,14 +57,13 @@
 	}
 
 	// attach long tap
-	_lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	_lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(goLongPress:)];
 	_lpGestureRecognizer.minimumPressDuration = 0.25;
 	[self addGestureRecognizer:_lpGestureRecognizer];
 }
 
 - (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-	HONOpponentVO *vo = opponentVO;//([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix]) ? challengeVO.creatorVO : opponentVO;
-//	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@%@",  [vo.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
+//	NSLog(@"\t--GRID IMAGE(%d):[%@]", _participantCounter, [NSString stringWithFormat:@"%@",  [opponentVO.imagePrefix stringByReplacingOccurrencesOfString:@"https://d1fqnfrnudpaz6.cloudfront.net/" withString:@""]]);
 	
 	CGPoint pos = CGPointMake(kSnapThumbSize.width * (_participantCounter % 4), kSnapThumbSize.height * (_participantCounter / 4));
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapThumbSize.width, kSnapThumbSize.height)];
@@ -80,6 +78,10 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
+			if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile) {//(opponentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+				[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"deleteIcon"]]];
+			}
+			
 //			if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
 //				[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
 		}];
@@ -90,7 +92,7 @@
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:vo.imagePrefix];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]
 							placeholderImage:nil
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];
@@ -106,27 +108,8 @@
 
 
 #pragma mark - Navigation
--(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+-(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		CGPoint touchPoint = [lpGestureRecognizer locationInView:_holderView];
-//		NSLog(@"TOUCHPT:[%@]", NSStringFromCGPoint(touchPoint));
-		
-		NSDictionary *dict = [NSDictionary dictionary];
-		if (CGRectContainsPoint(_holderView.frame, touchPoint)) {
-			int row = ((int)(touchPoint.y - _holderView.frame.origin.y) / (kSnapThumbSize.height + 1.0));
-			int col = ((int)touchPoint.x / (kSnapThumbSize.width + 1.0));
-			int idx = (row * 4) + col;
-			
-			NSLog(@"COORDS FOR CELL:[%d] -> (%d, %d)", idx, col, row);
-			dict = (idx < [_gridItems count]) ? [_gridItems objectAtIndex:idx] : nil;
-			
-			_selectedChallengeVO = [dict objectForKey:@"challenge"];
-			_selectedOpponentVO = [dict objectForKey:@"participant"];
-		}
-		
-		if (dict != nil)
-			[self.delegate participantGridView:self showProfile:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
-		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
 }
@@ -136,10 +119,7 @@
 - (void)_goPreview:(id)sender {
 	
 	NSDictionary *dict = [_gridItems objectAtIndex:[sender tag]];
-//	_selectedChallengeVO = (HONChallengeVO *)[dict objectForKey:@"challenge"];
-//	_selectedOpponentVO = (HONOpponentVO *)[dict objectForKey:@"participant"];
-//	if (_selectedChallengeVO != nil && _selectedOpponentVO != nil)
-		[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+	[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
 }
 
 @end

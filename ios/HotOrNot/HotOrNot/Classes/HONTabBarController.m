@@ -106,8 +106,8 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Active"] forState:UIControlStateSelected];
 	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
 	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_nonActive"] forState:UIControlStateDisabled];
-//	[_tabHolderView addSubview:_exploreButton];
-//	[_exploreButton setTag:1];
+	[_tabHolderView addSubview:_exploreButton];
+	[_exploreButton setTag:1];
 	
 	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -118,7 +118,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_verifyButton];
-	[_verifyButton setTag:1];
+	[_verifyButton setTag:2];
 	
 	[_homeButton setSelected:YES];
 	[self _toggleTabButtonsEnabled:YES];
@@ -200,17 +200,17 @@ const CGSize kTabSize = {80.0, 50.0};
 			notificationName = @"HOME_TAB";
 			break;
 			
-//		case 1:
-//			[_homeButton setSelected:NO];
-//			[_verifyButton setSelected:NO];
-//			[_exploreButton setSelected:YES];
-//			
-//			totalKey = @"explore";
-//			mpEvent = @"Explore";
-//			notificationName = @"EXPLORE_TAB";
-//			break;
-			
 		case 1:
+			[_homeButton setSelected:NO];
+			[_verifyButton setSelected:NO];
+			[_exploreButton setSelected:YES];
+			
+			totalKey = @"explore";
+			mpEvent = @"Explore";
+			notificationName = @"EXPLORE_TAB";
+			break;
+			
+		case 2:
 			[_homeButton setSelected:NO];
 			[_verifyButton setSelected:YES];
 			[_exploreButton setSelected:NO];
