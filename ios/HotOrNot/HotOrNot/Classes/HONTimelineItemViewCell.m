@@ -99,15 +99,10 @@
 		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
 		_heroImageView.image = image;
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		gradientImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"overlayFade-568h@2x" : @"overlayFade"];
-//		[_heroHolderView addSubview:gradientImageView];
-		
 //		if ([HONAppDelegate isRetina4Inch]) {
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				_heroImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
-				gradientImageView.alpha = 1.0;
 				[imageLoadingView stopAnimating];
 				[imageLoadingView removeFromSuperview];
 			}];

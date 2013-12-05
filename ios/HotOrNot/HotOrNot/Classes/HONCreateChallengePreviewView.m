@@ -138,11 +138,11 @@
 	_headerBGImageView.userInteractionEnabled = YES;
 	[self addSubview:_headerBGImageView];
 		
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, -2.0, 230.0, 50.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -2.0, 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-	_placeholderLabel.textColor = [HONAppDelegate honGreyTextColor];
-	_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
+	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	_placeholderLabel.textColor = [HONAppDelegate honBlueTextColor];
+	_placeholderLabel.text = @"how do you feel?";//(_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
 	[_headerBGImageView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
@@ -152,14 +152,14 @@
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[HONAppDelegate honBlueTextColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-	_subjectTextField.text = @"";//(_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : _subjectName;
+	_subjectTextField.text = @"";
 	_subjectTextField.delegate = self;
 	[_headerBGImageView addSubview:_subjectTextField];
 	
 	_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cancelButton.frame = CGRectMake(248.0, 0.0, 64.0, 44.0);
+	_cancelButton.frame = CGRectMake(244.0, 3.0, 64.0, 44.0);
 	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	_cancelButton.alpha = 0.75;

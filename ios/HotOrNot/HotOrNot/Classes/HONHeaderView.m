@@ -21,7 +21,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"headerLogo_volley" : @"headerLogo_selfieclub"]];
-		logoImageView.frame = CGRectOffset(logoImageView.frame, 88.0, 20.0);
+		logoImageView.frame = CGRectOffset(logoImageView.frame, 88.0, 18.0);
 		[self addSubview:logoImageView];
 	}
 	
@@ -35,7 +35,7 @@
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 29.0, 200.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:20];
+		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:22];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;

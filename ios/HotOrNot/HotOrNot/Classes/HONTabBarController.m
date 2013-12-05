@@ -22,7 +22,7 @@ const CGSize kTabSize = {80.0, 50.0};
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, strong) UIView *tabBarView;
 @property (nonatomic, retain) UIButton *homeButton;
-@property (nonatomic, retain) UIButton *exploreButton;
+@property (nonatomic, retain) UIButton *activityButton;
 @property (nonatomic, retain) UIButton *verifyButton;
 @property (nonatomic, retain) UIButton *avatarNeededButton;
 @end
@@ -99,15 +99,15 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_tabHolderView addSubview:_homeButton];
 	[_homeButton setTag:0];
 	
-	_exploreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_exploreButton.frame = CGRectMake(40.0 + kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_nonActive"] forState:UIControlStateNormal];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Tapped"] forState:UIControlStateHighlighted];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Active"] forState:UIControlStateSelected];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_exploreButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_exploreButton_nonActive"] forState:UIControlStateDisabled];
-	[_tabHolderView addSubview:_exploreButton];
-	[_exploreButton setTag:1];
+	_activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_activityButton.frame = CGRectMake(40.0 + kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
+	[_tabHolderView addSubview:_activityButton];
+	[_activityButton setTag:1];
 	
 	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -193,7 +193,7 @@ const CGSize kTabSize = {80.0, 50.0};
 		case 0:
 			[_homeButton setSelected:YES];
 			[_verifyButton setSelected:NO];
-			[_exploreButton setSelected:NO];
+			[_activityButton setSelected:NO];
 			
 			totalKey = @"timeline";
 			mpEvent = @"Timeline";
@@ -203,7 +203,7 @@ const CGSize kTabSize = {80.0, 50.0};
 		case 1:
 			[_homeButton setSelected:NO];
 			[_verifyButton setSelected:NO];
-			[_exploreButton setSelected:YES];
+			[_activityButton setSelected:YES];
 			
 			totalKey = @"explore";
 			mpEvent = @"Explore";
@@ -213,7 +213,7 @@ const CGSize kTabSize = {80.0, 50.0};
 		case 2:
 			[_homeButton setSelected:NO];
 			[_verifyButton setSelected:YES];
-			[_exploreButton setSelected:NO];
+			[_activityButton setSelected:NO];
 			
 			totalKey = @"verify";
 			mpEvent = @"Verify";
@@ -224,19 +224,18 @@ const CGSize kTabSize = {80.0, 50.0};
 			break;
 	}
 	
-	notificationName = [@"SELECTED_" stringByAppendingString:notificationName];
 	if (touch.tapCount == 1) {
 		mpEvent = [@"Tab Bar - " stringByAppendingString:mpEvent];
+		notificationName = [@"SELECTED_" stringByAppendingString:notificationName];
 		
 	} else {
 		mpEvent = [@"Tab Bar Double Tap - " stringByAppendingString:mpEvent];
-		notificationName = [@"TARE" stringByAppendingString:notificationName];
+		notificationName = [@"TARE_" stringByAppendingString:notificationName];
 	}
-		
+	
 	[[Mixpanel sharedInstance] track:mpEvent properties:@{@"user"	: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]}];
 	
 	[HONAppDelegate incTotalForCounter:totalKey];
-
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
 	

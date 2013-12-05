@@ -23,7 +23,7 @@
 @protocol HONSnapCameraOverlayViewDelegate
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView withOverlayTint:(HONSnapOverlayTint )snapOverlayTint;
+- (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView;

@@ -348,12 +348,11 @@
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																message:@"Cannot send email from this device!"
-															   delegate:nil
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:nil];
-			[alertView show];
+			[[[UIAlertView alloc] initWithTitle:@"Email Error"
+										message:@"Cannot send email from this device!"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
 		}
 		
 	} else if (indexPath.row == 4) {

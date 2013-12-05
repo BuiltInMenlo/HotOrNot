@@ -265,10 +265,10 @@
 	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
 	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
 	_emptySetImageView.hidden = YES;
-	[_tableView addSubview:_emptySetImageView];
+//	[_tableView addSubview:_emptySetImageView];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Alerts"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Activity"];
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -318,7 +318,7 @@
 }
 
 - (void)_challengeDetails {
-	[[Mixpanel sharedInstance] track:@"Verify A/B - Profile"
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -333,7 +333,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Create Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Activity Alerts - Create Volley%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -354,7 +354,7 @@
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Verify A/B - Refresh"
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -377,7 +377,7 @@
 }
 
 - (void)_goAddContacts {
-	[[Mixpanel sharedInstance] track:@"Verify A/B - Invite Friends"
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -414,10 +414,10 @@
 - (void)_selectedExploreTab:(NSNotification *)notification {
 	NSLog(@"_selectedExploreTab");
 	
-	NSLog(@"EXPLORE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"verify"]);
+	NSLog(@"EXPLORE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"explore"]);
 	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_explore-568h@2x" : @"tutorial_explore"];
+		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
 		
@@ -437,14 +437,8 @@
 		}
 	}
 	
-	_isRefreshing = YES;
-	[self _retrieveAlerts];
-	
-	//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	//	_progressHUD.minShowTime = kHUDTime;
-	//	_progressHUD.taskInProgress = YES;
+//	_isRefreshing = YES;
+//	[self _retrieveAlerts];
 }
 
 - (void)_refreshExploreTab:(NSNotification *)notification {
@@ -511,7 +505,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ([_alertItems count]);
+	return ([_alertItems count] + 3);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -521,14 +515,20 @@
 - (UITableViewCell *)tableView :(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	NSLog(@"cellForRowAtIndexPath[%d]", indexPath.section);
-	
 	if (cell == nil)
 		cell = [[HONAlertItemViewCell alloc] init];
 	
-	cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.section];
-	cell.delegate = self;
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	if (indexPath.section < [_alertItems count]) {
+		cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.section];
+		cell.delegate = self;
+	
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+		
+	} else {
+		[cell removeChevron];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	}
+	
 	
 	return (cell);
 }
@@ -536,7 +536,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (49.0 + (([_alertItems count] > 9 && indexPath.section == [_alertItems count] - 1) * 51.0));
+	return (49.0);// + (([_alertItems count] > 9 && indexPath.section == [_alertItems count] - 1) * 51.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -555,7 +555,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Explore - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Activity Alerts - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		

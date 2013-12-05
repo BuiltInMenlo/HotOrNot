@@ -82,7 +82,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 	label.textColor = [HONAppDelegate honGreyTextColor]; //	[HONAppDelegate honPercentGreyscaleColor:0.467]
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (_isJoinVolley) ? @"Reply hashtags" : @"Trending hashtags";
+	label.text = (_isJoinVolley) ? @"Reply" : @"Trending";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);

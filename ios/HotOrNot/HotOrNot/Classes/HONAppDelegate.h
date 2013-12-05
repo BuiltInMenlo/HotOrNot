@@ -43,15 +43,6 @@ typedef enum {
 } HONPushType;
 
 
-typedef enum {
-	HONSnapOverlayTintClear	= 0,	/** R:0.0% G:0.0% B:0.0% @ 0% - Clear color **/
-	HONSnapOverlayTintBlue,			/** R:1.2% G:33.3% B:82.7% @ 33% - Blue color **/
-	HONSnapOverlayTintFuschia,		/** R:45.1% G:14.1% B:44.3% @ 33% - Fuschia Color**/
-	HONSnapOverlayTintRed,			/** R:73.1% G:22.4% B:12.3% @ 33% - Red Color **/
-	HONSnapOverlayTintLime			/** R:10.5% G:68.5% B:17.3% @ 33% - Lime Color **/
-} HONSnapOverlayTint;
-
-
 // Push types
 typedef enum {
 	HONPushTriggerChallengeDetailsType =	1,
@@ -98,6 +89,7 @@ extern NSString * const kAPIPurgeUser;
 extern NSString * const kAPIPurgeContent;
 extern NSString * const kAPIGetActivity;
 extern NSString * const kAPIDeleteImage;
+extern NSString * const kAPIMakeShoutout;
 
 
 // view heights

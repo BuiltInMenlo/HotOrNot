@@ -525,7 +525,6 @@
 }
 
 - (void)_selectedHomeTab:(NSNotification *)notification {
-	NSLog(@"_selectedHomeTab");
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	//[self _retrieveChallenges];
 	
@@ -556,6 +555,8 @@
 }
 
 - (void)_tareHomeTab:(NSNotification *)notification {
+	NSLog(@"__[_tareHomeTab]__");
+	
 	[_tableView setContentOffset:CGPointZero animated:YES];
 }
 

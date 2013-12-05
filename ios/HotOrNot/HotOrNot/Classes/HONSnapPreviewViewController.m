@@ -392,19 +392,18 @@
 	[self.view addSubview:_closeButton];
 	
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)];
-	headerView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	[self.view addSubview:headerView];
 	
 	
 	//NSLog(@"AVATAR:[%@]", [_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 30.0, 30.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:[_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[headerView addSubview:avatarImageView];
 	
 	CGSize size;
-	CGFloat maxNameWidth = (_isVerify) ? 260.0 : 110.0;
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(44.0, 10.0, maxNameWidth, 18.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+	CGFloat maxNameWidth = (_isVerify) ? 255.0 : 105.0;
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 15.0, maxNameWidth, 18.0)];
+	nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	[headerView addSubview:nameLabel];
@@ -422,8 +421,8 @@
 	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), nameLabel.frame.size.height);
 	
 	if (!_isVerify) {
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 10.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
-		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 15.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
+		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _opponentVO.subjectName;
@@ -465,7 +464,7 @@
 	[headerView addSubview:profileButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(253.0, -3.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(253.0, 2.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];

@@ -21,7 +21,7 @@
 @end
 
 @protocol HONAvatarCameraOverlayDelegate
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withOverlayTint:(HONSnapOverlayTint )snapOverlayTint;
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView;

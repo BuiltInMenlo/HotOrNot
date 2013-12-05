@@ -22,7 +22,7 @@
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIView *blackMatteView;
-@property (nonatomic) HONSnapOverlayTint snapOverlayTint;
+@property (nonatomic) int tintIndex;
 @end
 
 @implementation HONAvatarCameraOverlayView
@@ -33,7 +33,7 @@
 #pragma mark - View Lifecycle
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_snapOverlayTint = HONSnapOverlayTintClear;
+		_tintIndex = 0;
 		
 		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
 		[self addSubview:_previewHolderView];
@@ -46,7 +46,7 @@
 		[self addSubview:_irisView];
 		
 		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
-		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
+		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 		[self addSubview:_tintedMatteView];
 		
 		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
@@ -209,7 +209,7 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePicture:self withOverlayTint:_snapOverlayTint];
+	[self.delegate cameraOverlayViewTakePicture:self withTintIndex:_tintIndex];
 }
 
 - (void)_goCancel {
@@ -257,11 +257,11 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	_snapOverlayTint = ++_snapOverlayTint % ([[HONAppDelegate colorsForOverlayTints] count] - 1);
+	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
 	[UIView beginAnimations:@"fade" context:nil];
 	[UIView setAnimationDuration:0.33];
-	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint]];
+	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex]];
 	[UIView commitAnimations];
 }
 

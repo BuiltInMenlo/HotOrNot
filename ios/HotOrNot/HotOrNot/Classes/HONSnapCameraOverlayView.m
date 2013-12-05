@@ -29,7 +29,7 @@
 @property (nonatomic, strong) UIButton *changeTintButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic) HONSnapOverlayTint snapOverlayTint;
+@property (nonatomic) int tintIndex;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
@@ -39,14 +39,14 @@
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {//[UIColor colorWithRed:0.012 green:0.333 blue:0.827 alpha:1.0]
 		
-		_snapOverlayTint = HONSnapOverlayTintClear;
+		_tintIndex = 0;
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
 		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
-		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
+		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 		[self addSubview:_tintedMatteView];
 		
 		_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
@@ -123,7 +123,7 @@
 //		_takePhotoButton.hidden = YES;
 		
 		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"tutorial_camera_volley" : @"tutorial_camera_selfieclub"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 186.0);
+		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 185.0);
 		_tutorialImageView.alpha = 0.0;
 		[self addSubview:_tutorialImageView];
 	
@@ -206,11 +206,11 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePhoto:self withOverlayTint:_snapOverlayTint];
+	[self.delegate cameraOverlayViewTakePhoto:self withTintIndex:_tintIndex];
 }
 
 - (void)_goChangeTint {
-	_snapOverlayTint = ++_snapOverlayTint % ([[HONAppDelegate colorsForOverlayTints] count] - 1);
+	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
 	[[Mixpanel sharedInstance] track:@"Create Volley - Change Tint Overlay"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -221,7 +221,7 @@
 	
 	[UIView beginAnimations:@"fade" context:nil];
 	[UIView setAnimationDuration:0.33];
-	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint]];
+	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex]];
 	[UIView commitAnimations];
 }
 

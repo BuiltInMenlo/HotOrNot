@@ -26,7 +26,7 @@
 @property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *filename;
-@property (nonatomic) HONSnapOverlayTint snapOverlayTint;
+@property (nonatomic) int tintIndex;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
@@ -113,15 +113,15 @@
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
 				}
-					
+				
 				[HONAppDelegate writeUserInfo:userResult];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 //				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-					}];
+					[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 //				}];
 				
 			} else {
@@ -218,7 +218,7 @@
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
 	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
+	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 	[canvasView addSubview:overlayTintView];
 	
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
@@ -252,6 +252,10 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+	
+//	if (viewController.navigationItem.hidesBackButton || viewController.navigationItem.rightBarButtonItem == nil) {
+//        [viewController.navigationController.navigationBar setNeedsLayout];
+//    }
 }
 
 
@@ -299,13 +303,13 @@
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withOverlayTint:(HONSnapOverlayTint)snapOverlayTint {
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
 	[[Mixpanel sharedInstance] track:@"Change Avatar - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d", snapOverlayTint], @"tint", nil]];
+									  [NSString stringWithFormat:@"%d", tintIndex], @"tint", nil]];
 	
-	_snapOverlayTint = snapOverlayTint;
+	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;

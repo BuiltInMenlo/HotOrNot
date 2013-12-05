@@ -37,7 +37,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *challengeParams;
 @property (nonatomic, strong) UIImageView *submitImageView;
-@property (nonatomic) HONSnapOverlayTint snapOverlayTint;
+@property (nonatomic) int tintIndex;
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL isPreviewMirrored;
@@ -221,8 +221,10 @@
 				_hasSubmitted = YES;
 				
 				if (_isUploadComplete) {
+					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+					
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 					
@@ -439,14 +441,13 @@
 	}];
 }
 
-- (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView withOverlayTint:(HONSnapOverlayTint )snapOverlayTint {
+- (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d", snapOverlayTint], @"tint", nil]];
+									  [NSString stringWithFormat:@"%d", tintIndex], @"tint", nil]];
 	
-	_snapOverlayTint = snapOverlayTint;
-	
+	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -466,6 +467,26 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
+	
+	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
+	
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && self.imagePickerController.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+		float scale = ([HONAppDelegate isRetina4Inch]) ? 1.55f : 1.25f;
+		
+		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+		self.imagePickerController.showsCameraControls = NO;
+		self.imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
+		self.imagePickerController.cameraViewTransform = CGAffineTransformScale(self.imagePickerController.cameraViewTransform, scale, scale);
+		self.imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		self.imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		
+		_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_cameraOverlayView.delegate = self;
+		
+		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
+			[self _showOverlay];
+		}];
+	}
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
@@ -546,8 +567,10 @@
 	}
 		
 	if (_hasSubmitted) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+		
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			
@@ -594,10 +617,11 @@
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
 	
 	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
+	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 	[canvasView addSubview:overlayTintView];
 	
 	_processedImage = [HONImagingDepictor createImageFromView:canvasView];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	
 	_previewView = (_isPreviewMirrored) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage];
 	_previewView.delegate = self;

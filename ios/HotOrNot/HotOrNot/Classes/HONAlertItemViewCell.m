@@ -39,6 +39,11 @@
 	return (self);
 }
 
+- (void)removeChevron {
+	[_chevronImageView removeFromSuperview];
+	_chevronImageView = nil;
+}
+
 
 - (void)setAlertItemVO:(HONAlertItemVO *)alertItemVO {
 	NSLog(@"¡¡setAlertItemVO!! [%@]", alertItemVO.dictionary);

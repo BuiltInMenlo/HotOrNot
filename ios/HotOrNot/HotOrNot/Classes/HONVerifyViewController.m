@@ -91,10 +91,9 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetVerifyList);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetVerifyList, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIGetVerifyList parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -169,37 +168,12 @@
 	}];
 }
 
-- (void)_updateChallengeAsSeen:(int)challengeID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 6], @"action",
-									[NSString stringWithFormat:@"%d",challengeID], @"challengeID",
-									nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"], params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			NSLog(@"AFNetworking HONChallengesViewController: %@", result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-	}];
-}
-
 - (void)_addFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"0", @"auto", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID],
+							 @"auto"	: @"0"};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIAddFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -242,14 +216,12 @@
 }
 
 - (void)_verifyUser:(int)userID asLegit:(BOOL)isApprove {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 10], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"targetID",
-							[NSString stringWithFormat:@"%d", (int)isApprove], @"approves",
-							nil];
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"	: [NSString stringWithFormat:@"%d", userID],
+							 @"approves"	: [NSString stringWithFormat:@"%d", (int)isApprove]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -286,6 +258,93 @@
 		_progressHUD = nil;
 	}];
 }
+
+- (void)_skipUser:(int)userID {
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"	: [NSString stringWithFormat:@"%d", userID],
+							 @"approves"	: [NSString stringWithFormat:@"%d", -1]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+			
+		} else {
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_sendShoutoutForChallenge:(int)challengeID {
+	NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", challengeID],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIMakeShoutout, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIMakeShoutout parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 - (void)_cacheNextImagesWithRange:(NSRange)range {
 	NSLog(@"RANGE:[%@]", NSStringFromRange(range));
@@ -621,17 +680,9 @@
 			[self _addFriend:challengeVO.creatorVO.userID];
 		
 		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
-
 		[self _removeCellForChallenge:challengeVO];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:@"Cancel"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:8];
-//		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -644,30 +695,46 @@
 	}
 }
 
-- (void)verifyViewCellDisprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)verifyViewCellSkip:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Skip%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	[self _skipUser:challengeVO.creatorVO.userID];
+	[self _removeCellForChallenge:challengeVO];
+}
+
+- (void)verifyViewCellShoutout:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Shoutout%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	[self _sendShoutoutForChallenge:challengeVO.challengeID];
+	[self _removeCellForChallenge:challengeVO];
+}
+
+- (void)verifyViewCellMore:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - More%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Yes", nil];
+														otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
 		[actionSheet setTag:1];
 		[actionSheet showInView:self.view];
-		
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:@"Cancel"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:9];
-//		[alertView show];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -680,23 +747,12 @@
 	}
 }
 
-- (void)verifyViewCellSkip:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Skip%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-	
-	[self _removeCellForChallenge:challengeVO];
-}
-
 
 #pragma mark - FollowCell Delegates
 - (void)followViewCell:(HONFollowTabViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
@@ -724,7 +780,7 @@
 
 - (void)followViewCellShowPreview:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	[[Mixpanel sharedInstance] track:@"Follow A/B - Show Profile"
+	[[Mixpanel sharedInstance] track:@"Verify A/B - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -753,20 +809,12 @@
 - (void)followViewCellApprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[_tabInfo objectForKey:@"yay_format"], _challengeVO.creatorVO.username]
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:@"Cancel"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:8];
-//		[alertView show];
-		
 		if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
 			[self _addFriend:challengeVO.creatorVO.userID];
 		
@@ -788,7 +836,7 @@
 - (void)followViewCellDisprove:(HONFollowTabViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - No%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - No%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -970,7 +1018,7 @@
 		HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
 		_challengeVO = challengeVO;
 		
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -1036,12 +1084,15 @@
 		}
 	
 	} else if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Confirm" : @"Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - More %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
 		if (buttonIndex == 0) {
+			[self _addFriend:_challengeVO.creatorVO.userID];
+			[self _removeCellForChallenge:_challengeVO];
+			
+		} else if (buttonIndex == 1) {
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
 									   delegate:nil
@@ -1049,9 +1100,8 @@
 							  otherButtonTitles:nil] show];
 			
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+			[self _removeCellForChallenge:_challengeVO];
 		}
-		
-		[self _removeCellForChallenge:_challengeVO];
 	}
 }
 
@@ -1138,39 +1188,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	
-//	} else if (alertView.tag == 8) {
-//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-//		
-//		if (buttonIndex == 1) {
-//			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
-//				[self _addFriend:_challengeVO.creatorVO.userID];
-//		
-//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-//
-//			UITableViewCell *tableCell;
-//			for (HONFollowTabViewCell *cell in _cells) {
-//				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-//					tableCell = (UITableViewCell *)cell;
-//					break;
-//				}
-//			}
-//			
-//			for (HONChallengeVO *vo in _challenges) {
-//				if (_challengeVO.challengeID == vo.challengeID) {
-//					[_challenges removeObject:vo];
-//					break;
-//				}
-//			}
-//			
-//			[_tableView beginUpdates];
-//			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
-//			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-//			[_tableView endUpdates];
-//		}
-//		
+	} else if (alertView.tag == 8) {
 	} else if (alertView.tag == 9) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1180,32 +1198,10 @@
 		if (buttonIndex == 1) {
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 			[self _removeCellForChallenge:_challengeVO];
-			
-//			UITableViewCell *tableCell;
-//			for (HONFollowTabViewCell *cell in _cells) {
-//				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-//					tableCell = (UITableViewCell *)cell;
-//					break;
-//				}
-//			}
-//			
-//			for (HONChallengeVO *vo in _challenges) {
-//				if (_challengeVO.challengeID == vo.challengeID) {
-//					[_challenges removeObject:vo];
-//					break;
-//				}
-//			}
-//			
-//			[_tableView beginUpdates];
-//			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
-//			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-//			[_tableView endUpdates];
-//			
-//			_emptyImageView.hidden = [_challenges count] > 0;
 		}
 	
 	} else if (alertView.tag == 10) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -1213,28 +1209,6 @@
 		if (buttonIndex == 1) {
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 			[self _removeCellForChallenge:_challengeVO];
-			
-//			UITableViewCell *tableCell;
-//			for (HONFollowTabViewCell *cell in _cells) {
-//				if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-//					tableCell = (UITableViewCell *)cell;
-//					break;
-//				}
-//			}
-//			
-//			for (HONChallengeVO *vo in _challenges) {
-//				if (_challengeVO.challengeID == vo.challengeID) {
-//					[_challenges removeObject:vo];
-//					break;
-//				}
-//			}
-//			
-//			[_tableView beginUpdates];
-//			NSIndexPath *indexPath = [_tableView indexPathForCell:tableCell];
-//			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-//			[_tableView endUpdates];
-//			
-//			_emptyImageView.hidden = [_challenges count] > 0;
 		}
 	}
 }

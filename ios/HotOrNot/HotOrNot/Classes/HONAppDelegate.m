@@ -27,8 +27,9 @@
 #import "TSTapstream.h"
 #import "UAConfig.h"
 #import "UAirship.h"
-#import "UAPush.h"
 #import "UAAnalytics.h"
+#import "UAPush.h"
+#import "UATagUtils.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
@@ -107,6 +108,7 @@ NSString * const kAPIPurgeUser = @"users/purge";
 NSString * const kAPIPurgeContent = @"users/purgecontent";
 NSString * const kAPIGetActivity = @"users/getactivity";
 NSString * const kAPIDeleteImage = @"challenges/deleteimage";
+NSString * const kAPIMakeShoutout = @"challenges/shoutout";
 
 
 // view heights
@@ -567,16 +569,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSMutableArray *overlayTints = [NSMutableArray arrayWithCapacity:[[[NSUserDefaults standardUserDefaults] objectForKey:@"overlay_tint_rbgas"] count]];
 	for (NSArray *rgba in [[NSUserDefaults standardUserDefaults] objectForKey:@"overlay_tint_rbgas"])
-		[overlayTints addObject:[UIColor colorWithRed:[[rgba objectAtIndex:0] floatValue] green:[[rgba objectAtIndex:1] floatValue] blue:[[rgba objectAtIndex:2] floatValue] alpha:[[rgba objectAtIndex:2] floatValue]]];
+		[overlayTints addObject:[UIColor colorWithRed:[[rgba objectAtIndex:0] floatValue] green:[[rgba objectAtIndex:1] floatValue] blue:[[rgba objectAtIndex:2] floatValue] alpha:[[rgba objectAtIndex:3] floatValue]]];
 	
 	return ([overlayTints copy]);
-	
-//	return (@[[UIColor clearColor],
-//			   [UIColor colorWithRed:0.012 green:0.333 blue:0.827 alpha:1.0],   // blue
-//			   [UIColor colorWithRed:0.451 green:0.141 blue:0.443 alpha:1.0],   // fuschia
-//			   [UIColor colorWithRed:0.731 green:0.224 blue:0.123 alpha:1.0],   // red
-//			   [UIColor colorWithRed:0.105 green:0.685 blue:0.173 alpha:1.0]]); // green
-	
 }
 
 + (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID {
@@ -833,7 +828,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
+//			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {
 				if (_progressHUD == nil)
@@ -1340,15 +1335,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_styleUIAppearance {
 	NSShadow *shadow = [NSShadow new];
 	[shadow setShadowColor:[UIColor clearColor]];
-	[shadow setShadowOffset:CGSizeMake(0.0f, 0.0f)];
+	[shadow setShadowOffset:CGSizeZero];
 	
 	//[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
 	
 	if ([HONAppDelegate isIOS7])
-		[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honBlueTextColor]];
+		[[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.176 green:0.294 blue:0.549 alpha:1.0]];
 	
 	else
-		[[UINavigationBar appearance] setTintColor:[HONAppDelegate honBlueTextColor]];
+		[[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.176 green:0.294 blue:0.549 alpha:1.0]];
 	
 	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
@@ -1433,6 +1428,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d", [HONAppDelegate totalForCounter:@"boot"]], @"boot_total", nil]];
 		
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"main_bg-568h@2x" : @"main_bg"];
+		[self.window addSubview:bgImageView];
 		
 		self.tabBarController = [[HONTabBarController alloc] init];
 		self.tabBarController.delegate = self;
@@ -1441,7 +1439,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 //		self.window.rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
 		[self _initUrbanAirship];
@@ -1730,6 +1727,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
 	[UAPush shared].pushNotificationDelegate = self;
 	
+	NSMutableArray *tags = [NSMutableArray arrayWithArray:[UATagUtils createTags:(UATagTypeTimeZone | UATagTypeLanguage | UATagTypeCountry)]];
+	[tags addObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+	[tags addObject:[HONAppDelegate deviceModel]];
+	[tags addObject:[[UIDevice currentDevice] systemVersion]];
+	
+	[UAPush shared].tags = [NSArray arrayWithArray:tags];
+	[[UAPush shared] updateRegistration];
+	
 	[HONAppDelegate writeDeviceToken:@""];
 }
 
@@ -1944,7 +1949,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"\nAWS didCompleteWithResponse:\n[%@] - %@", tag, request.url);
 	
 	if ([[tag objectAtIndex:1] isEqualToString:kSnapLargeSuffix]) {
-		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"])
+			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		
 		NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:[NSString stringWithFormat:@"%@", request.url]]};
 		VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);

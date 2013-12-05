@@ -42,7 +42,6 @@
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
-@property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
@@ -395,22 +394,22 @@
 	[super viewDidAppear:animated];
 //	[_bgHolderView addSubview:_bgImageView];
 	
-	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = _tutorialImageView.frame;
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
+//	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)];
+//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		
+//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.frame = _tutorialImageView.frame;
+//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:closeButton];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_tutorialImageView.alpha = 1.0;
+//		}];
+//	}
 }
 
 

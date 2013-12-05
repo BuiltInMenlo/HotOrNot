@@ -33,6 +33,8 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, kSnapThumbSize.height * (([challenges count] / 4) + 1))])) {
 		_challenges = [challenges mutableCopy];
 		_heroOpponentVO = opponentVO;
+		
+		self.backgroundColor = [UIColor purpleColor];
 	}
 	
 	return (self);
@@ -70,7 +72,13 @@
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbSize.width, kSnapThumbSize.height)];
 	[imageHolderView addSubview:imageView];
-	//imageView.alpha = 0.0;
+	
+	UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	deleteButton.frame = CGRectMake(55.0, 55.0, 24.0, 24.0);
+	[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteIcon_nonActive"] forState:UIControlStateNormal];
+	[deleteButton setBackgroundImage:[UIImage imageNamed:@"deleteIcon_Active"] forState:UIControlStateHighlighted];
+	[deleteButton addTarget:self action:@selector(_goDelete:) forControlEvents:UIControlEventTouchUpInside];
+	[deleteButton setTag:_participantCounter];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
@@ -79,7 +87,7 @@
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 			if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile) {//(opponentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-				[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"deleteIcon"]]];
+				[imageHolderView addSubview:deleteButton];
 			}
 			
 //			if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
@@ -117,9 +125,16 @@
 
 #pragma mark - Navigation
 - (void)_goPreview:(id)sender {
-	
+	NSLog(@"_goPreview:[%@]", sender);
 	NSDictionary *dict = [_gridItems objectAtIndex:[sender tag]];
 	[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+}
+
+- (void)_goDelete:(id)sender {
+	NSLog(@"_goDelete:[%@]", sender);
+	NSDictionary *dict = [_gridItems objectAtIndex:[sender tag]];
+	
+	[self.delegate participantGridView:self removeParticipantItem:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
 }
 
 @end

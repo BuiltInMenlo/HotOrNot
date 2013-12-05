@@ -45,14 +45,9 @@
 	NSLog(@"%@.layoutGrid withTotal[%d]", [[self class] description], [_gridItems count]);
 	[super layoutGrid];
 	
-//	[_lpGestureRecognizer removeTarget:self action:@selector(goLongPress:)];
-//	[self removeGestureRecognizer:_lpGestureRecognizer];
+	[_lpGestureRecognizer removeTarget:self action:@selector(goLongPress:)];
+	[self removeGestureRecognizer:_lpGestureRecognizer];
 }
-
-//- (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO {
-//	return ([super createItemForParticipant:opponentVO fromChallenge:challengeVO]);
-//}
-
 
 - (void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {

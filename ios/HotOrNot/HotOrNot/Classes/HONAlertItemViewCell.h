@@ -15,6 +15,7 @@
 @protocol HONAlertItemViewCellDelegate;
 @interface HONAlertItemViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+- (void)removeChevron;
 
 @property (nonatomic, assign) id <HONAlertItemViewCellDelegate> delegate;
 @property (nonatomic, retain) HONAlertItemVO *alertItemVO;
