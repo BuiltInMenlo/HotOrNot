@@ -20,7 +20,7 @@
 @synthesize delegate = _delegate;
 
 - (id)initAtPos:(int)yPos forChallenge:(HONChallengeVO *)challengeVO asPrimaryOpponent:(HONOpponentVO *)opponentVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, kSnapThumbSize.height * (([challengeVO.challengers count] / 4) + 1))])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, kSnapThumbSize.height)])) {
 		_heroOpponentVO = opponentVO;
 		
 		_challenges = [NSMutableArray arrayWithObject:challengeVO];
@@ -30,11 +30,9 @@
 }
 
 - (id)initAtPos:(int)yPos forChallenges:(NSArray *)challenges asPrimaryOpponent:(HONOpponentVO *)opponentVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, kSnapThumbSize.height * (([challenges count] / 4) + 1))])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, yPos, 320.0, kSnapThumbSize.height)])) {
 		_challenges = [challenges mutableCopy];
 		_heroOpponentVO = opponentVO;
-		
-		self.backgroundColor = [UIColor purpleColor];
 	}
 	
 	return (self);
@@ -44,6 +42,8 @@
 #pragma mark - UI Presentation
 - (void)layoutGrid {
 	_gridViews = [NSMutableArray array];
+	
+	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + 1));
 	
 	_holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + 1))];
 	[self addSubview:_holderView];
@@ -96,8 +96,8 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//		NSLog(@"FAILED:[%@]", error.description);
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:vo.imagePrefix];
+		NSLog(@"FAILED:[%@]", error.description);
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:opponentVO.imagePrefix];
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]

@@ -682,7 +682,7 @@
 		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
 		[self _removeCellForChallenge:challengeVO];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"approveAnimation"]]];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -705,6 +705,8 @@
 	
 	[self _skipUser:challengeVO.creatorVO.userID];
 	[self _removeCellForChallenge:challengeVO];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dislikeOverlayAnimation"]]];
 }
 
 - (void)verifyViewCellShoutout:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
@@ -716,7 +718,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[self _sendShoutoutForChallenge:challengeVO.challengeID];
+	[self _skipUser:_challengeVO.creatorVO.userID];
 	[self _removeCellForChallenge:challengeVO];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutOutOverlayAnimation"]]];
 }
 
 - (void)verifyViewCellMore:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
@@ -820,7 +825,7 @@
 		
 		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
 		[self _removeCellForChallenge:challengeVO];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"approveAnimation"]]];
 				
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -1084,7 +1089,7 @@
 		}
 	
 	} else if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - More %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - More Sheet %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];

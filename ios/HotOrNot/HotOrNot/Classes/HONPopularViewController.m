@@ -32,6 +32,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic) BOOL hasUpdated;
 @end
 
 
@@ -42,6 +43,8 @@
 		[[Mixpanel sharedInstance] track:@"Popular People - Open"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		
+		_hasUpdated = NO;
 	}
 	
 	return (self);
@@ -334,8 +337,11 @@
 //		[alertView show];
 	}
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+	if (_hasUpdated) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+	}
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -344,6 +350,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
+	_hasUpdated = YES;
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
 //	for (NSDictionary *dict in [HONAppDelegate searchUsers])
@@ -384,6 +391,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
 		
+		_hasUpdated = YES;
 		if (isSelected) {
 			[_selectedUsers addObject:popularUserVO];
 			
@@ -454,6 +462,7 @@
 	
 	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
 	cell.popularUserVO = vo;
+	[cell toggleSelected:[HONAppDelegate isFollowingUser:vo.userID]];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	

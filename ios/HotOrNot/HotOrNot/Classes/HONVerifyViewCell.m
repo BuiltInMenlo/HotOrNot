@@ -78,7 +78,7 @@
 	[self.contentView addSubview:headerView];
 	
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(234.0, [UIScreen mainScreen].bounds.size.height - 283.0, 65.0, 205.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -89,14 +89,14 @@
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	skipButton.frame = CGRectMake(0.0, 71.0, 64.0, 64.0);
+	skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:skipButton];
 	
 	UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shoutoutButton.frame = CGRectMake(0.0, 141.0, 64.0, 64.0);
+	shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
 	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
 	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
 	[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];

@@ -33,8 +33,8 @@
 		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.urlLargeBlue] placeholderImage:nil];
 		[self.contentView addSubview:imageView];
 		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 20.0, 200.0, 24.0)];
-		label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:19];
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 23.0, 200.0, 24.0)];
+		label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
 		label.textColor = [HONAppDelegate honBlueTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.text = _emotionVO.hastagName;

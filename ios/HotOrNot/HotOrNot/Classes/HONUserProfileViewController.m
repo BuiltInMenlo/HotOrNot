@@ -17,6 +17,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONImagePickerViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONSuggestedFollowViewController.h"
@@ -229,7 +230,7 @@
 							 @"username"	: _userVO.username,
 							 @"p"			: [NSString stringWithFormat:@"%d", 1]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -282,10 +283,9 @@
 }
 
 - (void)_addFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"0", @"auto", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID],
+							 @"auto"	: @"0"};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -328,9 +328,8 @@
 }
 
 - (void)_removeFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -373,12 +372,10 @@
 }
 
 - (void)_flagUser:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 10], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"targetID",
-							[NSString stringWithFormat:@"%d", 0], @"approves",
-							nil];
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"	: [NSString stringWithFormat:@"%d", userID],
+							 @"approves"	: [NSString stringWithFormat:@"%d", 0]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -418,14 +415,12 @@
 }
 
 - (void)_verifyUser:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 10], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"targetID",
-							[NSString stringWithFormat:@"%d", 1], @"approves",
-							nil];
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"	: [NSString stringWithFormat:@"%d", userID],
+							 @"approves"	: [NSString stringWithFormat:@"%d", 1]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -950,10 +945,10 @@
 		[_scrollView addSubview:reportButton];
 	}
 	
-	
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (324.0 + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
 	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:324.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
 	_profileGridView.delegate = self;
+	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
 	
 	
@@ -1219,6 +1214,17 @@
 		[snapPreviewViewController.view removeFromSuperview];
 		snapPreviewViewController = nil;
 	}
+}
+
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController joinChallenge:(HONChallengeVO *)challengeVO {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {

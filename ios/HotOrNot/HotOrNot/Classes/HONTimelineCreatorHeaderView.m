@@ -47,14 +47,14 @@
 		
 		CGSize size;
 		CGFloat maxNameWidth = 120.0;
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(46.0, 14.0, maxNameWidth, 18.0)];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 14.0, maxNameWidth, 18.0)];
 		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.text = _challengeVO.creatorVO.username;
 		[self addSubview:nameLabel];
 		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(254.0, 17.0, 50.0, 14.0)];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 17.0, 50.0, 14.0)];
 		timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 		timeLabel.textAlignment = NSTextAlignmentRight;
 		timeLabel.textColor = [UIColor whiteColor];

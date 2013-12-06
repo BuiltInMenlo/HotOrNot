@@ -49,8 +49,8 @@
 		[self addSubview:avatarButton];
 		
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 7.0, 220.0, 19.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 8.0, 220.0, 19.0)];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
@@ -62,7 +62,7 @@
 //												   context:nil].size;
 //		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, nameLabel.frame.size.height);
 		
-		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 24.0, 265.0, 17.0)];
+		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 25.0, 265.0, 17.0)];
 		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 		messageLabel.textColor = [UIColor whiteColor];
 		messageLabel.backgroundColor = [UIColor clearColor];

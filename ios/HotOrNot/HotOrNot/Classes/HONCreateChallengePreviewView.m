@@ -138,9 +138,9 @@
 	_headerBGImageView.userInteractionEnabled = YES;
 	[self addSubview:_headerBGImageView];
 		
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -2.0, 230.0, 50.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -1.0, 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	_placeholderLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
 	_placeholderLabel.textColor = [HONAppDelegate honBlueTextColor];
 	_placeholderLabel.text = @"how do you feel?";//(_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
 	[_headerBGImageView addSubview:_placeholderLabel];
@@ -152,7 +152,7 @@
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[HONAppDelegate honBlueTextColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+	_subjectTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = @"";
 	_subjectTextField.delegate = self;
@@ -191,7 +191,7 @@
 	[_buttonHolderImageView addSubview:previewButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(239.0, 3.0, 74.0, 44.0);
+	submitButton.frame = CGRectMake(236.0, 3.0, 74.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraSubmitButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"cameraSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];

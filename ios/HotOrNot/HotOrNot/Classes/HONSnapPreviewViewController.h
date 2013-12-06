@@ -11,17 +11,17 @@
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
-//typedef void(^imageLoadComplete_t)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image);
-//typedef void(^imageLoadFailure_t)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error);
+typedef enum {
+	HONSnapPreviewTypeChallenge	= 1,
+	HONSnapPreviewTypeVerify,
+	HONSnapPreviewTypeProfile
+} HONSnapPreviewType;
 
 @protocol HONSnapPreviewViewControllerDelegate;
 @interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate, UIActionSheetDelegate>
 - (id)initWithVerifyChallenge:(HONChallengeVO *)vo;
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (id)initFromProfileWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-
-//- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
-//                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
 @property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;
 @end
@@ -30,4 +30,6 @@
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController;
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+@optional
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController joinChallenge:(HONChallengeVO *)challengeVO;
 @end

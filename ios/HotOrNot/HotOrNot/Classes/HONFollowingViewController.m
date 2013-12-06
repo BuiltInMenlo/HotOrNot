@@ -21,6 +21,7 @@
 @property (nonatomic, strong) NSMutableArray *subscribees;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic) int userID;
+@property (nonatomic) BOOL hasUpdated;
 @end
 
 
@@ -30,6 +31,7 @@
 - (id)initWithUserID:(int)userID {
 	if ((self = [super init])) {
 		_userID = userID;
+		_hasUpdated = NO;
 		_subscribees = [NSMutableArray array];
 	}
 	
@@ -158,10 +160,9 @@
 }
 
 - (void)_addFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"0", @"auto", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID],
+							 @"auto"	: @"0"};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -204,9 +205,8 @@
 }
 
 - (void)_removeFriend:(int)userID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", userID], @"target", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [NSString stringWithFormat:@"%d", userID]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -305,11 +305,13 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Subscribees List - Done"
+	[[Mixpanel sharedInstance] track:@"Following - Done"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+	if (_hasUpdated)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -333,9 +335,11 @@
 	if (cell == nil)
 		cell = [[HONFollowUserViewCell alloc] init];
 	
-	cell.userVO = (HONUserVO *)[_subscribees objectAtIndex:indexPath.row];
+	HONUserVO *vo = (HONUserVO *)[_subscribees objectAtIndex:indexPath.row];
+	
+	cell.userVO = vo;
 	cell.delegate = self;
-	[cell toggleSelected:YES];
+	[cell toggleSelected:[HONAppDelegate isFollowingUser:vo.userID]];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
@@ -374,6 +378,8 @@
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Subscribers List - %@ User", (isSelected) ? @"Select" : @"Deselect"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_hasUpdated = YES;
 	
 	if (isSelected)
 		[self _addFriend:userVO.userID];

@@ -35,6 +35,7 @@
 @property (nonatomic) int inviteTypeCounter;
 @property (nonatomic) int inviteTypeTotal;
 @property (nonatomic) BOOL isFirstRun;
+@property (nonatomic) BOOL hasUpdated;
 @end
 
 
@@ -47,6 +48,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		_isFirstRun = isFirstRun;
+		_hasUpdated = NO;
 	}
 	
 	return (self);
@@ -73,7 +75,7 @@
 							[_smsRecipients substringToIndex:[_smsRecipients length] - 1], @"phone",
 							nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -258,9 +260,10 @@
 				_progressHUD = nil;
 			}
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
-			
 			if ([_selectedNonAppContacts count] == 0) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+				
 				[self dismissViewControllerAnimated:YES completion:^(void){
 				}];
 			}
@@ -373,7 +376,7 @@
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[emails substringToIndex:[emails length] - 1], @"addresses", nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)\n[%@]", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites, params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIEmailInvites parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -645,14 +648,11 @@
 	if ([_selectedInAppContacts count] > 0)
 		[self _sendFriendRequests];
 	
-//	if ([_selectedNonAppContacts count] > 0)
-//		[self _sendInvites];
+	if ([_selectedNonAppContacts count] > 0)
+		[self _sendInvites];
 	
 	if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
-			if (_isFirstRun)
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR" object:nil];
 		}];
 	}
 }
@@ -699,7 +699,8 @@
 			_progressHUD = nil;
 		}
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:^(void){
 		}];
 	}
@@ -708,6 +709,8 @@
 
 #pragma mark - InviteUserViewCell Delegates
 - (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	
+	_hasUpdated = YES;
 	if (isSelected){
 		[[Mixpanel sharedInstance] track:@"Add Contacts - Select In App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -902,10 +905,7 @@
 //			[self _sendInvites];
 		
 		if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 			[self dismissViewControllerAnimated:YES completion:^(void) {
-				if (_isFirstRun)
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR" object:nil];
 			}];
 		}
 	}

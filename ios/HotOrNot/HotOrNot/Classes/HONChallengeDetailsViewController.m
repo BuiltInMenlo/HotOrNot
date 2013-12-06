@@ -478,7 +478,7 @@
 		size = CGSizeMake(maxWidth + 15.0, size.height);
 	
 	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 2.0, size.width, subjectLabel.frame.size.height);
-	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), 44.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5), size.width, 44.0);
+	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), 34.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5), size.width, 44.0);
 	
 	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
@@ -904,6 +904,17 @@
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
 	}
+}
+
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController joinChallenge:(HONChallengeVO *)challengeVO {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 

@@ -22,7 +22,11 @@
 #import "HONImagingDepictor.h"
 
 
-#define TINT_COLOR [UIColor colorWithWhite:0.0 alpha:0.67]
+#define SPLASH_BLUE_TINT_COLOR		[UIColor colorWithRed:0.008 green:0.373 blue:0.914 alpha:0.667]
+#define SPLASH_MAGENTA_TINT_COLOR	[UIColor colorWithRed:0.910 green:0.009 blue:0.520 alpha:0.667]
+#define SPLASH_GREEN_TINT_COLOR		[UIColor colorWithRed:0.009 green:0.910 blue:0.178 alpha:0.667]
+#define SPLASH_TINT_FADE_DURATION	2.50f
+#define SPLASH_TINT_TIMER_DURATION	3.33f
 
 
 @interface HONRegisterViewController ()
@@ -70,6 +74,7 @@
 		_filename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
+		_tintIndex = 0;
 		
 		_splashImageURL = [NSString stringWithFormat:@"%@%@@@2x.png", [[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"], [NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"_%@-568h" : @"_%@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"volley" : @"selfieclub"]];
 	}
@@ -244,8 +249,7 @@
 				[self _retreiveSubscribees];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 					
 					if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
@@ -498,7 +502,7 @@
 //	[_splashHolderView addSubview:tintImageView];
 	
 	_rotatingTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_rotatingTintView.backgroundColor = [UIColor colorWithRed:0.234 green:0.391 blue:0.731 alpha:0.5];
+	_rotatingTintView.backgroundColor = SPLASH_BLUE_TINT_COLOR;
 	[_splashHolderView addSubview:_rotatingTintView];
 	
 	if (_tintTimer != nil) {
@@ -506,7 +510,8 @@
 		_tintTimer = nil;
 	}
 	
-	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:1.33 target:self selector:@selector(_nextSplashTint) userInfo:nil repeats:YES];
+	
+	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:SPLASH_TINT_TIMER_DURATION target:self selector:@selector(_nextSplashTint) userInfo:nil repeats:YES];
 	
 	UIImageView *splashTxtImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[_splashHolderView addSubview:splashTxtImageView];
@@ -527,14 +532,14 @@
 		
 		
 		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (185.0 - (((int)![HONAppDelegate isRetina4Inch]) * 24.0)), 320.0, 64.0);
+		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (190.0 - (((int)![HONAppDelegate isRetina4Inch]) * 19.0)), 320.0, 64.0);
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
 		[_splashHolderView addSubview:signupButton];
 		
 		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (105.0 - (((int)![HONAppDelegate isRetina4Inch]) * 24.0)), 320.0, 49.0);
+		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (103.0 - (((int)![HONAppDelegate isRetina4Inch]) * 18.0)), 320.0, 49.0);
 		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
 		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
 		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
@@ -615,6 +620,7 @@
 		_tintTimer = nil;
 	}
 	
+	_tintIndex = 0;
 	[self.splashImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
 	_filename = @"";
 	
@@ -636,28 +642,38 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if ([MFMailComposeViewController canSendMail]) {
-		_mailComposeViewController = [[MFMailComposeViewController alloc] init];
-		_mailComposeViewController.mailComposeDelegate = self;
-		[_mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
-		[_mailComposeViewController setSubject:@"Selfieclub - Help! I need to log back in"];
-		[_mailComposeViewController setMessageBody:[NSString stringWithFormat:@"My name is %@ and I need to log back into my account. Please help, my email is %@. Thanks!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"email"]] isHTML:NO];
-		
-		if (self.splashImagePickerController != nil)
-			[self.splashImagePickerController presentViewController:_mailComposeViewController animated:YES completion:^(void) {}];
-		
-		else
-			[self presentViewController:_mailComposeViewController animated:YES completion:^(void) {}];
-		
-		[_rotatingTintView.layer removeAllAnimations];
-		if (_tintTimer != nil) {
-			[_tintTimer invalidate];
-			_tintTimer = nil;
-		}
 	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
+		if ([MFMailComposeViewController canSendMail]) {
+			_mailComposeViewController = [[MFMailComposeViewController alloc] init];
+			_mailComposeViewController.mailComposeDelegate = self;
+			[_mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
+			[_mailComposeViewController setSubject:@"Selfieclub - Help! I need to log back in"];
+			[_mailComposeViewController setMessageBody:[NSString stringWithFormat:@"My name is %@ and I need to log back into my account. Please help, my email is %@. Thanks!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"email"]] isHTML:NO];
+			
+			if (self.splashImagePickerController != nil)
+				[self.splashImagePickerController presentViewController:_mailComposeViewController animated:YES completion:^(void) {}];
+			
+			else
+				[self presentViewController:_mailComposeViewController animated:YES completion:^(void) {}];
+			
+			[_rotatingTintView.layer removeAllAnimations];
+			if (_tintTimer != nil) {
+				[_tintTimer invalidate];
+				_tintTimer = nil;
+			}
+		
+		} else {
+			[[[UIAlertView alloc] initWithTitle:@"Email Error"
+										message:@"Cannot send email from this device!"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		}
+		
 	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Email Error"
-									message:@"Cannot send email from this device!"
+		[[[UIAlertView alloc] initWithTitle:@"This device has never been logged in!"
+									message:@""
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -670,11 +686,17 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
+	UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+	imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+	imagePickerController.view.backgroundColor = [UIColor whiteColor];
+	imagePickerController.sourceType = ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary;
+	imagePickerController.delegate = self;
+	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-		imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-		imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-		imagePickerController.delegate = self;
+//		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+//		imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+//		imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+//		imagePickerController.delegate = self;
 		
 		imagePickerController.showsCameraControls = NO;
 		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
@@ -685,14 +707,14 @@
 		_profileCameraOverlayView.alpha = 0.0;
 		
 		imagePickerController.cameraOverlayView = _profileCameraOverlayView;
-		self.profileImagePickerController = imagePickerController;
+//		self.profileImagePickerController = imagePickerController;
 		
 		
 		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_profileCameraOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {}];
 		
-		[self presentViewController:self.profileImagePickerController animated:NO completion:^(void) {}];
+//		[self presentViewController:self.profileImagePickerController animated:NO completion:^(void) {}];
 		
 		_tintIndex = 0;
 		_tintedMatteView = [[UIView alloc] initWithFrame:_profileCameraOverlayView.frame];
@@ -777,11 +799,10 @@
 				_tutorialImageView.alpha = 1.0;
 			}];
 		}];
-	
-	} else {
-		_filename = @"";
-		[self _finalizeUser];
 	}
+	
+	self.profileImagePickerController = imagePickerController;
+	[self presentViewController:self.profileImagePickerController animated:NO completion:^(void) {}];
 }
 
 - (void)_goFlipCamera {
@@ -969,14 +990,19 @@
 }
 
 - (void)_nextSplashTint {
-	CGFloat r = (float)(arc4random() % 192) / 255;
-	CGFloat g = (float)(arc4random() % 192) / 255;
-	CGFloat b = (float)(arc4random() % 192) / 255;
+	_tintIndex = ++_tintIndex % 3;
 	
 	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:0.33];
-	[_rotatingTintView setBackgroundColor:[UIColor colorWithRed:r green:g blue:b alpha:0.75]];
+	[UIView setAnimationDuration:SPLASH_TINT_FADE_DURATION];
+	[_rotatingTintView setBackgroundColor:(_tintIndex == 0) ? SPLASH_BLUE_TINT_COLOR : (_tintIndex == 1) ? SPLASH_MAGENTA_TINT_COLOR : SPLASH_GREEN_TINT_COLOR];
 	[UIView commitAnimations];
+}
+
+
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 
@@ -1154,7 +1180,6 @@
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_mailComposeViewController dismissViewControllerAnimated:YES completion:^(void) {
-		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:1.33 target:self selector:@selector(_nextSplashTint) userInfo:nil repeats:YES];
 	}];
 }
 

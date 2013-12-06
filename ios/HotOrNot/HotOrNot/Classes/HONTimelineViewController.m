@@ -492,6 +492,8 @@
 			_tutorialImageView.alpha = 0.0;
 		}
 	} completion:^(BOOL finished) {
+		if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 	}];
 }
 

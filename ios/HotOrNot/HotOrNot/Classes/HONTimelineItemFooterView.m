@@ -27,8 +27,8 @@
 		_challengeVO = challengeVO;
 //		self.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.5];
 		
-		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 26.0, 200.0, 19.0)];
-		_participantsLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 26.0, 200.0, 19.0)];
+		_participantsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		_participantsLabel.textColor = [UIColor whiteColor];
 		_participantsLabel.backgroundColor = [UIColor clearColor];
 		_participantsLabel.text = [self _captionForParticipants];
@@ -123,21 +123,13 @@
 	
 	NSString *caption = @"";
 	if (challengers > 0) {
-		caption = [NSString stringWithFormat:@"%d repl%@ ", challengers, (challengers == 1) ? @"y" : @"ies"];
+		caption = [NSString stringWithFormat:@"%d repl%@", challengers, (challengers == 1) ? @"y" : @"ies"];
+		caption = (score > 0) ? [caption stringByAppendingString:@" & "] : [caption stringByAppendingString:@"… "];
 		
-		if (score > 0)
-			caption = [caption stringByAppendingString:@"& "];
-	
 	} else
 		caption = @"Be the first to reply… ";
 	
-	
-	if (score > 0)
-		caption = [caption stringByAppendingString:[NSString stringWithFormat:@"%d like%@", score, (score == 1) ? @"" : @"s"]];
-	
-	else
-		caption = @"Be the first to like";
-	
+	caption = (score > 0) ? [caption stringByAppendingString:[NSString stringWithFormat:@"%d like%@", score, (score == 1) ? @"" : @"s"]] : [caption stringByAppendingString:@"Be the first to like"];
 	
 	return (caption);
 }

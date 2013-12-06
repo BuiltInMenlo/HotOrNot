@@ -23,6 +23,8 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONAddContactsViewController.h"
+#import "HONPopularViewController.h"
+#import "HONSuggestedFollowViewController.h"
 #import "HONImagingDepictor.h"
 
 
@@ -42,6 +44,7 @@
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic, strong) NSArray *defaultCaptions;
 @end
 
 
@@ -51,6 +54,10 @@
 	if ((self = [super init])) {
 		_alertItems = [NSMutableArray array];
 		_isRefreshing = NO;
+		
+		_defaultCaptions = @[@"Find friends",
+							 @"Search",
+							 @"Suggested people"];
 		
 		[self _retrieveAlerts];
 		
@@ -386,6 +393,26 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goSearch {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Search"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSuggested {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Suggested Follow"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goVolleyCamera {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -522,21 +549,22 @@
 		cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.section];
 		cell.delegate = self;
 	
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-		
 	} else {
 		[cell removeChevron];
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		cell.textLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+		cell.textLabel.textColor = [HONAppDelegate honBlueTextColor];
+		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.section - [_alertItems count]];
+		cell.textLabel.textAlignment = NSTextAlignmentCenter;
 	}
 	
-	
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (49.0);// + (([_alertItems count] > 9 && indexPath.section == [_alertItems count] - 1) * 51.0));
+	return (49.0 + ((([_alertItems count] + 3) > 6 && indexPath.section == [_alertItems count] + 3) * 51.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -544,11 +572,28 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return ((indexPath.section < [_alertItems count]) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	switch (indexPath.section - [_alertItems count]) {
+		case 0:
+			[self _goAddContacts];
+			break;
+			
+		case 1:
+			[self _goSearch];
+			break;
+			
+		case 2:
+			[self _goSuggested];
+			break;
+			
+		default:
+			break;
+	}
 }
 
 
@@ -594,6 +639,12 @@
 		viewController = userPofileViewController;
 		
 	} else if (alertItemVO.triggerType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
+		[self _addBlur];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		userPofileViewController.userID = alertItemVO.userID;
+		viewController = userPofileViewController;
+	
+	} else {
 		[self _addBlur];
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 		userPofileViewController.userID = alertItemVO.userID;

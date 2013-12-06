@@ -22,6 +22,7 @@
 @property (nonatomic, strong) NSMutableArray *selectedSubscribers;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic) int userID;
+@property (nonatomic) BOOL hasUpdated;
 @end
 
 
@@ -30,6 +31,7 @@
 - (id)initWithUserID:(int)userID {
 	if ((self = [super init])) {
 		_userID = userID;
+		_hasUpdated = NO;
 		_subscribers = [NSMutableArray array];
 	}
 	
@@ -266,7 +268,9 @@
 //	for (HONUserVO *vo in _selectedSubscribers)
 //		[self _addFriend:vo.userID];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+	if (_hasUpdated)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -290,8 +294,11 @@
 	if (cell == nil)
 		cell = [[HONFollowUserViewCell alloc] init];
 	
-	cell.userVO = (HONUserVO *)[_subscribers objectAtIndex:indexPath.row];
+	HONUserVO *vo = (HONUserVO *)[_subscribers objectAtIndex:indexPath.row];
+	
+	cell.userVO = vo;
 	cell.delegate = self;
+	[cell toggleSelected:([HONAppDelegate isFollowingUser:vo.userID])];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -330,6 +337,8 @@
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Subscribers List - %@ User", (isSelected) ? @"Select" : @"Deselect"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_hasUpdated = YES;
 	
 	if (isSelected)
 		[self _addFriend:userVO.userID];

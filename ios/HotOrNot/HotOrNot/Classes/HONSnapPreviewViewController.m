@@ -19,78 +19,39 @@
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
 #import "HONHeaderView.h"
+#import "HONTimelineItemFooterView.h"
 #import "HONImagingDepictor.h"
 #import "HONFollowersViewController.h"
 #import "HONFollowingViewController.h"
 #import "HONUserProfileGridView.h"
 #import "HONUserProfileViewController.h"
 
-@interface HONSnapPreviewViewController ()
+@interface HONSnapPreviewViewController () <HONTimelineItemFooterViewDelegate>
 //@property (nonatomic, copy) imageLoadComplete_t heroCompleteBlock;
 //@property (nonatomic, copy) imageLoadFailure_t heroFailureBlock;
+@property (nonatomic) HONSnapPreviewType snapPreviewType;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UIView *releaseHolderView;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONChallengeVO *newestChallengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, retain) HONUserProfileViewController *userProfileViewController;
 @property (nonatomic, strong) UIImageView *blurredImageView;
-@property (nonatomic) BOOL isVerify;
-@property (nonatomic) BOOL isRefreshing;
-@property (nonatomic) BOOL isFromProfile;
 @end
 
 
 @implementation HONSnapPreviewViewController
 @synthesize delegate = _delegate;
-//- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
-//                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
-//    self.completionBlock = ^{
-//        if () {
-//            if (failure) {
-//
-//            }
-//        } else {
-//            if (success) {
-//
-//            }
-//        }
-//    };
-//#pragma clang diagnostic pop
-//}
-
-//static void (^heroSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image);
-//
-//void (^heroSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//	
-//static void imageLoadComplete_t(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//    AFNetworkReachabilityStatus status = AFNetworkReachabilityStatusForFlags(flags);
-//    AFNetworkReachabilityStatusBlock block = (__bridge AFNetworkReachabilityStatusBlock)info;
-//    if (block) {
-//        block(status);
-//    }
-//    
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingReachabilityDidChangeNotification object:nil userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:status] forKey:AFNetworkingReachabilityNotificationStatusItem]];
-//    });
-//}
-
-
-
 
 - (id)initWithVerifyChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		_opponentVO = vo.creatorVO;
-		_isVerify = YES;
-		_isFromProfile = NO;
+		_snapPreviewType = HONSnapPreviewTypeVerify;
 		
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	}
@@ -102,8 +63,7 @@
 	if ((self = [super init])) {
 		_opponentVO = opponentVO;
 		_challengeVO = challengeVO;
-		_isVerify = NO;
-		_isFromProfile = NO;
+		_snapPreviewType = HONSnapPreviewTypeChallenge;
 		
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
@@ -115,7 +75,7 @@
 
 - (id)initFromProfileWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	if ((self = [self initWithOpponent:opponentVO forChallenge:challengeVO])) {
-		_isFromProfile = YES;
+		_snapPreviewType = HONSnapPreviewTypeProfile;
 	}
 	
 	return (self);
@@ -342,6 +302,93 @@
 	}];
 }
 
+- (void)_skipUser:(int)userID {
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 10],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"	: [NSString stringWithFormat:@"%d", userID],
+							 @"approves"	: [NSString stringWithFormat:@"%d", -1]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+			
+		} else {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
+//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_sendShoutoutForChallenge:(int)challengeID {
+	NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", challengeID],
+							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIMakeShoutout, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIMakeShoutout parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -401,7 +448,7 @@
 	[headerView addSubview:avatarImageView];
 	
 	CGSize size;
-	CGFloat maxNameWidth = (_isVerify) ? 255.0 : 105.0;
+	CGFloat maxNameWidth = (_snapPreviewType == HONSnapPreviewTypeVerify) ? 255.0 : 105.0;
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 15.0, maxNameWidth, 18.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	nameLabel.textColor = [UIColor whiteColor];
@@ -417,16 +464,15 @@
 	} //else
 //		size = [_opponentVO.username sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	
-	nameLabel.text = (_isVerify) ? _opponentVO.username : (size.width >= maxNameWidth) ? _opponentVO.username : [_opponentVO.username stringByAppendingString:@"…"];
+	nameLabel.text = (_snapPreviewType == HONSnapPreviewTypeVerify) ? _opponentVO.username : (size.width >= maxNameWidth) ? _opponentVO.username : [_opponentVO.username stringByAppendingString:@"…"];
 	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), nameLabel.frame.size.height);
 	
-	if (!_isVerify) {
+	if (_snapPreviewType != HONSnapPreviewTypeVerify) {
 		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 15.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _opponentVO.subjectName;
-		subjectLabel.hidden = _isVerify;
 		[headerView addSubview:subjectLabel];
 		
 		if ([HONAppDelegate isIOS7]) {
@@ -470,11 +516,11 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - (159.0 + ((_isVerify && [HONAppDelegate switchEnabledForKey:@"verify_tab"]) * 86.0)), 64.0, 196.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - (159.0 + (((_snapPreviewType == HONSnapPreviewTypeVerify) && [HONAppDelegate switchEnabledForKey:@"verify_tab"]) * 80.0)), 64.0, 219.0)];
 	_buttonHolderView.alpha = 0.0;
 	[self.view addSubview:_buttonHolderView];
 	
-	if (_isVerify) {
+	if (_snapPreviewType == HONSnapPreviewTypeVerify) {
 		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
 		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
@@ -482,35 +528,56 @@
 		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:approveButton];
 		
-		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-		[_buttonHolderView addSubview:skipButton];
-		
-		UIButton *disapproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		disapproveButton.frame = CGRectMake(0.0, 132.0, 64.0, 64.0);
-		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
-		[disapproveButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
-		[disapproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-		[_buttonHolderView addSubview:disapproveButton];
+		if ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) {
+			UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+			[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+			[_buttonHolderView addSubview:skipButton];
+			
+			UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
+			[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
+			[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
+			[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
+			[_buttonHolderView addSubview:shoutoutButton];
+			
+			UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			moreButton.frame = CGRectMake(13.0, [UIScreen mainScreen].bounds.size.height - 50.0, 44.0, 44.0);
+			[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+			[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+			[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+			[self.view addSubview:moreButton];
+			
+		} else {
+			UIButton *disapproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			disapproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+			[disapproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+			[disapproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+			[disapproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
+			[_buttonHolderView addSubview:disapproveButton];
+		}
 		
 	} else {
-		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		upvoteButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
-		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-		[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-		[_buttonHolderView addSubview:upvoteButton];
+		HONTimelineItemFooterView *timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:self.view.frame.size.height - 56.0 withChallenge:_challengeVO];
+		timelineItemFooterView.delegate = self;
+		[self.view addSubview:timelineItemFooterView];
 		
-		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flagButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-		flagButton.hidden = _isVerify;
-		[_buttonHolderView addSubview:flagButton];
+		
+//		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		upvoteButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+//		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+//		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+//		[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+//		[_buttonHolderView addSubview:upvoteButton];
+//		
+//		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		flagButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+//		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+//		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+//		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+//		[_buttonHolderView addSubview:flagButton];
 	}
 }
 
@@ -550,9 +617,6 @@
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-//	if (_isVerify)
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
-	
 //	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"preview_total"] intValue];
 //	if (![HONAppDelegate isFollowingUser:_userVO.userID] && total < [HONAppDelegate profileSubscribeThreshold]) {
 //		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -568,7 +632,7 @@
 }
 
 - (void)_goClose {
-	if (_isVerify)
+	if (_snapPreviewType == HONSnapPreviewTypeVerify)
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -646,15 +710,7 @@
 	[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 	
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkLargeAnimation"]]];
-	
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"yay_format"], _opponentVO.username]
-//														message:@""
-//													   delegate:self
-//											  cancelButtonTitle:@"Cancel"
-//											  otherButtonTitles:@"Yes", nil];
-//	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 1 : 3];
-//	[alertView show];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"approveAnimation"]]];
 }
 
 - (void)_goDisprove {
@@ -664,21 +720,21 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
-															 delegate:self
-													cancelButtonTitle:@"Cancel"//@"Nevermind"//@"Cancel"
-											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Yes", nil];
-	[actionSheet setTag:0];
-	[actionSheet showInView:self.view];
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
+//															 delegate:self
+//													cancelButtonTitle:@"Cancel"//@"Nevermind"//@"Cancel"
+//											   destructiveButtonTitle:nil
+//													otherButtonTitles:@"Yes", nil];
+//	[actionSheet setTag:0];
+//	[actionSheet showInView:self.view];
 	
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
-//														message:@""
-//													   delegate:self
-//											  cancelButtonTitle:@"Cancel"
-//											  otherButtonTitles:@"Yes", nil];
-//	[alertView setTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 2 : 4];
-//	[alertView show];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
+														message:@""
+													   delegate:self
+											  cancelButtonTitle:@"Cancel"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:2];
+	[alertView show];
 }
 
 - (void)_goSkip {
@@ -687,8 +743,37 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	
+	[self _skipUser:_opponentVO.userID];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dislikeOverlayAnimation"]]];
 	[self _goClose];
+}
+
+- (void)_goShoutout {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Shoutout", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	
+	[self _sendShoutoutForChallenge:_challengeVO.creatorVO.userID];
+	[self _skipUser:_challengeVO.creatorVO.userID];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutOutOverlayAnimation"]]];
+	[self _goClose];
+}
+
+- (void)_goMore {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - More Sheet%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
+	[actionSheet setTag:1];
+	[actionSheet showInView:self.view];
 }
 
 - (void)_goRemoveTutorial {
@@ -757,6 +842,39 @@
 }
 
 
+#pragma mark - TimelineItemFooterView Delegates
+- (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Volley Preview - User Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	
+	
+	[self _addBlur];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	userPofileViewController.userID = opponentVO.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Join Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	[self.delegate snapPreviewViewController:self joinChallenge:challengeVO];
+}
+
+- (void)footerView:(HONTimelineItemFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO {
+}
+
+- (void)footerView:(HONTimelineItemFooterView *)cell likeChallenge:(HONChallengeVO *)challengeVO {
+	[self _goUpvote];
+}
+
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
@@ -772,6 +890,27 @@
 		} else if (buttonIndex == 1) {
 			[self _flagUser:_opponentVO.userID];
 			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
+		}
+	
+	} else if (actionSheet.tag == 1) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - More Sheet %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 0) {
+			[self _addFriend:_challengeVO.creatorVO.userID];
+			[self _skipUser:_challengeVO.creatorVO.userID];
+			[self _goClose];
+			
+		} else if (buttonIndex == 1) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 		}
 	}
 }
@@ -791,19 +930,7 @@
 			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
 		}
 		
-//	}  else if (alertView.tag == 1) {
-//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Verify Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-//		
-//		if (buttonIndex == 1) {
-//			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
-//				[self _addFriend:_challengeVO.creatorVO.userID];
-//		
-//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-//		}
-//		
+	}  else if (alertView.tag == 1) {
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Verify Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -813,33 +940,9 @@
 		if (buttonIndex == 1) {
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
 		}
-//
-//	} else if (alertView.tag == 3) {
-//		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Follow Approve %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-//							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-//										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-//		
-//		if (buttonIndex == 1) {
-//			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
-//				[self _addFriend:_challengeVO.creatorVO.userID];
-//		
-//			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
-//		}
-//		
-	} else if (alertView.tag == 4) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Follow Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
-				[self _addFriend:_challengeVO.creatorVO.userID];
-			
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-		}
 
+	} else if (alertView.tag == 3) {
+	} else if (alertView.tag == 4) {
 	} else if (alertView.tag == 5) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

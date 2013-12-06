@@ -73,7 +73,6 @@
 		}];
 	};
 	
-	NSLog(@"AVATAR PREFIX:[%@]", _alertItemVO.avatarPrefix);
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_alertItemVO.avatarPrefix];
 	};
@@ -85,21 +84,21 @@
 	
 	CGSize size = [_alertItemVO.username boundingRectWithSize:CGSizeMake(90.0, 22.0)
 													  options:NSStringDrawingTruncatesLastVisibleLine
-												   attributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17]}
+												   attributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14]}
 													  context:nil].size;
 	
 	
 	if (size.width > 90.0)
 		size = CGSizeMake(90.0, size.height);
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, size.width, 18.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, size.width, 17.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _alertItemVO.username;
 	[self.contentView addSubview:nameLabel];
 	
-	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) - 2.0, nameLabel.frame.origin.y, 240.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
+	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 235.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
 	messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	messageLabel.textColor = [HONAppDelegate honLightGreyTextColor];
 	messageLabel.backgroundColor = [UIColor clearColor];

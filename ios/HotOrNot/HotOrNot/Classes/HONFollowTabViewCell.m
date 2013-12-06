@@ -83,7 +83,7 @@
 	[self.contentView addSubview:headerView];
 	
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 198.0, 64.0, 149.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 210.0, 64.0, 142.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -94,7 +94,7 @@
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(0.0, 68.0, 64.0, 64.0);
+	dispproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];

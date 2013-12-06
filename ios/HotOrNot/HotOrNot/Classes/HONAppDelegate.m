@@ -14,6 +14,7 @@
 #import <FacebookSDK/FacebookSDK.h>
 #import <Foundation/Foundation.h>
 #import <HockeySDK/HockeySDK.h>
+#import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
 #import <Social/SLServiceTypes.h>
 #import <sys/utsname.h>
@@ -52,8 +53,8 @@
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";//@"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";//@"boot_sc0001.json";
+NSString * const kConfigURL = @"http://api.letsvolley.com";
+NSString * const kConfigJSON = @"boot_sc0001.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
@@ -1001,6 +1002,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			if ([userResult objectForKey:@"id"] != [NSNull null] || [userResult count] > 0) {
 				[HONAppDelegate writeUserInfo:userResult];
 				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+					
+				[self _enableNotifications:(![[HONAppDelegate deviceToken] isEqualToString:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]])];
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"])
 					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
@@ -1082,7 +1085,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"isNotifications"	: (isEnabled) ? @"Y" : @"N"};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -1233,6 +1236,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	animationImageView.frame = CGRectOffset(animationImageView.frame, ([UIScreen mainScreen].bounds.size.width - animationImageView.frame.size.width) * 0.5, ([UIScreen mainScreen].bounds.size.height - animationImageView.frame.size.height) * 0.5);
 	[self.window addSubview:animationImageView];
 	
+//	animationImageView.layer.shadowColor = [[UIColor whiteColor] CGColor];
+//	animationImageView.layer.shadowRadius = 4.0f;
+//	animationImageView.layer.shadowOpacity = 0.9;
+//	animationImageView.layer.shadowOffset = CGSizeZero;
+	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		animationImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -1337,17 +1345,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[shadow setShadowColor:[UIColor clearColor]];
 	[shadow setShadowOffset:CGSizeZero];
 	
-	//[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
 	
 	if ([HONAppDelegate isIOS7])
-		[[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.176 green:0.294 blue:0.549 alpha:1.0]];
-	
+		[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honBlueTextColor]];
+
 	else
-		[[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.176 green:0.294 blue:0.549 alpha:1.0]];
+		[[UINavigationBar appearance] setTintColor:[HONAppDelegate honBlueTextColor]];
+	
+//	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header_modal"] forBarMetrics:UIBarMetricsDefault];
+//	[[UINavigationBar appearance] setBackgroundColor:[UIColor colorWithRed:0.008 green:0.373 blue:0.914 alpha:1.0]];
+//	[[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	
 	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
-														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20]}];
+														   NSFontAttributeName				: [[HONAppDelegate cartoGothicBold] fontWithSize:22]}];
 	
 	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
@@ -1556,8 +1567,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
 	
-	if ([HONAppDelegate apiServerPath] != nil)// && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"N"])
-		[self _enableNotifications:YES];
+//	if ([HONAppDelegate apiServerPath] != nil && [HONAppDelegate infoForUser] != nil)// && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"N"])
+//		[self _enableNotifications:YES];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
@@ -1572,8 +1583,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[HONAppDelegate writeDeviceToken:holderToken];
 	
-	if ([HONAppDelegate apiServerPath] != nil)// && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"])
-		[self _enableNotifications:NO];
+//	if ([HONAppDelegate apiServerPath] != nil && [HONAppDelegate infoForUser] != nil)// && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"])
+//		[self _enableNotifications:NO];
 }
  
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1614,9 +1625,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.tabBarController.view.hidden = NO;
 	self.tabBarController.viewControllers = navigationControllers;
 	self.window.backgroundColor = [UIColor clearColor];
-	
-//	if ([HONAppDelegate apiServerPath] != nil)
-//		[self _enableNotifications:YES];
 }
 
 - (void)_establishUserDefaults {
@@ -1899,6 +1907,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
+	
+	} else {
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 

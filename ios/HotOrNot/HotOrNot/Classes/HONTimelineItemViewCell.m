@@ -72,22 +72,12 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
 	
 	_heroOpponentVO = _challengeVO.creatorVO;
-//	int heroTime = [_heroOpponentVO.joinedDate timeIntervalSinceNow];
-//	int participant0Time = -1;
-//	
-//	if ([_challengeVO.challengers count] > 0) {
-//		participant0Time = [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow];
-//		
-//		if (participant0Time > heroTime && !_challengeVO.isCelebCreated && !_challengeVO.isExploreChallenge)
-//			_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
-//	}
-	
 	_heroHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//	_heroHolderView.clipsToBounds = YES;
 	_heroHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_heroHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroHolderView asLargeLoader:NO];
+	imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, 0.0, 40.0);
 	[imageLoadingView startAnimating];
 	[_heroHolderView addSubview:imageLoadingView];
 	
@@ -167,15 +157,18 @@
 	
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
 	if (sticker != nil) {
-		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 183.0, 94.0, 94.0)];
-		[stickerImageView setImageWithURL:[NSURL URLWithString:[[sticker objectForKey:@"img"] stringByAppendingString:@"_188x188.png"]] placeholderImage:nil];
+//		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 183.0, 94.0, 94.0)];
+//		[stickerImageView setImageWithURL:[NSURL URLWithString:[[sticker objectForKey:@"img"] stringByAppendingString:@"_188x188.png"]] placeholderImage:nil];
+		
+		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		[stickerImageView setImageWithURL:[NSURL URLWithString:[[[sticker objectForKey:@"img"] stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]] placeholderImage:nil];
 		[self.contentView addSubview:stickerImageView];
 		
-		UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		stickerButton.frame = stickerImageView.frame;
-		[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
-		[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
-		[self.contentView addSubview:stickerButton];
+//		UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		stickerButton.frame = stickerImageView.frame;
+//		[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
+//		[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
+//		[self.contentView addSubview:stickerButton];
 	}
 }
 

@@ -434,8 +434,9 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 	}];
@@ -500,6 +501,8 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
@@ -546,37 +549,36 @@
 	_uploadCounter++;
 	_isUploadComplete = (_uploadCounter == 2);
 	
-	if (_submitImageView != nil) {
-		[UIView animateWithDuration:0.5 animations:^(void) {
-			_submitImageView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_submitImageView removeFromSuperview];
-			_submitImageView = nil;
-		}];
-	}
-	
-	[_previewView uploadComplete];
-	
-	if (_isUploadComplete)
+	if (_isUploadComplete) {
+		if (_submitImageView != nil) {
+			[UIView animateWithDuration:0.5 animations:^(void) {
+				_submitImageView.alpha = 0.0;
+			} completion:^(BOOL finished) {
+				[_submitImageView removeFromSuperview];
+				_submitImageView = nil;
+			}];
+		}
+
+		[_previewView uploadComplete];
 		[self _finalizeUpload];
 	
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-		
-	if (_hasSubmitted) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-		
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
 			
+		if (_hasSubmitted) {
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				
 //			if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
-		}];
+			}];
+		}
 	}
 }
 
@@ -605,6 +607,11 @@
 	}
 }
 
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+}
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
@@ -662,6 +669,8 @@
 		[self _showOverlay];
 		
 	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		}];

@@ -50,9 +50,9 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header_modal"]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 29.0, 200.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
+		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:22];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
