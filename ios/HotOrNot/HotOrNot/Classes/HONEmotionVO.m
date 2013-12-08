@@ -19,7 +19,7 @@
 	
 	vo.emotionID = [[dictionary objectForKey:@"id"] intValue];
 	vo.emotionName = [dictionary objectForKey:@"name"];
-	vo.hastagName = [NSString stringWithFormat:@"#%@", vo.emotionName];
+	vo.hastagName = [@"#" stringByAppendingString:vo.emotionName];
 	vo.urlPrefix = [dictionary objectForKey:@"img"];
 	vo.urlLargeBlue = [vo.urlPrefix stringByAppendingString:@"-lg_blue.png"];
 	vo.urlSmallBlue = [vo.urlPrefix stringByAppendingString:@"-sm_blue.png"];

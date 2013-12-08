@@ -96,7 +96,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		NSLog(@"FAILED:[%@]", error.description);
+//		NSLog(@"FAILED:[%@]", error.description);
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:opponentVO.imagePrefix];
 	};
 	

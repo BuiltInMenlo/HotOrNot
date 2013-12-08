@@ -909,10 +909,10 @@
 	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+
 	
-	int regCheck = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_emailTextField.text]) * 2) + ((int)(![_birthdayLabel.text isEqualToString:@"What is your birthday?"]) * 4);
-	
-	if (regCheck == 0) {
+	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_emailTextField.text]) * 2) + ((int)(![_birthdayLabel.text isEqualToString:@"What is your birthday?"]) * 4);
+	if (registerErrorType == HONRegisterErrorTypeUsernameEmailBirthday) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username, Email or Birthday!"
 									message:@"You need to enter a username, email & birthday address to start snapping"
 								   delegate:nil
@@ -920,7 +920,7 @@
 						  otherButtonTitles:nil] show];
 		[_usernameTextField becomeFirstResponder];
 	 
-	} else if (regCheck == 1) {
+	} else if (registerErrorType == HONRegisterErrorTypeEmailBirthday) {
 		[[[UIAlertView alloc] initWithTitle:@"No Email & Birthday!"
 									message:@"You need to enter an email address & birthday to start snapping"
 								   delegate:nil
@@ -928,7 +928,7 @@
 						  otherButtonTitles:nil] show];
 		[_usernameTextField becomeFirstResponder];
 	
-	} else if (regCheck == 2) {
+	} else if (registerErrorType == HONRegisterErrorTypeUsernameBirthday) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Birthday!"
 									message:@"You need to enter a username and birthday to start snapping"
 								   delegate:nil
@@ -936,7 +936,7 @@
 						  otherButtonTitles:nil] show];
 		[_emailTextField becomeFirstResponder];
 	
-	} else if (regCheck == 3) {
+	} else if (registerErrorType == HONRegisterErrorTypeBirthday) {
 		[[[UIAlertView alloc] initWithTitle:@"No Birthday!"
 									message:@"You need to a birthday to keep the communty safe."
 								   delegate:nil
@@ -944,7 +944,7 @@
 						  otherButtonTitles:nil] show];
 		[self _goPicker];
 	
-	} else if (regCheck == 4) {
+	} else if (registerErrorType == HONRegisterErrorTypeUsernameEmail) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Email!"
 									message:@"You need to enter a username and email address to start snapping"
 								   delegate:nil
@@ -952,7 +952,7 @@
 						  otherButtonTitles:nil] show];
 		[_usernameTextField becomeFirstResponder];
 	
-	} else if (regCheck == 5) {
+	} else if (registerErrorType == HONRegisterErrorTypeEmail) {
 		[[[UIAlertView alloc] initWithTitle:@"No email!"
 									message:[NSString stringWithFormat:@"You need to enter a valid email address to use %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
 								   delegate:nil
@@ -960,7 +960,7 @@
 						  otherButtonTitles:nil] show];
 		[_emailTextField becomeFirstResponder];
 	
-	} else if (regCheck == 6) {
+	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to start snapping"
 								   delegate:nil
@@ -974,6 +974,30 @@
 		
 		[self _checkUsername];
 	}
+}
+
+
+#pragma mark - Notifications
+- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+	NSArray *tdls = @[@"cc", @"net", @"mil", @"jp", @"fk", @"sm", @"biz"];
+	NSString *emailFiller = @"";
+	
+	
+//	BOOL _isHeads = ((BOOL)roundf(((float)rand() / RAND_MAX)));
+	for (int i=0; i<((arc4random() % 8) + 3); i++)
+		emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
+	emailFiller = [emailFiller stringByAppendingString:@"@"];
+	
+	for (int i=0; i<((arc4random() % 8) + 3); i++)
+		emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
+	emailFiller = [[emailFiller stringByAppendingString:@"."] stringByAppendingString:[tdls objectAtIndex:(arc4random() % [tdls count])]];
+	
+#if __APPSTORE_BUILD__ == 0
+	if ([_emailTextField.text isEqualToString:@"¡"])
+		_emailTextField.text = emailFiller;//@"dfsfhsdfo@fssf.com";
+#endif
 }
 
 
@@ -1041,19 +1065,8 @@
 		_profileCameraOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 		_profileCameraOverlayView.alpha = 0.0;
 		
-//		picker.cameraOverlayView = _profileCameraOverlayView;
-//		self.profileImagePickerController = picker;
-//			
-	} else {
-//		[self dismissViewControllerAnimated:YES completion:^(void) {
-			[self _finalizeUser];
-			
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//				if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
-//					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
-//			}];
-//		}];
-	}
+	} else
+		[self _finalizeUser];
 }
 
 
@@ -1072,8 +1085,12 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
-	} completion:^(BOOL finished) {
-	}];
+	} completion:^(BOOL finished) {}];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -1088,26 +1105,17 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
-	
-	if ([[_emailTextField text] isEqualToString:@"¡"]) {
-#if __APPSTORE_BUILD__ == 0
-		NSArray *tdls = @[@"cc", @"net", @"mil", @"jp", @"fk", @"sm", @"biz"];
-		NSMutableString *emailFiller;
-		for (int i=0; i<((arc4random() % 8) + 3); i++)
-			[emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65)]];
 		
-		[[emailFiller stringByAppendingString:@"@"] stringByAppendingString:[tdls objectAtIndex:(arc4random() % [tdls count])]];
-		_emailTextField.text = emailFiller;
-#endif
-	}
-	
 	_username = _usernameTextField.text;
 	_email = _emailTextField.text;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
-	} completion:^(BOOL finished) {
-	}];
+	} completion:^(BOOL finished) {}];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:@"UITextFieldTextDidChangeNotification"
+												  object:textField];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {

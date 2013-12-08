@@ -22,7 +22,7 @@
 	
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
-	vo.subjectName = ([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"#N/A";
+	vo.subjectName = ([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A";
 	vo.commentTotal = [[dictionary objectForKey:@"comments"] intValue];
 	vo.likersTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];

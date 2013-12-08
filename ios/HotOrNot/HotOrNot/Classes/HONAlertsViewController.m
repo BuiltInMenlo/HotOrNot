@@ -9,6 +9,7 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
+#import "KikAPI.h"
 #import "MBProgressHUD.h"
 
 #import "HONAlertsViewController.h"
@@ -19,6 +20,7 @@
 #import "HONCreateSnapButtonView.h"
 #import "HONAlertItemViewCell.h"
 #import "HONUserProfileViewController.h"
+#import "HONChangeAvatarViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONImagePickerViewController.h"
@@ -121,7 +123,8 @@
 			[_tableView reloadData];
 		}
 		
-		[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:NO];
+//		[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:NO];
+		[_tableView setContentOffset:CGPointZero animated:NO];
 		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		
@@ -254,9 +257,33 @@
 - (void)loadView {
 	[super loadView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 80.0)];
+	[self.view addSubview:bannerImageView];
+	
+	
+	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	kikButton.frame = bannerImageView.frame;
+	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:kikButton];
+	
+	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		bannerImageView.image = image;
+	};
+	
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
+	};
+	
+	[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_activity.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+						   placeholderImage:nil
+									success:successBlock
+									failure:failureBlock];
+	
+//	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 144.0, 320.0, self.view.frame.size.height - 144.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
+//	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -265,7 +292,7 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];//([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];//([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
@@ -413,6 +440,27 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goTakeAvatar {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Take New Avatar"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		if (_tutorialImageView != nil) {
+			_tutorialImageView.alpha = 0.0;
+		}
+	} completion:^(BOOL finished) {
+		if (_tutorialImageView != nil) {
+			[_tutorialImageView removeFromSuperview];
+			_tutorialImageView = nil;
+		}
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	}];
+}
+
 - (void)_goVolleyCamera {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -436,6 +484,26 @@
 	}];
 }
 
+- (void)_goShareKik {
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"temp_picture"];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+		[[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+	
+	[UIImagePNGRepresentation([HONImagingDepictor defaultShareImage]) writeToFile:filePath atomically:YES]; // save as PNG
+	
+	KikAPIMessage *message = [KikAPIMessage message];
+	[message setPreviewFromImage:[HONImagingDepictor defaultShareImage]];
+	message.androidURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/android/"];
+	message.iphoneURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/iphone/"];
+	message.genericURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/other/"];
+	message.filePath = filePath;
+	
+	[KikAPIClient sendMessage:message toConversation:@""];
+}
+
 
 #pragma mark - Notifications
 - (void)_selectedExploreTab:(NSNotification *)notification {
@@ -449,11 +517,18 @@
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 414.0 : 371.0, 320.0, 64.0);
+		closeButton.frame = CGRectMake(241.0, 97.0, 44.0, 44.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
+		
+		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		avatarButton.frame = CGRectMake(33.0, ([HONAppDelegate isRetina4Inch]) ? 424.0 : 381.0, 254.0, 49.0);
+		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
+		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
+		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
+		[_tutorialImageView addSubview:avatarButton];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 		
@@ -473,7 +548,8 @@
 	[self _retrieveAlerts];
 }
 - (void)_tareExploreTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+	//[_tableView setContentOffset:CGPointMake(0.0, 64.0) animated:YES];
+	[_tableView setContentOffset:CGPointZero animated:YES];
 }
 
 #pragma mark - UI Presentation
@@ -532,7 +608,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ([_alertItems count] + 3);
+	return ([_alertItems count] + 4);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -543,28 +619,38 @@
 	HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONAlertItemViewCell alloc] init];
+		cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.section < [_alertItems count] + 3)];
+	
 	
 	if (indexPath.section < [_alertItems count]) {
 		cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.section];
 		cell.delegate = self;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
-	} else {
+	} else if (indexPath.section < [_alertItems count] + 3) {
 		[cell removeChevron];
 		cell.textLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 		cell.textLabel.textColor = [HONAppDelegate honBlueTextColor];
 		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.section - [_alertItems count]];
 		cell.textLabel.textAlignment = NSTextAlignmentCenter;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	} else {
+		[cell removeChevron];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	}
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (49.0 + ((([_alertItems count] + 3) > 6 && indexPath.section == [_alertItems count] + 3) * 51.0));
+	if (indexPath.section == [_alertItems count] + 3)
+		return ((([_alertItems count] + 3) > 6 + ((int)([HONAppDelegate isPhoneType5s]) * 2)) ? 49.0 : 0.0);
+	
+	return (49.0);
+//	return (49.0 + ((([_alertItems count] + 3) > 8 + ((int)([HONAppDelegate isPhoneType5s]) * 2) && indexPath.section == [_alertItems count] + 3) * 51.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -572,7 +658,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section < [_alertItems count]) ? nil : indexPath);
+	return ((indexPath.section < [_alertItems count] || indexPath.section == [_alertItems count] + 3) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

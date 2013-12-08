@@ -149,7 +149,7 @@
 		_cancelButton.alpha = 1.0;
 	}];
 	
-	textField.text = (_isUser) ? @"" : @"#";
+	textField.text = @"";
 	textField.frame = CGRectMake(9.0, 11.0, 200.0, 24.0);
 	[_searchTextField setTextColor:[HONAppDelegate honGreyTextColor]];
 	[self.delegate searchBarHeaderFocus:self];
@@ -158,7 +158,7 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {	
 	if ([textField.text isEqualToString:@""])
-		textField.text = (_isUser) ? @"" : @"#";
+		textField.text = @"";
 	
 	return (YES);
 }

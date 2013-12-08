@@ -506,6 +506,48 @@
 	}];
 }
 
+- (void)_sendShoutoutForUser:(int)userID {
+	NSDictionary *params = @{@"target"	: [NSString stringWithFormat:@"%d", userID],
+							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIMakeShoutout, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIMakeShoutout parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - Public APIs
 - (void)setUserID:(int)userID {
@@ -704,6 +746,10 @@
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:4];
 	[alertView show];
+}
+
+- (void)_goShoutout {
+	[self _sendShoutoutForUser:_userID];
 }
 
 - (void)_goFlag {
@@ -937,16 +983,24 @@
 		[_followButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:_followButton];
 		
+		UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		shoutoutButton.frame = CGRectMake(0.0, 279.0, 320.0, 45.0);
+		[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutoutButton_nonActive"] forState:UIControlStateNormal];
+		[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutoutButton_Active"] forState:UIControlStateHighlighted];
+		[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:shoutoutButton];
+		
 		UIButton *reportButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		reportButton.frame = CGRectMake(0.0, 279.0, 320.0, 45.0);
+		reportButton.frame = CGRectMake(0.0, 325.0, 320.0, 45.0);
 		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_nonActive"] forState:UIControlStateNormal];
 		[reportButton setBackgroundImage:[UIImage imageNamed:@"reportUser_Active"] forState:UIControlStateHighlighted];
 		[reportButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:reportButton];
 	}
 	
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (324.0 + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:324.0 forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	float gridPos = 324.0 + ((int)(!_isUser) * 45.0);
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];

@@ -105,6 +105,7 @@
 	[_headerBGImageView addSubview:_replyImageView];
 	
 	_creatorSubjectName = (_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
+	_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?";
 	_subjectTextField.text = @"";//(_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : _subjectName;
 	
 	_subjectsView.isJoinVolley = _isJoinChallenge;
@@ -142,7 +143,7 @@
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
 	_placeholderLabel.textColor = [HONAppDelegate honBlueTextColor];
-	_placeholderLabel.text = @"how do you feel?";//(_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
+	_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
 	[_headerBGImageView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
@@ -336,38 +337,17 @@
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 //	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
-	if ([[_subjectTextField.text componentsSeparatedByString:@"#"] count] > (2 + (_isJoinChallenge))) {
-		[[[UIAlertView alloc] initWithTitle:(_isJoinChallenge) ? @"Two emoticons only allowed" : @"One emotion only allowed"
-									message:@""
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-		
-		_subjectTextField.text = @"";//(_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
-		_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?";//([_subjectTextField.text length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
-	}
-	
-//	NSString *enteredCharacter = [_subjectTextField.text substringFromIndex:[_creatorSubjectName length]];
-//	if ([[_subjectTextField.text substringToIndex:[_subjectTextField.text length] - 1] isEqualToString:_creatorSubjectName])
-//		_subjectTextField.text = [_creatorSubjectName stringByAppendingFormat:@" : #%@", enteredCharacter];
+	if ([_subjectTextField.text length] == 0)
+		_subjectTextField.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?";
 }
 
 
 #pragma mark - EmotionsPickerView Delegates
 - (void)emotionsPickerView:(HONVolleyEmotionsPickerView *)cameraSubjectsView selectEmotion:(HONEmotionVO *)emotionVO {
-	_subjectTextField.text = @"";//(_isJoinChallenge) ? _creatorSubjectName : @"#";
+	_subjectTextField.text = @"";
 	_placeholderLabel.text = @"";
 	
-	NSLog(@"join_total:[%d]", [HONAppDelegate totalForCounter:@"join"]);
-//	if (_isJoinChallenge && [HONAppDelegate incTotalForCounter:@"join"] == 0) {
-//		[[[UIAlertView alloc] initWithTitle:@"You are about to add a second emoticon to this selfie"
-//									message:@""
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
-//	
-//	} else
-		_subjectTextField.text = emotionVO.hastagName;//(!_isJoinChallenge) ? emotionVO.hastagName : [NSString stringWithFormat:@"%@%@", _creatorSubjectName, emotionVO.hastagName];
+	_subjectTextField.text = emotionVO.hastagName;
 }
 
 
@@ -406,29 +386,7 @@
 			_tutorialImageView = nil;
 		}];
 	}
-	
-//	NSString *orgState = (_isJoinChallenge) ? [NSString stringWithFormat:@"%@%@", _creatorSubjectName, _subjectDelimiter] : @"#";
-	NSLog(@"ORG:[%@]\nTXT:[%@]\nCHG:[%@]", _creatorSubjectName, textField.text, string);
-	
-	_placeholderLabel.text = ([textField.text length] == 1) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
-	
-	// at starting pt for create, set to # and allow change
-	if ([textField.text length] == 0 && [string length] == 1) {
-		textField.text = @"#";
-		return (YES);
-	}
-	
-//	// at the starting pt for join and tapped a letter, append delimeter
-//	if ([textField.text isEqualToString:_creatorSubjectName] && range.length == 0 && [string length] != 0) {
-//		textField.text = [NSString stringWithFormat:@"%@#", _creatorSubjectName];
-//		return (YES);
-//	}
-//	
-//	// at starting pt, and tapped backspace
-//	if ([textField.text isEqualToString:_creatorSubjectName] && range.length == 1) {
-//		return (NO);
-//	}
-
+		
 	return (YES);
 }
 

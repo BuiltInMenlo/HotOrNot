@@ -157,7 +157,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic) int challengeID;
+@property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
+@property (nonatomic, copy) NSString *currentConversationID;
 @end
 
 
@@ -1204,6 +1206,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
+- (BOOL)handleKikAPIData:(KikAPIData *)data {
+	if (data == nil)
+		return (NO);
+	
+	if (data.type == KikAPIDataTypeNotKik)
+		return (NO);
+	
+	if (data.type == KikAPIDataTypePick)
+		_currentConversationID = data.conversationID;
+	
+	else {
+//		[self.viewController loadFromURI:data.message.fileUrl];
+		_currentConversationID = data.conversationID;
+	}
+	
+	return (YES);
+}
+
 
 #pragma mark - Notifications
 - (void)_addViewToWindow:(NSNotification *)notification {
@@ -1548,6 +1568,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+	return ([self handleKikAPIData:[KikAPIClient handleOpenURL:url sourceApplication:sourceApplication annotation:annotation]]);
 	return ([FBAppCall handleOpenURL:url sourceApplication:sourceApplication]);
 }
 
@@ -1766,9 +1787,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 	
-//	[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.selfieclub"
-//							   withHomepageURI:@"http://www.builtinmenlo.com"
-//								  addAppButton:YES];
+	[KikAPIClient registerAsKikPluginWithAppID:@"com.builtinmenlo.selfieclub.kik"
+							   withHomepageURI:@"http://www.builtinmenlo.com"
+								  addAppButton:YES];
 }
 
 
@@ -1840,8 +1861,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView setTag:1];
 		[alertView show];
 	
-	} else
-		[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
+	} else {
+		_userID = [[notification objectForKey:@"user"] intValue];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
+														   delegate:self
+												  cancelButtonTitle:@"Cancel"
+												  otherButtonTitles:@"OK", nil];
+		[alertView setTag:6];
+		[alertView show];
+	}
 }
 
 - (void)receivedForegroundNotification:(NSDictionary *)notification fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
@@ -1858,8 +1887,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView setTag:1];
 		[alertView show];
 		
-	} else
-		[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
+	} else {
+		_userID = [[notification objectForKey:@"user"] intValue];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
+														   delegate:self
+												  cancelButtonTitle:@"Cancel"
+												  otherButtonTitles:@"OK", nil];
+		[alertView setTag:6];
+		[alertView show];
+	}
 }
 
 - (void)receivedBackgroundNotification:(NSDictionary *)notification {
@@ -2099,6 +2136,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			case 1:
 				break;
+		}
+	
+	} else if (alertView.tag == 6) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Notification - %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		
+		if (buttonIndex == 1) {
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			userPofileViewController.userID = _userID;
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+			[navigationController setNavigationBarHidden:YES];
+			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

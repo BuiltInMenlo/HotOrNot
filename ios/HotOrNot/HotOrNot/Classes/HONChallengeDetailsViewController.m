@@ -375,7 +375,7 @@
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:_challengeVO.subjectName];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Messages"];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
@@ -434,14 +434,8 @@
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"subDetailsBackground"]];
-		[_heroHolderView addSubview:gradientImageView];
-		
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_heroImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			gradientImageView.alpha = 1.0;
-		}];
+//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//		} completion:^(BOOL finished) {}];
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -450,7 +444,6 @@
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapTabSize.width, kSnapTabSize.height)];
 	_heroImageView.userInteractionEnabled = YES;
-	_heroImageView.alpha = 0.0;
 	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						  placeholderImage:nil

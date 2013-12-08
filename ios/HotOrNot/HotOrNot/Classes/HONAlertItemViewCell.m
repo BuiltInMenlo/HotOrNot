@@ -29,15 +29,24 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityBackground"]];
-		
 		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityChevron"]];
 		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 279.0, 2.0);
+		_chevronImageView.hidden = YES;
 		[self.contentView addSubview:_chevronImageView];
 	}
 	
 	return (self);
 }
+
+- (id)initWithBackground:(BOOL)hasBackground {
+	if ((self = [self init])) {
+		if (hasBackground)
+			self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityBackground"]];
+	}
+	
+	return (self);
+}
+
 
 - (void)removeChevron {
 	[_chevronImageView removeFromSuperview];
@@ -98,12 +107,20 @@
 	nameLabel.text = _alertItemVO.username;
 	[self.contentView addSubview:nameLabel];
 	
-	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 235.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
+	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 225.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
 	messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	messageLabel.textColor = [HONAppDelegate honLightGreyTextColor];
 	messageLabel.backgroundColor = [UIColor clearColor];
 	messageLabel.text = _alertItemVO.message;
 	[self.contentView addSubview:messageLabel];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 14.0, 50.0, 17.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.textColor = [HONAppDelegate honGreyTextColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.text = [HONAppDelegate timeSinceDate:_alertItemVO.sentDate];
+	[self addSubview:timeLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectButton.frame = CGRectMake(0.0, 0.0, 320.0, 49.0);

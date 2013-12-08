@@ -27,7 +27,6 @@
 		
 		_verifyTabInfo = [HONAppDelegate infoForABTab];
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
-		avatarImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:avatarImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

@@ -9,5 +9,15 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <UIKit/UIKit.h>
 
+typedef enum {
+	HONRegisterErrorTypeUsernameEmailBirthday = 0,
+	HONRegisterErrorTypeEmailBirthday,
+	HONRegisterErrorTypeUsernameBirthday,
+	HONRegisterErrorTypeBirthday,
+	HONRegisterErrorTypeUsernameEmail,
+	HONRegisterErrorTypeEmail,
+	HONRegisterErrorTypeUsername
+} HONRegisterErrorType;
+
 @interface HONRegisterViewController : UIViewController <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>
 @end

@@ -34,6 +34,22 @@
 		_participantsLabel.text = [self _captionForParticipants];
 		[self addSubview:_participantsLabel];
 		
+		CGSize size;
+		if ([HONAppDelegate isIOS7]) {
+			size = [_participantsLabel.text boundingRectWithSize:CGSizeMake(200.0, 19.0)
+														 options:NSStringDrawingTruncatesLastVisibleLine
+													  attributes:@{NSFontAttributeName:_participantsLabel.font}
+														 context:nil].size;
+			
+		} //else
+//			size = [_participantsLabel.text sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+
+		_participantsLabel.frame = CGRectMake(_participantsLabel.frame.origin.x, _participantsLabel.frame.origin.y, MIN(200.0, size.width), _participantsLabel.frame.size.height);
+		UIButton *participantsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		participantsButton.frame = _participantsLabel.frame;
+		[participantsButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:participantsButton];
+		
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		joinButton.frame = CGRectMake(214.0, 0.0, 44.0, 44.0);
