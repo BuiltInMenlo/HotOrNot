@@ -9,7 +9,6 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
-#import "KikAPI.h"
 #import "MBProgressHUD.h"
 
 #import "HONAlertsViewController.h"
@@ -485,23 +484,26 @@
 }
 
 - (void)_goShareKik {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
-	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"temp_picture"];
+//	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//	NSString *documentsDirectory = [paths objectAtIndex:0];
+//	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"temp_picture"];
+//	
+//	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+//		[[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+//	
+//	[UIImagePNGRepresentation([HONImagingDepictor defaultShareImage]) writeToFile:filePath atomically:YES]; // save as PNG
+//	
+//	KikAPIMessage *message = [KikAPIMessage message];
+//	[message setPreviewFromImage:[HONImagingDepictor defaultShareImage]];
+//	message.androidURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/android/"];
+//	message.iphoneURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/iphone/"];
+//	message.genericURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/other/"];
+//	message.filePath = filePath;
+//	
+//	[KikAPIClient sendMessage:message toConversation:@""];
 	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
-		[[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-	
-	[UIImagePNGRepresentation([HONImagingDepictor defaultShareImage]) writeToFile:filePath atomically:YES]; // save as PNG
-	
-	KikAPIMessage *message = [KikAPIMessage message];
-	[message setPreviewFromImage:[HONImagingDepictor defaultShareImage]];
-	message.androidURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/android/"];
-	message.iphoneURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/iphone/"];
-	message.genericURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/other/"];
-	message.filePath = filePath;
-	
-	[KikAPIClient sendMessage:message toConversation:@""];
+	NSLog(@"KIK CARD:[%@]", [HONAppDelegate kikCardURL]);
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 }
 
 
@@ -509,7 +511,7 @@
 - (void)_selectedExploreTab:(NSNotification *)notification {
 	NSLog(@"_selectedExploreTab");
 	
-	NSLog(@"EXPLORE TOTAL:[%d]", [HONAppDelegate totalForCounter:@"explore"]);
+	NSLog(@"ALERT TOTAL:[%d]", [HONAppDelegate totalForCounter:@"explore"]);
 	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];

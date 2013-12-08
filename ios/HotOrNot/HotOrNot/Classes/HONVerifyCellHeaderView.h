@@ -1,8 +1,8 @@
 //
-//  HONVerifyCellHeaderView.h
+//  HONFollowTabCellHeaderView.h
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 10/31/13 @ 10:01 PM.
+//  Created by Matt Holcombe on 11/1/13 @ 1:02 PM.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
@@ -17,7 +17,6 @@
 
 @property (nonatomic, assign) id <HONVerifyCellHeaderViewDelegate> delegate;
 @end
-
 
 @protocol HONVerifyCellHeaderViewDelegate
 - (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO;

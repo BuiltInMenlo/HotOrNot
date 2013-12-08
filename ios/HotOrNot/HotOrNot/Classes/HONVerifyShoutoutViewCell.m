@@ -1,26 +1,25 @@
 //
-//  HONFollowTabViewCell.m
+//  HONVerifyShoutoutViewCell.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 11/1/13 @ 12:52 PM.
-//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//  Created by Matthew Holcombe on 09.07.12.
+//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONFollowTabViewCell.h"
-#import "HONFollowTabCellHeaderView.h"
+#import "HONVerifyShoutoutViewCell.h"
 #import "HONOpponentVO.h"
 #import "HONImageLoadingView.h"
+#import "HONVerifyCellHeaderView.h"
 
-
-@interface HONFollowTabViewCell() <HONFollowTabCellHeaderDelegate>
+@interface HONVerifyShoutoutViewCell() <HONVerifyCellHeaderViewDelegate>
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @end
 
-@implementation HONFollowTabViewCell
+@implementation HONVerifyShoutoutViewCell
 @synthesize delegate = _delegate;
 @synthesize challengeVO = _challengeVO;
 
@@ -55,16 +54,12 @@
 		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
 		_heroImageView.image = image;
 				
-//		if ([HONAppDelegate isRetina4Inch]) {
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_heroImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				[imageLoadingView stopAnimating];
-				[imageLoadingView removeFromSuperview];
-			}];
-		
-//		} else
-//			gradientImageView.alpha = 1.0;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_heroImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[imageLoadingView stopAnimating];
+			[imageLoadingView removeFromSuperview];
+		}];
 	};
 	
 	//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);
@@ -77,29 +72,42 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
-	HONFollowTabCellHeaderView *headerView = [[HONFollowTabCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
+	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
 	headerView.frame = CGRectOffset(headerView.frame, 0.0, 64.0);
 	headerView.delegate = self;
 	[self.contentView addSubview:headerView];
 	
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 210.0, 64.0, 142.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
-	UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dispproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-	[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-	[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:dispproveButton];
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:skipButton];
 	
+	UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
+	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
+	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
+	[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:shoutoutButton];
+	
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(13.0, [UIScreen mainScreen].bounds.size.height - 95.0, 44.0, 44.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:moreButton];
 	
 	if (![HONAppDelegate hasTakenSelfie])
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"needSelfieHeroBubble"]]];
@@ -125,36 +133,44 @@
 
 #pragma mark - Navigation
 - (void)_goApprove {
-	[self.delegate followViewCellApprove:self forChallenge:_challengeVO];
+	[self.delegate verifyShoutoutViewCellApprove:self forChallenge:_challengeVO];
 }
 
-- (void)_goDisprove {
-	[self.delegate followViewCellDisprove:self forChallenge:_challengeVO];
+- (void)_goSkip {
+	[self.delegate verifyShoutoutViewCellSkip:self forChallenge:_challengeVO];
+}
+
+- (void)_goMore {
+	[self.delegate verifyShoutoutViewCellMore:self forChallenge:_challengeVO];
+}
+
+- (void)_goShoutout {
+	[self.delegate verifyShoutoutViewCellShoutout:self forChallenge:_challengeVO];
 }
 
 - (void)_goUserProfile {
-	[self.delegate followViewCell:self creatorProfile:_challengeVO];
+	[self.delegate verifyShoutoutViewCell:self creatorProfile:_challengeVO];
 }
 
 
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
-		[self.delegate followViewCell:self creatorProfile:_challengeVO];
-	
+		[self.delegate verifyShoutoutViewCell:self creatorProfile:_challengeVO];
+		
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
 }
 
 
-#pragma mark - FollowTabCellHeader Delegates
-- (void)cellHeaderView:(HONFollowTabCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
+#pragma mark - VerifyCellHeader Delegates
+- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Follow A/B - Header Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	[self.delegate followViewCell:self creatorProfile:_challengeVO];
+	[self.delegate verifyShoutoutViewCell:self creatorProfile:_challengeVO];
 }
 
 @end

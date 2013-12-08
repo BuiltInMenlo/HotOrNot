@@ -133,6 +133,10 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
 + (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
 + (NSString *)deviceModel;
++ (BOOL)isPhoneType5s;
++ (BOOL)isRetina4Inch;
++ (BOOL)isIOS7;
++ (NSString *)deviceLocale;
 
 + (NSString *)apiServerPath;
 + (NSString *)customerServiceURL;
@@ -160,11 +164,13 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)replyEmotions;
 
 + (NSDictionary *)stickerForSubject:(NSString *)subject;
++ (NSString *)kikCardURL;
 
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 + (NSArray *)inviteCelebs;
 + (NSArray *)popularPeople;
++ (NSArray *)specialSubjects;
 
 + (NSRange)rangeForImageQueue;
 
@@ -195,14 +201,10 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (UIViewController *)appTabBarController;
 
-+ (BOOL)isPhoneType5s;
-+ (BOOL)isRetina4Inch;
-+ (BOOL)isIOS7;
 + (BOOL)hasTakenSelfie;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingConfigServer;
-+ (NSString *)deviceLocale;
 
 + (CGFloat)compressJPEGPercentage;
 + (NSArray *)colorsForOverlayTints;

@@ -351,6 +351,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (nil);
 }
 
++ (NSString *)kikCardURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
+}
+
 + (NSArray *)searchSubjects {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"search_subjects"]);
 }
@@ -367,6 +371,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSArray *)popularPeople {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"popular_people"]);
+}
+
++ (NSArray *)specialSubjects {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"special_subjects"]);
 }
 
 + (NSRange)rangeForImageQueue {
@@ -851,6 +859,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"kik_card"] forKey:@"kik_card"];
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
@@ -866,6 +875,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"popular_people"] forKey:@"popular_people"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"special_subjects"] forKey:@"special_subjects"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
 																   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
