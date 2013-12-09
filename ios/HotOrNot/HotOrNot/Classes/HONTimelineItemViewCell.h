@@ -16,7 +16,6 @@
 
 + (NSString *)cellReuseIdentifier;
 - (id)init;
-//- (void)upvoteUser:(int)userID onChallenge:(HONChallengeVO *)challengeVO;
 - (void)updateChallenge:(HONChallengeVO *)challengeVO;
 - (void)showTapOverlay;
 - (void)removeTutorialBubble;

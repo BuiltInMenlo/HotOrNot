@@ -18,7 +18,7 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONSnapPreviewViewController.h"
-#import "HONTimelineCreatorHeaderView.h"
+#import "HONTimelineCellHeaderView.h"
 #import "HONTimelineItemFooterView.h"
 #import "HONChallengeDetailsGridView.h"
 #import "HONUserProfileViewController.h"
@@ -28,7 +28,7 @@
 #import "HONEmotionVO.h"
 
 
-@interface HONChallengeDetailsViewController () <HONTimelineHeaderCreatorViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate, HONParticipantGridViewDelegate>
+@interface HONChallengeDetailsViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate, HONParticipantGridViewDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -482,7 +482,7 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
-	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
+	HONTimelineCellHeaderView *creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:_challengeVO];
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[_contentHolderView addSubview:creatorHeaderView];
@@ -792,8 +792,8 @@
 }
 
 
-#pragma mark - TimelineHeaderCreator Delegates
-- (void)timelineHeaderView:(HONTimelineCreatorHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+#pragma mark - TimelineCellHeaderCreator Delegates
+- (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Header Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",

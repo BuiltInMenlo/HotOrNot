@@ -1,5 +1,5 @@
 //
-//  HONTimelineCreatorHeaderView.m
+//  HONTimelineCellHeaderView.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 8/6/13.
@@ -8,14 +8,14 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONTimelineCreatorHeaderView.h"
+#import "HONTimelineCellHeaderView.h"
 #import "HONEmotionVO.h"
 
-@interface HONTimelineCreatorHeaderView()
+@interface HONTimelineCellHeaderView()
 @property (nonatomic, retain) HONChallengeVO *challengeVO;
 @end
 
-@implementation HONTimelineCreatorHeaderView
+@implementation HONTimelineCellHeaderView
 @synthesize delegate = _delegate;
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
@@ -117,7 +117,7 @@
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[self.delegate timelineHeaderView:self showProfile:_challengeVO.creatorVO forChallenge:_challengeVO];
+	[self.delegate timelineCellHeaderView:self showProfile:_challengeVO.creatorVO forChallenge:_challengeVO];
 }
 
 

@@ -13,14 +13,15 @@
 
 #import "HONTimelineItemViewCell.h"
 #import "HONImageLoadingView.h"
-#import "HONTimelineCreatorHeaderView.h"
+#import "HONTimelineCellHeaderView.h"
+#import "HONTimelineCellSubjectView.h"
 #import "HONTimelineItemFooterView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
 #import "HONOpponentVO.h"
 
 
-@interface HONTimelineItemViewCell() <HONTimelineHeaderCreatorViewDelegate, HONTimelineItemFooterViewDelegate>
+@interface HONTimelineItemViewCell() <HONTimelineCellHeaderViewDelegate, HONTimelineItemFooterViewDelegate>
 @property (nonatomic, strong) UIView *heroHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
@@ -119,34 +120,38 @@
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:detailsButton];
 	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"captionBackground"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 24.0, 0.0, 24.0)]];
-	[self.contentView addSubview:subjectBGImageView];
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:5.0 + (([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	[self.contentView addSubview:timelineCellSubjectView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 280.0, subjectBGImageView.frame.size.height)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:22];
-	subjectLabel.textColor = [UIColor whiteColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.textAlignment = NSTextAlignmentCenter;
-	subjectLabel.text = _challengeVO.subjectName;
-	[subjectBGImageView addSubview:subjectLabel];
 	
-	float maxWidth = 280.0;
-	CGSize size = [[NSString stringWithFormat:@"  %@  ", subjectLabel.text] boundingRectWithSize:CGSizeMake(maxWidth, 44.0)
-																						 options:NSStringDrawingTruncatesLastVisibleLine
-																					  attributes:@{NSFontAttributeName:subjectLabel.font}
-																						 context:nil].size;
-	if (size.width > maxWidth)
-		size = CGSizeMake(maxWidth + 15.0, size.height);
-	
-	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 2.0, size.width, subjectLabel.frame.size.height);
-	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), (5.0 + ([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5), size.width, 44.0);
+//	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"captionBackground"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 24.0, 0.0, 24.0)]];
+//	[self.contentView addSubview:subjectBGImageView];
+//	
+//	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 280.0, subjectBGImageView.frame.size.height)];
+//	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:22];
+//	subjectLabel.textColor = [UIColor whiteColor];
+//	subjectLabel.backgroundColor = [UIColor clearColor];
+//	subjectLabel.textAlignment = NSTextAlignmentCenter;
+//	subjectLabel.text = _challengeVO.subjectName;
+//	[subjectBGImageView addSubview:subjectLabel];
+//	
+//	float maxWidth = 280.0;
+//	CGSize size = [[NSString stringWithFormat:@"  %@  ", subjectLabel.text] boundingRectWithSize:CGSizeMake(maxWidth, 44.0)
+//																						 options:NSStringDrawingTruncatesLastVisibleLine
+//																					  attributes:@{NSFontAttributeName:subjectLabel.font}
+//																						 context:nil].size;
+//	if (size.width > maxWidth)
+//		size = CGSizeMake(maxWidth + 15.0, size.height);
+//	
+//	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 2.0, size.width, subjectLabel.frame.size.height);
+//	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), (5.0 + ([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5), size.width, 44.0);
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[self addGestureRecognizer:lpGestureRecognizer];
 	
 	
-	HONTimelineCreatorHeaderView *creatorHeaderView = [[HONTimelineCreatorHeaderView alloc] initWithChallenge:_challengeVO];
+	HONTimelineCellHeaderView *creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:_challengeVO];
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
@@ -247,8 +252,8 @@
 }
 
 
-#pragma mark - TimelineHeaderCreator Delegates
-- (void)timelineHeaderView:(HONTimelineCreatorHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+#pragma mark - TimelineCellHeaderCreator Delegates
+- (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Header - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",

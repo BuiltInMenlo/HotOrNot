@@ -338,7 +338,10 @@
 //	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
 	if ([_subjectTextField.text length] == 0)
-		_subjectTextField.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?";
+		_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?";
+	
+	else
+		_placeholderLabel.text = @"";
 }
 
 
