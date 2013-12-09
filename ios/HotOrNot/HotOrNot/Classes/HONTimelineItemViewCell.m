@@ -86,18 +86,13 @@
 //	NSLog(@"HERO DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", _heroOpponentVO.dictionary);
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		//_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
-		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
 		_heroImageView.image = image;
 		
-//		if ([HONAppDelegate isRetina4Inch]) {
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_heroImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				[imageLoadingView stopAnimating];
-				[imageLoadingView removeFromSuperview];
-			}];
-//		}
+		[UIView animateWithDuration:0.25 animations:^(void) {
+		} completion:^(BOOL finished) {
+			[imageLoadingView stopAnimating];
+			[imageLoadingView removeFromSuperview];
+		}];
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -108,43 +103,19 @@
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_heroImageView.userInteractionEnabled = YES;
-//	_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
 	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
 	
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:5.0 + (([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	[self.contentView addSubview:timelineCellSubjectView];
+	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = _heroHolderView.frame;
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:detailsButton];
-	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:5.0 + (([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
-	[self.contentView addSubview:timelineCellSubjectView];
-	
-	
-//	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"captionBackground"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 24.0, 0.0, 24.0)]];
-//	[self.contentView addSubview:subjectBGImageView];
-//	
-//	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 280.0, subjectBGImageView.frame.size.height)];
-//	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:22];
-//	subjectLabel.textColor = [UIColor whiteColor];
-//	subjectLabel.backgroundColor = [UIColor clearColor];
-//	subjectLabel.textAlignment = NSTextAlignmentCenter;
-//	subjectLabel.text = _challengeVO.subjectName;
-//	[subjectBGImageView addSubview:subjectLabel];
-//	
-//	float maxWidth = 280.0;
-//	CGSize size = [[NSString stringWithFormat:@"  %@  ", subjectLabel.text] boundingRectWithSize:CGSizeMake(maxWidth, 44.0)
-//																						 options:NSStringDrawingTruncatesLastVisibleLine
-//																					  attributes:@{NSFontAttributeName:subjectLabel.font}
-//																						 context:nil].size;
-//	if (size.width > maxWidth)
-//		size = CGSizeMake(maxWidth + 15.0, size.height);
-//	
-//	subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 2.0, size.width, subjectLabel.frame.size.height);
-//	subjectBGImageView.frame = CGRectMake(160.0 - (size.width * 0.5), (5.0 + ([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5), size.width, 44.0);
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	lpGestureRecognizer.minimumPressDuration = 0.25;

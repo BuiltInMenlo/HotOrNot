@@ -67,13 +67,8 @@
 - (void)_captionForSubject:(NSString *)subject {
 	_caption = subject;
 	
-	NSArray *specialSubjects = @[@{@"id"		: @"0",
-									  @"name"	: @"Shoutout",
-									  @"format"	: @"_{{SUBJECT_NAME}}_: _{{USERNAME}}_"}];
-	
 	BOOL isFound = NO;
-	//for (NSDictionary *dict in [HONAppDelegate specialSubjects]) {
-	for (NSDictionary *dict in specialSubjects) {
+	for (NSDictionary *dict in [HONAppDelegate specialSubjects]) {
 		if ([[subject lowercaseString] isEqualToString:[[dict objectForKey:@"name"] lowercaseString]]) {
 			isFound = YES;
 			_caption = [[dict objectForKey:@"format"] stringByReplacingOccurrencesOfString:@"_{{SUBJECT_NAME}}_" withString:[dict objectForKey:@"name"]];
