@@ -1872,14 +1872,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView show];
 	
 	} else {
-		_userID = [[notification objectForKey:@"user"] intValue];
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:6];
-		[alertView show];
+		if ([notification objectForKey:@"user"] != nil) {
+			_userID = [[notification objectForKey:@"user"] intValue];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
+															   delegate:self
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"OK", nil];
+			[alertView setTag:6];
+			[alertView show];
+			
+		} else
+			[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
 	}
 }
 
@@ -1898,14 +1902,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView show];
 		
 	} else {
-		_userID = [[notification objectForKey:@"user"] intValue];
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:6];
-		[alertView show];
+		if ([notification objectForKey:@"user"] != nil) {
+			_userID = [[notification objectForKey:@"user"] intValue];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
+															   delegate:self
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"OK", nil];
+			[alertView setTag:6];
+			[alertView show];
+			
+		} else
+			[self _showOKAlert:@"" withMessage:[[notification objectForKey:@"aps"] objectForKey:@"alert"]];
 	}
 }
 
@@ -1921,6 +1929,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)launchedFromNotification:(NSDictionary *)notification {
 	NSLog(@"launchedFromNotification:[%@]", notification);
 	
+	UINavigationController *navigationController;
+	
 	int pushType = [[notification objectForKey:@"type"] intValue];
 	if (pushType == HONPushTypeShowChallengeDetails)
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
@@ -1938,29 +1948,34 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	} else if (pushType == HONPushTypeShowUserProfile) {
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		
 	} else if (pushType == HONPushTypeShowAddContacts) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 		
 	} else if (pushType == HONPushTypeShowSettings) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 		
 	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
 	
 	} else {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
-		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		if ([notification objectForKey:@"user"] != nil) {
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		}
+	}
+	
+	if (navigationController != nil) {
 		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			}];
+			
+		} else
+			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
@@ -1968,6 +1983,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"launchedFromNotification:fetchCompletionHandler:[%@]", notification);
 	completionHandler(UIBackgroundFetchResultNoData);
 	
+	UINavigationController *navigationController;
+	
 	int pushType = [[notification objectForKey:@"type"] intValue];
 	if (pushType == HONPushTypeShowChallengeDetails)
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:NO];
@@ -1985,22 +2002,34 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	} else if (pushType == HONPushTypeShowUserProfile) {
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
 		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		
 	} else if (pushType == HONPushTypeShowAddContacts) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 		
 	} else if (pushType == HONPushTypeShowSettings) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 		
 	} else if (pushType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
+	
+	} else {
+		if ([notification objectForKey:@"user"] != nil) {
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		}
+	}
+	
+	if (navigationController != nil) {
+		[navigationController setNavigationBarHidden:YES];
+		if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			}];
+					
+		} else
+			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
@@ -2147,8 +2176,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			case 1:
 				break;
 		}
-	
-	} else if (alertView.tag == 6) {
+	}
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 6) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"App Notification - %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
@@ -2158,7 +2190,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			userPofileViewController.userID = _userID;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 			[navigationController setNavigationBarHidden:YES];
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			
+			if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+					[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				}];
+				
+			} else
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }
