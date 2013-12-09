@@ -17,7 +17,8 @@
 #import "HONImagingDepictor.h"
 
 
-const CGFloat kSnapRatio = 1.853125;
+const CGFloat kSnapRatio = 1.775;//1.853125f;
+const CGSize kInstagramSize = {612.0, 612.0};
 
 @implementation HONImagingDepictor
 
@@ -79,8 +80,44 @@ const CGFloat kSnapRatio = 1.853125;
 	return ([[HONImagingDepictor createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:1.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
 }
 
-+ (UIImage *)defaultShareImage {
-	return ([UIImage imageNamed:@"share_defaultTemplate"]);
++ (UIImage *)shareTemplateImageForType:(HONImagingDepictorShareTemplateType)shareTemplateType {
+	NSString *keySuffix = @"";
+	
+	switch (shareTemplateType) {
+		case HONImagingDepictorShareTemplateTypeDefault:
+			keySuffix = @"default";
+			break;
+			
+		case HONImagingDepictorShareTemplateTypeInstagram:
+			keySuffix = @"instagram";
+			break;
+			
+		case HONImagingDepictorShareTemplateTypeTwitter:
+			keySuffix = @"twitter";
+			break;
+			
+		case HONImagingDepictorShareTemplateTypeFacebook:
+			keySuffix = @"facebook";
+			break;
+			
+		case HONImagingDepictorShareTemplateTypeKik:
+			keySuffix = @"kik";
+			break;
+			
+		case HONImagingDepictorShareTemplateTypeSMS:
+			keySuffix = @"sms";
+			break;
+			
+		case HONImagingDepictorShareTemplateTypeEmail:
+			keySuffix = @"email";
+			break;
+			
+		default:
+			keySuffix = @"default";
+			break;
+	}
+	
+	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:[@"share_template-" stringByAppendingString:keySuffix]]]);
 }
 
 + (UIImage *)defaultAvatarImageAtSize:(CGSize)size {
@@ -128,6 +165,8 @@ const CGFloat kSnapRatio = 1.853125;
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: Failed Request - %@", [[self class] description], [error localizedDescription]);
+		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 	
 	[operation start];
@@ -292,18 +331,34 @@ const CGFloat kSnapRatio = 1.853125;
 	return (processedImage);
 }
 
-+ (UIImage *)prepImageForSharing:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle {
-	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 612.0, 612.0)];
++ (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {
+	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
+	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [HONImagingDepictor scaleImage:shareImage toSize:scaledSize];
+	
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kInstagramSize.width, kInstagramSize.height)];
 	canvasView.backgroundColor = [UIColor blackColor];
 	
-	//UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -237.0, 612.0, 1086.0)];
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (612.0 - avatar.size.height) * 0.5, avatar.size.width, avatar.size.height)];
-	avatarImageView.image = avatar;
-	[canvasView addSubview:avatarImageView];
-	
-	[canvasView addSubview:[[UIImageView alloc] initWithImage:baseImage]];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
+	imageView.image = processedImage;
+	[canvasView addSubview:imageView];
+	[canvasView addSubview:[[UIImageView alloc] initWithImage:templateImage]];
 	
 	return ([HONImagingDepictor createImageFromView:canvasView]);
+}
+
++ (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path {
+	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
+	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [HONImagingDepictor scaleImage:shareImage toSize:scaledSize];
+	
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kInstagramSize.width, kInstagramSize.height)];
+	canvasView.backgroundColor = [UIColor blackColor];
+	
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((kInstagramSize.width - processedImage.size.width) * 0.5, (kInstagramSize.height - processedImage.size.height) * 0.5, processedImage.size.width, processedImage.size.height)];
+	imageView.image = processedImage;
+	[canvasView addSubview:imageView];
+	[canvasView addSubview:[[UIImageView alloc] initWithImage:(CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? [[UIImage alloc] init] : [HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeInstagram]]];
+	
+	[UIImageJPEGRepresentation([HONImagingDepictor createImageFromView:canvasView], 1.0f) writeToFile:path atomically:YES];
 }
 
 @end

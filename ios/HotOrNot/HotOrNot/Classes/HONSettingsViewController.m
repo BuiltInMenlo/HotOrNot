@@ -318,9 +318,8 @@
 		
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
 			messageComposeViewController.messageComposeDelegate = self;
-			//messageComposeViewController.recipients = [NSArray arrayWithObject:@"8882221234"];
-			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]];
 			
 			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 			
@@ -339,10 +338,9 @@
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-			mailComposeViewController.mailComposeDelegate = self;
-			//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"foo@bar.com"]];
 			[mailComposeViewController setSubject:[[HONAppDelegate emailInviteFormat] objectForKey:@"subject"]];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[[HONAppDelegate emailInviteFormat] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]] isHTML:NO];
+			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[[HONAppDelegate emailInviteFormat] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]] isHTML:NO];
+			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:0];
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];

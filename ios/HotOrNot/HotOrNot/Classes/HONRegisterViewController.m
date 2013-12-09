@@ -76,7 +76,8 @@
 		_selfieAttempts = 0;
 		_tintIndex = 0;
 		
-		_splashImageURL = [NSString stringWithFormat:@"%@%@@@2x.png", [[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"], [NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"_%@-568h" : @"_%@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"volley" : @"selfieclub"]];
+		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[HONAppDelegate brandedAppName] lowercaseString]] stringByAppendingString:@"@2x.png"]];
+		NSLog(@"SPLASH TEXT:[%@]", _splashImageURL);
 	}
 	
 	return (self);
@@ -522,7 +523,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"volley" : @"selfieclub"]];
+			splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", [[HONAppDelegate brandedAppName] lowercaseString]]];
 		};
 		
 		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -954,7 +955,7 @@
 	
 	} else if (registerErrorType == HONRegisterErrorTypeEmail) {
 		[[[UIAlertView alloc] initWithTitle:@"No email!"
-									message:[NSString stringWithFormat:@"You need to enter a valid email address to use %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+									message:[NSString stringWithFormat:@"You need to enter a valid email address to use %@", [HONAppDelegate brandedAppName]]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

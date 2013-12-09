@@ -523,7 +523,7 @@
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Find & invite friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Find & invite friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"

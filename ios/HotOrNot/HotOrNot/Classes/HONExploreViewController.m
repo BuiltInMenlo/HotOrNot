@@ -222,7 +222,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"explore_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"INVITE your friends to %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"

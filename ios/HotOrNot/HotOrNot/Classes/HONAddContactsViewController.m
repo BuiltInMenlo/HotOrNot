@@ -787,7 +787,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? [NSString stringWithFormat:@"Friends on %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"] : @"Invite contacts";
+	label.text = (section == 0) ? [NSString stringWithFormat:@"Friends on %@", [HONAppDelegate brandedAppName]] : @"Invite contacts";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);

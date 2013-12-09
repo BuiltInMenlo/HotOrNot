@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MessageUI/MFMessageComposeViewController.h>
+#import <MessageUI/MFMailComposeViewController.h>
 #import <UIKit/UIKit.h>
 
 #import "MBProgressHUD.h"
@@ -125,7 +127,7 @@ extern NSString * const kNetErrorNoConnection;
 extern NSString * const kNetErrorStatusCode404;
 
 
-@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate>
+@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
 + (NSMutableString *)hmacToken;
 + (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;
@@ -155,17 +157,23 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (CGFloat)minSnapLuminosity;
 + (NSDictionary *)infoForABTab;
+
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
 + (NSString *)instagramShareMessageForIndex:(int)index;
-+ (NSString *)twitterShareCommentForIndex:(int)index;;
++ (NSString *)twitterShareCommentForIndex:(int)index;
++ (NSString *)facebookShareCommentForIndex:(int)index;
++ (NSString *)smsShareCommentForIndex:(int)index;
++ (NSDictionary *)emailShareCommentForIndex:(int)index;
 
 + (NSArray *)composeEmotions;
 + (NSArray *)replyEmotions;
 
 + (NSDictionary *)stickerForSubject:(NSString *)subject;
 + (NSString *)kikCardURL;
++ (NSString *)shareURL;
 
++ (NSString *)brandedAppName;
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 + (NSArray *)inviteCelebs;
@@ -213,6 +221,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)formattedExpireTime:(int)seconds;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
++ (NSDictionary *)parseQueryString:(NSString *)queryString;
 
 + (UIFont *)cartoGothicBold;
 + (UIFont *)cartoGothicBoldItalic;

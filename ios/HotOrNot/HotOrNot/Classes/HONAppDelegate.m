@@ -119,9 +119,6 @@ const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
-// snap params
-//const CGFloat kSnapRatio = 1.33333333f;
-
 // animation params
 const CGFloat kHUDTime = 0.5f;
 const CGFloat kHUDErrorTime = 1.5f;
@@ -246,51 +243,31 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)smsInviteFormat {
-//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
-//	NSString *kikName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"];
-//	NSString *igName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"];
-//	
-//	NSString *inviteFormat = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
-//	inviteFormat = [inviteFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:kikName];
-//	inviteFormat = [inviteFormat stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:igName];
-//	
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"]);
 }
 
 + (NSDictionary *)emailInviteFormat {
-//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
-//	NSString *kikName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"kik_name"];
-//	NSString *twName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"];
-//	
-//	NSString *subjectFormat = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
-//	
-//	NSString *bodyFormat = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
-//	bodyFormat = [bodyFormat stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:twName];
-//	bodyFormat = [bodyFormat stringByReplacingOccurrencesOfString:@"_{{KIK_NAME}}_" withString:kikName];
-//	
-//	return (@{@"subject"	: subjectFormat,
-//			  @"body"		: bodyFormat});
-	
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"email"]);
 }
 
 + (NSString *)instagramShareMessageForIndex:(int)index { //[0]:Details //[1]:Profile
-//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
-//	NSString *igName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"ig_name"];
-//	
-//	NSString *message = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
-//	message = [message stringByReplacingOccurrencesOfString:@"_{{IG_NAME}}_" withString:igName];
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:index]);
 }
 
 + (NSString *)twitterShareCommentForIndex:(int)index { //[0]:Details //[1]:Profile
-//	NSString *appName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"];
-//	NSString *twName = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"tw_name"];
-//	
-//	NSString *message = [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:index] stringByReplacingOccurrencesOfString:@"_{{APP_NAME}}_" withString:appName];
-//	message = [message stringByReplacingOccurrencesOfString:@"_{{TW_NAME}}_" withString:twName];
-//	
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:index]);
+}
+
++ (NSString *)facebookShareCommentForIndex:(int)index {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"facebook"] objectAtIndex:index]);
+}
+
++ (NSString *)smsShareCommentForIndex:(int)index {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"sms"] objectAtIndex:index]);
+}
+
++ (NSDictionary *)emailShareCommentForIndex:(int)index {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
 }
 
 + (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds {	
@@ -353,6 +330,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSString *)kikCardURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
+}
+
++ (NSString *)shareURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"share_url"]);
+}
+
++ (NSString *)brandedAppName {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]);
 }
 
 + (NSArray *)searchSubjects {
@@ -737,6 +722,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([imagePrefix copy]);
 }
 
++ (NSDictionary *)parseQueryString:(NSString *)queryString {
+	NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+	for (NSString *pair in [queryString componentsSeparatedByString:@"&"]) {
+		NSArray *kv = [pair componentsSeparatedByString:@"="];
+		NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+		params[kv[0]] = val;
+	}
+	
+	return (params);
+}
 
 + (UIFont *)cartoGothicBold {
 	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
@@ -859,7 +854,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"kik_card"] forKey:@"kik_card"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
@@ -903,12 +900,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //					
 //					[verifyAB addObject:dict];
 //				}
-
+//
 //				[[NSUserDefaults standardUserDefaults] setObject:verifyAB forKey:@"verify_AB"];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
-				
-				
+//				
 //				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceBrandingInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
 //																   @"email"	: @{@"subject"	: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"]],
 //																				@"body"		: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"]]}} forKey:@"invite_formats"];
@@ -916,13 +910,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:0]],
 //																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:1]]],
 //																   @"twitter"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:0]],
-//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:1]]]} forKey:@"share_formats"];
+//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:1]]],
+//																   @"facebook"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"facebook"] objectAtIndex:0]],
+//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"facebook"] objectAtIndex:1]]],
+//																   @"sms"			: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"sms"] objectAtIndex:0]],
+//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"sms"] objectAtIndex:1]]],
+//																   @"email"			: @[@{@"subject"	: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:0] objectForKey:@"subject"]],
+//																						  @"body"		: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:0] objectForKey:@"body"]]},
+//																						@{@"subject"	: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:1] objectForKey:@"subject"]],
+//																						  @"body"		: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:1] objectForKey:@"body"]]}]} forKey:@"share_formats"];
 				
+				
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 																   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+				
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
-																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"]} forKey:@"share_formats"];
+																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
+																   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
+																   @"sms"		: [[result objectForKey:@"share_formats"] objectForKey:@"sms"],
+																   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
 
 				
 				[[NSUserDefaults standardUserDefaults] synchronize];
@@ -935,38 +943,36 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
 					[self _showOKAlert:@"Update Required"
-						   withMessage:[NSString stringWithFormat:@"Please update %@ to the latest version to use the latest features.", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]];
+						   withMessage:[NSString stringWithFormat:@"Please update %@ to the latest version to use the latest features.", [HONAppDelegate brandedAppName]]];
 				}
 				
+				[self _writeShareTemplates];
 				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
+				[self _registerUser];
 				
-				if (!_isFromBackground)
-					[self _registerUser];
-				
-				else {
-					_isFromBackground = NO;
+				if (_isFromBackground) {
 					NSString *notificationName = @"";
-					
 					switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
 						case 0:
 							notificationName = @"REFRESH_HOME_TAB";
 							break;
 							
-//						case 1:
-//							notificationName = @"REFRESH_EXPLORE_TAB";
-//							break;
-							
 						case 1:
+							notificationName = @"REFRESH_EXPLORE_TAB";
+							break;
+							
+						case 2:
 							notificationName = @"REFRESH_VERIFY_TAB";
 							break;
 						
 						default:
-							notificationName = @"REFRESH_HOME_TAB";
+							notificationName = @"REFRESH_ALL_TABS";
 							break;
 					}
 					
 					NSLog(@"REFRESHING:[%@]", notificationName);
 					[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+					_isFromBackground = NO;
 				}
 			}
 		}
@@ -1074,7 +1080,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		} else {
 //			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			[HONAppDelegate writeSubscribeeList:result];
-			[self _initTabs];
+			
+			if (self.tabBarController.view.hidden)
+				[self _initTabs];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1252,7 +1260,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Share on Twitter", @"Share on Instagram", nil];
+													otherButtonTitles:@"Share on Kik", @"Share on Instagram", @"Share on Twitter", @"Share on Facebook", @"Share via SMS", @"Share via Email", @"Copy link", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
 }
@@ -1454,8 +1462,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
 //		if ([HONAppDelegate totalForCounter:@"boot"] == 5) {
 //			UIAlertView *alertView = [[UIAlertView alloc]
-//									  initWithTitle:[NSString stringWithFormat:@"Rate %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
-//									  message:[NSString stringWithFormat:@"Why not rate %@ in the app store!", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+//									  initWithTitle:[NSString stringWithFormat:@"Rate %@", [HONAppDelegate brandedAppName]]
+//									  message:[NSString stringWithFormat:@"Why not rate %@ in the app store!", [HONAppDelegate brandedAppName]]
 //									  delegate:self
 //									  cancelButtonTitle:nil
 //									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
@@ -1538,7 +1546,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 				if ([HONAppDelegate totalForCounter:@"background"] == 2 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"INVITE FRIENDS?"
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite friends?"
 																		message:@"Get more followers now, tap OK."
 																	   delegate:self
 															  cancelButtonTitle:@"No"
@@ -1548,7 +1556,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				}
 				
 				if ([HONAppDelegate totalForCounter:@"background"] == 4 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"VOLLEY" : @"SELFIECLUB"]
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@?", [HONAppDelegate brandedAppName]]
 																		message:@""
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
@@ -1566,7 +1574,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			} else {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 				[self _retrieveConfigJSON];
-				_isFromBackground = NO;
 			}
 		}
 	}
@@ -1802,6 +1809,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  addAppButton:YES];
 }
 
+- (void)_writeShareTemplates {
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
+		for (NSString *key in [dict keyEnumerator])
+			[HONImagingDepictor writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
+	}
+}
+
 
 #pragma mark - Data Manip
 - (NSArray *)_colorsFromJSON:(NSArray *)tintJSON {
@@ -1837,17 +1851,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nformat:[%@]", replaceFormat);
 	
 	NSDictionary *brandingDict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])];
-//	NSDictionary *tokenDict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] lastObject];
-	NSArray *branding = @[@{@"token"	: [brandingDict objectForKey:@"app_token"],
-							@"name"		: [brandingDict objectForKey:@"app_name"]},
-						  @{@"token"	: [brandingDict objectForKey:@"ig_token"],
-							@"name"		: [brandingDict objectForKey:@"ig_name"]},
-						  @{@"token"	: [brandingDict objectForKey:@"kik_token"],
-							@"name"		: [brandingDict objectForKey:@"kik_name"]},
-						  @{@"token"	: [brandingDict objectForKey:@"tw_token"],
-							@"name"		: [brandingDict objectForKey:@"tw_name"]}];
+	NSArray *pairs = @[@{@"token"	: [brandingDict objectForKey:@"app_token"],
+						 @"name"	: [brandingDict objectForKey:@"app_name"]},
+					   @{@"token"	: [brandingDict objectForKey:@"ig_token"],
+						 @"name"	: [brandingDict objectForKey:@"ig_name"]},
+					   @{@"token"	: [brandingDict objectForKey:@"kik_token"],
+						 @"name"	: [brandingDict objectForKey:@"kik_name"]},
+					   @{@"token"	: [brandingDict objectForKey:@"tw_token"],
+						 @"name"	: [brandingDict objectForKey:@"tw_name"]},
+					   @{@"token"	: [brandingDict objectForKey:@"fb_token"],
+						 @"name"	: [brandingDict objectForKey:@"fb_name"]}];
 	
-	for (NSDictionary *dict in branding) {
+	for (NSDictionary *dict in pairs) {
 		if ([replaceFormat rangeOfString:[dict objectForKey:@"token"]].location != NSNotFound) {
 			replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:[dict objectForKey:@"token"] withString:[dict objectForKey:@"name"]];
 			NSLog(@"replaceFormat -/> [%@]", replaceFormat);
@@ -2206,11 +2221,36 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == 0) ? @"Twitter" : (buttonIndex == 1) ? @"Instagram" : @"Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == 0) ? @"Kik" : (buttonIndex == 1) ? @"Instagram" : (buttonIndex == 2) ? @"Twitter" : (buttonIndex == 3) ? @"Facebook" : (buttonIndex == 4) ? @"SMS" : (buttonIndex == 5) ? @"Email" : (buttonIndex == 6) ? @"Link" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
+		// kik
 		if (buttonIndex == 0) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
+			
+		} else if (buttonIndex == 1) {
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
+			[HONImagingDepictor saveForInstagram:[_shareInfo objectForKey:@"image"]
+									withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
+										  toPath:savePath];
+			
+			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"instagram://app"]]) {
+				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+				_documentInteractionController.UTI = @"com.instagram.exclusivegram";
+				_documentInteractionController.delegate = self;
+				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"caption"] objectAtIndex:0] forKey:@"InstagramCaption"];
+				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+											message:@"This device isn't allowed or doesn't recognize instagram"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		
+		} else if (buttonIndex == 2) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
@@ -2221,9 +2261,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					[twitterComposeViewController dismissViewControllerAnimated:YES completion:nil];
 				};
 				
-				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"caption"] objectAtIndex:0]];
+				[twitterComposeViewController setInitialText:[[_shareInfo objectForKey:@"caption"] objectAtIndex:1]];
 				[twitterComposeViewController addImage:[_shareInfo objectForKey:@"image"]];
-//				[twitterComposeViewController addURL:[_shareInfo objectForKey:@"url"]];
 				twitterComposeViewController.completionHandler = completionBlock;
 				
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:twitterComposeViewController animated:YES completion:nil];
@@ -2235,30 +2274,93 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
 			}
+		
+			// fb
+		} else if (buttonIndex == 3) {
+			NSString *url = ([[_shareInfo objectForKey:@"url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [_shareInfo objectForKey:@"url"] : @"https://s3.amazonaws.com/hotornot-banners/shareTemplate_default.png";
+			NSDictionary *params = @{@"name"		: [HONAppDelegate brandedAppName],
+									 @"caption"		: [[_shareInfo objectForKey:@"caption"] objectAtIndex:2],
+									 @"description"	: @"Welcome @Selfieclub members!\nPost your selfie and how you feel. Right now.\nGet \"Selfie famous\" by getting the most shoutouts!",
+									 @"link"		: [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]],
+									 @"picture"		: url};
 			
-		} else if (buttonIndex == 1) {
-			NSString *instaURL = @"instagram://app";
-			NSString *instaFormat = @"com.instagram.exclusivegram";
-			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
-			UIImage *shareImage = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"]
-															  avatarImage:[_shareInfo objectForKey:@"image"]
-																 username:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-			
-			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
-				_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
-				_documentInteractionController.UTI = instaFormat;
-				_documentInteractionController.delegate = self;
-				_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[[_shareInfo objectForKey:@"caption"] objectAtIndex:1] forKey:@"InstagramCaption"];
-				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
+			[FBWebDialogs presentFeedDialogModallyWithSession:nil parameters:params handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+				if (error) {
+					[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Error)", [_shareInfo objectForKey:@"mp_event"]]
+										  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+					
+					NSLog(@"Error publishing story.");
+					
+				} else {
+					if (result == FBWebDialogResultDialogNotCompleted) {
+						[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Canceled)", [_shareInfo objectForKey:@"mp_event"]]
+											  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+						
+						NSLog(@"User canceled story publishing.");
+						
+					} else {
+						NSDictionary *urlParams = [HONAppDelegate parseQueryString:[resultURL query]];
+						if (![urlParams valueForKey:@"post_id"]) {
+							[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Canceled)", [_shareInfo objectForKey:@"mp_event"]]
+												  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+
+							NSLog(@"User canceled story publishing.");
+							
+						} else {
+							[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Posted)", [_shareInfo objectForKey:@"mp_event"]]
+												  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+															  [urlParams valueForKey:@"post_id"], @"post", nil]];
+							NSLog(@"Posted:[%@]", [urlParams valueForKey:@"post_id"]);
+							[self _showOKAlert:@"" withMessage:@"Posted to your timeline!"];
+						}
+					}
+				}
+			 }];
+		
+			// sms
+		} else if (buttonIndex == 4) {
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.body = [[_shareInfo objectForKey:@"caption"] objectAtIndex:3];
+				messageComposeViewController.messageComposeDelegate = self;
+				
+				[[_shareInfo objectForKey:@"view_controller"] presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize instagram"
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
 			}
+		
+			// email
+		} else if (buttonIndex == 5) {
+			if ([MFMailComposeViewController canSendMail]) {
+				NSRange range = [[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] rangeOfString:@"|"];
+				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+				[mailComposeViewController setSubject:[[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] substringToIndex:range.location]];
+				[mailComposeViewController setMessageBody:[[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] substringFromIndex:range.location + 1] isHTML:NO];
+				mailComposeViewController.mailComposeDelegate = self;
+				
+				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Email Error"
+											message:@"Cannot send email from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		
+			// link copy / paste
+		} else if (buttonIndex == 6) {
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [HONAppDelegate shareURL];
 		}
 		
 		_shareInfo = nil;
@@ -2293,6 +2395,72 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [controller name], @"controller", nil]];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	NSString *mpAction = @"";
+	switch (result) {
+		case MessageComposeResultCancelled:
+			mpAction = @"Canceled";
+			break;
+			
+		case MessageComposeResultSent:
+			mpAction = @"Sent";
+			break;
+			
+		case MessageComposeResultFailed:
+			mpAction = @"Failed";
+			break;
+			
+		default:
+			mpAction = @"Not Sent";
+			break;
+	}
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share via SMS (%@)", [_shareInfo objectForKey:@"mp_event"], mpAction]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[controller dismissViewControllerAnimated:YES completion:nil];
+	_shareInfo = nil;
+}
+
+
+#pragma mark - MailCompose Delegates
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+		
+	NSString *mpAction = @"";
+	switch (result) {
+		case MFMailComposeResultCancelled:
+			mpAction = @"Canceled";
+			break;
+			
+		case MFMailComposeResultFailed:
+			mpAction = @"Failed";
+			break;
+			
+		case MFMailComposeResultSaved:
+			mpAction = @"Saved";
+			break;
+			
+		case MFMailComposeResultSent:
+			mpAction = @"Sent";
+			break;
+			
+		default:
+			mpAction = @"Not Sent";
+			break;
+	}
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share via Email (%@)", [_shareInfo objectForKey:@"mp_event"], mpAction]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+	[controller dismissViewControllerAnimated:YES completion:nil];
+	_shareInfo = nil;
 }
 
 

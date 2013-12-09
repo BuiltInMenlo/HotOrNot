@@ -219,7 +219,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"Your profile photo helps the %@ community know your real.", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+														message:[NSString stringWithFormat:@"Your profile photo helps the %@ community know your real.",[HONAppDelegate brandedAppName]]
 													   delegate:self
 											  cancelButtonTitle:@"No Thanks"
 											  otherButtonTitles:@"Take Photo", nil];

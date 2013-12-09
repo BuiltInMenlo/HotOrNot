@@ -272,7 +272,7 @@
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				if (total == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
 																		message:@"Get more subscribers now, tap OK."
 																	   delegate:self
 															  cancelButtonTitle:@"Cancel"
@@ -654,7 +654,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 0 && [HONAppDelegate switchEnabledForKey:@"like_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"

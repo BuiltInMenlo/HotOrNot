@@ -9,6 +9,16 @@
 #import <Foundation/Foundation.h>
 
 
+typedef enum {
+	HONImagingDepictorShareTemplateTypeDefault = 0,
+	HONImagingDepictorShareTemplateTypeInstagram,
+	HONImagingDepictorShareTemplateTypeTwitter,
+	HONImagingDepictorShareTemplateTypeFacebook,
+	HONImagingDepictorShareTemplateTypeKik,
+	HONImagingDepictorShareTemplateTypeSMS,
+	HONImagingDepictorShareTemplateTypeEmail
+} HONImagingDepictorShareTemplateType;
+
 const CGFloat kSnapRatio;
 
 
@@ -20,7 +30,7 @@ const CGFloat kSnapRatio;
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key;
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key;
 
-+ (UIImage *)defaultShareImage;
++ (UIImage *)shareTemplateImageForType:(HONImagingDepictorShareTemplateType)shareTemplateType;
 + (UIImage *)defaultAvatarImageAtSize:(CGSize)size;
 
 + (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor;
@@ -35,6 +45,7 @@ const CGFloat kSnapRatio;
 + (UIImage *)mirrorImage:(UIImage *)image;
 
 + (UIImage *)prepForUploading:(UIImage *)image;
-+ (UIImage *)prepImageForSharing:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle;
++ (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username;
++ (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path;
 
 @end

@@ -262,7 +262,7 @@
 	
 	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	kikButton.frame = bannerImageView.frame;
-	[kikButton addTarget:self action:@selector(_goShareKik) forControlEvents:UIControlEventTouchUpInside];
+	[kikButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:kikButton];
 	
 	
@@ -399,7 +399,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"SHARE %@ with your friends?", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub"]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -483,7 +483,11 @@
 	}];
 }
 
-- (void)_goShareKik {
+- (void)_goShare {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Share"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 //	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 //	NSString *documentsDirectory = [paths objectAtIndex:0];
 //	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"temp_picture"];
@@ -491,10 +495,10 @@
 //	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
 //		[[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
 //	
-//	[UIImagePNGRepresentation([HONImagingDepictor defaultShareImage]) writeToFile:filePath atomically:YES]; // save as PNG
+//	[UIImagePNGRepresentation([HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault]) writeToFile:filePath atomically:YES]; // save as PNG
 //	
 //	KikAPIMessage *message = [KikAPIMessage message];
-//	[message setPreviewFromImage:[HONImagingDepictor defaultShareImage]];
+//	[message setPreviewFromImage:[HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault]];
 //	message.androidURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/android/"];
 //	message.iphoneURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/iphone/"];
 //	message.genericURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/other/"];
@@ -502,8 +506,16 @@
 //	
 //	[KikAPIClient sendMessage:message toConversation:@""];
 	
-	NSLog(@"KIK CARD:[%@]", [HONAppDelegate kikCardURL]);
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault],
+																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																							@"mp_event"			: @"Activity Alerts - Share",
+																							@"view_controller"	: self}];
 }
 
 
