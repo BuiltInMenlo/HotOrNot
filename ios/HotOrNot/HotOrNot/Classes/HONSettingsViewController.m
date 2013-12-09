@@ -22,7 +22,6 @@
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
-@property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -34,11 +33,8 @@
 	if ((self = [super init])) {
 		_captions = @[@"Help",
 					  @"Notifications",
-					  @"Invite Friends via SMS",
-					  @"Invite Friends via Email",
 					  @"Change Username",
 					  @"Change Email",
-					  @"Change Birthday",
 					  @"Delete all my Selfies",
 					  @"Deactivate Account",
 					  @"Report Abuse or Bugs",
@@ -77,6 +73,8 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIPurgeContent parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -91,14 +89,14 @@
 			_progressHUD = nil;
 			
 		} else {
-//			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], result);
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+			result = nil;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], [[operation request] URL], [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -118,6 +116,8 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIPurgeUser parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -132,8 +132,7 @@
 			_progressHUD = nil;
 			
 		} else {
-//			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			NSArray *totals = @[@"background_total",
 								@"timeline_total",
@@ -165,6 +164,8 @@
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
 			}];
+			
+			result = nil;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -180,7 +181,58 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+}
 
+- (void)_toggleNotifications {
+	NSDictionary *params = @{@"action"			: [NSString stringWithFormat:@"%d", 4],
+							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"isNotifications"	: (_notificationSwitch.on) ? @"Y" : @"N"};
+	
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if ([result objectForKey:@"id"] != [NSNull null])
+				[HONAppDelegate writeUserInfo:result];
+		}
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
 }
 
 
@@ -195,8 +247,7 @@
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Settings"];
-	_headerView.backgroundColor = [UIColor whiteColor];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Settings" hasTranslucency:NO];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
@@ -230,15 +281,18 @@
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
-	NSString *msg = (switchView.on) ? @"Turn on notifications?" : @"Turn off notifications?";	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Notifications Toggle %@", (switchView.on) ? @"On" : @"Off"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
+	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
-																	message:msg
+																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
 																  delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
-	[alertView setTag:0];
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"OK", nil];
+	[alertView setTag:HONSettingsAlertTypeNotifications];
 	[alertView show];
-	_activatedSwitch = switchView;
 }
 
 
@@ -278,7 +332,7 @@
 	if (cell == nil)
 		cell = [[HONSettingsViewCell alloc] initWithCaption:[_captions objectAtIndex:indexPath.row]];
 	
-	if (indexPath.row == 1) {
+	if (indexPath.row == HONSettingsCellTypeNotifications) {
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
 	}
@@ -294,14 +348,14 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == 1) ? nil : indexPath);
+	return ((indexPath.row == HONSettingsCellTypeNotifications) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	if (indexPath.row == 0) {
+	if (indexPath.row == HONSettingsCellTypeHelp) {
 		[[Mixpanel sharedInstance] track:@"Settings - Show FAQ"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -310,49 +364,7 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	
-	} else if (indexPath.row == 2) {
-		[[Mixpanel sharedInstance] track:@"Settings - Invite via SMS"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		if ([MFMessageComposeViewController canSendText]) {
-			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
-			messageComposeViewController.messageComposeDelegate = self;
-			
-			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"SMS Error"
-										message:@"Cannot send SMS from this device!"
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
-		
-	} else if (indexPath.row == 3) {
-		[[Mixpanel sharedInstance] track:@"Settings - Invite via Email"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		if ([MFMailComposeViewController canSendMail]) {
-			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-			[mailComposeViewController setSubject:[[HONAppDelegate emailInviteFormat] objectForKey:@"subject"]];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[[HONAppDelegate emailInviteFormat] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]] isHTML:NO];
-			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController.view setTag:0];
-			
-			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Email Error"
-										message:@"Cannot send email from this device!"
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
-		
-	} else if (indexPath.row == 4) {
+	} else if (indexPath.row == HONSettingsCellTypeChangeUsername) {
 		[[Mixpanel sharedInstance] track:@"Settings - Change Username"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -361,7 +373,7 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
-	} else if (indexPath.row == 5) {
+	} else if (indexPath.row == HONSettingsCellTypeChangeEmail) {
 		[[Mixpanel sharedInstance] track:@"Settings - Change Email"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -372,7 +384,7 @@
 			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
 			[mailComposeViewController setSubject:@"Change My Email Address"];
 			[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-			[mailComposeViewController.view setTag:1];
+			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeChangeEmail];
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
@@ -384,30 +396,7 @@
 							  otherButtonTitles:nil] show];
 		}
 	
-	} else if (indexPath.row == 6) {
-		[[Mixpanel sharedInstance] track:@"Settings - Change Birthday"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		if ([MFMailComposeViewController canSendMail]) {
-			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController.view setTag:3];
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
-			[mailComposeViewController setSubject:@"Change My Birthday"];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your birthday change here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-			
-			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Email Error"
-										message:@"Cannot send email from this device!"
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
-		
-	} else if (indexPath.row == 7) {
+	} else if (indexPath.row == HONSettingsCellTypeDeleteChallenges) {
 		[[Mixpanel sharedInstance] track:@"Settings - Delete Volleys"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -417,10 +406,10 @@
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:2];
+		[alertView setTag:HONSettingsAlertTypeDeleteChallenges];
 		[alertView show];
 		
-	} else if (indexPath.row == 8) {
+	} else if (indexPath.row == HONSettingsCellTypeDeactivate) {
 		[[Mixpanel sharedInstance] track:@"Settings - Deactivate"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -430,10 +419,10 @@
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:1];
+		[alertView setTag:HONSettingsAlertTypeDeactivate];
 		[alertView show];
 		
-	} else if (indexPath.row == 9) {
+	} else if (indexPath.row == HONSettingsCellTypeReportAbuse) {
 		[[Mixpanel sharedInstance] track:@"Settings - Report Abuse / Bug"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -441,7 +430,7 @@
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController.view setTag:4];
+			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
 			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
 			[mailComposeViewController setSubject:@"Report Abuse / Bug"];
 			[mailComposeViewController setMessageBody:@"" isHTML:NO];
@@ -456,7 +445,7 @@
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (indexPath.row == 10) {
+	} else if (indexPath.row == HONSettingsCellTypeTermsConditions) {
 		[[Mixpanel sharedInstance] track:@"Settings - Show Support"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -501,16 +490,10 @@
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
 	
 	NSString *mpEvent = @"";
-	if (controller.view.tag == 0) {
-		mpEvent = @"Invite via Email";
-	
-	} else if (controller.view.tag == 1) {
+	if (controller.view.tag == HONSettingsMailComposerTypeChangeEmail) {
 		mpEvent = @"Change Email";
 		
-	} else if (controller.view.tag == 3) {
-		mpEvent = @"Change Birthday";
-	
-	} else if (controller.view.tag == 4) {
+	} else if (controller.view.tag == HONSettingsMailComposerTypeReportAbuse) {
 		mpEvent = @"Report Abuse / Bug";
 	}
 	
@@ -548,67 +531,19 @@
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		if (buttonIndex == 0) {
-				[[Mixpanel sharedInstance] track:@"Settings - Notifications"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
-				
-				
-				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-												[NSString stringWithFormat:@"%d", 4], @"action",
-												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-												(_notificationSwitch.on) ? @"Y" : @"N", @"isNotifications", nil];
-				
-				VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-				AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-					NSError *error = nil;
-					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-						
-						if (_progressHUD == nil)
-							_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-						_progressHUD.minShowTime = kHUDTime;
-						_progressHUD.mode = MBProgressHUDModeCustomView;
-						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-						_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-						[_progressHUD show:NO];
-						[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-						_progressHUD = nil;
-						
-					} else {
-						NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
-						
-						if ([userResult objectForKey:@"id"] != [NSNull null])
-							[HONAppDelegate writeUserInfo:userResult];
-					}
-					
-					if (_progressHUD != nil) {
-						[_progressHUD hide:YES];
-						_progressHUD = nil;
-					}
-					
-				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-					
-					if (_progressHUD == nil)
-						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-					_progressHUD.minShowTime = kHUDTime;
-					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-					_progressHUD = nil;
-				}];
-			
-		} else if (buttonIndex == 1)
-			_activatedSwitch.on = !_activatedSwitch.on;
-	
-	} else if (alertView.tag == 1) {
+	if (alertView.tag == HONSettingsAlertTypeNotifications) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Notifications Toggle %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
+		
+		if (buttonIndex == 0)
+			_notificationSwitch.on = !_notificationSwitch.on;
+		
+		else
+			[self _toggleNotifications];
+		
+	} else if (alertView.tag == HONSettingsCellTypeDeactivate) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Deactivate %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -627,7 +562,7 @@
 			[self _wipeUser];
 		}
 	
-	} else if (alertView.tag == 2) {
+	} else if (alertView.tag == HONSettingsCellTypeDeleteChallenges) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Delete Volleys %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

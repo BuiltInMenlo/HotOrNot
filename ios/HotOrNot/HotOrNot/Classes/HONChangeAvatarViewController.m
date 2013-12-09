@@ -87,10 +87,12 @@
 							 @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
 							 @"imgURL"		: [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] stringByAppendingString:kSnapLargeSuffix]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -105,24 +107,21 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			//VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
 				}
 				
-				[HONAppDelegate writeUserInfo:userResult];
+				[HONAppDelegate writeUserInfo:result];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-//				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
-//				}];
+				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 				
 			} else {
 				if (_progressHUD == nil)

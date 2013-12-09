@@ -70,8 +70,8 @@ NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 
 
 NSString * const kFacebookAppID = @"600550136636754";
-NSString * const kTestFlightAppToken = @"a6addd92-ada9-4e47-918f-dde2c01958f7";
-NSString * const kHockeyAppToken = @"b784de80afa5c65803e0f3d8035cd725";
+NSString * const kTestFlightAppToken = @"e12a9b35-36fc-481b-bb50-4c8ca3e91dc7";
+NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 
 //api endpts
@@ -146,7 +146,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <AmazonServiceRequestDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate, UAPushNotificationDelegate>
+@interface HONAppDelegate() <AmazonServiceRequestDelegate, UAPushNotificationDelegate, BITHockeyManagerDelegate>
 #else
 @interface HONAppDelegate() <AmazonServiceRequestDelegate, UAPushNotificationDelegate>
 #endif
@@ -338,21 +338,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)brandedAppName {
+	NSString *appName = @"Selfieclub";
+	
 	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])]) {
 		for (NSString *key in [dict keyEnumerator]) {
 			if ([key isEqualToString:@"_{{APP_NAME}}_"]) {
-				return ([dict objectForKey:key]);
+				appName = [dict objectForKey:key];
 				break;
 			}
 		}
 	}
 	
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
-		for (NSString *key in [dict keyEnumerator])
-			[HONImagingDepictor writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
-	}
-	
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]);
+	return (appName);
+//	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]);
 }
 
 + (NSArray *)searchSubjects {
@@ -828,7 +826,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retrieveConfigJSON {
 	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
 	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:configURLWithTimestamp parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -863,6 +861,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				_progressHUD = nil;
 				
 			} else {
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"branding"] forKey:@"branding"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 				[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
@@ -878,7 +879,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 				[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"branding"] forKey:@"branding"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
@@ -895,7 +895,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
 																   @"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
 				
-//				[[NSUserDefaults standardUserDefaults] synchronize];
+				
 //				NSMutableArray *verifyAB = [NSMutableArray array];
 //				for (NSMutableDictionary *dict in [result objectForKey:@"verify_AB"]) {
 //					NSLog(@"verify a/b :[%@]", dict);
@@ -921,7 +921,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceBrandingInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
 //																   @"email"	: @{@"subject"	: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"]],
 //																				@"body"		: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"]]}} forKey:@"invite_formats"];
-//				
+//
+				[[NSUserDefaults standardUserDefaults] setObject:[self _replaceBrandingInFormat:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"]] forKey:@"share_title"];
 //				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:0]],
 //																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:1]]],
 //																   @"twitter"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:0]],
@@ -941,6 +942,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 																   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 				
+				//[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
 																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
 																   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
@@ -1010,11 +1012,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_registerUser {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -1030,11 +1032,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if ([userResult objectForKey:@"id"] != [NSNull null] || [userResult count] > 0) {
-				[HONAppDelegate writeUserInfo:userResult];
-				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			if ([result objectForKey:@"id"] != [NSNull null] || [result count] > 0) {
+				[HONAppDelegate writeUserInfo:result];
+				[HONImagingDepictor writeImageFromWeb:[result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 					
 				[self _enableNotifications:(![[HONAppDelegate deviceToken] isEqualToString:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]])];
 				
@@ -1073,14 +1075,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retreiveSubscribees {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIGetSubscribees parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			VolleyJSONLog(@"[:_:] AFNetworking :|: (%@) %@ [:_:] Failed to parse JSON: %@", [[operation request] URL], [[self class] description], [error localizedFailureReason]);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -1093,10 +1095,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			[HONAppDelegate writeSubscribeeList:result];
 			
-			if (self.tabBarController.view.hidden)
+//			if (self.tabBarController.view.hidden)
+			if (self.tabBarController == nil)
 				[self _initTabs];
 		}
 		
@@ -1124,6 +1127,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -1138,11 +1143,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if ([userResult isEqual:[NSNull null]])
-				[HONAppDelegate writeUserInfo:userResult];
+			if (![result isEqual:[NSNull null]])
+				[HONAppDelegate writeUserInfo:result];
 		}
 		
 		if (_progressHUD != nil) {
@@ -1192,7 +1196,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:result]]];
 			[navigationController setNavigationBarHidden:YES];
@@ -1221,7 +1225,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							(hasSeen) ? @"Y" : @"N", @"hasSeen",
 							nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -1271,11 +1275,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	_shareInfo = [notification object];
 	
 	NSLog(@"_showShareShelf:[%@]", _shareInfo);
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[[NSUserDefaults standardUserDefaults] objectForKey:@"share_title"]
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Share on Kik", @"Share on Instagram", @"Share on Twitter", @"Share on Facebook", @"Share via SMS", @"Share via Email", @"Copy link", nil];
+													otherButtonTitles:@"Kik", @"Instagram", @"Twitter", @"Facebook", @"SMS", @"Email", @"Copy link", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
 }
@@ -1308,6 +1312,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -1322,8 +1328,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			result = nil;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1496,13 +1502,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"main_bg-568h@2x" : @"main_bg"];
 		[self.window addSubview:bgImageView];
 		
-		self.tabBarController = [[HONTabBarController alloc] init];
-		self.tabBarController.delegate = self;
-		self.tabBarController.view.hidden = YES;
-		
-		self.window.rootViewController = self.tabBarController;
-		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-//		self.window.rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+//		self.tabBarController = [[HONTabBarController alloc] init];
+//		self.tabBarController.delegate = self;
+//		self.tabBarController.view.hidden = YES;
+//		
+//		self.window.rootViewController = self.tabBarController;
+//		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 		[self.window makeKeyAndVisible];
 		
 		[self _initUrbanAirship];
@@ -1669,14 +1674,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	for (UINavigationController *navigationController in navigationControllers) {
 		[navigationController setNavigationBarHidden:YES animated:NO];
-//		[navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
 		
 		if ([navigationController.navigationBar respondsToSelector:@selector(setShadowImage:)])
 			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
 	}
 	
-	self.tabBarController.view.hidden = NO;
+	self.tabBarController = [[HONTabBarController alloc] init];
 	self.tabBarController.viewControllers = navigationControllers;
+	self.tabBarController.delegate = self;
+	
+	self.window.rootViewController = self.tabBarController;
+	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor clearColor];
 }
 
@@ -1863,24 +1871,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (NSString *)_replaceBrandingInFormat:(NSString *)format {
 	NSString *replaceFormat = [NSString stringWithString:format];
-	NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nformat:[%@]", replaceFormat);
 	
-	NSDictionary *brandingDict = [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])];
-	NSArray *pairs = @[@{@"token"	: [brandingDict objectForKey:@"app_token"],
-						 @"name"	: [brandingDict objectForKey:@"app_name"]},
-					   @{@"token"	: [brandingDict objectForKey:@"ig_token"],
-						 @"name"	: [brandingDict objectForKey:@"ig_name"]},
-					   @{@"token"	: [brandingDict objectForKey:@"kik_token"],
-						 @"name"	: [brandingDict objectForKey:@"kik_name"]},
-					   @{@"token"	: [brandingDict objectForKey:@"tw_token"],
-						 @"name"	: [brandingDict objectForKey:@"tw_name"]},
-					   @{@"token"	: [brandingDict objectForKey:@"fb_token"],
-						 @"name"	: [brandingDict objectForKey:@"fb_name"]}];
-	
-	for (NSDictionary *dict in pairs) {
-		if ([replaceFormat rangeOfString:[dict objectForKey:@"token"]].location != NSNotFound) {
-			replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:[dict objectForKey:@"token"] withString:[dict objectForKey:@"name"]];
-			NSLog(@"replaceFormat -/> [%@]", replaceFormat);
+	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])]) {
+		for (NSString *key in [dict keyEnumerator]) {
+			if ([replaceFormat rangeOfString:key].location != NSNotFound) {
+				replaceFormat = [replaceFormat stringByReplacingOccurrencesOfString:key withString:[dict objectForKey:key]];
+				NSLog(@"replaceFormat -/> [%@]", replaceFormat);
+			}
 		}
 	}
 		
@@ -2082,7 +2079,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 				
 			} else {
-				VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+				VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -2236,15 +2233,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == 0) ? @"Kik" : (buttonIndex == 1) ? @"Instagram" : (buttonIndex == 2) ? @"Twitter" : (buttonIndex == 3) ? @"Facebook" : (buttonIndex == 4) ? @"SMS" : (buttonIndex == 5) ? @"Email" : (buttonIndex == 6) ? @"Link" : @"Cancel"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share %@", [_shareInfo objectForKey:@"mp_event"], (buttonIndex == HONShareSheetActionTypeKik) ? @"Kik" : (buttonIndex == HONShareSheetActionTypeInstagram) ? @"Instagram" : (buttonIndex == HONShareSheetActionTypeTwitter) ? @"Twitter" : (buttonIndex == HONShareSheetActionTypeFacebook) ? @"Facebook" : (buttonIndex == HONShareSheetActionTypeSMS) ? @"SMS" : (buttonIndex == HONShareSheetActionTypeEmail) ? @"Email" : (buttonIndex == HONShareSheetActionTypeClipboard) ? @"Link" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
-		// kik
-		if (buttonIndex == 0) {
+		if (buttonIndex == HONShareSheetActionTypeKik) {
 			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[HONAppDelegate kikCardURL]]];
 			
-		} else if (buttonIndex == 1) {
+		} else if (buttonIndex == HONShareSheetActionTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
 			[HONImagingDepictor saveForInstagram:[_shareInfo objectForKey:@"image"]
 									withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
@@ -2259,13 +2255,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle:@"Not Available"
-											message:@"This device isn't allowed or doesn't recognize instagram"
+											message:@"This device isn't allowed or doesn't recognize Instagram!"
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
 			}
 		
-		} else if (buttonIndex == 2) {
+		} else if (buttonIndex == HONShareSheetActionTypeTwitter) {
 			if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
 				SLComposeViewController *twitterComposeViewController = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
 				SLComposeViewControllerCompletionHandler completionBlock = ^(SLComposeViewControllerResult result) {
@@ -2290,8 +2286,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  otherButtonTitles:nil] show];
 			}
 		
-			// fb
-		} else if (buttonIndex == 3) {
+		} else if (buttonIndex == HONShareSheetActionTypeFacebook) {
 			NSString *url = ([[_shareInfo objectForKey:@"url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [_shareInfo objectForKey:@"url"] : @"https://s3.amazonaws.com/hotornot-banners/shareTemplate_default.png";
 			NSDictionary *params = @{@"name"		: [HONAppDelegate brandedAppName],
 									 @"caption"		: [[_shareInfo objectForKey:@"caption"] objectAtIndex:2],
@@ -2304,7 +2299,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Error)", [_shareInfo objectForKey:@"mp_event"]]
 										  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-					
 					NSLog(@"Error publishing story.");
 					
 				} else {
@@ -2312,7 +2306,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Canceled)", [_shareInfo objectForKey:@"mp_event"]]
 											  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-						
 						NSLog(@"User canceled story publishing.");
 						
 					} else {
@@ -2321,7 +2314,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ - Share Facebook (Canceled)", [_shareInfo objectForKey:@"mp_event"]]
 												  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-
 							NSLog(@"User canceled story publishing.");
 							
 						} else {
@@ -2336,8 +2328,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				}
 			 }];
 		
-			// sms
-		} else if (buttonIndex == 4) {
+		} else if (buttonIndex == HONShareSheetActionTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {
 				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 				messageComposeViewController.body = [[_shareInfo objectForKey:@"caption"] objectAtIndex:3];
@@ -2353,8 +2344,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  otherButtonTitles:nil] show];
 			}
 		
-			// email
-		} else if (buttonIndex == 5) {
+		} else if (buttonIndex == HONShareSheetActionTypeEmail) {
 			if ([MFMailComposeViewController canSendMail]) {
 				NSRange range = [[[_shareInfo objectForKey:@"caption"] objectAtIndex:4] rangeOfString:@"|"];
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -2372,10 +2362,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  otherButtonTitles:nil] show];
 			}
 		
-			// link copy / paste
-		} else if (buttonIndex == 6) {
+		} else if (buttonIndex == HONShareSheetActionTypeClipboard) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [HONAppDelegate shareURL];
+			
+			[self _showOKAlert:@"Link Copied to Clipboard" withMessage:[HONAppDelegate shareURL]];
 		}
 		
 		_shareInfo = nil;

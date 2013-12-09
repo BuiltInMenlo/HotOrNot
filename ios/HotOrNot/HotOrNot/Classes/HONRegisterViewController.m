@@ -102,10 +102,12 @@
 							 @"username"	: _username,
 							 @"password"	: _email};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail, params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPICheckNameAndEmail parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -120,10 +122,9 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if ([[userResult objectForKey:@"result"] intValue] == 0) {
+			if ([[result objectForKey:@"result"] intValue] == 0) {
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
@@ -147,7 +148,7 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = ([[userResult objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[userResult objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+				_progressHUD.labelText = ([[result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[result objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -201,10 +202,12 @@
 							 @"token"		: [HONAppDelegate deviceToken],
 							 @"imgURL"		: ([_filename length] == 0) ? [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -219,16 +222,15 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if ([userResult count] != 0) {
+			if ([result count] != 0) {
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
 				}
 				
-				[HONAppDelegate writeUserInfo:userResult];
+				[HONAppDelegate writeUserInfo:result];
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 				
 				[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
@@ -260,7 +262,7 @@
 				}];
 				
 			} else {
-				int errorCode = [[userResult objectForKey:@"result"] intValue];
+				int errorCode = [[result objectForKey:@"result"] intValue];
 				
 				if (_progressHUD == nil)
 					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -321,7 +323,7 @@
 			_progressHUD = nil;
 			
 		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			[HONAppDelegate writeSubscribeeList:result];
 		}
 		
@@ -342,12 +344,12 @@
 
 - (void)_recreateUser {
 	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -363,11 +365,11 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if ([userResult objectForKey:@"id"] != [NSNull null] || [userResult count] > 0) {
-				[HONAppDelegate writeUserInfo:userResult];
-				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			if ([result objectForKey:@"id"] != [NSNull null] || [result count] > 0) {
+				[HONAppDelegate writeUserInfo:result];
+				[HONImagingDepictor writeImageFromWeb:[result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			}
 		}
 		
@@ -392,8 +394,7 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register"];
-	_headerView.backgroundColor = [UIColor whiteColor];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register" hasTranslucency:NO];
 	[self.view addSubview:_headerView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];

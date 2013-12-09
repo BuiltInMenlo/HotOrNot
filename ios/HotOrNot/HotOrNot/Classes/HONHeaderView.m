@@ -16,8 +16,9 @@
 @implementation HONHeaderView
 @synthesize title = _title;
 
-- (id)initWithBranding {
+- (id)initWithBrandingWithTranslucency:(BOOL)isTranslucent {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
+		self.backgroundColor = (isTranslucent) ? [UIColor clearColor] : [UIColor whiteColor];
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"headerLogo_volley" : @"headerLogo_selfieclub"]];
@@ -28,8 +29,9 @@
 	return (self);
 }
 
-- (id)initWithTitle:(NSString *)title {
+- (id)initWithTitle:(NSString *)title hasTranslucency:(BOOL)isTranslucent {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
+		self.backgroundColor = (isTranslucent) ? [UIColor clearColor] : [UIColor whiteColor];
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		_title = title;
@@ -45,8 +47,9 @@
 	return (self);
 }
 
-- (id)initAsModalWithTitle:(NSString *)title {
+- (id)initAsModalWithTitle:(NSString *)title hasTranslucency:(BOOL)isTranslucent {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)])) {
+		self.backgroundColor = (isTranslucent) ? [UIColor clearColor] : [UIColor whiteColor];
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header_modal"]]];
 		
 		_title = title;

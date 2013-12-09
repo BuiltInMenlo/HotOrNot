@@ -73,6 +73,8 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIAddFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -87,8 +89,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
 				[HONAppDelegate writeSubscribeeList:result];
@@ -117,6 +118,8 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIRemoveFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -131,8 +134,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
 				[HONAppDelegate writeSubscribeeList:result];
@@ -164,10 +166,12 @@
 	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 1],
 							 @"username"	: username};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -182,8 +186,10 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *result = [NSArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			result = [NSArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+											  sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
 			_users = [NSMutableArray array];
 			for (NSDictionary *dict in result) {
@@ -257,9 +263,8 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Search"];
-	headerView.backgroundColor = [UIColor whiteColor];
-	[headerView addButton:selectAllButton];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Search" hasTranslucency:NO];
+//	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	
@@ -311,8 +316,7 @@
 		for (HONPopularUserVO *vo in _selectedUsers)
 			[self _addFriend:vo.userID];
 		
-		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
-		if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+		if ([HONAppDelegate totalForCounter:@"popular"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 																message:@"Get more subscribers now, tap OK."
 															   delegate:self
@@ -320,21 +324,7 @@
 													  otherButtonTitles:@"OK", nil];
 			[alertView setTag:0];
 			[alertView show];
-			
-			
-		} else {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
-		
-	} else {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:1];
-//		[alertView show];
 	}
 	
 	if (_hasUpdated) {
@@ -353,33 +343,14 @@
 	_hasUpdated = YES;
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
-//	for (NSDictionary *dict in [HONAppDelegate searchUsers])
-//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
-//	
-//	for (HONPopularUserViewCell *cell in _cells)
-//		[cell toggleSelected:YES];
 
+	for (HONPopularUserVO *vo in _users) {
+		[_selectedUsers addObject:vo];
+		[_addUsers addObject:vo];
+	}
 	
-	// delselect all
-//	if ([_addUsers count] == [_users count]) {
-//		[_addUsers removeAllObjects];
-//		
-//		for (HONPopularUserVO *vo in _users)
-//			[_removeUsers addObject:vo];
-//		
-//		for (HONPopularUserViewCell *cell in _cells)
-//			[cell toggleSelected:NO];
-//	
-//	} else {
-		[_removeUsers removeAllObjects];
-		for (HONPopularUserVO *vo in _users) {
-			[_selectedUsers addObject:vo];
-			[_addUsers addObject:vo];
-		}
-		
-		for (HONPopularUserViewCell *cell in _cells)
-			[cell toggleSelected:YES];
-//	}
+	for (HONPopularUserViewCell *cell in _cells)
+		[cell toggleSelected:YES];
 }
 
 
@@ -540,8 +511,7 @@
 			for (HONPopularUserVO *vo in _selectedUsers)
 				[self _addFriend:vo.userID];
 			
-			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
-			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+			if ([HONAppDelegate totalForCounter:@"popular"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
@@ -551,14 +521,7 @@
 				[alertView show];
 				
 				
-			} else {
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//				[self dismissViewControllerAnimated:YES completion:nil];
 			}
-			
-		} else {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//			[self dismissViewControllerAnimated:YES completion:nil];
 		}
 	
 	} else if (alertView.tag == 2) {

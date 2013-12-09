@@ -62,10 +62,12 @@
 							_username, @"username",
 							nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"], params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -81,14 +83,13 @@
 			
 			
 		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AAAAAAAAA AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AAAAAAAAA AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+			if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 				
-				[HONAppDelegate writeUserInfo:userResult];
+				[HONAppDelegate writeUserInfo:result];
 				[self dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 				}];
@@ -133,8 +134,7 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Username"];
-	headerView.backgroundColor = [UIColor whiteColor];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Username" hasTranslucency:NO];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	

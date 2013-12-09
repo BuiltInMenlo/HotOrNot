@@ -60,8 +60,7 @@
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:_headerTitle];
-	headerView.backgroundColor = [UIColor whiteColor];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:_headerTitle hasTranslucency:NO];
 	[headerView addButton:closeButton];
 	[self.view addSubview:headerView];
 	

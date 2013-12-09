@@ -12,9 +12,9 @@
 #import "HONCreateSnapButtonView.h"
 
 @interface HONHeaderView : UIView
-- (id)initWithBranding;
-- (id)initWithTitle:(NSString *)title;
-- (id)initAsModalWithTitle:(NSString *)title;
+- (id)initWithBrandingWithTranslucency:(BOOL)isTranslucent;
+- (id)initWithTitle:(NSString *)title hasTranslucency:(BOOL)isTranslucent;
+- (id)initAsModalWithTitle:(NSString *)title hasTranslucency:(BOOL)isTranslucent;
 
 - (void)leftAlignTitle;
 - (void)addButton:(UIView *)buttonView;

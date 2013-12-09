@@ -58,6 +58,8 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPISuspendedAccount parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -73,8 +75,7 @@
 			
 			
 		} else {
-//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 //			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
 				[_progressHUD hide:YES];
@@ -101,6 +102,7 @@
 //				_passcode = @"";
 //				[_passcodeTextField becomeFirstResponder];
 //			}
+			result = nil;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -124,7 +126,7 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Account Suspended"];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Account Suspended" hasTranslucency:YES];
 	[self.view addSubview:_headerView];
 	
 	
