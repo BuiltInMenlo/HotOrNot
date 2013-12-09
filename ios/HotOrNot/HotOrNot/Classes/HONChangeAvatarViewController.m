@@ -253,10 +253,6 @@
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-	
-//	if (viewController.navigationItem.hidesBackButton || viewController.navigationItem.rightBarButtonItem == nil) {
-//        [viewController.navigationController.navigationBar setNeedsLayout];
-//    }
 }
 
 

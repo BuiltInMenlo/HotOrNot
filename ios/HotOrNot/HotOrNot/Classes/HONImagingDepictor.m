@@ -183,6 +183,9 @@ const CGSize kInstagramSize = {612.0, 612.0};
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], url, [error localizedDescription]);
+		
+		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 	
 	[operation start];

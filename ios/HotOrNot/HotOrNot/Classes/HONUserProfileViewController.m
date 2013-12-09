@@ -234,6 +234,8 @@
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -248,9 +250,8 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [result count]);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [result objectAtIndex:0]);
 			_challenges = [NSMutableArray array];
 			
@@ -507,13 +508,15 @@
 }
 
 - (void)_sendShoutoutForUser:(int)userID {
-	NSDictionary *params = @{@"target"	: [NSString stringWithFormat:@"%d", userID],
-							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"	: [NSString stringWithFormat:@"%d", userID]};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIMakeShoutout, params);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProfileShoutout, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIMakeShoutout parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIProfileShoutout parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
@@ -528,8 +531,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			//			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 		}
 		
@@ -1002,7 +1004,7 @@
 		[_scrollView addSubview:reportButton];
 	}
 	
-	float gridPos = 325.0 + ((int)(!_isUser) * 45.0);
+	float gridPos = 324.0 + ((int)(!_isUser) * 45.0);
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
 	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
 	_profileGridView.delegate = self;

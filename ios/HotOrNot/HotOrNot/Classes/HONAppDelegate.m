@@ -109,7 +109,8 @@ NSString * const kAPIPurgeUser = @"users/purge";
 NSString * const kAPIPurgeContent = @"users/purgecontent";
 NSString * const kAPIGetActivity = @"users/getactivity";
 NSString * const kAPIDeleteImage = @"challenges/deleteimage";
-NSString * const kAPIMakeShoutout = @"challenges/shoutout";
+NSString * const kAPIVerifyShoutout = @"challenges/shoutout";
+NSString * const kAPIProfileShoutout = @"challenges/selfieshoutout";
 
 
 // view heights
@@ -337,6 +338,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)brandedAppName {
+	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])]) {
+		for (NSString *key in [dict keyEnumerator]) {
+			if ([key isEqualToString:@"_{{APP_NAME}}_"]) {
+				return ([dict objectForKey:key]);
+				break;
+			}
+		}
+	}
+	
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
+		for (NSString *key in [dict keyEnumerator])
+			[HONImagingDepictor writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
+	}
+	
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]);
 }
 
@@ -812,12 +827,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
 	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
-	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
+	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:configURLWithTimestamp parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -833,7 +849,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 //			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
 			if ([result isEqual:[NSNull null]]) {

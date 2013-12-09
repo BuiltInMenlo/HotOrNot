@@ -32,7 +32,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
 		_captions = @[@"Help",
 					  @"Notifications",
 					  @"Invite Friends via SMS",
@@ -227,7 +226,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
@@ -361,7 +360,7 @@
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
-	
+		
 	} else if (indexPath.row == 5) {
 		[[Mixpanel sharedInstance] track:@"Settings - Change Email"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

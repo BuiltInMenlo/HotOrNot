@@ -19,7 +19,7 @@
 #define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
-#define __FORCE_REGISTER__ 0
+#define __FORCE_REGISTER__ 1
 
 #define __FORCE_SUGGEST__ 0
 #define __IGNORE_SUSPENDED__ 0
@@ -91,7 +91,8 @@ extern NSString * const kAPIPurgeUser;
 extern NSString * const kAPIPurgeContent;
 extern NSString * const kAPIGetActivity;
 extern NSString * const kAPIDeleteImage;
-extern NSString * const kAPIMakeShoutout;
+extern NSString * const kAPIVerifyShoutout;
+extern NSString * const kAPIProfileShoutout;
 
 
 // view heights
