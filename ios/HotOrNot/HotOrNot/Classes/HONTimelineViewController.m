@@ -49,9 +49,7 @@
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) UIImageView *blurredImageView;
 @property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
-@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic) BOOL isScrollingDown;
 @property (nonatomic) BOOL isFirstLoad;
 @property (nonatomic) int imageQueueLocation;
@@ -125,8 +123,6 @@
 					[_challenges addObject:vo];
 			}
 			
-			[_tableView reloadData];
-			
 			if ([_challenges count] > 0 && _imageQueueLocation < [_challenges count]) {
 				int cnt = 0;
 				NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
@@ -151,7 +147,8 @@
 			_progressHUD = nil;
 		}
 		
-		_isRefreshing = NO;
+		[_tableView reloadData];
+		_tableView.pagingEnabled = YES;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		_isFirstLoad = NO;
 		
@@ -168,7 +165,7 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 		
-		_isRefreshing = NO;
+		_tableView.pagingEnabled = YES;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		_isFirstLoad = NO;
 	}];
@@ -339,7 +336,6 @@
 	[super loadView];
 	//self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
-	_isRefreshing = NO;
 	
 	_imageQueueLocation = 0;
 	_challenges = [NSMutableArray array];
@@ -347,17 +343,16 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	//_tableView.contentInset = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.scrollsToTop = NO;
 	_tableView.pagingEnabled = YES;
-	_tableView.showsVerticalScrollIndicator = YES;
+	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
+	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 
 //	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -409,8 +404,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[HONAppDelegate incTotalForCounter:@"timeline"];
-	
-	_isRefreshing = YES;
 	[self _retrieveChallenges];
 }
 
@@ -421,10 +414,9 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	[self _addBlur];
 	[self _removeTutorialBubbles];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -462,10 +454,6 @@
 	[[Mixpanel sharedInstance] track:@"Start First Run"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-//	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -619,17 +607,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_addBlur {
-//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-//	_blurredImageView.alpha = 0.0;
-//	[self.view addSubview:_blurredImageView];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_blurredImageView.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	}];
-}
-
 - (void)_removeTutorialBubbles {
 	for (HONTimelineItemViewCell *cell in _cells) {
 		[cell removeTutorialBubble];
@@ -650,9 +627,8 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		[self _addBlur];
 		[self _removeTutorialBubbles];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -721,7 +697,6 @@
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
 //		_challengeVO = challengeVO;
-//		[self _addBlur];
 //		[self _removeTutorialBubbles];
 		
 //		[cell showTapOverlay];
@@ -851,27 +826,8 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	_isRefreshing = YES;
+	_tableView.pagingEnabled = NO;
 	[self _goRefresh];
-}
-
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing);
-}
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-//NSLog(@"scrollViewWillEndDragging:withVelocity:[%@]targetContentOffset:[%@]", NSStringFromCGPoint(velocity), NSStringFromCGPoint(*targetContentOffset));
-	_timelineScrollDirection = (velocity.y > 0.0) ? HONTimelineScrollDirectionDown : HONTimelineScrollDirectionUp;
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
@@ -964,6 +920,24 @@
 			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
 		}
 	}
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"[:_:] scrollViewDidScroll-{%@}- offset:[%.02f] inset:[%@] [:_:]", scrollView.superview, scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+//	NSLog(@"[:_:] scrollViewWillEndDragging-{%@}- offset:[%.02f] inset:[%@] [:_:]", scrollView, scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+	_timelineScrollDirection = (velocity.y > 0.0) ? HONTimelineScrollDirectionDown : HONTimelineScrollDirectionUp;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+//	NSLog(@"[:_:] scrollViewDidEndDragging-{%@}- offset:[%.02f] inset:[%@] [:_:]", scrollView, scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+	
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 

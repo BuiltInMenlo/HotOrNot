@@ -49,10 +49,8 @@
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int imageQueueLocation;
-@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSDictionary *tabInfo;
 @end
@@ -128,8 +126,8 @@
 			
 			_emptySetImageView.hidden = [_challenges count] > 0;
 			[_tableView reloadData];
-
-			_isRefreshing = NO;
+			
+			_tableView.pagingEnabled = YES;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 			
 			_imageQueueLocation = 0;
@@ -164,7 +162,7 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 		
-		_isRefreshing = NO;
+		_tableView.pagingEnabled = YES;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
@@ -377,16 +375,15 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-//	_tableView.contentInset = ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f) : UIEdgeInsetsMake(-20.0, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.scrollsToTop = NO;
-	_tableView.pagingEnabled = YES;//(![HONAppDelegate switchEnabledForKey:@"verify_tab"]);
-	_tableView.showsVerticalScrollIndicator = YES;
+	_tableView.pagingEnabled = YES;
+	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];//([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
+	_refreshTableHeaderView.scrollView = _tableView;
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
@@ -421,8 +418,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -455,7 +451,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_isRefreshing = YES;
 	[self _retrieveChallenges];
 	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyRefresh_total"] intValue];
@@ -536,7 +531,7 @@
 //	[self _retrieveChallenges];
 	
 	if ([HONAppDelegate incTotalForCounter:@"verify"] == 1) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+		_tutorialImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
@@ -577,19 +572,10 @@
 
 
 #pragma mark - UI Presentation
-- (void)_addBlur {
-//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-//	_blurredImageView.alpha = 0.0;
-//	[self.view addSubview:_blurredImageView];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_blurredImageView.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	}];
-}
-
 - (void)_removeCellForChallenge:(HONChallengeVO *)challengeVO {
 	UITableViewCell *tableCell;
+	
+	//
 	for (HONVerifyViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == challengeVO.challengeID) {
 			tableCell = (UITableViewCell *)cell;
@@ -618,10 +604,13 @@
 		
 		if (indexPath != nil) {
 			[_tableView beginUpdates];
-			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationFade];
 			[_tableView endUpdates];
-			
 			_emptySetImageView.hidden = [_challenges count] > 0;
+			
+//			[UIView animateWithDuration:0.33 delay:0.0 options:(UIViewAnimationOptionAutoreverse | UIViewAnimationOptionAllowAnimatedContent)
+//							 animations:^{}
+//							 completion:^(BOOL finished) {}];
 		}
 	}
 }
@@ -636,8 +625,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -657,8 +645,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -676,17 +663,16 @@
 }
 
 - (void)verifyShoutoutViewCellShowPreview:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
 	[[Mixpanel sharedInstance] track:@"Verify A/B - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 	
+	_challengeVO = challengeVO;
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -704,20 +690,18 @@
 }
 
 - (void)verifyShoutoutViewCellApprove:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
 		if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"])
 			[self _addFriend:challengeVO.creatorVO.userID];
 		
+		
 		[self _verifyUser:challengeVO.creatorVO.userID asLegit:YES];
 		[self _removeCellForChallenge:challengeVO];
-		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"approveAnimation"]]];
 		
 	} else {
@@ -801,8 +785,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -829,8 +812,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = challengeVO.creatorVO.userID;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		[navigationController setNavigationBarHidden:YES];
@@ -850,7 +832,7 @@
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Yes%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -934,11 +916,8 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	_tableView.pagingEnabled = NO;
 	[self _goRefresh];
-}
-
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing);
 }
 
 
@@ -977,6 +956,7 @@
 		
 		cell.delegate = self;
 		cell.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
+		cell.indexPath = indexPath;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		
 		[_cells addObject:cell];
@@ -1001,14 +981,12 @@
 
 
 #pragma mark - TableView Delegates
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {	
 	return (self.view.frame.size.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
-	return (([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? 310.0 : self.view.frame.size.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	return (0.0);
-	return (40.0 * ((int)[HONAppDelegate switchEnabledForKey:@"verify_tab"]));
 }
 
 //- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1103,6 +1081,11 @@
 		}
 		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"verify" : @"follow"];
 	}
+}
+
+
+- (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath {
+	return (proposedDestinationIndexPath);
 }
 
 

@@ -25,7 +25,7 @@
 @end
 
 
-@protocol HONTimelineItemViewCellDelegate
+@protocol HONTimelineItemViewCellDelegate <NSObject>
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showChallenge:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell upvoteCreatorForChallenge:(HONChallengeVO *)challengeVO;

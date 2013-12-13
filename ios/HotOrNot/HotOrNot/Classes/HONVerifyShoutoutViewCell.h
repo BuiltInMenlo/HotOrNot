@@ -16,12 +16,14 @@
 @interface HONVerifyShoutoutViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)showTapOverlay;
+- (void)tintMe;;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, assign) id <HONVerifyShoutoutViewCellDelegate> delegate;
 @end
 
-@protocol HONVerifyShoutoutViewCellDelegate
+@protocol HONVerifyShoutoutViewCellDelegate <NSObject>
 - (void)verifyShoutoutViewCellShowPreview:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyShoutoutViewCell:(HONVerifyShoutoutViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
 - (void)verifyShoutoutViewCellApprove:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;

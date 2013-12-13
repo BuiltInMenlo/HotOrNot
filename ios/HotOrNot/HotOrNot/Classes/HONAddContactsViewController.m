@@ -866,7 +866,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];

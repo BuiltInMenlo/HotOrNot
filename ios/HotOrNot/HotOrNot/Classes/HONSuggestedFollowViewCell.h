@@ -22,7 +22,7 @@
 @end
 
 
-@protocol HONSuggestedFollowViewCellDelegate
+@protocol HONSuggestedFollowViewCellDelegate <NSObject>
 - (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONPopularUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end
 

@@ -13,6 +13,6 @@
 @property (nonatomic, assign) id <HONEmptyTimelineViewDelegate> delegate;
 @end
 
-@protocol HONEmptyTimelineViewDelegate
+@protocol HONEmptyTimelineViewDelegate <NSObject>
 - (void)emptyTimelineViewVerify:(HONEmptyTimelineView *)emptyTimelineView;
 @end

@@ -28,23 +28,27 @@
 #import <QuartzCore/QuartzCore.h>
 
 typedef enum {
-	EGOOPullRefreshPulling = 0,
-	EGOOPullRefreshNormal,
-	EGOOPullRefreshLoading,	
+	EGOOPullRefreshNormal = 0,
+	EGOOPullRefreshPulling,
+	EGOOPullRefreshLoading,
+	EGOOPullRefreshReseting
 } EGOPullRefreshState;
 
 @protocol EGORefreshTableHeaderDelegate;
-@interface EGORefreshTableHeaderView : UIView
-- (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset;
+@interface EGORefreshTableHeaderView : UIView <UIScrollViewDelegate>
+- (id)initWithFrame:(CGRect)frame headerOverlaps:(BOOL)isOverlapping;
+- (id)initWithFrame:(CGRect)frame usingTareOffset:(CGFloat)tareOffset;
+
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView;
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView;
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView;
 
 @property (nonatomic, assign) id <EGORefreshTableHeaderDelegate> delegate;
+@property (nonatomic, retain) UIScrollView *scrollView;
 @end
 
 
-@protocol EGORefreshTableHeaderDelegate
+@protocol EGORefreshTableHeaderDelegate <NSObject>
+@required
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view;
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view;
 @end

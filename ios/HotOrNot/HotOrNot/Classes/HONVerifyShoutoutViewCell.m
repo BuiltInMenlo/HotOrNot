@@ -22,6 +22,7 @@
 @implementation HONVerifyShoutoutViewCell
 @synthesize delegate = _delegate;
 @synthesize challengeVO = _challengeVO;
+@synthesize indexPath = _indexPath;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -128,6 +129,21 @@
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
 	}];
+}
+
+- (void)tintMe {
+	UIView *tintView = [[UIView alloc] initWithFrame:self.contentView.frame];
+	[self.contentView addSubview:tintView];
+	
+	CGFloat hue = (((float)(arc4random() % RAND_MAX)) / RAND_MAX);
+	CGFloat sat = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (1/2));
+	CGFloat bri = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (2/3));
+	UIColor *color = [UIColor colorWithHue:hue saturation:sat brightness:bri alpha:(2/3)];
+	
+	[UIView beginAnimations:@"fade" context:nil];
+	[UIView setAnimationDuration:0.33];
+	[self.contentView setBackgroundColor:color];
+	[UIView commitAnimations];
 }
 
 

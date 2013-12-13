@@ -19,6 +19,6 @@
 @property (nonatomic) BOOL isJoinVolley;
 @end
 
-@protocol HONVolleyEmotionsPickerViewDelegate
+@protocol HONVolleyEmotionsPickerViewDelegate <NSObject>
 - (void)emotionsPickerView:(HONVolleyEmotionsPickerView *)emotionsPickerView selectEmotion:(HONEmotionVO *)emotionVO;
 @end

@@ -18,6 +18,6 @@
 @property (nonatomic, assign) id <HONVerifyCellHeaderViewDelegate> delegate;
 @end
 
-@protocol HONVerifyCellHeaderViewDelegate
+@protocol HONVerifyCellHeaderViewDelegate <NSObject>
 - (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO;
 @end

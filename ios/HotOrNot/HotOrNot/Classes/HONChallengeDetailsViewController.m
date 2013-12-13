@@ -29,7 +29,7 @@
 #import "HONEmotionVO.h"
 
 
-@interface HONChallengeDetailsViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate, HONParticipantGridViewDelegate>
+@interface HONChallengeDetailsViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -48,17 +48,14 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
-@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic) int opponentCounter;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UIImageView *blurredImageView;
 @end
 
 @implementation HONChallengeDetailsViewController
 
-//- (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		
@@ -102,8 +99,6 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenge {
-	_isRefreshing = YES;
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 							nil];
@@ -133,17 +128,13 @@
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			
 			[self _participantCheck];
-			[self _remakeUI];
+			[self _rebuildUI];
 		}
 		
-		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		
-		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -154,6 +145,8 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+		
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 	}];
 }
 
@@ -366,8 +359,6 @@
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (kDetailsHeroImageHeight + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
-	_scrollView.contentOffset = CGPointZero;
-	_scrollView.contentInset = UIEdgeInsetsZero;
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
@@ -377,21 +368,23 @@
 	//NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d] (%d)", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count], (int)(kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)));
 	
 	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _scrollView.contentSize.height)];
+//	_contentHolderView.backgroundColor = [UIColor yellowColor];
 	[_scrollView addSubview:_contentHolderView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_scrollView.frame.size.height, _scrollView.frame.size.width, _scrollView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
+	
+//	_refreshView = [[DLRefreshView alloc] initWithFrame:CGRectMake(0.0, 0.0 - _scrollView.frame.size.height, _scrollView.frame.size.width, _scrollView.frame.size.height)];
+//	_refreshView.delegate = self;
+//	[_scrollView addSubview:_refreshView];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Messages" hasTranslucency:YES];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
 	[self _participantCheck];
-	[self _remakeUI];
-	
-	_isRefreshing = NO;
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+	[self _rebuildUI];
 }
 
 - (void)viewDidLoad {
@@ -422,10 +415,17 @@
 
 
 #pragma mark - UI Presentation
-- (void)_remakeUI {
+- (void)_rebuildUI {
+	[self _orphanUI];
+	[self _adoptUI];
+}
+
+- (void)_orphanUI {
 	for (UIView *view in _contentHolderView.subviews)
 		[view removeFromSuperview];
-	
+}
+
+- (void)_adoptUI {
 	[self _makeHero];
 	[self _makeParticipantGrid];
 	[self _makeFooterTabBar];
@@ -467,18 +467,18 @@
 	[heroPreviewButton addTarget:self action:@selector(_goHeroPreview) forControlEvents:UIControlEventTouchUpInside];
 	[_heroHolderView addSubview:heroPreviewButton];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.25;
-	[_scrollView addGestureRecognizer:lpGestureRecognizer];
-	
 	HONTimelineCellHeaderView *creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:_challengeVO];
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
-	[_contentHolderView addSubview:creatorHeaderView];
+	[_heroHolderView addSubview:creatorHeaderView];
 	
 	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kDetailsHeroImageHeight - 56.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
-	[_contentHolderView addSubview:_timelineItemFooterView];
+	[_heroHolderView addSubview:_timelineItemFooterView];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 }
 
 - (void)_makeParticipantGrid {
@@ -596,7 +596,6 @@
 }
 
 - (void)_goRefresh {
-	_isRefreshing = YES;
 	[self _retrieveChallenge];
 }
 
@@ -633,6 +632,7 @@
 
 
 - (void)_goHeroPreview {
+	NSLog(@"_goHeroPreview");
 	if (_snapPreviewViewController != nil) {
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
@@ -651,8 +651,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", userID, @""], @"opponent", nil]];
 	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -752,19 +751,6 @@
 }
 
 
-#pragma mark - UI Presentation
-- (void)_addBlur {
-//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-//	_blurredImageView.alpha = 0.0;
-//	[self.view addSubview:_blurredImageView];
-//
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_blurredImageView.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	}];
-}
-
-
 #pragma mark - Data Housekeeping
 - (void)_participantCheck {
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
@@ -806,9 +792,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -847,8 +831,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -907,20 +890,19 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+//	NSLog(@"[:|:] egoRefreshTableHeaderDidTriggerRefresh offset:[%.02f] inset:[%@] [:|:]", _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset));
 	[self _goRefresh];
-}
-
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing);
 }
 
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"[:_:] scrollViewDidScroll offset:[%.02f] inset:[%@] [:_:]", scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+//	NSLog(@"[:_:] scrollViewDidEndDragging offset:[%.02f] inset:[%@] [:_:]", scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 

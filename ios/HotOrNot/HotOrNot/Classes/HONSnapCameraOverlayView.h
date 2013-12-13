@@ -20,7 +20,7 @@
 @end
 
 
-@protocol HONSnapCameraOverlayViewDelegate
+@protocol HONSnapCameraOverlayViewDelegate <NSObject>
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;

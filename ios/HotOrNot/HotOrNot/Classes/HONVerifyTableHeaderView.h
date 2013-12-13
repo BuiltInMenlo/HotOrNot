@@ -19,6 +19,6 @@
 @end
 
 
-@protocol HONVerifyTableHeaderViewDelegate
+@protocol HONVerifyTableHeaderViewDelegate <NSObject>
 - (void)tableHeaderView:(HONVerifyTableHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO;
 @end

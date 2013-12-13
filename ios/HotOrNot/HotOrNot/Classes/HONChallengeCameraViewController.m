@@ -40,7 +40,6 @@
 @property (nonatomic) int tintIndex;
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isFirstAppearance;
-@property (nonatomic) BOOL isPreviewMirrored;
 @property (nonatomic) BOOL isFirstCamera;
 @property (nonatomic) BOOL isUploadComplete;
 @property (nonatomic) int uploadCounter;
@@ -618,7 +617,7 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	_isPreviewMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
+	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
 	_processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
@@ -630,13 +629,14 @@
 	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 	[canvasView addSubview:overlayTintView];
 	
-	_processedImage = [HONImagingDepictor createImageFromView:canvasView];
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	_processedImage = (isSourceImageMirrored) ? [HONImagingDepictor mirrorImage:[HONImagingDepictor createImageFromView:canvasView]] : [HONImagingDepictor createImageFromView:canvasView];
 	
-	_previewView = (_isPreviewMirrored) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	//_previewView = (isSourceImageMirrored) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage];
+	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage asSubmittingType:_selfieSubmitType withSubject:_subjectName];
 	_previewView.delegate = self;
-	_previewView.isFirstCamera = _isFirstCamera;
-	_previewView.isJoinChallenge = (_selfieSubmitType == HONSelfieSubmitTypeReply);
+//	_previewView.isFirstCamera = _isFirstCamera;
+//	_previewView.isJoinChallenge = (_selfieSubmitType == HONSelfieSubmitTypeReply);
 	[_previewView showKeyboard];
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {

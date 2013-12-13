@@ -18,7 +18,7 @@
 @property (nonatomic, assign) id <HONTimelineCellHeaderViewDelegate> delegate;
 @end
 
-@protocol HONTimelineCellHeaderViewDelegate
+@protocol HONTimelineCellHeaderViewDelegate <NSObject>
 - (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 @optional
 - (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showDetails:(HONChallengeVO *)challengeVO;

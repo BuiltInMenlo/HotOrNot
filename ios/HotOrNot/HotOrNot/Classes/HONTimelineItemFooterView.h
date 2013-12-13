@@ -21,7 +21,7 @@
 @end
 
 
-@protocol HONTimelineItemFooterViewDelegate
+@protocol HONTimelineItemFooterViewDelegate <NSObject>
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO;
 - (void)footerView:(HONTimelineItemFooterView *)cell likeChallenge:(HONChallengeVO *)challengeVO;
 - (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;

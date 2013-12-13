@@ -26,7 +26,7 @@ typedef enum {
 @property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;
 @end
 
-@protocol HONSnapPreviewViewControllerDelegate
+@protocol HONSnapPreviewViewControllerDelegate <NSObject>
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController;
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;

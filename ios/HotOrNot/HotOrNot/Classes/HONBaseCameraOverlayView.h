@@ -21,7 +21,7 @@
 @property(nonatomic, assign) id <HONCameraOverlayViewDelegate> delegate;
 @end
 
-@protocol HONCameraOverlayViewDelegate
+@protocol HONCameraOverlayViewDelegate <NSObject>
 - (void)cameraOverlayViewTakePicture:(HONBaseCameraOverlayView *)previewView;
 - (void)cameraOverlayViewRetake:(HONBaseCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONBaseCameraOverlayView *)previewView;

@@ -18,7 +18,7 @@
 @end
 
 
-@protocol HONSearchBarHeaderViewDelegate
+@protocol HONSearchBarHeaderViewDelegate <NSObject>
 - (void)searchBarHeaderFocus:(HONSearchBarHeaderView *)searchBarHeaderView;
 - (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView;
 - (void)searchBarHeader:(HONSearchBarHeaderView *)searchBarHeaderView enteredSearch:(NSString *)searchQuery;

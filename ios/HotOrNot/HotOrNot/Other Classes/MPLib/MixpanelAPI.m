@@ -49,7 +49,7 @@
 @synthesize testMode;
 @synthesize sendDeviceModel;
 
-static MixpanelAPI *sharedInstance = nil; 
+static MixpanelAPI *sharedInstance = nil;
 
 + (NSString*)calculateHMAC_SHA1withString:(NSString*) str andKey:(NSString*)key {
 	const char *cStr = [str UTF8String];

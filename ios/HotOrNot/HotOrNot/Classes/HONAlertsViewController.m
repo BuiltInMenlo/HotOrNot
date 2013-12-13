@@ -40,9 +40,7 @@
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) NSArray *defaultCaptions;
@@ -54,7 +52,6 @@
 - (id)init {
 	if ((self = [super init])) {
 		_alertItems = [NSMutableArray array];
-		_isRefreshing = NO;
 		
 		_defaultCaptions = @[@"Find friends",
 							 @"Search",
@@ -122,9 +119,6 @@
 			[_tableView reloadData];
 		}
 		
-//		[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:NO];
-		[_tableView setContentOffset:CGPointZero animated:NO];
-		_isRefreshing = NO;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		
 		if (_progressHUD != nil) {
@@ -144,6 +138,8 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+		
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -253,43 +249,17 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 80.0)];
-	[self.view addSubview:bannerImageView];
-	
-	
-	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	kikButton.frame = bannerImageView.frame;
-	[kikButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:kikButton];
-	
-	
-	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		bannerImageView.image = image;
-	};
-	
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
-	};
-	
-	[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_activity.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-						   placeholderImage:nil
-									success:successBlock
-									failure:failureBlock];
-	
-//	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 144.0, 320.0, self.view.frame.size.height - 144.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-//	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.scrollsToTop = NO;
-	_tableView.pagingEnabled = NO;
-	_tableView.showsVerticalScrollIndicator = YES;
+	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];//([HONAppDelegate switchEnabledForKey:@"verify_tab"])];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:NO];
 	_refreshTableHeaderView.delegate = self;
+	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
@@ -339,8 +309,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -354,8 +323,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -388,14 +356,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_isRefreshing = YES;
 	[self _retrieveAlerts];
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyRefresh_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyRefresh_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (total == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
+	if ([HONAppDelegate incTotalForCounter:@"verifyRefresh"] == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
@@ -462,7 +425,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:=_challengeVO]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -484,24 +447,6 @@
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Share"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-//	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//	NSString *documentsDirectory = [paths objectAtIndex:0];
-//	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"temp_picture"];
-//	
-//	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
-//		[[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-//	
-//	[UIImagePNGRepresentation([HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault]) writeToFile:filePath atomically:YES]; // save as PNG
-//	
-//	KikAPIMessage *message = [KikAPIMessage message];
-//	[message setPreviewFromImage:[HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault]];
-//	message.androidURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/android/"];
-//	message.iphoneURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/iphone/"];
-//	message.genericURIs = [NSArray arrayWithObject:@"http://kik.com/api-demo/sketch/other/"];
-//	message.filePath = filePath;
-//	
-//	[KikAPIClient sendMessage:message toConversation:@""];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -555,26 +500,13 @@
 }
 
 - (void)_refreshExploreTab:(NSNotification *)notification {
-	_isRefreshing = YES;
 	[self _retrieveAlerts];
 }
 - (void)_tareExploreTab:(NSNotification *)notification {
-	//[_tableView setContentOffset:CGPointMake(0.0, 64.0) animated:YES];
 	[_tableView setContentOffset:CGPointZero animated:YES];
 }
 
 #pragma mark - UI Presentation
-- (void)_addBlur {
-//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-//	_blurredImageView.alpha = 0.0;
-//	[self.view addSubview:_blurredImageView];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_blurredImageView.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	}];
-}
-
 - (void)_removeCellForAlertItem:(HONAlertItemVO *)alertItemVO {
 	UITableViewCell *tableCell;
 	for (HONAlertItemViewCell *cell in _cells) {
@@ -600,11 +532,11 @@
 	//	NSLog(@"CHALLENGE:(%d)[%@]", ind, challengeVO.creatorVO.username);
 	
 	if (tableCell != nil) {
-		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:ind];
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:ind inSection:0];
 		
 		if (indexPath != nil) {
 			[_tableView beginUpdates];
-			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.row] withRowAnimation:UITableViewRowAnimationTop];
 			[_tableView endUpdates];
 			
 			_emptySetImageView.hidden = [_alertItems count] > 0;
@@ -615,34 +547,56 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (1);
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return ([_alertItems count] + 4);
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return (nil);
+	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 80.0)];
+	bannerImageView.userInteractionEnabled = YES;
+	
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = CGRectOffset(bannerImageView.frame, 0.0, -bannerImageView.frame.origin.y);
+	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[bannerImageView addSubview:shareButton];
+	
+	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		bannerImageView.image = image;
+	};
+	
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
+	};
+	
+	[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_activity.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+						   placeholderImage:nil
+									success:successBlock
+									failure:failureBlock];
+	
+	return (bannerImageView);
 }
 
 - (UITableViewCell *)tableView :(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.section < [_alertItems count] + 3)];
+		cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.row < [_alertItems count] + 3)];
 	
 	
-	if (indexPath.section < [_alertItems count]) {
-		cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.section];
+	if (indexPath.row < [_alertItems count]) {
+		cell.alertItemVO = (HONAlertItemVO *)[_alertItems objectAtIndex:indexPath.row];
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
-	} else if (indexPath.section < [_alertItems count] + 3) {
+	} else if (indexPath.row < [_alertItems count] + 3) {
 		[cell removeChevron];
 		cell.textLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 		cell.textLabel.textColor = [HONAppDelegate honBlueTextColor];
-		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.section - [_alertItems count]];
+		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.row - [_alertItems count]];
 		cell.textLabel.textAlignment = NSTextAlignmentCenter;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
@@ -657,25 +611,24 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == [_alertItems count] + 3)
+	if (indexPath.row == [_alertItems count] + 3)
 		return ((([_alertItems count] + 3) > 6 + ((int)([HONAppDelegate isPhoneType5s]) * 2)) ? 49.0 : 0.0);
 	
 	return (49.0);
-//	return (49.0 + ((([_alertItems count] + 3) > 8 + ((int)([HONAppDelegate isPhoneType5s]) * 2) && indexPath.section == [_alertItems count] + 3) * 51.0));
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
+	return (80.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section < [_alertItems count] || indexPath.section == [_alertItems count] + 3) ? nil : indexPath);
+	return ((indexPath.row < [_alertItems count] || indexPath.row == [_alertItems count] + 3) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	switch (indexPath.section - [_alertItems count]) {
+	switch (indexPath.row - [_alertItems count]) {
 		case 0:
 			[self _goAddContacts];
 			break;
@@ -691,6 +644,16 @@
 		default:
 			break;
 	}
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
@@ -719,31 +682,27 @@
 	UINavigationController *navigationController;
 	
 	if (alertItemVO.triggerType == HONPushTypeShowChallengeDetails) {
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = alertItemVO.userID;
 		viewController = userPofileViewController;
 		
 	} else if (alertItemVO.triggerType == HONPushTypeUserVerified) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = alertItemVO.userID;
 		viewController = userPofileViewController;
 	
 	} else if (alertItemVO.triggerType == HONPushTriggerUserProfileType) {
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = alertItemVO.userID;
 		viewController = userPofileViewController;
 		
 	} else if (alertItemVO.triggerType == HONPushTypeShowChallengeDetailsIgnoringPushes) {
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = alertItemVO.userID;
 		viewController = userPofileViewController;
 	
 	} else {
-		[self _addBlur];
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = alertItemVO.userID;
 		viewController = userPofileViewController;
 	}
@@ -761,20 +720,6 @@
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
 	[self _goRefresh];
-}
-
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing);
-}
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 

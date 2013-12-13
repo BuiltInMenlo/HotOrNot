@@ -11,8 +11,8 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
-#import "UIImageView+AFNetworking.h"
 #import "MBProgressHUD.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -25,6 +25,7 @@
 #import "HONSettingsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONRoteAPICaller.h"
 #import "HONImageLoadingView.h"
 #import "HONUserProfileGridView.h"
 #import "HONChallengeVO.h"
@@ -36,18 +37,14 @@
 #import "HONFollowingViewController.h"
 #import "HONFollowersViewController.h"
 
-//[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0][UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:0.5]
 
-
-@interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate>
+@interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
-@property (nonatomic, strong) UIView *bgHolderView;
-@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *verifyButton;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+//@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONUserProfileGridView *profileGridView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -69,21 +66,18 @@
 @property (nonatomic) int followingCounter;
 @property (nonatomic) BOOL isUser;
 @property (nonatomic) BOOL isFollowing;
-@property (nonatomic) BOOL isRefreshing;
 @end
 
 
 @implementation HONUserProfileViewController
 @synthesize userID = _userID;
 
-- (id)initWithBackground:(UIImageView *)imageView {
+- (id)init {
 	if ((self = [super init])) {
-		_bgImageView = nil;//imageView;
-		self.view.backgroundColor = (imageView == nil) ? [UIColor whiteColor] : [UIColor clearColor];
-		
 		_isUser = NO;
 		_isFollowing = NO;
 		
+		self.view.backgroundColor = [UIColor whiteColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
@@ -199,10 +193,11 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %d", [[self class] description], [result count]);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %d", [[self class] description], [[operation request] URL], [result count]);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if (_isUser)
-				[HONAppDelegate writeSubscribeeList:result];
+//			if (_isUser)
+//				[HONAppDelegate writeSubscribeeList:result];
 			
 			_followingCounter = [result count];
 			[self _retrieveChallenges];
@@ -262,10 +257,9 @@
 					[_challenges addObject:vo];
 			}
 			
-			_isRefreshing = NO;
-			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-
-			[self _makeUI];
+//			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+			[self _orphanUI];
+			[self _adoptUI];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -280,6 +274,8 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+		
+//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 	}];
 }
 
@@ -487,13 +483,8 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil) {
-				for (UIImageView *imageView in _gridHolderView.subviews)
-					[imageView removeFromSuperview];
-				
-				[_gridHolderView removeFromSuperview];
-				_gridHolderView = nil;
-				
-				[self _retrieveUser];
+				[self _orphanUI];
+				[self _adoptUI];
 			}
 		}
 		
@@ -540,6 +531,12 @@
 			
 			if (![result isEqual:[NSNull null]])
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+			
+			[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
+												 message:@"Check your Home timeline to like and reply."
+												delegate:nil
+									cancelButtonTitle:@"OK"
+									otherButtonTitles:@"", nil] show];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -573,20 +570,17 @@
 - (void)loadView {
 	[super loadView];
 	
-	_bgHolderView = [[UIView alloc] initWithFrame:self.view.frame];
-	[self.view addSubview:_bgHolderView];
-	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.pagingEnabled = NO;
-	_scrollView.delegate = self;
-	_scrollView.showsVerticalScrollIndicator = YES;
+	_scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+//	_scrollView.frame = CGRectOffset(_scrollView.frame, 0.0, 0.0);
 	_scrollView.showsHorizontalScrollIndicator = NO;
+//	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
 	
-//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_scrollView.frame.size.height, _scrollView.frame.size.width, _scrollView.frame.size.height) headerOverlaps:YES];
+//	_refreshTableHeaderView.scrollView = _scrollView;
 //	_refreshTableHeaderView.delegate = self;
+//	[_refreshTableHeaderView setTag:666];
 //	[_scrollView addSubview:_refreshTableHeaderView];
-//	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -620,15 +614,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[_bgHolderView addSubview:_bgImageView];
-		
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 	
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"profile_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	if (total == 0 && _isUser) {
+	if ([HONAppDelegate incTotalForCounter:@"profile"] == 0 && _isUser) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.hidden = YES;
@@ -701,12 +689,6 @@
 }
 
 - (void)_goRefresh {
-	for (UIImageView *imageView in _gridHolderView.subviews)
-		[imageView removeFromSuperview];
-	
-	[_gridHolderView removeFromSuperview];
-	_gridHolderView = nil;
-	
 	[self _retrieveUser];
 }
 
@@ -876,41 +858,11 @@
 
 
 #pragma mark - UI Presentation
-- (void)_makeUI {
-	[_headerView setTitle:_userVO.username];
-	
-	for (UIView *view in _scrollView.subviews)
-		[view removeFromSuperview];
-	
-	
-	[self _makeAvatarImage];
-	
-		
-//	HONEmotionVO *emotionVO = [self _latestChallengeEmotion];
-//	BOOL isEmotionFound = (emotionVO != nil);
-//	
-//	if (isEmotionFound) {
-//		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(1.0, 222.0, 43.0, 43.0)];
-//		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.imageLargeURL] placeholderImage:nil];
-//		[_scrollView addSubview:emoticonImageView];
-//	}
-//	
-//	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0 + (((int)isEmotionFound) * 32.0), 232.0, 250.0, 22.0)];
-//	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-//	subjectLabel.textColor = [UIColor whiteColor];
-//	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-//	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-//	subjectLabel.backgroundColor = [UIColor clearColor];
-//	subjectLabel.text = ((HONChallengeVO *)[_challenges lastObject]).subjectName;
-//	[_scrollView addSubview:subjectLabel];
-	
-	
-	UIImageView *statsBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileLineBackground"]];
-	statsBGImageView.frame = CGRectOffset(statsBGImageView.frame, 0.0, 180.0);
-	[_scrollView addSubview:statsBGImageView];
-	
-	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+- (void)_orphanUI {
+	if (_avatarImageView != nil) {
+		[_avatarImageView removeFromSuperview];
+		_avatarImageView = nil;
+	}
 	
 	if (_selfiesLabel) {
 		[_selfiesLabel removeFromSuperview];
@@ -927,6 +879,73 @@
 		_followingLabel = nil;
 	}
 	
+	for (UIImageView *imageView in _gridHolderView.subviews)
+		[imageView removeFromSuperview];
+	
+	[_gridHolderView removeFromSuperview];
+	_gridHolderView = nil;
+	
+	
+	for (UIView *view in _scrollView.subviews) {
+		if (view.tag != 666)
+			[view removeFromSuperview];
+	}
+}
+
+- (void)_adoptUI {
+	[_headerView setTitle:_userVO.username];
+	
+	[self _makeAvatarImage];
+	[self _makeStats];
+	[self _makeFooterBar];
+}
+
+- (void)_makeAvatarImage {
+//	NSLog(@"AVATAR LOADING:[%@]", [_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
+	
+	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(120.0, 85.0, 80.0, 80.0)];
+	[_scrollView addSubview:avatarHolderView];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView asLargeLoader:NO];
+	[imageLoadingView startAnimating];
+	[avatarHolderView addSubview:imageLoadingView];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_avatarImageView.image = image;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+			_avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
+	};
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
+	[avatarHolderView addSubview:_avatarImageView];
+	_avatarImageView.alpha = 0.0;
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+							placeholderImage:nil
+									 success:imageSuccessBlock
+									 failure:imageFailureBlock];
+	
+	UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	changeAvatarButton.frame = CGRectMake(120.0, 85.0, 80.0, 80.0);
+	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_nonActive"] forState:UIControlStateNormal];
+	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_Active"] forState:UIControlStateHighlighted];
+	[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
+	changeAvatarButton.hidden = (!_isUser);
+	[_scrollView addSubview:changeAvatarButton];
+}
+
+- (void)_makeStats {
+	UIImageView *statsBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileLineBackground"]];
+	statsBGImageView.frame = CGRectOffset(statsBGImageView.frame, 0.0, 180.0);
+	[_scrollView addSubview:statsBGImageView];
+	
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
 	_selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 196.0, 107.0, 18.0)];
 	_selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	_selfiesLabel.textColor = [HONAppDelegate honGreyTextColor];
@@ -942,7 +961,7 @@
 	_followersLabel.textAlignment = NSTextAlignmentCenter;
 	_followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_followersLabel];
-
+	
 	_followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 196.0, 107.0, 18.0)];
 	_followingLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	_followingLabel.textColor = [HONAppDelegate honGreyTextColor];
@@ -950,7 +969,7 @@
 	_followingLabel.textAlignment = NSTextAlignmentCenter;
 	_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
 	[_scrollView addSubview:_followingLabel];
-
+	
 //	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 432.0, 260.0, 35.0)];
 //	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:27];
 //	_likesLabel.textColor = [HONAppDelegate honGreyTextColor];
@@ -967,7 +986,7 @@
 	followingButton.frame = _followingLabel.frame;
 	[followingButton addTarget:self action:@selector(_goSubscribees) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:followingButton];
-
+	
 	UIButton *volleysButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	volleysButton.frame = _selfiesLabel.frame;
 	[volleysButton addTarget:self action:@selector(_goVolleys) forControlEvents:UIControlEventTouchUpInside];
@@ -1017,52 +1036,6 @@
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
-	
-	
-	[self _makeFooterBar];
-}
-
-- (void)_makeAvatarImage {
-//	NSLog(@"AVATAR LOADING:[%@]", [_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
-	
-	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(120.0, 85.0, 80.0, 80.0)];
-	[_scrollView addSubview:avatarHolderView];
-	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView asLargeLoader:NO];
-	[imageLoadingView startAnimating];
-	[avatarHolderView addSubview:imageLoadingView];
-	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_avatarImageView.image = image;
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
-	};
-	
-	if (_avatarImageView != nil) {
-		[_avatarImageView removeFromSuperview];
-		_avatarImageView = nil;
-	}
-	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
-	[avatarHolderView addSubview:_avatarImageView];
-	_avatarImageView.alpha = 0.0;
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-							placeholderImage:nil
-									 success:imageSuccessBlock
-									 failure:imageFailureBlock];
-	
-	UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	changeAvatarButton.frame = CGRectMake(120.0, 85.0, 80.0, 80.0);
-	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_nonActive"] forState:UIControlStateNormal];
-	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_Active"] forState:UIControlStateHighlighted];
-	[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
-	changeAvatarButton.hidden = (!_isUser);
-	[_scrollView addSubview:changeAvatarButton];
 }
 
 - (void)_makeFooterBar {
@@ -1070,20 +1043,6 @@
 	NSArray *footerElements;
 	
 	if (_isUser) {
-//		UIButton *addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		addFriendsButton.frame = CGRectMake(0.0, 0.0, 40.0, 44.0);
-//		[addFriendsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-//		[addFriendsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-//		[addFriendsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
-//		[addFriendsButton setTitle:@"Add Friends" forState:UIControlStateNormal];
-//		[addFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-//		
-//		size = [addFriendsButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
-//															  options:NSStringDrawingTruncatesLastVisibleLine
-//														   attributes:@{NSFontAttributeName:addFriendsButton.titleLabel.font}
-//															  context:nil].size;
-//		addFriendsButton.frame = CGRectMake(addFriendsButton.frame.origin.x, addFriendsButton.frame.origin.y, size.width, size.height);
-		
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
@@ -1122,26 +1081,11 @@
 		
 		settingsButton.frame = CGRectMake(settingsButton.frame.origin.x, settingsButton.frame.origin.y, size.width, size.height);
 		
-		footerElements = @[//[[UIBarButtonItem alloc] initWithCustomView:addFriendsButton],
-//						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-						   [[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
+		footerElements = @[[[UIBarButtonItem alloc] initWithCustomView:shareFooterButton],
 						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 						   [[UIBarButtonItem alloc] initWithCustomView:settingsButton]];
 		
 	} else {
-//		_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
-//		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-//		[_subscribeButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-//		[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
-//		[_subscribeButton setTitle:(_isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
-//		[_subscribeButton addTarget:self action:(_isFollowing) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-//		size = [_subscribeButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
-//											  options:NSStringDrawingTruncatesLastVisibleLine
-//										   attributes:@{NSFontAttributeName:_subscribeButton.titleLabel.font}
-//											  context:nil].size;
-//		_subscribeButton.frame = CGRectMake(_subscribeButton.frame.origin.x, _subscribeButton.frame.origin.y, size.width, size.height);
-		
 		UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
@@ -1180,9 +1124,7 @@
 		
 		flagButton.frame = CGRectMake(flagButton.frame.origin.x, flagButton.frame.origin.y, size.width, size.height);
 		
-		footerElements = @[//[[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
-//						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-						   [[UIBarButtonItem alloc] initWithCustomView:shareButton],
+		footerElements = @[[[UIBarButtonItem alloc] initWithCustomView:shareButton],
 						   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 						   [[UIBarButtonItem alloc] initWithCustomView:flagButton]];
 	}
@@ -1193,11 +1135,11 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
@@ -1229,7 +1171,7 @@
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = opponentVO.userID;
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -1302,6 +1244,13 @@
 }
 
 
+#pragma mark - RefreshTableHeader Delegates
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+//	NSLog(@"[:|:] egoRefreshTableHeaderDidTriggerRefresh offset:[%.02f] inset:[%@] [:|:]", _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset));
+	[self _goRefresh];
+}
+
+
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
@@ -1344,6 +1293,8 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
+//			[[HONRoteAPICaller sharedInstance] followerUserWithUserID:_userVO.userID];
+			
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"unfollow_nonActive"] forState:UIControlStateNormal];
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"unfollow_Active"] forState:UIControlStateHighlighted];
 			[_followButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -1362,7 +1313,8 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
-			[self _removeFriend:_userVO.userID];
+//			[self _removeFriend:_userVO.userID];
+//			[[HONRoteAPICaller sharedInstance] stopFollowingUserWithUserID:_userVO.userID];
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
 			[_followButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];

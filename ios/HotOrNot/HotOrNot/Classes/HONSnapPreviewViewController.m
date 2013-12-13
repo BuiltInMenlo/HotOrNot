@@ -40,7 +40,6 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, retain) HONUserProfileViewController *userProfileViewController;
-@property (nonatomic, strong) UIImageView *blurredImageView;
 @end
 
 
@@ -403,6 +402,8 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor blackColor];
 	
+	// <*] main image [*>
+	//~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~~*~._
 	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imageHolderView];
 	
@@ -430,7 +431,6 @@
 		}];
 	};
 	
-	//_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (kSnapLargeSize.height - self.view.frame.size.height) * -0.5, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	[_imageHolderView addSubview:_imageView];
 	_imageView.alpha = 0.0;
@@ -441,11 +441,17 @@
 	
 	//NSLog(@"%@ --> HERO:[%@] DATA:[%@]\n", (_isVerify) ? @"VERIFY" : @"OPPONENT", _opponentVO.imagePrefix, _opponentVO.dictionary);
 	
+	
+	
 	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_closeButton.frame = self.view.frame;
 	[_closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchDown];
 	[self.view addSubview:_closeButton];
+	//]~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 	
+	
+	// <*] header [*>
+	//~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~~*~._
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)];
 	[self.view addSubview:headerView];
 	
@@ -523,7 +529,11 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
+	//]~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 	
+	
+	// <*] buttons [*>
+	//~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~~*~._
 	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - (159.0 + (((_snapPreviewType == HONSnapPreviewTypeVerify) && [HONAppDelegate switchEnabledForKey:@"verify_tab"]) * 80.0)), 64.0, 219.0)];
 	_buttonHolderView.alpha = 0.0;
 	[self.view addSubview:_buttonHolderView];
@@ -531,16 +541,16 @@
 	if (_snapPreviewType == HONSnapPreviewTypeVerify) {
 		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
-		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
+		[approveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"yayVerifyButton_nonActive" : @"yayButton_nonActive"] forState:UIControlStateNormal];
+		[approveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"yayVerifyButton_Active" : @"yayButton_Active"] forState:UIControlStateHighlighted];
 		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:approveButton];
 		
 		if ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) {
 			UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
+			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
+			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
 			[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 			[_buttonHolderView addSubview:skipButton];
 			
@@ -567,25 +577,11 @@
 			[_buttonHolderView addSubview:disapproveButton];
 		}
 		
+//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[¡]~=~=~=~=~=~=~=~=~=~=~=~=~=~[//
 	} else {
 		HONTimelineItemFooterView *timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:self.view.frame.size.height - 56.0 withChallenge:_challengeVO];
 		timelineItemFooterView.delegate = self;
 		[self.view addSubview:timelineItemFooterView];
-		
-		
-//		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		upvoteButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-//		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
-//		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-//		[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-//		[_buttonHolderView addSubview:upvoteButton];
-//		
-//		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		flagButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-//		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-//		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
-//		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-//		[_buttonHolderView addSubview:flagButton];
 	}
 }
 
@@ -624,19 +620,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	
-//	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"preview_total"] intValue];
-//	if (![HONAppDelegate isFollowingUser:_userVO.userID] && total < [HONAppDelegate profileSubscribeThreshold]) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//															message:[NSString stringWithFormat:@"Want to subscribe to @%@'s updates?", _userVO.username]
-//														   delegate:self
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:3];
-//		[alertView show];
-//		
-//	} else
-		[self.delegate snapPreviewViewControllerClose:self];
+	[self.delegate snapPreviewViewControllerClose:self];
 }
 
 - (void)_goClose {
@@ -681,8 +665,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self _addBlur];
-	_userProfileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	_userProfileViewController = [[HONUserProfileViewController alloc] init];
 	_userProfileViewController.userID = _opponentVO.userID;
 	[self.view addSubview:_userProfileViewController.view];
 }
@@ -727,14 +710,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-	
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
-//															 delegate:self
-//													cancelButtonTitle:@"Cancel"//@"Nevermind"//@"Cancel"
-//											   destructiveButtonTitle:nil
-//													otherButtonTitles:@"Yes", nil];
-//	[actionSheet setTag:0];
-//	[actionSheet showInView:self.view];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
 														message:@""
@@ -807,16 +782,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_addBlur {
-//	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-//	_blurredImageView.alpha = 0.0;
-//	[self.view addSubview:_blurredImageView];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_blurredImageView.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	}];
-}
 
 
 #pragma mark - Data Tally
@@ -858,9 +823,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	
-	[self _addBlur];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = opponentVO.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
@@ -938,7 +901,7 @@
 			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
 		}
 		
-	}  else if (alertView.tag == 1) {
+	} else if (alertView.tag == 1) {
 	} else if (alertView.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Verify Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:

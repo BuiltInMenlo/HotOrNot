@@ -20,7 +20,7 @@
 @property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end
 
-@protocol HONAvatarCameraOverlayDelegate
+@protocol HONAvatarCameraOverlayDelegate <NSObject>
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;

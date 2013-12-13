@@ -1973,7 +1973,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView show];
 		
 	} else if (pushType == HONPushTypeShowUserProfile) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
 		navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		
@@ -1988,7 +1988,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	} else {
 		if ([notification objectForKey:@"user"] != nil) {
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 			userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		}
@@ -2027,7 +2027,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView show];
 		
 	} else if (pushType == HONPushTypeShowUserProfile) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
 		navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		
@@ -2042,7 +2042,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	} else {
 		if ([notification objectForKey:@"user"] != nil) {
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 			userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 		}
@@ -2213,7 +2213,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 			userPofileViewController.userID = _userID;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 			[navigationController setNavigationBarHidden:YES];

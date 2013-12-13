@@ -47,7 +47,7 @@ typedef enum {
 @end
 
 
-@protocol HONParticipantGridViewDelegate
+@protocol HONParticipantGridViewDelegate <NSObject>
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 

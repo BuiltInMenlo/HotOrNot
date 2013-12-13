@@ -20,6 +20,6 @@
 @property (nonatomic, assign) id <HONAddContactViewCellDelegate> delegate;
 @end
 
-@protocol HONAddContactViewCellDelegate
+@protocol HONAddContactViewCellDelegate <NSObject>
 - (void)addContactViewCell:(HONAddContactViewCell *)cell user:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end

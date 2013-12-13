@@ -22,7 +22,7 @@
 @property (nonatomic, assign) id <HONVerifyViewCellDelegate> delegate;
 @end
 
-@protocol HONVerifyViewCellDelegate
+@protocol HONVerifyViewCellDelegate <NSObject>
 - (void)verifyViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCellApprove:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;

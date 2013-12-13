@@ -19,6 +19,6 @@
 @property (nonatomic, assign) id <HONFollowUserViewCellDelegate> delegate;
 @end
 
-@protocol HONFollowUserViewCellDelegate
+@protocol HONFollowUserViewCellDelegate <NSObject>
 - (void)followViewCell:(HONFollowUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end

@@ -288,9 +288,14 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	inputSize = size;
 	
 	// constrain crop rect to legitimate bounds
-	if (rect.origin.x >= inputSize.width || rect.origin.y >= inputSize.height) return (outputImage);
-	if (rect.origin.x + rect.size.width >= inputSize.width) rect.size.width = inputSize.width - rect.origin.x;
-	if (rect.origin.y + rect.size.height >= inputSize.height) rect.size.height = inputSize.height - rect.origin.y;
+	if (rect.origin.x >= inputSize.width || rect.origin.y >= inputSize.height)
+		return (outputImage);
+	
+	if (rect.origin.x + rect.size.width >= inputSize.width)
+		rect.size.width = inputSize.width - rect.origin.x;
+	
+	if (rect.origin.y + rect.size.height >= inputSize.height)
+		rect.size.height = inputSize.height - rect.origin.y;
 	
 	// crop
 	if ((imageRef = CGImageCreateWithImageInRect(outputImage.CGImage, rect))) {
@@ -308,7 +313,9 @@ const CGSize kInstagramSize = {612.0, 612.0};
 //	imageView.transform = CGAffineTransformScale(imageView.transform, -1.0f, 1.0f);
 //	return ([HONImagingDepictor createImageFromView:imageView]);
 	
-	return ([UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:(image.imageOrientation == UIImageOrientationUp) ? UIImageOrientationUpMirrored : UIImageOrientationUp]);
+	return ([UIImage imageWithCGImage:image.CGImage
+								scale:image.scale
+						  orientation:(image.imageOrientation + 4) % 8]);
 }
 
 + (UIImage *)prepForUploading:(UIImage *)image {

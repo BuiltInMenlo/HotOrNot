@@ -24,6 +24,6 @@
 @end
 
 
-@protocol HONAlertItemViewCellDelegate
+@protocol HONAlertItemViewCellDelegate <NSObject>
 - (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO;
 @end

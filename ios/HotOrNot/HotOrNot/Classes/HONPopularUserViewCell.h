@@ -22,6 +22,6 @@
 @end
 
 
-@protocol HONPopularUserViewCellDelegate
+@protocol HONPopularUserViewCellDelegate <NSObject>
 - (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected;
 @end

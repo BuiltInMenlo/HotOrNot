@@ -20,6 +20,6 @@
 @property (nonatomic, assign) id <HONInviteUserViewCellDelegate> delegate;
 @end
 
-@protocol HONInviteUserViewCellDelegate
+@protocol HONInviteUserViewCellDelegate <NSObject>
 - (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end

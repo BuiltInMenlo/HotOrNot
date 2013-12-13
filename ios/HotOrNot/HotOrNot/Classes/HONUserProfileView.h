@@ -19,7 +19,7 @@
 @end
 
 
-@protocol HONUserProfileViewDelegate
+@protocol HONUserProfileViewDelegate <NSObject>
 - (void)userProfileViewChangeAvatar:(HONUserProfileView *)userProfileView;
 - (void)userProfileViewInviteFriends:(HONUserProfileView *)userProfileView;
 - (void)userProfileViewPromote:(HONUserProfileView *)userProfileView;
