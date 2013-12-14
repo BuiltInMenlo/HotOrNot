@@ -16,7 +16,7 @@
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD__ 1
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 #define __FORCE_REGISTER__ 0
@@ -26,7 +26,7 @@
 #define __RESET_TOTALS__ 0
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __APPSTORE_BUILD__ 0
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -256,6 +256,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (UIColor *)honLightGreyTextColor;
 + (UIColor *)honPlaceholderTextColor;
 
++ (UIColor *)honDebugColor;
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent;
 
 

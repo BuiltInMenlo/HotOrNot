@@ -40,33 +40,31 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, retain) HONUserProfileViewController *userProfileViewController;
+@property (nonatomic) BOOL hasTakenVerifyAction;
 @end
 
 
 @implementation HONSnapPreviewViewController
 @synthesize delegate = _delegate;
 
-- (id)initWithVerifyChallenge:(HONChallengeVO *)vo {
-	if ((self = [super init])) {
-		_challengeVO = vo;
-		_opponentVO = vo.creatorVO;
-		_snapPreviewType = HONSnapPreviewTypeVerify;
-		
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	}
-	
-	return (self);
-}
-
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	if ((self = [super init])) {
 		_opponentVO = opponentVO;
 		_challengeVO = challengeVO;
+		_hasTakenVerifyAction = NO;
 		_snapPreviewType = HONSnapPreviewTypeChallenge;
 		
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
 		//NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCHALLENGE DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n", _challengeVO.dictionary);
+	}
+	
+	return (self);
+}
+
+- (id)initWithVerifyChallenge:(HONChallengeVO *)vo {
+	if ((self = [self initWithOpponent:vo.creatorVO forChallenge:vo])) {
+		_snapPreviewType = HONSnapPreviewTypeVerify;
 	}
 	
 	return (self);
@@ -124,6 +122,7 @@
 		} else {
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			result = nil;
+			_hasTakenVerifyAction = YES;
 		}
 		
 		[self _goClose];
@@ -176,7 +175,7 @@
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:result];
-			[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
+			[self.delegate snapPreviewViewController:self upvoteOpponent:_opponentVO forChallenge:_challengeVO];
 		}
 		
 		[self _goClose];
@@ -269,6 +268,8 @@
 			_progressHUD = nil;
 			
 		} else {
+			_hasTakenVerifyAction = YES;
+			
 			if (isApprove) {
 				int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"verifyAction_total"] intValue];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"verifyAction_total"];
@@ -306,10 +307,10 @@
 }
 
 - (void)_skipUser:(int)userID {
-	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 10],
-							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"targetID"	: [NSString stringWithFormat:@"%d", userID],
-							 @"approves"	: [NSString stringWithFormat:@"%d", -1]};
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 10],
+							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"targetID"		: [NSString stringWithFormat:@"%d", userID],
+							 @"approves"		: [NSString stringWithFormat:@"%d", -1]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -335,6 +336,8 @@
 //			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			result = nil;
+			_hasTakenVerifyAction = YES;
+			[self _goClose];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -379,6 +382,8 @@
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 			result = nil;
+			_hasTakenVerifyAction = YES;
+			[self _goClose];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -611,24 +616,22 @@
 
 
 #pragma mark - Navigation
-- (void)_goDone {
-	NSLog(@"[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n%@\n\n", _opponentVO.username);
+- (void)_goClose {
+	NSLog(@"[:-:] snapPreviewViewController._goClose [:-:]");
 	
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	if (_snapPreviewType == HONSnapPreviewTypeVerify && _hasTakenVerifyAction)
+		[self.delegate snapPreviewViewController:self removeVerifyChallenge:_challengeVO];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.delegate snapPreviewViewControllerClose:self];
 }
 
-- (void)_goClose {
-	if (_snapPreviewType == HONSnapPreviewTypeVerify)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VERIFY_TAB" object:nil];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self.delegate snapPreviewViewControllerClose:self];
+- (void)_goDone {
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Close"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[self _goClose];
 }
 
 - (void)_goUpvote {
@@ -638,8 +641,8 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 	[self _upvoteChallenge:_opponentVO.userID];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"like_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++total] forKey:@"like_total"];
@@ -728,7 +731,6 @@
 	
 	[self _skipUser:_opponentVO.userID];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dislikeOverlayAnimation"]]];
-	[self _goClose];
 }
 
 - (void)_goShoutout {
@@ -741,7 +743,6 @@
 	[self _sendShoutoutForChallenge:_challengeVO.creatorVO.userID];
 	[self _skipUser:_challengeVO.creatorVO.userID];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutOutOverlayAnimation"]]];
-	[self _goClose];
 }
 
 - (void)_goMore {
@@ -860,7 +861,7 @@
 			
 		} else if (buttonIndex == 1) {
 			[self _flagUser:_opponentVO.userID];
-			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
+			[self.delegate snapPreviewViewController:self flagOpponent:_opponentVO forChallenge:_challengeVO];
 		}
 	
 	} else if (actionSheet.tag == 1) {
@@ -872,7 +873,6 @@
 		if (buttonIndex == 0) {
 			[self _addFriend:_challengeVO.creatorVO.userID];
 			[self _skipUser:_challengeVO.creatorVO.userID];
-			[self _goClose];
 			
 		} else if (buttonIndex == 1) {
 			[[[UIAlertView alloc] initWithTitle:@""
@@ -898,7 +898,7 @@
 		
 		if (buttonIndex == 1) {
 			[self _flagUser:_opponentVO.userID];
-			[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
+			[self.delegate snapPreviewViewController:self flagOpponent:_opponentVO forChallenge:_challengeVO];
 		}
 		
 	} else if (alertView.tag == 1) {

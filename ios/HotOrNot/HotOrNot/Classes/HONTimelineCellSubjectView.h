@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONTimelineCellSubjectViewDelegate;
 @interface HONTimelineCellSubjectView : UIView
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username;
+
+@property (nonatomic, assign) id <HONTimelineCellSubjectViewDelegate> delegate;
+@end
+
+
+@protocol HONTimelineCellSubjectViewDelegate <NSObject>
+- (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView;
 @end

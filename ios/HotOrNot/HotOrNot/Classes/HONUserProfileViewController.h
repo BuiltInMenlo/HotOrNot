@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+	HONUserProfileTypeUser	= 0,
+	HONUserProfileTypeOpponent
+	
+} HONUserProfileType;
+
 @interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic) int userID;
 @end

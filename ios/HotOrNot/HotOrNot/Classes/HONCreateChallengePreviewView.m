@@ -41,8 +41,10 @@
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0) * 2.0];
 		_selfieSubmitType = selfieSubmitType;
+		
+		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
 		_subjectName = subject;
 		_creatorSubjectName = (_selfieSubmitType == HONSelfieSubmitTypeReply) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
@@ -134,17 +136,16 @@
 #pragma mark - UI Presentation
 - (void)_adoptUI {
 	
-	_previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-	_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * ((self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0));
+	_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(ABS(self.frame.size.width - (_previewImage.size.width * 0.5)) * -0.5, ABS(self.frame.size.height - (_previewImage.size.height * 0.5)) * ((self.frame.size.height < (_previewImage.size.height * 0.5)) ? -0.5 : 0.0), _previewImage.size.width * 0.5, _previewImage.size.height * 0.5)];
+	_previewImageView.image = _previewImage;
 	[self addSubview:_previewImageView];
 	
-	_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
-	_blurredImageView.frame = _previewImageView.frame;
-	_blurredImageView.alpha = 0.0;
-	[self addSubview:_blurredImageView];
+//	_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
+//	_blurredImageView.frame = _previewImageView.frame;
+//	_blurredImageView.alpha = 0.0;
+//	[self addSubview:_blurredImageView];
 	
-	
-	// |]~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~[|]~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~[| //
+	// !]~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~[¡]~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~[! //
 	
 	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
 	

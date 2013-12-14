@@ -331,7 +331,14 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	if (ratio > 1.0)
 		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(1280.0 * ratio, 1280.0)] toRect:CGRectMake(((1280.0 * ratio) - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
 		
-	else if (ratio < 1.0)
+	else if (ratio == 0.75) {
+		if (CGSizeEqualToSize(image.size, CGSizeMake(960.0, 1280.0)))
+			return (image);
+		
+		else
+			processedImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
+	
+	} else if (ratio < 1.0)
 		processedImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 960.0 / ratio)] toRect:CGRectMake(0.0, ((960.0 / ratio) - 1280.0) * 0.5, 960.0, 1280.0)];
 		
 	else

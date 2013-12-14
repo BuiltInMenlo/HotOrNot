@@ -24,6 +24,7 @@
 @end
 
 @implementation HONTimelineCellSubjectView
+@synthesize delegate = _delegate;
 
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:CGRectMake(0.0, offsetY, 320.0, 44.0)])) {
@@ -51,6 +52,11 @@
 		_captionLabel.frame = CGRectMake(_captionLabel.frame.origin.x, _captionLabel.frame.origin.y - 2.0, _size.width, _captionLabel.frame.size.height);
 		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _size.width, _bgImageView.frame.size.height);
 		self.frame = CGRectMake(160.0 - (_size.width * 0.5), self.frame.origin.y, _size.width, self.frame.size.height);
+		
+		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		profileButton.frame = _bgImageView.frame;
+		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:profileButton];
 	}
 	
 	return (self);
@@ -58,8 +64,8 @@
 
 
 #pragma mark - Navigation
-- (void)_goCTA {
-	
+- (void)_goProfile {
+	[self.delegate timelineCellSubjectViewShowProfile:self];
 }
 
 

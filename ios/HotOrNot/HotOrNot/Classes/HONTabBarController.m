@@ -179,7 +179,7 @@ const CGSize kTabSize = {80.0, 50.0};
 - (void)_goTabButton:(id)sender event:(UIEvent *)event {
 	int tabID = [sender tag];
 	
-	UITouch *touch = [[event allTouches] anyObject];
+//	UITouch *touch = [[event allTouches] anyObject];
 	
 	NSString *mpEvent = @"";
 	NSString *notificationName = @"";
@@ -224,14 +224,14 @@ const CGSize kTabSize = {80.0, 50.0};
 			break;
 	}
 	
-	if (touch.tapCount == 1) {
+//	if (touch.tapCount == 1) {
 		mpEvent = [@"Tab Bar - " stringByAppendingString:mpEvent];
 		notificationName = [@"SELECTED_" stringByAppendingString:notificationName];
 		
-	} else {
-		mpEvent = [@"Tab Bar Double Tap - " stringByAppendingString:mpEvent];
-		notificationName = [@"TARE_" stringByAppendingString:notificationName];
-	}
+//	} else {
+//		mpEvent = [@"Tab Bar Double Tap - " stringByAppendingString:mpEvent];
+//		notificationName = [@"TARE_" stringByAppendingString:notificationName];
+//	}
 	
 	[[Mixpanel sharedInstance] track:mpEvent properties:@{@"user"	: [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]}];
 	

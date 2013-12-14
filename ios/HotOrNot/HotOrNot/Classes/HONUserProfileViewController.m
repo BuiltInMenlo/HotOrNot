@@ -42,6 +42,7 @@
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
+@property (readonly, nonatomic, assign) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *verifyButton;
 //@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -56,7 +57,6 @@
 @property (nonatomic, strong) UILabel *followingLabel;
 //@property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIButton *followButton;
-@property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *challengeImages;
 @property (nonatomic, strong) UIToolbar *footerToolbar;
@@ -64,7 +64,6 @@
 @property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) int followingCounter;
-@property (nonatomic) BOOL isUser;
 @property (nonatomic) BOOL isFollowing;
 @end
 
@@ -74,7 +73,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_isUser = NO;
 		_isFollowing = NO;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
@@ -126,7 +124,8 @@
 			
 			if ([result objectForKey:@"id"] != nil) {
 				_userVO = [HONUserVO userWithDictionary:result];
-				_isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+				
+				_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) ? HONUserProfileTypeUser : HONUserProfileTypeOpponent;
 				
 				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateNormal];
 				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
@@ -134,7 +133,7 @@
 //				[_verifyButton setBackgroundImage:[UIImage imageNamed:@"userVerifiedButton_nonActive"] forState:UIControlStateNormal];
 //				[_verifyButton setBackgroundImage:[UIImage imageNamed:@"userVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
 				
-				if (!_isUser) {
+				if (_userProfileType == HONUserProfileTypeOpponent) {
 					[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_Active" : @"userNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
 					[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 				}
@@ -196,7 +195,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %d", [[self class] description], [[operation request] URL], [result count]);
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-//			if (_isUser)
+//			if (_userProfileType == HONUserProfileTypeUser)
 //				[HONAppDelegate writeSubscribeeList:result];
 			
 			_followingCounter = [result count];
@@ -257,9 +256,23 @@
 					[_challenges addObject:vo];
 			}
 			
-//			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-			[self _orphanUI];
-			[self _adoptUI];
+			if ([_scrollView.subviews count] == 1) {
+				[self _orphanUI];
+				[self _adoptUI];
+				
+//				[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+				
+			} else {
+				if (_selfiesLabel != nil) {
+					_userVO.totalVolleys--;
+					
+					NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+					[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+					_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
+				}
+				
+				[self _remakeGrid];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -482,10 +495,8 @@
 		} else {
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			if (result != nil) {
-				[self _orphanUI];
-				[self _adoptUI];
-			}
+			if (result != nil)
+				[self _retrieveChallenges];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -506,16 +517,17 @@
 - (void)_sendShoutoutForUser:(int)userID {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"targetID"	: [NSString stringWithFormat:@"%d", userID]};
+							
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIProfileShoutout, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIProfileShoutout parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
+
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
+
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
@@ -525,23 +537,23 @@
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
-			
+
 		} else {
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
+
+			[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
+										message:@"Check your Home timeline to like and reply."
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+
 			if (![result isEqual:[NSNull null]])
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-			
-			[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
-												 message:@"Check your Home timeline to like and reply."
-												delegate:nil
-									cancelButtonTitle:@"OK"
-									otherButtonTitles:@"", nil] show];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		
+
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -616,7 +628,7 @@
 	[super viewDidAppear:animated];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 	
-	if ([HONAppDelegate incTotalForCounter:@"profile"] == 0 && _isUser) {
+	if ([HONAppDelegate incTotalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.hidden = YES;
@@ -643,7 +655,7 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-	if (total == 0 && _isUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
+	if (total == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
@@ -689,6 +701,8 @@
 }
 
 - (void)_goRefresh {
+	[self _orphanUI];
+	[_scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 320.0,[UIScreen mainScreen].bounds.size.height) animated:NO];
 	[self _retrieveUser];
 }
 
@@ -813,19 +827,31 @@
 
 
 - (void)_goSubscribers {
+	[[Mixpanel sharedInstance] track:@"User Profile - Followers"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowersViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSubscribees {
+	[[Mixpanel sharedInstance] track:@"User Profile - Following"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowingViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goVolleys {
-	[_scrollView scrollRectToVisible:CGRectMake(0.0, _scrollView.frame.size.height, 320.0, _gridHolderView.frame.size.height) animated:YES];
+	[[Mixpanel sharedInstance] track:@"User Profile - Volleys"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[_scrollView scrollRectToVisible:CGRectMake(0.0, 268.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0), 320.0, MIN([UIScreen mainScreen].bounds.size.height - 8.0, (268.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0)) + _profileGridView.frame.size.height)) animated:YES];
 }
 
 - (void)_goRemoveTutorial {
@@ -853,11 +879,20 @@
 
 #pragma mark - Notifications
 - (void)_refreshProfile:(NSNotification *)notification {
+	[self _orphanUI];
+	[_scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
 	[self _retrieveUser];
 }
 
 
 #pragma mark - UI Presentation
+- (void)_removeSnapOverlay {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+}
+
 - (void)_orphanUI {
 	if (_avatarImageView != nil) {
 		[_avatarImageView removeFromSuperview];
@@ -879,17 +914,24 @@
 		_followingLabel = nil;
 	}
 	
-	for (UIImageView *imageView in _gridHolderView.subviews)
-		[imageView removeFromSuperview];
-	
-	[_gridHolderView removeFromSuperview];
-	_gridHolderView = nil;
-	
-	
 	for (UIView *view in _scrollView.subviews) {
 		if (view.tag != 666)
 			[view removeFromSuperview];
 	}
+}
+
+- (void)_remakeGrid {
+	if (_profileGridView != nil) {
+		[_profileGridView removeFromSuperview];
+		_profileGridView = nil;
+	}
+	
+	CGFloat gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	_profileGridView.delegate = self;
+	_profileGridView.clipsToBounds = YES;
+	[_scrollView addSubview:_profileGridView];
 }
 
 - (void)_adoptUI {
@@ -934,7 +976,7 @@
 	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_nonActive"] forState:UIControlStateNormal];
 	[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"profilePhotoButton_Active"] forState:UIControlStateHighlighted];
 	[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
-	changeAvatarButton.hidden = (!_isUser);
+	changeAvatarButton.hidden = (_userProfileType == HONUserProfileTypeOpponent);
 	[_scrollView addSubview:changeAvatarButton];
 }
 
@@ -992,7 +1034,7 @@
 	[volleysButton addTarget:self action:@selector(_goVolleys) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:volleysButton];
 	
-	if (_isUser) {
+	if (_userProfileType == HONUserProfileTypeUser) {
 		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		findFriendsButton.frame = CGRectMake(0.0, 233.0, 320.0, 45.0);
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
@@ -1030,8 +1072,8 @@
 		[_scrollView addSubview:reportButton];
 	}
 	
-	float gridPos = 324.0 + ((int)(!_isUser) * 45.0);
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + 1))));
+	float gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
 	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
@@ -1042,7 +1084,7 @@
 	CGSize size;
 	NSArray *footerElements;
 	
-	if (_isUser) {
+	if (_userProfileType == HONUserProfileTypeUser) {
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
@@ -1147,7 +1189,7 @@
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 //	NSLog(@"participantGridView:[%@]showPreview:[%@]forChallenge:[%d]", participantGridView, opponentVO.dictionary, challengeVO.challengeID);
 	
-	[[Mixpanel sharedInstance] track:(_isUser) ? [NSString stringWithFormat:@"User Profile - Remove Selfie%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"] : [NSString stringWithFormat:@"User Profile - Show Preview%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:(_userProfileType == HONUserProfileTypeUser) ? [NSString stringWithFormat:@"User Profile - Remove Selfie%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"] : [NSString stringWithFormat:@"User Profile - Show Preview%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
@@ -1209,27 +1251,16 @@
 
 
 #pragma mark - SnapPreview Delegates
-- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	if (snapPreviewViewController != nil) {
-		[snapPreviewViewController.view removeFromSuperview];
-		snapPreviewViewController = nil;
-	}
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController upvoteOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[self _removeSnapOverlay];
 }
 
-- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	if (snapPreviewViewController != nil) {
-		[snapPreviewViewController.view removeFromSuperview];
-		snapPreviewViewController = nil;
-	}
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController flagOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[self _removeSnapOverlay];
 }
 
 - (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController joinChallenge:(HONChallengeVO *)challengeVO {
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -1237,10 +1268,7 @@
 }
 
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
-	if (snapPreviewViewController != nil) {
-		[snapPreviewViewController.view removeFromSuperview];
-		snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 }
 
 
@@ -1248,6 +1276,10 @@
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
 //	NSLog(@"[:|:] egoRefreshTableHeaderDidTriggerRefresh offset:[%.02f] inset:[%@] [:|:]", _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset));
 	[self _goRefresh];
+}
+
+- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
+	_scrollView.pagingEnabled = YES;
 }
 
 

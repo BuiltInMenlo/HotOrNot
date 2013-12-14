@@ -29,7 +29,7 @@
 #import "HONEmotionVO.h"
 
 
-@interface HONChallengeDetailsViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONChallengeDetailsViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineCellSubjectViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -358,7 +358,7 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (((int)![HONAppDelegate isRetina4Inch]) * -80.0) + (kDetailsHeroImageHeight + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (kDetailsHeroImageHeight + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + ([_challengeVO.challengers count] % 4 != 0)))));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
@@ -368,7 +368,6 @@
 	//NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d] (%d)", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count], (int)(kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)));
 	
 	_contentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _scrollView.contentSize.height)];
-//	_contentHolderView.backgroundColor = [UIColor yellowColor];
 	[_scrollView addSubview:_contentHolderView];
 	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_scrollView.frame.size.height, _scrollView.frame.size.width, _scrollView.frame.size.height) headerOverlaps:YES];
@@ -379,7 +378,7 @@
 //	_refreshView.delegate = self;
 //	[_scrollView addSubview:_refreshView];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Messages" hasTranslucency:YES];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:_challengeVO.subjectName hasTranslucency:YES];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
@@ -415,6 +414,13 @@
 
 
 #pragma mark - UI Presentation
+- (void)_removeSnapOverlay {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+}
+
 - (void)_rebuildUI {
 	[self _orphanUI];
 	[self _adoptUI];
@@ -459,9 +465,6 @@
 								   failure:failureBlock];
 	
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:34.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
-	[_heroHolderView addSubview:timelineCellSubjectView];
-	
 	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
 	[heroPreviewButton addTarget:self action:@selector(_goHeroPreview) forControlEvents:UIControlEventTouchUpInside];
@@ -471,6 +474,10 @@
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[_heroHolderView addSubview:creatorHeaderView];
+	
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:34.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	timelineCellSubjectView.delegate = self;
+	[_heroHolderView addSubview:timelineCellSubjectView];
 	
 	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kDetailsHeroImageHeight - 56.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
@@ -784,6 +791,22 @@
 }
 
 
+#pragma mark - TimelineSubject Delegates
+- (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+	userPofileViewController.userID = _challengeVO.creatorVO.userID;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - TimelineItemFooterView Delegates
 - (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
@@ -841,13 +864,10 @@
 
 #pragma mark - SnapPreview Delegates
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 }
 
-- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController upvoteOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
@@ -857,30 +877,19 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 //	[_timelineItemFooterView upvoteUser:opponentVO.userID onChallenge:challengeVO];
 	[_timelineItemFooterView updateChallenge:_challengeVO];
 }
 
-- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController flagOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_opponentVO = opponentVO;
-	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 }
 
 - (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController joinChallenge:(HONChallengeVO *)challengeVO {
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
 	[navigationController setNavigationBarHidden:YES];

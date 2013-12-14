@@ -54,7 +54,7 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0001.json";
+NSString * const kConfigJSON = @"boot_sc0002.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
@@ -200,6 +200,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
 	[httpClient setDefaultHeader:@"X-DEVICE" value:[HONAppDelegate deviceModel]];
+	
 	return httpClient;
 }
  
@@ -322,7 +323,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSDictionary *)stickerForSubject:(NSString *)subject {
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"stickers"]) {
-		if ([[[dict objectForKey:@"hashtag"] lowercaseString] isEqualToString:[subject lowercaseString]])
+//		NSLog(@"STICKER CHECK:(%@) == (%@)", [subject lowercaseString], [[dict objectForKey:@"subject"] lowercaseString]);
+		if ([[[dict objectForKey:@"subject"] lowercaseString] isEqualToString:[subject lowercaseString]])
 			return (dict);
 	}
 	
@@ -350,7 +352,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	return (appName);
-//	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"branding"] objectAtIndex:([HONAppDelegate switchEnabledForKey:@"volley_brand"])] objectForKey:@"app_name"]);
 }
 
 + (NSArray *)searchSubjects {
@@ -817,6 +818,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([UIColor colorWithWhite:0.790 alpha:1.0]);
 }
 
++ (UIColor *)honDebugColor {
+	return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:0.5]);
+}
 + (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent {
 	return (([[colorName uppercaseString] isEqualToString:@"FUSCHIA"]) ? [UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:MIN(MAX(0.33, percent), 1.00)] : [UIColor colorWithRed:((float)[[colorName uppercaseString] isEqualToString:@"RED"]) green:((float)[[colorName uppercaseString] isEqualToString:@"GREEN"]) blue:((float)[[colorName uppercaseString] isEqualToString:@"BLUE"]) alpha:MIN(MAX(0.33, percent), 1.00)]);
 }
@@ -890,12 +894,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"special_subjects"] forKey:@"special_subjects"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
-																   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
-																   @"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
-																   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
-																   @"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
-				
-				
+																					@"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
+																					@"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
+																					@"emoticons"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
+																					@"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
+
 //				NSMutableArray *verifyAB = [NSMutableArray array];
 //				for (NSMutableDictionary *dict in [result objectForKey:@"verify_AB"]) {
 //					NSLog(@"verify a/b :[%@]", dict);
@@ -956,12 +959,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 				NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_TAB_BAR_AB" object:nil];
 				
-				if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
-					[self _showOKAlert:@"Update Required"
-						   withMessage:[NSString stringWithFormat:@"Please update %@ to the latest version to use the latest features.", [HONAppDelegate brandedAppName]]];
-				}
+				if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
+					[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
+				
+				
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_TAB_BAR_AB" object:nil];
 				
 				[self _writeShareTemplates];
 				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
@@ -1225,7 +1229,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							(hasSeen) ? @"Y" : @"N", @"hasSeen",
 							nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, params);
+//	VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -1235,7 +1239,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSLog(@"AFNetworking HONChallengesViewController: %@", result);
+			result = nil;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

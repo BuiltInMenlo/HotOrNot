@@ -53,6 +53,7 @@
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSDictionary *tabInfo;
+@property (nonatomic) BOOL isScrollingIgnored;
 @end
 
 @implementation HONVerifyViewController
@@ -63,6 +64,7 @@
 		_headers = [NSMutableArray array];
 		_cells = [NSMutableArray array];
 		
+		_isScrollingIgnored = NO;
 		_tabInfo = [HONAppDelegate infoForABTab];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVerifyTab:) name:@"SELECTED_VERIFY_TAB" object:nil];
@@ -127,7 +129,6 @@
 			_emptySetImageView.hidden = [_challenges count] > 0;
 			[_tableView reloadData];
 			
-			_tableView.pagingEnabled = YES;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 			
 			_imageQueueLocation = 0;
@@ -162,7 +163,6 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 		
-		_tableView.pagingEnabled = YES;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
@@ -525,7 +525,7 @@
 
 #pragma mark - Notifications
 - (void)_selectedVerifyTab:(NSNotification *)notification {
-	NSLog(@"_selectedVerifyTab");
+	NSLog(@"::|> _selectedVerifyTab <|::");
 	
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 //	[self _retrieveChallenges];
@@ -567,24 +567,49 @@
 }
 
 - (void)_tareVerifyTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	NSLog(@"::|> _tareVerifyTab <|::");
+	
+	if (_tableView.contentOffset.y > 0) {
+		_tableView.pagingEnabled = NO;
+		[_tableView setContentOffset:CGPointZero animated:YES];
+	}
 }
 
 
 #pragma mark - UI Presentation
+- (void)_removeSnapOverlay {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	_isScrollingIgnored = NO;
+}
+
 - (void)_removeCellForChallenge:(HONChallengeVO *)challengeVO {
 	UITableViewCell *tableCell;
 	
-	//
-	for (HONVerifyViewCell *cell in _cells) {
-		if (cell.challengeVO.challengeID == challengeVO.challengeID) {
-			tableCell = (UITableViewCell *)cell;
-			[_cells removeObject:tableCell];
-			break;
+	if ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) {
+		for (HONVerifyShoutoutViewCell *cell in _cells) {
+			if (cell.challengeVO.challengeID == challengeVO.challengeID) {
+				tableCell = (UITableViewCell *)cell;
+				[_cells removeObject:tableCell];
+				break;
+			}
+		}
+		
+	} else {
+		for (HONVerifyViewCell *cell in _cells) {
+			if (cell.challengeVO.challengeID == challengeVO.challengeID) {
+				tableCell = (UITableViewCell *)cell;
+				[_cells removeObject:tableCell];
+				break;
+			}
 		}
 	}
 	
-//	NSLog(@"TABLECELL:[%@]", ((HONFollowTabViewCell *)tableCell).challengeVO.creatorVO.username);
+	
+	NSLog(@"TABLECELL:[%@]", ((HONVerifyViewCell *)tableCell).challengeVO.creatorVO.username);
 	
 	int ind = -1;
 	for (HONChallengeVO *vo in _challenges) {
@@ -596,21 +621,17 @@
 		}
 	}
 	
-//	NSLog(@"CHALLENGE:(%d)[%@]", ind, challengeVO.creatorVO.username);
+	NSLog(@"CHALLENGE:(%d)[%@]", ind, challengeVO.creatorVO.username);
 	
 	if (tableCell != nil) {
 		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:ind];// [_tableView indexPathForCell:tableCell];
-//		NSLog(@"INDEX PATH:[%d/%d]", indexPath.section, [_challenges count]);
+		NSLog(@"INDEX PATH:[%d/%d]", indexPath.section, [_challenges count]);
 		
 		if (indexPath != nil) {
 			[_tableView beginUpdates];
 			[_tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationFade];
 			[_tableView endUpdates];
 			_emptySetImageView.hidden = [_challenges count] > 0;
-			
-//			[UIView animateWithDuration:0.33 delay:0.0 options:(UIViewAnimationOptionAutoreverse | UIViewAnimationOptionAllowAnimatedContent)
-//							 animations:^{}
-//							 completion:^(BOOL finished) {}];
 		}
 	}
 }
@@ -642,33 +663,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = challengeVO.creatorVO.userID;
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
-		[alertView show];
-	}
-}
-
-- (void)verifyShoutoutViewCellShowPreview:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify A/B - Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
-	
-	_challengeVO = challengeVO;
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 		
@@ -887,32 +881,26 @@
 
 #pragma mark - SnapPreview Delegates
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	NSLog(@"\n**_[snapPreviewViewControllerClose]_**\n");
+	
+	[self _removeSnapOverlay];
 }
 
-- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController flagOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
+	[self _removeSnapOverlay];
 }
 
-- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController upvoteOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+	[self _removeSnapOverlay];
 }
 
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController removeVerifyChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"\n**_[snapPreviewViewController]_**\n");
+	
+	[self _removeCellForChallenge:challengeVO];
+}
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
@@ -920,14 +908,28 @@
 	[self _goRefresh];
 }
 
+- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
+	_tableView.pagingEnabled = YES;
+}
+
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+//	NSLog(@"**_[scrollViewDidScroll(%d)]_**", !_isScrollingIgnored);
+	
+	if (!_isScrollingIgnored)
+		[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+//	NSLog(@"**_[scrollViewDidEndDragging]_**");
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+//	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_**");
+	scrollView.pagingEnabled = YES;
+	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
 }
 
 
@@ -1003,62 +1005,24 @@
 		HONVerifyShoutoutViewCell *cell = (HONVerifyShoutoutViewCell *)[_cells objectAtIndex:indexPath.section];
 		[cell showTapOverlay];
 		
-		HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-		_challengeVO = challengeVO;
-		
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if ([HONAppDelegate hasTakenSelfie]) {
-			NSLog(@"didSelectRowAtIndexPath:[%@]", challengeVO.dictionary);
-			
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
-			_snapPreviewViewController.delegate = self;
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
-			
-		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-																message:NSLocalizedString(@"alert_noSelfie_m", nil)
-															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"Take Photo", nil];
-			[alertView setTag:5];
-			[alertView show];
-		}
-	
 	} else {
-		[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-		
 		HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.section];
 		[cell showTapOverlay];
-		
-		HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-		_challengeVO = challengeVO;
-		
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if ([HONAppDelegate hasTakenSelfie]) {
-			NSLog(@"didSelectRowAtIndexPath:[%d]\n%@", indexPath.section, challengeVO.dictionary);
-			
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
-			_snapPreviewViewController.delegate = self;
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
-			
-		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-																message:NSLocalizedString(@"alert_noSelfie_m", nil)
-															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"Take Photo", nil];
-			[alertView setTag:5];
-			[alertView show];
-		}
 	}
+	
+	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
+	_challengeVO = challengeVO;
+	
+	NSLog(@"didSelectRowAtIndexPath:[%@]", challengeVO.dictionary);
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	_isScrollingIgnored = YES;
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
+	_snapPreviewViewController.delegate = self;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {

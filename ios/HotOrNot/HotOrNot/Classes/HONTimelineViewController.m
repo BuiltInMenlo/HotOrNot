@@ -112,7 +112,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			//VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			VolleyJSONLog(@"AFNetworking [-] %@: FEED TOTAL %d", [[self class] description], [result count]);
 			
 			_challenges = [NSMutableArray array];
@@ -148,7 +148,6 @@
 		}
 		
 		[_tableView reloadData];
-		_tableView.pagingEnabled = YES;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		_isFirstLoad = NO;
 		
@@ -165,7 +164,6 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 		
-		_tableView.pagingEnabled = YES;
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		_isFirstLoad = NO;
 	}];
@@ -571,9 +569,15 @@
 }
 
 - (void)_tareHomeTab:(NSNotification *)notification {
-	NSLog(@"__[_tareHomeTab]__");
+	NSLog(@"::|> tareHomeTab <|::");
 	
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	if (_tableView.contentOffset.y > 0) {
+		_tableView.pagingEnabled = NO;
+		[_tableView setContentOffset:CGPointZero animated:YES];
+	}
+	
+//	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+//	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
 }
 
 - (void)_showHomeTutorial:(NSNotification *)notification {
@@ -616,8 +620,6 @@
 
 #pragma mark - TimelineItemCell Delegates
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO {
-//	_challengeVO = challengeVO;
-	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -771,7 +773,7 @@
 
 
 #pragma mark - SnapPreview Delegates
-- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController upvoteOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 //	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
@@ -780,8 +782,6 @@
 		snapPreviewViewController = nil;
 	}
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-	
 	for (HONTimelineItemViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == challengeVO.challengeID)
 			[cell updateChallenge:_challengeVO];
@@ -789,7 +789,7 @@
 	}
 }
 
-- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController flagOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 //	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
@@ -826,8 +826,15 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+//	NSLog(@"**_[egoRefreshTableHeaderDidTriggerRefresh]_**");
+	
 	_tableView.pagingEnabled = NO;
 	[self _goRefresh];
+}
+
+- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
+//	NSLog(@"**_[egoRefreshTableHeaderDidFinishTareAnimation]_**");
+	_tableView.pagingEnabled = YES;
 }
 
 
@@ -925,19 +932,23 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"[:_:] scrollViewDidScroll-{%@}- offset:[%.02f] inset:[%@] [:_:]", scrollView.superview, scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"**_[scrollViewDidScroll]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-//	NSLog(@"[:_:] scrollViewWillEndDragging-{%@}- offset:[%.02f] inset:[%@] [:_:]", scrollView, scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"**_[scrollViewWillEndDragging]_** offset:[%.02f] inset:[%.02f]", scrollView.contentOffset.y, scrollView.contentInset.top);
 	_timelineScrollDirection = (velocity.y > 0.0) ? HONTimelineScrollDirectionDown : HONTimelineScrollDirectionUp;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-//	NSLog(@"[:_:] scrollViewDidEndDragging-{%@}- offset:[%.02f] inset:[%@] [:_:]", scrollView, scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
-	
+//	NSLog(@"**_[scrollViewDidEndDragging]_** offset:[%.02f] inset:[%.02f]", scrollView.contentOffset.y, scrollView.contentInset.top);
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_**");
+	scrollView.pagingEnabled = YES;
 }
 
 

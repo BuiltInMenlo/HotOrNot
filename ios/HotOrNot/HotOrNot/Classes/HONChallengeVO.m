@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, recentLikes, challengers, commentTotal, likersTotal, likesTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
+@synthesize challengeID, statusID, status, subjectName, hashtagName, recentLikes, challengers, commentTotal, likersTotal, likesTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -23,6 +23,7 @@
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.subjectName = [([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
+	vo.hashtagName = [@"#" stringByAppendingString:vo.subjectName];
 	vo.commentTotal = [[dictionary objectForKey:@"comments"] intValue];
 	vo.likersTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
@@ -129,6 +130,7 @@
 	self.recentLikes = nil;
 	self.challengers = nil;
 	self.subjectName = nil;
+	self.hashtagName = nil;
 	self.startedDate = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;

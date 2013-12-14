@@ -465,7 +465,6 @@
 - (void)_selectedExploreTab:(NSNotification *)notification {
 	NSLog(@"_selectedExploreTab");
 	
-	NSLog(@"ALERT TOTAL:[%d]", [HONAppDelegate totalForCounter:@"explore"]);
 	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
@@ -495,7 +494,6 @@
 		}
 	}
 	
-//	_isRefreshing = YES;
 //	[self _retrieveAlerts];
 }
 
@@ -503,7 +501,7 @@
 	[self _retrieveAlerts];
 }
 - (void)_tareExploreTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 }
 
 #pragma mark - UI Presentation
@@ -649,11 +647,18 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"**_[scrollViewDidScroll]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+//	NSLog(@"**_[scrollViewDidEndDragging]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+//	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
+	[_tableView setContentOffset:CGPointZero animated:NO];
 }
 
 
@@ -721,7 +726,6 @@
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
 	[self _goRefresh];
 }
-
 
 
 @end

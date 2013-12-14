@@ -21,7 +21,7 @@
 #import "HONOpponentVO.h"
 
 
-@interface HONTimelineItemViewCell() <HONTimelineCellHeaderViewDelegate, HONTimelineItemFooterViewDelegate>
+@interface HONTimelineItemViewCell() <HONTimelineCellHeaderViewDelegate, HONTimelineCellSubjectViewDelegate, HONTimelineItemFooterViewDelegate>
 @property (nonatomic, strong) UIView *heroHolderView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
@@ -109,9 +109,6 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:5.0 + (([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
-	[self.contentView addSubview:timelineCellSubjectView];
-	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = _heroHolderView.frame;
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
@@ -127,24 +124,29 @@
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:5.0 + (([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	timelineCellSubjectView.delegate = self;
+	[self.contentView addSubview:timelineCellSubjectView];
+	
 	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 106.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
 	[self.contentView addSubview:_timelineItemFooterView];
 	
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
+	
 	if (sticker != nil) {
-//		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 183.0, 94.0, 94.0)];
-//		[stickerImageView setImageWithURL:[NSURL URLWithString:[[sticker objectForKey:@"img"] stringByAppendingString:@"_188x188.png"]] placeholderImage:nil];
-		
+//		NSLog(@"STICKER:[%@]", [[[sticker objectForKey:@"img"] stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]);
 		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		[stickerImageView setImageWithURL:[NSURL URLWithString:[[[sticker objectForKey:@"img"] stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]] placeholderImage:nil];
 		[self.contentView addSubview:stickerImageView];
 		
-//		UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		stickerButton.frame = stickerImageView.frame;
-//		[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
-//		[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
-//		[self.contentView addSubview:stickerButton];
+		if ([[sticker objectForKey:@"user_id"] intValue] != 0) {
+			UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			stickerButton.frame = stickerImageView.frame;
+			[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
+			[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
+			[self.contentView addSubview:stickerButton];
+		}
 	}
 }
 
@@ -195,6 +197,10 @@
 	[self.delegate timelineItemViewCell:self showProfileForUserID:button.tag forChallenge:_challengeVO];
 }
 
+- (void)_goCreatorProfile {
+	[self.delegate timelineItemViewCell:self showProfileForUserID:_challengeVO.creatorVO.userID forChallenge:_challengeVO];
+}
+
 
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -234,6 +240,11 @@
 	[self.delegate timelineItemViewCell:self showProfileForUserID:opponentVO.userID forChallenge:challengeVO];
 }
 
+
+#pragma mark - TimelineSubject Deletegates
+- (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView {
+	[self _goCreatorProfile];
+}
 
 #pragma mark - TimelineItemFooter Delegates
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {

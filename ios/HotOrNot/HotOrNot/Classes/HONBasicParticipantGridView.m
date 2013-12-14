@@ -43,9 +43,8 @@
 - (void)layoutGrid {
 	_gridViews = [NSMutableArray array];
 	
-	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + 1));
-	
-	_holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + 1))];
+	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, 320.0, kSnapThumbSize.height * (([_gridItems count] / 4) + ([_gridItems count] % 4 != 0)));
+	_holderView = [[UIView alloc] initWithFrame:CGRectOffset(self.frame, 0.0, -self.frame.origin.y)];
 	[self addSubview:_holderView];
 	
 	_participantCounter = 0;

@@ -51,4 +51,6 @@ typedef enum {
 @protocol EGORefreshTableHeaderDelegate <NSObject>
 @required
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view;
+@optional
+- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view;
 @end
