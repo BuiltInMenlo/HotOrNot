@@ -39,8 +39,6 @@
 #import "HONTimelineViewController.h"
 #import "HONAlertsViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONChallengeVO.h"
-#import "HONEmotionVO.h"
 #import "HONUserVO.h"
 #import "HONUsernameViewController.h"
 #import "HONImagingDepictor.h"
@@ -270,6 +268,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSDictionary *)emailShareCommentForIndex:(int)index {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
+}
+
++ (int)minimumAge {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_age"] intValue]);
 }
 
 + (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds {	
@@ -543,6 +545,50 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	return ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorVO.userID);
+}
+
++ (HONOpponentVO *)mostRecentOpponentInChallenge:(HONChallengeVO *)challengeVO byUserID:(int)userID {
+	HONOpponentVO *opponentVO;
+	
+	if (userID == challengeVO.creatorVO.userID)
+		opponentVO = challengeVO.creatorVO;
+	
+	else {
+		NSLog(@"newestChallenge -> opponents:[%d]", [challengeVO.challengers count]);
+		for (HONOpponentVO *vo in challengeVO.challengers) {
+			if (userID == vo.userID) {
+				opponentVO = vo;
+				break;
+			}
+		}
+	}
+	
+	return (opponentVO);
+}
+
++ (HONEmotionVO *)mostRecentEmotionForOpponent:(HONOpponentVO *)opponentVO {
+	HONEmotionVO *emotionVO;
+	
+	BOOL isEmotionFound = NO;
+	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
+		if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
+			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+			isEmotionFound = YES;
+			break;
+		}
+	}
+	
+	if (!isEmotionFound) {
+		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
+			if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
+				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
+				isEmotionFound = YES;
+				break;
+			}
+		}
+	}
+	
+	return ((isEmotionFound) ? emotionVO : nil);
 }
 
 
@@ -880,6 +926,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"age_range"] forKey:@"age_range"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_age"] forKey:@"min_age"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 				[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
@@ -899,53 +946,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																					@"emoticons"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
 																					@"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
 
-//				NSMutableArray *verifyAB = [NSMutableArray array];
-//				for (NSMutableDictionary *dict in [result objectForKey:@"verify_AB"]) {
-//					NSLog(@"verify a/b :[%@]", dict);
-//
-//					NSLog(@"cta_txt:[%@]", [dict objectForKey:@"cta_txt"]);
-//					NSLog(@"yay_format:[%@]", [dict objectForKey:@"yay_format"]);
-//					NSLog(@"nay_format:[%@]", [dict objectForKey:@"nay_format"]);
-//
-//					[dict setObject:[self _replaceBrandingInFormat:[dict objectForKey:@"cta_txt"]] forKey:@"cta_txt"];
-//					NSLog(@"cta_txt:[%@]", [dict objectForKey:@"cta_txt"]);
-//					
-//					[dict setObject:[self _replaceBrandingInFormat:[dict objectForKey:@"yay_format"]] forKey:@"yay_format"];
-//					NSLog(@"yay_format:[%@]", [dict objectForKey:@"yay_format"]);
-//					
-//					[dict setObject:[self _replaceBrandingInFormat:[dict objectForKey:@"nay_format"]] forKey:@"nay_format"];
-//					NSLog(@"nay_format:[%@]", [dict objectForKey:@"nay_format"]);
-//					
-//					[verifyAB addObject:dict];
-//				}
-//
-//				[[NSUserDefaults standardUserDefaults] setObject:verifyAB forKey:@"verify_AB"];
-//				
-//				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"	: [self _replaceBrandingInFormat:[[result objectForKey:@"invite_formats"] objectForKey:@"sms"]],
-//																   @"email"	: @{@"subject"	: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"subject"]],
-//																				@"body"		: [self _replaceBrandingInFormat:[[[result objectForKey:@"invite_formats"] objectForKey:@"email"] objectForKey:@"body"]]}} forKey:@"invite_formats"];
-//
 				[[NSUserDefaults standardUserDefaults] setObject:[self _replaceBrandingInFormat:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"]] forKey:@"share_title"];
-//				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:0]],
-//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"instagram"] objectAtIndex:1]]],
-//																   @"twitter"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:0]],
-//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"twitter"] objectAtIndex:1]]],
-//																   @"facebook"		: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"facebook"] objectAtIndex:0]],
-//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"facebook"] objectAtIndex:1]]],
-//																   @"sms"			: @[[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"sms"] objectAtIndex:0]],
-//																						[self _replaceBrandingInFormat:[[[result objectForKey:@"share_formats"] objectForKey:@"sms"] objectAtIndex:1]]],
-//																   @"email"			: @[@{@"subject"	: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:0] objectForKey:@"subject"]],
-//																						  @"body"		: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:0] objectForKey:@"body"]]},
-//																						@{@"subject"	: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:1] objectForKey:@"subject"]],
-//																						  @"body"		: [self _replaceBrandingInFormat:[[[[result objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:1] objectForKey:@"body"]]}]} forKey:@"share_formats"];
-				
-				
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_AB"] forKey:@"verify_AB"];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 																   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 				
-				//[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
 				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
 																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
 																   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],

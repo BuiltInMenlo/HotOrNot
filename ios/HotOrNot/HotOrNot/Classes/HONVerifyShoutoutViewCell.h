@@ -15,11 +15,15 @@
 @protocol HONVerifyShoutoutViewCellDelegate;
 @interface HONVerifyShoutoutViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+
+
+- (id)initAsInviteCell:(BOOL)isInviteCell;
 - (void)showTapOverlay;
-- (void)tintMe;;
+- (void)tintMe;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSIndexPath *indexPath;
+@property (nonatomic) BOOL isInviteCell;
 @property (nonatomic, assign) id <HONVerifyShoutoutViewCellDelegate> delegate;
 @end
 

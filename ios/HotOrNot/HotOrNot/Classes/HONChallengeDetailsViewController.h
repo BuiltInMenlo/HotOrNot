@@ -13,5 +13,5 @@
 
 @interface HONChallengeDetailsViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate>
 - (id)initWithChallenge:(HONChallengeVO *)vo;
-//- (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView;
+- (id)initWithChallengeID:(int)challengeID;
 @end

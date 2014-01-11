@@ -543,7 +543,8 @@
 		else
 			[self _toggleNotifications];
 		
-	} else if (alertView.tag == HONSettingsCellTypeDeactivate) {
+//>>} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
+		} else if (alertView.tag == HONSettingsCellTypeDeactivate) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Deactivate %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -562,7 +563,7 @@
 			[self _wipeUser];
 		}
 	
-	} else if (alertView.tag == HONSettingsCellTypeDeleteChallenges) {
+	} else if (alertView.tag == HONSettingsAlertTypeDeleteChallenges) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Delete Volleys %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

@@ -53,4 +53,5 @@ typedef enum {
 
 @optional
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showDetailsForChallenge:(HONChallengeVO *)challengeVO;
 @end

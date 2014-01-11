@@ -106,6 +106,7 @@
 	
 	_previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_previewButton.frame = imageView.frame;
+	//>>[_previewButton addTarget:self action:(_participantGridViewType == HONParticipantGridViewTypeDetails) ? @selector(_goPreview:) : @selector(_goDetails:) forControlEvents:UIControlEventTouchUpInside];
 	[_previewButton addTarget:self action:@selector(_goPreview:) forControlEvents:UIControlEventTouchUpInside];
 	[_previewButton setTag:_participantCounter];
 	[imageHolderView addSubview:_previewButton];
@@ -116,6 +117,8 @@
 
 #pragma mark - Navigation
 -(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	NSLog(@"goLongPress:[%d]", lpGestureRecognizer.state);
+	
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
@@ -127,6 +130,12 @@
 	NSLog(@"_goPreview:[%@]", sender);
 	NSDictionary *dict = [_gridItems objectAtIndex:[sender tag]];
 	[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+}
+
+- (void)_goDetails:(id)sender {
+	NSLog(@"_goDetails:[%@]", sender);
+	NSDictionary *dict = [_gridItems objectAtIndex:[sender tag]];
+	[self.delegate participantGridView:self showDetailsForChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
 }
 
 - (void)_goDelete:(id)sender {

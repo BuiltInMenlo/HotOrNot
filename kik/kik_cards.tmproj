@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>cards/demo/index.html</string>
+	<string>cards/demo/index_20131115_172343.html</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -77,7 +77,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>185</integer>
 		</dict>
 		<key>cards/demo/index_20131115_172343.html</key>
 		<dict>
@@ -91,7 +91,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>170</integer>
 		</dict>
 		<key>cards/demo/index_dev.html</key>
 		<dict>
@@ -134,6 +134,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{264, -224}, {1061, 769}}</string>
+	<string>{{264, 4}, {1061, 769}}</string>
 </dict>
 </plist>

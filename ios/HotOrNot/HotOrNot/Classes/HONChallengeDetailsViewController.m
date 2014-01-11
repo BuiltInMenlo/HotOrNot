@@ -49,6 +49,7 @@
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) int opponentCounter;
+@property (nonatomic) int challengeID;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -58,27 +59,22 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
-		
 		_challengeVO = vo;
-//		_bgImageView = imageView;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
+	}
+	
+	return (self);
+}
+
+- (id)initWithChallengeID:(int)challengeID {
+	if ((self = [super init])) {
+		_challengeID = challengeID;
+		_challengeVO = nil;
 		
-//		NSMutableArray *mChallenge = [vo.challengers mutableCopy];
-//		int min = ([vo.challengers count] < 5) ? 0 : 5;
-//		int diff = ([vo.challengers count]) - min;
-//		int len = (diff == min) ? 0 : diff;
-//		[mChallenge removeObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(min, len)]];		
-//		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
-//		NSLog(@"CREATOR[%@] -- CHALLENGERS:[%d]", vo.creatorVO.subjectName, [vo.challengers count]);
-//		int cnt = 0;
-//		for (HONOpponentVO *vo in _challengeVO.challengers) {
-//			NSLog(@"\tCHALLENGER:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n\n", vo.subjectName);
-//
-//			if (++cnt == 5)
-//				break;
-//		}
+		self.view.backgroundColor = [UIColor whiteColor];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -98,10 +94,8 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveChallenge {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-							nil];
+- (void)_retrieveChallenge:(int)challengeID {
+	NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", challengeID]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -374,10 +368,6 @@
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
 	
-//	_refreshView = [[DLRefreshView alloc] initWithFrame:CGRectMake(0.0, 0.0 - _scrollView.frame.size.height, _scrollView.frame.size.width, _scrollView.frame.size.height)];
-//	_refreshView.delegate = self;
-//	[_scrollView addSubview:_refreshView];
-	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:_challengeVO.subjectName hasTranslucency:YES];
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
@@ -427,11 +417,15 @@
 }
 
 - (void)_orphanUI {
+	NSLog(@"_orphanUI");
+	
 	for (UIView *view in _contentHolderView.subviews)
 		[view removeFromSuperview];
 }
 
 - (void)_adoptUI {
+	NSLog(@"_adoptUI");
+	
 	[self _makeHero];
 	[self _makeParticipantGrid];
 	[self _makeFooterTabBar];
@@ -603,7 +597,7 @@
 }
 
 - (void)_goRefresh {
-	[self _retrieveChallenge];
+	[self _retrieveChallenge:_challengeVO.challengeID];
 }
 
 - (void)_goClose {
@@ -746,7 +740,7 @@
 
 #pragma mark - Notifications
 - (void)_refreshAllTabs:(NSNotification *)notification {
-	[self _retrieveChallenge];
+	[self _retrieveChallenge:_challengeVO.challengeID];
 }
 
 - (void)_refreshLikeCount:(NSNotification *)notification {

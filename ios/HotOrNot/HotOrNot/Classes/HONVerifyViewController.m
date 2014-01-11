@@ -33,7 +33,6 @@
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONFAQViewController.h"
 
 
 @interface HONVerifyViewController() <HONVerifyTableHeaderViewDelegate, HONVerifyShoutoutViewCellDelegate, HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
@@ -441,7 +440,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:3];
+		[alertView setTag:HONVerifyAlertTypeCreateChallengeBlocked];
 		[alertView show];
 	}
 }
@@ -463,7 +462,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
+		[alertView setTag:HONVerifyAlertTypeShare];
 		[alertView show];
 	}
 }
@@ -474,16 +473,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_goFAQ {
-	[[Mixpanel sharedInstance] track:@"Verify A/B - FAQ"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -678,7 +667,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
+		[alertView setTag:HONVerifyAlertTypeShowProfileBlocked];
 		[alertView show];
 	}
 }
@@ -704,7 +693,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:6];
+		[alertView setTag:HONVerifyAlertTypeApproveBlocked];
 		[alertView show];
 	}
 }
@@ -747,13 +736,16 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
-		[actionSheet setTag:1];
-		[actionSheet showInView:self.view];
+		[self _addFriend:_challengeVO.creatorVO.userID];
+		[self _removeCellForChallenge:_challengeVO];
+		
+//		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+//																 delegate:self
+//														cancelButtonTitle:@"Cancel"
+//												   destructiveButtonTitle:nil
+//														otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
+//		[actionSheet setTag:1];
+//		[actionSheet showInView:self.view];
 		
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
@@ -761,7 +753,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:7];
+		[alertView setTag:HONVerifyAlertTypeFollowBlocked];
 		[alertView show];
 	}
 }
@@ -791,7 +783,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
+		[alertView setTag:HONVerifyAlertTypeShowProfileBlocked];
 		[alertView show];
 	}
 }
@@ -818,7 +810,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
+		[alertView setTag:HONVerifyAlertTypeShowProfileBlocked];
 		[alertView show];
 	}
 }
@@ -845,7 +837,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:6];
+		[alertView setTag:HONVerifyAlertTypeApproveBlocked];
 		[alertView show];
 	}
 }
@@ -864,7 +856,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:10];
+		[alertView setTag:HONVerifyAlertTypeDisproveConfirm];
 		[alertView show];
 		
 	} else {
@@ -873,7 +865,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:7];
+		[alertView setTag:HONVerifyAlertTypeDisproveBlocked];
 		[alertView show];
 	}
 }
@@ -954,7 +946,7 @@
 		HONVerifyShoutoutViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONVerifyShoutoutViewCell alloc] init];
+			cell = [[HONVerifyShoutoutViewCell alloc] initAsInviteCell:((indexPath.section % 25) == 0 && indexPath.section > 0)];
 		
 		cell.delegate = self;
 		cell.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
@@ -969,7 +961,7 @@
 		HONVerifyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONVerifyViewCell alloc] init];
+			cell = [[HONVerifyViewCell alloc] initAsInviteCell:((indexPath.section % 25) == 0 && indexPath.section > 0)];
 		
 		cell.delegate = self;
 		cell.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
@@ -1001,28 +993,38 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
+	BOOL isInviteCell = NO;
 	if ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) {
 		HONVerifyShoutoutViewCell *cell = (HONVerifyShoutoutViewCell *)[_cells objectAtIndex:indexPath.section];
+		isInviteCell = cell.isInviteCell;
 		[cell showTapOverlay];
 		
 	} else {
 		HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.section];
+		isInviteCell = cell.isInviteCell;
 		[cell showTapOverlay];
 	}
 	
-	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-	_challengeVO = challengeVO;
+	if (isInviteCell) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	
-	NSLog(@"didSelectRowAtIndexPath:[%@]", challengeVO.dictionary);
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
-	
-	_isScrollingIgnored = YES;
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
-	_snapPreviewViewController.delegate = self;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+	} else {
+		HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
+		_challengeVO = challengeVO;
+		
+		NSLog(@"didSelectRowAtIndexPath:[%@]", challengeVO.dictionary);
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+		
+		_isScrollingIgnored = YES;
+		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
+		_snapPreviewViewController.delegate = self;
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+	}
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -1096,7 +1098,7 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
+	if (alertView.tag == HONVerifyAlertTypeShare) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
@@ -1108,19 +1110,8 @@
 																									@"mp_event"			: @"Verify A/B - Share",
 																									@"view_controller"	: self}];
 		}
-	
-	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - FAQ %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-	
-	} else if (alertView.tag == 3) {
+	} else if (alertView.tag == HONVerifyAlertTypeCreateChallengeBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Create Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
@@ -1131,7 +1122,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 		
-	} else if (alertView.tag == 4) {
+	} else if (alertView.tag == HONVerifyAlertTypeShowProfileBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Profile Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
@@ -1142,18 +1133,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 		
-	} else if (alertView.tag == 5) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Show Detail Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
-		
-	} else if (alertView.tag == 6) {
+	} else if (alertView.tag == HONVerifyAlertTypeApproveBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Approve Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
@@ -1164,7 +1144,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 		
-	} else if (alertView.tag == 7) {
+	} else if (alertView.tag == HONVerifyAlertTypeDisproveBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
@@ -1176,19 +1156,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	
-	} else if (alertView.tag == 8) {
-	} else if (alertView.tag == 9) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
-			[self _removeCellForChallenge:_challengeVO];
-		}
-	
-	} else if (alertView.tag == 10) {
+	} else if (alertView.tag == HONVerifyAlertTypeDisproveConfirm) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify A/B - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",

@@ -468,14 +468,19 @@
 	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 258.0);
 	[self.view addSubview:divider3ImageView];
 	
+	//>>
+//	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+//	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+//	[dateComponents setYear:-[HONAppDelegate minimumAge]];
+	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
 	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
 	_datePicker.date = (![[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] || [[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [dateFormat dateFromString:@"1970-01-01"] : [dateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
-	_datePicker.minimumDate = [dateFormat dateFromString:@"1970-01-01"];
-	_datePicker.maximumDate = [NSDate date];
+	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
+	_datePicker.maximumDate = [NSDate date];//>>[calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
 	
@@ -499,10 +504,6 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-//	UIImageView *tintImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//	tintImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"overlayTint_1stRun-568h@2x" : @"overlayTint_1stRun"];
-//	[_splashHolderView addSubview:tintImageView];
-	
 	_rotatingTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_rotatingTintView.backgroundColor = SPLASH_BLUE_TINT_COLOR;
 	[_splashHolderView addSubview:_rotatingTintView];
@@ -511,7 +512,6 @@
 		[_tintTimer invalidate];
 		_tintTimer = nil;
 	}
-	
 	
 	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:SPLASH_TINT_TIMER_DURATION target:self selector:@selector(_nextSplashTint) userInfo:nil repeats:YES];
 	
@@ -539,13 +539,14 @@
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
 		[_splashHolderView addSubview:signupButton];
-		
-		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (103.0 - (((int)![HONAppDelegate isRetina4Inch]) * 18.0)), 320.0, 49.0);
-		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
-		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
-		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-		[_splashHolderView addSubview:loginButton];
+
+		//>>
+//		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (103.0 - (((int)![HONAppDelegate isRetina4Inch]) * 18.0)), 320.0, 49.0);
+//		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
+//		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
+//		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+//		[_splashHolderView addSubview:loginButton];
 		
 		if (_isFirstAppearance) {
 			_isFirstAppearance = NO;
@@ -695,11 +696,6 @@
 	imagePickerController.delegate = self;
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-//		imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-//		imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-//		imagePickerController.delegate = self;
-		
 		imagePickerController.showsCameraControls = NO;
 		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
@@ -709,14 +705,10 @@
 		_profileCameraOverlayView.alpha = 0.0;
 		
 		imagePickerController.cameraOverlayView = _profileCameraOverlayView;
-//		self.profileImagePickerController = imagePickerController;
-		
 		
 		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_profileCameraOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {}];
-		
-//		[self presentViewController:self.profileImagePickerController animated:NO completion:^(void) {}];
 		
 		_tintIndex = 0;
 		_tintedMatteView = [[UIView alloc] initWithFrame:_profileCameraOverlayView.frame];

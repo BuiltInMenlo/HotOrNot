@@ -14,6 +14,19 @@ typedef enum {
 	
 } HONUserProfileType;
 
+
+typedef enum {
+	HONUserProfileAlertTypeInvite = 0,
+	HONUserProfileAlertTypeDeleteChallenge,
+	HONUserProfileAlertTypeFollow,
+	HONUserProfileAlertTypeFollowClose,
+	HONUserProfileAlertTypeUnfollow,
+	HONUserProfileAlertTypeFlag,
+	HONUserProfileAlertTypeShowProfileBlocked
+	
+} HONUserProfileAlertType;
+
+
 @interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic) int userID;
 @end

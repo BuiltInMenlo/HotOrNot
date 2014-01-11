@@ -13,10 +13,11 @@
 #import "MBProgressHUD.h"
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
+#import "HONEmotionVO.h"
 #import "AFHTTPClient.h"
 
 
-#define __DEV_BUILD__ 0
+#define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 #define __FORCE_REGISTER__ 0
@@ -26,7 +27,7 @@
 #define __RESET_TOTALS__ 0
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __APPSTORE_BUILD__ 1
+#define __APPSTORE_BUILD__ 0
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -160,6 +161,7 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSString *)s3BucketForType:(NSString *)bucketType;
 
++ (int)minimumAge;
 + (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds;
 
 + (int)profileSubscribeThreshold;
@@ -214,6 +216,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)writeSubscribeeList:(NSArray *)subscribees;
 + (BOOL)isFollowingUser:(int)userID;
 
++ (HONOpponentVO *)mostRecentOpponentInChallenge:(HONChallengeVO *)challengeVO byUserID:(int)userID;
++ (HONEmotionVO *)mostRecentEmotionForOpponent:(HONOpponentVO *)opponentVO;
 + (int)hasVoted:(int)challengeID;
 + (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO;
 + (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO;

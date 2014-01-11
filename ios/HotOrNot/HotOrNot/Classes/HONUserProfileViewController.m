@@ -19,6 +19,7 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONAddContactsViewController.h"
+#import "HONChallengeDetailsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONSuggestedFollowViewController.h"
 #import "HONFAQViewController.h"
@@ -245,7 +246,7 @@
 			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: USER CHALLENGES:[%d]", [[self class] description], [result count]);
-//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			//VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result objectAtIndex:0]);
 			_challenges = [NSMutableArray array];
 			
@@ -661,7 +662,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:5];
+		[alertView setTag:HONUserProfileAlertTypeInvite];
 		[alertView show];
 	
 	} else {
@@ -672,7 +673,7 @@
 //															   delegate:self
 //													  cancelButtonTitle:@"No"
 //													  otherButtonTitles:@"Yes", nil];
-//			[alertView setTag:0];
+//			[alertView setTag:HONUserProfileAlertTypeFollowClose];
 //			[alertView show];
 //		
 //		} else {
@@ -734,7 +735,7 @@
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:3];
+	[alertView setTag:HONUserProfileAlertTypeFollow];
 	[alertView show];
 }
 
@@ -749,7 +750,7 @@
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:4];
+	[alertView setTag:HONUserProfileAlertTypeUnfollow];
 	[alertView show];
 }
 
@@ -769,7 +770,7 @@
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes, flag user", nil];
 	
-	[alertView setTag:2];
+	[alertView setTag:HONUserProfileAlertTypeFlag];
 	[alertView show];
 }
 
@@ -928,7 +929,7 @@
 	
 	CGFloat gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[HONAppDelegate mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
@@ -1074,7 +1075,7 @@
 	
 	float gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[self _latestOpponentInChallenge]];
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[HONAppDelegate mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
@@ -1226,9 +1227,20 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:2];
+		[alertView setTag:HONUserProfileAlertTypeShowProfileBlocked];
 		[alertView show];
 	}
+}
+
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showDetailsForChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"User Profile - Show Details"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
@@ -1245,7 +1257,7 @@
 													   delegate:self
 											  cancelButtonTitle:@"Cancel"
 											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:1];
+	[alertView setTag:HONUserProfileAlertTypeDeleteChallenge];
 	[alertView show];
 }
 
@@ -1285,7 +1297,7 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
+	if (alertView.tag == HONUserProfileAlertTypeFollowClose) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Close Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1298,7 +1310,7 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 		}];
 		
-	} else if (alertView.tag == 1) {
+	} else if (alertView.tag == HONUserProfileAlertTypeDeleteChallenge) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Remove Selfie %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1308,7 +1320,7 @@
 			[self _removeChallengeWithID:_challengeVO.challengeID usingImagePrefix:_opponentVO.imagePrefix];
 		}
 		
-	} else if (alertView.tag == 2) {
+	} else if (alertView.tag == HONUserProfileAlertTypeFlag) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1318,7 +1330,7 @@
 			[self _flagUser:_userVO.userID];
 		}
 		
-	} else if (alertView.tag == 3) {
+	} else if (alertView.tag == HONUserProfileAlertTypeFollow) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1338,7 +1350,7 @@
 			[_subscribeButton addTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 		
-	} else if (alertView.tag == 4) {
+	} else if (alertView.tag == HONUserProfileAlertTypeUnfollow) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Unsubscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1359,7 +1371,7 @@
 			[_subscribeButton addTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
 		}
 	
-	} else if (alertView.tag == 5) {
+	} else if (alertView.tag == HONUserProfileAlertTypeInvite) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1402,7 +1414,7 @@
 													  cancelButtonTitle:@"No"
 													  otherButtonTitles:@"Yes, flag user", nil];
 			
-			[alertView setTag:2];
+			[alertView setTag:HONUserProfileAlertTypeFlag];
 			[alertView show];
 		}
 		
@@ -1442,6 +1454,7 @@
 }
 
 
+/*
 - (HONOpponentVO *)_latestOpponentInChallenge {
 	HONOpponentVO *opponentVO;
 	
@@ -1461,10 +1474,12 @@
 	
 	return (opponentVO);
 }
+*/
 
+/*
 - (HONEmotionVO *)_latestChallengeEmotion {
 	HONEmotionVO *emotionVO;
-	HONOpponentVO *opponentVO = [self _latestOpponentInChallenge];
+	HONOpponentVO *opponentVO = [HONAppDelegate mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID];
 	
 	BOOL isEmotionFound = NO;
 	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
@@ -1487,6 +1502,7 @@
 	
 	return ((isEmotionFound) ? emotionVO : nil);
 }
+*/
 
 
 @end

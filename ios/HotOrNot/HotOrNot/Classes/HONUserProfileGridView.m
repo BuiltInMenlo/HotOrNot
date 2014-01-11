@@ -45,8 +45,8 @@
 	NSLog(@"%@.layoutGrid withTotal[%d]", [[self class] description], [_gridItems count]);
 	[super layoutGrid];
 	
-	[_lpGestureRecognizer removeTarget:self action:@selector(goLongPress:)];
-	[self removeGestureRecognizer:_lpGestureRecognizer];
+//	[_lpGestureRecognizer removeTarget:self action:@selector(goLongPress:)];
+//	[self removeGestureRecognizer:_lpGestureRecognizer];
 }
 
 - (void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -68,7 +68,8 @@
 		}
 		
 		if (dict != nil)
-			[self.delegate participantGridView:self removeParticipantItem:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+			[self.delegate participantGridView:self showPreview:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
+			//[self.delegate participantGridView:self removeParticipantItem:(HONOpponentVO *)[dict objectForKey:@"participant"] forChallenge:(HONChallengeVO *)[dict objectForKey:@"challenge"]];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}

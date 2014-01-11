@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+
 #import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
@@ -113,6 +114,7 @@
 			
 		} else {
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
 			VolleyJSONLog(@"AFNetworking [-] %@: FEED TOTAL %d", [[self class] description], [result count]);
 			
 			_challenges = [NSMutableArray array];
@@ -439,7 +441,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:1];
+		[alertView setTag:HONTimelineAlertTypeCreateChallengeBlocked];
 		[alertView show];
 	}
 }
@@ -518,7 +520,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
+		[alertView setTag:HONTimelineAlertTypeInvite];
 		[alertView show];
 	
 	} else {
@@ -642,7 +644,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:2];
+		[alertView setTag:HONTimelineAlertTypeShowProfileBlocked];
 		[alertView show];
 	}
 }
@@ -684,7 +686,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:3];
+		[alertView setTag:HONTimelineAlertTypeJoinChallengeBlocked];
 		[alertView show];
 	}
 }
@@ -713,7 +715,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
+		[alertView setTag:HONTimelineAlertTypeChallengeDetailsBlocked];
 		[alertView show];
 	}
 }
@@ -766,7 +768,7 @@
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:4];
+		[alertView setTag:HONTimelineAlertTypePhotoDetailBlocked];
 		[alertView show];
 	}
 }
@@ -819,7 +821,7 @@
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Use mobile #", @"Use email address", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:0];
+	[actionSheet setTag:HONTimelineActionSheetTypeVerify];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
@@ -954,7 +956,7 @@
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.tag == 0) {
+	if (actionSheet.tag == HONTimelineActionSheetTypeVerify) {
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:NO]];
 			[navigationController setNavigationBarHidden:YES];
@@ -971,14 +973,39 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		if (buttonIndex == 1) {
+	if (alertView.tag == HONTimelineAlertTypeInvite) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Invite Friends %@", (buttonIndex == 0) ? @"No" : @"Yes"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																message:@""
+															   delegate:self
+													  cancelButtonTitle:@"No"
+													  otherButtonTitles:@"Yes", nil];
+			[alertView setTag:HONTimelineAlertTypeInviteConfirm];
+			[alertView show];
+		}
+		
+		else if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	
-	} else if (alertView.tag == 1) {
+	} else if (alertView.tag == HONTimelineAlertTypeInviteConfirm) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Invite Confirm %@", (buttonIndex == 0) ? @"No" : @"Yes"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+		
+	} else if (alertView.tag == HONTimelineAlertTypeCreateChallengeBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Create Volley Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -989,7 +1016,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	
-	} else if (alertView.tag == 2) {
+	} else if (alertView.tag == HONTimelineAlertTypeShowProfileBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Header - Show Profile Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1001,7 +1028,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	
-	} else if (alertView.tag == 3) {
+	} else if (alertView.tag == HONTimelineAlertTypeJoinChallengeBlocked) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Join Challenge Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1013,13 +1040,11 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 		
-	} else if (alertView.tag == 4) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Photo Detail Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
+	} else if (alertView.tag == HONTimelineAlertTypeChallengeDetailsBlocked) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Challenge Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-										  nil]];
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
@@ -1027,11 +1052,12 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 		
-	} else if (alertView.tag == 4) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Challenge Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
+	} else if (alertView.tag == HONTimelineAlertTypePhotoDetailBlocked) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Photo Detail Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];

@@ -1,0 +1,11 @@
+{
+	"img_width"      : 320,
+	"img_height"     : 568,
+	"slide_speed"    : 32,
+	"slide_ease"     : 0.005,
+	"drag_threshold" : 56,
+	"drag_axis"      : "y",
+	"share_img"      : "http://54.197.247.164/images/share-03_612x612_im.png",
+	"taps_io"        : "http://taps.io/JWPA",
+	"selfie_url"     : "/api/challenges/getselfies",
+}

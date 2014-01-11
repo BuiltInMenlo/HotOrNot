@@ -8,5 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+	HONVerifyAlertTypeShare = 0,
+	HONVerifyAlertTypeDisproveConfirm,
+	HONVerifyAlertTypeCreateChallengeBlocked,
+	HONVerifyAlertTypeShowProfileBlocked,
+	HONVerifyAlertTypeApproveBlocked,
+	HONVerifyAlertTypeDisproveBlocked,
+	HONVerifyAlertTypeFollowBlocked
+} HONVerifyAlertType;
+
+
 @interface HONVerifyViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 @end
