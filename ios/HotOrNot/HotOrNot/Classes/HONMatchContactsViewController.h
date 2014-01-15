@@ -1,5 +1,5 @@
 //
-//  HONVerifyAccountViewController.h
+//  HONMatchContactsViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 05.09.13.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONVerifyAccountViewController : UIViewController
+@interface HONMatchContactsViewController : UIViewController
 - (id)initAsEmailVerify:(BOOL)isEmail;
 @end

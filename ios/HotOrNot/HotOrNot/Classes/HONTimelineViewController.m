@@ -26,10 +26,9 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONHeaderView.h"
-#import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
 #import "HONSuggestedFollowViewController.h"
-#import "HONVerifyAccountViewController.h"
+#import "HONMatchContactsViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
@@ -38,11 +37,10 @@
 #import "HONProfileHeaderButtonView.h"
 
 
-@interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
+@interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONEmptyTimelineView *emptyTimelineView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
@@ -200,7 +198,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -246,7 +244,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -366,7 +364,6 @@
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
-	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];
 	
@@ -460,14 +457,6 @@
 	[self presentViewController:navigationController animated:NO completion:^(void) {}];
 }
 
-- (void)_goVerify {
-	if (_emptyTimelineView == nil) {
-		_emptyTimelineView = [[HONEmptyTimelineView alloc] initWithFrame:self.view.bounds];
-		_emptyTimelineView.delegate = self;
-		[self.view addSubview:_emptyTimelineView];
-	}
-}
-
 - (void)_goAddContacts {
 	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -497,6 +486,21 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	}];
+}
+
+- (void)_goMatchContacts {
+	[[Mixpanel sharedInstance] track:@"Timeline - Match Contacts"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Use mobile #", @"Use email address", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:HONTimelineActionSheetTypeMatchContacts];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 - (void)_goRemoveTutorial {
@@ -597,7 +601,7 @@
 		[_tutorialImageView addSubview:closeButton];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(33.0, ([HONAppDelegate isRetina4Inch]) ? 424.0 : 381.0, 254.0, 49.0);
+		avatarButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 416.0 : 380.0, 320.0, 64.0);
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
 		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
@@ -809,23 +813,6 @@
 }
 
 
-#pragma mark - EmptyTimelineView Delegates
-- (void)emptyTimelineViewVerify:(HONEmptyTimelineView *)emptyTimelineView {
-	[[Mixpanel sharedInstance] track:@"Timeline - Verify"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Use mobile #", @"Use email address", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:HONTimelineActionSheetTypeVerify];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
-
-
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
 //	NSLog(@"**_[egoRefreshTableHeaderDidTriggerRefresh]_**");
@@ -868,7 +855,7 @@
 	
 	if (cell == nil) {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-		cell = [[HONTimelineItemViewCell alloc] init];
+		cell = [[HONTimelineItemViewCell alloc] initAsBannerCell:((indexPath.section % 5 == 0) && indexPath.section != 0)];
 		cell.challengeVO = vo;
 	}
 	
@@ -956,17 +943,10 @@
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.tag == HONTimelineActionSheetTypeVerify) {
-		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-					
-		} else if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:YES]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
+	if (actionSheet.tag == HONTimelineActionSheetTypeMatchContacts) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:(buttonIndex == 1)]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 

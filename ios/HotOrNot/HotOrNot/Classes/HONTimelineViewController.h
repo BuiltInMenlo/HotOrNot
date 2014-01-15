@@ -21,7 +21,7 @@ typedef enum {
 } HONTimelineAlertType;
 
 typedef enum {
-	HONTimelineActionSheetTypeVerify = 0
+	HONTimelineActionSheetTypeMatchContacts = 0
 } HONTimelineActionSheetType;
 
 

@@ -9,6 +9,16 @@
 #import <UIKit/UIKit.h>
 
 
+typedef enum {
+	HONAlertCellTypeNormal = 0,
+	HONAlertCellTypeInviteContacts,
+	HONAlertCellTypeInviteEmail,
+	HONAlertCellTypeInvitePhone,
+	HONAlertCellTypeSearch,
+	HONAlertCellTypeSuggested
+} HONAlertCellType;
+
+
 
 @interface HONAlertsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 

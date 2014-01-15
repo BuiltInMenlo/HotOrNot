@@ -69,11 +69,9 @@
 
 #pragma mark - Data Calls
 - (void)_sendSMSContacts {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 11], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[_smsRecipients substringToIndex:[_smsRecipients length] - 1], @"phone",
-							nil];
+	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 11],
+							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"phone"	: [_smsRecipients substringToIndex:[_smsRecipients length] - 1]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -146,10 +144,8 @@
 }
 
 - (void)_sendEmailContacts {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[_emailRecipients substringToIndex:[_emailRecipients length] - 1], @"emailList",
-							nil];
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"emailList"	: [_emailRecipients substringToIndex:[_emailRecipients length] - 1]};
 	
 	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailContacts, params);
@@ -230,10 +226,9 @@
 	
 	NSLog(@"SELECTED FRIENDS:[%@]", [userIDs substringToIndex:[userIDs length] - 1]);
 		
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[userIDs substringToIndex:[userIDs length] - 1], @"target",
-							@"0", @"auto", nil];
+	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"target"	: [userIDs substringToIndex:[userIDs length] - 1],
+							 @"auto"	: @"0"};
 
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -257,7 +252,7 @@
 		} else {
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-			[HONAppDelegate writeSubscribeeList:result];
+			[HONAppDelegate writeFollowingList:result];
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -325,9 +320,8 @@
 	}
 	
 	NSLog(@"SELECTED PHONE:[%@]", [phoneNumbers substringToIndex:[phoneNumbers length] - 1]);
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[phoneNumbers substringToIndex:[phoneNumbers length] - 1], @"numbers", nil];
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"numbers"		: [phoneNumbers substringToIndex:[phoneNumbers length] - 1]};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISMSInvites);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -378,9 +372,8 @@
 	}
 	
 	NSLog(@"SELECTED EMAIL:[%@]", [emails substringToIndex:[emails length] - 1]);
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[emails substringToIndex:[emails length] - 1], @"addresses", nil];
+	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"addresses"	: [emails substringToIndex:[emails length] - 1]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -809,13 +802,15 @@
 			cell.userVO = (HONUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
-		for (HONUserVO *vo in _selectedInAppContacts) {
-			if (cell.userVO.userID == vo.userID) {
-				[cell toggleSelected:YES];
-				break;
-			}
-		}
+		[cell toggleSelected:YES];
 		
+//		for (HONUserVO *vo in _selectedInAppContacts) {
+//			if (cell.userVO.userID == vo.userID) {
+//				[cell toggleSelected:YES];
+//				break;
+//			}
+//		}
+//		
 //		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
 //			if (cell.userVO.userID == vo.userID) {
 //				[cell toggleSelected:YES];

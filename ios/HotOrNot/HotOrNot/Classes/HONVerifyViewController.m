@@ -196,7 +196,7 @@
 			NSLog(@"_addFriend");
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -533,7 +533,7 @@
 		[_tutorialImageView addSubview:closeButton];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(33.0, ([HONAppDelegate isRetina4Inch]) ? 424.0 : 381.0, 254.0, 49.0);
+		avatarButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 416.0 : 380.0, 320.0, 64.0);
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
 		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
@@ -946,7 +946,7 @@
 		HONVerifyShoutoutViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONVerifyShoutoutViewCell alloc] initAsInviteCell:((indexPath.section % 25) == 0 && indexPath.section > 0)];
+			cell = [[HONVerifyShoutoutViewCell alloc] initAsInviteCell:((indexPath.section % 5) == 0 && indexPath.section > 0)];
 		
 		cell.delegate = self;
 		cell.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
@@ -961,7 +961,7 @@
 		HONVerifyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONVerifyViewCell alloc] initAsInviteCell:((indexPath.section % 25) == 0 && indexPath.section > 0)];
+			cell = [[HONVerifyViewCell alloc] initAsInviteCell:((indexPath.section % 5) == 0 && indexPath.section > 0)];
 		
 		cell.delegate = self;
 		cell.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];

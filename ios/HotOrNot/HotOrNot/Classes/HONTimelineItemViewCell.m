@@ -29,6 +29,7 @@
 @property (nonatomic, strong) HONTimelineItemFooterView *timelineItemFooterView;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic) BOOL isBanner;
 @end
 
 @implementation HONTimelineItemViewCell
@@ -38,8 +39,9 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)init {
+- (id)initAsBannerCell:(BOOL)isBanner {
 	if ((self = [super init])) {
+		_isBanner = isBanner;
 		self.backgroundColor = [UIColor whiteColor];
 		[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineBackground"]]];
 	}
@@ -124,7 +126,7 @@
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:5.0 + (([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:(([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
 	timelineCellSubjectView.delegate = self;
 	[self.contentView addSubview:timelineCellSubjectView];
 	
@@ -147,6 +149,26 @@
 			[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
 			[self.contentView addSubview:stickerButton];
 		}
+	}
+	
+	if (_isBanner) {
+		creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 80.0);
+		
+		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 80.0)];
+		[self.contentView addSubview:bannerImageView];
+		
+		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			bannerImageView.image = image;
+		};
+		
+		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
+		};
+		
+		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_timeline.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+							   placeholderImage:nil
+										success:successBlock
+										failure:failureBlock];
 	}
 }
 

@@ -27,6 +27,7 @@
 #import "HONPopularViewController.h"
 #import "HONSuggestedFollowViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONMatchContactsViewController.h"
 
 
 @interface HONAlertsViewController () <HONAlertItemViewCellDelegate, EGORefreshTableHeaderDelegate>
@@ -53,7 +54,9 @@
 	if ((self = [super init])) {
 		_alertItems = [NSMutableArray array];
 		
-		_defaultCaptions = @[@"Find friends",
+		_defaultCaptions = @[@"Find friends from contacts",
+							 @"Find friends from my email",
+							 @"Find friends from my phone #",
 							 @"Search",
 							 @"Suggested people"];
 		
@@ -379,6 +382,28 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goMatchPhone {
+	[[Mixpanel sharedInstance] track:@"Timeline - Match Phone"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	NSLog(@"_goMatchPhone");
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goMatchEmail {
+	[[Mixpanel sharedInstance] track:@"Timeline - Match Email"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	NSLog(@"_goMatchEmail");
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:YES]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goSearch {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Search"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -479,7 +504,7 @@
 		[_tutorialImageView addSubview:closeButton];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(33.0, ([HONAppDelegate isRetina4Inch]) ? 424.0 : 381.0, 254.0, 49.0);
+		avatarButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 416.0 : 380.0, 320.0, 64.0);
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
 		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
@@ -545,7 +570,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_alertItems count] + 4);
+	return ([_alertItems count] + 6);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -578,11 +603,11 @@
 	return (bannerImageView);
 }
 
-- (UITableViewCell *)tableView :(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.row < [_alertItems count] + 3)];
+		cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.row < [_alertItems count] + 5)];
 	
 	
 	if (indexPath.row < [_alertItems count]) {
@@ -590,7 +615,7 @@
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
-	} else if (indexPath.row < [_alertItems count] + 3) {
+	} else if (indexPath.row < [_alertItems count] + 5) {
 		[cell removeChevron];
 		cell.textLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 		cell.textLabel.textColor = [HONAppDelegate honBlueTextColor];
@@ -609,8 +634,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == [_alertItems count] + 3)
-		return ((([_alertItems count] + 3) > 6 + ((int)([HONAppDelegate isPhoneType5s]) * 2)) ? 49.0 : 0.0);
+	if (indexPath.row == [_alertItems count] + 5)
+		return ((([_alertItems count] + 5) > 7 + ((int)([HONAppDelegate isPhoneType5s]) * 2)) ? 49.0 : 0.0);
 	
 	return (49.0);
 }
@@ -620,7 +645,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row < [_alertItems count] || indexPath.row == [_alertItems count] + 3) ? nil : indexPath);
+	return ((indexPath.row < [_alertItems count] || indexPath.row == [_alertItems count] + 5) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -632,10 +657,18 @@
 			break;
 			
 		case 1:
-			[self _goSearch];
+			[self _goMatchEmail];
 			break;
 			
 		case 2:
+			[self _goMatchPhone];
+			break;
+			
+		case 3:
+			[self _goSearch];
+			break;
+			
+		case 4:
 			[self _goSuggested];
 			break;
 			

@@ -104,7 +104,7 @@
 		
 		if (emotionVO != nil) {
 			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(subjectLabel.frame.origin.x + subjectLabel.frame.size.width + 6.0, 10.0, 18.0, 18.0)];
-//			emoticonImageView.image = [UIImage imageNamed:@"emoticon_white"];
+			emoticonImageView.image = [UIImage imageNamed:@"emoticon_white"];
 			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlSmallWhite] placeholderImage:nil];
 			[self addSubview:emoticonImageView];
 		}

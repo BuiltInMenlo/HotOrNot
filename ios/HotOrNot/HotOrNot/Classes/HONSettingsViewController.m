@@ -543,8 +543,7 @@
 		else
 			[self _toggleNotifications];
 		
-//>>} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
-		} else if (alertView.tag == HONSettingsCellTypeDeactivate) {
+	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Deactivate %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

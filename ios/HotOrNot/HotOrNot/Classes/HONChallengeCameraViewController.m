@@ -519,7 +519,7 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if ([[HONAppDelegate friendsList] count] == 1 && friend_total == 0) {
+	if ([[HONAppDelegate followersList] count] == 1 && friend_total == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc]
 								  initWithTitle:@"Find Friends"
 								  message:@"Selfieclub is more fun with friends! Find some now?"

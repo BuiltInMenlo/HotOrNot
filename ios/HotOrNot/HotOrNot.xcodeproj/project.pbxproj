@@ -548,7 +548,7 @@
 		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
-		4CB03BB5173C88B40062B607 /* HONVerifyAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB03BB4173C88B40062B607 /* HONVerifyAccountViewController.m */; };
+		4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB03BB4173C88B40062B607 /* HONMatchContactsViewController.m */; };
 		4CB2902E17EE6E660099EE62 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB2902B17EE6E650099EE62 /* Default-568h@2x.png */; };
 		4CB2902F17EE6E660099EE62 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB2902C17EE6E650099EE62 /* Default.png */; };
 		4CB2903017EE6E660099EE62 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB2902D17EE6E660099EE62 /* Default@2x.png */; };
@@ -1361,8 +1361,8 @@
 		4CAF9609167D676C0036E849 /* HONVoterViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterViewCell.m; sourceTree = "<group>"; };
 		4CAF960B167D68B40036E849 /* HONVoterVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterVO.h; sourceTree = "<group>"; };
 		4CAF960C167D68B40036E849 /* HONVoterVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterVO.m; sourceTree = "<group>"; };
-		4CB03BB3173C88B40062B607 /* HONVerifyAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVerifyAccountViewController.h; sourceTree = "<group>"; };
-		4CB03BB4173C88B40062B607 /* HONVerifyAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVerifyAccountViewController.m; sourceTree = "<group>"; };
+		4CB03BB3173C88B40062B607 /* HONMatchContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMatchContactsViewController.h; sourceTree = "<group>"; };
+		4CB03BB4173C88B40062B607 /* HONMatchContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMatchContactsViewController.m; sourceTree = "<group>"; };
 		4CB2902B17EE6E650099EE62 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		4CB2902C17EE6E650099EE62 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		4CB2902D17EE6E660099EE62 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -1697,6 +1697,8 @@
 				4C56864E177CCF7B004E570F /* HONAddContactsViewController.m */,
 				4C48745616BF0E36007D901B /* HONSearchBarHeaderView.h */,
 				4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */,
+				4CB03BB3173C88B40062B607 /* HONMatchContactsViewController.h */,
+				4CB03BB4173C88B40062B607 /* HONMatchContactsViewController.m */,
 			);
 			name = "Popular / Invite";
 			sourceTree = "<group>";
@@ -1704,7 +1706,6 @@
 		4C148F7917815B9F00EBD245 /* _obsolete */ = {
 			isa = PBXGroup;
 			children = (
-				4CDFB3C5178DC74800438732 /* Verify */,
 				4C45FF4A16DED015002F1080 /* Comments */,
 				4C45FF4B16DED0B6002F1080 /* Voters */,
 			);
@@ -3005,15 +3006,6 @@
 			path = TestFlightSDK;
 			sourceTree = "<group>";
 		};
-		4CDFB3C5178DC74800438732 /* Verify */ = {
-			isa = PBXGroup;
-			children = (
-				4CB03BB3173C88B40062B607 /* HONVerifyAccountViewController.h */,
-				4CB03BB4173C88B40062B607 /* HONVerifyAccountViewController.m */,
-			);
-			name = Verify;
-			sourceTree = "<group>";
-		};
 		4CDFB3C6178DC76F00438732 /* Verify Account */ = {
 			isa = PBXGroup;
 			children = (
@@ -3940,7 +3932,7 @@
 				4CC5F89317F9123B00BCA1DE /* AFJSONRequestOperation.m in Sources */,
 				4C355481185538BC008B1F48 /* HONTimelineCellSubjectView.m in Sources */,
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
-				4CB03BB5173C88B40062B607 /* HONVerifyAccountViewController.m in Sources */,
+				4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONChallengeCameraViewController.m in Sources */,
 				4C8CBC4A179CFAA600C95189 /* TSCore.m in Sources */,
 				4C6A3E1817669D7400B6CD4D /* HONInviteUserViewCell.m in Sources */,

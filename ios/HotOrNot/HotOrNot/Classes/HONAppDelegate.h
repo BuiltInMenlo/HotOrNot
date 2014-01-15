@@ -206,14 +206,14 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 + (int)ageForDate:(NSDate *)date;
 
-+ (NSArray *)friendsList;
-+ (void)addFriendToList:(NSDictionary *)friend;
-+ (void)writeFriendsList:(NSArray *)friends;
++ (NSArray *)followersList;
++ (void)addFollower:(NSDictionary *)follower;
++ (void)writeFollowers:(NSArray *)followers;
 + (BOOL)isFollowedByUser:(int)userID;
 
-+ (NSArray *)subscribeeList;
-+ (void)addSubscribeeToList:(NSDictionary *)subscribee;
-+ (void)writeSubscribeeList:(NSArray *)subscribees;
++ (NSArray *)followingList;
++ (void)addFollowingToList:(NSDictionary *)followingUser;
++ (void)writeFollowingList:(NSArray *)followingUsers;
 + (BOOL)isFollowingUser:(int)userID;
 
 + (HONOpponentVO *)mostRecentOpponentInChallenge:(HONChallengeVO *)challengeVO byUserID:(int)userID;

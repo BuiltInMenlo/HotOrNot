@@ -92,7 +92,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -137,7 +137,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -438,7 +438,7 @@
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	BOOL isFound = NO;
-	for (HONUserVO *userVO in [HONAppDelegate subscribeeList]) {
+	for (HONUserVO *userVO in [HONAppDelegate followingList]) {
 		if (vo.userID == userVO.userID) {
 			isFound = YES;
 			[_selectedUsers addObject:vo];

@@ -144,7 +144,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -190,7 +190,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

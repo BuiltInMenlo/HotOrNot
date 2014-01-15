@@ -26,7 +26,6 @@
 #import "HONSettingsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONImagingDepictor.h"
-#import "HONRoteAPICaller.h"
 #import "HONImageLoadingView.h"
 #import "HONUserProfileGridView.h"
 #import "HONChallengeVO.h"
@@ -46,7 +45,7 @@
 @property (readonly, nonatomic, assign) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIButton *verifyButton;
-//@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONUserProfileGridView *profileGridView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -196,9 +195,6 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %d", [[self class] description], [[operation request] URL], [result count]);
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
-//			if (_userProfileType == HONUserProfileTypeUser)
-//				[HONAppDelegate writeSubscribeeList:result];
-			
 			_followingCounter = [result count];
 			[self _retrieveChallenges];
 		}
@@ -321,7 +317,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -366,7 +362,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1337,8 +1333,6 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		if (buttonIndex == 1) {
 			[self _addFriend:_userVO.userID];
-//			[[HONRoteAPICaller sharedInstance] followerUserWithUserID:_userVO.userID];
-			
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"unfollow_nonActive"] forState:UIControlStateNormal];
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"unfollow_Active"] forState:UIControlStateHighlighted];
 			[_followButton removeTarget:self action:@selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -1357,8 +1351,7 @@
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
-//			[self _removeFriend:_userVO.userID];
-//			[[HONRoteAPICaller sharedInstance] stopFollowingUserWithUserID:_userVO.userID];
+			[self _removeFriend:_userVO.userID];
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_nonActive"] forState:UIControlStateNormal];
 			[_followButton setBackgroundImage:[UIImage imageNamed:@"followUser_Active"] forState:UIControlStateHighlighted];
 			[_followButton removeTarget:self action:@selector(_goUnsubscribe) forControlEvents:UIControlEventTouchUpInside];
@@ -1452,57 +1445,6 @@
 	
 	return (tot);
 }
-
-
-/*
-- (HONOpponentVO *)_latestOpponentInChallenge {
-	HONOpponentVO *opponentVO;
-	
-	HONChallengeVO *newestChallenge = (HONChallengeVO *)[_challenges lastObject];
-	if (_userID == newestChallenge.creatorVO.userID)
-		opponentVO = newestChallenge.creatorVO;
-	
-	else {
-		NSLog(@"newestChallenge -> opponents:[%d]", [newestChallenge.challengers count]);
-		for (HONOpponentVO *vo in newestChallenge.challengers) {
-			if (_userID == vo.userID) {
-				opponentVO = vo;
-				break;
-			}
-		}
-	}
-	
-	return (opponentVO);
-}
-*/
-
-/*
-- (HONEmotionVO *)_latestChallengeEmotion {
-	HONEmotionVO *emotionVO;
-	HONOpponentVO *opponentVO = [HONAppDelegate mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID];
-	
-	BOOL isEmotionFound = NO;
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
-			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-			isEmotionFound = YES;
-			break;
-		}
-	}
-	
-	if (!isEmotionFound) {
-		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-			if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
-				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-				isEmotionFound = YES;
-				break;
-			}
-		}
-	}
-	
-	return ((isEmotionFound) ? emotionVO : nil);
-}
-*/
 
 
 @end

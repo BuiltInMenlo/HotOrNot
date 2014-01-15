@@ -319,7 +319,7 @@
 			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeSubscribeeList:result];
+				[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -372,8 +372,10 @@
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
-	[self _participantCheck];
-	[self _rebuildUI];
+	if (_challengeVO != nil) {
+		[self _participantCheck];
+		[self _rebuildUI];
+	}
 }
 
 - (void)viewDidLoad {
@@ -469,7 +471,7 @@
 	creatorHeaderView.delegate = self;
 	[_heroHolderView addSubview:creatorHeaderView];
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:34.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:20.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
 	timelineCellSubjectView.delegate = self;
 	[_heroHolderView addSubview:timelineCellSubjectView];
 	

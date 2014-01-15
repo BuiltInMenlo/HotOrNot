@@ -441,7 +441,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([date timeIntervalSinceNow] / -31536000);
 }
 
-+ (NSArray *)friendsList {
++ (NSArray *)followersList {
 	NSMutableArray *friends = [NSMutableArray array];
 	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
 		[friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -459,26 +459,26 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (@[[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
 }
 
-+ (void)addFriendToList:(NSDictionary *)friend {
++ (void)addFollower:(NSDictionary *)follower {
 	NSMutableDictionary *dict = [[HONAppDelegate infoForUser] mutableCopy];
 	NSMutableArray *friends = [[dict objectForKey:@"friends"] mutableCopy];
 	
-	[friends addObject:friend];
+	[friends addObject:follower];
 	[dict setObject:friends forKey:@"friends"];
 	
 	[HONAppDelegate writeUserInfo:[dict copy]];
 }
 
-+ (void)writeFriendsList:(NSArray *)friends {
++ (void)writeFollowers:(NSArray *)followers {
 	NSMutableDictionary *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
-	[userInfo setObject:friends forKey:@"friends"];
+	[userInfo setObject:followers forKey:@"friends"];
 	[HONAppDelegate writeUserInfo:[userInfo copy]];
 }
 
 + (BOOL)isFollowedByUser:(int)userID {
 	BOOL isFollowed = NO;
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+		for (HONUserVO *vo in [HONAppDelegate followersList]) {
 			if (vo.userID == userID) {
 				isFollowed = YES;
 				break;
@@ -489,9 +489,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (isFollowed);
 }
 
-+ (NSArray *)subscribeeList {
++ (NSArray *)followingList {
 	NSMutableArray *subscribees = [NSMutableArray array];
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"subscribees"]) {
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"following"]) {
 		[subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 														  [NSString stringWithFormat:@"%d", 0], @"points",
@@ -507,26 +507,26 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([NSArray arrayWithArray:[subscribees sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
 }
 
-+ (void)addSubscribeeToList:(NSDictionary *)subscribee {
-	NSMutableArray *friends = [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscribees"] mutableCopy];
-	[friends addObject:subscribee];
++ (void)addFollowingToList:(NSDictionary *)followingUser {
+	NSMutableArray *friends = [[[NSUserDefaults standardUserDefaults] objectForKey:@"following"] mutableCopy];
+	[friends addObject:followingUser];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[friends copy] forKey:@"subscribees"];
+	[[NSUserDefaults standardUserDefaults] setObject:[friends copy] forKey:@"following"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (void)writeSubscribeeList:(NSArray *)subscribees {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"subscribees"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"subscribees"];
++ (void)writeFollowingList:(NSArray *)followingUsers {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"following"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"following"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:subscribees forKey:@"subscribees"];
+	[[NSUserDefaults standardUserDefaults] setObject:followingUsers forKey:@"following"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (BOOL)isFollowingUser:(int)userID {
 	BOOL isFollowing = NO;
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+		for (HONUserVO *vo in [HONAppDelegate followingList]) {
 			if (vo.userID == userID) {
 				isFollowing = YES;
 				break;
@@ -1106,7 +1106,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else {
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			[HONAppDelegate writeSubscribeeList:result];
+			[HONAppDelegate writeFollowingList:result];
 			
 //			if (self.tabBarController.view.hidden)
 			if (self.tabBarController == nil)

@@ -7,6 +7,7 @@
 //
 
 
+#import "UIImageView+AFNetworking.h"
 #import "UILabel+FormattedText.h"
 
 #import "HONTimelineCellSubjectView.h"
@@ -16,7 +17,6 @@
 
 
 @interface HONTimelineCellSubjectView ()
-@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UILabel *captionLabel;
 @property (nonatomic) CGSize size;
 @property (nonatomic, strong) NSString *caption;
@@ -27,36 +27,49 @@
 @synthesize delegate = _delegate;
 
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username {
-	if ((self = [super initWithFrame:CGRectMake(0.0, offsetY, 320.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(10.0, offsetY, 320.0, 70.0)])) {
 		_username = username;
 		
-		_bgImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"captionBackground"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 24.0, 0.0, 24.0)]];
-		[self addSubview:_bgImageView];
-		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, _bgImageView.frame.size.height)];
-		_captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:22];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, self.frame.size.height)];
+		_captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:28];
 		_captionLabel.textColor = [UIColor whiteColor];
+		_captionLabel.numberOfLines = 0;
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textAlignment = NSTextAlignmentCenter;
-		[_bgImageView addSubview:_captionLabel];
+		[self addSubview:_captionLabel];
 		
 		[self _captionForSubject:subjectName];
-		_size = [[NSString stringWithFormat:@"  %@  ", _caption] boundingRectWithSize:CGSizeMake(kMAX_WIDTH, _captionLabel.frame.size.height)
-																			  options:NSStringDrawingTruncatesLastVisibleLine
-																		   attributes:@{NSFontAttributeName:_captionLabel.font}
-																			  context:nil].size;
+		
+		
+		_size = [_caption boundingRectWithSize:CGSizeMake(kMAX_WIDTH, _captionLabel.frame.size.height)
+									   options:NSStringDrawingUsesLineFragmentOrigin
+									attributes:@{NSFontAttributeName:_captionLabel.font}
+									   context:nil].size;
 		if (_size.width > kMAX_WIDTH)
-			_size = CGSizeMake(kMAX_WIDTH + 15.0, _size.height);
+			_size = CGSizeMake(kMAX_WIDTH, _size.height);
+		
+		_captionLabel.frame = CGRectMake(_captionLabel.frame.origin.x, _captionLabel.frame.origin.y, _captionLabel.frame.size.width, _size.height);
 		
 		
-		_captionLabel.frame = CGRectMake(_captionLabel.frame.origin.x, _captionLabel.frame.origin.y - 2.0, _size.width, _captionLabel.frame.size.height);
-		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, _bgImageView.frame.origin.y, _size.width, _bgImageView.frame.size.height);
-		self.frame = CGRectMake(160.0 - (_size.width * 0.5), self.frame.origin.y, _size.width, self.frame.size.height);
-		
-		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profileButton.frame = _bgImageView.frame;
-		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:profileButton];
+		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
+		if (emotionVO != nil) {
+			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, _captionLabel.frame.origin.y + _captionLabel.frame.size.height + 10.0, 94.0, 94.0)];
+			[self addSubview:emoticonImageView];
+			
+			void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+				self.frame = CGRectOffset(self.frame, 0.0, -50.0);
+				emoticonImageView.image = image;
+			};
+			
+			void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			};
+			
+			
+			[emoticonImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.urlLarge] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+									 placeholderImage:nil
+											  success:successBlock
+											  failure:failureBlock];
+		}
 	}
 	
 	return (self);
@@ -65,7 +78,6 @@
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[self.delegate timelineCellSubjectViewShowProfile:self];
 }
 
 
@@ -87,6 +99,28 @@
 	
 	if (isFound)
 		[_captionLabel setTextColor:kSPECIAL_COLOR range:NSMakeRange(0, [_captionLabel.text rangeOfString:@":"].location + 1)];
+}
+
+- (HONEmotionVO *)_creatorEmotionVO {
+	HONEmotionVO *emotionVO;
+	
+	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
+		if ([vo.hastagName isEqualToString:_caption]) {
+			emotionVO = vo;
+			break;
+		}
+	}
+	
+	if (emotionVO == nil) {
+		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
+			if ([vo.hastagName isEqualToString:_caption]) {
+				emotionVO = vo;
+				break;
+			}
+		}
+	}
+	
+	return (emotionVO);
 }
 
 @end

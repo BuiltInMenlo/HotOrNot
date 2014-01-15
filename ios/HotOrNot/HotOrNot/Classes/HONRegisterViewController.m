@@ -324,7 +324,7 @@
 			
 		} else {
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			[HONAppDelegate writeSubscribeeList:result];
+			[HONAppDelegate writeFollowingList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

@@ -106,8 +106,8 @@
 	
 	_previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_previewButton.frame = imageView.frame;
-	//>>[_previewButton addTarget:self action:(_participantGridViewType == HONParticipantGridViewTypeDetails) ? @selector(_goPreview:) : @selector(_goDetails:) forControlEvents:UIControlEventTouchUpInside];
-	[_previewButton addTarget:self action:@selector(_goPreview:) forControlEvents:UIControlEventTouchUpInside];
+	[_previewButton addTarget:self action:(_participantGridViewType == HONParticipantGridViewTypeDetails) ? @selector(_goPreview:) : @selector(_goDetails:) forControlEvents:UIControlEventTouchUpInside];
+	//[_previewButton addTarget:self action:@selector(_goPreview:) forControlEvents:UIControlEventTouchUpInside];
 	[_previewButton setTag:_participantCounter];
 	[imageHolderView addSubview:_previewButton];
 	

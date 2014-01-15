@@ -15,7 +15,7 @@
 @interface HONTimelineItemViewCell : UITableViewCell
 
 + (NSString *)cellReuseIdentifier;
-- (id)init;
+- (id)initAsBannerCell:(BOOL)isBanner;
 - (void)updateChallenge:(HONChallengeVO *)challengeVO;
 - (void)showTapOverlay;
 - (void)removeTutorialBubble;

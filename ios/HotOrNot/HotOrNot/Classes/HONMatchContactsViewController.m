@@ -1,5 +1,5 @@
 //
-//  HONVerifyAccountViewController.m
+//  HONMatchContactsViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 05.09.13.
@@ -11,26 +11,24 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONVerifyAccountViewController.h"
+#import "HONMatchContactsViewController.h"
+#import "HONHeaderView.h"
 
 
-@interface HONVerifyAccountViewController () <UIAlertViewDelegate, UITextFieldDelegate>
+@interface HONMatchContactsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, retain) UITextField *textField;
 @property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) BOOL isEmail;
 @property (nonatomic) float submitButtonOriginY;
 @end
 
-@implementation HONVerifyAccountViewController 
+@implementation HONMatchContactsViewController 
 
 - (id)initAsEmailVerify:(BOOL)isEmail {
 	if ((self = [super init])) {
 		_isEmail = isEmail;
-		
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Verification - Open", (_isEmail) ? @"Email" : @"Phone"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
 	
 	return (self);
@@ -51,10 +49,9 @@
 
 #pragma mark - Data Calls
 - (void)_submitVerify {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[[HONAppDelegate infoForUser] objectForKey:@"sms_code"], @"code",
-							_textField.text, (_isEmail) ? @"email" : @"phone", nil];
+	NSDictionary *params = @{@"userID"							: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"code"							: [[HONAppDelegate infoForUser] objectForKey:@"sms_code"],
+							 (_isEmail) ? @"email" : @"phone"	: _textField.text};
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_isEmail) ? kAPIEmailVerify : kAPIPhoneVerify);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -76,7 +73,7 @@
 			_progressHUD = nil;
 			
 		} else {
-//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -107,39 +104,42 @@
 	}];
 }
 
+
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina4Inch]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina4Inch]) ? 99.0 : 89.0)];
-	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? (_isEmail) ? @"verifyEmailText-568h@2x" : @"verifyPhoneText-568h@2x" : (_isEmail) ? @"verifyEmailText" : @"verifyPhoneText"];
-	[self.view addSubview:captionImageView];
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_Active"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:doneButton];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"Find friends from my %@", (_isEmail) ? @"email" : @"phone #"] hasTranslucency:NO];
+	[_headerView addButton:cancelButton];
+	[self.view addSubview:_headerView];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina4Inch]) ? 192.0 : 130.0, 244.0, 44.0)];
-	usernameBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
-	[self.view addSubview:usernameBGImageView];
-	
-	_textField = [[UITextField alloc] initWithFrame:CGRectMake(55.0, ([HONAppDelegate isRetina4Inch]) ? 201.0 : 138.0, 210.0, 30.0)];
+	_textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
+	//[_textField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_textField setReturnKeyType:UIReturnKeyGo];
-	[_textField setTextColor:[HONAppDelegate honBlueTextColor]];
+	[_textField setTextColor:[UIColor blackColor]];
 	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_textField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_textField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+	_textField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_textField.keyboardType = (_isEmail) ? UIKeyboardTypeEmailAddress : UIKeyboardTypePhonePad;
+	_textField.placeholder = (_isEmail) ? @"Please provide your email address" : @"Please provide your mobile #";
 	_textField.text = @"";
 	_textField.delegate = self;
 	[self.view addSubview:_textField];
+	
+	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 128.0);
+	[self.view addSubview:divider1ImageView];
+	
 	
 	_submitButtonOriginY = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height) ? [UIScreen mainScreen].bounds.size.height - 53.0 : [UIScreen mainScreen].bounds.size.height - 73.0;
 	
@@ -173,41 +173,22 @@
 	[_textField resignFirstResponder];
 }
 
-- (void)_goDone {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Verification - Done", (_isEmail) ? @"Email" : @"Phone"]
+- (void)_goCancel {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Matching - Cancel", (_isEmail) ? @"Email" : @"Phone"]
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																		 message:[NSString stringWithFormat:@"Really!? %@ is more fun with friends!", [HONAppDelegate brandedAppName]]
-																		delegate:self
-															cancelButtonTitle:@"Cancel"
-															otherButtonTitles:@"Yes, I'm Sure", nil];
-	[alertView setTag:0];
-	[alertView show];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		switch(buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Verification - Done Cancel", (_isEmail) ? @"Email" : @"Phone"]
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-				break;
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Verification - Done Confirm", (_isEmail) ? @"Email" : @"Phone"]
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[self dismissViewControllerAnimated:YES completion:nil];
-				break;
-		}
+		[[Mixpanel sharedInstance] track:@"Email Matching - Invalid Email"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[_textField becomeFirstResponder];
 	}
 }
 
@@ -233,7 +214,7 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	if ([textField.text length] > 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Verification - Entered %@", (_isEmail) ? @"Email" : @"Phone", (_isEmail) ? @"Email" : @"Phone"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Matching - Entered %@", (_isEmail) ? @"Email" : @"Phone", (_isEmail) ? @"Email" : @"Phone"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  textField.text, (_isEmail) ? @"email": @"phone", nil]];
@@ -244,7 +225,21 @@
 			_submitButton.hidden = YES;
 		}];
 		
-		[self _submitVerify];
+		
+		if (_isEmail) {
+			if ([HONAppDelegate isValidEmail:textField.text])
+				[self _submitVerify];
+			
+			else {
+				[[[UIAlertView alloc] initWithTitle:@"No email!"
+											message:@"You need to enter a valid email address!"
+										   delegate:self
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+			
+		} else
+			[self _submitVerify];
 		
 	} else
 		textField.text = @"";
@@ -255,7 +250,6 @@
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
 }
-
 
 
 @end

@@ -83,7 +83,7 @@
 			
 			
 		} else {
-			VolleyJSONLog(@"AAAAAAAAA AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];

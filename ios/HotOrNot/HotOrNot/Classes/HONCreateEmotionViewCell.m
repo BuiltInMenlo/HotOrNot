@@ -30,7 +30,7 @@
 		_emotionVO = emotionVO;
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 14.0, 37.0, 37.0)];
-		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.urlLargeBlue] placeholderImage:nil];
+		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.urlSmall] placeholderImage:nil];
 		[self.contentView addSubview:imageView];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 23.0, 200.0, 24.0)];
