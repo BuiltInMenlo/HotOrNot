@@ -152,9 +152,9 @@
 	}
 	
 	if (_isBanner) {
-		creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 80.0);
+		_timelineItemFooterView.frame = CGRectOffset(_timelineItemFooterView.frame, 0.0, -80.0);
 		
-		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 80.0)];
+		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 130.0, 320.0, 80.0)];
 		[self.contentView addSubview:bannerImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -169,6 +169,11 @@
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];
+		
+		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		bannerButton.frame = bannerImageView.frame;
+		[bannerButton addTarget:self action:@selector(_goBanner) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:bannerButton];
 	}
 }
 
@@ -221,6 +226,10 @@
 
 - (void)_goCreatorProfile {
 	[self.delegate timelineItemViewCell:self showProfileForUserID:_challengeVO.creatorVO.userID forChallenge:_challengeVO];
+}
+
+- (void)_goBanner {
+	[self.delegate timelineItemViewCell:self showBannerForChallenge:_challengeVO];
 }
 
 

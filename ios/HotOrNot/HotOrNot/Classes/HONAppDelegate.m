@@ -52,7 +52,7 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0002.json";
+NSString * const kConfigJSON = @"boot_sc0003.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";

@@ -116,7 +116,7 @@
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"Find friends from my %@", (_isEmail) ? @"email" : @"phone #"] hasTranslucency:NO];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"Enter your %@", (_isEmail) ? @"email" : @"phone #"] hasTranslucency:NO];
 	[_headerView addButton:cancelButton];
 	[self.view addSubview:_headerView];
 	

@@ -30,8 +30,19 @@
 		_emotionVO = emotionVO;
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 14.0, 37.0, 37.0)];
-		[imageView setImageWithURL:[NSURL URLWithString:_emotionVO.urlSmall] placeholderImage:nil];
 		[self.contentView addSubview:imageView];
+		
+		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			imageView.image = image;
+		};
+		
+		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		};
+		
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.urlSmall] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:successBlock
+								  failure:failureBlock];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 23.0, 200.0, 24.0)];
 		label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];

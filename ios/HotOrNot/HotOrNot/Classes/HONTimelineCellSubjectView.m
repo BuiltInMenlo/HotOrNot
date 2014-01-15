@@ -27,7 +27,7 @@
 @synthesize delegate = _delegate;
 
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username {
-	if ((self = [super initWithFrame:CGRectMake(10.0, offsetY, 320.0, 70.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(20.0, offsetY, 320.0, 70.0)])) {
 		_username = username;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, self.frame.size.height)];
@@ -53,11 +53,12 @@
 		
 		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
 		if (emotionVO != nil) {
-			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, _captionLabel.frame.origin.y + _captionLabel.frame.size.height + 10.0, 94.0, 94.0)];
+			self.frame = CGRectOffset(self.frame, 0.0, -50.0);
+			
+			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(93.0, _captionLabel.frame.origin.y + _captionLabel.frame.size.height + 10.0, 94.0, 94.0)];
 			[self addSubview:emoticonImageView];
 			
 			void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-				self.frame = CGRectOffset(self.frame, 0.0, -50.0);
 				emoticonImageView.image = image;
 			};
 			
@@ -105,7 +106,7 @@
 	HONEmotionVO *emotionVO;
 	
 	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:_caption]) {
+		if ([vo.emotionName isEqualToString:_caption]) {
 			emotionVO = vo;
 			break;
 		}
@@ -113,7 +114,7 @@
 	
 	if (emotionVO == nil) {
 		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-			if ([vo.hastagName isEqualToString:_caption]) {
+			if ([vo.emotionName isEqualToString:_caption]) {
 				emotionVO = vo;
 				break;
 			}
