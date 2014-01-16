@@ -312,6 +312,10 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:20.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	timelineCellSubjectView.delegate = self;
+	[_heroHolderView addSubview:timelineCellSubjectView];
+	
 	
 	UIButton *heroPreviewButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	heroPreviewButton.frame = CGRectMake(0.0, 0.0, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
@@ -322,10 +326,6 @@
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[_heroHolderView addSubview:creatorHeaderView];
-	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:20.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
-	timelineCellSubjectView.delegate = self;
-	[_heroHolderView addSubview:timelineCellSubjectView];
 	
 	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:kDetailsHeroImageHeight - 56.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;

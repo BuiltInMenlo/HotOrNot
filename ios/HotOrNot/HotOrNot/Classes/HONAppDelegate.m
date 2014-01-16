@@ -22,6 +22,7 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "AFJSONRequestOperation.h"
+#import "Chartboost.h"
 #import "MBProgressHUD.h"
 #import "KikAPI.h"
 #import "Reachability.h"
@@ -72,6 +73,8 @@ NSString * const kFacebookAppID = @"600550136636754";
 NSString * const kTestFlightAppToken = @"e12a9b35-36fc-481b-bb50-4c8ca3e91dc7";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
+NSString * const kChartboostAppID = @"";
+NSString * const kChartboostAppSignature = @"";
 
 //api endpts
 NSString * const kAPIChallenges = @"Challenges.php";
@@ -145,9 +148,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <AmazonServiceRequestDelegate, UAPushNotificationDelegate, BITHockeyManagerDelegate>
+@interface HONAppDelegate() <AmazonServiceRequestDelegate, BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
 #else
-@interface HONAppDelegate() <AmazonServiceRequestDelegate, UAPushNotificationDelegate>
+@interface HONAppDelegate() <AmazonServiceRequestDelegate, ChartboostDelegate, UAPushNotificationDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -1122,10 +1125,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
-- (void)_recreateImageSizes:(NSNotification *)notification {
-	[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:[HONAppDelegate cleanImagePrefixURL:[notification object]] completion:nil];
-}
-
 - (void)_uploadImagesToAWS:(NSNotification *)notification {
 	NSLog(@"_uploadImagesToAWS:[%@]", [notification object]);
 	
@@ -1236,7 +1235,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_recreateImageSizes:) name:@"RECREATE_IMAGE_SIZES" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_uploadImagesToAWS:) name:@"UPLOAD_IMAGES_TO_AWS" object:nil];
 	
@@ -1322,15 +1320,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[FBAppEvents activateApp];
 	[[UAPush shared] resetBadge];
 	
+	Chartboost *chartboost = [Chartboost sharedChartboost];
+    chartboost.appId = kChartboostAppID;
+    chartboost.appSignature = kChartboostAppSignature;
+    chartboost.delegate = self;
+	
+    [chartboost startSession];
+    [chartboost showInterstitial];
+	
 	if (_isFromBackground) {
-//		Mixpanel *mixpanel = [Mixpanel sharedInstance];
-//		[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
-//		[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-//							   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-//							   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-//							   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-//							   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
-		
 		if ([HONAppDelegate hasNetwork]) {
 			[[Mixpanel sharedInstance] track:@"App Leaving Background"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1834,6 +1832,36 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+#pragma mark - Chartboost Delegates
+- (BOOL)shouldRequestInterstitialsInFirstSession {
+	return (NO);
+}
+
+- (BOOL)shouldRequestInterstitial:(NSString *)location {
+	return (YES);
+}
+
+- (BOOL)shouldDisplayInterstitial:(NSString *)location {
+	return (YES);
+}
+
+- (void)didDismissInterstitial:(NSString *)location {
+	
+}
+
+- (void)didCloseInterstitial:(NSString *)location {
+	
+}
+
+- (void)didClickInterstitial:(NSString *)location {
+	
+}
+
+- (void)didFailToLoadInterstitial:(NSString *)location withError:(CBLoadError)error {
+	
+}
+
+
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
@@ -1843,7 +1871,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"])
 			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		
-//		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:[NSString stringWithFormat:@"%@", request.url] completion:nil];
+//		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:[NSString stringWithFormat:@"%@", request.url] preDelay:1.0 completion:nil];
 		NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:[NSString stringWithFormat:@"%@", request.url]]};
 		VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);
 		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];

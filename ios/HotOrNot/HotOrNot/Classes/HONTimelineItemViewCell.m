@@ -112,6 +112,11 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:(([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	timelineCellSubjectView.delegate = self;
+	[self.contentView addSubview:timelineCellSubjectView];
+	
+	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = _heroHolderView.frame;
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
@@ -126,10 +131,6 @@
 	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
-	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:(([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
-	timelineCellSubjectView.delegate = self;
-	[self.contentView addSubview:timelineCellSubjectView];
 	
 	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 106.0 withChallenge:_challengeVO];
 	_timelineItemFooterView.delegate = self;
@@ -176,6 +177,18 @@
 		[bannerButton addTarget:self action:@selector(_goBanner) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:bannerButton];
 	}
+}
+
+- (void)showTapOverlay {
+	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _heroHolderView.frame.size.height)];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+	[self.contentView addSubview:tappedOverlayView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		tappedOverlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[tappedOverlayView removeFromSuperview];
+	}];
 }
 
 
@@ -246,18 +259,6 @@
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
-}
-
-- (void)showTapOverlay {
-	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _heroHolderView.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
-	[self.contentView addSubview:tappedOverlayView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		tappedOverlayView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[tappedOverlayView removeFromSuperview];
-	}];
 }
 
 

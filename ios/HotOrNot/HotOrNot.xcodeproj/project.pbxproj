@@ -30,6 +30,7 @@
 		4C0C40CF162BD261007F0DA3 /* header@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C40CD162BD261007F0DA3 /* header@2x.png */; };
 		4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */; };
 		4C0C414C162C9744007F0DA3 /* icon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4149162C9743007F0DA3 /* icon_512x512.png */; };
+		4C0DFE6218883E3B00D85C38 /* libChartboost.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C0DFE5F18883E3B00D85C38 /* libChartboost.a */; };
 		4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C0EC00617FE50E7001CF22A /* Twitter.framework */; };
 		4C0F5EE317C9508000894551 /* HONCreateEmotionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE217C9508000894551 /* HONCreateEmotionViewCell.m */; };
 		4C0F5EFD17C9AB1000894551 /* overlayLoader001.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0F5EED17C9AB1000894551 /* overlayLoader001.png */; };
@@ -224,7 +225,7 @@
 		4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674F15F96FA800AA7FCE /* MessageUI.framework */; };
 		4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675015F96FA800AA7FCE /* MobileCoreServices.framework */; };
 		4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675115F96FA800AA7FCE /* Security.framework */; };
-		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; };
+		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
 		4C65419A1845216200C936CD /* tutorial_closeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6541961845216200C936CD /* tutorial_closeButton_Active.png */; };
 		4C65419B1845216200C936CD /* tutorial_closeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6541971845216200C936CD /* tutorial_closeButton_Active@2x.png */; };
@@ -739,6 +740,8 @@
 		4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHeaderView.h; sourceTree = "<group>"; };
 		4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHeaderView.m; sourceTree = "<group>"; };
 		4C0C4149162C9743007F0DA3 /* icon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_512x512.png; sourceTree = "<group>"; };
+		4C0DFE5E18883E3B00D85C38 /* Chartboost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chartboost.h; sourceTree = "<group>"; };
+		4C0DFE5F18883E3B00D85C38 /* libChartboost.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libChartboost.a; sourceTree = "<group>"; };
 		4C0EC00617FE50E7001CF22A /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		4C0F5EE117C9508000894551 /* HONCreateEmotionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateEmotionViewCell.h; sourceTree = "<group>"; };
 		4C0F5EE217C9508000894551 /* HONCreateEmotionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateEmotionViewCell.m; sourceTree = "<group>"; };
@@ -1649,6 +1652,7 @@
 				4C62652C15F96C7100AA7FCE /* Foundation.framework in Frameworks */,
 				4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */,
 				4CA6BE46174AF81B00C57CF2 /* kikapilib.a in Frameworks */,
+				4C0DFE6218883E3B00D85C38 /* libChartboost.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1701,6 +1705,15 @@
 				4CB03BB4173C88B40062B607 /* HONMatchContactsViewController.m */,
 			);
 			name = "Popular / Invite";
+			sourceTree = "<group>";
+		};
+		4C0DFE5C18883E3B00D85C38 /* Chartboost */ = {
+			isa = PBXGroup;
+			children = (
+				4C0DFE5E18883E3B00D85C38 /* Chartboost.h */,
+				4C0DFE5F18883E3B00D85C38 /* libChartboost.a */,
+			);
+			path = Chartboost;
 			sourceTree = "<group>";
 		};
 		4C148F7917815B9F00EBD245 /* _obsolete */ = {
@@ -2154,6 +2167,7 @@
 		4C62655A15F96E2900AA7FCE /* Other Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4C0DFE5C18883E3B00D85C38 /* Chartboost */,
 				4C9B926018287AED00A060B2 /* Mixpanel */,
 				4C9B922F1828127100A060B2 /* ios-image-filters */,
 				4CD9265617FBCFDF0006732D /* TestFlightSDK */,
@@ -4091,6 +4105,7 @@
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/KikAPI",
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/TestFlightSDK",
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/Mixpanel",
+					"$(SRCROOT)/HotOrNot/Other\\ Classes/Chartboost",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
@@ -4122,6 +4137,7 @@
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/KikAPI",
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/TestFlightSDK",
 					"$(SRCROOT)/HotOrNot/Other\\ Classes/Mixpanel",
+					"$(SRCROOT)/HotOrNot/Other\\ Classes/Chartboost",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;

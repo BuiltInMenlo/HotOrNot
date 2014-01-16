@@ -24,7 +24,7 @@
 #import "HONCreateChallengePreviewView.h"
 
 
-@interface HONChallengeCameraViewController () <HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>//, AmazonServiceRequestDelegate>
+@interface HONChallengeCameraViewController () <HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
@@ -96,60 +96,59 @@
 	_uploadCounter = 0;
 	
 	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
-	
-	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
-	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-	por1.contentType = @"image/jpeg";
-	
-	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
-	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.80);
-	por2.contentType = @"image/jpeg";
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:@{@"url"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
-																								@"pors"	: @[por1, por2]}];
 
-	[_previewView uploadComplete];
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-	
-	
-//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-//	@try {
-//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-//		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
-//		_por1.delegate = self;
-//		_por1.contentType = @"image/jpeg";
-//		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-//		[s3 putObject:_por1];
-//		
-//		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
-//		_por2.delegate = self;
-//		_por2.contentType = @"image/jpeg";
-//		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
-//		[s3 putObject:_por2];
-//		
-//	} @catch (AmazonClientException *exception) {
-//		NSLog(@"AWS FAIL:[%@]", exception.message);
-//		
-//		if (_progressHUD == nil)
-//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//		
-//		_progressHUD.minShowTime = kHUDTime;
-//		_progressHUD.mode = MBProgressHUDModeCustomView;
-//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-//		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-//		[_progressHUD show:NO];
-//		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+//	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+//	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
+//	por1.contentType = @"image/jpeg";
+//	
+//	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+//	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.875);
+//	por2.contentType = @"image/jpeg";
+//	
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:@{@"url"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
+//																								@"pors"	: @[por1, por2]}];
+//	[_previewView uploadComplete];
+//	
+//	if (_progressHUD != nil) {
+//		[_progressHUD hide:YES];
 //		_progressHUD = nil;
 //	}
+	
+
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	@try {
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+		_por1.delegate = self;
+		_por1.contentType = @"image/jpeg";
+		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
+		[s3 putObject:_por1];
+		
+		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+		_por2.delegate = self;
+		_por2.contentType = @"image/jpeg";
+		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
+		[s3 putObject:_por2];
+		
+	} @catch (AmazonClientException *exception) {
+		NSLog(@"AWS FAIL:[%@]", exception.message);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}
 }
 
 - (void)_submitChallenge {
@@ -189,7 +188,7 @@
 		} else {
 			_hasSubmitted = YES;
 			
-//			if (_isUploadComplete) {
+			if (_isUploadComplete) {
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 				
@@ -197,7 +196,7 @@
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 				}];
-//			}
+			}
 		}
 	}];
 }
@@ -455,7 +454,7 @@
 	}
 }
 
-/*
+
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
@@ -474,10 +473,20 @@
 		}
 
 		[_previewView uploadComplete];
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURLPrefix:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename] completion:^(NSObject *result){
+		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename] preDelay:1.0 completion:^(NSObject *result){
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
+			}
+		
+			if (_hasSubmitted) {
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				}];
 			}
 		}];
 		
@@ -524,7 +533,7 @@
 			_submitImageView = nil;
 		}];
 	}
-}*/
+}
 
 
 #pragma mark - NavigationController Delegates

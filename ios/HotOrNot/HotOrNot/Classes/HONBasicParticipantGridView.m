@@ -95,7 +95,7 @@
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 //		NSLog(@"FAILED:[%@]", error.description);
-//		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURLPrefix:opponentVO.imagePrefix completion:nil];
+//		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:opponentVO.imagePrefix completion:nil];
 		imageHolderView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile)
 			[imageHolderView addSubview:deleteButton];

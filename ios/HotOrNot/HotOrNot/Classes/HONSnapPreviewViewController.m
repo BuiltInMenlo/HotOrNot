@@ -260,12 +260,12 @@
 			[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
 			[_buttonHolderView addSubview:shoutoutButton];
 			
-			UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			moreButton.frame = CGRectMake(13.0, [UIScreen mainScreen].bounds.size.height - 50.0, 94.0, 44.0);
-			[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-			[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
-			[moreButton addTarget:self action:@selector(_goFollowUser) forControlEvents:UIControlEventTouchUpInside];
-			[self.view addSubview:moreButton];
+			UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			followButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 45.0, 94.0, 44.0);
+			[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+			[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+			[followButton addTarget:self action:@selector(_goFollowUser) forControlEvents:UIControlEventTouchUpInside];
+			[self.view addSubview:followButton];
 			
 		} else {
 			UIButton *disapproveButton = [UIButton buttonWithType:UIButtonTypeCustom];

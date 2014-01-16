@@ -14,11 +14,11 @@
 
 + (HONAPICaller *)sharedInstance;
 
-
 /**
  * Helpers
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)notifyToProcessImageSizesForURL:(NSString *)imageURL completion:(void (^)(NSObject *result))completion;
+- (void)notifyToProcessImageSizesForURL:(NSString *)imageURL preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
@@ -75,6 +75,7 @@
  *
  **/
 
+- (void)showDataErrorHUD;
 
 
 

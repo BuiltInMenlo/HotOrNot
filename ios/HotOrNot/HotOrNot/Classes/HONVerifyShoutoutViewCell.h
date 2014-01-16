@@ -19,7 +19,6 @@
 
 - (id)initAsInviteCell:(BOOL)isInviteCell;
 - (void)showTapOverlay;
-- (void)tintMe;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSIndexPath *indexPath;
@@ -33,6 +32,7 @@
 - (void)verifyShoutoutViewCellSkip:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyShoutoutViewCellShoutout:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyShoutoutViewCellMore:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
-@optional
+- (void)verifyShoutoutViewCellBanner:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyShoutoutViewCellShowPreview:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+@optional
 @end

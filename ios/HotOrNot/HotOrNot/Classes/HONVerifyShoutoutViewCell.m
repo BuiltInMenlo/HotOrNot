@@ -76,11 +76,21 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
+	
+	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	previewButton.frame = _heroImageView.frame;
+	[previewButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:previewButton];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
+	
+	
 	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
 	headerView.frame = CGRectOffset(headerView.frame, 0.0, 64.0);
 	headerView.delegate = self;
 	[self.contentView addSubview:headerView];
-	
 	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
 	[self.contentView addSubview:buttonHolderView];
@@ -106,24 +116,20 @@
 	[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:shoutoutButton];
 	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(13.0, [UIScreen mainScreen].bounds.size.height - 95.0, 94.0, 44.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
-	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:moreButton];
+	UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	followButton.frame = CGRectMake(11.0, [UIScreen mainScreen].bounds.size.height - 95.0, 94.0, 44.0);
+	[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+	[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+	[followButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:followButton];
 	
 	if (![HONAppDelegate hasTakenSelfie])
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"needSelfieHeroBubble"]]];
 	
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.25;
-	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
-	
 	if (_isInviteCell) {
 		buttonHolderView.frame = CGRectOffset(buttonHolderView.frame, 0.0, -80.0);
-		moreButton.frame = CGRectOffset(moreButton.frame, 0.0, -80.0);
+		followButton.frame = CGRectOffset(followButton.frame, 0.0, -80.0);
 		
 		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 130.0, 320.0, 80.0)];
 		[self.contentView addSubview:bannerImageView];
@@ -141,12 +147,10 @@
 										success:successBlock
 										failure:failureBlock];
 		
-		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_nonActive"] forState:UIControlStateNormal];
-		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_Active"] forState:UIControlStateHighlighted];
-		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
-		[self.contentView addSubview:approveButton];
+		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		bannerButton.frame = bannerImageView.frame;
+		[bannerButton addTarget:self action:@selector(_goBanner) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:bannerButton];
 	}
 }
 
@@ -160,21 +164,6 @@
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
 	}];
-}
-
-- (void)tintMe {
-	UIView *tintView = [[UIView alloc] initWithFrame:self.contentView.frame];
-	[self.contentView addSubview:tintView];
-	
-	CGFloat hue = (((float)(arc4random() % RAND_MAX)) / RAND_MAX);
-	CGFloat sat = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (1/2));
-	CGFloat bri = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (2/3));
-	UIColor *color = [UIColor colorWithHue:hue saturation:sat brightness:bri alpha:(2/3)];
-	
-	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:0.33];
-	[self.contentView setBackgroundColor:color];
-	[UIView commitAnimations];
 }
 
 
@@ -199,6 +188,14 @@
 	[self.delegate verifyShoutoutViewCell:self creatorProfile:_challengeVO];
 }
 
+- (void)_goPreview {
+	[self.delegate verifyShoutoutViewCellShowPreview:self forChallenge:_challengeVO];
+}
+
+- (void)_goBanner {
+	[self.delegate verifyShoutoutViewCellBanner:self forChallenge:_challengeVO];
+}
+
 
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -207,6 +204,21 @@
 		
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
+}
+
+- (void)_goTint {
+	UIView *tintView = [[UIView alloc] initWithFrame:self.contentView.frame];
+	[self.contentView addSubview:tintView];
+	
+	CGFloat hue = (((float)(arc4random() % RAND_MAX)) / RAND_MAX);
+	CGFloat sat = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (1/2));
+	CGFloat bri = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (2/3));
+	UIColor *color = [UIColor colorWithHue:hue saturation:sat brightness:bri alpha:(2/3)];
+	
+	[UIView beginAnimations:@"fade" context:nil];
+	[UIView setAnimationDuration:0.33];
+	[self.contentView setBackgroundColor:color];
+	[UIView commitAnimations];
 }
 
 
