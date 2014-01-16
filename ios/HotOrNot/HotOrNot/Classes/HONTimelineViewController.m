@@ -810,32 +810,35 @@
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
 //	NSLog(@"tableView:didEndDisplayingCell:[%@]forRowAtIndexPath:[%d]", NSStringFromCGPoint(cell.frame.origin), indexPath.section);
 	
-	if (_timelineScrollDirection == HONTimelineScrollDirectionDown) {
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-		
-		if ([HONAppDelegate isChallengeParticipant:vo] || [HONAppDelegate hasVoted:vo.challengeID])
-			[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:vo.challengeID completion:nil];
-		
-		else
-			[[HONAPICaller sharedInstance] markChallengeAsUnseenWithChallengeID:vo.challengeID completion:nil];
-		
-		
-		if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_challenges count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {
-			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
-			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
+	
+	if ([_challenges count] > 0) {
+		if (_timelineScrollDirection == HONTimelineScrollDirectionDown) {
+			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
 			
-			int cnt = 0;
-			//NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
-			for (int i=queueRange.location; i<queueRange.length; i++) {
-				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+			if ([HONAppDelegate isChallengeParticipant:vo] || [HONAppDelegate hasVoted:vo.challengeID])
+				[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:vo.challengeID completion:nil];
+			
+			else
+				[[HONAPICaller sharedInstance] markChallengeAsUnseenWithChallengeID:vo.challengeID completion:nil];
+			
+			
+			if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_challenges count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {
+				NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
+				NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
 				
-				cnt++;
-				_imageQueueLocation++;
-				if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_challenges count])
-					break;
-				
+				int cnt = 0;
+				//NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
+				for (int i=queueRange.location; i<queueRange.length; i++) {
+					[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+					
+					cnt++;
+					_imageQueueLocation++;
+					if ([imageQueue count] >= [HONAppDelegate rangeForImageQueue].length || _imageQueueLocation >= [_challenges count])
+						break;
+					
+				}
+				[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
 			}
-			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
 		}
 	}
 }
