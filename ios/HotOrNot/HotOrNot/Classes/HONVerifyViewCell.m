@@ -9,6 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyViewCell.h"
+#import "HONAPICaller.h"
 #import "HONVerifyCellHeaderView.h"
 #import "HONOpponentVO.h"
 #import "HONImageLoadingView.h"
@@ -75,7 +76,7 @@
 		
 		//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:challengeVO.creatorVO.imagePrefix];
+			[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:challengeVO.creatorVO.imagePrefix completion:nil];
 		};
 		
 		[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

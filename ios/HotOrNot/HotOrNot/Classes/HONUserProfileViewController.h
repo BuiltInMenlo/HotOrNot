@@ -11,8 +11,13 @@
 typedef enum {
 	HONUserProfileTypeUser	= 0,
 	HONUserProfileTypeOpponent
-	
 } HONUserProfileType;
+
+
+typedef enum {
+	HONUserProfileActionSheetTypeVerify = 0,
+	HONUserProfileActionSheetTypeSocial
+} HONUserProfileActionSheetType;
 
 
 typedef enum {
@@ -23,7 +28,6 @@ typedef enum {
 	HONUserProfileAlertTypeUnfollow,
 	HONUserProfileAlertTypeFlag,
 	HONUserProfileAlertTypeShowProfileBlocked
-	
 } HONUserProfileAlertType;
 
 

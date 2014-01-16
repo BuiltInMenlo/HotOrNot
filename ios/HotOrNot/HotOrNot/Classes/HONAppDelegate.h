@@ -32,7 +32,7 @@
 
 
 typedef enum {
-	HONTimelineScrollDirectionDown	= 0,	/** Challenges using same hashtag */
+	HONTimelineScrollDirectionDown = 0,	/** Challenges using same hashtag */
 	HONTimelineScrollDirectionUp,			/** Challenges of a single user */
 } HONTimelineScrollDirection;
 
@@ -48,7 +48,7 @@ typedef enum {
 
 // Push types
 typedef enum {
-	HONPushTriggerChallengeDetailsType =	1,
+	HONPushTriggerChallengeDetailsType = 1,
 	HONPushTriggerVerifyAlertDetailsType,
 	HONPushTriggerUserProfileType,
 	HONPushTriggerAddContactsType
@@ -236,7 +236,6 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)timeSinceDate:(NSDate *)date;
-+ (NSString *)formattedExpireTime:(int)seconds;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;
 

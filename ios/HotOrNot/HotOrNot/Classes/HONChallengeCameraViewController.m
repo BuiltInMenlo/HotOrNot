@@ -18,12 +18,13 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONChallengeCameraViewController.h"
+#import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
 #import "HONCreateChallengePreviewView.h"
 
 
-@interface HONChallengeCameraViewController () <HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate, AmazonServiceRequestDelegate>
+@interface HONChallengeCameraViewController () <HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>//, AmazonServiceRequestDelegate>
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
@@ -101,65 +102,54 @@
 	
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
-//	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
-//	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-//	por1.contentType = @"image/jpeg";
-//	
-//	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
-//	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.80);
-//	por2.contentType = @"image/jpeg";
-//	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:@{@"url"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
-//																								@"pors"	: @[por1, por2]}];
-//
-//	[_previewView uploadComplete];
-//	
-//	if (_progressHUD != nil) {
-//		[_progressHUD hide:YES];
-//		_progressHUD = nil;
-//	}
-//	
-//	if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		[self.imagePickerController dismissViewControllerAnimated:YES completion:^(void) {
-//			_previewView = (_isMainCamera) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage];
-//			_previewView.delegate = self;
-//			_previewView.isFirstCamera = _isFirstCamera;
-//			_previewView.isJoinChallenge = (_selfieSubmitType == HONSelfieSubmitTypeReply);
-//			[_previewView showKeyboard];
-//			
-//			[self.view addSubview:_previewView];
-//		}];
-//	}
+	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
+	por1.contentType = @"image/jpeg";
 	
-	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-	@try {
-		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
-		_por1.delegate = self;
-		_por1.contentType = @"image/jpeg";
-		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-		[s3 putObject:_por1];
-		
-		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
-		_por2.delegate = self;
-		_por2.contentType = @"image/jpeg";
-		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
-		[s3 putObject:_por2];
-		
-	} @catch (AmazonClientException *exception) {
-		NSLog(@"AWS FAIL:[%@]", exception.message);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.80);
+	por2.contentType = @"image/jpeg";
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:@{@"url"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], [_filename stringByAppendingString:kSnapLargeSuffix]],
+																								@"pors"	: @[por1, por2]}];
+
+	[_previewView uploadComplete];
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
+	
+	
+//	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+//	@try {
+//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+//		_por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-challenges"];
+//		_por1.delegate = self;
+//		_por1.contentType = @"image/jpeg";
+//		_por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
+//		[s3 putObject:_por1];
+//		
+//		_por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-challenges"];
+//		_por2.delegate = self;
+//		_por2.contentType = @"image/jpeg";
+//		_por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
+//		[s3 putObject:_por2];
+//		
+//	} @catch (AmazonClientException *exception) {
+//		NSLog(@"AWS FAIL:[%@]", exception.message);
+//		
+//		if (_progressHUD == nil)
+//			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//		
+//		_progressHUD.minShowTime = kHUDTime;
+//		_progressHUD.mode = MBProgressHUDModeCustomView;
+//		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+//		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+//		[_progressHUD show:NO];
+//		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+//		_progressHUD = nil;
+//	}
 }
 
 - (void)_submitChallenge {
@@ -177,123 +167,38 @@
 		_submitImageView.alpha = 1.0;
 	} completion:nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_selfieSubmitType == HONSelfieSubmitTypeReply) ? kAPIJoinChallenge : kAPIChallenges);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:(_selfieSubmitType == HONSelfieSubmitTypeCreate) ? kAPICreateChallenge : kAPIJoinChallenge parameters:_challengeParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+	[[HONAPICaller sharedInstance] submitChallengeWithDictionary:_challengeParams completion:^(NSObject *result){
+//		[UIView animateWithDuration:0.5 animations:^(void) {
+//			_submitImageView.alpha = 0.0;
+//		} completion:^(BOOL finished) {
+//			[_submitImageView removeFromSuperview];
+//			_submitImageView = nil;
+//		}];
 		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
+		if ([[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_dlFailed", nil);
+			_progressHUD.labelText = @"Error!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
+			_hasSubmitted = YES;
 			
-//			[UIView animateWithDuration:0.5 animations:^(void) {
-//				_submitImageView.alpha = 0.0;
-//			} completion:^(BOOL finished) {
-//				[_submitImageView removeFromSuperview];
-//				_submitImageView = nil;
-//			}];
-			
-			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = @"Error!";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
+//			if (_isUploadComplete) {
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 				
-			} else {
-				_hasSubmitted = YES;
-				
-				if (_isUploadComplete) {
-					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-					[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-					
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-					
-//						if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"volley_share"])
-//							[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];
-					}];
-				}
-			}
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				}];
+//			}
 		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_finalizeUpload {
-	NSDictionary *params = @{@"imgURL"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessChallengeImage, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIProcessChallengeImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			result = nil;
-		}
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
 	}];
 }
 
@@ -530,20 +435,27 @@
 		[alertView show];
 		
 	} else {
-		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
-									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengeID",
-									   _subjectName, @"subject", nil];
+//		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+//									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+//									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
+//									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengeID",
+//									   _subjectName, @"subject",
+//									   (_selfieSubmitType == HONSelfieSubmitTypeReply) ? kAPIJoinChallenge : kAPIChallenges, @"api_endpt", nil];
+//		_challengeParams = [params copy];
 
-		_challengeParams = [params copy];
-		NSLog(@"PARAMS:[%@]", _challengeParams);
 		
+		_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+							 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
+							 @"challenge_id"	: [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID],
+							 @"subject"			: _subjectName,
+							 @"api_endpt"		: (_selfieSubmitType == HONSelfieSubmitTypeCreate) ? kAPICreateChallenge : kAPIJoinChallenge};
+		
+		NSLog(@"PARAMS:[%@]", _challengeParams);
 		[self _submitChallenge];
 	}
 }
 
-
+/*
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
@@ -562,8 +474,13 @@
 		}
 
 		[_previewView uploadComplete];
-		[self _finalizeUpload];
-	
+		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURLPrefix:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename] completion:^(NSObject *result){
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+		}];
+		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -607,7 +524,8 @@
 			_submitImageView = nil;
 		}];
 	}
-}
+}*/
+
 
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
@@ -632,11 +550,8 @@
 	_processedImage = (isSourceImageMirrored) ? [HONImagingDepictor mirrorImage:[HONImagingDepictor createImageFromView:canvasView]] : [HONImagingDepictor createImageFromView:canvasView];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	//_previewView = (isSourceImageMirrored) ? [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_processedImage] : [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_processedImage];
 	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage asSubmittingType:_selfieSubmitType withSubject:_subjectName];
 	_previewView.delegate = self;
-//	_previewView.isFirstCamera = _isFirstCamera;
-//	_previewView.isJoinChallenge = (_selfieSubmitType == HONSelfieSubmitTypeReply);
 	[_previewView showKeyboard];
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {

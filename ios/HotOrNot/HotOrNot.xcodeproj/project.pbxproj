@@ -659,7 +659,7 @@
 		4CE03985185676290005256F /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE03981185676290005256F /* HockeySDK.framework */; };
 		4CE039861856762A0005256F /* HockeySDK.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4CE03983185676290005256F /* HockeySDK.xcconfig */; };
 		4CE039871856762A0005256F /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CE03984185676290005256F /* HockeySDKResources.bundle */; };
-		4CE0399E185727150005256F /* HONRoteAPICaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0399D185727150005256F /* HONRoteAPICaller.m */; };
+		4CE0399E185727150005256F /* HONAPICaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0399D185727150005256F /* HONAPICaller.m */; };
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
 		4CE5306817C1790900F7B4AD /* flagButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE5306417C1790900F7B4AD /* flagButton_Active.png */; };
 		4CE5306917C1790900F7B4AD /* flagButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE5306517C1790900F7B4AD /* flagButton_Active@2x.png */; };
@@ -1545,8 +1545,8 @@
 		4CE03981185676290005256F /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		4CE03983185676290005256F /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		4CE03984185676290005256F /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
-		4CE0399C185727150005256F /* HONRoteAPICaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRoteAPICaller.h; sourceTree = "<group>"; };
-		4CE0399D185727150005256F /* HONRoteAPICaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRoteAPICaller.m; sourceTree = "<group>"; };
+		4CE0399C185727150005256F /* HONAPICaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAPICaller.h; sourceTree = "<group>"; };
+		4CE0399D185727150005256F /* HONAPICaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAPICaller.m; sourceTree = "<group>"; };
 		4CE52261160D254B005F2ADC /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		4CE5306417C1790900F7B4AD /* flagButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flagButton_Active.png; sourceTree = "<group>"; };
 		4CE5306517C1790900F7B4AD /* flagButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flagButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -1998,8 +1998,8 @@
 			children = (
 				4C51010C1733002400A5D342 /* HONImagingDepictor.h */,
 				4C51010D1733002500A5D342 /* HONImagingDepictor.m */,
-				4CE0399C185727150005256F /* HONRoteAPICaller.h */,
-				4CE0399D185727150005256F /* HONRoteAPICaller.m */,
+				4CE0399C185727150005256F /* HONAPICaller.h */,
+				4CE0399D185727150005256F /* HONAPICaller.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -3858,7 +3858,7 @@
 				4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */,
 				4C0B691F179E06C200D3E12A /* HONSnapPreviewViewController.m in Sources */,
 				4C32B99B15FA6F720023A0EE /* HONVerifyShoutoutViewCell.m in Sources */,
-				4CE0399E185727150005256F /* HONRoteAPICaller.m in Sources */,
+				4CE0399E185727150005256F /* HONAPICaller.m in Sources */,
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				4C9B92491828127100A060B2 /* ImageFilter.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,

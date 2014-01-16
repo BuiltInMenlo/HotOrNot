@@ -19,6 +19,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
+#import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 
@@ -57,96 +58,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_addFriend:(int)userID {
-	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"target"	: [NSString stringWithFormat:@"%d", userID],
-							 @"auto"	: @"0"};
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIAddFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if (result != nil)
-				[HONAppDelegate writeFollowingList:result];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_removeFriend:(int)userID {
-	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"target"	: [NSString stringWithFormat:@"%d", userID]};
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIRemoveFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if (result != nil)
-				[HONAppDelegate writeFollowingList:result];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
 
 
 #pragma mark - View lifecycle
@@ -222,21 +133,28 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	if ([_selectedUsers count] > 0) {
-		for (HONPopularUserVO *vo in _selectedUsers)
-			[self _addFriend:vo.userID];
-		
-		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
-		if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
-																message:@"Get more subscribers now, tap OK."
-															   delegate:self
-													  cancelButtonTitle:@"No"
-													  otherButtonTitles:@"OK", nil];
-			[alertView setTag:0];
-			[alertView show];
+	for (HONPopularUserVO *vo in _removeUsers) {
+		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSObject *result){
+			[HONAppDelegate writeFollowingList:(NSArray *)result];
+		}];
+	}
+
+	for (HONPopularUserVO *vo in _selectedUsers) {
+		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result){
+			[HONAppDelegate writeFollowingList:(NSArray *)result];
+		}];
+	}
+	
+	
+	if ([HONAppDelegate incTotalForCounter:@"popular"] == 1 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
+															message:@"Get more subscribers now, tap OK."
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"OK", nil];
+		[alertView setTag:0];
+		[alertView show];
 			
-		}
 		
 	} else {
 //		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
@@ -265,25 +183,7 @@
 	
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
-//	for (NSDictionary *dict in [HONAppDelegate popularPeople])
-//		[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
-//
-//	for (HONPopularUserViewCell *cell in _cells)
-//		[cell toggleSelected:YES];
-
-
-// delselect all
-//	if ([_addUsers count] == [_users count]) {
-//		[_addUsers removeAllObjects];
-//
-//		for (HONPopularUserVO *vo in _users)
-//			[_removeUsers addObject:vo];
-//
-//		for (HONPopularUserViewCell *cell in _cells)
-//			[cell toggleSelected:NO];
-//
-//	} else {
-	[_removeUsers removeAllObjects];
+	
 	for (HONPopularUserVO *vo in _users) {
 		[_selectedUsers addObject:vo];
 		[_addUsers addObject:vo];
@@ -291,7 +191,6 @@
 	
 	for (HONSuggestedFollowViewCell *cell in _cells)
 		[cell toggleSelected:YES];
-//	}
 }
 
 
@@ -318,6 +217,8 @@
 			
 			[_selectedUsers removeObjectsInArray:removeVOs];
 			removeVOs = nil;
+			
+			[_removeUsers addObject:userVO];
 		}
 		
 	} else {
@@ -435,8 +336,11 @@
 			for (HONSuggestedFollowViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
-			for (HONPopularUserVO *vo in _selectedUsers)
-				[self _addFriend:vo.userID];
+			for (HONPopularUserVO *vo in _selectedUsers) {
+				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result) {
+					[HONAppDelegate writeFollowingList:(NSArray *)result];
+				}];
+			}
 			
 			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
 			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {

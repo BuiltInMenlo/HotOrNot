@@ -12,6 +12,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
+#import "HONAPICaller.h"
 #import "HONImageLoadingView.h"
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineCellSubjectView.h"
@@ -98,7 +99,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:[NSString stringWithFormat:@"%@%@", _heroOpponentVO.imagePrefix, kSnapLargeSuffix]];
+		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_heroOpponentVO.imagePrefix completion:nil];
 		_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 		[_heroImageView setImageWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
 	};

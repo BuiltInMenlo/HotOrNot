@@ -19,6 +19,7 @@
 
 #import "HONRegisterViewController.h"
 #import "HONHeaderView.h"
+#import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
 
 
@@ -98,77 +99,38 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"username"	: _username,
-							 @"password"	: _email};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPICheckNameAndEmail parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andEmail:_email completion:^(NSObject *result){
+		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 0) {
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
 			
+			if ([HONAppDelegate switchEnabledForKey:@"firstrun_camera"])
+				[self _goCamera];
+			
+			else {
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				[self _finalizeUser];
+			}
+			
+		} else {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			
+			[_progressHUD setYOffset:-80.0];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
+			_progressHUD.labelText = ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if ([[result objectForKey:@"result"] intValue] == 0) {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-				if ([HONAppDelegate switchEnabledForKey:@"firstrun_camera"])
-					[self _goCamera];
-				
-				else {
-					[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-					
-					[self _finalizeUser];
-				}
-				
-			} else {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				
-				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = ([[result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[result objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-				
-				[_usernameTextField becomeFirstResponder];
-			}
+			[_usernameTextField becomeFirstResponder];
 		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
 	}];
 }
 
@@ -194,197 +156,71 @@
 }
 
 - (void)_finalizeUser {
-	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 9],
-							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"username"	: _username,
-							 @"password"	: _email,
-							 @"age"			: _birthday,
-							 @"token"		: [HONAppDelegate deviceToken],
-							 @"imgURL"		: ([_filename length] == 0) ? [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if ([result count] != 0) {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-				[HONAppDelegate writeUserInfo:result];
-				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
-				
-				[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-				
-				Mixpanel *mixpanel = [Mixpanel sharedInstance];
-				[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
-				[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-									   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-									   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-									   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-									   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-				[self _retreiveSubscribees];
-				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-					
-					if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-					
-					else
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
-				}];
-				
-			} else {
-				int errorCode = [[result objectForKey:@"result"] intValue];
-				
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				
-				[_progressHUD setYOffset:-80.0];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Email taken!" : (errorCode == 3) ? @"Username & email taken!" : @"Unknown Error";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																@"username"	: _username,
+																@"email"	: _email,
+																@"birthday"	: _birthday,
+																@"filename"	: _filename} completion:^(NSObject *result){
+		if (result != nil) {
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
 				_progressHUD = nil;
+			}
+			
+			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+			
+			[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			
+			Mixpanel *mixpanel = [Mixpanel sharedInstance];
+			[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+								   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			[[HONAPICaller sharedInstance] retrieveFollowersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+				[HONAppDelegate writeFollowingList:(NSArray *)result];
+			}];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 				
-				if (errorCode == 2)
-					[_emailTextField becomeFirstResponder];
+				if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 				
 				else
-					[_usernameTextField becomeFirstResponder];
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@ ) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_retreiveSubscribees {
-	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	
-	[httpClient postPath:kAPIGetSubscribees parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
+			}];
+			
+		} else {
+			int errorCode = [[(NSDictionary *)result objectForKey:@"result"] intValue];
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			
+			[_progressHUD setYOffset:-80.0];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Email taken!" : (errorCode == 3) ? @"Username & email taken!" : @"Unknown Error";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-		} else {
-//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			[HONAppDelegate writeFollowingList:result];
+			if (errorCode == 2)
+				[_emailTextField becomeFirstResponder];
+			
+			else
+				[_usernameTextField becomeFirstResponder];
 		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_recreateUser {
-	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 1]};
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if ([result objectForKey:@"id"] != [NSNull null] || [result count] > 0) {
-				[HONAppDelegate writeUserInfo:result];
-				[HONImagingDepictor writeImageFromWeb:[result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
 	}];
 }
 
@@ -468,10 +304,9 @@
 	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 258.0);
 	[self.view addSubview:divider3ImageView];
 	
-	//>>
-//	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-//	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
-//	[dateComponents setYear:-[HONAppDelegate minimumAge]];
+	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+	[dateComponents setYear:-[HONAppDelegate minimumAge]];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
@@ -480,7 +315,7 @@
 	_datePicker.date = (![[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] || [[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [dateFormat dateFromString:@"1970-01-01"] : [dateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
 	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
-	_datePicker.maximumDate = [NSDate date];//>>[calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
+	_datePicker.maximumDate = [calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
 	
@@ -627,8 +462,14 @@
 	[self.splashImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
 	_filename = @"";
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil)
-		[self _recreateUser];
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
+		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){
+			if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
+				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+				[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			}
+		}];
+	}
 	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];

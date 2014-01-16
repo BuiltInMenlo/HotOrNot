@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONBasicParticipantGridView.h"
-
+#import "HONAPICaller.h"
 
 @interface HONBasicParticipantGridView () {
 	int _participantCounter;
@@ -85,9 +85,8 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
-			if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile) {//(opponentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+			if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile)
 				[imageHolderView addSubview:deleteButton];
-			}
 			
 //			if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
 //				[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
@@ -96,7 +95,10 @@
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 //		NSLog(@"FAILED:[%@]", error.description);
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:opponentVO.imagePrefix];
+//		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURLPrefix:opponentVO.imagePrefix completion:nil];
+		imageHolderView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile)
+			[imageHolderView addSubview:deleteButton];
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]

@@ -7,6 +7,7 @@
 //
 
 #import "HONAlertItemViewCell.h"
+#import "HONAPICaller.h"
 #import "HONAlertItemVO.h"
 #import "HONImageLoadingView.h"
 
@@ -55,8 +56,6 @@
 
 
 - (void)setAlertItemVO:(HONAlertItemVO *)alertItemVO {
-	NSLog(@"¡¡setAlertItemVO!! [%@]", alertItemVO.dictionary);
-	
 	_alertItemVO = alertItemVO;
 	
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 7.0, 34.0, 34.0)];
@@ -83,7 +82,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_alertItemVO.avatarPrefix];
+		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_alertItemVO.avatarPrefix completion:nil];
 	};
 	
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_alertItemVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

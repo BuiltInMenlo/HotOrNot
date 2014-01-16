@@ -10,6 +10,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
 
+#import "HONAPICaller.h"
 #import "HONSuggestedFollowViewCell.h"
 #import "HONImageLoadingView.h"
 #import "HONUserVO.h"
@@ -99,7 +100,8 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
+		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_userVO.avatarURL completion:nil];
+		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
@@ -129,7 +131,12 @@
 		[borderImageView addSubview:imageLoadingView];
 	}
 	
-	[self _retrieveUser];
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_popularUserVO.userID completion:^(NSObject *result) {
+		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
+			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
+			[self _retreiveSubscribees];
+		}
+	}];
 }
 
 - (void)toggleSelected:(BOOL)isSelected {
@@ -141,38 +148,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser {
-	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 5],
-							 @"userID"	: [NSString stringWithFormat:@"%d", _popularUserVO.userID]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			//VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if ([result objectForKey:@"id"] != nil) {
-				_userVO = [HONUserVO userWithDictionary:result];
-				[self _retreiveSubscribees];
-				
-			} else {
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if ([error.description isEqualToString:kNetErrorNoConnection]) {
-		}
-	}];
-}
-
 - (void)_retreiveSubscribees {
 	NSDictionary *params = @{@"userID"	: [NSString stringWithFormat:@"%d", _popularUserVO.userID]};
 	

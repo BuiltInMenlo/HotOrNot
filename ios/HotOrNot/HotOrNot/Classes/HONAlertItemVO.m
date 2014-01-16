@@ -17,12 +17,14 @@
 	
 	vo.dictionary = dictionary;
 	vo.alertID = [dictionary objectForKey:@"id"];
-	vo.triggerType = [[dictionary objectForKey:@"type"] intValue];
+	vo.triggerType = [[dictionary objectForKey:@"activity_type"] intValue];
 	vo.message = [dictionary objectForKey:@"message"];
 	
 	vo.userID = [[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
 	vo.username = [[dictionary objectForKey:@"user"] objectForKey:@"username"];
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[[dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]];
+	
+	vo.challengeID = [[dictionary objectForKey:@"challengeID"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

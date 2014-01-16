@@ -8,6 +8,7 @@
 
 #import "UIImageView+AFNetworking.h"
 
+#import "HONAPICaller.h"
 #import "HONTimelineCellHeaderView.h"
 #import "HONEmotionVO.h"
 
@@ -31,7 +32,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_challengeVO.creatorVO.avatarURL];
+			[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_challengeVO.creatorVO.avatarURL completion:nil];
 		};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_challengeVO.creatorVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

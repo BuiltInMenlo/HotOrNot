@@ -9,6 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyTableHeaderView.h"
+#import "HONAPICaller.h"
 
 
 @interface HONVerifyTableHeaderView ()
@@ -35,7 +36,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_opponentVO.avatarURL];
+			[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_opponentVO.avatarURL completion:nil];
 		};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

@@ -17,6 +17,19 @@ typedef enum {
 	HONSnapPreviewTypeProfile
 } HONSnapPreviewType;
 
+typedef enum {
+	HONSnapPreviewActionSheetTypeFlag = 0,
+	HONSnapPreviewActionSheetTypeMore
+} HONSnapPreviewActionSheetType;
+
+typedef enum {
+	HONSnapPreviewAlertTypeFlag = 0,
+	HONSnapPreviewAlertTypeDisprove,
+	HONSnapPreviewAlertTypeShare
+} HONSnapPreviewAlertType;
+
+
+
 @protocol HONSnapPreviewViewControllerDelegate;
 @interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate, UIActionSheetDelegate>
 - (id)initWithVerifyChallenge:(HONChallengeVO *)vo;

@@ -7,7 +7,7 @@
 //
 
 #import "UIImageView+AFNetworking.h"
-
+#import "HONAPICaller.h"
 #import "HONFollowUserViewCell.h"
 #import "HONImagingDepictor.h"
 
@@ -64,7 +64,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"RECREATE_IMAGE_SIZES" object:_userVO.avatarURL];
+		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_userVO.avatarURL completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {

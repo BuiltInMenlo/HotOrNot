@@ -10,13 +10,14 @@
 
 
 typedef enum {
-	HONAlertCellTypeNormal = 0,
-	HONAlertCellTypeInviteContacts,
-	HONAlertCellTypeInviteEmail,
-	HONAlertCellTypeInvitePhone,
-	HONAlertCellTypeSearch,
-	HONAlertCellTypeSuggested
+	HONAlertCellTypeVerify = 1,
+	HONAlertCellTypeFollow,
+	HONAlertCellTypeLike,
+	HONAlertCellTypeShoutout,
+	HONAlertCellTypeReply
 } HONAlertCellType;
+
+
 
 
 
