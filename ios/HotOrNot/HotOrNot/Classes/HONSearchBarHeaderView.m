@@ -7,7 +7,7 @@
 //
 
 #import "HONSearchBarHeaderView.h"
-
+#import "HONColorAuthority.h"
 
 @interface HONSearchBarHeaderView ()
 @property (nonatomic, strong) UIImageView *staticBGImageView;
@@ -42,7 +42,7 @@
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_searchTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
-		[_searchTextField setTextColor:[HONAppDelegate honLightGreyTextColor]];
+		[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 		[_searchTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_searchTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
@@ -69,7 +69,7 @@
 	
 	} else {
 		[_searchTextField resignFirstResponder];
-		[_searchTextField setTextColor:[HONAppDelegate honLightGreyTextColor]];
+		[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 	}
 	
 	_staticBGImageView.alpha = (isFocused) ? 1.0 : 0.85;
@@ -95,7 +95,7 @@
 	
 	
 	_searchTextField.text = @"Tap here to search";
-	[_searchTextField setTextColor:[HONAppDelegate honLightGreyTextColor]];
+	[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 0.0;
 		_staticBGImageView.alpha = 0.85;
@@ -116,7 +116,7 @@
 									  _searchTextField.text, @"query", nil]];
 	
 	if (![_searchTextField.text isEqualToString:@"@"] && ![_searchTextField.text isEqualToString:@"search for users to snap with…"])
-		[self.delegate searchBarHeader:self enteredSearch:[_searchTextField.text substringFromIndex:1]];//[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
+		[self.delegate searchBarHeader:self enteredSearch:_searchTextField.text];
 	
 	else {
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -126,9 +126,8 @@
 		
 		_searchTextField.text = @"Tap here to search";
 		_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
-		[_searchTextField setTextColor:[HONAppDelegate honLightGreyTextColor]];
+		[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 		[self.delegate searchBarHeaderCancel:self];
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	}
 }
 
@@ -151,7 +150,7 @@
 	
 	textField.text = @"";
 	textField.frame = CGRectMake(9.0, 11.0, 200.0, 24.0);
-	[_searchTextField setTextColor:[HONAppDelegate honGreyTextColor]];
+	[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
 	[self.delegate searchBarHeaderFocus:self];
 //	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:textField.text];
 }

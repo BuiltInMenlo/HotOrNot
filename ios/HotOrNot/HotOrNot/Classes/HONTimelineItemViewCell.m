@@ -35,6 +35,7 @@
 
 @implementation HONTimelineItemViewCell
 @synthesize delegate = _delegate;
+@synthesize challengeVO = _challengeVO;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));

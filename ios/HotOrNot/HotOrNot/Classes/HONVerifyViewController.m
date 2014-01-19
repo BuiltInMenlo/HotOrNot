@@ -487,9 +487,10 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	_challengeVO = challengeVO;
-	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:challengeVO.challengeID completion:^(NSObject *result){
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-	}];
+	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:challengeVO.challengeID completion:nil];
+//	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:challengeVO.challengeID completion:^(NSObject *result){
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+//	}];
 	
 	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
 	[self _removeCellForChallenge:challengeVO];

@@ -16,6 +16,7 @@
 
 #import "HONAddContactsViewController.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
@@ -574,7 +575,7 @@
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-	label.textColor = [HONAppDelegate honGreenTextColor];
+	label.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (section == 0) ? [NSString stringWithFormat:@"Friends on %@", [HONAppDelegate brandedAppName]] : @"Invite contacts";
 	[headerImageView addSubview:label];

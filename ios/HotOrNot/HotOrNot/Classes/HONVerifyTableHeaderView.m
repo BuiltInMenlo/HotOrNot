@@ -10,6 +10,7 @@
 
 #import "HONVerifyTableHeaderView.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 
 
 @interface HONVerifyTableHeaderView ()
@@ -53,7 +54,7 @@
 		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 7.0, 220.0, 19.0)];
 		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textColor = [HONAppDelegate honBlueTextColor];
+		nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
 		[self addSubview:nameLabel];
 		
@@ -65,7 +66,7 @@
 		
 		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 24.0, 265.0, 19.0)];
 		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-		messageLabel.textColor = [HONAppDelegate honBlueTextColor];
+		messageLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		messageLabel.backgroundColor = [UIColor clearColor];
 		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];
 		[self addSubview:messageLabel];

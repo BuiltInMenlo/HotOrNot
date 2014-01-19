@@ -295,14 +295,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Go Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self.navigationController popViewControllerAnimated:YES];
-}
-
 - (void)_goRefresh {
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -412,7 +404,6 @@
 }
 
 - (void)_goRemoveTutorial {
-	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {
 			_tutorialImageView.alpha = 0.0;

@@ -135,7 +135,6 @@
 	self.addedDate = nil;
 	self.updatedDate = nil;
 	self.creatorVO = nil;
-	self.challengers = nil;
 }
 
 @end

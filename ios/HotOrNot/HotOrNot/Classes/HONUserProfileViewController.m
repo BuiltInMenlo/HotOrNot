@@ -25,6 +25,7 @@
 #import "HONFAQViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONPopularViewController.h"
+#import "HONColorAuthority.h"
 #import "HONImagingDepictor.h"
 #import "HONAPICaller.h"
 #import "HONImageLoadingView.h"
@@ -376,8 +377,8 @@
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
 		
-		if (![result isEqual:[NSNull null]])
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+//		if (![result isEqual:[NSNull null]])
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 	}];
 }
 
@@ -422,6 +423,7 @@
 	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
 	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
 	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
 																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault],
 																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
@@ -617,7 +619,7 @@
 	
 	_selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 196.0, 107.0, 18.0)];
 	_selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-	_selfiesLabel.textColor = [HONAppDelegate honGreyTextColor];
+	_selfiesLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_selfiesLabel.backgroundColor = [UIColor clearColor];
 	_selfiesLabel.textAlignment = NSTextAlignmentCenter;
 	_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
@@ -625,7 +627,7 @@
 	
 	_followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, 196.0, 107.0, 18.0)];
 	_followersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-	_followersLabel.textColor = [HONAppDelegate honGreyTextColor];
+	_followersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_followersLabel.backgroundColor = [UIColor clearColor];
 	_followersLabel.textAlignment = NSTextAlignmentCenter;
 	_followersLabel.text = [NSString stringWithFormat:@"%@ Follower%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
@@ -633,7 +635,7 @@
 	
 	_followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 196.0, 107.0, 18.0)];
 	_followingLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-	_followingLabel.textColor = [HONAppDelegate honGreyTextColor];
+	_followingLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_followingLabel.backgroundColor = [UIColor clearColor];
 	_followingLabel.textAlignment = NSTextAlignmentCenter;
 	_followingLabel.text = [NSString stringWithFormat:@"%@ Following", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_followingCounter]]];
@@ -714,8 +716,8 @@
 	if (_userProfileType == HONUserProfileTypeUser) {
 		UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+		[shareFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+		[shareFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
@@ -733,8 +735,8 @@
 		
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		settingsButton.frame = CGRectMake(0.0, 0.0, 59.0, 44.0);
-		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[settingsButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+		[settingsButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+		[settingsButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[settingsButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
@@ -757,8 +759,8 @@
 	} else {
 		UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		shareButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-		[shareButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[shareButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+		[shareButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+		[shareButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[shareButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[shareButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
@@ -776,8 +778,8 @@
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-		[flagButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-		[flagButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+		[flagButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+		[flagButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 		[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];

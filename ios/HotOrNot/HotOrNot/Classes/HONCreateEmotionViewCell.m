@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCreateEmotionViewCell.h"
-
+#import "HONColorAuthority.h"
 
 @interface HONCreateEmotionViewCell()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
@@ -46,7 +46,7 @@
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 23.0, 200.0, 24.0)];
 		label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
-		label.textColor = [HONAppDelegate honBlueTextColor];
+		label.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.text = _emotionVO.hastagName;
 		[self.contentView addSubview:label];

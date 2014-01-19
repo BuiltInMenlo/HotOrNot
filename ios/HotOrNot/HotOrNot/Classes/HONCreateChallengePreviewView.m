@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCreateChallengePreviewView.h"
+#import "HONColorAuthority.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 #import "HONVolleyEmotionsPickerView.h"
@@ -172,7 +173,7 @@
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -1.0, 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
-	_placeholderLabel.textColor = [HONAppDelegate honBlueTextColor];
+	_placeholderLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 //	_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
 	_placeholderLabel.text = (_selfieSubmitType == HONSelfieSubmitTypeCreate) ? @"how do you feel?" : @"reply how you feel";
 	[_headerBGImageView addSubview:_placeholderLabel];
@@ -182,7 +183,7 @@
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[HONAppDelegate honBlueTextColor]];
+	[_subjectTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;

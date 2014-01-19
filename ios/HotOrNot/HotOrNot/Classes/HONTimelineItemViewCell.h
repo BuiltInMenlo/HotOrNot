@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
-#import "HONChallengeVO.h"
 
 @protocol HONTimelineItemViewCellDelegate;
 @interface HONTimelineItemViewCell : UITableViewCell

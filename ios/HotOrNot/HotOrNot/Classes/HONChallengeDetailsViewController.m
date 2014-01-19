@@ -25,6 +25,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 #import "HONEmotionVO.h"
@@ -359,8 +360,8 @@
 	
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinFooterButton.frame = CGRectMake(0.0, 1.0, 43.0, 44.0);
-	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-	[joinFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[joinFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[joinFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -378,8 +379,8 @@
 	
 	UIButton *shareFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
-	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-	[shareFooterButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[shareFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[shareFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -397,8 +398,8 @@
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
-	[flagButton setTitleColor:[HONAppDelegate honBlueTextColor] forState:UIControlStateNormal];
-	[flagButton setTitleColor:[HONAppDelegate honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[flagButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[flagButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];

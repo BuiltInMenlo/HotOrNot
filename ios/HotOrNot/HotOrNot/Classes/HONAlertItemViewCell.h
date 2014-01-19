@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UIImageView+AFNetworking.h"
-
 #import "HONAlertItemVO.h"
 
 @protocol HONAlertItemViewCellDelegate;

@@ -10,7 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCommentViewCell.h"
-
+#import "HONColorAuthority.h"
 
 @implementation HONCommentViewCell
 
@@ -35,7 +35,7 @@
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 13.0, 180.0, 18.0)];
 	usernameLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	usernameLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.455];
+	usernameLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];
@@ -43,7 +43,7 @@
 	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16]}];
 	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 33.0, 200.0, size.height)];
 	contentLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
-	contentLabel.textColor = [HONAppDelegate honBlueTextColor];
+	contentLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	contentLabel.backgroundColor = [UIColor clearColor];
 	contentLabel.text = _commentVO.content;
 	[self addSubview:contentLabel];

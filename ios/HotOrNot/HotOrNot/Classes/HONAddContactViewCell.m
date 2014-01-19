@@ -7,6 +7,8 @@
 //
 
 #import "HONAddContactViewCell.h"
+#import "HONColorAuthority.h"
+
 
 @interface HONAddContactViewCell ()
 @property (nonatomic, strong) UIButton *checkButton;
@@ -51,14 +53,14 @@
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 14.0, 180.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
+	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.fullName;
 	[self addSubview:nameLabel];
 	
 	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 30.0, 180.0, 18.0)];
 	contactLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	contactLabel.textColor = [HONAppDelegate honPercentGreyscaleColor:0.455];
+	contactLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
 	contactLabel.backgroundColor = [UIColor clearColor];
 	contactLabel.text = (_userVO.isSMSAvailable) ? _userVO.rawNumber : _userVO.email;
 	[self addSubview:contactLabel];

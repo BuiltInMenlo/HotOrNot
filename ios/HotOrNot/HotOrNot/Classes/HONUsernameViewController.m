@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONUsernameViewController.h"
+#import "HONColorAuthority.h"
 #import "HONHeaderView.h"
 
 
@@ -143,7 +144,7 @@
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
-	[_usernameTextField setTextColor:[HONAppDelegate honPercentGreyscaleColor:0.518]];
+	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.518]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];

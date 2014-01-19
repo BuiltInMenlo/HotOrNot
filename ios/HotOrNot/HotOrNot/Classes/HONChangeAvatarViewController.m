@@ -17,6 +17,7 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONChangeAvatarViewController.h"
+#import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 
@@ -25,9 +26,8 @@
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic) int tintIndex;
-@property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
 @end
@@ -58,34 +58,24 @@
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {
-	_uploadCounter = 0;
-    
-	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _imageFilename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
-	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
-	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-	por1.contentType = @"image/jpeg";
-	
-	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
-	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
-	por2.contentType = @"image/jpeg";
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:@{@"url"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]],
-																								@"pors"	: @[por1, por2]}];
-	[_cameraOverlayView uploadComplete];
-	[self _finalizeUser];
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-avatars" withFilename:_imageFilename completion:^(NSObject *result){
+		[_cameraOverlayView uploadComplete];
+		[self _finalizeUser];
+	}];
 }
 
 - (void)_finalizeUser {
 	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 9],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-							 @"imgURL"		: [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] stringByAppendingString:kSnapLargeSuffix]};
+							 @"imgURL"		: [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _imageFilename] stringByAppendingString:kSnapLargeSuffix]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];

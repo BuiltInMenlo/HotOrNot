@@ -2,11 +2,14 @@
 //  HONAPICaller.h
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 12/10/2013 @ 02:40 .
+//  Created by Matt Holcombe on 12/10/2013 @ 12:40.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 
 #import "HONOpponentVO.h"
 
@@ -14,11 +17,21 @@
 
 + (HONAPICaller *)sharedInstance;
 
+
 /**
- * Helpers
+ * Utility
+ **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+- (AFHTTPClient *)getHttpClientWithHMAC;
+- (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;
+- (NSMutableString *)hmacToken;
+//**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
+
+/**
+ * Images
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)notifyToProcessImageSizesForURL:(NSString *)imageURL completion:(void (^)(NSObject *result))completion;
 - (void)notifyToProcessImageSizesForURL:(NSString *)imageURL preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion;
+- (void)uploadPhotosToS3:(NSArray *)imageData intoBucket:(NSString *)bucket withFilename:(NSString *)filename completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
@@ -62,6 +75,7 @@
 - (void)followUserWithUserID:(int)userID isReciprocal:(BOOL)isMutualFollow completion:(void (^)(NSObject *result))completion;
 - (void)followUsersByUserIDWithDelimitedList:(NSString *)userIDs completion:(void (^)(NSObject *result))completion;
 - (void)followUsersByUserIDWithDelimitedList:(NSString *)userIDs isReciprocal:(BOOL)isMutualFollow completion:(void (^)(NSObject *result))completion;
+- (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
 - (void)sendDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
 - (void)sendDelimitedPhoneContacts:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
 - (void)sendEmailInvitesFromDelimitedList:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
@@ -72,11 +86,10 @@
 
 
 /**
- *
- **/
-
+ * Helpers
+ **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)showDataErrorHUD;
-
+//**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 
 @end

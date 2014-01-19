@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONCommentsViewController.h"
+#import "HONColorAuthority.h"
 #import "HONGenericRowViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
@@ -253,7 +254,7 @@
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_commentTextField setReturnKeyType:UIReturnKeySend];
-	[_commentTextField setTextColor:[HONAppDelegate honPercentGreyscaleColor:0.455]];
+	[_commentTextField setTextColor:[[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_commentTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;

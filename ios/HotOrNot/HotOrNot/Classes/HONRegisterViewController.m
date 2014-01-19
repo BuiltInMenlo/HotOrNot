@@ -18,6 +18,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONRegisterViewController.h"
+#import "HONColorAuthority.h"
 #import "HONHeaderView.h"
 #import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
@@ -38,7 +39,7 @@
 @property (nonatomic, strong) UIView *rotatingTintView;
 @property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *email;
 @property (nonatomic, strong) UITextField *usernameTextField;
@@ -72,7 +73,7 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
-		_filename = @"";
+		_imageFilename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
 		_tintIndex = 0;
@@ -135,24 +136,15 @@
 }
 
 - (void)_uploadPhotos:(UIImage *)image {
-	_filename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _imageFilename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
-	
-	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapLargeSuffix] inBucket:@"hotornot-avatars"];
-	por1.data = UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]);
-	por1.contentType = @"image/jpeg";
-	
-	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[_filename stringByAppendingString:kSnapTabSuffix] inBucket:@"hotornot-avatars"];
-	por2.data = UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85);
-	por2.contentType = @"image/jpeg";
-	
-	[self _finalizeUser];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPLOAD_IMAGES_TO_AWS" object:@{@"url"	: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [_filename stringByAppendingString:kSnapLargeSuffix]],
-																								@"pors"	: @[por1, por2]}];
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-avatars" withFilename:_imageFilename completion:^(NSObject *result){
+		[self _finalizeUser];
+	}];
 }
 
 - (void)_finalizeUser {
@@ -160,7 +152,7 @@
 																@"username"	: _username,
 																@"email"	: _email,
 																@"birthday"	: _birthday,
-																@"filename"	: _filename} completion:^(NSObject *result){
+																@"filename"	: _imageFilename} completion:^(NSObject *result){
 		if (result != nil) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -289,7 +281,7 @@
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
 	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
-	_birthdayLabel.textColor = [HONAppDelegate honPlaceholderTextColor];
+	_birthdayLabel.textColor = [[HONColorAuthority sharedInstance] honPlaceholderTextColor];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
 	_birthdayLabel.text = @"What is your birthday?";
 	[self.view addSubview:_birthdayLabel];
@@ -416,7 +408,7 @@
 #if __DEV_BUILD__ == 1
 				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
 				easterEggButton.frame = CGRectMake(154.0, 16.0, 16.0, 8.0);
-				easterEggButton.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.875];
+				easterEggButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColorByName:@"fuschia" atOpacity:0.875];
 				[easterEggButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchDown];
 				[_splashHolderView addSubview:easterEggButton];
 #endif
@@ -460,7 +452,7 @@
 	
 	_tintIndex = 0;
 	[self.splashImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
-	_filename = @"";
+	_imageFilename = @"";
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
 		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){
@@ -682,7 +674,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_filename = @"";
+	_imageFilename = @"";
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -976,7 +968,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			_filename = @"";
+			_imageFilename = @"";
 			[self.profileImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
 			
 			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);

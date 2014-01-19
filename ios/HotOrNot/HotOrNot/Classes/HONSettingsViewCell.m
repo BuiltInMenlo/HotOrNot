@@ -10,7 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSettingsViewCell.h"
-
+#import "HONColorAuthority.h"
 
 @interface HONSettingsViewCell()
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -36,7 +36,7 @@
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 21.0, 260.0, 20.0)];
 		_captionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
-		_captionLabel.textColor =  [HONAppDelegate honBlueTextColor];
+		_captionLabel.textColor =  [[HONColorAuthority sharedInstance] honBlueTextColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.text = _caption;
 		[self addSubview:_captionLabel];

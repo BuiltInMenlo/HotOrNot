@@ -22,8 +22,9 @@ const CGSize kTabSize = {80.0, 50.0};
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, strong) UIView *tabBarView;
 @property (nonatomic, retain) UIButton *homeButton;
+@property (nonatomic, retain) UIButton *messagesButton;
 @property (nonatomic, retain) UIButton *activityButton;
-@property (nonatomic, retain) UIButton *verifyButton;
+@property (nonatomic, retain) UIButton *discoverButton;
 @property (nonatomic, retain) UIButton *avatarNeededButton;
 @end
 
@@ -90,7 +91,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	bgImageView.hidden = YES;
 	
 	_homeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_homeButton.frame = CGRectMake(20.0, 0.0, kTabSize.width, kTabSize.height);
+	_homeButton.frame = CGRectMake(0.0, 0.0, kTabSize.width, kTabSize.height);
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
@@ -99,26 +100,36 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_tabHolderView addSubview:_homeButton];
 	[_homeButton setTag:0];
 	
+	_messagesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_messagesButton.frame = CGRectMake(kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
+	[_tabHolderView addSubview:_messagesButton];
+	[_messagesButton setTag:1];
+	
 	_activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_activityButton.frame = CGRectMake(40.0 + kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
+	_activityButton.frame = CGRectMake(kTabSize.width * 2.0, 0.0, kTabSize.width, kTabSize.height);
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_activityButton];
-	[_activityButton setTag:1];
+	[_activityButton setTag:2];
 	
-	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
-	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_verifyButton.frame = CGRectMake(60.0 + (kTabSize.width * 2.0), 0.0, kTabSize.width, kTabSize.height);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Tapped"]] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
-	[_tabHolderView addSubview:_verifyButton];
-	[_verifyButton setTag:2];
+	NSString *discoverTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
+	_discoverButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_discoverButton.frame = CGRectMake(kTabSize.width * 3.0, 0.0, kTabSize.width, kTabSize.height);
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[discoverTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[discoverTabPrefix stringByAppendingString:@"_Tapped"]] forState:UIControlStateHighlighted];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[discoverTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[discoverTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[discoverTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
+	[_tabHolderView addSubview:_discoverButton];
+	[_discoverButton setTag:3];
 	
 	[_homeButton setSelected:YES];
 	[self _toggleTabButtonsEnabled:YES];
@@ -192,8 +203,9 @@ const CGSize kTabSize = {80.0, 50.0};
 	switch(tabID) {
 		case 0:
 			[_homeButton setSelected:YES];
-			[_verifyButton setSelected:NO];
+			[_messagesButton setSelected:NO];
 			[_activityButton setSelected:NO];
+			[_discoverButton setSelected:NO];
 			
 			totalKey = @"timeline";
 			mpEvent = @"Timeline";
@@ -202,18 +214,31 @@ const CGSize kTabSize = {80.0, 50.0};
 			
 		case 1:
 			[_homeButton setSelected:NO];
-			[_verifyButton setSelected:NO];
+			[_messagesButton setSelected:YES];
+			[_activityButton setSelected:NO];
+			[_discoverButton setSelected:NO];
+			
+			totalKey = @"messages";
+			mpEvent = @"Messages";
+			notificationName = @"MESSAGES_TAB";
+			break;
+			
+		case 2:
+			[_homeButton setSelected:NO];
+			[_messagesButton setSelected:NO];
 			[_activityButton setSelected:YES];
+			[_discoverButton setSelected:NO];
 			
 			totalKey = @"explore";
 			mpEvent = @"Explore";
 			notificationName = @"EXPLORE_TAB";
 			break;
 			
-		case 2:
+		case 3:
 			[_homeButton setSelected:NO];
-			[_verifyButton setSelected:YES];
+			[_messagesButton setSelected:NO];
 			[_activityButton setSelected:NO];
+			[_discoverButton setSelected:YES];
 			
 			totalKey = @"verify";
 			mpEvent = @"Verify";
@@ -295,11 +320,11 @@ const CGSize kTabSize = {80.0, 50.0};
 
 - (void)_updateTabBarAB:(NSNotification *)notification {
 	NSString *verifyTabPrefix = ([[HONAppDelegate infoForABTab] objectForKey:@"tab_asset"]);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Tapped"]] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Tapped"]] forState:UIControlStateHighlighted];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_Active"]] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_discoverButton setBackgroundImage:[UIImage imageNamed:[verifyTabPrefix stringByAppendingString:@"_nonActive"]] forState:UIControlStateDisabled];
 }
 
 

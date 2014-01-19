@@ -6,14 +6,16 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIImageView+AFNetworking.h"
+
 #import "HONAlertItemViewCell.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 #import "HONAlertItemVO.h"
 #import "HONImageLoadingView.h"
 
 @interface HONAlertItemViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UIImageView *messageLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIImageView *chevronImageView;
@@ -101,14 +103,14 @@
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, size.width, 17.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
+	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _alertItemVO.username;
 	[self.contentView addSubview:nameLabel];
 	
 	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 225.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
 	messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-	messageLabel.textColor = [HONAppDelegate honLightGreyTextColor];
+	messageLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	messageLabel.backgroundColor = [UIColor clearColor];
 	messageLabel.text = _alertItemVO.message;
 	[self.contentView addSubview:messageLabel];
@@ -116,7 +118,7 @@
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 14.0, 50.0, 17.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.textColor = [HONAppDelegate honGreyTextColor];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.text = [HONAppDelegate timeSinceDate:_alertItemVO.sentDate];
 	[self addSubview:timeLabel];

@@ -2,32 +2,38 @@
 //  HONAPICaller.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 12/10/2013 @ 02:40 .
+//  Created by Matt Holcombe on 12/10/2013 @ 12:40.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
+
+#import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import <CommonCrypto/CommonHMAC.h>
+
 #import "MBProgressHUD.h"
 
 #import "HONAPICaller.h"
-
-void (^failureBlock)(AFHTTPRequestOperation *operation, NSError *error);
-void (^failureBlock)(AFHTTPRequestOperation *operation, NSError *error) = ^(AFHTTPRequestOperation *operation, NSError *error) {
-	VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[[HONAPICaller sharedInstance] class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-	
-	[[HONAPICaller sharedInstance] showDataErrorHUD];
-};
+#import "HONImagingDepictor.h"
 
 
+//void (^failureBlock)(AFHTTPRequestOperation *operation, NSError *error);
+//void (^failureBlock)(AFHTTPRequestOperation *operation, NSError *error) = ^(AFHTTPRequestOperation *operation, NSError *error) {
+//	VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[[HONAPICaller sharedInstance] class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+//	
+//	[[HONAPICaller sharedInstance] showDataErrorHUD];
+//};
 
-@interface HONAPICaller ()
+
+NSString * const kHMACKey = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
+
+
+@interface HONAPICaller () <AmazonServiceRequestDelegate>
+@property (nonatomic) int awsUploadCounter;
 @property (nonatomic, retain) MBProgressHUD *progressHUD;
 @end
 
 
 @implementation HONAPICaller
-
 static HONAPICaller *sharedInstance = nil;
 
 + (HONAPICaller *)sharedInstance {
@@ -49,7 +55,46 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 
-#pragma mark - Helpers
+#pragma mark - Utility
+- (AFHTTPClient *)getHttpClientWithHMAC {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
+	[httpClient setDefaultHeader:@"X-DEVICE" value:[HONAppDelegate deviceModel]];
+	
+	return (httpClient);
+}
+
+- (NSString *)hmacForKey:(NSString *)key AndData:(NSString *)data{
+    const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
+    const char *cData = [data cStringUsingEncoding:NSASCIIStringEncoding];
+    unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
+    CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+    
+    NSMutableString *result = [NSMutableString string];
+    for (int i=0; i<sizeof cHMAC; i++)
+        [result appendFormat:@"%02hhx", cHMAC[i]];
+		
+    return ([result copy]);
+}
+
+- (NSString *)hmacToken {
+    NSMutableString *token = [NSMutableString stringWithString:@"unknown"];
+    NSMutableString *data = [NSMutableString stringWithString:[HONAppDelegate deviceToken]];
+	
+	if( data != nil ){
+	    [data appendString:@"+"];
+	    [data appendString:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+	    
+		token = [HONAppDelegate hmacForKey:kHMACKey AndData:data];
+	    [token appendString:@"+"];
+	    [token appendString:data];
+    }
+	
+    return ([token copy]);
+}
+
+
+#pragma mark - Images
 - (void)notifyToProcessImageSizesForURL:(NSString *)imageURL completion:(void (^)(NSObject *result))completion {
 	[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:imageURL preDelay:(2/3) completion:completion];
 }
@@ -84,6 +129,46 @@ static HONAPICaller *sharedInstance = nil;
 	});
 }
 
+- (void)uploadPhotosToS3:(NSArray *)imageData intoBucket:(NSString *)bucket withFilename:(NSString *)filename completion:(void (^)(NSObject *result))completion {
+	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucket];
+	por1.data = [imageData objectAtIndex:0];
+	por1.requestTag = [NSString stringWithFormat:@"%@|%@", por1.bucket, kSnapLargeSuffix];
+	por1.contentType = @"image/jpeg";
+	por1.delegate = self;
+	
+	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapTabSuffix] inBucket:bucket];
+	por2.data = [imageData objectAtIndex:1];
+	por2.requestTag = [NSString stringWithFormat:@"%@|%@", por2.bucket, kSnapTabSuffix];
+	por2.contentType = @"image/jpeg";
+	por2.delegate = self;
+	
+	_awsUploadCounter = 0;
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	
+	@try {
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:bucket]];
+		[s3 putObject:por1];
+		[s3 putObject:por2];
+		
+	} @catch (AmazonClientException *exception) {
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+		
+		if ([bucket rangeOfString:@"hotornot-challenges"].location != NSNotFound)
+			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+	}
+	
+	if (completion)
+		completion(nil);
+}
 
 #pragma mark - Users
 - (void)checkForAvailableUsername:(NSString *)username andEmail:(NSString *)email completion:(void (^)(NSObject *result))completion {
@@ -233,7 +318,7 @@ static HONAPICaller *sharedInstance = nil;
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
 	[httpClient postPath:kAPIGetActivity parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -820,6 +905,35 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
+- (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion {
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 1],
+							 @"username"	: username};
+	
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, params);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			result = [NSArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+											  sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
 
 - (void)sendDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
@@ -977,6 +1091,63 @@ static HONAPICaller *sharedInstance = nil;
 	[_progressHUD show:NO];
 	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 	_progressHUD = nil;
+}
+
+
+#pragma mark - AWS Delegates
+- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
+	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
+	NSLog(@"\nAWS didCompleteWithResponse:\n[%@] - %@", tag, request.url);
+	
+	if ([[tag objectAtIndex:1] isEqualToString:kSnapLargeSuffix]) {
+		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"])
+			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		
+//		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:[NSString stringWithFormat:@"%@", request.url] completion:nil];
+		NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:[NSString stringWithFormat:@"%@", request.url]]};
+		VolleyJSONLog(@"%@ —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIProcessUserImage, params);
+		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+		[httpClient postPath:kAPIProcessUserImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			if (error != nil)
+				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			else
+				VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		}];
+	}
+	
+	_awsUploadCounter++;
+	if (_awsUploadCounter == 2) {
+		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+		}
+		
+		_awsUploadCounter = 0;
+	}
+}
+
+- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
+	NSLog(@"AWS didFailWithError:\n%@", [error description]);
+	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.mode = MBProgressHUDModeCustomView;
+	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+	_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
+	[_progressHUD show:NO];
+	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	_progressHUD = nil;
+	
+	if ([[tag firstObject] isEqualToString:@"hotornot-avatars"]) {
+		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+	}
 }
 
 

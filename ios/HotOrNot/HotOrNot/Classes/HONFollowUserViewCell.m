@@ -8,6 +8,7 @@
 
 #import "UIImageView+AFNetworking.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 #import "HONFollowUserViewCell.h"
 #import "HONImagingDepictor.h"
 
@@ -79,7 +80,7 @@
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 22.0, 130.0, 22.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
+	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.username;
 	[self addSubview:nameLabel];
