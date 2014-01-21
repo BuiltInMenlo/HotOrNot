@@ -804,13 +804,12 @@
 	
 	if ([_challenges count] > 0) {
 		if (_timelineScrollDirection == HONTimelineScrollDirectionDown) {
-			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-			
-			if ([HONAppDelegate isChallengeParticipant:vo] || [HONAppDelegate hasVoted:vo.challengeID])
-				[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:vo.challengeID completion:nil];
-			
-			else
-				[[HONAPICaller sharedInstance] markChallengeAsUnseenWithChallengeID:vo.challengeID completion:nil];
+//			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];			
+//			if ([HONAppDelegate isChallengeParticipant:vo] || [HONAppDelegate hasVoted:vo.challengeID])
+//				[[HONAPICaller sharedInstance] markChallengeAsSeenWithChallengeID:vo.challengeID completion:nil];
+//			
+//			else
+//				[[HONAPICaller sharedInstance] markChallengeAsUnseenWithChallengeID:vo.challengeID completion:nil];
 			
 			
 			if (indexPath.section % [HONAppDelegate rangeForImageQueue].location == 0 || [_challenges count] - _imageQueueLocation <= [HONAppDelegate rangeForImageQueue].location) {

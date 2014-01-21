@@ -88,6 +88,11 @@
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _messageVO.creatorVO.username;
 	[self.contentView addSubview:nameLabel];
+	
+	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	detailsButton.frame = CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight);
+	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchDown];
+	[self.contentView addSubview:detailsButton];
 }
 
 - (void)showTapOverlay {
@@ -104,7 +109,7 @@
 
 
 #pragma mark - Navigation
-- (void)_goMessageDetails {
+- (void)_goDetails {
 	[self.delegate messageItemViewCell:self showMessage:_messageVO];
 }
 

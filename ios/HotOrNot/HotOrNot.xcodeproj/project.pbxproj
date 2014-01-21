@@ -352,6 +352,8 @@
 		4C961371182AC60B00D0EAB2 /* icon_29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C96136E182AC60B00D0EAB2 /* icon_29x29.png */; };
 		4C961372182AC60B00D0EAB2 /* icon_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C96136F182AC60B00D0EAB2 /* icon_57x57.png */; };
 		4C961373182AC60B00D0EAB2 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C961370182AC60B00D0EAB2 /* icon_114x114.png */; };
+		4C980586188C9B2800E4FEA4 /* HONMessageDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */; };
+		4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */; };
 		4C9B92421828127100A060B2 /* BezierCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9B92321828127100A060B2 /* BezierCurve.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C9B92431828127100A060B2 /* CatmullRomSpline.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9B92341828127100A060B2 /* CatmullRomSpline.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C9B92441828127100A060B2 /* CubicBezierCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9B92371828127100A060B2 /* CubicBezierCurve.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1145,6 +1147,10 @@
 		4C96136E182AC60B00D0EAB2 /* icon_29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_29x29.png; sourceTree = "<group>"; };
 		4C96136F182AC60B00D0EAB2 /* icon_57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_57x57.png; sourceTree = "<group>"; };
 		4C961370182AC60B00D0EAB2 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
+		4C980584188C9B2800E4FEA4 /* HONMessageDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageDetailsViewController.h; sourceTree = "<group>"; };
+		4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageDetailsViewController.m; sourceTree = "<group>"; };
+		4C980587188CA02900E4FEA4 /* HONMessageReplyViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageReplyViewCell.h; sourceTree = "<group>"; };
+		4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageReplyViewCell.m; sourceTree = "<group>"; };
 		4C9B92311828127100A060B2 /* BezierCurve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierCurve.h; sourceTree = "<group>"; };
 		4C9B92321828127100A060B2 /* BezierCurve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BezierCurve.m; sourceTree = "<group>"; };
 		4C9B92331828127100A060B2 /* CatmullRomSpline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatmullRomSpline.h; sourceTree = "<group>"; };
@@ -3036,6 +3042,10 @@
 				4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */,
 				4CD42F26188B410E00264845 /* HONMessagesViewController.h */,
 				4CD42F27188B410E00264845 /* HONMessagesViewController.m */,
+				4C980587188CA02900E4FEA4 /* HONMessageReplyViewCell.h */,
+				4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */,
+				4C980584188C9B2800E4FEA4 /* HONMessageDetailsViewController.h */,
+				4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */,
 			);
 			name = Messages;
 			sourceTree = "<group>";
@@ -3919,6 +3929,7 @@
 				4C6BBC861615455000145996 /* HONSnapCameraOverlayView.m in Sources */,
 				4CCA4168181C1BDE00FC9863 /* HONChallengeDetailsGridView.m in Sources */,
 				4C8CBC4C179CFAA600C95189 /* TSEvent.m in Sources */,
+				4C980586188C9B2800E4FEA4 /* HONMessageDetailsViewController.m in Sources */,
 				4C8CBC49179CFAA600C95189 /* TSConfig.m in Sources */,
 				4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */,
 				4C7341921616C078001F9F11 /* HONFAQViewController.m in Sources */,
@@ -3989,6 +4000,7 @@
 				4C6A3E1817669D7400B6CD4D /* HONInviteUserViewCell.m in Sources */,
 				4CC5F89117F9123B00BCA1DE /* AFHTTPRequestOperation.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONAddContactViewCell.m in Sources */,
+				4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */,
 				4C8CBC4E179CFAA600C95189 /* TSLogging.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4CED1C1B177D46C100A32F2B /* NBPhoneMetaDataGenerator.m in Sources */,

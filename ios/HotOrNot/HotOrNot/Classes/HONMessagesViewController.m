@@ -18,6 +18,7 @@
 #import "HONCreateSnapButtonView.h"
 #import "HONMessageItemViewCell.h"
 #import "HONMessageVO.h"
+#import "HONMessageDetailsViewController.h"
 
 
 @interface HONMessagesViewController () <EGORefreshTableHeaderDelegate, HONMessageItemViewCellDelegate>
@@ -269,7 +270,7 @@
 }
 
 - (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
-	//	NSLog(@"**_[egoRefreshTableHeaderDidFinishTareAnimation]_**");
+//	NSLog(@"**_[egoRefreshTableHeaderDidFinishTareAnimation]_**");
 }
 
 
@@ -284,6 +285,8 @@
 	[[Mixpanel sharedInstance] track:@"Messages - Show Details"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.navigationController pushViewController:[[HONMessageDetailsViewController alloc] initWithMessage:messageVO] animated:YES];
 }
 
 
