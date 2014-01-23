@@ -51,7 +51,7 @@
 	return (self);
 }
 
-- (void)setUserVO:(HONUserVO *)userVO {
+- (void)setUserVO:(HONTrivialUserVO *)userVO {
 	_userVO = userVO;
 	
 	//NSLog(@"AVATAR:[%@]", _userVO.avatarURL);

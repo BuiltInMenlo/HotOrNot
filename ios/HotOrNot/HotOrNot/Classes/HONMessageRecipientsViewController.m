@@ -12,10 +12,9 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
-#import "HONMessageRecipientVO.h"
 #import "HONMessageRecipientViewCell.h"
 #import "HONImagePickerViewController.h"
-#import "HONUserVO.h"
+#import "HONTrivialUserVO.h"
 
 
 @interface HONMessageRecipientsViewController () <EGORefreshTableHeaderDelegate, HONMessageRecipientViewCellDelegate>
@@ -53,17 +52,17 @@
 #pragma mark - Data Calls
 - (void)_buildRecipients {
 	_followers = [NSMutableArray array];
-	for (HONUserVO *vo in [HONAppDelegate followersListWithRefresh:YES]) {
-		[_followers addObject:[HONMessageRecipientVO recipientWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", vo.userID],
-																			   @"username"	: vo.username,
-																			   @"avatar"	: vo.avatarPrefix}]];
+	for (HONTrivialUserVO *vo in [HONAppDelegate followersListWithRefresh:YES]) {
+		[_followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", vo.userID],
+																	 @"username"	: vo.username,
+																	 @"img_url"		: vo.avatarPrefix}]];
 	}
 	
 	_following = [NSMutableArray array];
-	for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
-		[_following addObject:[HONMessageRecipientVO recipientWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", vo.userID],
-																			   @"username"	: vo.username,
-																			   @"avatar"	: vo.avatarPrefix}]];
+	for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
+		[_following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", vo.userID],
+																	 @"username"	: vo.username,
+																	 @"img_url"		: vo.avatarPrefix}]];
 	}
 	
 	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
@@ -167,29 +166,29 @@
 
 
 #pragma mark - MessageRecipientViewCell Delegates
-- (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONMessageRecipientVO *)messageRecipientVO {
+- (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONTrivialUserVO *)userVO {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Message Recipients - %@elect Recipient", (isSelected) ? @"S" : @"D"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", messageRecipientVO.userID, messageRecipientVO.username], @"recipient", nil]];
+									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"recipient", nil]];
 	
 	
 	if (isSelected) {
 		BOOL isFound = NO;
-		for (HONMessageRecipientVO *vo in _selectedRecipients) {
-			if (vo.userID  == messageRecipientVO.userID) {
+		for (HONTrivialUserVO *vo in _selectedRecipients) {
+			if (vo.userID  == userVO.userID) {
 				isFound = YES;
 				break;
 			}
 		}
 		
 		if (!isFound)
-			[_selectedRecipients addObject:messageRecipientVO];
+			[_selectedRecipients addObject:userVO];
 	
 	} else {
 		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONMessageRecipientVO *vo in _selectedRecipients) {
-			if (vo.userID  == messageRecipientVO.userID)
+		for (HONTrivialUserVO *vo in _selectedRecipients) {
+			if (vo.userID  == userVO.userID)
 				[removeVOs addObject:vo];
 		}
 		
@@ -228,9 +227,9 @@
 	HONMessageRecipientViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-		HONMessageRecipientVO *vo = (indexPath.section == 0) ? (HONMessageRecipientVO *)[_followers objectAtIndex:indexPath.row] : (HONMessageRecipientVO *)[_following objectAtIndex:indexPath.row];
+		HONTrivialUserVO *vo = (indexPath.section == 0) ? (HONTrivialUserVO *)[_followers objectAtIndex:indexPath.row] : (HONTrivialUserVO *)[_following objectAtIndex:indexPath.row];
 		cell = [[HONMessageRecipientViewCell alloc] init];
-		cell.messageRecipientVO = vo;
+		cell.userVO = vo;
 	}
 	
 	cell.delegate = self;

@@ -253,6 +253,8 @@
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
+				
 				if (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeReplyChallenge)
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 				

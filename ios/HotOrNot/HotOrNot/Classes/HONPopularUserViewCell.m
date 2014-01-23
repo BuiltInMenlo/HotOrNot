@@ -21,7 +21,7 @@
 
 @implementation HONPopularUserViewCell
 @synthesize delegate = _delegate;
-@synthesize popularUserVO = _popularUserVO;
+@synthesize trivialUserVO = _trivialUserVO;
 @synthesize isSelected = _isSelected;
 
 + (NSString *)cellReuseIdentifier {
@@ -52,8 +52,8 @@
 	return (self);
 }
 
-- (void)setPopularUserVO:(HONPopularUserVO *)popularUserVO {
-	_popularUserVO = popularUserVO;
+- (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
+	_trivialUserVO = trivialUserVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
 	avatarImageView.alpha = 0.0;
@@ -68,7 +68,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_popularUserVO.avatarPrefix forAvatarBucket:YES completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_trivialUserVO.avatarPrefix forAvatarBucket:YES completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -76,7 +76,7 @@
 		} completion:nil];
 	};
 	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_popularUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_trivialUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
@@ -87,7 +87,7 @@
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _popularUserVO.username;
+	nameLabel.text = _trivialUserVO.username;
 	[self addSubview:nameLabel];
 }
 
@@ -108,7 +108,7 @@
 		_followButton.hidden = YES;
 	}];
 	
-	[self.delegate popularUserViewCell:self user:_popularUserVO toggleSelected:YES];
+	[self.delegate popularUserViewCell:self user:_trivialUserVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
@@ -119,7 +119,7 @@
 		_checkButton.hidden = YES;
 	}];
 	
-	[self.delegate popularUserViewCell:self user:_popularUserVO toggleSelected:NO];
+	[self.delegate popularUserViewCell:self user:_trivialUserVO toggleSelected:NO];
 }
 
 @end

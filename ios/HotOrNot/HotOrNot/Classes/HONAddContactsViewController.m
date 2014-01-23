@@ -17,7 +17,7 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
-#import "HONUserVO.h"
+#import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONInviteUserViewCell.h"
 #import "HONAddContactViewCell.h"
@@ -72,17 +72,11 @@
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] sendDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
-			HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
-															@"username"		: [dict objectForKey:@"username"],
-															@"avatar_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix],
-															@"points"		: @"",
-															@"total_votes"	: @"",
-															@"pokes"		: @"",
-															@"pics"			: @"",
-															@"age"			: @"",
-															@"fb_id"		: @""}];
+			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+																		  @"username"	: [dict objectForKey:@"username"],
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
 			BOOL isFound = NO;
-			for (HONUserVO *searchVO in _inAppContacts) {
+			for (HONTrivialUserVO *searchVO in _inAppContacts) {
 				if (searchVO.userID == vo.userID) {
 					isFound = YES;
 					break;
@@ -105,18 +99,12 @@
 - (void)_sendPhoneContacts {
 	[[HONAPICaller sharedInstance] sendDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
-			HONUserVO *vo = [HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
-															@"username"		: [dict objectForKey:@"username"],
-															@"avatar_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix],
-															@"points"		: @"",
-															@"total_votes"	: @"",
-															@"pokes"		: @"",
-															@"pics"			: @"",
-															@"age"			: @"",
-															@"fb_id"		: @""}];
+			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+																		  @"username"	: [dict objectForKey:@"username"],
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
 			
 			BOOL isFound = NO;
-			for (HONUserVO *searchVO in _inAppContacts) {
+			for (HONTrivialUserVO *searchVO in _inAppContacts) {
 				if (searchVO.userID == vo.userID) {
 					isFound = YES;
 					break;
@@ -138,7 +126,7 @@
 
 - (void)_followUsers {
 	NSString *userIDs = @"";
-	for (HONUserVO *vo in _selectedInAppContacts)
+	for (HONTrivialUserVO *vo in _selectedInAppContacts)
 		userIDs = [userIDs stringByAppendingFormat:@"%d|", vo.userID];
 	
 	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSObject *result){
@@ -282,11 +270,10 @@
 			email = @"";
 		
 		if ([phoneNumber length] > 0 || [email length] > 0) {
-			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			fName, @"f_name",
-																			lName, @"l_name",
-																			phoneNumber, @"phone",
-																			email, @"email", nil]];
+			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
+																			 @"l_name"	: lName,
+																			 @"phone"	: phoneNumber,
+																			 @"email"	: email}];
 			[unsortedContacts addObject:vo.dictionary];
 			
 			if (vo.isSMSAvailable)
@@ -497,7 +484,7 @@
 
 
 #pragma mark - InviteUserViewCell Delegates
-- (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+- (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	
 	_hasUpdated = YES;
 	if (isSelected){
@@ -515,8 +502,8 @@
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
 		
 		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONUserVO *vo in _selectedInAppContacts) {
-			for (HONUserVO *dropVO in _inAppContacts) {
+		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
+			for (HONTrivialUserVO *dropVO in _inAppContacts) {
 				if (vo.userID == dropVO.userID) {
 					[removeVOs addObject:vo];
 				}
@@ -588,17 +575,17 @@
 		
 		if (cell == nil) {
 			cell = [[HONInviteUserViewCell alloc] init];
-			cell.userVO = (HONUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
+			cell.userVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
-		for (HONUserVO *vo in _selectedInAppContacts) {
+		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
 			if (cell.userVO.userID == vo.userID) {
 				[cell toggleSelected:YES];
 				break;
 			}
 		}
 		
-		for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
+		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 			if (cell.userVO.userID == vo.userID) {
 				[cell toggleSelected:YES];
 				break;
@@ -647,7 +634,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	HONUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
+	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];

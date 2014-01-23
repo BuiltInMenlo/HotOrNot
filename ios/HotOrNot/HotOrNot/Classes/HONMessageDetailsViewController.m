@@ -74,6 +74,7 @@
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(8.0, 10.0, 64.0, 24.0);
@@ -149,6 +150,7 @@
 
 #pragma mark - Notifications
 - (void)_refreshMessage:(NSNotification *)notification {
+	NSLog(@"**_[_refreshMessage]_**");
 	[self _retrieveMessage];
 }
 

@@ -11,7 +11,7 @@
 @implementation HONMessageVO
 
 @synthesize dictionary;
-@synthesize messageID, statusID, status, subjectName, hashtagName, participants, replies, hasViewed, addedDate, startedDate, updatedDate;
+@synthesize messageID, statusID, status, subjectName, hashtagName, participants, viewedParticipants, replies, hasViewed, addedDate, startedDate, updatedDate;
 
 
 + (HONMessageVO *)messageWithDictionary:(NSDictionary *)dictionary {
@@ -26,11 +26,30 @@
 	vo.subjectName = [([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
 	vo.hashtagName = [@"#" stringByAppendingString:vo.subjectName];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
-	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
-	vo.updatedDate = [dateFormat dateFromString:[dictionary objectForKey:@"updated"]];
+	vo.viewedParticipants = [NSMutableArray array];
+	for (NSString *key in [[dictionary objectForKey:@"viewed"] keyEnumerator]) {
+		BOOL isFound = NO;
+		for (NSString *userID in vo.viewedParticipants) {
+			if ([key intValue] == [userID intValue]) {
+				isFound = YES;
+				break;
+			}
+		}
+		
+		if (!isFound && [[[dictionary objectForKey:@"viewed"] objectForKey:key] intValue] == 1)
+			[vo.viewedParticipants addObject:key];
+	}
+	
+	if ([[dictionary objectForKey:@"viewed"] objectForKey:[[HONAppDelegate infoForUser] objectForKey:@"id"]] != nil)
+		[vo.viewedParticipants addObject:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
+	
+	vo.hasViewed = ([vo.viewedParticipants count] > 0);
+	
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+	vo.addedDate = [dateFormatter dateFromString:[dictionary objectForKey:@"added"]];
+	vo.startedDate = [dateFormatter dateFromString:[dictionary objectForKey:@"started"]];
+	vo.updatedDate = [dateFormatter dateFromString:[dictionary objectForKey:@"updated"]];
 	
 	
 	switch (vo.statusID) {
@@ -86,17 +105,6 @@
 		[vo.participants addObject:opponentVO];
 	}
 	
-	
-	vo.hasViewed = ([vo.replies count] == 0);
-	if (!vo.hasViewed) {
-		for (NSString *key in [[dictionary objectForKey:@"viewed"] keyEnumerator]) {
-			if ([[[dictionary objectForKey:@"viewed"] objectForKey:key] intValue] == 1) {
-				vo.hasViewed = YES;
-				break;
-			}
-		}
-	}
-	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
 	
 	return (vo);
@@ -106,6 +114,7 @@
 	self.dictionary = nil;
 	self.status = nil;
 	self.participants = nil;
+	self.viewedParticipants = nil;
 	self.replies = nil;
 	self.subjectName = nil;
 	self.hashtagName = nil;

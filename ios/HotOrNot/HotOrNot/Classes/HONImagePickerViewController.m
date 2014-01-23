@@ -9,7 +9,7 @@
 
 #import "HONImagePickerViewController.h"
 #import "HONChallengeCameraViewController.h"
-#import "HONMessageRecipientVO.h"
+#import "HONTrivialUserVO.h"
 
 @interface HONImagePickerViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -47,7 +47,7 @@
 		_isMessage = YES;
 		
 		_recipients = @"";
-		for (HONMessageRecipientVO *vo in recipients)
+		for (HONTrivialUserVO *vo in recipients)
 			_recipients = [[_recipients stringByAppendingString:[NSString stringWithFormat:@"%d", vo.userID]] stringByAppendingString:@","];
 		
 		_recipients = [_recipients substringToIndex:[_recipients length] - 1];

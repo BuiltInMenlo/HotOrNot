@@ -10,10 +10,6 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <UIKit/UIKit.h>
 
-#import "HONChallengeVO.h"
-#import "HONEmotionVO.h"
-#import "HONOpponentVO.h"
-
 
 #define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/

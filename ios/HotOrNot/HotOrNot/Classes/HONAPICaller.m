@@ -428,7 +428,7 @@ static HONAPICaller *sharedInstance = nil;
 			
 		} else {
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
 			VolleyJSONLog(@"AFNetworking [-] %@: FEED TOTAL %d", [[self class] description], [result count]);
 			
 			if (completion)
@@ -1070,6 +1070,34 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Messages
+- (void)markMessageAsSeenForMessageID:(int)messageID withUsers:(NSArray *)userIDs completion:(void (^)(NSObject *result))completion {
+	for (int i=0; i<[userIDs count]; i++) {
+		NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", messageID],
+								 @"userID"		: [userIDs objectAtIndex:i]};
+		
+		VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengesMessageSeen, params);
+		AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+		[httpClient postPath:kAPIChallengesMessageSeen parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			
+			if (error != nil) {
+				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+				[[HONAPICaller sharedInstance] showDataErrorHUD];
+				
+			} else {
+				VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+				if (completion)
+					completion(result);
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+		}];
+	}
+}
+
 - (void)retrieveMessageForMessageID:(int)messageID completion:(void (^)(NSObject *result))completion {
 	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:messageID completion:completion];
 }
@@ -1077,7 +1105,7 @@ static HONAPICaller *sharedInstance = nil;
 - (void)retrieveMessagesForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
 	NSDictionary *params = @{@"userID"		: [NSString stringWithFormat:@"%d", userID]};
 	
-	VolleyJSONLog(@"%@ _retrieveChallenges —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetMessages, params);
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengesMessageSeen, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
 	[httpClient postPath:kAPIGetMessages parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -1089,7 +1117,7 @@ static HONAPICaller *sharedInstance = nil;
 			
 		} else {
 //			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
+//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
 			VolleyJSONLog(@"AFNetworking [-] %@: MESSAGES TOTAL %d", [[self class] description], [result count]);
 			
 			if (completion)
@@ -1132,32 +1160,6 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)updateMessageAsSeenForMessageID:(int)messageID completion:(void (^)(NSObject *result))completion {
-	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"challengeID"	: [NSString stringWithFormat:@"%d", messageID]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengesMessageSeen, params);
-	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallengesMessageSeen parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
-			
-			if (completion)
-				completion(result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
-}
 
 #pragma mark - Invite / Social
 - (void)followUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion {

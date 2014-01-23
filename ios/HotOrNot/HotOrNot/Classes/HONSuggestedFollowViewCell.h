@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "HONGenericAvatarViewCell.h"
-#import "HONPopularUserVO.h"
+#import "HONTrivialUserVO.h"
 
 
 @protocol HONSuggestedFollowViewCellDelegate;
@@ -17,12 +17,12 @@
 + (NSString *)cellReuseIdentifier;
 
 - (void)toggleSelected:(BOOL)isSelected;
-@property (nonatomic, retain) HONPopularUserVO *popularUserVO;
+@property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, assign) id <HONSuggestedFollowViewCellDelegate> delegate;
 @end
 
 
 @protocol HONSuggestedFollowViewCellDelegate <NSObject>
-- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONPopularUserVO *)userVO toggleSelected:(BOOL)isSelected;
+- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end
 

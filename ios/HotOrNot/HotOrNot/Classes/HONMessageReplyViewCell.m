@@ -89,6 +89,14 @@
 										success:challengeSuccessBlock
 										failure:challengeFailureBlock];
 	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 25.0, 100.0, 14.0)];
+	subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
+	subjectLabel.textAlignment = NSTextAlignmentCenter;
+	subjectLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = _messageReplyVO.subjectName;
+	[self.contentView addSubview:subjectLabel];
+	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isAuthor) ? 7.0 : 255.0, 17.0, 50.0, 14.0)];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 	timeLabel.textAlignment = (_isAuthor) ? NSTextAlignmentLeft : NSTextAlignmentRight;

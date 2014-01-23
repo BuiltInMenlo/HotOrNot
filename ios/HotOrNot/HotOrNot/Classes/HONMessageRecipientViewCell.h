@@ -8,17 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONMessageRecipientVO.h"
+#import "HONTrivialUserVO.h"
 
 @protocol HONMessageRecipientViewCellDelegate;
 @interface HONMessageRecipientViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
-@property (nonatomic, strong) HONMessageRecipientVO *messageRecipientVO;
+@property (nonatomic, strong) HONTrivialUserVO *userVO;
 @property (nonatomic, assign) id <HONMessageRecipientViewCellDelegate> delegate;
 @end
 
 
 @protocol HONMessageRecipientViewCellDelegate <NSObject>
-- (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONMessageRecipientVO *)messageRecipientVO;
+- (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONTrivialUserVO *)userVO;
 @end

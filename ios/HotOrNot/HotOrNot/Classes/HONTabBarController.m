@@ -12,6 +12,7 @@
 #import "HONTabBarController.h"
 #import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
+#import "HONChallengeVO.h"
 #import "HONChangeAvatarViewController.h"
 
 const CGSize kTabSize = {80.0, 50.0};

@@ -12,6 +12,7 @@
 #import "HONFollowersViewController.h"
 #import "HONFollowUserViewCell.h"
 #import "HONUserVO.h"
+#import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
 #import "HONUserProfileViewController.h"
 
@@ -63,15 +64,9 @@
 				[users addObject:[dict objectForKey:@"user"]];
 			
 			for (NSDictionary *dict in [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
-				[_subscribers addObject:[HONUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
-																		@"points"		: @"0",
-																		@"total_votes"	: @"0",
-																		@"pokes"		: @"0",
-																		@"pics"			: @"0",
-																		@"age"			: @"0",
-																		@"username"		: [dict objectForKey:@"username"],
-																		@"fb_id"		: @"",
-																		@"avatar_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
+				[_subscribers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
+																			   @"username"	: [dict objectForKey:@"username"],
+																			   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
 			[_tableView reloadData];
 		}
 	}];
@@ -163,7 +158,7 @@
 	if (cell == nil)
 		cell = [[HONFollowUserViewCell alloc] init];
 	
-	HONUserVO *vo = (HONUserVO *)[_subscribers objectAtIndex:indexPath.row];
+	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row];
 	
 	cell.userVO = vo;
 	cell.delegate = self;
@@ -194,7 +189,7 @@
 	bgImageView.backgroundColor = [UIColor whiteColor];
 	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = ((HONUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID;
+	userPofileViewController.userID = ((HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row]).userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];

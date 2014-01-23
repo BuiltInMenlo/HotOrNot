@@ -27,5 +27,6 @@
 
 @property (nonatomic, retain) HONOpponentVO *creatorVO;
 @property (nonatomic, retain) NSMutableArray *participants;
+@property (nonatomic, retain) NSMutableArray *viewedParticipants;
 @property (nonatomic, retain) NSMutableArray *replies;
 @end

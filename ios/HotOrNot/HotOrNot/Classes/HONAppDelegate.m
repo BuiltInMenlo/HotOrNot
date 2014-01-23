@@ -36,13 +36,14 @@
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
+#import "HONUserVO.h"
+#import "HONTrivialUserVO.h"
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONAlertsViewController.h"
 #import "HONMessagesViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONUserVO.h"
 #import "HONUsernameViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
@@ -366,15 +367,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
-		[followers addObject:[HONUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
-															 @"points"		: [NSString stringWithFormat:@"%d", 0],
-															 @"total_votes"	: [NSString stringWithFormat:@"%d", 0],
-															 @"pokes"		: [NSString stringWithFormat:@"%d", 0],
-															 @"pics"		: [NSString stringWithFormat:@"%d", 0],
-															 @"age"			: [NSString stringWithFormat:@"%d", 0],
-															 @"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
-															 @"fb_id"		: @"",
-															 @"avatar_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
+		[followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
+																	@"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
+																	@"img_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
 		
 	}
 	
@@ -400,7 +395,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (BOOL)isFollowedByUser:(int)userID {
 	BOOL isFollowed = NO;
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONUserVO *vo in [HONAppDelegate followersListWithRefresh:NO]) {
+		for (HONTrivialUserVO *vo in [HONAppDelegate followersListWithRefresh:NO]) {
 			if (vo.userID == userID) {
 				isFollowed = YES;
 				break;
@@ -421,15 +416,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"following"]) {
-		[following addObject:[HONUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
-															 @"points"		: [NSString stringWithFormat:@"%d", 0],
-															 @"total_votes"	: [NSString stringWithFormat:@"%d", 0],
-															 @"pokes"		: [NSString stringWithFormat:@"%d", 0],
-															 @"pics"		: [NSString stringWithFormat:@"%d", 0],
-															 @"age"			: [NSString stringWithFormat:@"%d", 0],
-															 @"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
-															 @"fb_id"		: @"",
-															 @"avatar_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
+		[following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
+																	@"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
+																	@"img_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
 	}
 	
 	return ([NSArray arrayWithArray:[following sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
@@ -454,7 +443,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (BOOL)isFollowingUser:(int)userID {
 	BOOL isFollowing = NO;
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
+		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 			if (vo.userID == userID) {
 				isFollowing = YES;
 				break;
@@ -535,7 +524,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:100] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;

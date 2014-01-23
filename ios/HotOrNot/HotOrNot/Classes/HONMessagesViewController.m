@@ -65,8 +65,8 @@
 			[_messages addObject:vo];
 		}
 		
-		[_tableView reloadData];
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[_tableView reloadData];
 	 }];
 }
 
@@ -264,8 +264,13 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (!messageVO.hasViewed)
-		[[HONAPICaller sharedInstance] updateMessageAsSeenForMessageID:messageVO.messageID completion:nil];
+	if (!messageVO.hasViewed) {
+		NSMutableArray *userIDs = [NSMutableArray array];
+		for (HONOpponentVO *vo in messageVO.participants)
+			[userIDs addObject:[NSString stringWithFormat:@"%d", vo.userID]];
+		
+		[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID withUsers:userIDs completion:nil];
+	}
 	
 	[cell updateAsSeen];
 	[self.navigationController pushViewController:[[HONMessageDetailsViewController alloc] initWithMessage:messageVO] animated:YES];

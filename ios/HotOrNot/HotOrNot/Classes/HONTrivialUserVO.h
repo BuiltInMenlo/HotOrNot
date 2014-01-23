@@ -1,15 +1,15 @@
 //
-//  HONPopularUserVO.h
+//  HONTrivialUserVO.h
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 9/25/13 @ 6:09 PM.
-//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 01/23/2014 @ 09:43 .
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@interface HONPopularUserVO : NSObject
-+ (HONPopularUserVO *)userWithDictionary:(NSDictionary *)dictionary;
+@interface HONTrivialUserVO : NSObject
++ (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

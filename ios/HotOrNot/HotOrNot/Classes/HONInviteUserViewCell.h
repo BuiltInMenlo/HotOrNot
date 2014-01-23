@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONUserVO.h"
+#import "HONTrivialUserVO.h"
 
 
 @protocol HONInviteUserViewCellDelegate;
@@ -16,10 +16,10 @@
 + (NSString *)cellReuseIdentifier;
 
 - (void)toggleSelected:(BOOL)isSelected;
-@property (nonatomic, retain) HONUserVO *userVO;
+@property (nonatomic, retain) HONTrivialUserVO *userVO;
 @property (nonatomic, assign) id <HONInviteUserViewCellDelegate> delegate;
 @end
 
 @protocol HONInviteUserViewCellDelegate <NSObject>
-- (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected;
+- (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end

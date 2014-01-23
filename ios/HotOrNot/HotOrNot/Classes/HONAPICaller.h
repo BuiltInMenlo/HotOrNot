@@ -115,10 +115,10 @@ extern NSString * const kAPIChallengesMessageSeen;
 /**
  * Messages
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+- (void)markMessageAsSeenForMessageID:(int)messageID withUsers:(NSArray *)userIDs completion:(void (^)(NSObject *result))completion;
 - (void)retrieveMessageForMessageID:(int)messageID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveMessagesForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)submitNewMessageWithDictionary:(NSDictionary *)dict completion:(void (^)(NSObject *result))completion;
-- (void)updateMessageAsSeenForMessageID:(int)messageID completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

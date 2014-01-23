@@ -13,6 +13,8 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONImageLoadingView.h"
+#import "HONChallengeVO.h"
+#import "HONEmotionVO.h"
 #import "HONUserVO.h"
 #import "HONImagingDepictor.h"
 
@@ -31,7 +33,7 @@
 
 @implementation HONSuggestedFollowViewCell
 @synthesize delegate = _delegate;
-@synthesize popularUserVO = _popularUserVO;
+@synthesize trivialUserVO = _trivialUserVO;
 
 
 + (NSString *)cellReuseIdentifier {
@@ -86,8 +88,8 @@
 	return (self);
 }
 
-- (void)setPopularUserVO:(HONPopularUserVO *)popularUserVO {
-	_popularUserVO = popularUserVO;
+- (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
+	_trivialUserVO = trivialUserVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 5.0, 33.0, 33.0)];
 	[self.contentView addSubview:avatarImageView];
@@ -108,7 +110,7 @@
 		} completion:nil];
 	};
 	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_popularUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_trivialUserVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
@@ -118,7 +120,7 @@
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _popularUserVO.username;
+	nameLabel.text = _trivialUserVO.username;
 	[self.contentView addSubview:nameLabel];
 	
 	for (int i=0; i<2; i++) {
@@ -131,11 +133,11 @@
 		[borderImageView addSubview:imageLoadingView];
 	}
 	
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_popularUserVO.userID completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSObject *result) {
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
 			
-			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_popularUserVO.userID completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_trivialUserVO.userID completion:^(NSObject *result){
 				_totalFollowing = [(NSArray *)result count];
 				
 				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
@@ -154,12 +156,12 @@
 					cnt = 0;
 					for (HONChallengeVO *vo in _challenges) {
 						NSString *imgPrefix = @"";
-						if (vo.creatorVO.userID == _popularUserVO.userID)
+						if (vo.creatorVO.userID == _trivialUserVO.userID)
 							imgPrefix = vo.creatorVO.imagePrefix;
 						
 						else {
 							for (HONOpponentVO *opponentVO in vo.challengers) {
-								if (opponentVO.userID == _popularUserVO.userID)
+								if (opponentVO.userID == _trivialUserVO.userID)
 									imgPrefix = opponentVO.imagePrefix;
 							}
 						}
@@ -202,7 +204,7 @@
 		_followButton.hidden = YES;
 	}];
 	
-	[self.delegate followViewCell:self user:_popularUserVO toggleSelected:YES];
+	[self.delegate followViewCell:self user:_trivialUserVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
@@ -213,7 +215,7 @@
 		_checkButton.hidden = YES;
 	}];
 	
-	[self.delegate followViewCell:self user:_popularUserVO toggleSelected:NO];
+	[self.delegate followViewCell:self user:_trivialUserVO toggleSelected:NO];
 }
 
 

@@ -12,6 +12,7 @@
 
 #import "HONTimelineCellSubjectView.h"
 #import "HONFontAllocator.h"
+#import "HONEmotionVO.h"
 
 #define kMAX_WIDTH 280.0f
 #define kSPECIAL_COLOR [UIColor colorWithRed:0.424 green:1.000 blue:0.000 alpha:1.0]

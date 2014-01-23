@@ -11,7 +11,7 @@
 
 #import "HONPopularViewController.h"
 #import "HONPopularUserViewCell.h"
-#import "HONPopularUserVO.h"
+#import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONUserProfileViewController.h"
@@ -73,7 +73,7 @@
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSObject *result){
 		_users = [NSMutableArray array];
 		for (NSDictionary *dict in (NSArray *)result) {
-			[_users addObject:[HONPopularUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			[_users addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																	 @"username"	: [dict objectForKey:@"username"],
 																	 @"img_url"		: [dict objectForKey:@"avatar_url"]}]];
 		}
@@ -90,7 +90,7 @@
 				
 				_users = [NSMutableArray array];
 				for (NSDictionary *dict in [HONAppDelegate searchUsers])
-					[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
+					[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 				
 			} else {
 				[_progressHUD hide:YES];
@@ -115,7 +115,7 @@
 	_cells = [NSMutableArray array];
 	
 	for (NSDictionary *dict in [HONAppDelegate searchUsers])
-		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
+		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
 	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectAllButton.frame = CGRectMake(10.0, 10.0, 74.0, 24.0);
@@ -182,10 +182,10 @@
 		[HONAppDelegate writeFollowingList:(NSArray *)result];
 	};
 	
-	for (HONPopularUserVO *vo in _removeUsers)
+	for (HONTrivialUserVO *vo in _removeUsers)
 		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:completionBlock];
 
-	for (HONPopularUserVO *vo in _selectedUsers)
+	for (HONTrivialUserVO *vo in _selectedUsers)
 		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:completionBlock];
 	
 	
@@ -217,7 +217,7 @@
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
 
-	for (HONPopularUserVO *vo in _users) {
+	for (HONTrivialUserVO *vo in _users) {
 		[_selectedUsers addObject:vo];
 		[_addUsers addObject:vo];
 	}
@@ -228,21 +228,21 @@
 
 
 #pragma mark - PopularUserViewCell Delegates
-- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONPopularUserVO *)popularUserVO toggleSelected:(BOOL)isSelected {
+- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected {
 	if ([HONAppDelegate hasTakenSelfie]) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - %@elect%@", (isSelected) ? @"Des" : @"S", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - @%@", popularUserVO.userID, popularUserVO.username], @"celeb", nil]];
+										  [NSString stringWithFormat:@"%d - @%@", trivialUserVO.userID, trivialUserVO.username], @"celeb", nil]];
 		
 		_hasUpdated = YES;
 		if (isSelected) {
-			[_selectedUsers addObject:popularUserVO];
+			[_selectedUsers addObject:trivialUserVO];
 			
 		} else {
 			NSMutableArray *removeVOs = [NSMutableArray array];
-			for (HONPopularUserVO *vo in _selectedUsers) {
-				for (HONPopularUserVO *dropVO in _users) {
+			for (HONTrivialUserVO *vo in _selectedUsers) {
+				for (HONTrivialUserVO *dropVO in _users) {
 					if ([vo.username isEqualToString:dropVO.username]) {
 						[removeVOs addObject:vo];
 					}
@@ -252,7 +252,7 @@
 			[_selectedUsers removeObjectsInArray:removeVOs];
 			removeVOs = nil;
 			
-			[_removeUsers addObject:popularUserVO];
+			[_removeUsers addObject:trivialUserVO];
 		}
 		
 	} else {
@@ -274,7 +274,7 @@
 - (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView {
 	_users = [NSMutableArray array];
 	for (NSDictionary *dict in [HONAppDelegate searchUsers])
-		[_users addObject:[HONPopularUserVO userWithDictionary:dict]];
+		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
 	[_tableView reloadData];
 }
@@ -306,14 +306,14 @@
 	if (cell == nil)
 		cell = [[HONPopularUserViewCell alloc] init];
 	
-	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
-	cell.popularUserVO = vo;
+	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_users objectAtIndex:indexPath.row];
+	cell.trivialUserVO = vo;
 	[cell toggleSelected:[HONAppDelegate isFollowingUser:vo.userID]];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	BOOL isFound = NO;
-	for (HONUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
+	for (HONTrivialUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
 		if (vo.userID == userVO.userID) {
 			isFound = YES;
 			[_selectedUsers addObject:vo];
@@ -344,7 +344,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	HONPopularUserVO *vo = [_users objectAtIndex:indexPath.row];
+	HONTrivialUserVO *vo = [_users objectAtIndex:indexPath.row];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = vo.userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -378,12 +378,12 @@
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
 			for (NSDictionary *dict in [HONAppDelegate searchUsers])
-				[_selectedUsers addObject:[HONPopularUserVO userWithDictionary:dict]];
+				[_selectedUsers addObject:[HONTrivialUserVO userWithDictionary:dict]];
 			
 			for (HONPopularUserViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
-			for (HONPopularUserVO *vo in _selectedUsers) {
+			for (HONTrivialUserVO *vo in _selectedUsers) {
 				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^void(NSObject *result) {
 					[HONAppDelegate writeFollowingList:(NSArray *)result];
 				}];
