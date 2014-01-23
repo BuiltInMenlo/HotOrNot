@@ -12,7 +12,7 @@
 @implementation HONCommentVO
 
 @synthesize dictionary;
-@synthesize commentID, challengeID, userID, fbID, username, avatarURL, userScore, content, addedDate;
+@synthesize commentID, challengeID, userID, fbID, username, avatarPrefix, userScore, content, addedDate;
 
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary {
 	HONCommentVO *vo = [[HONCommentVO alloc] init];
@@ -23,7 +23,7 @@
 	vo.userID = [[dictionary objectForKey:@"user_id"] intValue];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarURL = [dictionary objectForKey:@"img_url"];
+	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
 	vo.userScore = [[dictionary objectForKey:@"score"] intValue];
 	vo.content = [dictionary objectForKey:@"text"];
 	
@@ -38,7 +38,7 @@
 	self.dictionary = nil;
 	self.fbID = nil;
 	self.username = nil;
-	self.avatarURL = nil;
+	self.avatarPrefix = nil;
 	self.content = nil;
 	self.addedDate = nil;
 }

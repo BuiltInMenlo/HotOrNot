@@ -10,7 +10,7 @@
 
 @implementation HONCelebVO
 @synthesize dictionary;
-@synthesize userID, fullName, username, avatarURL;
+@synthesize userID, fullName, username, avatarPrefix;
 
 + (HONCelebVO *)celebWithDictionary:(NSDictionary *)dictionary {
 	HONCelebVO *vo = [[HONCelebVO alloc] init];
@@ -19,7 +19,7 @@
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.fullName = [dictionary objectForKey:@"full_name"];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarURL = [dictionary objectForKey:@"avatar_url"];
+	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"avatar_url"]];
 	
 	return (vo);
 }
@@ -28,7 +28,7 @@
 	self.dictionary = nil;
 	self.fullName = nil;
 	self.username = nil;
-	self.avatarURL = nil;
+	self.avatarPrefix = nil;
 }
 
 @end

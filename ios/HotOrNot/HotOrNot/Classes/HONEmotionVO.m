@@ -23,9 +23,6 @@
 	vo.urlPrefix = [dictionary objectForKey:@"img"];
 	vo.urlLarge = [vo.urlPrefix stringByAppendingString:@"-l.png"];
 	vo.urlSmall = [vo.urlPrefix stringByAppendingString:@"-s.png"];
-//	vo.urlLargeBlue = [vo.urlPrefix stringByAppendingString:@"-lg_blue.png"];
-//	vo.urlSmallBlue = [vo.urlPrefix stringByAppendingString:@"-sm_blue.png"];
-//	vo.urlSmallWhite = [vo.urlPrefix stringByAppendingString:@"-sm_white.png"];
 	vo.price = [[dictionary objectForKey:@"price"] floatValue];
 	vo.isFree = (vo.price == 0.0);
 	
@@ -39,9 +36,6 @@
 	self.urlPrefix = nil;
 	self.urlLarge = nil;
 	self.urlSmall = nil;
-//	self.urlLargeBlue = nil;
-//	self.urlSmallBlue = nil;
-//	self.urlSmallWhite = nil;
 }
 
 @end

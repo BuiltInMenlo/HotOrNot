@@ -19,9 +19,6 @@
 @property (nonatomic, retain) NSString *urlPrefix;
 @property (nonatomic, retain) NSString *urlLarge;
 @property (nonatomic, retain) NSString *urlSmall;
-//@property (nonatomic, retain) NSString *urlLargeBlue;
-//@property (nonatomic, retain) NSString *urlSmallBlue;
-//@property (nonatomic, retain) NSString *urlSmallWhite;
 @property (nonatomic) CGFloat price;
 @property (nonatomic) BOOL isFree;
 @end

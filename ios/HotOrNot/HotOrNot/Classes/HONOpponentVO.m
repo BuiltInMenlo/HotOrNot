@@ -11,7 +11,7 @@
 @implementation HONOpponentVO
 
 @synthesize dictionary;
-@synthesize userID, subjectName, username, avatarURL, imagePrefix, joinedDate, score, birthday;
+@synthesize userID, subjectName, username, avatarPrefix, imagePrefix, joinedDate, score, birthday;
 
 + (HONOpponentVO *)opponentWithDictionary:(NSDictionary *)dictionary {
 	HONOpponentVO *vo = [[HONOpponentVO alloc] init];
@@ -22,7 +22,7 @@
 	vo.username = [dictionary objectForKey:@"username"];
 	
 	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
-	vo.avatarURL = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
+	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -38,7 +38,7 @@
 	self.dictionary = nil;
 	self.subjectName = nil;
 	self.username = nil;
-	self.avatarURL = nil;
+	self.avatarPrefix = nil;
 	self.imagePrefix = nil;
 	self.joinedDate = nil;
 }

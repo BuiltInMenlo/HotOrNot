@@ -22,7 +22,7 @@
 	_commentVO = commentVO;
 	
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 38.0, 38.0)];
-	[userImageView setImageWithURL:[NSURL URLWithString:_commentVO.avatarURL] placeholderImage:nil];
+	[userImageView setImageWithURL:[NSURL URLWithString:_commentVO.avatarPrefix] placeholderImage:nil];
 	[self addSubview:userImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 60.0, 16.0)];

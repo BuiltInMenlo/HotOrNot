@@ -39,7 +39,7 @@
 - (void)setMessageVO:(HONMessageVO *)messageVO {
 	_messageVO = messageVO;
 	
-	NSString *avatarPrefix = ((HONOpponentVO *)[_messageVO.participants lastObject]).avatarURL;
+	NSString *avatarPrefix = ((HONOpponentVO *)[_messageVO.participants lastObject]).avatarPrefix;
 	NSString *username = ((HONOpponentVO *)[_messageVO.participants lastObject]).username;
 		
 	_unviewedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emoticon_blue"]];

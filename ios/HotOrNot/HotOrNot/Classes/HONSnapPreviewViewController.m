@@ -153,7 +153,7 @@
 	
 	//NSLog(@"AVATAR:[%@]", [_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:[_opponentVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:[_opponentVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	[headerView addSubview:avatarImageView];
 	
 	CGSize size;

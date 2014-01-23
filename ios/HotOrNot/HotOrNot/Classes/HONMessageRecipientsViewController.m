@@ -55,14 +55,14 @@
 	for (HONUserVO *vo in [HONAppDelegate followersListWithRefresh:YES]) {
 		[_followers addObject:[HONMessageRecipientVO recipientWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", vo.userID],
 																			   @"username"	: vo.username,
-																			   @"avatar"	: vo.avatarURL}]];
+																			   @"avatar"	: vo.avatarPrefix}]];
 	}
 	
 	_following = [NSMutableArray array];
 	for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 		[_following addObject:[HONMessageRecipientVO recipientWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", vo.userID],
 																			   @"username"	: vo.username,
-																			   @"avatar"	: vo.avatarURL}]];
+																			   @"avatar"	: vo.avatarPrefix}]];
 	}
 	
 	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];

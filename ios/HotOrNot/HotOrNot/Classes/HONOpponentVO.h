@@ -15,7 +15,7 @@
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) NSString *avatarURL;
+@property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic, retain) NSString *imagePrefix;
 @property (nonatomic, retain) NSDate *joinedDate;
 @property (nonatomic, retain) NSDate *birthday;

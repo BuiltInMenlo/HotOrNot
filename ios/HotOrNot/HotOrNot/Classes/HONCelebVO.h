@@ -16,5 +16,5 @@
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *fullName;
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) NSString *avatarURL;
+@property (nonatomic, retain) NSString *avatarPrefix;
 @end

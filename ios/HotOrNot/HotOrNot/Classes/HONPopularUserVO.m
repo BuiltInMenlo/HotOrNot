@@ -11,14 +11,14 @@
 @implementation HONPopularUserVO
 
 @synthesize dictionary;
-@synthesize userID, username, imageURL;
+@synthesize userID, username, avatarPrefix;
 
 + (HONPopularUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONPopularUserVO *vo = [[HONPopularUserVO alloc] init];
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];	
-	vo.imageURL = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
+	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
 	
 	return (vo);
 }
@@ -26,7 +26,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.username = nil;
-	self.imageURL = nil;
+	self.avatarPrefix = nil;
 }
 
 @end

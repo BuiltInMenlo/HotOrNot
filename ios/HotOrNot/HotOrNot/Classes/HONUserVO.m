@@ -14,7 +14,7 @@
 @implementation HONUserVO
 
 @synthesize dictionary;
-@synthesize userID, username, points, votes, abuseCount, totalVolleys, isVerified, isSuspended, score, avatarURL, birthday, friends;
+@synthesize userID, username, points, votes, abuseCount, totalVolleys, isVerified, isSuspended, score, avatarPrefix, birthday, friends;
 
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONUserVO *vo = [[HONUserVO alloc] init];
@@ -29,7 +29,7 @@
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.isSuspended = ((BOOL)[[dictionary objectForKey:@"is_suspended"] intValue]);
 	vo.score = vo.points + vo.votes;
-	vo.avatarURL = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"avatar_url"]];
+	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"avatar_url"]];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -53,7 +53,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.username = nil;
-	self.avatarURL = nil;
+	self.avatarPrefix = nil;
 	self.friends = nil;
 	self.birthday = nil;
 }
