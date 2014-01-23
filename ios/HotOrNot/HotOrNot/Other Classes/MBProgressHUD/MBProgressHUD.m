@@ -5,7 +5,7 @@
 //
 
 #import "MBProgressHUD.h"
-
+#import "HONDeviceTraits.h"
 
 #if __has_feature(objc_arc)
 	#define MB_AUTORELEASE(exp) exp
@@ -453,7 +453,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	totalSize.width = MAX(totalSize.width, indicatorF.size.width);
 	totalSize.height += indicatorF.size.height;
 	
-	CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];//([HONAppDelegate isIOS7]) ? [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}] :[label.text sizeWithFont:label.font];
+	CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];//([[HONDeviceTraits sharedInstance] isIOS7]) ? [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}] :[label.text sizeWithFont:label.font];
 	labelSize.width = MIN(labelSize.width, maxWidth);
 	totalSize.width = MAX(totalSize.width, labelSize.width);
 	totalSize.height += labelSize.height;
@@ -464,7 +464,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	CGFloat remainingHeight = bounds.size.height - totalSize.height - kPadding - 4 * margin; 
 	CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
 	CGSize detailsLabelSize;
-	if ([HONAppDelegate isIOS7]) {
+	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 		detailsLabelSize = [detailsLabel.text boundingRectWithSize:maxSize
 														   options:NSStringDrawingUsesLineFragmentOrigin
 														attributes:@{NSFontAttributeName:detailsLabelFont}

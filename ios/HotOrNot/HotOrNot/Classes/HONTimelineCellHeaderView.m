@@ -10,6 +10,7 @@
 
 #import "HONTimelineCellHeaderView.h"
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
@@ -66,7 +67,7 @@
 		timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 		[self addSubview:timeLabel];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [[_challengeVO.creatorVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
 																								options:NSStringDrawingTruncatesLastVisibleLine
 																							 attributes:@{NSFontAttributeName:nameLabel.font}
@@ -94,7 +95,7 @@
 		subjectLabel.text = _challengeVO.subjectName;
 		[self addSubview:subjectLabel];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [subjectLabel.text boundingRectWithSize:CGSizeMake(maxSubjectWidth, 18.0)
 												   options:NSStringDrawingTruncatesLastVisibleLine
 												attributes:@{NSFontAttributeName:subjectLabel.font}

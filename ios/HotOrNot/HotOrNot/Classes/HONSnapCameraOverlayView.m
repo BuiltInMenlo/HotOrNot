@@ -12,6 +12,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSnapCameraOverlayView.h"
+#import "HONDeviceTraits.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
@@ -107,7 +108,7 @@
 	
 	if (isTutorial) {
 //		_infoImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
+//		_infoImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
 //		[self addSubview:_infoImageView];
 //		
 //		UIButton *tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -8,7 +8,7 @@
 
 
 #import "HONEmptyTimelineView.h"
-
+#import "HONDeviceTraits.h"
 
 @interface HONEmptyTimelineView ()
 @end
@@ -20,8 +20,8 @@
 	if ((self = [super initWithFrame:CGRectOffset(frame, 0.0, kNavBarHeaderHeight)])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina4Inch]) ? 454.0 : 366.0)];
-		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"verification-586@2x" : @"verification"];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 454.0 : 366.0)];
+		bgImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"verification-586@2x" : @"verification"];
 		[self addSubview:bgImageView];
 		
 		UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];

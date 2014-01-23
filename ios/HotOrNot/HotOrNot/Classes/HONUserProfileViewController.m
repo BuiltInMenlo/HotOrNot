@@ -14,7 +14,9 @@
 
 #import "HONUserProfileViewController.h"
 #import "HONAPICaller.h"
+#import "HONChallengeAssistant.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONChangeAvatarViewController.h"
@@ -553,7 +555,7 @@
 	
 	CGFloat gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[HONAppDelegate mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[[HONChallengeAssistant sharedInstance] mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
@@ -702,7 +704,7 @@
 	
 	float gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[HONAppDelegate mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
+	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[[HONChallengeAssistant sharedInstance] mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
@@ -721,7 +723,7 @@
 		[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareFooterButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
 												  options:NSStringDrawingTruncatesLastVisibleLine
 											   attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
@@ -740,7 +742,7 @@
 		[settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [settingsButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
 												  options:NSStringDrawingTruncatesLastVisibleLine
 											   attributes:@{NSFontAttributeName:settingsButton.titleLabel.font}
@@ -764,7 +766,7 @@
 		[shareButton setTitle:@"Share" forState:UIControlStateNormal];
 		[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [shareButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
 												  options:NSStringDrawingTruncatesLastVisibleLine
 											   attributes:@{NSFontAttributeName:shareButton.titleLabel.font}
@@ -783,7 +785,7 @@
 		[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 44.0)
 												  options:NSStringDrawingTruncatesLastVisibleLine
 											   attributes:@{NSFontAttributeName:flagButton.titleLabel.font}

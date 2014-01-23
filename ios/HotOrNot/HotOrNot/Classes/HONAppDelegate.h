@@ -106,14 +106,6 @@ extern NSString * const kNetErrorStatusCode404;
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
-+ (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
-+ (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
-+ (NSString *)deviceModel;
-+ (BOOL)isPhoneType5s;
-+ (BOOL)isRetina4Inch;
-+ (BOOL)isIOS7;
-+ (NSString *)deviceLocale;
-
 + (NSString *)apiServerPath;
 + (NSString *)customerServiceURL;
 + (NSDictionary *)s3Credentials;
@@ -176,13 +168,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)writeFollowingList:(NSArray *)followingUsers;
 + (BOOL)isFollowingUser:(int)userID;
 
-+ (HONOpponentVO *)mostRecentOpponentInChallenge:(HONChallengeVO *)challengeVO byUserID:(int)userID;
-+ (HONEmotionVO *)mostRecentEmotionForOpponent:(HONOpponentVO *)opponentVO;
-+ (int)hasVoted:(int)challengeID;
-+ (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO;
-+ (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO;
-
-+ (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID;
 
 + (UIViewController *)appTabBarController;
 

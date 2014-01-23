@@ -12,6 +12,7 @@
 
 #import "HONAlertsViewController.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONAlertItemVO.h"
 #import "HONChallengeVO.h"
@@ -331,19 +332,19 @@
 	
 	if ([HONAppDelegate incTotalForCounter:@"alerts"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
+		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(241.0, ([HONAppDelegate isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
+		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
+		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
 		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
@@ -546,7 +547,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == [_alertItems count] + 5)
-		return ((([_alertItems count] + 5) > 7 + ((int)([HONAppDelegate isPhoneType5s]) * 2)) ? 49.0 : 0.0);
+		return ((([_alertItems count] + 5) > 7 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 49.0 : 0.0);
 	
 	return (49.0);
 }

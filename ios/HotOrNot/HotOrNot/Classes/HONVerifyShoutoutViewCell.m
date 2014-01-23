@@ -10,6 +10,7 @@
 
 #import "HONVerifyShoutoutViewCell.h"
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONOpponentVO.h"
 #import "HONImageLoadingView.h"
 #import "HONVerifyCellHeaderView.h"
@@ -54,8 +55,8 @@
 	[_imageHolderView addSubview:_heroImageView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		//_heroImageView.alpha = 1.0 - ((int)[HONAppDelegate isRetina4Inch]);
-		_heroImageView.alpha = (int)((request.URL == nil));// || (![HONAppDelegate isRetina4Inch]));
+		//_heroImageView.alpha = 1.0 - ((int)[[HONDeviceTraits sharedInstance] isRetina4Inch]);
+		_heroImageView.alpha = (int)((request.URL == nil));// || (![[HONDeviceTraits sharedInstance] isRetina4Inch]));
 		_heroImageView.image = image;
 				
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -71,7 +72,7 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:challengeVO.creatorVO.imagePrefix forAvatarBucket:YES completion:nil];
 	};
 	
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						  placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];

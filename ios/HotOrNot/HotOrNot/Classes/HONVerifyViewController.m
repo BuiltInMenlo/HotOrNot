@@ -20,6 +20,7 @@
 #import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
+#import "HONDeviceTraits.h"
 #import "HONImagingDepictor.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONAddContactsViewController.h"
@@ -108,7 +109,7 @@
 			
 			int cnt = 0;
 			for (int i=queueRange.location; i<queueRange.length; i++) {
-				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
 				
 				cnt++;
 				_imageQueueLocation++;
@@ -130,7 +131,7 @@
 	for (int i=range.location; i<MIN(range.length, [_challenges count]); i++) {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:i];
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
 								  failure:failureBlock];
@@ -287,19 +288,19 @@
 	
 	if ([HONAppDelegate incTotalForCounter:@"verify"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
+		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(241.0, ([HONAppDelegate isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
+		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 		[_tutorialImageView addSubview:closeButton];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(-1.0, ([HONAppDelegate isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
+		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
 		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
 		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
@@ -784,7 +785,7 @@
 //	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
 //	
 //	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-//	[imageView setImageWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+//	[imageView setImageWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
 //}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -801,7 +802,7 @@
 		int cnt = 0;
 		NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:queueRange.length];
 		for (int i=queueRange.location; i<queueRange.length; i++) {
-			[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+			[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
 			
 			cnt++;
 			_imageQueueLocation++;

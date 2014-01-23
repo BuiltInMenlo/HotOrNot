@@ -17,6 +17,7 @@
 
 #import "HONChallengeCameraViewController.h"
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
 #import "HONCreateChallengePreviewView.h"
@@ -126,7 +127,7 @@
 	_isUploadComplete = NO;
 	_uploadCounter = 0;
 	
-	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	_filename = [NSString stringWithFormat:@"%@-%@_%@", [[[HONDeviceTraits sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
@@ -315,7 +316,7 @@
 	imagePickerController.delegate = self;
 	
 	if (sourceType == UIImagePickerControllerSourceTypeCamera) {
-		float scale = ([HONAppDelegate isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		imagePickerController.showsCameraControls = NO;
 		imagePickerController.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
@@ -446,7 +447,7 @@
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && self.imagePickerController.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-		float scale = ([HONAppDelegate isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
 		self.imagePickerController.showsCameraControls = NO;
@@ -646,7 +647,7 @@
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		float scale = ([HONAppDelegate isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
 		self.imagePickerController.showsCameraControls = NO;

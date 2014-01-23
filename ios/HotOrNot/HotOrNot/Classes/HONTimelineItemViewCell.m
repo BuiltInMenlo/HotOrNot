@@ -11,6 +11,7 @@
 
 #import "HONTimelineItemViewCell.h"
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONImageLoadingView.h"
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineCellSubjectView.h"
@@ -106,7 +107,7 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -138,9 +139,9 @@
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
 	
 	if (sticker != nil) {
-//		NSLog(@"STICKER:[%@]", [[[sticker objectForKey:@"img"] stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]);
+//		NSLog(@"STICKER:[%@]", [[[sticker objectForKey:@"img"] stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]);
 		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		[stickerImageView setImageWithURL:[NSURL URLWithString:[[[sticker objectForKey:@"img"] stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]] placeholderImage:nil];
+		[stickerImageView setImageWithURL:[NSURL URLWithString:[[[sticker objectForKey:@"img"] stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]] placeholderImage:nil];
 		[self.contentView addSubview:stickerImageView];
 		
 		if ([[sticker objectForKey:@"user_id"] intValue] != 0) {

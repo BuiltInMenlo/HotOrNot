@@ -7,9 +7,7 @@
 //
 
 #import <AddressBook/AddressBook.h>
-#import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CommonCrypto/CommonHMAC.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import <Foundation/Foundation.h>
 #import <HockeySDK/HockeySDK.h>
@@ -32,8 +30,12 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
+#import "HONAPICaller.h"
+#import "HONChallengeAssistant.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
@@ -42,8 +44,6 @@
 #import "HONImagePickerViewController.h"
 #import "HONUserVO.h"
 #import "HONUsernameViewController.h"
-#import "HONAPICaller.h"
-#import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONUserProfileViewController.h"
@@ -130,23 +130,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @synthesize tabBarController = _tabBarController;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
-
-
-
-+ (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes {
-	return ((noDashes) ? [[[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""]  : [[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
-}
-
-+ (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes {
-	return ((noDashes) ? [[[UIDevice currentDevice].identifierForVendor UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""] : [[UIDevice currentDevice].identifierForVendor UUIDString]);
-}
-
-+ (NSString *)deviceModel {
-	struct utsname systemInfo;
-	uname(&systemInfo);
-	
-	return ([NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
-}
 
 
 + (NSString *)apiServerPath {
@@ -483,85 +466,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-+ (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO {
-	for (HONOpponentVO *vo in challengeVO.challengers) {
-		if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
-			return (YES);
-	}
-	
-	return ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorVO.userID);
-}
-
-+ (HONOpponentVO *)mostRecentOpponentInChallenge:(HONChallengeVO *)challengeVO byUserID:(int)userID {
-	HONOpponentVO *opponentVO;
-	
-	if (userID == challengeVO.creatorVO.userID)
-		opponentVO = challengeVO.creatorVO;
-	
-	else {
-		NSLog(@"newestChallenge -> opponents:[%d]", [challengeVO.challengers count]);
-		for (HONOpponentVO *vo in challengeVO.challengers) {
-			if (userID == vo.userID) {
-				opponentVO = vo;
-				break;
-			}
-		}
-	}
-	
-	return (opponentVO);
-}
-
-+ (HONEmotionVO *)mostRecentEmotionForOpponent:(HONOpponentVO *)opponentVO {
-	HONEmotionVO *emotionVO;
-	
-	BOOL isEmotionFound = NO;
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
-			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-			isEmotionFound = YES;
-			break;
-		}
-	}
-	
-	if (!isEmotionFound) {
-		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-			if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
-				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-				isEmotionFound = YES;
-				break;
-			}
-		}
-	}
-	
-	return ((isEmotionFound) ? emotionVO : nil);
-}
-
-
-+ (int)hasVoted:(int)challengeID {
-	NSArray *voteArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"votes"];
-	
-	for (NSNumber *cID in voteArray) {
-		if ([cID intValue] == challengeID || -[cID intValue] == challengeID) {
-			return ([cID intValue]);
-		}
-	}
-	
-	return (0);
-}
-
-+ (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
-	NSMutableArray *upvoteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"upvotes"] mutableCopy];
-	NSDictionary *dict = @{@"challenge_id"		: [NSString stringWithFormat:@"%d", challengeVO.challengeID],
-						   @"participant_id"	: [NSString stringWithFormat:@"%d", opponentVO.userID]};
-	
-//	[upvoteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
-//	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
-	
-	[upvoteArray addObject:dict];
-	[[NSUserDefaults standardUserDefaults] setObject:upvoteArray forKey:@"upvotes"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
 + (CGFloat)compressJPEGPercentage {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
 }
@@ -575,44 +479,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([overlayTints copy]);
 }
 
-+ (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID {
-	return (@{@"id"			:[NSString stringWithFormat:@"%d", challengeID],
-			  @"added"		: @"1970-01-01 00:00:00",
-			  @"challengers": @[],
-			  @"comments"	: @"0",
-			  @"creator"	: @{@"age"		:@"1970-01-01 00:00:00",
-								@"avatar"	:@"",
-								@"id"		:@"0",
-								@"img"		:@"",
-								@"score"	:@"0",
-								@"subject"	:@"",
-								@"username"	:@"",
-								@"joined"	:@"1970-01-01 00:00:00"},
-			  @"has_viewed"	: @"N",
-			  @"is_celeb"	: @"0",
-			  @"is_explore"	: @"1",
-			  @"is_verify"	: @"0",
-			  @"started"	: @"1970-01-01 00:00:00",
-			  @"status"		: @"0",
-			  @"subject"	: @"__#INVITE__",
-			  @"updated"	: @"1970-01-01 00:00:00"});
-}
 
 + (UIViewController *)appTabBarController {
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
-}
-
-
-+ (BOOL)isPhoneType5s {
-	return ([[HONAppDelegate deviceModel] rangeOfString:@"iPhone6"].location == 0);
-}
-
-+ (BOOL)isRetina4Inch {
-	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
-}
-
-+ (BOOL)isIOS7 {
-	return ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]);
 }
 
 + (BOOL)hasTakenSelfie {
@@ -642,10 +511,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
 	return (YES);
-}
-
-+ (NSString *)deviceLocale {
-	return ([[NSLocale preferredLanguages] objectAtIndex:0]);
 }
 
 + (BOOL)isValidEmail:(NSString *)checkString {
@@ -1008,7 +873,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[shadow setShadowOffset:CGSizeZero];
 	
 	
-	if ([HONAppDelegate isIOS7])
+	if ([[HONDeviceTraits sharedInstance] isIOS7])
 		[[UINavigationBar appearance] setBarTintColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
 
 	else
@@ -1031,7 +896,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	
-	if ([HONAppDelegate isIOS7])
+	if ([[HONDeviceTraits sharedInstance] isIOS7])
 		[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
 	
 	else
@@ -1040,7 +905,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
-	if ([HONAppDelegate isIOS7])
+	if ([[HONDeviceTraits sharedInstance] isIOS7])
 		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
 	
 	else
@@ -1099,7 +964,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										  [NSString stringWithFormat:@"%d", [HONAppDelegate totalForCounter:@"boot"]], @"boot_total", nil]];
 		
 		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"main_bg-568h@2x" : @"main_bg"];
+		bgImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"main_bg-568h@2x" : @"main_bg"];
 		[self.window addSubview:bgImageView];
 		
 //		self.tabBarController = [[HONTabBarController alloc] init];
@@ -1114,7 +979,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[self _retrieveConfigJSON];
 		
 		
-//		NSLog(@"ADID:[%@]\nVID:[%@]", [HONAppDelegate advertisingIdentifierWithoutSeperators:YES], [HONAppDelegate identifierForVendorWithoutSeperators:YES]);
+//		NSLog(@"ADID:[%@]\nVID:[%@]", [[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES], [HONAppDelegate identifierForVendorWithoutSeperators:YES]);
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -1214,7 +1079,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UAPush shared] registerDeviceToken:deviceToken];
 	
 	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	[mixpanel.people addPushDeviceToken:deviceToken];
 	
 	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
@@ -1236,7 +1101,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSString *holderToken = [[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"];
 	
 	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[HONAppDelegate writeDeviceToken:holderToken];
@@ -1336,7 +1201,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 	
 	for (int i=-2; i<=0; i++)
-		[[NSUserDefaults standardUserDefaults] setObject:[HONAppDelegate emptyChallengeDictionaryWithID:i] forKey:[NSString stringWithFormat:@"empty_challenge_%d", i]];
+		[[NSUserDefaults standardUserDefaults] setObject:[[HONChallengeAssistant sharedInstance] emptyChallengeDictionaryWithID:i] forKey:[NSString stringWithFormat:@"empty_challenge_%d", i]];
 		
 #if __FORCE_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
@@ -1396,7 +1261,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSMutableArray *tags = [NSMutableArray arrayWithArray:[UATagUtils createTags:(UATagTypeTimeZone | UATagTypeLanguage | UATagTypeCountry)]];
 	[tags addObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-	[tags addObject:[HONAppDelegate deviceModel]];
+	[tags addObject:[[HONDeviceTraits sharedInstance] modelName]];
 	[tags addObject:[[UIDevice currentDevice] systemVersion]];
 	
 	[UAPush shared].tags = [NSArray arrayWithArray:tags];
@@ -1416,7 +1281,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
-	config.idfa = [HONAppDelegate advertisingIdentifierWithoutSeperators:NO];
+	config.idfa = [[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO];
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";

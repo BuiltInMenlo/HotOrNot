@@ -17,6 +17,7 @@
 
 #import "HONRegisterViewController.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONAPICaller.h"
@@ -77,7 +78,7 @@
 		_selfieAttempts = 0;
 		_tintIndex = 0;
 		
-		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[HONAppDelegate brandedAppName] lowercaseString]] stringByAppendingString:@"@2x.png"]];
+		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[HONAppDelegate brandedAppName] lowercaseString]] stringByAppendingString:@"@2x.png"]];
 		NSLog(@"SPLASH TEXT:[%@]", _splashImageURL);
 	}
 	
@@ -135,7 +136,7 @@
 }
 
 - (void)_uploadPhotos:(UIImage *)image {
-	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[HONAppDelegate identifierForVendorWithoutSeperators:YES] lowercaseString], [[HONAppDelegate advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[[HONDeviceTraits sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _imageFilename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
@@ -167,7 +168,7 @@
 			
 			
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+			[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
@@ -313,9 +314,9 @@
 	_birthday = [dateFormat stringFromDate:_datePicker.date];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = ([HONAppDelegate isRetina4Inch]) ? CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 269.0, 320.0, 53.0) : CGRectMake(254.0, 28.0, 59.0, 24.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"submitUsernameButton_nonActive" : @"smallSubmit_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"submitUsernameButton_Active" : @"smallSubmit_Active"] forState:UIControlStateHighlighted];
+	submitButton.frame = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 269.0, 320.0, 53.0) : CGRectMake(254.0, 28.0, 59.0, 24.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"submitUsernameButton_nonActive" : @"smallSubmit_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"submitUsernameButton_Active" : @"smallSubmit_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:submitButton];
 	
@@ -350,7 +351,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([HONAppDelegate isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", [[HONAppDelegate brandedAppName] lowercaseString]]];
+			splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", [[HONAppDelegate brandedAppName] lowercaseString]]];
 		};
 		
 		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -360,7 +361,7 @@
 		
 		
 		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (190.0 - (((int)![HONAppDelegate isRetina4Inch]) * 19.0)), 320.0, 64.0);
+		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (190.0 - (((int)![[HONDeviceTraits sharedInstance] isRetina4Inch]) * 19.0)), 320.0, 64.0);
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
 		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
 		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
@@ -368,7 +369,7 @@
 
 		//>>
 //		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (103.0 - (((int)![HONAppDelegate isRetina4Inch]) * 18.0)), 320.0, 49.0);
+//		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (103.0 - (((int)![[HONDeviceTraits sharedInstance] isRetina4Inch]) * 18.0)), 320.0, 49.0);
 //		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
 //		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
 //		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
@@ -383,7 +384,7 @@
 				imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
 				imagePickerController.delegate = nil;
 				imagePickerController.showsCameraControls = NO;
-				imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
+				imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f);
 				imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 				
 				imagePickerController.cameraOverlayView = _splashHolderView;
@@ -529,7 +530,7 @@
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		imagePickerController.showsCameraControls = NO;
-		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f, ([HONAppDelegate isRetina4Inch]) ? 1.65f : 1.0f);
+		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
@@ -879,7 +880,7 @@
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		float scale = ([HONAppDelegate isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		picker.showsCameraControls = NO;

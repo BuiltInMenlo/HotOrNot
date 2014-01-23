@@ -14,6 +14,7 @@
 #import "HONHeaderView.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONImagePickerViewController.h"
@@ -147,7 +148,7 @@
 	
 //	if ([HONAppDelegate incTotalForCounter:@"details"] == 0) {
 //		_tutorialImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)];
-//		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
+//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_details-568h@2x" : @"tutorial_details"];
 //		_tutorialImageView.userInteractionEnabled = YES;
 //		_tutorialImageView.alpha = 0.0;
 //		
@@ -265,7 +266,7 @@
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	if ([HONAppDelegate isIOS7]) {
+	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 		size = [joinFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 															  options:NSStringDrawingTruncatesLastVisibleLine
 														   attributes:@{NSFontAttributeName:joinFooterButton.titleLabel.font}
@@ -284,7 +285,7 @@
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	if ([HONAppDelegate isIOS7]) {
+	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 		size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 															   options:NSStringDrawingTruncatesLastVisibleLine
 															attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
@@ -303,7 +304,7 @@
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	if ([HONAppDelegate isIOS7]) {
+	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 		size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 														options:NSStringDrawingTruncatesLastVisibleLine
 													 attributes:@{NSFontAttributeName:flagButton.titleLabel.font}

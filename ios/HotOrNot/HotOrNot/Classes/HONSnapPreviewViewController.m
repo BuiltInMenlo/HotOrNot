@@ -13,14 +13,15 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONSnapPreviewViewController.h"
-#import "HONImageLoadingView.h"
+#import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
+#import "HONImageLoadingView.h"
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
 #import "HONHeaderView.h"
 #import "HONTimelineItemFooterView.h"
-#import "HONAPICaller.h"
-#import "HONImagingDepictor.h"
 #import "HONFollowersViewController.h"
 #import "HONFollowingViewController.h"
 #import "HONUserProfileGridView.h"
@@ -130,7 +131,7 @@
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	[_imageHolderView addSubview:_imageView];
 	_imageView.alpha = 0.0;
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([HONAppDelegate isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 					  placeholderImage:nil
 							   success:successBlock
 							   failure:failureBlock];
@@ -165,7 +166,7 @@
 	nameLabel.backgroundColor = [UIColor clearColor];
 	[headerView addSubview:nameLabel];
 	
-	if ([HONAppDelegate isIOS7]) {
+	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 		size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
 																				 options:NSStringDrawingTruncatesLastVisibleLine
 																			  attributes:@{NSFontAttributeName:nameLabel.font}
@@ -185,7 +186,7 @@
 		subjectLabel.text = _opponentVO.subjectName;
 		[headerView addSubview:subjectLabel];
 		
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
 												   options:NSStringDrawingTruncatesLastVisibleLine
 												attributes:@{NSFontAttributeName:nameLabel.font}

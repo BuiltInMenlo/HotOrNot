@@ -11,6 +11,7 @@
 
 #import "HONCreateChallengePreviewView.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
@@ -203,7 +204,7 @@
 	_cancelButton.alpha = 0.75;
 	[_headerBGImageView addSubview:_cancelButton];
 	
-	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
+	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([[HONDeviceTraits sharedInstance] isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	_subjectsView.isJoinVolley = _selfieSubmitType;

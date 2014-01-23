@@ -13,6 +13,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONImagingDepictor.h"
 
 
@@ -106,7 +107,7 @@ static HONAPICaller *sharedInstance = nil;
 - (AFHTTPClient *)getHttpClientWithHMAC {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken] ];
-	[httpClient setDefaultHeader:@"X-DEVICE" value:[HONAppDelegate deviceModel]];
+	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceTraits sharedInstance] modelName]];
 	
 	return (httpClient);
 }
@@ -130,7 +131,7 @@ static HONAPICaller *sharedInstance = nil;
 	
 	if( data != nil ){
 	    [data appendString:@"+"];
-	    [data appendString:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
+	    [data appendString:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	    
 		token = [[[HONAPICaller sharedInstance] hmacForKey:kHMACKey withData:data] mutableCopy];
 	    [token appendString:@"+"];

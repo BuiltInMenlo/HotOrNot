@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemFooterView.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONEmotionVO.h"
 
@@ -36,7 +37,7 @@
 		[self addSubview:_participantsLabel];
 		
 		CGSize size;
-		if ([HONAppDelegate isIOS7]) {
+		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
 			size = [_participantsLabel.text boundingRectWithSize:CGSizeMake(200.0, 19.0)
 														 options:NSStringDrawingTruncatesLastVisibleLine
 													  attributes:@{NSFontAttributeName:_participantsLabel.font}
