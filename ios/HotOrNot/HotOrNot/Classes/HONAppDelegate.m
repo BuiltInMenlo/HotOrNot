@@ -726,42 +726,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (params);
 }
 
-//+ (UIFont *)cartoGothicBold {
-//	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
-//}
-//
-//+ (UIFont *)cartoGothicBoldItalic {
-//	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:24.0]);
-//}
-//
-//+ (UIFont *)cartoGothicBook {
-//	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
-//}
-//
-//+ (UIFont *)cartoGothicItalic {
-//	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
-//}
-//
-//+ (UIFont *)helveticaNeueFontRegular {
-//	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
-//}
-//
-//+ (UIFont *)helveticaNeueFontLight {
-//	return ([UIFont fontWithName:@"HelveticaNeue-Light" size:18.0]);
-//}
-//
-//+ (UIFont *)helveticaNeueFontBold {
-//	return ([UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0]);
-//}
-//
-//+ (UIFont *)helveticaNeueFontBoldItalic {
-//	return ([UIFont fontWithName:@"HelveticaNeue-BoldItalic" size:18.0]);
-//}
-//
-//+ (UIFont *)helveticaNeueFontMedium {
-//	return ([UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0]);
-//}
-
 
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {

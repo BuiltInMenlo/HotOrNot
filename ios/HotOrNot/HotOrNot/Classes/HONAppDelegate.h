@@ -199,15 +199,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;
 
-//+ (UIFont *)cartoGothicBold;
-//+ (UIFont *)cartoGothicBoldItalic;
-//+ (UIFont *)cartoGothicBook;
-//+ (UIFont *)cartoGothicItalic;
-//+ (UIFont *)helveticaNeueFontRegular;
-//+ (UIFont *)helveticaNeueFontLight;
-//+ (UIFont *)helveticaNeueFontBold;
-//+ (UIFont *)helveticaNeueFontBoldItalic;
-//+ (UIFont *)helveticaNeueFontMedium;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
