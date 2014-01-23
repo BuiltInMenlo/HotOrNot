@@ -7,8 +7,6 @@
 //
 
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
@@ -28,8 +26,6 @@
 #import "HONUserProfileViewController.h"
 
 @interface HONSnapPreviewViewController () <HONTimelineItemFooterViewDelegate>
-//@property (nonatomic, copy) imageLoadComplete_t heroCompleteBlock;
-//@property (nonatomic, copy) imageLoadFailure_t heroFailureBlock;
 @property (nonatomic) HONSnapPreviewType snapPreviewType;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *imageHolderView;
@@ -122,7 +118,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_opponentVO.imagePrefix completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_opponentVO.imagePrefix forAvatarBucket:NO completion:nil];
 		
 		[_imageLoadingView stopAnimating];
 		[UIView animateWithDuration:0.33 animations:^(void) {

@@ -7,8 +7,6 @@
 //
 
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
@@ -100,7 +98,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_heroOpponentVO.imagePrefix completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_heroOpponentVO.imagePrefix forAvatarBucket:NO completion:nil];
 		_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 		[_heroImageView setImageWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
 	};

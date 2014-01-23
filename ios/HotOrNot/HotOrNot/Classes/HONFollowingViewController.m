@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 
 #import "HONAPICaller.h"
@@ -86,7 +84,7 @@
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
 			
-			[[HONAPICaller sharedInstance] retrieveFollowersForUserByUserID:_userID completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userID completion:^(NSObject *result){
 				NSMutableArray *users = [NSMutableArray arrayWithCapacity:[(NSArray *)result count]];
 				for (NSDictionary *dict in (NSArray *)result)
 					[users addObject:[dict objectForKey:@"user"]];

@@ -6,13 +6,11 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 
 #import "HONSuspendedViewController.h"
 #import "HONHeaderView.h"
-
+#import "HONAPICaller.h"
 
 @interface HONSuspendedViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -49,76 +47,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_submitPasscode {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							_passcode, @"passcode", nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISuspendedAccount);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPISuspendedAccount parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-			
-		} else {
-//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-//			if ((BOOL)[[result objectForKey:@"result"] intValue]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Passcode Verified"
-																	message:@"Your account has been reinstated"
-																   delegate:self
-														  cancelButtonTitle:@"OK"
-														  otherButtonTitles:nil];
-				[alertView setTag:0];
-				[alertView show];
-				
-				
-//			} else {
-//				_progressHUD.minShowTime = kHUDTime;
-//				_progressHUD.mode = MBProgressHUDModeCustomView;
-//				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-//				_progressHUD.labelText = @"Passcode Failed!";
-//				[_progressHUD show:NO];
-//				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//				_progressHUD = nil;
-//				
-//				_passcode = @"";
-//				[_passcodeTextField becomeFirstResponder];
-//			}
-			result = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
 
 
 #pragma mark - View lifecycle
@@ -244,7 +172,32 @@
 		_submitButton.hidden = YES;
 	}];
 	
-	[self _submitPasscode];
+	[[HONAPICaller sharedInstance] submitPasscodeToLiftAccountSuspension:_passcode completion:^(NSObject *result){
+		if ((BOOL)[[(NSDictionary *)result objectForKey:@"result"] intValue]) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Passcode Verified!"
+																message:@"Your account has been re-instated"
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:0];
+			[alertView show];
+		
+		} else {
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = @"Passcode Failed!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+
+			_passcode = @"";
+			[_passcodeTextField becomeFirstResponder];
+		}
+	}];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {

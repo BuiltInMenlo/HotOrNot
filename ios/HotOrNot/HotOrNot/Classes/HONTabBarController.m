@@ -6,12 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImage+ImageEffects.h"
 
 #import "HONTabBarController.h"
+#import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
 #import "HONChangeAvatarViewController.h"
 
@@ -229,9 +228,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_activityButton setSelected:YES];
 			[_discoverButton setSelected:NO];
 			
-			totalKey = @"explore";
-			mpEvent = @"Explore";
-			notificationName = @"EXPLORE_TAB";
+			totalKey = @"alerts";
+			mpEvent = @"Alerts";
+			notificationName = @"ALERTS_TAB";
 			break;
 			
 		case 3:
@@ -330,104 +329,62 @@ const CGSize kTabSize = {80.0, 50.0};
 
 #pragma mark - Data Tally
 - (void)_updateBadges {
-	NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-													[NSNumber numberWithInt:0], @"status",
-													[NSNumber numberWithInt:0], @"score",
-													[NSNumber numberWithInt:0], @"comments", nil];
+	NSDictionary *alertTotals = @{@"status"		: [NSNumber numberWithInt:0],
+								  @"score"		: [NSNumber numberWithInt:0],
+								  @"comments"	: [NSNumber numberWithInt:0]};
 	
-	
-	NSDictionary *params = @{@"action"	: [NSString stringWithFormat:@"%d", 3],
-							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+		int statusChanges = 0;
+		int voteChanges = 0;
+		int commentChanges = 0;
 		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+		NSMutableArray *challenges = [NSMutableArray array];
+		for (NSDictionary *dict in (NSArray *)result) {
+			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], result);
-			
-			int statusChanges = 0;
-			int voteChanges = 0;
-			int commentChanges = 0;
-			
-			NSMutableArray *challenges = [NSMutableArray array];
-			for (NSDictionary *dict in result) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
-				
-				if (vo != nil)// && (vo.statusID == 1 && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
-					[challenges addObject:vo];
-			}
-			
-			NSMutableArray *updateChallenges = [NSMutableArray array];
-			for (HONChallengeVO *vo in challenges) {
-				[updateChallenges addObject: @{@"id"		: [NSNumber numberWithInt:vo.challengeID],
-											   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
-											   @"score"		: [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score],
-											   @"comments"	: [NSNumber numberWithInt:vo.commentTotal]}];
-			}
-			
-			NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
-			for (NSDictionary *lDict in localChallenges) {
-				for (NSDictionary *uDict in updateChallenges) {
-					if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
-						if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
-							[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
-						}
-						
-						if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
-							voteChanges += [[uDict objectForKey:@"score"] intValue] - [[lDict objectForKey:@"score"] intValue];
-							[alertTotals setValue:[NSNumber numberWithInt:voteChanges] forKey:@"score"];
-						}
-						
-						if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
-							commentChanges += [[uDict objectForKey:@"comments"] intValue] - [[lDict objectForKey:@"comments"] intValue];
-							[alertTotals setValue:[NSNumber numberWithInt:commentChanges] forKey:@"comments"];
-						}
+			if (vo != nil)// && (vo.statusID == 1 && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
+				[challenges addObject:vo];
+		}
+		
+		NSMutableArray *updateChallenges = [NSMutableArray array];
+		for (HONChallengeVO *vo in challenges) {
+			[updateChallenges addObject: @{@"id"		: [NSNumber numberWithInt:vo.challengeID],
+										   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
+										   @"score"		: [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score],
+										   @"comments"	: [NSNumber numberWithInt:vo.commentTotal]}];
+		}
+		
+		NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
+		for (NSDictionary *lDict in localChallenges) {
+			for (NSDictionary *uDict in updateChallenges) {
+				if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
+					if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
+						[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
+					}
+					
+					if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
+						voteChanges += [[uDict objectForKey:@"score"] intValue] - [[lDict objectForKey:@"score"] intValue];
+						[alertTotals setValue:[NSNumber numberWithInt:voteChanges] forKey:@"score"];
+					}
+					
+					if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
+						commentChanges += [[uDict objectForKey:@"comments"] intValue] - [[lDict objectForKey:@"comments"] intValue];
+						[alertTotals setValue:[NSNumber numberWithInt:commentChanges] forKey:@"comments"];
 					}
 				}
 			}
-			
-			if ([localChallenges count] < [updateChallenges count]) {
-				[alertTotals setValue:[NSNumber numberWithInt:[[alertTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
-			}
-			
-			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-			//NSLog(@"CHANGES:\n%@", alertTotals);
-			
-//			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
-//				[self _showBadgesWithTotals:alertTotals];
-//			}
 		}
 		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		if ([localChallenges count] < [updateChallenges count])
+			[alertTotals setValue:[NSNumber numberWithInt:[[alertTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
 		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
+		[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		//NSLog(@"CHANGES:\n%@", alertTotals);
+		
+//		if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0)
+//			[self _showBadgesWithTotals:alertTotals];
 	}];
 }
 

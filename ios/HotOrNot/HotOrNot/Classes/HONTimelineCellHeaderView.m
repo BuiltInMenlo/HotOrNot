@@ -33,7 +33,7 @@
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_challengeVO.creatorVO.avatarURL completion:nil];
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_challengeVO.creatorVO.avatarURL forAvatarBucket:YES completion:nil];
 			avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		};
 		

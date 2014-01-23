@@ -256,6 +256,9 @@
 		4C6BBC881615466200145996 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6BBC871615466200145996 /* AssetsLibrary.framework */; };
 		4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */; };
 		4C6C0600171CDCEF00B6E3C6 /* tabMenuBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6C05FF171CDCEF00B6E3C6 /* tabMenuBackground.png */; };
+		4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */; };
+		4C70F9DC189082B900ED5C4E /* HONMessageRecipientsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C70F9DB189082B900ED5C4E /* HONMessageRecipientsViewController.m */; };
+		4C70F9DF1890837B00ED5C4E /* HONMessageRecipientVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C70F9DE1890837B00ED5C4E /* HONMessageRecipientVO.m */; };
 		4C71BF3A181B1B55005044F8 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C71BF36181B1B55005044F8 /* cancelButton_Active.png */; };
 		4C71BF3B181B1B56005044F8 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C71BF37181B1B55005044F8 /* cancelButton_Active@2x.png */; };
 		4C71BF3C181B1B56005044F8 /* cancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C71BF38181B1B55005044F8 /* cancelButton_nonActive.png */; };
@@ -1024,6 +1027,12 @@
 		4C6BBCB016167F2000145996 /* HONSettingsViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSettingsViewCell.h; sourceTree = "<group>"; };
 		4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewCell.m; sourceTree = "<group>"; };
 		4C6C05FF171CDCEF00B6E3C6 /* tabMenuBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMenuBackground.png; sourceTree = "<group>"; };
+		4C70F9D71890825D00ED5C4E /* HONMessageRecipientViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientViewCell.h; sourceTree = "<group>"; };
+		4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageRecipientViewCell.m; sourceTree = "<group>"; };
+		4C70F9DA189082B900ED5C4E /* HONMessageRecipientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientsViewController.h; sourceTree = "<group>"; };
+		4C70F9DB189082B900ED5C4E /* HONMessageRecipientsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageRecipientsViewController.m; sourceTree = "<group>"; };
+		4C70F9DD1890837B00ED5C4E /* HONMessageRecipientVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientVO.h; sourceTree = "<group>"; };
+		4C70F9DE1890837B00ED5C4E /* HONMessageRecipientVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageRecipientVO.m; sourceTree = "<group>"; };
 		4C71BF36181B1B55005044F8 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
 		4C71BF37181B1B55005044F8 /* cancelButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancelButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C71BF38181B1B55005044F8 /* cancelButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_nonActive.png; sourceTree = "<group>"; };
@@ -1821,6 +1830,8 @@
 				4C106076184D989700B361A6 /* HONAlertItemVO.m */,
 				4C75502316D5699200833C18 /* HONCommentVO.h */,
 				4C75502416D5699200833C18 /* HONCommentVO.m */,
+				4C70F9DD1890837B00ED5C4E /* HONMessageRecipientVO.h */,
+				4C70F9DE1890837B00ED5C4E /* HONMessageRecipientVO.m */,
 			);
 			name = VO;
 			sourceTree = "<group>";
@@ -3042,6 +3053,10 @@
 				4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */,
 				4CD42F26188B410E00264845 /* HONMessagesViewController.h */,
 				4CD42F27188B410E00264845 /* HONMessagesViewController.m */,
+				4C70F9D71890825D00ED5C4E /* HONMessageRecipientViewCell.h */,
+				4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */,
+				4C70F9DA189082B900ED5C4E /* HONMessageRecipientsViewController.h */,
+				4C70F9DB189082B900ED5C4E /* HONMessageRecipientsViewController.m */,
 				4C980587188CA02900E4FEA4 /* HONMessageReplyViewCell.h */,
 				4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */,
 				4C980584188C9B2800E4FEA4 /* HONMessageDetailsViewController.h */,
@@ -3970,6 +3985,7 @@
 				4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */,
 				4CC5F89617F9123B00BCA1DE /* AFURLConnectionOperation.m in Sources */,
 				4C9B92471828127100A060B2 /* QuadraticBezierCurve.m in Sources */,
+				4C70F9DC189082B900ED5C4E /* HONMessageRecipientsViewController.m in Sources */,
 				4C8CBC4B179CFAA600C95189 /* TSCoreListenerImpl.m in Sources */,
 				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
 				4CEC304117DACC9B0016AAE1 /* UIImage+ImageEffects.m in Sources */,
@@ -3978,6 +3994,7 @@
 				4C382FFC178B8AD700C7FA7C /* HONPopularUserViewCell.m in Sources */,
 				4CC5F89017F9123B00BCA1DE /* AFHTTPClient.m in Sources */,
 				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
+				4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */,
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
 				4C1BA89317F3C0D3006024B2 /* HONPopularUserVO.m in Sources */,
@@ -3992,6 +4009,7 @@
 				4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */,
 				4CC5F89317F9123B00BCA1DE /* AFJSONRequestOperation.m in Sources */,
 				4C355481185538BC008B1F48 /* HONTimelineCellSubjectView.m in Sources */,
+				4C70F9DF1890837B00ED5C4E /* HONMessageRecipientVO.m in Sources */,
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONChallengeCameraViewController.m in Sources */,

@@ -6,12 +6,12 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
+
 #import "MBProgressHUD.h"
 
 #import "HONVotersViewController.h"
 #import "HONGenericRowViewCell.h"
+#import "HONAPICaller.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
@@ -57,13 +57,13 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 5], @"action",
-									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-									nil];
+	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 5],
+							 @"challengeID"	: [NSString stringWithFormat:@"%d", _challengeVO.challengeID]};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	
+	/*
+	 AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -109,7 +109,7 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
-	}];
+	}];*/
 }
 
 

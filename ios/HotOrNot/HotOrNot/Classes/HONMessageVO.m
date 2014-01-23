@@ -11,7 +11,7 @@
 @implementation HONMessageVO
 
 @synthesize dictionary;
-@synthesize messageID, statusID, status, subjectName, hashtagName, challengers, hasViewed, addedDate, startedDate, updatedDate;
+@synthesize messageID, statusID, status, subjectName, hashtagName, participants, replies, hasViewed, addedDate, startedDate, updatedDate;
 
 
 + (HONMessageVO *)messageWithDictionary:(NSDictionary *)dictionary {
@@ -25,13 +25,13 @@
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.subjectName = [([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
 	vo.hashtagName = [@"#" stringByAppendingString:vo.subjectName];
-	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
 	vo.updatedDate = [dateFormat dateFromString:[dictionary objectForKey:@"updated"]];
+	
 	
 	switch (vo.statusID) {
 		case 1:
@@ -75,10 +75,26 @@
 	[creator setValue:[dictionary objectForKey:@"added"] forKey:@"joined"];
 	vo.creatorVO = [HONOpponentVO opponentWithDictionary:creator];
 	
-	vo.challengers = [NSMutableArray array];
-	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {
+	vo.participants = [NSMutableArray array];
+	vo.replies = [NSMutableArray array];
+	for (NSDictionary *challenger in [dictionary objectForKey:@"challengers"]) {
 		HONOpponentVO *opponentVO = [HONOpponentVO opponentWithDictionary:challenger];
-		[vo.challengers addObject:opponentVO];
+		
+		if ([opponentVO.imagePrefix length] > 0)
+			[vo.replies addObject:opponentVO];
+		
+		[vo.participants addObject:opponentVO];
+	}
+	
+	
+	vo.hasViewed = ([vo.replies count] == 0);
+	if (!vo.hasViewed) {
+		for (NSString *key in [[dictionary objectForKey:@"viewed"] keyEnumerator]) {
+			if ([[[dictionary objectForKey:@"viewed"] objectForKey:key] intValue] == 1) {
+				vo.hasViewed = YES;
+				break;
+			}
+		}
 	}
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
@@ -89,7 +105,8 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.status = nil;
-	self.challengers = nil;
+	self.participants = nil;
+	self.replies = nil;
 	self.subjectName = nil;
 	self.hashtagName = nil;
 	self.startedDate = nil;

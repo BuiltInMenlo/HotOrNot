@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
@@ -62,10 +60,10 @@
 							 @"Search",
 							 @"Suggested people"];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedExploreTab:) name:@"SELECTED_EXPLORE_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareExploreTab:) name:@"TARE_EXPLORE_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshExploreTab:) name:@"REFRESH_EXPLORE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedAlertsTab:) name:@"SELECTED_ALERTS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareAlertsTab:) name:@"TARE_ALERTS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAlertsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAlertsTab:) name:@"REFRESH_ALERTS_TAB" object:nil];
 	}
 	
 	return (self);
@@ -191,7 +189,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if ([HONAppDelegate hasTakenSelfie]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 		
@@ -327,10 +325,10 @@
 
 
 #pragma mark - Notifications
-- (void)_selectedExploreTab:(NSNotification *)notification {
-	NSLog(@"_selectedExploreTab");
+- (void)_selectedAlertsTab:(NSNotification *)notification {
+	NSLog(@"_selectedAlertsTab");
 	
-	if ([HONAppDelegate incTotalForCounter:@"explore"] == 1) {
+	if ([HONAppDelegate incTotalForCounter:@"alerts"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 		_tutorialImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
 		_tutorialImageView.userInteractionEnabled = YES;
@@ -358,14 +356,12 @@
 			}];
 		}
 	}
-	
-//	[self _retrieveAlerts];
 }
 
-- (void)_refreshExploreTab:(NSNotification *)notification {
+- (void)_refreshAlertsTab:(NSNotification *)notification {
 	[self _retrieveAlerts];
 }
-- (void)_tareExploreTab:(NSNotification *)notification {
+- (void)_tareAlertsTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 }
 
@@ -408,6 +404,10 @@
 }
 
 
+#pragma mark - RefreshTableHeader Delegates
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	[self _goRefresh];
+}
 
 
 #pragma mark - AlertView Delegates
@@ -602,12 +602,6 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
 //	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
 	[_tableView setContentOffset:CGPointZero animated:NO];
-}
-
-
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _goRefresh];
 }
 
 

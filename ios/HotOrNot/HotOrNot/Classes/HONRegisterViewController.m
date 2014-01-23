@@ -10,8 +10,6 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
@@ -178,7 +176,7 @@
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			[[HONAPICaller sharedInstance] retrieveFollowersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 			}];
 			

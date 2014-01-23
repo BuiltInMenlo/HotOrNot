@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAPICaller.h"
@@ -101,7 +99,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_userVO.avatarURL completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userVO.avatarURL forAvatarBucket:YES completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -135,7 +133,50 @@
 	[[HONAPICaller sharedInstance] retrieveUserByUserID:_popularUserVO.userID completion:^(NSObject *result) {
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
-			[self _retreiveSubscribees];
+			
+			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_popularUserVO.userID completion:^(NSObject *result){
+				_totalFollowing = [(NSArray *)result count];
+				
+				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
+					_challenges = [NSMutableArray array];
+					
+					int cnt = 0;
+					for (NSDictionary *dict in (NSArray *)result) {
+//						NSLog(@"CHALLENGE #%d:[%@]", (cnt + 1), [dict objectForKey:@"creator"]);
+						HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+						[_challenges addObject:vo];
+						
+						if (cnt++ == 1)
+							break;
+					}
+					
+					cnt = 0;
+					for (HONChallengeVO *vo in _challenges) {
+						NSString *imgPrefix = @"";
+						if (vo.creatorVO.userID == _popularUserVO.userID)
+							imgPrefix = vo.creatorVO.imagePrefix;
+						
+						else {
+							for (HONOpponentVO *opponentVO in vo.challengers) {
+								if (opponentVO.userID == _popularUserVO.userID)
+									imgPrefix = opponentVO.imagePrefix;
+							}
+						}
+						
+						UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0 + (cnt * (kSnapThumbSize.width + 15.0)), 58.0, kSnapThumbSize.width, kSnapThumbSize.height)];
+						[challengeImageView setImageWithURL:[NSURL URLWithString:[imgPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+						[self.contentView addSubview:challengeImageView];
+						
+						UIImageView *borderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedFollowChallengeBorder"]];
+						borderImageView.frame = challengeImageView.frame;
+						[self.contentView addSubview:borderImageView];
+						
+						cnt++;
+					}
+					
+					[self _makeStats];
+				}];
+			}];
 		}
 	}];
 }
@@ -149,92 +190,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_retreiveSubscribees {
-	NSDictionary *params = @{@"userID"	: [NSString stringWithFormat:@"%d", _popularUserVO.userID]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	
-	[httpClient postPath:kAPIGetSubscribees parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			//VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			_totalFollowing = [result count];
-			[self _retrieveChallenges];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-	}];
-}
-
-- (void)_retrieveChallenges {
-	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"action"		: [NSString stringWithFormat:@"%d", 9],
-							 @"isPrivate"	: @"N",
-							 @"username"	: _userVO.username,
-							 @"p"			: [NSString stringWithFormat:@"%d", 1]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-			//VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result objectAtIndex:0]);
-			_challenges = [NSMutableArray array];
-			
-			int cnt = 0;
-			for (NSDictionary *dict in result) {
-//				NSLog(@"CHALLENGE #%d:[%@]", (cnt + 1), [dict objectForKey:@"creator"]);
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
-				[_challenges addObject:vo];
-				
-				if (cnt++ == 1)
-					break;
-			}
-			
-			cnt = 0;
-			for (HONChallengeVO *vo in _challenges) {
-				NSString *imgPrefix = @"";
-				if (vo.creatorVO.userID == _popularUserVO.userID)
-					imgPrefix = vo.creatorVO.imagePrefix;
-				
-				else {
-					for (HONOpponentVO *opponentVO in vo.challengers) {
-						if (opponentVO.userID == _popularUserVO.userID)
-							imgPrefix = opponentVO.imagePrefix;
-					}
-				}
-				
-				UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0 + (cnt * (kSnapThumbSize.width + 15.0)), 58.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-				[challengeImageView setImageWithURL:[NSURL URLWithString:[imgPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
-				[self.contentView addSubview:challengeImageView];
-				
-				UIImageView *borderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedFollowChallengeBorder"]];
-				borderImageView.frame = challengeImageView.frame;
-				[self.contentView addSubview:borderImageView];
-				
-				cnt++;
-			}
-			
-			[self _makeStats];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-	}];
-}
 
 
 #pragma mark - Navigation

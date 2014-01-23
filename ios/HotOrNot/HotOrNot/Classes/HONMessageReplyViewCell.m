@@ -11,11 +11,13 @@
 #import "HONMessageReplyViewCell.h"
 #import "HONImageLoadingView.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 
 @interface HONMessageReplyViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UIImageView *challengeImageView;
 @property (nonatomic, strong) UIImageView *replyImageView;
+@property (nonatomic) BOOL isAuthor;
 @end
 
 @implementation HONMessageReplyViewCell
@@ -27,8 +29,9 @@
 }
 
 
-- (id)init {
+- (id)initAsAuthor:(BOOL)isAuthor {
 	if ((self = [super init])) {
+		_isAuthor = isAuthor;
 	}
 	
 	return (self);
@@ -39,13 +42,10 @@
 - (void)setMessageReplyVO:(HONOpponentVO *)messageReplyVO {
 	_messageReplyVO = messageReplyVO;
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
-	
-	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 7.0, 34.0, 34.0)];
+	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake((_isAuthor) ? 275.0 : 7.0, 7.0, 34.0, 34.0)];
 	[self.contentView addSubview:avatarHolderView];
 	
-	UIView *challengeHolderView = [[UIView alloc] initWithFrame:CGRectMake(55.0, 7.0, kSnapThumbSize.width, kSnapThumbSize.height)];
+	UIView *challengeHolderView = [[UIView alloc] initWithFrame:CGRectMake((_isAuthor) ? 250.0 - kSnapThumbSize.width : 55.0, 7.0, kSnapThumbSize.width, kSnapThumbSize.height)];
 	[self.contentView addSubview:challengeHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:challengeHolderView asLargeLoader:NO];
@@ -64,25 +64,37 @@
 		_avatarImageView.image = image;
 	};
 	
+	void (^avatarFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_messageReplyVO.avatarURL forAvatarBucket:YES completion:nil];
+	};
+	
 	void (^challengeSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_challengeImageView.image = image;
 		[imageLoadingView stopAnimating];
 		[imageLoadingView removeFromSuperview];
 	};
 	
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_messageReplyVO.avatarURL completion:nil];
+	void (^challengeFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_messageReplyVO.avatarURL forAvatarBucket:NO completion:nil];
 	};
 	
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 							placeholderImage:nil
 									 success:avatarSuccessBlock
-									 failure:failureBlock];
+									 failure:avatarFailureBlock];
 	
 	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:challengeSuccessBlock
-										failure:failureBlock];
+										failure:challengeFailureBlock];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isAuthor) ? 7.0 : 255.0, 17.0, 50.0, 14.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+	timeLabel.textAlignment = (_isAuthor) ? NSTextAlignmentLeft : NSTextAlignmentRight;
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.text = [HONAppDelegate timeSinceDate:_messageReplyVO.joinedDate];
+	[self.contentView addSubview:timeLabel];
 }
 
 @end

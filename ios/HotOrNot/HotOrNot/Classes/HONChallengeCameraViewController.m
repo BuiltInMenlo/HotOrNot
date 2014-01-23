@@ -11,8 +11,6 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
@@ -30,7 +28,9 @@
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (readonly, nonatomic, assign) HONSelfieSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) NSString *recipients;
 @property (nonatomic, strong) S3PutObjectRequest *por1;
 @property (nonatomic, strong) S3PutObjectRequest *por2;
 @property (nonatomic, strong) UIImage *processedImage;
@@ -50,12 +50,8 @@
 
 @implementation HONChallengeCameraViewController
 
-- (id)initAsNewChallenge {
-	NSLog(@"%@ - initAsNewChallenge", [self description]);
+- (id)init {
 	if ((self = [super init])) {
-		_selfieSubmitType = HONSelfieSubmitTypeCreate;
-		
-		_subjectName = @"";
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
 	}
@@ -63,15 +59,50 @@
 	return (self);
 }
 
+- (id)initAsNewChallenge {
+	NSLog(@"%@ - initAsNewChallenge", [self description]);
+	if ((self = [self init])) {
+		_selfieSubmitType = HONSelfieSubmitTypeCreateChallenge;
+		
+		_subjectName = @"";
+		_recipients = @"";
+	}
+	
+	return (self);
+}
+
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO {
 	NSLog(@"%@ - initAsJoinChallenge:[%d] \"%@\"", [self description], challengeVO.challengeID, challengeVO.subjectName);
-	if ((self = [super init])) {
-		_selfieSubmitType = HONSelfieSubmitTypeReply;
+	if ((self = [self init])) {
+		_selfieSubmitType = HONSelfieSubmitTypeReplyChallenge;
 		
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
-		_selfieAttempts = 0;
-		_isFirstAppearance = YES;
+		_recipients = @"";
+	}
+	
+	return (self);
+}
+
+- (id)initAsNewMessageWithRecipients:(NSString *)recipients {
+	NSLog(@"%@ - initAsNewMessageWithRecipients:[%@]", [self description], recipients);
+	if ((self = [self init])) {
+		_selfieSubmitType = HONSelfieSubmitTypeCreateMessage;
+		_recipients = recipients;
+		_subjectName = @"";
+	}
+	
+	return (self);
+}
+
+- (id)initAsMessageReply:(HONMessageVO *)messageVO {
+	NSLog(@"%@ - initAsMessageReply:[%@]", [self description], messageVO.dictionary);
+	if ((self = [self init])) {
+		_selfieSubmitType = HONSelfieSubmitTypeReplyMessage;
+		
+		_messageVO = messageVO;
+		_subjectName = _messageVO.subjectName;
+		_recipients = @"";
 	}
 	
 	return (self);
@@ -176,31 +207,66 @@
 //			_submitImageView = nil;
 //		}];
 		
-		if ([[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = @"Error!";
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			_hasSubmitted = YES;
-			
-			if (_isUploadComplete) {
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-				}];
-			}
-		}
+		[self _submitCompleted:(NSDictionary *)result];
 	}];
+}
+
+- (void)_submitMessage {
+	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, ([UIScreen mainScreen].bounds.size.height - 14.0) * 0.5, 54.0, 14.0)];
+	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
+										[UIImage imageNamed:@"cameraUpload_002"],
+										[UIImage imageNamed:@"cameraUpload_003"], nil];
+	_submitImageView.animationDuration = 0.5f;
+	_submitImageView.animationRepeatCount = 0;
+	_submitImageView.alpha = 0.0;
+	[_submitImageView startAnimating];
+	[[[UIApplication sharedApplication] delegate].window addSubview:_submitImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitImageView.alpha = 1.0;
+	} completion:nil];
+	
+	[[HONAPICaller sharedInstance] submitNewMessageWithDictionary:_challengeParams completion:^(NSObject *result){
+		[self _submitCompleted:(NSDictionary *)result];
+	}];
+}
+
+
+- (void)_submitCompleted:(NSDictionary *)result {
+	if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = @"Error!";
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+		
+	} else {
+		_hasSubmitted = YES;
+		
+		if (_isUploadComplete) {
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				if (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeReplyChallenge)
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+				
+				else if (_selfieSubmitType == HONSelfieSubmitTypeCreateMessage)
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES_TAB" object:nil];
+				
+				else if (_selfieSubmitType == HONSelfieSubmitTypeReplyMessage) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGE" object:nil];
+				}
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+			}];
+		}
+	}
 }
 
 
@@ -425,7 +491,7 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	if ([[HONAppDelegate followersList] count] == 1 && friend_total == 0) {
+	if ([[HONAppDelegate followersListWithRefresh:NO] count] == 1 && friend_total == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc]
 								  initWithTitle:@"Find Friends"
 								  message:@"Selfieclub is more fun with friends! Find some now?"
@@ -436,23 +502,19 @@
 		[alertView show];
 		
 	} else {
-//		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-//									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-//									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
-//									   [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID], @"challengeID",
-//									   _subjectName, @"subject",
-//									   (_selfieSubmitType == HONSelfieSubmitTypeReply) ? kAPIJoinChallenge : kAPIChallenges, @"api_endpt", nil];
-//		_challengeParams = [params copy];
-
-		
 		_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
-							 @"challenge_id"	: [NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 0 : _challengeVO.challengeID],
+							 @"challenge_id"	: [NSString stringWithFormat:@"%d", (_selfieSubmitType == HONSelfieSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
 							 @"subject"			: _subjectName,
-							 @"api_endpt"		: (_selfieSubmitType == HONSelfieSubmitTypeCreate) ? kAPICreateChallenge : kAPIJoinChallenge};
+							 @"recipients"		: _recipients,
+							 @"api_endpt"		: (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
 		
-		NSLog(@"PARAMS:[%@]", _challengeParams);
-		[self _submitChallenge];
+		NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);
+		if (_selfieSubmitType == HONSelfieSubmitTypeCreateMessage)
+			[self _submitMessage];
+		
+		else
+			[self _submitChallenge];
 	}
 }
 
@@ -475,7 +537,7 @@
 		}
 
 		[_previewView uploadComplete];
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename] preDelay:1.0 completion:^(NSObject *result){
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename] forAvatarBucket:NO preDelay:1.0 completion:^(NSObject *result){
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;

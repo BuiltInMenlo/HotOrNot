@@ -18,9 +18,7 @@
 #import <Social/SLServiceTypes.h>
 #import <sys/utsname.h>
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
-#import "AFJSONRequestOperation.h"
+#import "AFNetworking.h"
 #import "Chartboost.h"
 #import "MBProgressHUD.h"
 #import "KikAPI.h"
@@ -76,44 +74,6 @@ NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 NSString * const kChartboostAppID = @"";
 NSString * const kChartboostAppSignature = @"";
-
-//api endpts
-NSString * const kAPIChallenges = @"Challenges.php";
-NSString * const kAPIComments = @"Comments.php";
-NSString * const kAPIDiscover = @"Discover.php";
-NSString * const kAPIPopular = @"Popular.php";
-NSString * const kAPISearch = @"Search.php";
-NSString * const kAPIUsers = @"Users.php";
-NSString * const kAPIVotes = @"Votes.php";
-NSString * const kAPIGetFriends = @"social/getfriends";
-NSString * const kAPIGetSubscribees = @"users/getsubscribees";
-NSString * const kAPIAddFriend = @"social/addfriend";
-NSString * const kAPIRemoveFriend = @"social/removefriend";
-NSString * const kAPISMSInvites = @"g/smsinvites";
-NSString * const kAPIEmailInvites = @"g/emailinvites";
-NSString * const kAPITumblrLogin = @"users/invitetumblr";
-NSString * const kAPIEmailVerify = @"users/verifyemail";
-NSString * const kAPIPhoneVerify = @"users/verifyphone";
-NSString * const kAPIEmailContacts = @"users/ffemail";
-NSString * const kAPIChallengeObject = @"challenges/get";
-NSString * const kAPIGetPublicMessages = @"challenges/getpublic";
-NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
-NSString * const kAPISetUserAgeGroup = @"users/setage";
-NSString * const kAPICheckNameAndEmail = @"users/checkNameAndEmail";
-NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
-NSString * const kAPICreateChallenge = @"challenges/create";
-NSString * const kAPIJoinChallenge = @"challenges/join";
-NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
-NSString * const kAPIMissingImage = @"challenges/missingimage";
-NSString * const kAPIProcessChallengeImage = @"challenges/processimage";
-NSString * const kAPIProcessUserImage = @"users/processimage";
-NSString * const kAPISuspendedAccount = @"users/suspendedaccount";
-NSString * const kAPIPurgeUser = @"users/purge";
-NSString * const kAPIPurgeContent = @"users/purgecontent";
-NSString * const kAPIGetActivity = @"users/getactivity";
-NSString * const kAPIDeleteImage = @"challenges/deleteimage";
-NSString * const kAPIVerifyShoutout = @"challenges/shoutout";
-NSString * const kAPIProfileShoutout = @"challenges/selfieshoutout";
 
 
 // view heights
@@ -171,42 +131,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @synthesize managedObjectModel = _managedObjectModel;
 
 
-+ (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data{
-    const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
-    const char *cData = [data cStringUsingEncoding:NSASCIIStringEncoding];
-    unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
-    CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
-    
-    NSMutableString *result = [NSMutableString string];
-    for (int i = 0; i < sizeof cHMAC ; i++){
-        [result appendFormat:@"%02hhx", cHMAC[i]];
-    }
-    return result;
-}
-
-+ (NSMutableString *)hmacToken
-{
-    NSMutableString *hmac = [NSMutableString stringWithString:@"unknown"];
-    NSMutableString *data = [NSMutableString stringWithString:[HONAppDelegate deviceToken]];
-	if( data != nil ){
-	    [data appendString:@"+"];
-	    [data appendString:[HONAppDelegate advertisingIdentifierWithoutSeperators:NO]];
-	    NSString *key = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
-	    hmac = [HONAppDelegate hmacForKey:key AndData:data];
-	    [hmac appendString:@"+"];
-	    [hmac appendString:data];
-    }
-    return hmac;
-}
-
-+ (AFHTTPClient *)getHttpClientWithHMAC {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
-	[httpClient setDefaultHeader:@"X-DEVICE" value:[HONAppDelegate deviceModel]];
-	
-	return httpClient;
-}
- 
 
 + (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes {
 	return ((noDashes) ? [[[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""]  : [[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
@@ -446,22 +370,31 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([date timeIntervalSinceNow] / -31536000);
 }
 
-+ (NSArray *)followersList {
-	NSMutableArray *friends = [NSMutableArray array];
-	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
-		[friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
-														  [NSString stringWithFormat:@"%d", 0], @"points",
-														  [NSString stringWithFormat:@"%d", 0], @"total_votes",
-														  [NSString stringWithFormat:@"%d", 0], @"pokes",
-														  [NSString stringWithFormat:@"%d", 0], @"pics",
-														  [NSString stringWithFormat:@"%d", 0], @"age",
-														  [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
-														  @"", @"fb_id",
-														  [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
++ (NSArray *)followersListWithRefresh:(BOOL)isRefresh {
+	NSMutableArray *followers = [NSMutableArray array];
+	
+	if (isRefresh) {
+		[[HONAPICaller sharedInstance] retrieveUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+			NSDictionary *userObj = (NSDictionary *)result;
+			[HONAppDelegate writeFollowers:[userObj objectForKey:@"friends"]];
+		}];
+	
 	}
 	
-	return (@[[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
+	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
+		[followers addObject:[HONUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
+															 @"points"		: [NSString stringWithFormat:@"%d", 0],
+															 @"total_votes"	: [NSString stringWithFormat:@"%d", 0],
+															 @"pokes"		: [NSString stringWithFormat:@"%d", 0],
+															 @"pics"		: [NSString stringWithFormat:@"%d", 0],
+															 @"age"			: [NSString stringWithFormat:@"%d", 0],
+															 @"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
+															 @"fb_id"		: @"",
+															 @"avatar_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
+		
+	}
+	
+	return ([followers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]);
 }
 
 + (void)addFollower:(NSDictionary *)follower {
@@ -483,7 +416,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (BOOL)isFollowedByUser:(int)userID {
 	BOOL isFollowed = NO;
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONUserVO *vo in [HONAppDelegate followersList]) {
+		for (HONUserVO *vo in [HONAppDelegate followersListWithRefresh:NO]) {
 			if (vo.userID == userID) {
 				isFollowed = YES;
 				break;
@@ -494,22 +427,28 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (isFollowed);
 }
 
-+ (NSArray *)followingList {
-	NSMutableArray *subscribees = [NSMutableArray array];
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"following"]) {
-		[subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
-														  [NSString stringWithFormat:@"%d", 0], @"points",
-														  [NSString stringWithFormat:@"%d", 0], @"total_votes",
-														  [NSString stringWithFormat:@"%d", 0], @"pokes",
-														  [NSString stringWithFormat:@"%d", 0], @"pics",
-														  [NSString stringWithFormat:@"%d", 0], @"age",
-														  [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
-														  @"", @"fb_id",
-														  [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
++ (NSArray *)followingListWithRefresh:(BOOL)isRefresh {
+	NSMutableArray *following = [NSMutableArray array];
+	
+	if (isRefresh) {
+		[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+			[HONAppDelegate writeFollowingList:(NSArray *)result];
+		}];
 	}
 	
-	return ([NSArray arrayWithArray:[subscribees sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"following"]) {
+		[following addObject:[HONUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
+															 @"points"		: [NSString stringWithFormat:@"%d", 0],
+															 @"total_votes"	: [NSString stringWithFormat:@"%d", 0],
+															 @"pokes"		: [NSString stringWithFormat:@"%d", 0],
+															 @"pics"		: [NSString stringWithFormat:@"%d", 0],
+															 @"age"			: [NSString stringWithFormat:@"%d", 0],
+															 @"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
+															 @"fb_id"		: @"",
+															 @"avatar_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
+	}
+	
+	return ([NSArray arrayWithArray:[following sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
 }
 
 + (void)addFollowingToList:(NSDictionary *)followingUser {
@@ -531,7 +470,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (BOOL)isFollowingUser:(int)userID {
 	BOOL isFollowing = NO;
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONUserVO *vo in [HONAppDelegate followingList]) {
+		for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 			if (vo.userID == userID) {
 				isFollowing = YES;
 				break;
@@ -978,10 +917,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							break;
 							
 						case 1:
-							notificationName = @"REFRESH_EXPLORE_TAB";
+							notificationName = @"REFRESH_MESSAGES_TAB";
 							break;
 							
 						case 2:
+							notificationName = @"REFRESH_ALERTS_TAB";
+							break;
+							
+						case 3:
 							notificationName = @"REFRESH_VERIFY_TAB";
 							break;
 						
@@ -1024,7 +967,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //				[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 			
 #if __IGNORE_SUSPENDED__ == 1
-			[[HONAPICaller sharedInstance] retrieveFollowersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 				
 				if (self.tabBarController == nil)
@@ -1037,7 +980,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 				
 			} else {
-				[[HONAPICaller sharedInstance] retrieveFollowersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+				[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
 					[HONAppDelegate writeFollowingList:(NSArray *)result];
 					
 					if (self.tabBarController == nil)
@@ -1427,8 +1370,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSArray *totalKeys = @[@"boot_total",
 						   @"background_total",
 						   @"timeline_total",
-						   @"explore_total",
-						   @"exploreRefresh_total",
+						   @"timelineRefresh_total",
+						   @"messages_total",
+						   @"messagesRefresh_total",
+						   @"alerts_total",
+						   @"alertsRefresh_total",
 						   @"verify_total",
 						   @"verifyRefresh_total",
 						   @"popular_total",
@@ -1457,12 +1403,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"upvotes"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"upvotes"];
-	
-	NSArray *bannerKeys = @[@"home_banner", @"explore_banner", @"verify_banner"];
-	for (NSString *key in bannerKeys) {
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
-			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:key];
-	}
 	
 	for (NSString *key in totalKeys) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])

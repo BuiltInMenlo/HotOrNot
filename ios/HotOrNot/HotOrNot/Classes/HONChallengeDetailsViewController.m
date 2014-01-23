@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
@@ -96,106 +94,6 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveChallenge:(int)challengeID {
-	NSDictionary *params = @{@"challengeID"	: [NSString stringWithFormat:@"%d", challengeID]};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallengeObject parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
-			
-			[self _participantCheck];
-			[self _rebuildUI];
-		}
-		
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-		
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-	}];
-}
-
-- (void)_upvoteChallenge:(int)userID {
-	NSDictionary *params = @{@"action"			: [NSString stringWithFormat:@"%d", 6],
-							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"challengeID"		: [NSString stringWithFormat:@"%d", _challengeVO.challengeID],
-							 @"challengerID"	: [NSString stringWithFormat:@"%d", userID],
-							 @"imgURL"			: _challengeVO.creatorVO.imagePrefix};
-	
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if (result != nil)
-				_challengeVO = [HONChallengeVO challengeWithDictionary:result];
-			
-			[_timelineItemFooterView updateChallenge:_challengeVO];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:_challengeVO.dictionary];
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
 
 
 #pragma mark - View Lifecycle
@@ -452,7 +350,14 @@
 }
 
 - (void)_goRefresh {
-	[self _retrieveChallenge:_challengeVO.challengeID];
+	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_challengeVO.challengeID completion:^(NSObject *result){
+		_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+		
+		[self _participantCheck];
+		[self _rebuildUI];
+		
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+	}];
 }
 
 - (void)_goClose {
@@ -543,7 +448,14 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-	[self _upvoteChallenge:_challengeVO.creatorVO.userID];
+	
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_challengeVO.challengeID forOpponent:_challengeVO.creatorVO completion:^(NSObject *result){
+		if (result != nil)
+			_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+		
+		[_timelineItemFooterView updateChallenge:_challengeVO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:_challengeVO.dictionary];
+	}];
 }
 
 - (void)_goShareChallenge {
@@ -595,15 +507,14 @@
 
 #pragma mark - Notifications
 - (void)_refreshAllTabs:(NSNotification *)notification {
-	[self _retrieveChallenge:_challengeVO.challengeID];
-}
-
-- (void)_refreshLikeCount:(NSNotification *)notification {
-//	HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:[notification object]];
-//	if (_challengeVO.challengeID == challengeVO.challengeID) {
-//		_challengeVO = challengeVO;
-//		[_timelineItemFooterView upvoteUser:challengeVO.creatorVO.userID onChallenge:challengeVO];
-//	}
+	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:_challengeVO.challengeID completion:^(NSObject *result){
+		_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+		
+		[self _participantCheck];
+		[self _rebuildUI];
+		
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+	}];
 }
 
 

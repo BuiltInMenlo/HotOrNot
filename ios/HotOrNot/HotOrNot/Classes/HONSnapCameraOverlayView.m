@@ -8,8 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 

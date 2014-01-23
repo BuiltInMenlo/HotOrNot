@@ -9,8 +9,6 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -599,7 +597,7 @@
 			}
 		}
 		
-		for (HONUserVO *vo in [HONAppDelegate followingList]) {
+		for (HONUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 			if (cell.userVO.userID == vo.userID) {
 				[cell toggleSelected:YES];
 				break;

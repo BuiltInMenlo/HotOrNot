@@ -48,7 +48,7 @@
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
 		_subjectName = subject;
-		_creatorSubjectName = (_selfieSubmitType == HONSelfieSubmitTypeReply) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
+		_creatorSubjectName = (_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
 		
 		[self _adoptUI];
 	}
@@ -165,7 +165,7 @@
 	
 	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyArrow"]];
 	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 8.0, 12.0);
-	_replyImageView.hidden = (_selfieSubmitType == HONSelfieSubmitTypeCreate);
+	_replyImageView.hidden = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage);
 	[_headerBGImageView addSubview:_replyImageView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
@@ -174,8 +174,7 @@
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
 	_placeholderLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-//	_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?"; //([_subjectName length] == 0) ? (_isJoinChallenge) ? @"reply how you feel" : @"how are you feeling?" : @"";
-	_placeholderLabel.text = (_selfieSubmitType == HONSelfieSubmitTypeCreate) ? @"how do you feel?" : @"reply how you feel";
+	_placeholderLabel.text = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage) ? @"how do you feel?" : @"reply how you feel";
 	[_headerBGImageView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
@@ -191,7 +190,7 @@
 	_subjectTextField.delegate = self;
 	[_headerBGImageView addSubview:_subjectTextField];
 	
-	_placeholderLabel.frame = CGRectOffset(_placeholderLabel.frame, ((int)(_selfieSubmitType == HONSelfieSubmitTypeReply)) * 25.0, 0.0);
+	_placeholderLabel.frame = CGRectOffset(_placeholderLabel.frame, ((int)(_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge)) * 25.0, 0.0);
 	_subjectTextField.frame = _placeholderLabel.frame;
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
@@ -203,7 +202,7 @@
 	_cancelButton.alpha = 0.75;
 	[_headerBGImageView addSubview:_cancelButton];
 	
-	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreate)];
+	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([HONAppDelegate isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	_subjectsView.isJoinVolley = _selfieSubmitType;
@@ -267,9 +266,9 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _dropKeyboardAndRemove:NO];
-	if ([_subjectTextField.text length] > 0 || (_selfieSubmitType == HONSelfieSubmitTypeReply)) {
+	if ([_subjectTextField.text length] > 0 || (_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge)) {
 		
-		if (_selfieSubmitType == HONSelfieSubmitTypeCreate)
+		if (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)
 			_subjectName = _subjectTextField.text;
 		
 		[self.delegate previewView:self changeSubject:_subjectName];
@@ -374,7 +373,7 @@
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 //	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);	
-	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? (_selfieSubmitType == HONSelfieSubmitTypeCreate) ? @"how do you feel?" : @"reply how you feel" : @"";
+	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge) ? @"how do you feel?" : @"reply how you feel" : @"";
 }
 
 

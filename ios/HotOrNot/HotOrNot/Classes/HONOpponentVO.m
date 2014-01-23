@@ -22,7 +22,7 @@
 	vo.username = [dictionary objectForKey:@"username"];
 	
 	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
-	vo.avatarURL = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : [NSString stringWithFormat:@"%@.jpg", vo.imagePrefix]];
+	vo.avatarURL = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];

@@ -63,7 +63,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_userVO.avatarURL completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userVO.avatarURL forAvatarBucket:YES completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {

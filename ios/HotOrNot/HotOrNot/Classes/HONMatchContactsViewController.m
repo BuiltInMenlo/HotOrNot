@@ -6,12 +6,11 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONMatchContactsViewController.h"
+#import "HONAPICaller.h"
 #import "HONHeaderView.h"
 
 
@@ -48,60 +47,19 @@
 
 
 #pragma mark - Data Calls
-- (void)_submitVerify {
-	NSDictionary *params = @{@"userID"							: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"code"							: [[HONAppDelegate infoForUser] objectForKey:@"sms_code"],
-							 (_isEmail) ? @"email" : @"phone"	: _textField.text};
+- (void)_submitContact {
+	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
+		[[HONAPICaller sharedInstance] showSuccessHUD];
+		
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self dismissViewControllerAnimated:YES completion:nil];
+	};
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_isEmail) ? kAPIEmailVerify : kAPIPhoneVerify);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:(_isEmail) ? kAPIEmailVerify : kAPIPhoneVerify parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[self dismissViewControllerAnimated:YES completion:nil];
-			result = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
+	if (_isEmail)
+		[[HONAPICaller sharedInstance] submitEmailAddressForContactsMatching:_textField.text completion:completionBlock];
+	
+	else
+		[[HONAPICaller sharedInstance] submitPhoneNumberForContactsMatching:_textField.text completion:completionBlock];
 }
 
 
@@ -228,7 +186,7 @@
 		
 		if (_isEmail) {
 			if ([HONAppDelegate isValidEmail:textField.text])
-				[self _submitVerify];
+				[self _submitContact];
 			
 			else {
 				[[[UIAlertView alloc] initWithTitle:@"No email!"
@@ -239,7 +197,7 @@
 			}
 			
 		} else
-			[self _submitVerify];
+			[self _submitContact];
 		
 	} else
 		textField.text = @"";

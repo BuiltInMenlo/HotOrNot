@@ -15,6 +15,7 @@
 
 @interface HONMessageItemViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UIImageView *unviewedImageView;
 @end
 
 @implementation HONMessageItemViewCell
@@ -38,10 +39,15 @@
 - (void)setMessageVO:(HONMessageVO *)messageVO {
 	_messageVO = messageVO;
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
+	NSString *avatarPrefix = ((HONOpponentVO *)[_messageVO.participants lastObject]).avatarURL;
+	NSString *username = ((HONOpponentVO *)[_messageVO.participants lastObject]).username;
+		
+	_unviewedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emoticon_blue"]];
+	_unviewedImageView.frame = CGRectOffset(_unviewedImageView.frame, 0.0, 12.0);
+	_unviewedImageView.hidden = (_messageVO.hasViewed);
+	[self.contentView addSubview:_unviewedImageView];
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 7.0, 34.0, 34.0)];
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0, 7.0, 34.0, 34.0)];
 	[self.contentView addSubview:imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
@@ -65,29 +71,37 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_messageVO.creatorVO.avatarURL completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:avatarPrefix forAvatarBucket:YES completion:nil];
 	};
 	
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageVO.creatorVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 							placeholderImage:nil
 									 success:successBlock
 									 failure:failureBlock];
 	
-	CGSize size = [_messageVO.creatorVO.username boundingRectWithSize:CGSizeMake(90.0, 22.0)
-															  options:NSStringDrawingTruncatesLastVisibleLine
-														   attributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14]}
-															  context:nil].size;
+	CGSize size = [username boundingRectWithSize:CGSizeMake(200.0, 17.0)
+										 options:NSStringDrawingTruncatesLastVisibleLine
+									  attributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14]}
+										 context:nil].size;
 	
 	
-	if (size.width > 90.0)
-		size = CGSizeMake(90.0, size.height);
+	if (size.width > 200.0)
+		size = CGSizeMake(200.0, size.height);
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, size.width, 17.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 14.0, size.width, 17.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _messageVO.creatorVO.username;
+	nameLabel.text = username;
 	[self.contentView addSubview:nameLabel];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 17.0, 50.0, 14.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.text = [HONAppDelegate timeSinceDate:_messageVO.updatedDate];
+	[self.contentView addSubview:timeLabel];
 	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	detailsButton.frame = CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight);
@@ -105,6 +119,10 @@
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
 	}];
+}
+
+- (void)updateAsSeen {
+	_unviewedImageView.hidden = YES;
 }
 
 

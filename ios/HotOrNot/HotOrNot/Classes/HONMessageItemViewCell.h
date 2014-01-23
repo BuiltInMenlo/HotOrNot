@@ -15,6 +15,7 @@
 + (NSString *)cellReuseIdentifier;
 
 - (void)showTapOverlay;
+- (void)updateAsSeen;
 
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, assign) id <HONMessageItemViewCellDelegate> delegate;

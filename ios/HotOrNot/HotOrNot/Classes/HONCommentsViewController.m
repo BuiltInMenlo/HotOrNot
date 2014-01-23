@@ -6,11 +6,11 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
+#import "AFNetworking.h"
 #import "MBProgressHUD.h"
 
 #import "HONCommentsViewController.h"
+#import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONGenericRowViewCell.h"
 #import "HONCommentViewCell.h"
@@ -62,7 +62,8 @@
 									nil];
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	/*
+	 AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -112,6 +113,7 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+	 */
 }
 
 - (void)_submitComment {
@@ -128,6 +130,7 @@
 	_progressHUD.taskInProgress = YES;
 	_progressHUD.yOffset = -75.0;
 	
+	/*
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 2], @"action",
 									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
@@ -177,6 +180,7 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+	 */
 }
 
 - (void)_deleteComment:(int)commentID {
@@ -186,6 +190,8 @@
 							nil];
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
+	
+	/*
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -223,6 +229,7 @@
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+	 */
 }
 
 

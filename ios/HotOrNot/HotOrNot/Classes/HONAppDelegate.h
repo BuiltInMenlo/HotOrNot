@@ -10,11 +10,9 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <UIKit/UIKit.h>
 
-#import "MBProgressHUD.h"
 #import "HONChallengeVO.h"
-#import "HONOpponentVO.h"
 #import "HONEmotionVO.h"
-#import "AFHTTPClient.h"
+#import "HONOpponentVO.h"
 
 
 #define __DEV_BUILD__ 1
@@ -71,41 +69,6 @@ typedef enum {
 extern NSString * const kConfigURL;
 extern NSString * const kConfigJSON;
 extern NSString * const kAPIHost;
-extern NSString * const kAPIChallenges;
-extern NSString * const kAPIComments;
-extern NSString * const kAPIDiscover;
-extern NSString * const kAPIPopular;
-extern NSString * const kAPISearch;
-extern NSString * const kAPIUsers;
-extern NSString * const kAPIVotes;
-extern NSString * const kAPIGetFriends;
-extern NSString * const kAPIGetSubscribees;
-extern NSString * const kAPIAddFriend;
-extern NSString * const kAPIRemoveFriend;
-extern NSString * const kAPISMSInvites;
-extern NSString * const kAPIEmailInvites;
-extern NSString * const kAPITumblrLogin;
-extern NSString * const kAPIEmailVerify;
-extern NSString * const kAPIPhoneVerify;
-extern NSString * const kAPIEmailContacts;
-extern NSString * const kAPIChallengeObject;
-extern NSString * const kAPIGetPublicMessages;
-extern NSString * const kAPIGetPrivateMessages;
-extern NSString * const kAPICheckNameAndEmail;
-extern NSString * const kAPIUsersFirstRunComplete;
-extern NSString * const kAPISetUserAgeGroup;
-extern NSString * const kAPICreateChallenge;
-extern NSString * const kAPIJoinChallenge;
-extern NSString * const kAPIGetVerifyList;
-extern NSString * const kAPIProcessChallengeImage;
-extern NSString * const kAPIProcessUserImage;
-extern NSString * const kAPISuspendedAccount;
-extern NSString * const kAPIPurgeUser;
-extern NSString * const kAPIPurgeContent;
-extern NSString * const kAPIGetActivity;
-extern NSString * const kAPIDeleteImage;
-extern NSString * const kAPIVerifyShoutout;
-extern NSString * const kAPIProfileShoutout;
 
 
 // view heights
@@ -143,9 +106,6 @@ extern NSString * const kNetErrorStatusCode404;
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
-+ (NSMutableString *)hmacToken;
-+ (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;
-+ (AFHTTPClient *)getHttpClientWithHMAC;
 + (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
 + (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
 + (NSString *)deviceModel;
@@ -206,12 +166,12 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 + (int)ageForDate:(NSDate *)date;
 
-+ (NSArray *)followersList;
++ (NSArray *)followersListWithRefresh:(BOOL)isRefresh;
 + (void)addFollower:(NSDictionary *)follower;
 + (void)writeFollowers:(NSArray *)followers;
 + (BOOL)isFollowedByUser:(int)userID;
 
-+ (NSArray *)followingList;
++ (NSArray *)followingListWithRefresh:(BOOL)isRefresh;
 + (void)addFollowingToList:(NSDictionary *)followingUser;
 + (void)writeFollowingList:(NSArray *)followingUsers;
 + (BOOL)isFollowingUser:(int)userID;
@@ -248,18 +208,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (UIFont *)helveticaNeueFontBold;
 + (UIFont *)helveticaNeueFontBoldItalic;
 + (UIFont *)helveticaNeueFontMedium;
-
-//+ (UIColor *)honPercentGreyscaleColor:(CGFloat)percent;
-//+ (UIColor *)honBlueTextColor;
-//+ (UIColor *)honBlueTextColorHighlighted;
-//+ (UIColor *)honGreenTextColor;
-//+ (UIColor *)honGreyTextColor;
-//+ (UIColor *)honDarkGreyTextColor;
-//+ (UIColor *)honLightGreyTextColor;
-//+ (UIColor *)honPlaceholderTextColor;
-//+ (UIColor *)honDebugColor;
-//+ (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent;
-
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

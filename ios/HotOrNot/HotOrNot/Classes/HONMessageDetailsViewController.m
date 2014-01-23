@@ -6,13 +6,12 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
+
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessageDetailsViewController.h"
+#import "HONAPICaller.h"
 #import "HONHeaderView.h"
-#import "HONCreateSnapButtonView.h"
 #import "HONImagePickerViewController.h"
 #import "HONMessageReplyViewCell.h"
 
@@ -29,6 +28,7 @@
 - (id)initWithMessage:(HONMessageVO *)messageVO {
 	if ((self = [super init])) {
 		_messageVO = messageVO;
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshMessage:) name:@"REFRESH_MESSAGE" object:nil];
 	}
 	
 	return (self);
@@ -48,6 +48,14 @@
 
 
 #pragma mark - Data Calls
+- (void)_retrieveMessage {
+	[[HONAPICaller sharedInstance] retrieveMessageForMessageID:_messageVO.messageID completion:^(NSObject *result) {
+		_messageVO = [HONMessageVO messageWithDictionary:(NSDictionary *)result];
+		
+		[_tableView reloadData];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+	}];
+}
 
 
 #pragma mark - View lifecycle
@@ -68,15 +76,20 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(8.0, 5.0, 74.0, 34.0);
-	backButton.backgroundColor = [UIColor greenColor];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(8.0, 10.0, 64.0, 24.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonIcon_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonIcon_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:_messageVO.subjectName hasTranslucency:YES];
+	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	replyButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+	
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:_messageVO.subjectName hasTranslucency:YES];
 	[_headerView addButton:backButton];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[_headerView addButton:replyButton];
 	[self.view addSubview:_headerView];
 }
 
@@ -120,16 +133,23 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[HONAppDelegate incTotalForCounter:@"messages"];
+	[self _retrieveMessage];
 }
 
-- (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Message Details - Create Volley"
+- (void)_goReply {
+	[[Mixpanel sharedInstance] track:@"Message Details - Reply"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsMessageReply:_messageVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+
+#pragma mark - Notifications
+- (void)_refreshMessage:(NSNotification *)notification {
+	[self _retrieveMessage];
 }
 
 
@@ -150,7 +170,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1 + [_messageVO.challengers count]);
+	return (1 + [_messageVO.replies count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -165,8 +185,8 @@
 	HONMessageReplyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-		cell = [[HONMessageReplyViewCell alloc] init];
-		HONOpponentVO *vo = (indexPath.section == 0) ? (HONOpponentVO *)_messageVO.creatorVO : (HONOpponentVO *)[[_messageVO challengers] objectAtIndex:indexPath.section - 1];
+		HONOpponentVO *vo = (indexPath.section == 0) ? (HONOpponentVO *)_messageVO.creatorVO : (HONOpponentVO *)[[_messageVO replies] objectAtIndex:indexPath.section - 1];
+		cell = [[HONMessageReplyViewCell alloc] initAsAuthor:vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
 		cell.messageReplyVO = vo;
 	}
 	

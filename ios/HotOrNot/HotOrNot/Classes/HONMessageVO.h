@@ -26,5 +26,6 @@
 @property (nonatomic, retain) NSDate *updatedDate;
 
 @property (nonatomic, retain) HONOpponentVO *creatorVO;
-@property (nonatomic, retain) NSMutableArray *challengers;
+@property (nonatomic, retain) NSMutableArray *participants;
+@property (nonatomic, retain) NSMutableArray *replies;
 @end

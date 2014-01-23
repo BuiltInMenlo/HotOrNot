@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -267,7 +265,7 @@
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	BOOL isFound = NO;
-	for (HONUserVO *userVO in [HONAppDelegate followingList]) {
+	for (HONUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
 		if (vo.userID == userVO.userID) {
 			isFound = YES;
 			[_selectedUsers addObject:vo];

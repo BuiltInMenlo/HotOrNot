@@ -9,14 +9,19 @@
 #import <UIKit/UIKit.h>
 
 #import "HONChallengeVO.h"
+#import "HONMessageVO.h"
 
 typedef enum {
-	HONSelfieSubmitTypeCreate	= 0,	/** Creates a new challenge */
-	HONSelfieSubmitTypeReply			/** Joins an in-progress challenge */
+	HONSelfieSubmitTypeCreateChallenge = 0,
+	HONSelfieSubmitTypeReplyChallenge,
+	HONSelfieSubmitTypeCreateMessage,
+	HONSelfieSubmitTypeReplyMessage
 } HONSelfieSubmitType;
 
 
 @interface HONChallengeCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initAsNewChallenge;
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
+- (id)initAsNewMessageWithRecipients:(NSString *)recipients;
+- (id)initAsMessageReply:(HONMessageVO *)messageVO;
 @end

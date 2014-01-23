@@ -6,14 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessagesViewController.h"
 #import "HONAPICaller.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONMessageRecipientsViewController.h"
 #import "HONHeaderView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONMessageItemViewCell.h"
@@ -34,7 +33,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedMessagesTab:) name:@"SELECTED_MESSAGES_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareMessagesTab:) name:@"TARE_MESSAGES_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshMessagesTab:) name:@"REFRESH_MESSAGES_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshMessagesTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -55,41 +57,16 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveMessages {
-	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"action"		: [NSString stringWithFormat:@"%d", 10],
-							 @"isPrivate"	: @"N"};
-	
-	VolleyJSONLog(@"%@ _retrieveChallenges —/> (%@/%@)\n%@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-		} else {
-//			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [result firstObject]);
-			VolleyJSONLog(@"AFNetworking [-] %@: FEED TOTAL %d", [[self class] description], [result count]);
-			
-			_messages = [NSMutableArray array];
-			for (NSDictionary *dict in result) {
-				HONMessageVO *vo = [HONMessageVO messageWithDictionary:dict];
-				
-				//if (![HONAppDelegate switchEnabledForKey:@"dissolving_timeline"] && !vo.hasViewed)
-				[_messages addObject:vo];
-			}
+	[[HONAPICaller sharedInstance] retrieveMessagesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+		_messages = [NSMutableArray array];
+		for (NSDictionary *dict in (NSArray *)result) {
+			HONMessageVO *vo = [HONMessageVO messageWithDictionary:dict];
+			[_messages addObject:vo];
 		}
 		
 		[_tableView reloadData];
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-		
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-	}];
+	 }];
 }
 
 
@@ -187,7 +164,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessageRecipientsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -197,7 +174,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -286,6 +263,10 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	if (!messageVO.hasViewed)
+		[[HONAPICaller sharedInstance] updateMessageAsSeenForMessageID:messageVO.messageID completion:nil];
+	
+	[cell updateAsSeen];
 	[self.navigationController pushViewController:[[HONMessageDetailsViewController alloc] initWithMessage:messageVO] animated:YES];
 }
 

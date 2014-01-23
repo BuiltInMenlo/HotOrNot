@@ -8,8 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
@@ -122,7 +120,7 @@
 				[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 			}
 			
-			[[HONAPICaller sharedInstance] retrieveFollowersForUserByUserID:_userVO.userID completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userVO.userID completion:^(NSObject *result){
 				_followingCounter = [(NSArray *)result count];
 				[self _retrieveChallenges];
 			}];
@@ -141,7 +139,7 @@
 }
 
 - (void)_retrieveChallenges {
-	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUsername:_userVO.username completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
 		_challenges = [NSMutableArray array];
 		
 		for (NSDictionary *dict in (NSArray *)result) {
@@ -378,7 +376,7 @@
 						  otherButtonTitles:nil] show];
 		
 //		if (![result isEqual:[NSNull null]])
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	}];
 }
 
@@ -586,7 +584,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToProcessImageSizesForURL:_userVO.avatarURL completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userVO.avatarURL forAvatarBucket:YES completion:nil];
 		
 		_avatarImageView.alpha = 1.0;
 		_avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];

@@ -313,7 +313,7 @@
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	BOOL isFound = NO;
-	for (HONUserVO *userVO in [HONAppDelegate followingList]) {
+	for (HONUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
 		if (vo.userID == userVO.userID) {
 			isFound = YES;
 			[_selectedUsers addObject:vo];
