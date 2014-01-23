@@ -9,6 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAPICaller.h"
+#import "HONFontAllocator.h"
 #import "HONInviteUserViewCell.h"
 #import "HONColorAuthority.h"
 #import "HONImagingDepictor.h"
@@ -79,7 +80,7 @@
 //	[avatarImageView setImageWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];

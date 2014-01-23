@@ -12,6 +12,7 @@
 #import "HONImageLoadingView.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 
 @interface HONMessageReplyViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
@@ -89,7 +90,7 @@
 										failure:challengeFailureBlock];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isAuthor) ? 7.0 : 255.0, 17.0, 50.0, 14.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 	timeLabel.textAlignment = (_isAuthor) ? NSTextAlignmentLeft : NSTextAlignmentRight;
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];

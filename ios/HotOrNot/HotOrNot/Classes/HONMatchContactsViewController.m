@@ -11,6 +11,7 @@
 
 #import "HONMatchContactsViewController.h"
 #import "HONAPICaller.h"
+#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 
 
@@ -87,7 +88,7 @@
 	[_textField setTextColor:[UIColor blackColor]];
 	[_textField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_textField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_textField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_textField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	_textField.keyboardType = (_isEmail) ? UIKeyboardTypeEmailAddress : UIKeyboardTypePhonePad;
 	_textField.placeholder = (_isEmail) ? @"Please provide your email address" : @"Please provide your mobile #";
 	_textField.text = @"";

@@ -8,6 +8,7 @@
 
 #import "HONSearchBarHeaderView.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 
 @interface HONSearchBarHeaderView ()
 @property (nonatomic, strong) UIImageView *staticBGImageView;
@@ -44,7 +45,7 @@
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
 		[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 		[_searchTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_searchTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+		_searchTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
 		_searchTextField.text = @"Tap here to search";
 		_searchTextField.delegate = self;

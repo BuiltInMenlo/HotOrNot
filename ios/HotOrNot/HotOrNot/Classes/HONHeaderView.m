@@ -7,7 +7,7 @@
 //
 
 #import "HONHeaderView.h"
-
+#import "HONFontAllocator.h"
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -37,7 +37,7 @@
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 29.0, 200.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:22];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
@@ -55,7 +55,7 @@
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 29.0, 200.0, 26.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:22];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;

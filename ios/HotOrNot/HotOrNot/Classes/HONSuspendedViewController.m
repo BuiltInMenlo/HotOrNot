@@ -11,6 +11,7 @@
 #import "HONSuspendedViewController.h"
 #import "HONHeaderView.h"
 #import "HONAPICaller.h"
+#import "HONFontAllocator.h"
 
 @interface HONSuspendedViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -59,7 +60,7 @@
 	
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 20.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
+	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
 	label.textColor = [UIColor grayColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.textAlignment = NSTextAlignmentCenter;
@@ -92,7 +93,7 @@
 //	[_passcodeTextField setTextColor:[UIColor blackColor]];
 //	[_passcodeTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 //	[_passcodeTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-//	_passcodeTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+//	_passcodeTextField.font = [[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 //	_passcodeTextField.keyboardType = UIKeyboardTypeAlphabet;
 //	_passcodeTextField.text = @"";
 //	_passcodeTextField.delegate = self;

@@ -12,6 +12,7 @@
 #import "HONUsernameViewController.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 
 
@@ -75,7 +76,7 @@
 	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.518]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
+	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	_usernameTextField.delegate = self;

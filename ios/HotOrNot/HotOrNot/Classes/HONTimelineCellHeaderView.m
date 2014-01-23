@@ -8,9 +8,10 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONAPICaller.h"
-#import "HONImagingDepictor.h"
 #import "HONTimelineCellHeaderView.h"
+#import "HONAPICaller.h"
+#import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
 
 @interface HONTimelineCellHeaderView()
@@ -51,14 +52,14 @@
 		CGSize size;
 		CGFloat maxNameWidth = 120.0;
 		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 14.0, maxNameWidth, 18.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+		nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.text = _challengeVO.creatorVO.username;
 		[self addSubview:nameLabel];
 		
 		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 17.0, 50.0, 14.0)];
-		timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 		timeLabel.textAlignment = NSTextAlignmentRight;
 		timeLabel.textColor = [UIColor whiteColor];
 		timeLabel.backgroundColor = [UIColor clearColor];
@@ -87,7 +88,7 @@
 		CGFloat maxSubjectWidth = 320.0 - ((nameLabel.frame.size.width + 90.0) + ((int)(emotionVO != nil) * 22.0));
 		
 		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 9.0, maxSubjectWidth, 18.0)];
-		subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		subjectLabel.font = [[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _challengeVO.subjectName;

@@ -11,6 +11,7 @@
 #import "UILabel+FormattedText.h"
 
 #import "HONTimelineCellSubjectView.h"
+#import "HONFontAllocator.h"
 
 #define kMAX_WIDTH 280.0f
 #define kSPECIAL_COLOR [UIColor colorWithRed:0.424 green:1.000 blue:0.000 alpha:1.0]
@@ -31,7 +32,7 @@
 		_username = username;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, self.frame.size.height)];
-		_captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:28];
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:28];
 		_captionLabel.textColor = [UIColor whiteColor];
 		_captionLabel.numberOfLines = 0;
 		_captionLabel.backgroundColor = [UIColor clearColor];

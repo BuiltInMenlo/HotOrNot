@@ -11,6 +11,7 @@
 
 #import "HONVoterViewCell.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 
 @interface HONVoterViewCell()
 @end
@@ -38,7 +39,7 @@
 	[self addSubview:userImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
 	timeLabel.textColor = [UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -46,7 +47,7 @@
 	[self addSubview:timeLabel];
 	
 	UILabel *voterLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 23.0, 220.0, 16.0)];
-	voterLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	voterLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
 	voterLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
 	voterLabel.backgroundColor = [UIColor clearColor];
 	voterLabel.text = [NSString stringWithFormat:NSLocalizedString(@"voters_caption", nil), _voterVO.username];

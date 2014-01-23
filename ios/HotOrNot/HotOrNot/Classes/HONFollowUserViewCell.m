@@ -11,6 +11,7 @@
 #import "HONFollowUserViewCell.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 
 @interface HONFollowUserViewCell ()
@@ -80,7 +81,7 @@
 									failure:imageFailureBlock];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 22.0, 130.0, 22.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.username;

@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemFooterView.h"
+#import "HONFontAllocator.h"
 #import "HONEmotionVO.h"
 
 
@@ -28,7 +29,7 @@
 //		self.backgroundColor = [HONAppDelegate honDebugColorByName:@"fuschia" atOpacity:0.5];
 		
 		_participantsLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 26.0, 200.0, 19.0)];
-		_participantsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+		_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
 		_participantsLabel.textColor = [UIColor whiteColor];
 		_participantsLabel.backgroundColor = [UIColor clearColor];
 		_participantsLabel.text = [self _captionForParticipants];

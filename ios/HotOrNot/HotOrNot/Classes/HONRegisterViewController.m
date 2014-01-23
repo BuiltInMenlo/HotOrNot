@@ -17,6 +17,7 @@
 
 #import "HONRegisterViewController.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
@@ -238,7 +239,7 @@
 	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = @"Enter username";
 	_usernameTextField.text = @"";
@@ -265,7 +266,7 @@
 	[_emailTextField setTextColor:[UIColor blackColor]];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_emailTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_emailTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	_emailTextField.keyboardType = UIKeyboardTypeEmailAddress;
 	_emailTextField.placeholder = @"Enter email";
 	_emailTextField.text = @"";
@@ -278,7 +279,7 @@
 	[self.view addSubview:divider2ImageView];
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
-	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_birthdayLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	_birthdayLabel.textColor = [[HONColorAuthority sharedInstance] honPlaceholderTextColor];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
 	_birthdayLabel.text = @"What is your birthday?";

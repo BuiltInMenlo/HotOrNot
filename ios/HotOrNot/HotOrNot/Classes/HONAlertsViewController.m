@@ -12,6 +12,7 @@
 
 #import "HONAlertsViewController.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONAlertItemVO.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
@@ -527,7 +528,7 @@
 	
 	} else if (indexPath.row < [_alertItems count] + 5) {
 		[cell removeChevron];
-		cell.textLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.row - [_alertItems count]];
 		cell.textLabel.textAlignment = NSTextAlignmentCenter;

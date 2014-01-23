@@ -10,6 +10,7 @@
 
 #import "HONVerifyCellHeaderView.h"
 #import "HONAPICaller.h"
+#import "HONFontAllocator.h"
 
 
 @interface HONVerifyCellHeaderView ()
@@ -50,7 +51,7 @@
 		
 		
 		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 8.0, 220.0, 19.0)];
-		nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+		nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:13];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
@@ -63,7 +64,7 @@
 //		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, nameLabel.frame.size.height);
 		
 		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 25.0, 265.0, 17.0)];
-		messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		messageLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 		messageLabel.textColor = [UIColor whiteColor];
 		messageLabel.backgroundColor = [UIColor clearColor];
 		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];

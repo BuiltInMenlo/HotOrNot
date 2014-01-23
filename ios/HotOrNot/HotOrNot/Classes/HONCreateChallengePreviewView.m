@@ -11,6 +11,7 @@
 
 #import "HONCreateChallengePreviewView.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 #import "HONVolleyEmotionsPickerView.h"
@@ -172,7 +173,7 @@
 	
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -1.0, 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
+	_placeholderLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
 	_placeholderLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	_placeholderLabel.text = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage) ? @"how do you feel?" : @"reply how you feel";
 	[_headerBGImageView addSubview:_placeholderLabel];
@@ -184,7 +185,7 @@
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
+	_subjectTextField.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = @"";
 	_subjectTextField.delegate = self;

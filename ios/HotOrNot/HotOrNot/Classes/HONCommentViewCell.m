@@ -11,6 +11,7 @@
 
 #import "HONCommentViewCell.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 
 @implementation HONCommentViewCell
 
@@ -26,7 +27,7 @@
 	[self addSubview:userImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
 	timeLabel.textColor = [UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -34,15 +35,15 @@
 	[self addSubview:timeLabel];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 13.0, 180.0, 18.0)];
-	usernameLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
 	usernameLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];
 	
-	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16]}];
+	CGSize size = [_commentVO.content sizeWithAttributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}];
 	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 33.0, 200.0, size.height)];
-	contentLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
+	contentLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	contentLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	contentLabel.backgroundColor = [UIColor clearColor];
 	contentLabel.text = _commentVO.content;

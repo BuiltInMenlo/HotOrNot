@@ -11,6 +11,7 @@
 #import "HONAlertItemViewCell.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONAlertItemVO.h"
 #import "HONImageLoadingView.h"
 
@@ -94,7 +95,7 @@
 	
 	CGSize size = [_alertItemVO.username boundingRectWithSize:CGSizeMake(90.0, 22.0)
 													  options:NSStringDrawingTruncatesLastVisibleLine
-												   attributes:@{NSFontAttributeName:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14]}
+												   attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14]}
 													  context:nil].size;
 	
 	
@@ -102,21 +103,21 @@
 		size = CGSizeMake(90.0, size.height);
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, size.width, 17.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _alertItemVO.username;
 	[self.contentView addSubview:nameLabel];
 	
 	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 225.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
-	messageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	messageLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	messageLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	messageLabel.backgroundColor = [UIColor clearColor];
 	messageLabel.text = _alertItemVO.message;
 	[self.contentView addSubview:messageLabel];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 14.0, 50.0, 17.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];

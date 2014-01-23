@@ -10,8 +10,12 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONHeaderView.h"
 #import "HONChallengeDetailsViewController.h"
+#import "HONHeaderView.h"
+#import "HONAPICaller.h"
+#import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
 #import "HONImagePickerViewController.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
@@ -22,9 +26,6 @@
 #import "HONChallengeDetailsGridView.h"
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONAPICaller.h"
-#import "HONColorAuthority.h"
-#import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 #import "HONEmotionVO.h"
 
@@ -260,7 +261,7 @@
 	joinFooterButton.frame = CGRectMake(0.0, 1.0, 43.0, 44.0);
 	[joinFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[joinFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
+	[joinFooterButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17.0]];
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -279,7 +280,7 @@
 	shareFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 	[shareFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[shareFooterButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[shareFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
+	[shareFooterButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17.0]];
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -298,7 +299,7 @@
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 	[flagButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
 	[flagButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17.0]];
+	[flagButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
 	

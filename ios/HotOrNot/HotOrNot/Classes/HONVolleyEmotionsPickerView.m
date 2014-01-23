@@ -8,6 +8,7 @@
 
 #import "HONVolleyEmotionsPickerView.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
 #import "HONCreateEmotionViewCell.h"
@@ -80,7 +81,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
 	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor]; //	[HONAppDelegate honPercentGreyscaleColor:0.467]
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (_isJoinVolley) ? @"Reply" : @"Trending";

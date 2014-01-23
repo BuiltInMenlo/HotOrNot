@@ -33,6 +33,7 @@
 
 #import "HONAppDelegate.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
@@ -725,82 +726,40 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (params);
 }
 
-+ (UIFont *)cartoGothicBold {
-	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
-}
-
-+ (UIFont *)cartoGothicBoldItalic {
-	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:24.0]);
-}
-
-+ (UIFont *)cartoGothicBook {
-	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
-}
-
-+ (UIFont *)cartoGothicItalic {
-	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
-}
-
-+ (UIFont *)helveticaNeueFontRegular {
-	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
-}
-
-+ (UIFont *)helveticaNeueFontLight {
-	return ([UIFont fontWithName:@"HelveticaNeue-Light" size:18.0]);
-}
-
-+ (UIFont *)helveticaNeueFontBold {
-	return ([UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0]);
-}
-
-+ (UIFont *)helveticaNeueFontBoldItalic {
-	return ([UIFont fontWithName:@"HelveticaNeue-BoldItalic" size:18.0]);
-}
-
-+ (UIFont *)helveticaNeueFontMedium {
-	return ([UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0]);
-}
-
-
-//+ (UIColor *)honPercentGreyscaleColor:(CGFloat)percent {
-//	return ([UIColor colorWithWhite:percent alpha:1.0]);
+//+ (UIFont *)cartoGothicBold {
+//	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
 //}
 //
-//+ (UIColor *)honBlueTextColor {
-//	return ([UIColor colorWithRed:0.141 green:0.271 blue:0.925 alpha:1.0]);
-//	//return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:1.0]);
+//+ (UIFont *)cartoGothicBoldItalic {
+//	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:24.0]);
 //}
 //
-//+ (UIColor *)honBlueTextColorHighlighted {
-//	return ([UIColor colorWithRed:0.580 green:0.729 blue:0.973 alpha:1.0]);
-////	return ([UIColor colorWithRed:0.071 green:0.439 blue:1.000 alpha:0.5]);
+//+ (UIFont *)cartoGothicBook {
+//	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
 //}
 //
-//+ (UIColor *)honGreenTextColor {
-//	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
+//+ (UIFont *)cartoGothicItalic {
+//	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
 //}
 //
-//+ (UIColor *)honGreyTextColor {
-//	return ([UIColor colorWithWhite:0.600 alpha:1.0]);
+//+ (UIFont *)helveticaNeueFontRegular {
+//	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
 //}
 //
-//+ (UIColor *)honDarkGreyTextColor {
-//	return ([UIColor colorWithWhite:0.400 alpha:1.0]);
+//+ (UIFont *)helveticaNeueFontLight {
+//	return ([UIFont fontWithName:@"HelveticaNeue-Light" size:18.0]);
 //}
 //
-//+ (UIColor *)honLightGreyTextColor {
-//	return ([UIColor colorWithWhite:0.671 alpha:1.0]);
+//+ (UIFont *)helveticaNeueFontBold {
+//	return ([UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0]);
 //}
 //
-//+ (UIColor *)honPlaceholderTextColor {
-//	return ([UIColor colorWithWhite:0.790 alpha:1.0]);
+//+ (UIFont *)helveticaNeueFontBoldItalic {
+//	return ([UIFont fontWithName:@"HelveticaNeue-BoldItalic" size:18.0]);
 //}
 //
-//+ (UIColor *)honDebugColor {
-//	return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:0.5]);
-//}
-//+ (UIColor *)honDebugColorByName:(NSString *)colorName atOpacity:(CGFloat)percent {
-//	return (([[colorName uppercaseString] isEqualToString:@"FUSCHIA"]) ? [UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:MIN(MAX(0.33, percent), 1.00)] : [UIColor colorWithRed:((float)[[colorName uppercaseString] isEqualToString:@"RED"]) green:((float)[[colorName uppercaseString] isEqualToString:@"GREEN"]) blue:((float)[[colorName uppercaseString] isEqualToString:@"BLUE"]) alpha:MIN(MAX(0.33, percent), 1.00)]);
+//+ (UIFont *)helveticaNeueFontMedium {
+//	return ([UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0]);
 //}
 
 
@@ -1097,14 +1056,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
-														   NSFontAttributeName				: [[HONAppDelegate cartoGothicBold] fontWithSize:22]}];
+														   NSFontAttributeName				: [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22]}];
 	
 	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
-														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateNormal];
+														   NSFontAttributeName				: [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateNormal];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
-														   NSFontAttributeName				: [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateHighlighted];
+														   NSFontAttributeName				: [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateHighlighted];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	

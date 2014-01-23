@@ -8,9 +8,10 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONAPICaller.h"
 #import "HONSuggestedFollowViewCell.h"
+#import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONImageLoadingView.h"
 #import "HONUserVO.h"
 #import "HONImagingDepictor.h"
@@ -58,7 +59,7 @@
 		[self.contentView addSubview:_followButton];
 		
 		_selfiesLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 170.0, 107.0, 18.0)];
-		_selfiesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		_selfiesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_selfiesLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_selfiesLabel.backgroundColor = [UIColor clearColor];
 		_selfiesLabel.textAlignment = NSTextAlignmentCenter;
@@ -66,7 +67,7 @@
 		[self.contentView addSubview:_selfiesLabel];
 		
 		_followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, 170.0, 107.0, 18.0)];
-		_followersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		_followersLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_followersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_followersLabel.backgroundColor = [UIColor clearColor];
 		_followersLabel.textAlignment = NSTextAlignmentCenter;
@@ -74,7 +75,7 @@
 		[self.contentView addSubview:_followersLabel];
 		
 		_followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 170.0, 107.0, 18.0)];
-		_followingLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
+		_followingLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_followingLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_followingLabel.backgroundColor = [UIColor clearColor];
 		_followingLabel.textAlignment = NSTextAlignmentCenter;
@@ -114,7 +115,7 @@
 	
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 11.0, 170.0, 20.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _popularUserVO.username;

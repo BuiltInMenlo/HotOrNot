@@ -14,6 +14,7 @@
 
 #import "HONSnapPreviewViewController.h"
 #import "HONImageLoadingView.h"
+#import "HONFontAllocator.h"
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
 #import "HONHeaderView.h"
@@ -159,7 +160,7 @@
 	CGSize size;
 	CGFloat maxNameWidth = (_snapPreviewType == HONSnapPreviewTypeVerify) ? 255.0 : 105.0;
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 15.0, maxNameWidth, 18.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:13];
 	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	[headerView addSubview:nameLabel];
@@ -178,7 +179,7 @@
 	
 	if (_snapPreviewType != HONSnapPreviewTypeVerify) {
 		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 15.0, 320.0 - (nameLabel.frame.size.width + 110.0), 18.0)];
-		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
+		subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _opponentVO.subjectName;

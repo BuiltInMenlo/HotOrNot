@@ -10,6 +10,7 @@
 
 #import "HONCreateEmotionViewCell.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 
 @interface HONCreateEmotionViewCell()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
@@ -45,7 +46,7 @@
 								  failure:failureBlock];
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 23.0, 200.0, 24.0)];
-		label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:20];
+		label.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
 		label.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.text = _emotionVO.hastagName;

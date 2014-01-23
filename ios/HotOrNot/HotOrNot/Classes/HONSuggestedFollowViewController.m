@@ -19,6 +19,7 @@
 #import "HONChangeAvatarViewController.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 
@@ -244,7 +245,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
 	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = @"Follow popular people";
