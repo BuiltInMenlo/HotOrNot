@@ -30,6 +30,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityBackground"]];
 	}
 	
 	return (self);
@@ -41,14 +42,17 @@
 	_messageVO = messageVO;
 	
 	NSString *avatarPrefix = ((HONOpponentVO *)[_messageVO.participants lastObject]).avatarPrefix;
-	NSString *username = ((HONOpponentVO *)[_messageVO.participants lastObject]).username;
-		
+	NSString *usernames = @"";
+	for (NSString *username in _messageVO.participantNames)
+		usernames = [[usernames stringByAppendingString:username] stringByAppendingString:@", "];
+	usernames = [usernames substringToIndex:[usernames length] - 2];
+	
 	_unviewedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emoticon_blue"]];
 	_unviewedImageView.frame = CGRectOffset(_unviewedImageView.frame, 0.0, 12.0);
 	_unviewedImageView.hidden = (_messageVO.hasViewed);
 	[self.contentView addSubview:_unviewedImageView];
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0, 7.0, 34.0, 34.0)];
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 54.0, 54.0)];
 	[self.contentView addSubview:imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
@@ -80,32 +84,30 @@
 									 success:successBlock
 									 failure:failureBlock];
 	
-	CGSize size = [username boundingRectWithSize:CGSizeMake(200.0, 17.0)
-										 options:NSStringDrawingTruncatesLastVisibleLine
-									  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14]}
-										 context:nil].size;
-	
-	
-	if (size.width > 200.0)
-		size = CGSizeMake(200.0, size.height);
-	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 14.0, size.width, 17.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 19.0, 150.0, 19.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = username;
+	nameLabel.text = usernames;
 	[self.contentView addSubview:nameLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 17.0, 50.0, 14.0)];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 37.0, 150.0, 17.0)];
+	subjectLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	subjectLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = _messageVO.subjectName;
+	[self.contentView addSubview:subjectLabel];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 29.0, 50.0, 15.0)];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.text = [HONAppDelegate timeSinceDate:_messageVO.updatedDate];
 	[self.contentView addSubview:timeLabel];
 	
 	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	detailsButton.frame = CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight);
+	detailsButton.frame = CGRectMake(0.0, 0.0, 320.0, 74.0);
 	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchDown];
 	[self.contentView addSubview:detailsButton];
 }

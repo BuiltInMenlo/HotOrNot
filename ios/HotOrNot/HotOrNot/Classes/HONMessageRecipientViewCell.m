@@ -33,10 +33,10 @@
 	if ((self = [super init])) {
 		_isSelected = NO;
 		
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityBackground"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(272.0, 10.0, 44.0, 44.0);
+		_checkButton.frame = CGRectMake(272.0, 3.0, 44.0, 44.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"greenDot"] forState:UIControlStateNormal];
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"greenDot"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goDeselected) forControlEvents:UIControlEventTouchUpInside];
@@ -44,7 +44,7 @@
 		[self addSubview:_checkButton];
 		
 		_selectedButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_selectedButton.frame = CGRectMake(272.0, 10.0, 44.0, 44.0);
+		_selectedButton.frame = CGRectMake(272.0, 3.0, 44.0, 44.0);
 		[_selectedButton setBackgroundImage:[UIImage imageNamed:@"grayDot"] forState:UIControlStateNormal];
 		[_selectedButton setBackgroundImage:[UIImage imageNamed:@"grayDot"] forState:UIControlStateHighlighted];
 		[_selectedButton addTarget:self action:@selector(_goSelected) forControlEvents:UIControlEventTouchUpInside];
@@ -60,7 +60,7 @@
 	_userVO = userVO;
 	
 	//NSLog(@"AVATAR:[%@]", _messageRecipientVO.avatarPrefix);
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 7.0, 34.0, 34.0)];
 	avatarImageView.alpha = 0.0;
 	[self addSubview:avatarImageView];
 	
@@ -85,8 +85,8 @@
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 22.0, 130.0, 22.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, 130.0, 18.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.username;

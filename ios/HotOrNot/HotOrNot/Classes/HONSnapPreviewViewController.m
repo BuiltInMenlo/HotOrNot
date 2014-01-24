@@ -167,7 +167,7 @@
 	[headerView addSubview:nameLabel];
 	
 	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
-		size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
+		size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 18.0)
 																				 options:NSStringDrawingTruncatesLastVisibleLine
 																			  attributes:@{NSFontAttributeName:nameLabel.font}
 																				 context:nil].size;

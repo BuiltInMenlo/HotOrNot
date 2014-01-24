@@ -48,6 +48,7 @@
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) UIImageView *emptyTimelineImageView;
 @property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
 @property (nonatomic) BOOL isScrollingDown;
 @property (nonatomic) BOOL isFirstLoad;
@@ -111,6 +112,9 @@
 			}
 			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
 		}
+		
+		_emptyTimelineImageView.hidden = ([_challenges count] > 0);
+		
 	 
 		_isFirstLoad = NO;
 		[_tableView reloadData];
@@ -122,7 +126,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	//self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
 	
 	_imageQueueLocation = 0;
@@ -137,6 +140,10 @@
 	_tableView.pagingEnabled = YES;
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
+	
+	_emptyTimelineImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_noFollowers"]];
+	_emptyTimelineImageView.frame = CGRectOffset(_emptyTimelineImageView.frame, 0.0, 80.0);
+	[_tableView addSubview:_emptyTimelineImageView];
 	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;

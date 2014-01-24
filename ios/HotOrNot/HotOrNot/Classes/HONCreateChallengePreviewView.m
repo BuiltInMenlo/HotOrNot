@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -15,6 +17,7 @@
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
+#import "HONTrivialUserVO.h"
 #import "HONVolleyEmotionsPickerView.h"
 
 @interface HONCreateChallengePreviewView () <HONVolleyEmotionsPickerViewDelegate>
@@ -26,6 +29,7 @@
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIImageView *blurredImageView;
+@property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
 @property (nonatomic, strong) UIImageView *buttonHolderImageView;
@@ -40,7 +44,7 @@
 @synthesize delegate = _delegate;
 
 
-- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieSubmitType)selfieSubmitType withSubject:(NSString *)subject {
+- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieSubmitType)selfieSubmitType withSubject:(NSString *)subject withRecipients:(NSArray *)recipients {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
@@ -51,53 +55,7 @@
 		
 		_subjectName = subject;
 		_creatorSubjectName = (_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
-		
-		[self _adoptUI];
-	}
-	
-	return (self);
-}
-
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
-	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor whiteColor];
-		_subjectName = subject;
-		
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)];
-		NSLog(@"NORMAL -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
-		
-		_previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * ((self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0));
-		[self addSubview:_previewImageView];
-		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
-		_blurredImageView.frame = _previewImageView.frame;//CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * ((self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0));
-		[self addSubview:_blurredImageView];
-		
-		[self _adoptUI];
-	}
-	
-	return (self);
-}
-
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
-	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor whiteColor];;
-		_subjectName = subject;
-		
-		_previewImage = [HONImagingDepictor mirrorImage:[HONImagingDepictor scaleImage:image byFactor:([UIScreen mainScreen].bounds.size.height / 1280.0)]];
-		NSLog(@"MIRRORED -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
-		
-		_previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * ((self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0));
-//		_previewImageView.transform = CGAffineTransformScale(_previewImageView.transform, -1.0f, 1.0f);
-		[self addSubview:_previewImageView];
-		
-		_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
-		_blurredImageView.frame = _previewImageView.frame;//CGRectOffset(_blurredImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, ABS(self.frame.size.height - _previewImage.size.height) * ((self.frame.size.height < _previewImage.size.height) ? -0.5 : 0.0));
-//		_blurredImageView.transform = CGAffineTransformScale(_blurredImageView.transform, -1.0f, 1.0f);
-//		_blurredImageView.alpha = 0.0;
-		[self addSubview:_blurredImageView];
+		_recipients = recipients;
 		
 		[self _adoptUI];
 	}
@@ -107,24 +65,6 @@
 
 
 #pragma mark - Puplic APIs
-//- (void)setIsJoinChallenge:(BOOL)isJoinChallenge {
-//	_isJoinChallenge = isJoinChallenge;
-//	
-//	_placeholderLabel.frame = CGRectOffset(_placeholderLabel.frame, ((int)_isJoinChallenge) * 25.0, 0.0);//(10.0 + ((int)_isJoinChallenge) * 25.0, _placeholderLabel.frame.origin.y, _placeholderLabel.frame.size.width - (((int)_isJoinChallenge) * 25.0), _placeholderLabel.frame.size.height);
-//	_subjectTextField.frame = _placeholderLabel.frame;
-//
-//	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyArrow"]];
-//	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 8.0, 12.0);
-//	_replyImageView.hidden = !_isJoinChallenge;
-//	[_headerBGImageView addSubview:_replyImageView];
-//	
-//	_creatorSubjectName = (_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : @"";
-//	_placeholderLabel.text = (_isJoinChallenge) ? @"reply how you feel" : @"how do you feel?";
-//	_subjectTextField.text = @"";//(_isJoinChallenge) ? [NSString stringWithFormat:@"%@ : ", _subjectName] : _subjectName;
-//	
-//	_subjectsView.isJoinVolley = _isJoinChallenge;
-//}
-
 - (void)uploadComplete {
 	NSLog(@"uploadComplete");
 	[_cancelButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
@@ -165,6 +105,19 @@
 	_headerBGImageView.userInteractionEnabled = YES;
 	[self addSubview:_headerBGImageView];
 	
+	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(38.0, 5.0, 203.0, 34.0)];
+	avatarHolderView.clipsToBounds = YES;
+	avatarHolderView.hidden = (_recipients == nil);
+	[self addSubview:avatarHolderView];
+	
+	int offset = 0;
+	for (HONTrivialUserVO *vo in _recipients) {
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(offset, 0.0, 34.0, 34.0)];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:[vo.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+		[avatarHolderView addSubview:avatarImageView];
+		offset += 39;
+	}
+	
 	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyArrow"]];
 	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 8.0, 12.0);
 	_replyImageView.hidden = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage);
@@ -175,7 +128,7 @@
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -1.0, 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
-	_placeholderLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+	_placeholderLabel.textColor = [UIColor blackColor];
 	_placeholderLabel.text = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage) ? @"how do you feel?" : @"reply how you feel";
 	[_headerBGImageView addSubview:_placeholderLabel];
 	

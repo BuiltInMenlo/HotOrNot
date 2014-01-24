@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+	HONMessageRowTypeFindFriends = 0,
+	HONMessageRowTypeFindClubs,
+	HONMessageRowTypeMatchPhone
+} HONMessageRowType;
+
 @interface HONMessagesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 @end

@@ -22,6 +22,6 @@ typedef enum {
 @interface HONChallengeCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initAsNewChallenge;
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
-- (id)initAsNewMessageWithRecipients:(NSString *)recipients;
+- (id)initAsNewMessageWithRecipients:(NSArray *)recipients;
 - (id)initAsMessageReply:(HONMessageVO *)messageVO;
 @end

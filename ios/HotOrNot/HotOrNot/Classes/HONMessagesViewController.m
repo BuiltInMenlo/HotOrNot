@@ -10,15 +10,21 @@
 
 #import "HONMessagesViewController.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
+#import "HONFontAllocator.h"
+#import "HONHeaderView.h"
+#import "HONMessageVO.h"
+#import "HONCreateSnapButtonView.h"
+#import "HONMessageRecipientsViewController.h"
+#import "HONMessageItemViewCell.h"
+#import "HONAlertItemViewCell.h"
+#import "HONMessageDetailsViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONMessageRecipientsViewController.h"
-#import "HONHeaderView.h"
-#import "HONCreateSnapButtonView.h"
-#import "HONMessageItemViewCell.h"
-#import "HONMessageVO.h"
-#import "HONMessageDetailsViewController.h"
+#import "HONMatchContactsViewController.h"
+#import "HONPopularViewController.h"
+#import "HONSuggestedFollowViewController.h"
 
 
 @interface HONMessagesViewController () <EGORefreshTableHeaderDelegate, HONMessageItemViewCellDelegate>
@@ -90,8 +96,14 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
+	UIButton *createMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createMessageButton.frame = CGRectMake(-2.0, 0.0, 44.0, 44.0);
+	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessage_nonActive"] forState:UIControlStateNormal];
+	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessage_Active"] forState:UIControlStateHighlighted];
+	[createMessageButton addTarget:self action:@selector(_goCreateMessage) forControlEvents:UIControlEventTouchUpInside];
+	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Messages" hasTranslucency:YES];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goCreateMessage)]];
+	[_headerView addButton:createMessageButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
@@ -210,6 +222,46 @@
 	}];
 }
 
+- (void)_goMatchPhone {
+	[[Mixpanel sharedInstance] track:@"Messages - Match Phone"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goMatchEmail {
+	[[Mixpanel sharedInstance] track:@"Messages - Match Email"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:YES]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSearch {
+	[[Mixpanel sharedInstance] track:@"Messages - Search"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSuggested {
+	[[Mixpanel sharedInstance] track:@"Messages - Suggested Follow"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - Notifications
 - (void)_selectedMessagesTab:(NSNotification *)notification {
@@ -279,11 +331,11 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (1);
+	return ((section < [_messages count]) ? 1 : 4);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ([_messages count]);
+	return ([_messages count] + 1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -295,23 +347,44 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONMessageItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-	
-	if (cell == nil) {
-		HONMessageVO *vo = (HONMessageVO *)[_messages objectAtIndex:indexPath.section];
-		cell = [[HONMessageItemViewCell alloc] init];
-		cell.messageVO = vo;
+	if (indexPath.section < [_messages count]) {
+		HONMessageItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		
+		if (cell == nil) {
+			HONMessageVO *vo = (HONMessageVO *)[_messages objectAtIndex:indexPath.section];
+			cell = [[HONMessageItemViewCell alloc] init];
+			cell.messageVO = vo;
+		}
+		
+		cell.delegate = self;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		return (cell);
+		
+	} else {
+		HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		
+		if (cell == nil)
+			cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.row < 3)];
+		
+		[cell removeChevron];
+		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+		cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+		cell.textLabel.text = (indexPath.row == 0) ? @"Find friends to follow" : (indexPath.row == 1) ? @"Find clubs to join" : (indexPath.row == 2) ? @"Verify you phone number" : @"";
+		cell.textLabel.textAlignment = NSTextAlignmentCenter;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+		
+		return (cell);
 	}
-	
-	cell.delegate = self;
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	if (indexPath.section < [_messages count])
+		return (74.0);
+	
+	else
+		return ((([_messages count] + 5) > 7 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 49.0 : 0.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -323,7 +396,27 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return ((indexPath.section < [_messages count] || indexPath.row == 4) ? nil : indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	switch (indexPath.row) {
+		case HONMessageRowTypeFindFriends:
+			[self _goSearch];
+			break;
+			
+		case HONMessageRowTypeFindClubs:
+			[self _goSuggested];
+			break;
+			
+		case HONMessageRowTypeMatchPhone:
+			[self _goMatchPhone];
+			
+		default:
+			break;
+	}
 }
 
 

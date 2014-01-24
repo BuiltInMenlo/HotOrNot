@@ -15,7 +15,7 @@
 @interface HONMessageReplyViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
-- (id)initAsAuthor:(BOOL)isAuthor;
+- (id)init;
 
 @property (nonatomic, strong) HONOpponentVO *messageReplyVO;
 @property (nonatomic, assign) id <HONMessageReplyViewCellDelegate> delegate;

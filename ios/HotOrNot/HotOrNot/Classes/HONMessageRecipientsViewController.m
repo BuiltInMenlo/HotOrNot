@@ -89,14 +89,21 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Recipients" hasTranslucency:YES];
-	[_headerView addButton:doneButton];
+	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Select" hasTranslucency:YES];
+	[_headerView addButton:closeButton];
+	[_headerView addButton:nextButton];
 	[self.view addSubview:_headerView];
 	
 	[self _buildRecipients];
@@ -128,13 +135,21 @@
 
 
 #pragma mark - Navigation
-- (void)_goDone {
+- (void)_goClose {
+	[[Mixpanel sharedInstance] track:@"Message Recipients - Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_goNext {
 	if ([_selectedRecipients count] == 0) {
-		[[Mixpanel sharedInstance] track:@"Message Recipients - Cancel"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+		[[[UIAlertView alloc] initWithTitle:@"No One Selected!"
+									message:@"You need to choose at least one person."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 		
 	} else {
 		[[Mixpanel sharedInstance] track:@"Message Recipients - Create Message"
@@ -210,10 +225,10 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor]; //	[HONAppDelegate honPercentGreyscaleColor:0.467]
+	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+	label.textColor = [[HONColorAuthority sharedInstance] honDarkGreyTextColor]; //	[[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.467]
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Following…" : @"Followers…";
+	label.text = (section == 0) ? @"Following" : @"Followers";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);
@@ -240,7 +255,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return (49.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

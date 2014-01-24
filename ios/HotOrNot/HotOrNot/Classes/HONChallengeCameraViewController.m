@@ -21,6 +21,7 @@
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
 #import "HONCreateChallengePreviewView.h"
+#import "HONTrivialUserVO.h"
 
 
 @interface HONChallengeCameraViewController () <HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate, AmazonServiceRequestDelegate>
@@ -31,7 +32,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) NSString *recipients;
+@property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic, strong) S3PutObjectRequest *por1;
 @property (nonatomic, strong) S3PutObjectRequest *por2;
 @property (nonatomic, strong) UIImage *processedImage;
@@ -66,7 +67,6 @@
 		_selfieSubmitType = HONSelfieSubmitTypeCreateChallenge;
 		
 		_subjectName = @"";
-		_recipients = @"";
 	}
 	
 	return (self);
@@ -79,13 +79,12 @@
 		
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
-		_recipients = @"";
 	}
 	
 	return (self);
 }
 
-- (id)initAsNewMessageWithRecipients:(NSString *)recipients {
+- (id)initAsNewMessageWithRecipients:(NSArray *)recipients {
 	NSLog(@"%@ - initAsNewMessageWithRecipients:[%@]", [self description], recipients);
 	if ((self = [self init])) {
 		_selfieSubmitType = HONSelfieSubmitTypeCreateMessage;
@@ -103,7 +102,6 @@
 		
 		_messageVO = messageVO;
 		_subjectName = _messageVO.subjectName;
-		_recipients = @"";
 	}
 	
 	return (self);
@@ -505,11 +503,15 @@
 		[alertView show];
 		
 	} else {
+		NSString *recipients = @"";
+		for (HONTrivialUserVO *vo in _recipients)
+			recipients = [[recipients stringByAppendingString:[NSString stringWithFormat:@"%d", vo.userID]] stringByAppendingString:@","];
+		
 		_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
 							 @"challenge_id"	: [NSString stringWithFormat:@"%d", (_selfieSubmitType == HONSelfieSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
 							 @"subject"			: _subjectName,
-							 @"recipients"		: _recipients,
+							 @"recipients"		: [recipients substringToIndex:[recipients length] - 1],
 							 @"api_endpt"		: (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
 		
 		NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);
@@ -626,7 +628,7 @@
 	_processedImage = (isSourceImageMirrored) ? [HONImagingDepictor mirrorImage:[HONImagingDepictor createImageFromView:canvasView]] : [HONImagingDepictor createImageFromView:canvasView];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage asSubmittingType:_selfieSubmitType withSubject:_subjectName];
+	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage asSubmittingType:_selfieSubmitType withSubject:_subjectName withRecipients:_recipients];
 	_previewView.delegate = self;
 	[_previewView showKeyboard];
 	

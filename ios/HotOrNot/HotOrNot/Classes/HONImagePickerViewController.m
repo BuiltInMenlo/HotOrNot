@@ -14,7 +14,7 @@
 @interface HONImagePickerViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
-@property (nonatomic, strong) NSString *recipients;
+@property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic) BOOL isJoinChallenge;
 @property (nonatomic) BOOL isMessage;
 @end
@@ -45,12 +45,7 @@
 	if ((self = [self init])) {
 		_isJoinChallenge = NO;
 		_isMessage = YES;
-		
-		_recipients = @"";
-		for (HONTrivialUserVO *vo in recipients)
-			_recipients = [[_recipients stringByAppendingString:[NSString stringWithFormat:@"%d", vo.userID]] stringByAppendingString:@","];
-		
-		_recipients = [_recipients substringToIndex:[_recipients length] - 1];
+		_recipients = recipients;
 	}
 	
 	return (self);

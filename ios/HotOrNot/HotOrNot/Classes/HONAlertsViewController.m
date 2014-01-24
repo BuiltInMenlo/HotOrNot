@@ -235,7 +235,7 @@
 }
 
 - (void)_goMatchPhone {
-	[[Mixpanel sharedInstance] track:@"Timeline - Match Phone"
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Match Phone"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -245,7 +245,7 @@
 }
 
 - (void)_goMatchEmail {
-	[[Mixpanel sharedInstance] track:@"Timeline - Match Email"
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Match Email"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	

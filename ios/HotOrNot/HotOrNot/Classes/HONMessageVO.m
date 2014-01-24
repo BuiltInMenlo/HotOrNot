@@ -11,7 +11,7 @@
 @implementation HONMessageVO
 
 @synthesize dictionary;
-@synthesize messageID, statusID, status, subjectName, hashtagName, participants, viewedParticipants, replies, hasViewed, addedDate, startedDate, updatedDate;
+@synthesize messageID, statusID, status, subjectName, hashtagName, participants, participantNames, viewedParticipants, replies, hasViewed, addedDate, startedDate, updatedDate;
 
 
 + (HONMessageVO *)messageWithDictionary:(NSDictionary *)dictionary {
@@ -42,8 +42,6 @@
 	
 	if ([[dictionary objectForKey:@"viewed"] objectForKey:[[HONAppDelegate infoForUser] objectForKey:@"id"]] != nil)
 		[vo.viewedParticipants addObject:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
-	
-	vo.hasViewed = ([vo.viewedParticipants count] > 0);
 	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -94,6 +92,8 @@
 	[creator setValue:[dictionary objectForKey:@"added"] forKey:@"joined"];
 	vo.creatorVO = [HONOpponentVO opponentWithDictionary:creator];
 	
+	BOOL isFound = NO;
+	vo.participantNames = [NSMutableArray array];
 	vo.participants = [NSMutableArray array];
 	vo.replies = [NSMutableArray array];
 	for (NSDictionary *challenger in [dictionary objectForKey:@"challengers"]) {
@@ -103,7 +103,32 @@
 			[vo.replies addObject:opponentVO];
 		
 		[vo.participants addObject:opponentVO];
+		
+		isFound = NO;
+		for (NSString *username in vo.participantNames) {
+			if ([username isEqualToString:opponentVO.username]) {
+				isFound = YES;
+				break;
+			}
+		}
+		
+		if (!isFound && opponentVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+			[vo.participantNames addObject:opponentVO.username];
+		}
 	}
+	
+	isFound = NO;
+	for (NSString *username in vo.participantNames) {
+		if ([username isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) {
+			isFound = YES;
+			break;
+		}
+	}
+	
+	if (!isFound && vo.creatorVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+		[vo.participantNames insertObject:vo.creatorVO.username atIndex:0];
+	
+	vo.hasViewed = ([vo.viewedParticipants count] == [vo.participants count]);
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
 	
@@ -115,6 +140,7 @@
 	self.status = nil;
 	self.participants = nil;
 	self.viewedParticipants = nil;
+	self.participantNames = nil;
 	self.replies = nil;
 	self.subjectName = nil;
 	self.hashtagName = nil;

@@ -84,11 +84,11 @@
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	replyButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"messageReplyButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"messageReplyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:_messageVO.subjectName hasTranslucency:YES];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:((HONOpponentVO *)[_messageVO.participants lastObject]).username hasTranslucency:YES];
 	[_headerView addButton:backButton];
 	[_headerView addButton:replyButton];
 	[self.view addSubview:_headerView];
@@ -172,7 +172,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1 + [_messageVO.replies count]);
+	return (2 + [_messageVO.replies count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -187,9 +187,11 @@
 	HONMessageReplyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-		HONOpponentVO *vo = (indexPath.section == 0) ? (HONOpponentVO *)_messageVO.creatorVO : (HONOpponentVO *)[[_messageVO replies] objectAtIndex:indexPath.section - 1];
-		cell = [[HONMessageReplyViewCell alloc] initAsAuthor:vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
-		cell.messageReplyVO = vo;
+		cell = [[HONMessageReplyViewCell alloc] init];
+		if (indexPath.section < [_messageVO.replies count] + 1) {
+			HONOpponentVO *vo = (indexPath.section == [_messageVO.replies count]) ? (HONOpponentVO *)_messageVO.creatorVO : (HONOpponentVO *)[_messageVO.replies objectAtIndex:indexPath.section];
+			cell.messageReplyVO = vo;
+		}
 	}
 	
 //	cell.delegate = self;
@@ -200,7 +202,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kSnapThumbSize.height + 20.0);
+	return (indexPath.section < [_messageVO.replies count] + 1 ? 310.0 : 49.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

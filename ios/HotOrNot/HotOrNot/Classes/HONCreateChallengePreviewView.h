@@ -15,9 +15,7 @@
 
 @protocol HONCreateChallengePreviewViewDelegate;
 @interface HONCreateChallengePreviewView : UIView <UIAlertViewDelegate, UITextFieldDelegate>
-- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieSubmitType)selfieSubmitType withSubject:(NSString *)subject;
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image;
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image;
+- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieSubmitType)selfieSubmitType withSubject:(NSString *)subject withRecipients:(NSArray *)recipients;
 - (void)uploadComplete;
 - (void)showKeyboard;
 
