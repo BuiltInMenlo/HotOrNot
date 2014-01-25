@@ -23,7 +23,7 @@
 #import "HONChangeAvatarViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONMatchContactsViewController.h"
-#import "HONPopularViewController.h"
+#import "HONSearchUsersViewController.h"
 #import "HONSuggestedFollowViewController.h"
 
 
@@ -247,7 +247,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSearchUsersViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -316,13 +316,8 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (!messageVO.hasViewed) {
-		NSMutableArray *userIDs = [NSMutableArray array];
-		for (HONOpponentVO *vo in messageVO.participants)
-			[userIDs addObject:[NSString stringWithFormat:@"%d", vo.userID]];
-		
-		[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID withUsers:userIDs completion:nil];
-	}
+	if (!messageVO.hasViewed)
+		[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID forParticipant:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:nil];
 	
 	[cell updateAsSeen];
 	[self.navigationController pushViewController:[[HONMessageDetailsViewController alloc] initWithMessage:messageVO] animated:YES];

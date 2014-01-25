@@ -1,5 +1,5 @@
 //
-//  HONPopularViewController.h
+//  HONSearchUsersViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 7/8/13 @ 5:02 PM.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONPopularViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONSearchUsersViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
 @end

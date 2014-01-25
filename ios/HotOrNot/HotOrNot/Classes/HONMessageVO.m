@@ -11,7 +11,7 @@
 @implementation HONMessageVO
 
 @synthesize dictionary;
-@synthesize messageID, statusID, status, subjectName, hashtagName, participants, participantNames, viewedParticipants, replies, hasViewed, addedDate, startedDate, updatedDate;
+@synthesize messageID, statusID, status, subjectName, hashtagName, participants, participantNames, replies, hasViewed, addedDate, startedDate, updatedDate;
 
 
 + (HONMessageVO *)messageWithDictionary:(NSDictionary *)dictionary {
@@ -25,23 +25,7 @@
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.subjectName = [([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
 	vo.hashtagName = [@"#" stringByAppendingString:vo.subjectName];
-	
-	vo.viewedParticipants = [NSMutableArray array];
-	for (NSString *key in [[dictionary objectForKey:@"viewed"] keyEnumerator]) {
-		BOOL isFound = NO;
-		for (NSString *userID in vo.viewedParticipants) {
-			if ([key intValue] == [userID intValue]) {
-				isFound = YES;
-				break;
-			}
-		}
-		
-		if (!isFound && [[[dictionary objectForKey:@"viewed"] objectForKey:key] intValue] == 1)
-			[vo.viewedParticipants addObject:key];
-	}
-	
-	if ([[dictionary objectForKey:@"viewed"] objectForKey:[[HONAppDelegate infoForUser] objectForKey:@"id"]] != nil)
-		[vo.viewedParticipants addObject:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
+	vo.hasViewed = ([[[dictionary objectForKey:@"viewed"] objectForKey:[[HONAppDelegate infoForUser] objectForKey:@"id"]] intValue]);
 	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -112,9 +96,8 @@
 			}
 		}
 		
-		if (!isFound && opponentVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		if (!isFound && opponentVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 			[vo.participantNames addObject:opponentVO.username];
-		}
 	}
 	
 	isFound = NO;
@@ -128,8 +111,6 @@
 	if (!isFound && vo.creatorVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
 		[vo.participantNames insertObject:vo.creatorVO.username atIndex:0];
 	
-	vo.hasViewed = ([vo.viewedParticipants count] == [vo.participants count]);
-	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");
 	
 	return (vo);
@@ -139,7 +120,6 @@
 	self.dictionary = nil;
 	self.status = nil;
 	self.participants = nil;
-	self.viewedParticipants = nil;
 	self.participantNames = nil;
 	self.replies = nil;
 	self.subjectName = nil;

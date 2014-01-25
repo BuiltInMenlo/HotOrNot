@@ -129,7 +129,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Popular People - Done"
+	[[Mixpanel sharedInstance] track:@"Suggested People - Done"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
@@ -146,7 +146,7 @@
 	}
 	
 	
-	if ([HONAppDelegate incTotalForCounter:@"popular"] == 1 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+	if ([HONAppDelegate incTotalForCounter:@"suggested"] == 1 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
@@ -177,7 +177,7 @@
 }
 
 - (void)_goSelectAll {
-	[[Mixpanel sharedInstance] track:@"Popular People - Select All"
+	[[Mixpanel sharedInstance] track:@"Suggested People - Select All"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
@@ -196,39 +196,28 @@
 
 #pragma mark - SuggestedViewCell Delegates
 - (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - %@elect%@", (isSelected) ? @"Des" : @"S", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - @%@", userVO.userID, userVO.username], @"celeb", nil]];
-		
-		if (isSelected) {
-			[_selectedUsers addObject:userVO];
-			
-		} else {
-			NSMutableArray *removeVOs = [NSMutableArray array];
-			for (HONTrivialUserVO *vo in _selectedUsers) {
-				for (HONTrivialUserVO *dropVO in _users) {
-					if ([vo.username isEqualToString:dropVO.username]) {
-						[removeVOs addObject:vo];
-					}
-				}
-			}
-			
-			[_selectedUsers removeObjectsInArray:removeVOs];
-			removeVOs = nil;
-			
-			[_removeUsers addObject:userVO];
-		}
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - %@elect", (isSelected) ? @"Des" : @"S"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - @%@", userVO.userID, userVO.username], @"celeb", nil]];
+	
+	if (isSelected) {
+		[_selectedUsers addObject:userVO];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:2];
-		[alertView show];
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONTrivialUserVO *vo in _selectedUsers) {
+			for (HONTrivialUserVO *dropVO in _users) {
+				if ([vo.username isEqualToString:dropVO.username]) {
+					[removeVOs addObject:vo];
+				}
+			}
+		}
+		
+		[_selectedUsers removeObjectsInArray:removeVOs];
+		removeVOs = nil;
+		
+		[_removeUsers addObject:userVO];
 	}
 }
 
@@ -309,7 +298,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
@@ -324,7 +313,7 @@
 		}
 		
 	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
@@ -342,8 +331,7 @@
 				}];
 			}
 			
-			int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"popular_total"] intValue];
-			if (total == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+			if ([HONAppDelegate totalForCounter:@"suggested"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
@@ -360,7 +348,7 @@
 		[self dismissViewControllerAnimated:YES completion:nil];
 		
 	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		

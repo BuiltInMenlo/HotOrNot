@@ -1,5 +1,5 @@
 //
-//  HONPopularUserViewCell.h
+//  HONSearchUserViewCell.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 7/8/13 @ 5:03 PM.
@@ -10,18 +10,18 @@
 
 #import "HONTrivialUserVO.h"
 
-@protocol HONPopularUserViewCellDelegate;
-@interface HONPopularUserViewCell : UITableViewCell
+@protocol HONSearchUserViewCellDelegate;
+@interface HONSearchUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)toggleSelected:(BOOL)isSelected;
 
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic) BOOL isSelected;
 
-@property (nonatomic, assign) id <HONPopularUserViewCellDelegate> delegate;
+@property (nonatomic, assign) id <HONSearchUserViewCellDelegate> delegate;
 @end
 
 
-@protocol HONPopularUserViewCellDelegate <NSObject>
-- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
+@protocol HONSearchUserViewCellDelegate <NSObject>
+- (void)searchUserViewCell:(HONSearchUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
 @end

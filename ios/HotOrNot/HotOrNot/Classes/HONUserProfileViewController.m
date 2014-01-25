@@ -24,11 +24,10 @@
 #import "HONImagePickerViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChallengeDetailsViewController.h"
-#import "HONPopularViewController.h"
+#import "HONSearchUsersViewController.h"
 #import "HONSuggestedFollowViewController.h"
 #import "HONFAQViewController.h"
 #import "HONSettingsViewController.h"
-#import "HONPopularViewController.h"
 #import "HONImageLoadingView.h"
 #import "HONUserProfileGridView.h"
 #import "HONChallengeVO.h"
@@ -266,8 +265,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-	if (total == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
+	if ([HONAppDelegate totalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
@@ -277,8 +275,8 @@
 		[alertView show];
 	
 	} else {
-//		int total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_total"] intValue];
-//		if (!_isFollowing && total < [HONAppDelegate profileSubscribeThreshold]) {
+		
+//		if (!_isFollowing && [HONAppDelegate totalForCounter:@"profile"] < [HONAppDelegate profileSubscribeThreshold]) {
 //			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 //																message:[NSString stringWithFormat:@"Want to subscribe to %@'s updates?", _userVO.username]
 //															   delegate:self
@@ -834,31 +832,20 @@
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	NSLog(@"participantGridView:showProfile:[%@]forChallenge:[%d]", opponentVO.dictionary, challengeVO.challengeID);
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Show Profile%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"User Profile - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
 	
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = opponentVO.userID;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:HONUserProfileAlertTypeShowProfileBlocked];
-		[alertView show];
-	}
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+	userPofileViewController.userID = opponentVO.userID;
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showDetailsForChallenge:(HONChallengeVO *)challengeVO {
@@ -1070,7 +1057,7 @@
 		
 		if (buttonIndex != 3) {
 			NSArray *viewControllers = @[[[HONAddContactsViewController alloc] init],
-										 [[HONPopularViewController alloc] init],
+										 [[HONSearchUsersViewController alloc] init],
 										 [[HONSuggestedFollowViewController alloc] init]];
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[viewControllers objectAtIndex:buttonIndex]];

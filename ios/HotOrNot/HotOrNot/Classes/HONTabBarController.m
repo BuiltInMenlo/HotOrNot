@@ -352,7 +352,7 @@ const CGSize kTabSize = {80.0, 50.0};
 			[updateChallenges addObject: @{@"id"		: [NSNumber numberWithInt:vo.challengeID],
 										   @"status"	: (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started",
 										   @"score"		: [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score],
-										   @"comments"	: [NSNumber numberWithInt:vo.commentTotal]}];
+										   @"comments"	: [NSNumber numberWithInt:0]}];
 		}
 		
 		NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];

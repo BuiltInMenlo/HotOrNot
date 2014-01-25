@@ -22,8 +22,6 @@
 #import "HONEmotionVO.h"
 #import "HONHeaderView.h"
 #import "HONTimelineItemFooterView.h"
-#import "HONFollowersViewController.h"
-#import "HONFollowingViewController.h"
 #import "HONUserProfileGridView.h"
 #import "HONUserProfileViewController.h"
 

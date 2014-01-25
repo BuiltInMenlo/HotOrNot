@@ -1,5 +1,5 @@
 //
-//  HONPopularUserViewCell.m
+//  HONSearchUserViewCell.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 7/8/13 @ 5:03 PM.
@@ -11,15 +11,15 @@
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
-#import "HONPopularUserViewCell.h"
+#import "HONSearchUserViewCell.h"
 #import "HONImagingDepictor.h"
 
-@interface HONPopularUserViewCell()
+@interface HONSearchUserViewCell()
 @property (nonatomic, strong) UIButton *followButton;
 @property (nonatomic, strong) UIButton *checkButton;
 @end
 
-@implementation HONPopularUserViewCell
+@implementation HONSearchUserViewCell
 @synthesize delegate = _delegate;
 @synthesize trivialUserVO = _trivialUserVO;
 @synthesize isSelected = _isSelected;
@@ -81,7 +81,7 @@
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-//	[avatarImageView setImageWithURL:[NSURL URLWithString:[_popularUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+//	[avatarImageView setImageWithURL:[NSURL URLWithString:[_trivialUserVO.imageURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 20.0, 170.0, 20.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
@@ -108,7 +108,7 @@
 		_followButton.hidden = YES;
 	}];
 	
-	[self.delegate popularUserViewCell:self user:_trivialUserVO toggleSelected:YES];
+	[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
@@ -119,7 +119,7 @@
 		_checkButton.hidden = YES;
 	}];
 	
-	[self.delegate popularUserViewCell:self user:_trivialUserVO toggleSelected:NO];
+	[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:NO];
 }
 
 @end

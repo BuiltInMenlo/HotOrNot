@@ -18,9 +18,6 @@ typedef enum {
 } HONAlertCellType;
 
 
-
-
-
 @interface HONAlertsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @end

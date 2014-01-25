@@ -23,7 +23,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		NSLog(@"%@ - init", [self description]);
 		self.view.backgroundColor = [UIColor whiteColor];
 	}
 	
@@ -31,7 +30,6 @@
 }
 
 - (id)initAsNewChallenge {
-	NSLog(@"%@ - initAsNewChallenge", [self description]);
 	if ((self = [self init])) {
 		_isJoinChallenge = NO;
 		_isMessage = NO;
@@ -41,7 +39,6 @@
 }
 
 - (id)initAsMessageToRecipients:(NSArray *)recipients {
-	NSLog(@"%@ - initAsMessageToRecipients:[%d]", [self description], [recipients count]);
 	if ((self = [self init])) {
 		_isJoinChallenge = NO;
 		_isMessage = YES;
@@ -52,7 +49,6 @@
 }
 
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo {
-	NSLog(@"%@ - initWithJoinChallenge:[%d] (%d/%d)", [self description], vo.challengeID, vo.creatorVO.userID, ((HONOpponentVO *)[vo.challengers lastObject]).userID);
 	if ((self = [self init])) {
 		_isJoinChallenge = YES;
 		_isMessage = NO;
@@ -63,7 +59,6 @@
 }
 
 - (id)initAsMessageReply:(HONMessageVO *)messageVO {
-	NSLog(@"%@ - initAsMessageReply:[%@]", [self description], messageVO.dictionary);
 	if ((self= [self init])) {
 		_isJoinChallenge = YES;
 		_isMessage = YES;

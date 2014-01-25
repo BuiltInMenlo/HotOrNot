@@ -20,12 +20,9 @@
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *hashtagName;
-@property (nonatomic) int commentTotal;
-@property (nonatomic) int likersTotal;
-@property (nonatomic) int likesTotal;
+@property (nonatomic) int likedByTotal;
+@property (nonatomic) int totalLikes;
 @property (nonatomic) BOOL hasViewed;
-@property (nonatomic) BOOL isCelebCreated;
-@property (nonatomic) BOOL isExploreChallenge;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;

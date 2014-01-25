@@ -43,8 +43,6 @@
 #import "HONTimelineViewController.h"
 #import "HONAlertsViewController.h"
 #import "HONMessagesViewController.h"
-#import "HONImagePickerViewController.h"
-#import "HONUsernameViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONUserProfileViewController.h"
@@ -1057,10 +1055,36 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[FBSession.activeSession close];
 }
 
-
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-	return ([self handleKikAPIData:[KikAPIClient handleOpenURL:url sourceApplication:sourceApplication annotation:annotation]]);
-	return ([FBAppCall handleOpenURL:url sourceApplication:sourceApplication]);
+	NSLog(@"application:openURL:[%@]", [url absoluteString]);
+	
+	if (!url)
+		return (NO);
+	
+	NSString *protocol = [[url absoluteString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
+	if ([protocol isEqualToString:@"selfieclub"]) {
+		NSRange range = [[url absoluteString] rangeOfString:@"://"];
+		NSArray *path = [[[url absoluteString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
+		
+		
+		if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
+			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC);
+			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void){
+				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+				userPofileViewController.userID = [[path objectAtIndex:1] intValue];
+				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:userPofileViewController] animated:YES completion:nil];
+			});
+		
+		} else if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
+			
+		}
+		
+		return (YES);
+	
+	} else {
+		return ([self handleKikAPIData:[KikAPIClient handleOpenURL:url sourceApplication:sourceApplication annotation:annotation]]);
+		return ([FBAppCall handleOpenURL:url sourceApplication:sourceApplication]);
+	}
 }
 
 
@@ -1154,7 +1178,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"alertsRefresh_total",
 						   @"verify_total",
 						   @"verifyRefresh_total",
-						   @"popular_total",
+						   @"search_total",
+						   @"suggested_total",
 						   @"verifyAction_total",
 						   @"preview_total",
 						   @"details_total",

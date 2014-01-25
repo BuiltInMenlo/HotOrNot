@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, hashtagName, recentLikes, challengers, commentTotal, likersTotal, likesTotal, hasViewed, isCelebCreated, isExploreChallenge, addedDate, startedDate, updatedDate;
+@synthesize challengeID, statusID, status, subjectName, hashtagName, recentLikes, challengers, likedByTotal, totalLikes, hasViewed, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -24,11 +24,8 @@
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.subjectName = [([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
 	vo.hashtagName = [@"#" stringByAppendingString:vo.subjectName];
-	vo.commentTotal = [[dictionary objectForKey:@"comments"] intValue];
-	vo.likersTotal = [[dictionary objectForKey:@"total_likers"] intValue];
+	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
-	vo.isCelebCreated = [[dictionary objectForKey:@"is_celeb"] intValue];
-	vo.isExploreChallenge = [[dictionary objectForKey:@"is_explore"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -78,13 +75,13 @@
 	[creator setValue:[dictionary objectForKey:@"added"] forKey:@"joined"];
 //	[creator setObject:[dateFormat stringFromDate:vo.addedDate] forKey:@"joined"];
 	vo.creatorVO = [HONOpponentVO opponentWithDictionary:creator];
-	vo.likesTotal = vo.creatorVO.score;
+	vo.totalLikes = vo.creatorVO.score;
 	
 	vo.challengers = [NSMutableArray array];
 	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {
 		HONOpponentVO *opponentVO = [HONOpponentVO opponentWithDictionary:challenger];
 		[vo.challengers addObject:opponentVO];
-		vo.likesTotal += opponentVO.score;
+		vo.totalLikes += opponentVO.score;
 	}
 	
 	vo.recentLikes = @"Be the first to like";
@@ -100,7 +97,7 @@
 	}
 		
 	if ([userLikes count] > 0 && [dictionary objectForKey:@"recent_likes"] != [NSNull null] && !isTurdInPunchBowl) {
-		int remaining = vo.likersTotal - [userLikes count];
+		int remaining = vo.likedByTotal - [userLikes count];
 		if ([userLikes count] == 3) {
 				vo.recentLikes = (remaining > 0) ? [NSString stringWithFormat:@"%@, %@, %@, and %d other%@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"], remaining, (remaining != 1) ? @"s" : @""] : [NSString stringWithFormat:@"%@, %@, and %@", [[userLikes objectAtIndex:0] objectForKey:@"username"], [[userLikes objectAtIndex:1] objectForKey:@"username"], [[userLikes objectAtIndex:2] objectForKey:@"username"]];
 			
@@ -116,7 +113,7 @@
 		vo.recentLikes = @"Be the first to like";
 	
 	
-	vo.recentLikes = (vo.likesTotal == 0) ? @"Be the first to like" : [NSString stringWithFormat:@"%d like%@", vo.likesTotal, (vo.likesTotal != 1) ? @"s" : @""];
+	vo.recentLikes = (vo.totalLikes == 0) ? @"Be the first to like" : [NSString stringWithFormat:@"%d like%@", vo.totalLikes, (vo.totalLikes != 1) ? @"s" : @""];
 	
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorVO.dictionary, ([vo.challengers count] > 0) ? ((HONOpponentVO *)[vo.challengers objectAtIndex:0]).dictionary : @"");

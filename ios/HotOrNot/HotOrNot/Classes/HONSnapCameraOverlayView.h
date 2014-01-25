@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONImagePickerViewController.h"
 #import "HONCreateChallengePreviewView.h"
 
 @protocol HONSnapCameraOverlayViewDelegate;

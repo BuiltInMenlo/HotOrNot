@@ -11,11 +11,6 @@
 typedef enum {
 	HONVerifyAlertTypeShare = 0,
 	HONVerifyAlertTypeDisproveConfirm,
-	HONVerifyAlertTypeCreateChallengeBlocked,
-	HONVerifyAlertTypeShowProfileBlocked,
-	HONVerifyAlertTypeApproveBlocked,
-	HONVerifyAlertTypeDisproveBlocked,
-	HONVerifyAlertTypeFollowBlocked
 } HONVerifyAlertType;
 
 

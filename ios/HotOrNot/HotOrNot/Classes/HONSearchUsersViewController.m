@@ -1,5 +1,5 @@
 //
-//  HONPopularViewController.m
+//  HONSearchUsersViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 7/8/13 @ 5:02 PM.
@@ -9,8 +9,8 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONPopularViewController.h"
-#import "HONPopularUserViewCell.h"
+#import "HONSearchUsersViewController.h"
+#import "HONSearchUserViewCell.h"
 #import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
 #import "HONSearchBarHeaderView.h"
@@ -22,7 +22,7 @@
 #import "HONUserVO.h"
 
 
-@interface HONPopularViewController () <HONSearchBarHeaderViewDelegate, HONPopularUserViewCellDelegate>
+@interface HONSearchUsersViewController () <HONSearchBarHeaderViewDelegate, HONSearchUserViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *addUsers;
@@ -35,14 +35,10 @@
 @end
 
 
-@implementation HONPopularViewController
+@implementation HONSearchUsersViewController
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Popular People - Open"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
 		_hasUpdated = NO;
 	}
 	
@@ -160,7 +156,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	[HONAppDelegate incTotalForCounter:@"popular"];
+	[HONAppDelegate incTotalForCounter:@"search"];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -174,7 +170,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Popular People - Done"
+	[[Mixpanel sharedInstance] track:@"Search Users - Done"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 
@@ -189,7 +185,7 @@
 		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:completionBlock];
 	
 	
-	if ([HONAppDelegate totalForCounter:@"popular"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+	if ([HONAppDelegate totalForCounter:@"search"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
@@ -209,7 +205,7 @@
 }
 
 - (void)_goSelectAll {
-	[[Mixpanel sharedInstance] track:@"Popular People - Select All"
+	[[Mixpanel sharedInstance] track:@"Search Users - Select All"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
@@ -222,47 +218,36 @@
 		[_addUsers addObject:vo];
 	}
 	
-	for (HONPopularUserViewCell *cell in _cells)
+	for (HONSearchUserViewCell *cell in _cells)
 		[cell toggleSelected:YES];
 }
 
 
-#pragma mark - PopularUserViewCell Delegates
-- (void)popularUserViewCell:(HONPopularUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected {
-	if ([HONAppDelegate hasTakenSelfie]) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - %@elect%@", (isSelected) ? @"Des" : @"S", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - @%@", trivialUserVO.userID, trivialUserVO.username], @"celeb", nil]];
-		
-		_hasUpdated = YES;
-		if (isSelected) {
-			[_selectedUsers addObject:trivialUserVO];
-			
-		} else {
-			NSMutableArray *removeVOs = [NSMutableArray array];
-			for (HONTrivialUserVO *vo in _selectedUsers) {
-				for (HONTrivialUserVO *dropVO in _users) {
-					if ([vo.username isEqualToString:dropVO.username]) {
-						[removeVOs addObject:vo];
-					}
-				}
-			}
-			
-			[_selectedUsers removeObjectsInArray:removeVOs];
-			removeVOs = nil;
-			
-			[_removeUsers addObject:trivialUserVO];
-		}
+#pragma mark - SearchUserViewCell Delegates
+- (void)searchUserViewCell:(HONSearchUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users People - %@elect", (isSelected) ? @"Des" : @"S"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - @%@", trivialUserVO.userID, trivialUserVO.username], @"celeb", nil]];
+	
+	_hasUpdated = YES;
+	if (isSelected) {
+		[_selectedUsers addObject:trivialUserVO];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noSelfie_t", nil)
-															message:NSLocalizedString(@"alert_noSelfie_m", nil)
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Take Photo", nil];
-		[alertView setTag:2];
-		[alertView show];
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONTrivialUserVO *vo in _selectedUsers) {
+			for (HONTrivialUserVO *dropVO in _users) {
+				if ([vo.username isEqualToString:dropVO.username]) {
+					[removeVOs addObject:vo];
+				}
+			}
+		}
+		
+		[_selectedUsers removeObjectsInArray:removeVOs];
+		removeVOs = nil;
+		
+		[_removeUsers addObject:trivialUserVO];
 	}
 }
 
@@ -301,10 +286,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONSearchUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONPopularUserViewCell alloc] init];
+		cell = [[HONSearchUserViewCell alloc] init];
 	
 	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_users objectAtIndex:indexPath.row];
 	cell.trivialUserVO = vo;
@@ -356,7 +341,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
@@ -371,7 +356,7 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
@@ -380,7 +365,7 @@
 			for (NSDictionary *dict in [HONAppDelegate searchUsers])
 				[_selectedUsers addObject:[HONTrivialUserVO userWithDictionary:dict]];
 			
-			for (HONPopularUserViewCell *cell in _cells)
+			for (HONSearchUserViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
 			for (HONTrivialUserVO *vo in _selectedUsers) {
@@ -389,7 +374,7 @@
 				}];
 			}
 			
-			if ([HONAppDelegate totalForCounter:@"popular"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
+			if ([HONAppDelegate totalForCounter:@"search"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
@@ -403,7 +388,7 @@
 		}
 	
 	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Popular People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		

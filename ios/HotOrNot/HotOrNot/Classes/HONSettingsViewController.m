@@ -16,7 +16,6 @@
 #import "HONFAQViewController.h"
 #import "HONTermsConditionsViewController.h"
 #import "HONHeaderView.h"
-#import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONTimelineViewController.h"
 
@@ -409,8 +408,9 @@
 									@"alertsRefresh_total",
 									@"verify_total",
 									@"verifyRefresh_total",
-									@"popular_total",
 									@"verifyAction_total",
+									@"search_total",
+									@"popular_total"
 									@"preview_total",
 									@"details_total",
 									@"camera_total",

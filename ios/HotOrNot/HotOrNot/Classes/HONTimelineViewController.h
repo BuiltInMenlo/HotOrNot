@@ -11,19 +11,9 @@
 
 typedef enum {
 	HONTimelineAlertTypeInvite = 0,
-	HONTimelineAlertTypeInviteConfirm,
-	HONTimelineAlertTypeCreateChallengeBlocked,
-	HONTimelineAlertTypeJoinChallengeBlocked,
-	HONTimelineAlertTypeChallengeDetailsBlocked,
-	HONTimelineAlertTypeShowProfileBlocked,
-	HONTimelineAlertTypePhotoDetailBlocked
-	
+	HONTimelineAlertTypeInviteConfirm	
 } HONTimelineAlertType;
 
-typedef enum {
-	HONTimelineActionSheetTypeMatchContacts = 0
-} HONTimelineActionSheetType;
 
-
-@interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
+@interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @end

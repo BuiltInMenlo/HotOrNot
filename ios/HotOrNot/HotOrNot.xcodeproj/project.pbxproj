@@ -114,8 +114,8 @@
 		4C34BCD217D05EFE007F3A38 /* headerFadeBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C34BCD017D05EFE007F3A38 /* headerFadeBackground@2x.png */; };
 		4C355481185538BC008B1F48 /* HONTimelineCellSubjectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C355480185538BC008B1F48 /* HONTimelineCellSubjectView.m */; };
 		4C382FF4178B7D2000C7FA7C /* HONCelebVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FF3178B7D2000C7FA7C /* HONCelebVO.m */; };
-		4C382FF9178B8AA200C7FA7C /* HONPopularViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FF8178B8AA200C7FA7C /* HONPopularViewController.m */; };
-		4C382FFC178B8AD700C7FA7C /* HONPopularUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FFB178B8AD700C7FA7C /* HONPopularUserViewCell.m */; };
+		4C382FF9178B8AA200C7FA7C /* HONSearchUsersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FF8178B8AA200C7FA7C /* HONSearchUsersViewController.m */; };
+		4C382FFC178B8AD700C7FA7C /* HONSearchUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */; };
 		4C3ABB1E1829CDC800131757 /* ImageFiltering in Resources */ = {isa = PBXBuildFile; fileRef = 4C3ABB1D1829CDC800131757 /* ImageFiltering */; };
 		4C3ABB201829FFB300131757 /* Challenge.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C3ABB1F1829FFB300131757 /* Challenge.json */; };
 		4C3ABB24182A119F00131757 /* HONGenericAvatarViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3ABB23182A119F00131757 /* HONGenericAvatarViewCell.m */; };
@@ -870,10 +870,10 @@
 		4C355480185538BC008B1F48 /* HONTimelineCellSubjectView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineCellSubjectView.m; sourceTree = "<group>"; };
 		4C382FF2178B7D2000C7FA7C /* HONCelebVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCelebVO.h; sourceTree = "<group>"; };
 		4C382FF3178B7D2000C7FA7C /* HONCelebVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCelebVO.m; sourceTree = "<group>"; };
-		4C382FF7178B8AA200C7FA7C /* HONPopularViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularViewController.h; sourceTree = "<group>"; };
-		4C382FF8178B8AA200C7FA7C /* HONPopularViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONPopularViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		4C382FFA178B8AD700C7FA7C /* HONPopularUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularUserViewCell.h; sourceTree = "<group>"; };
-		4C382FFB178B8AD700C7FA7C /* HONPopularUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularUserViewCell.m; sourceTree = "<group>"; };
+		4C382FF7178B8AA200C7FA7C /* HONSearchUsersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchUsersViewController.h; sourceTree = "<group>"; };
+		4C382FF8178B8AA200C7FA7C /* HONSearchUsersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONSearchUsersViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4C382FFA178B8AD700C7FA7C /* HONSearchUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchUserViewCell.h; sourceTree = "<group>"; };
+		4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchUserViewCell.m; sourceTree = "<group>"; };
 		4C3ABB1D1829CDC800131757 /* ImageFiltering */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ImageFiltering; sourceTree = "<group>"; };
 		4C3ABB1F1829FFB300131757 /* Challenge.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Challenge.json; sourceTree = "<group>"; };
 		4C3ABB22182A119F00131757 /* HONGenericAvatarViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGenericAvatarViewCell.h; sourceTree = "<group>"; };
@@ -1756,13 +1756,13 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
-		4C0CA3F5175151FA00DD0652 /* Popular / Invite */ = {
+		4C0CA3F5175151FA00DD0652 /* Search / Invite */ = {
 			isa = PBXGroup;
 			children = (
-				4C382FFA178B8AD700C7FA7C /* HONPopularUserViewCell.h */,
-				4C382FFB178B8AD700C7FA7C /* HONPopularUserViewCell.m */,
-				4C382FF7178B8AA200C7FA7C /* HONPopularViewController.h */,
-				4C382FF8178B8AA200C7FA7C /* HONPopularViewController.m */,
+				4C382FFA178B8AD700C7FA7C /* HONSearchUserViewCell.h */,
+				4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */,
+				4C382FF7178B8AA200C7FA7C /* HONSearchUsersViewController.h */,
+				4C382FF8178B8AA200C7FA7C /* HONSearchUsersViewController.m */,
 				4C6A3E1617669D7400B6CD4D /* HONInviteUserViewCell.h */,
 				4C6A3E1717669D7400B6CD4D /* HONInviteUserViewCell.m */,
 				4C6A3E191766AD3500B6CD4D /* HONAddContactViewCell.h */,
@@ -1774,7 +1774,7 @@
 				4CB03BB3173C88B40062B607 /* HONMatchContactsViewController.h */,
 				4CB03BB4173C88B40062B607 /* HONMatchContactsViewController.m */,
 			);
-			name = "Popular / Invite";
+			name = "Search / Invite";
 			sourceTree = "<group>";
 		};
 		4C0DFE5C18883E3B00D85C38 /* Chartboost */ = {
@@ -2243,7 +2243,6 @@
 				4C62673915F96E5600AA7FCE /* Classes */,
 				4C62655A15F96E2900AA7FCE /* Other Classes */,
 				4C6266AE15F96E2900AA7FCE /* Other Frameworks */,
-				4CE03980185676290005256F /* HockeySDK.embeddedframework */,
 				4C62676115F9710E00AA7FCE /* Resources */,
 				4C62653015F96C7100AA7FCE /* Supporting Files */,
 			);
@@ -2316,6 +2315,7 @@
 			children = (
 				4CC5F96D17F961CF00BCA1DE /* AWSiOSSDK.framework */,
 				340149EF1808AF8300581096 /* FacebookSDK.framework */,
+				4CE03980185676290005256F /* HockeySDK.embeddedframework */,
 			);
 			path = "Other Frameworks";
 			sourceTree = "<group>";
@@ -2360,7 +2360,7 @@
 			children = (
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C86C43617FFA8D2007DC458 /* Followers / Following */,
-				4C0CA3F5175151FA00DD0652 /* Popular / Invite */,
+				4C0CA3F5175151FA00DD0652 /* Search / Invite */,
 				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C45FF4516DECE40002F1080 /* Views */,
 				4CEEFC8017E155EE0006A640 /* View Controllers */,
@@ -3167,8 +3167,7 @@
 				4CE03981185676290005256F /* HockeySDK.framework */,
 				4CE03982185676290005256F /* Resources */,
 			);
-			name = HockeySDK.embeddedframework;
-			path = "Other Frameworks/HockeySDK.embeddedframework";
+			path = HockeySDK.embeddedframework;
 			sourceTree = "<group>";
 		};
 		4CE03982185676290005256F /* Resources */ = {
@@ -4088,7 +4087,7 @@
 				4CEC304117DACC9B0016AAE1 /* UIImage+ImageEffects.m in Sources */,
 				4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */,
 				4CA7426218232F0100E96E31 /* HONTimelineItemFooterView.m in Sources */,
-				4C382FFC178B8AD700C7FA7C /* HONPopularUserViewCell.m in Sources */,
+				4C382FFC178B8AD700C7FA7C /* HONSearchUserViewCell.m in Sources */,
 				4CC5F89017F9123B00BCA1DE /* AFHTTPClient.m in Sources */,
 				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
 				4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */,
@@ -4120,7 +4119,7 @@
 				4CED1C1B177D46C100A32F2B /* NBPhoneMetaDataGenerator.m in Sources */,
 				4CCE75231843FA9D00FF09F7 /* HONSuggestedFollowViewCell.m in Sources */,
 				4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */,
-				4C382FF9178B8AA200C7FA7C /* HONPopularViewController.m in Sources */,
+				4C382FF9178B8AA200C7FA7C /* HONSearchUsersViewController.m in Sources */,
 				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,
 				4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */,
 				4CCA416B181C1BF200FC9863 /* HONUserProfileGridView.m in Sources */,
