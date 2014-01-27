@@ -34,18 +34,9 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
 - (BOOL)shouldAutorotate {
 	return (NO);
 }
-
 
 #pragma mark - Data Calls
 - (void)_retrieveMessage {
@@ -59,8 +50,9 @@
 
 
 #pragma mark - View lifecycle
-- (void)loadView {
-	[super loadView];
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -74,7 +66,6 @@
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(8.0, 10.0, 64.0, 24.0);
@@ -93,31 +84,6 @@
 	[_headerView addButton:replyButton];
 	[self.view addSubview:_headerView];
 }
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
 
 #pragma mark - Navigation
 - (void)_goBack {
