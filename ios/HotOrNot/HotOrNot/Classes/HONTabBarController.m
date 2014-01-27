@@ -74,11 +74,6 @@ const CGSize kTabSize = {80.0, 50.0};
 //	[self _createPopoverBadge];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-
 #pragma mark - Presentation
 -(void)_addCustomTabs {
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
