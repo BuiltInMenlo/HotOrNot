@@ -23,5 +23,4 @@
 
 @protocol HONMessageItemViewCellDelegate <NSObject>
 - (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForUserID:(int)userID forMessage:(HONMessageVO *)messageVO;
-- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showMessage:(HONMessageVO *)messageVO;
 @end

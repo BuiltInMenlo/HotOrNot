@@ -276,6 +276,11 @@
 		4C72C64217A9B15E00A3CBA9 /* inviteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C72C63E17A9B15E00A3CBA9 /* inviteButton_Active@2x.png */; };
 		4C72C64317A9B15E00A3CBA9 /* inviteButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C72C63F17A9B15E00A3CBA9 /* inviteButton_nonActive.png */; };
 		4C72C64417A9B15E00A3CBA9 /* inviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C72C64017A9B15E00A3CBA9 /* inviteButton_nonActive@2x.png */; };
+		4C72F6A71894E01D00CF67BC /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C72F6A51894E01D00CF67BC /* TapjoyResources.bundle */; };
+		4C72F6A81894E01D00CF67BC /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C72F6A61894E01D00CF67BC /* Tapjoy.framework */; };
+		4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C72F6A91894E2D400CF67BC /* CoreMotion.framework */; };
+		4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C72F6AB1894E2DD00CF67BC /* EventKit.framework */; };
+		4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C72F6AC1894E2DD00CF67BC /* EventKitUI.framework */; };
 		4C7341921616C078001F9F11 /* HONFAQViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7341911616C078001F9F11 /* HONFAQViewController.m */; };
 		4C75502516D5699300833C18 /* HONCommentVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502416D5699200833C18 /* HONCommentVO.m */; };
 		4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502716D5718A00833C18 /* HONCommentsViewController.m */; };
@@ -1070,6 +1075,11 @@
 		4C72C63E17A9B15E00A3CBA9 /* inviteButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "inviteButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C72C63F17A9B15E00A3CBA9 /* inviteButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = inviteButton_nonActive.png; sourceTree = "<group>"; };
 		4C72C64017A9B15E00A3CBA9 /* inviteButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4C72F6A51894E01D00CF67BC /* TapjoyResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapjoyResources.bundle; sourceTree = "<group>"; };
+		4C72F6A61894E01D00CF67BC /* Tapjoy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tapjoy.framework; sourceTree = "<group>"; };
+		4C72F6A91894E2D400CF67BC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		4C72F6AB1894E2DD00CF67BC /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		4C72F6AC1894E2DD00CF67BC /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
 		4C7341901616C078001F9F11 /* HONFAQViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFAQViewController.h; sourceTree = "<group>"; };
 		4C7341911616C078001F9F11 /* HONFAQViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFAQViewController.m; sourceTree = "<group>"; };
 		4C75502316D5699200833C18 /* HONCommentVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentVO.h; sourceTree = "<group>"; };
@@ -1688,6 +1698,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
+				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
+				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
 				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
@@ -1711,6 +1724,7 @@
 				4C62675815F96FA800AA7FCE /* libsqlite3.dylib in Frameworks */,
 				4C62675915F96FA800AA7FCE /* libz.dylib in Frameworks */,
 				4C62675A15F96FA800AA7FCE /* MapKit.framework in Frameworks */,
+				4C72F6A81894E01D00CF67BC /* Tapjoy.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4CD9265D17FBCFDF0006732D /* libTestFlight.a in Frameworks */,
 				340149F01808AF8300581096 /* FacebookSDK.framework in Frameworks */,
@@ -2200,6 +2214,9 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C72F6AB1894E2DD00CF67BC /* EventKit.framework */,
+				4C72F6AC1894E2DD00CF67BC /* EventKitUI.framework */,
+				4C72F6A91894E2D400CF67BC /* CoreMotion.framework */,
 				4C0EC00617FE50E7001CF22A /* Twitter.framework */,
 				4C810EA017DE65D900F6EAE9 /* CoreImage.framework */,
 				4CEC304217DAD3140016AAE1 /* Accelerate.framework */,
@@ -2316,6 +2333,7 @@
 				4CC5F96D17F961CF00BCA1DE /* AWSiOSSDK.framework */,
 				340149EF1808AF8300581096 /* FacebookSDK.framework */,
 				4CE03980185676290005256F /* HockeySDK.embeddedframework */,
+				4C72F6A31894E01D00CF67BC /* Tapjoy.embeddedframework */,
 			);
 			path = "Other Frameworks";
 			sourceTree = "<group>";
@@ -2391,6 +2409,23 @@
 				4C6541A8184532E600C936CD /* avicii_188x188.png */,
 			);
 			name = stickers;
+			sourceTree = "<group>";
+		};
+		4C72F6A31894E01D00CF67BC /* Tapjoy.embeddedframework */ = {
+			isa = PBXGroup;
+			children = (
+				4C72F6A41894E01D00CF67BC /* Resources */,
+				4C72F6A61894E01D00CF67BC /* Tapjoy.framework */,
+			);
+			path = Tapjoy.embeddedframework;
+			sourceTree = "<group>";
+		};
+		4C72F6A41894E01D00CF67BC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4C72F6A51894E01D00CF67BC /* TapjoyResources.bundle */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		4C7AD0FA17629ACE0035A62A /* Follow / Invite */ = {
@@ -3770,6 +3805,7 @@
 				4C41A16A1801290600CE93D2 /* tutorial_camera.png in Resources */,
 				4C48DE7918275BD8003CB309 /* reportUser_nonActive@2x.png in Resources */,
 				4C72C63B17A9B10D00A3CBA9 /* checkmarkButton_nonActive.png in Resources */,
+				4C72F6A71894E01D00CF67BC /* TapjoyResources.bundle in Resources */,
 				4CA8EBE2184E8EBB00F91363 /* nayVerifyButton_Active@2x.png in Resources */,
 				4C22ADCD180A6718001A88D1 /* verifyFAQ_Active@2x.png in Resources */,
 				4C8FB3E01824809500B33FD8 /* sendBackground@2x.png in Resources */,
@@ -4257,6 +4293,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Other\\ Frameworks",
 					"$(SRCROOT)/HotOrNot/Other\\ Frameworks/HockeySDK.embeddedframework",
+					"$(SRCROOT)/HotOrNot/Other\\ Frameworks/Tapjoy.embeddedframework",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
@@ -4289,6 +4326,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/HotOrNot/Other\\ Frameworks",
 					"$(SRCROOT)/HotOrNot/Other\\ Frameworks/HockeySDK.embeddedframework",
+					"$(SRCROOT)/HotOrNot/Other\\ Frameworks/Tapjoy.embeddedframework",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";

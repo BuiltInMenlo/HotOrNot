@@ -93,6 +93,14 @@
 	[self addSubview:nameLabel];
 }
 
+- (void)toggleSelected {
+	if (_isSelected)
+		[self _goDeselected];
+		
+	else
+		[self _goSelected];
+}
+
 
 #pragma mark - Navigation
 - (void)_goSelected {

@@ -511,7 +511,7 @@
 							 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
 							 @"challenge_id"	: [NSString stringWithFormat:@"%d", (_selfieSubmitType == HONSelfieSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
 							 @"subject"			: _subjectName,
-							 @"recipients"		: [recipients substringToIndex:[recipients length] - 1],
+							 @"recipients"		: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @"",
 							 @"api_endpt"		: (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
 		
 		NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);

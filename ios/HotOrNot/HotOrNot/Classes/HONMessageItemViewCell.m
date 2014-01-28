@@ -105,11 +105,6 @@
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.text = [HONAppDelegate timeSinceDate:_messageVO.updatedDate];
 	[self.contentView addSubview:timeLabel];
-	
-	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	detailsButton.frame = CGRectMake(0.0, 0.0, 320.0, 74.0);
-	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchDown];
-	[self.contentView addSubview:detailsButton];
 }
 
 - (void)showTapOverlay {
@@ -128,10 +123,5 @@
 	_unviewedImageView.hidden = YES;
 }
 
-
-#pragma mark - Navigation
-- (void)_goDetails {
-	[self.delegate messageItemViewCell:self showMessage:_messageVO];
-}
 
 @end

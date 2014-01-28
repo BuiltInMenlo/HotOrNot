@@ -105,10 +105,23 @@
 	_headerBGImageView.userInteractionEnabled = YES;
 	[self addSubview:_headerBGImageView];
 	
+	UIImageView *replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraInputField"]];
+	replyImageView.frame = CGRectOffset(replyImageView.frame, 0.0, 45.0);
+	replyImageView.hidden = (_recipients == nil);
+	[self addSubview:replyImageView];
+	
 	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(38.0, 5.0, 203.0, 34.0)];
 	avatarHolderView.clipsToBounds = YES;
 	avatarHolderView.hidden = (_recipients == nil);
 	[self addSubview:avatarHolderView];
+	
+	UILabel *toLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 14.0, 50.0, 14.0)];
+	toLabel.backgroundColor = [UIColor clearColor];
+	toLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	toLabel.textColor = [[HONColorAuthority sharedInstance] honDarkGreyTextColor];
+	toLabel.hidden = (_recipients == nil);
+	toLabel.text = @"To:";
+	[self addSubview:toLabel];
 	
 	int offset = 0;
 	for (HONTrivialUserVO *vo in _recipients) {
@@ -119,31 +132,31 @@
 	}
 	
 	_replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyArrow"]];
-	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 8.0, 12.0);
+	_replyImageView.frame = CGRectOffset(_replyImageView.frame, 8.0, 12.0 + (45.0 * (_recipients != nil)));
 	_replyImageView.hidden = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage);
 	[_headerBGImageView addSubview:_replyImageView];
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -1.0, 230.0, 50.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, -1.0 + (45.0 * (_recipients != nil)), 230.0, 50.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
 	_placeholderLabel.textColor = [UIColor blackColor];
 	_placeholderLabel.text = (_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieSubmitTypeCreateMessage) ? @"how do you feel?" : @"reply how you feel";
-	[_headerBGImageView addSubview:_placeholderLabel];
+	[self addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
+	[_subjectTextField setTextColor:[UIColor blackColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = @"";
 	_subjectTextField.delegate = self;
-	[_headerBGImageView addSubview:_subjectTextField];
+	[self addSubview:_subjectTextField];
 	
 	_placeholderLabel.frame = CGRectOffset(_placeholderLabel.frame, ((int)(_selfieSubmitType == HONSelfieSubmitTypeReplyChallenge)) * 25.0, 0.0);
 	_subjectTextField.frame = _placeholderLabel.frame;
@@ -151,13 +164,13 @@
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 	_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cancelButton.frame = CGRectMake(244.0, 3.0, 64.0, 44.0);
+	_cancelButton.frame = CGRectMake(244.0 + (5.0 * (_recipients != nil)), 3.0 + (-3.0 * (_recipients != nil)), 64.0, 44.0);
 	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	_cancelButton.alpha = 0.75;
-	[_headerBGImageView addSubview:_cancelButton];
+	[self addSubview:_cancelButton];
 	
-	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, 215.0 + ([[HONDeviceTraits sharedInstance] isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
+	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0 + (45.0 * (_recipients != nil)), 320.0, 215.0 + ([[HONDeviceTraits sharedInstance] isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	_subjectsView.isJoinVolley = _selfieSubmitType;

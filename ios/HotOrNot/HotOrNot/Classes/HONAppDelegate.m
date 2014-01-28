@@ -8,13 +8,16 @@
 
 #import <AddressBook/AddressBook.h>
 #import <AVFoundation/AVFoundation.h>
-#import <FacebookSDK/FacebookSDK.h>
 #import <Foundation/Foundation.h>
-#import <HockeySDK/HockeySDK.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
 #import <Social/SLServiceTypes.h>
 #import <sys/utsname.h>
+
+#import <FacebookSDK/FacebookSDK.h>
+#import <HockeySDK/HockeySDK.h>
+#import <Tapjoy/Tapjoy.h>
+
 
 #import "AFNetworking.h"
 #import "Chartboost.h"
@@ -49,6 +52,7 @@
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
 #import "HONAlertsViewController.h"
+#import "HONImagePickerViewController.h"
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
@@ -74,6 +78,8 @@ NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 NSString * const kChartboostAppID = @"";
 NSString * const kChartboostAppSignature = @"";
+NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
+NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
 // view heights
@@ -1001,13 +1007,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[FBAppEvents activateApp];
 	[[UAPush shared] resetBadge];
 	
-	Chartboost *chartboost = [Chartboost sharedChartboost];
-    chartboost.appId = kChartboostAppID;
-    chartboost.appSignature = kChartboostAppSignature;
-    chartboost.delegate = self;
-	
-    [chartboost startSession];
-    [chartboost showInterstitial];
+//	Chartboost *chartboost = [Chartboost sharedChartboost];
+//    chartboost.appId = kChartboostAppID;
+//    chartboost.appSignature = kChartboostAppSignature;
+//    chartboost.delegate = self;
+//	
+//    [chartboost startSession];
+//    [chartboost showInterstitial];
 	
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
@@ -1065,7 +1071,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([protocol isEqualToString:@"selfieclub"]) {
 		NSRange range = [[url absoluteString] rangeOfString:@"://"];
 		NSArray *path = [[[url absoluteString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
-		
+		NSLog(@"PATH:[%@]", path);
 		
 		if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
 			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC);
@@ -1075,8 +1081,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:userPofileViewController] animated:YES completion:nil];
 			});
 		
-		} else if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
-			
+		} else if ([[path objectAtIndex:0] isEqualToString:@"invite"]) {
+			[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]] animated:YES completion:nil];
+		
+		} else if ([[path objectAtIndex:0] isEqualToString:@"create"]) {
+			if ([[path objectAtIndex:1] isEqualToString:@"selfie"])
+				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]] animated:YES completion:nil];
 		}
 		
 		return (YES);
@@ -1292,6 +1302,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[TestFlight takeOff:kTestFlightAppToken];
 #endif
 	
+	[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+	
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1299,14 +1311,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
-	[TSTapstream createWithAccountName:@"volley" developerSecret:kTapStreamSecretKey config:config];
+	[TSTapstream createWithAccountName:@"volley"
+					   developerSecret:kTapStreamSecretKey
+								config:config];
 	
+	//TSTapstream *tapstream = [TSTapstream instance];
 	
-	[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+	[Tapjoy requestTapjoyConnect:kTapjoyAppID
+					   secretKey:kTapjoyAppSecretKey
+						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 	
-	[KikAPIClient registerAsKikPluginWithAppID:@"com.builtinmenlo.selfieclub.kik"
-							   withHomepageURI:@"http://www.builtinmenlo.com"
-								  addAppButton:YES];
+//	[KikAPIClient registerAsKikPluginWithAppID:@"com.builtinmenlo.selfieclub.kik"
+//							   withHomepageURI:@"http://www.builtinmenlo.com"
+//								  addAppButton:YES];
 }
 
 - (void)_writeShareTemplates {

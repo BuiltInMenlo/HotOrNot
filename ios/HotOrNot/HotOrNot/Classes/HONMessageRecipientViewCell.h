@@ -14,6 +14,8 @@
 @interface HONMessageRecipientViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+- (void)toggleSelected;
+
 @property (nonatomic, strong) HONTrivialUserVO *userVO;
 @property (nonatomic, assign) id <HONMessageRecipientViewCellDelegate> delegate;
 @end

@@ -27,7 +27,7 @@
 #import "HONSuggestedFollowViewController.h"
 
 
-@interface HONMessagesViewController () <EGORefreshTableHeaderDelegate, HONMessageItemViewCellDelegate>
+@interface HONMessagesViewController () <EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -69,6 +69,8 @@
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONMessageVO *vo = [HONMessageVO messageWithDictionary:dict];
 			[_messages addObject:vo];
+			
+			NSLog(@"MESSAGE.VIEWED:[%@]", [vo.dictionary objectForKey:@"viewed"]);
 		}
 		
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
@@ -311,18 +313,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
-- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showMessage:(HONMessageVO *)messageVO {
-	[[Mixpanel sharedInstance] track:@"Messages - Show Details"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (!messageVO.hasViewed)
-		[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID forParticipant:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:nil];
-	
-	[cell updateAsSeen];
-	[self.navigationController pushViewController:[[HONMessageDetailsViewController alloc] initWithMessage:messageVO] animated:YES];
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -351,8 +341,8 @@
 			cell.messageVO = vo;
 		}
 		
-		cell.delegate = self;
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		//cell.delegate = self;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		return (cell);
 		
 	} else {
@@ -391,26 +381,43 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section < [_messages count] || indexPath.row == 4) ? nil : indexPath);
+	//return ((indexPath.section < [_messages count] || indexPath.row == 4) ? nil : indexPath);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	switch (indexPath.row) {
-		case HONMessageRowTypeFindFriends:
-			[self _goSearch];
-			break;
-			
-		case HONMessageRowTypeFindClubs:
-			[self _goSuggested];
-			break;
-			
-		case HONMessageRowTypeMatchPhone:
-			[self _goMatchPhone];
-			
-		default:
-			break;
+	if (indexPath.section >= [_messages count]) {
+		switch (indexPath.row) {
+			case HONMessageRowTypeFindFriends:
+				[self _goSearch];
+				break;
+				
+			case HONMessageRowTypeFindClubs:
+				[self _goSuggested];
+				break;
+				
+			case HONMessageRowTypeMatchPhone:
+				[self _goMatchPhone];
+				
+			default:
+				break;
+		}
+	
+	} else {
+		[[Mixpanel sharedInstance] track:@"Messages - Show Details"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		HONMessageItemViewCell *cell = (HONMessageItemViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+		HONMessageVO *messageVO = cell.messageVO;
+		
+		if (!messageVO.hasViewed)
+			[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID forParticipant:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:nil];
+		
+		[cell updateAsSeen];
+		[self.navigationController pushViewController:[[HONMessageDetailsViewController alloc] initWithMessage:messageVO] animated:YES];
 	}
 }
 

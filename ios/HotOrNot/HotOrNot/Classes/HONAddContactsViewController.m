@@ -413,14 +413,6 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are You Sure?"
-//														message:@"Do you wish to select and invite all of your contacts?"
-//													   delegate:self
-//											  cancelButtonTitle:@"No"
-//											  otherButtonTitles:@"Yes", nil];
-//	[alertView setTag:1];
-//	[alertView show];
-	
 	if ([_selectedInAppContacts count] > 0)
 		[self _followUsers];
 	
@@ -647,11 +639,6 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Add Contacts - Close Confirm"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		} else {
 			[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
@@ -673,8 +660,8 @@
 		if ([_selectedInAppContacts count] > 0)
 			[self _followUsers];
 		
-//		if ([_selectedNonAppContacts count] > 0)
-//			[self _sendInvites];
+		if ([_selectedNonAppContacts count] > 0)
+			[self _sendInvites];
 		
 		if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
