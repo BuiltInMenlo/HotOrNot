@@ -252,7 +252,6 @@
 		_participantsGridView.delegate = self;
 		[_contentHolderView addSubview:_participantsGridView];
 	}
-	
 }
 
 - (void)_makeFooterTabBar {

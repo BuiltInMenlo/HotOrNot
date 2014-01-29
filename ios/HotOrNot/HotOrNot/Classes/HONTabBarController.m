@@ -97,11 +97,11 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	_messagesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_messagesButton.frame = CGRectMake(kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
-	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
-	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
-	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
-	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_nonActive"] forState:UIControlStateNormal];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_Tapped"] forState:UIControlStateHighlighted];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_Active"] forState:UIControlStateSelected];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_messagesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_messagesButton];
 	[_messagesButton setTag:1];
 	

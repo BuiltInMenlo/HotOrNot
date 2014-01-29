@@ -28,7 +28,9 @@
 #import "HONSuggestedFollowViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONAPICaller.h"
+#import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
+#import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
@@ -48,7 +50,7 @@
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
-@property (nonatomic, strong) UIImageView *emptyTimelineImageView;
+@property (nonatomic, strong) UIView *emptyTimelineView;
 @property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
 @property (nonatomic) BOOL isScrollingDown;
 @property (nonatomic) BOOL isFirstLoad;
@@ -113,7 +115,7 @@
 			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"home"];
 		}
 		
-		_emptyTimelineImageView.hidden = ([_challenges count] > 0);
+		_emptyTimelineView.hidden = ([_challenges count] > 0);
 		
 	 
 		_isFirstLoad = NO;
@@ -141,9 +143,50 @@
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
-	_emptyTimelineImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_noFollowers"]];
-	_emptyTimelineImageView.frame = CGRectOffset(_emptyTimelineImageView.frame, 0.0, 80.0);
-	[_tableView addSubview:_emptyTimelineImageView];
+	_emptyTimelineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 335.0)];
+	[_emptyTimelineView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_noFollowers"]]];
+	[_tableView addSubview:_emptyTimelineView];
+	
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(0.0, 200.0, 320.0, 45.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
+	[inviteButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
+	[inviteButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[inviteButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
+	[inviteButton setTitle:@"Find friends to follow" forState:UIControlStateNormal];
+	[inviteButton setTitle:@"Find friends to follow" forState:UIControlStateHighlighted];
+	inviteButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyTimelineView addSubview:inviteButton];
+	
+	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createClubButton.frame = CGRectMake(0.0, 245.0, 320.0, 45.0);
+	[createClubButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
+	[createClubButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
+	[createClubButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
+	[createClubButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[createClubButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
+	[createClubButton setTitle:@"Invite friends to join my club" forState:UIControlStateNormal];
+	[createClubButton setTitle:@"Invite friends to join my club" forState:UIControlStateHighlighted];
+	createClubButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+	[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyTimelineView addSubview:createClubButton];
+	
+	UIButton *matchPhoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	matchPhoneButton.frame = CGRectMake(0.0, 290.0, 320.0, 45.0);
+	[matchPhoneButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
+	[matchPhoneButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
+	[matchPhoneButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
+	[matchPhoneButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[matchPhoneButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
+	[matchPhoneButton setTitle:@"Verify your phone number" forState:UIControlStateNormal];
+	[matchPhoneButton setTitle:@"Verify your phone number" forState:UIControlStateHighlighted];
+	matchPhoneButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+	[matchPhoneButton addTarget:self action:@selector(_goMatchPhone) forControlEvents:UIControlEventTouchUpInside];
+	[_emptyTimelineView addSubview:matchPhoneButton];
+	
+	
 	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
@@ -259,6 +302,36 @@
 		if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
 	}];
+}
+
+- (void)_goAddContacts {
+	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goMatchPhone {
+	[[Mixpanel sharedInstance] track:@"Timeline - Match Phone"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goCreateClub {
+	[[Mixpanel sharedInstance] track:@"Timeline - Create Club"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		340149F01808AF8300581096 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340149EF1808AF8300581096 /* FacebookSDK.framework */; };
+		4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0113D91898B243007461DB /* HONCreateClubViewController.m */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
 		4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C02601C172B4703001CC476 /* HONContactUserVO.m */; };
 		4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */; };
@@ -721,6 +722,16 @@
 		4CEFDEB017D6DA430086AC32 /* retakeAvatarButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDEAC17D6DA430086AC32 /* retakeAvatarButton_nonActive@2x.png */; };
 		4CF07C141686756C00E0FBC1 /* fpo_upvote.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */; };
 		4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF07C151686770100E0FBC1 /* MediaPlayer.framework */; };
+		4CF7503618984789009E39E4 /* cameraStep2Line.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7503418984789009E39E4 /* cameraStep2Line.png */; };
+		4CF7503718984789009E39E4 /* cameraStep2Line@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7503518984789009E39E4 /* cameraStep2Line@2x.png */; };
+		4CF7503A189847A7009E39E4 /* messageOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF75038189847A7009E39E4 /* messageOverlay.png */; };
+		4CF7503B189847A7009E39E4 /* messageOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF75039189847A7009E39E4 /* messageOverlay@2x.png */; };
+		4CF7504218986715009E39E4 /* tabMenu_messagesButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7503C18986715009E39E4 /* tabMenu_messagesButton_Active.png */; };
+		4CF7504318986715009E39E4 /* tabMenu_messagesButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7503D18986715009E39E4 /* tabMenu_messagesButton_Active@2x.png */; };
+		4CF7504418986715009E39E4 /* tabMenu_messagesButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7503E18986715009E39E4 /* tabMenu_messagesButton_nonActive.png */; };
+		4CF7504518986715009E39E4 /* tabMenu_messagesButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7503F18986715009E39E4 /* tabMenu_messagesButton_nonActive@2x.png */; };
+		4CF7504618986715009E39E4 /* tabMenu_messagesButton_Tapped.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7504018986715009E39E4 /* tabMenu_messagesButton_Tapped.png */; };
+		4CF7504718986715009E39E4 /* tabMenu_messagesButton_Tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CF7504118986715009E39E4 /* tabMenu_messagesButton_Tapped@2x.png */; };
 		4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */; };
 		4CFA8B801891BE6300DCCCB1 /* grayDot.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CFA8B7C1891BE6300DCCCB1 /* grayDot.png */; };
 		4CFA8B811891BE6300DCCCB1 /* grayDot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CFA8B7D1891BE6300DCCCB1 /* grayDot@2x.png */; };
@@ -748,6 +759,8 @@
 
 /* Begin PBXFileReference section */
 		340149EF1808AF8300581096 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		4C0113D81898B243007461DB /* HONCreateClubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateClubViewController.h; sourceTree = "<group>"; };
+		4C0113D91898B243007461DB /* HONCreateClubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateClubViewController.m; sourceTree = "<group>"; };
 		4C026019172B2CA8001CC476 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		4C02601B172B4703001CC476 /* HONContactUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactUserVO.h; sourceTree = "<group>"; };
 		4C02601C172B4703001CC476 /* HONContactUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactUserVO.m; sourceTree = "<group>"; };
@@ -1665,6 +1678,16 @@
 		4CEFDEAC17D6DA430086AC32 /* retakeAvatarButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "retakeAvatarButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fpo_upvote.mp3; sourceTree = "<group>"; };
 		4CF07C151686770100E0FBC1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		4CF7503418984789009E39E4 /* cameraStep2Line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraStep2Line.png; sourceTree = "<group>"; };
+		4CF7503518984789009E39E4 /* cameraStep2Line@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraStep2Line@2x.png"; sourceTree = "<group>"; };
+		4CF75038189847A7009E39E4 /* messageOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = messageOverlay.png; sourceTree = "<group>"; };
+		4CF75039189847A7009E39E4 /* messageOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "messageOverlay@2x.png"; sourceTree = "<group>"; };
+		4CF7503C18986715009E39E4 /* tabMenu_messagesButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMenu_messagesButton_Active.png; sourceTree = "<group>"; };
+		4CF7503D18986715009E39E4 /* tabMenu_messagesButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabMenu_messagesButton_Active@2x.png"; sourceTree = "<group>"; };
+		4CF7503E18986715009E39E4 /* tabMenu_messagesButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMenu_messagesButton_nonActive.png; sourceTree = "<group>"; };
+		4CF7503F18986715009E39E4 /* tabMenu_messagesButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabMenu_messagesButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF7504018986715009E39E4 /* tabMenu_messagesButton_Tapped.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMenu_messagesButton_Tapped.png; sourceTree = "<group>"; };
+		4CF7504118986715009E39E4 /* tabMenu_messagesButton_Tapped@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabMenu_messagesButton_Tapped@2x.png"; sourceTree = "<group>"; };
 		4CFA8B7818918E8C00DCCCB1 /* HONTrivialUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTrivialUserVO.h; sourceTree = "<group>"; };
 		4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTrivialUserVO.m; sourceTree = "<group>"; };
 		4CFA8B7C1891BE6300DCCCB1 /* grayDot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayDot.png; sourceTree = "<group>"; };
@@ -1933,6 +1956,12 @@
 		4C351D2916FEA96500BD9498 /* Tab Bar */ = {
 			isa = PBXGroup;
 			children = (
+				4CF7503C18986715009E39E4 /* tabMenu_messagesButton_Active.png */,
+				4CF7503D18986715009E39E4 /* tabMenu_messagesButton_Active@2x.png */,
+				4CF7503E18986715009E39E4 /* tabMenu_messagesButton_nonActive.png */,
+				4CF7503F18986715009E39E4 /* tabMenu_messagesButton_nonActive@2x.png */,
+				4CF7504018986715009E39E4 /* tabMenu_messagesButton_Tapped.png */,
+				4CF7504118986715009E39E4 /* tabMenu_messagesButton_Tapped@2x.png */,
 				4CA8EC351850EF9800F91363 /* tabMenu_shoutoutsButton_Active.png */,
 				4CA8EC361850EF9800F91363 /* tabMenu_shoutoutsButton_Active@2x.png */,
 				4CA8EC371850EF9800F91363 /* tabMenu_shoutoutsButton_nonActive.png */,
@@ -2376,18 +2405,19 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				4CE8B62E16E2EC4100D29191 /* Splash */,
+				4CF7504818989DFA009E39E4 /* Clubs */,
+				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C86C43617FFA8D2007DC458 /* Followers / Following */,
 				4C0CA3F5175151FA00DD0652 /* Search / Invite */,
-				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
+				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C45FF4516DECE40002F1080 /* Views */,
 				4CEEFC8017E155EE0006A640 /* View Controllers */,
 				4C148F7E17815CA900EBD245 /* Settings */,
+				4C45FF4616DECE63002F1080 /* Utils */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
 				4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */,
-				4C45FF4616DECE63002F1080 /* Utils */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -2919,6 +2949,8 @@
 		4CA8DA9916140F5300B7B13C /* Create Challenge */ = {
 			isa = PBXGroup;
 			children = (
+				4CF7503418984789009E39E4 /* cameraStep2Line.png */,
+				4CF7503518984789009E39E4 /* cameraStep2Line@2x.png */,
 				4C8FB40D18248A6F00B33FD8 /* Emoticons */,
 				4C8FB3F91824876D00B33FD8 /* cameraInputField.png */,
 				4C8FB3FA1824876D00B33FD8 /* cameraInputField@2x.png */,
@@ -3361,6 +3393,15 @@
 			name = SFX;
 			sourceTree = "<group>";
 		};
+		4CF7504818989DFA009E39E4 /* Clubs */ = {
+			isa = PBXGroup;
+			children = (
+				4C0113D81898B243007461DB /* HONCreateClubViewController.h */,
+				4C0113D91898B243007461DB /* HONCreateClubViewController.m */,
+			);
+			name = Clubs;
+			sourceTree = "<group>";
+		};
 		4CF84495166503AC00C0CC5B /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -3379,6 +3420,8 @@
 		4CFA8B7B1891BE4800DCCCB1 /* Messages */ = {
 			isa = PBXGroup;
 			children = (
+				4CF75038189847A7009E39E4 /* messageOverlay.png */,
+				4CF75039189847A7009E39E4 /* messageOverlay@2x.png */,
 				4CFA8B9018920DD600DCCCB1 /* messageReplyCellBackground.png */,
 				4CFA8B9118920DD600DCCCB1 /* messageReplyCellBackground@2x.png */,
 				4CFA8B7C1891BE6300DCCCB1 /* grayDot.png */,
@@ -3508,6 +3551,7 @@
 				4CDFB3CF178DC7D400438732 /* verifyEmailText@2x.png in Resources */,
 				4C9F2C251855A9E300152CFC /* shareTemplate_instagram.png in Resources */,
 				4CFA8BA218920E4A00DCCCB1 /* nextButton_nonActive.png in Resources */,
+				4CF7504618986715009E39E4 /* tabMenu_messagesButton_Tapped.png in Resources */,
 				4C9E3B661825AD1B004878F9 /* imageLoader_002@2x.png in Resources */,
 				4CE61E251696733900F260C9 /* checkIcon@2x.png in Resources */,
 				4CA944191698FA3300507A08 /* rowGray_Active.png in Resources */,
@@ -3521,6 +3565,7 @@
 				4C8FB3BE1824294100B33FD8 /* tabMenu_followButton_nonActive@2x.png in Resources */,
 				4CA8EC1418502BFA00F91363 /* tabMenu_activityButton_Tapped@2x.png in Resources */,
 				4C9B928818287AED00A060B2 /* MPLogo@2x.png in Resources */,
+				4CF7504418986715009E39E4 /* tabMenu_messagesButton_nonActive.png in Resources */,
 				4CCE753E184463B500FF09F7 /* suggestedFollowOnButton_Active.png in Resources */,
 				4CA0A6C818173CF400045594 /* freeButton_nonActive.png in Resources */,
 				4C48DE81182764CC003CB309 /* profilePhotoButton_nonActive@2x.png in Resources */,
@@ -3581,6 +3626,7 @@
 				4C068AA5170267850019428A /* commentsInputField_nonActive.jpg in Resources */,
 				4C9E3B751825CE35004878F9 /* userNotVerifiedButton_nonActive.png in Resources */,
 				4CA8EBEB184E990D00F91363 /* timelineLikeButton_nonActive.png in Resources */,
+				4CF7503718984789009E39E4 /* cameraStep2Line@2x.png in Resources */,
 				4C9B928A18287AED00A060B2 /* MPSurvey.storyboard in Resources */,
 				4C068AA6170267850019428A /* commentsInputField_nonActive@2x.jpg in Resources */,
 				4C71BF3A181B1B55005044F8 /* cancelButton_Active.png in Resources */,
@@ -3592,6 +3638,7 @@
 				4C8FB41818248B9800B33FD8 /* verifyRowBackground.png in Resources */,
 				4C48DE6D18275BD8003CB309 /* followUser_Active@2x.png in Resources */,
 				4C6541A5184523BD00C936CD /* verifyMoreButton_nonActive@2x.png in Resources */,
+				4CF7504518986715009E39E4 /* tabMenu_messagesButton_nonActive@2x.png in Resources */,
 				4C6541B518453E8900C936CD /* CartoGothicStd-Italic.otf in Resources */,
 				4C9E3B681825AD1B004878F9 /* imageLoader_003@2x.png in Resources */,
 				4CCE75531844807400FF09F7 /* splashText_volley-568h@2x.png in Resources */,
@@ -3631,6 +3678,7 @@
 				4C6541B218453E8900C936CD /* CartoGothicStd-Bold.otf in Resources */,
 				4C3CB1E217E440070076BF78 /* cameraButton_nonActive@2x.png in Resources */,
 				4C9B92B51828943D00A060B2 /* cancelWhiteButton_Active@2x.png in Resources */,
+				4CF7504318986715009E39E4 /* tabMenu_messagesButton_Active@2x.png in Resources */,
 				4CDFB3CE178DC7D400438732 /* verifyEmailText.png in Resources */,
 				4CDFB3DC178DDC4E00438732 /* verification@2x.png in Resources */,
 				4C9B928618287AED00A060B2 /* MPDismissKeyboard@2x.png in Resources */,
@@ -3645,6 +3693,7 @@
 				4CFA8BA318920E4A00DCCCB1 /* nextButton_nonActive@2x.png in Resources */,
 				4CFA8B801891BE6300DCCCB1 /* grayDot.png in Resources */,
 				4CFA8B9F18920E4900DCCCB1 /* messageReplyButton_nonActive@2x.png in Resources */,
+				4CF7503B189847A7009E39E4 /* messageOverlay@2x.png in Resources */,
 				4CDB154E180CBD1700FD93CB /* skipThis_nonActive@2x.png in Resources */,
 				4CA7427818236B2C00E96E31 /* profileNotVerifiedButton_Active@2x.png in Resources */,
 				4C11AA4F182DFB20005A876B /* friendsTile.png in Resources */,
@@ -3708,6 +3757,7 @@
 				4CA8EBD3184E86FB00F91363 /* captionBackground.png in Resources */,
 				4C48DE7418275BD8003CB309 /* profileLineBackground.png in Resources */,
 				4C8FB3DB1824802600B33FD8 /* replyArrow.png in Resources */,
+				4CF7504718986715009E39E4 /* tabMenu_messagesButton_Tapped@2x.png in Resources */,
 				4C9B928718287AED00A060B2 /* MPLogo.png in Resources */,
 				4C43C9421772A50900983BE8 /* firstRunInputBG_Active@2x.png in Resources */,
 				4CFA8B9C18920E4900DCCCB1 /* messageReplyButton_Active.png in Resources */,
@@ -3740,6 +3790,7 @@
 				4C7E2B40182EDB2E00D48E1C /* defaultAvatarLarge_640x1136.jpg in Resources */,
 				4C8FB3D818247F5B00B33FD8 /* header_modal@2x.png in Resources */,
 				4C80A40E18542F5100F8D7EE /* tutorial_profilePhoto_nonActive.png in Resources */,
+				4CF7504218986715009E39E4 /* tabMenu_messagesButton_Active.png in Resources */,
 				4CBA313817F60CE5008CEDD6 /* nayButton_nonActive.png in Resources */,
 				4CCE75521844807400FF09F7 /* splashText_selfieclub@2x.png in Resources */,
 				4C48DE6818275BD8003CB309 /* findFriends_Active.png in Resources */,
@@ -3848,6 +3899,7 @@
 				4C8FB3F7182485B100B33FD8 /* cameraSubmitButton_nonActive.png in Resources */,
 				4C0396BD17B7038300AECD97 /* backButtonIcon_nonActive@2x.png in Resources */,
 				4C9E3B671825AD1B004878F9 /* imageLoader_003.png in Resources */,
+				4CF7503618984789009E39E4 /* cameraStep2Line.png in Resources */,
 				4CCE753B184463B500FF09F7 /* suggestedFollowOffButton_Active@2x.png in Resources */,
 				4CA8EBFE184FD88200F91363 /* moreButton_Active@2x.png in Resources */,
 				4C225CC017B83F3C00330EB3 /* divider.png in Resources */,
@@ -3871,6 +3923,7 @@
 				4C48DE6F18275BD8003CB309 /* followUser_nonActive@2x.png in Resources */,
 				4C1BA89917F51DAF006024B2 /* exploreSearch_Active.png in Resources */,
 				4C9B92981828891D00A060B2 /* emoticon_white.png in Resources */,
+				4CF7503A189847A7009E39E4 /* messageOverlay.png in Resources */,
 				4CAA455C17BE06BF002670A6 /* retakeButton_Active.png in Resources */,
 				4CAA455D17BE06BF002670A6 /* retakeButton_Active@2x.png in Resources */,
 				4CAA455E17BE06BF002670A6 /* retakeButton_nonActive.png in Resources */,
@@ -4154,6 +4207,7 @@
 				4C459106189183FF0014FA7E /* HONDeviceTraits.m in Sources */,
 				4CED1C1B177D46C100A32F2B /* NBPhoneMetaDataGenerator.m in Sources */,
 				4CCE75231843FA9D00FF09F7 /* HONSuggestedFollowViewCell.m in Sources */,
+				4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */,
 				4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */,
 				4C382FF9178B8AA200C7FA7C /* HONSearchUsersViewController.m in Sources */,
 				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,

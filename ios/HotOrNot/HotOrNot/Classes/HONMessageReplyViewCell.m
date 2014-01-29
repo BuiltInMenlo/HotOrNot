@@ -55,6 +55,8 @@
 	[imageLoadingView startAnimating];
 	[challengeHolderView addSubview:imageLoadingView];
 	
+	[challengeHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"messageOverlay"]]];
+	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 34.0, 34.0)];
 	_avatarImageView.userInteractionEnabled = YES;
 	[avatarHolderView addSubview:_avatarImageView];

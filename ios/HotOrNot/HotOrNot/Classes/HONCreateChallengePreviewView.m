@@ -101,7 +101,7 @@
 	_previewBackButton.frame = self.frame;
 	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
-	_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraInputField"]];
+	_headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_recipients == nil) ? @"cameraInputField" : @"cameraStep2Line"]];
 	_headerBGImageView.userInteractionEnabled = YES;
 	[self addSubview:_headerBGImageView];
 	
