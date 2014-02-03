@@ -13,6 +13,7 @@
 
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
+#import "TSTapstream.h"
 #import "UIImage+fixOrientation.h"
 
 #import "HONChallengeCameraViewController.h"
@@ -95,13 +96,14 @@
 	return (self);
 }
 
-- (id)initAsMessageReply:(HONMessageVO *)messageVO {
+- (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients {
 	NSLog(@"%@ - initAsMessageReply:[%@]", [self description], messageVO.dictionary);
 	if ((self = [self init])) {
 		_selfieSubmitType = HONSelfieSubmitTypeReplyMessage;
 		
 		_messageVO = messageVO;
 		_subjectName = _messageVO.subjectName;
+		_recipients = recipients;
 	}
 	
 	return (self);
@@ -247,6 +249,14 @@
 		_hasSubmitted = YES;
 		
 		if (_isUploadComplete) {
+			TSTapstream *tracker = [TSTapstream instance];
+			
+			TSEvent *e = [TSEvent eventWithName:@"Submitted Photo" oneTimeOnly:YES];
+			[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+			[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
+			[tracker fireEvent:e];
+			
+			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			

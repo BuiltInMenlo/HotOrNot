@@ -10,6 +10,7 @@
 #import <AddressBook/AddressBook.h>
 
 #import "MBProgressHUD.h"
+#import "TSTapstream.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAddContactsViewController.h"
@@ -162,6 +163,13 @@
 	_inviteTypeTotal = ((int)[numbers count] > 0) + ((int)[emails count] > 0);
 	
 	if (_inviteTypeTotal > 0) {
+		TSTapstream *tracker = [TSTapstream instance];
+		
+		TSEvent *e = [TSEvent eventWithName:@"Invite Friends" oneTimeOnly:YES];
+		[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+		[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
+		[tracker fireEvent:e];
+		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;

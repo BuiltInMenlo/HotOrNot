@@ -15,7 +15,7 @@
 #import "HONHeaderView.h"
 
 
-@interface HONMatchContactsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
+@interface HONMatchContactsViewController ()
 @property (nonatomic, retain) UITextField *textField;
 @property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -52,8 +52,13 @@
 	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
 		[[HONAPICaller sharedInstance] showSuccessHUD];
 		
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:nil];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Great!"
+															message:@"We will notify you when new friends are on Selfieclub!"
+														   delegate:self
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView setTag:1];
+		[alertView show];
 	};
 	
 	if (_isEmail)
@@ -148,6 +153,10 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		[_textField becomeFirstResponder];
+	
+	} else if (alertView.tag == 1) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 

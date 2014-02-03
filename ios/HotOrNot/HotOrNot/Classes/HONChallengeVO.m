@@ -78,7 +78,7 @@
 	vo.totalLikes = vo.creatorVO.score;
 	
 	vo.challengers = [NSMutableArray array];
-	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {
+	for (NSDictionary *challenger in [dictionary objectForKey:@"challengers"]) {
 		HONOpponentVO *opponentVO = [HONOpponentVO opponentWithDictionary:challenger];
 		[vo.challengers addObject:opponentVO];
 		vo.totalLikes += opponentVO.score;

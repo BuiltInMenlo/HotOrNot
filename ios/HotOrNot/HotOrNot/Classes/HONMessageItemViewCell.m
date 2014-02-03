@@ -47,8 +47,8 @@
 		usernames = [[usernames stringByAppendingString:username] stringByAppendingString:@", "];
 	usernames = [usernames substringToIndex:[usernames length] - 2];
 	
-	_unviewedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emoticon_blue"]];
-	_unviewedImageView.frame = CGRectOffset(_unviewedImageView.frame, 0.0, 12.0);
+	_unviewedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"newMessageDot"]];
+	_unviewedImageView.frame = CGRectOffset(_unviewedImageView.frame, 263.0, 30.0);
 	_unviewedImageView.hidden = (_messageVO.hasViewed);
 	[self.contentView addSubview:_unviewedImageView];
 	

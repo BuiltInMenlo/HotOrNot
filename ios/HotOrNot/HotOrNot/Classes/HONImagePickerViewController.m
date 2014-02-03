@@ -58,11 +58,12 @@
 	return (self);
 }
 
-- (id)initAsMessageReply:(HONMessageVO *)messageVO {
+- (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients {
 	if ((self= [self init])) {
 		_isJoinChallenge = YES;
 		_isMessage = YES;
 		_messageVO = messageVO;
+		_recipients = recipients;
 	}
 	
 	return (self);
@@ -97,7 +98,7 @@
 	
 	if (_isMessage) {
 		if (_isJoinChallenge)
-			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsMessageReply:_messageVO] animated:NO];
+			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsMessageReply:_messageVO withRecipients:_recipients] animated:NO];
 		
 		else
 			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewMessageWithRecipients:_recipients] animated:NO];

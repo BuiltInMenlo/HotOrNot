@@ -11,6 +11,11 @@
 		4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0113D91898B243007461DB /* HONCreateClubViewController.m */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
 		4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C02601C172B4703001CC476 /* HONContactUserVO.m */; };
+		4C02D0F7189C2B18005A5B6A /* newMessageDot.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C02D0F5189C2B18005A5B6A /* newMessageDot.png */; };
+		4C02D0F8189C2B18005A5B6A /* newMessageDot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C02D0F6189C2B18005A5B6A /* newMessageDot@2x.png */; };
+		4C02D0FC189C2ED6005A5B6A /* tutorial_messages-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C02D0F9189C2ED6005A5B6A /* tutorial_messages-568h@2x.png */; };
+		4C02D0FD189C2ED6005A5B6A /* tutorial_messages.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C02D0FA189C2ED6005A5B6A /* tutorial_messages.png */; };
+		4C02D0FE189C2ED6005A5B6A /* tutorial_messages@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C02D0FB189C2ED6005A5B6A /* tutorial_messages@2x.png */; };
 		4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */; };
 		4C0396BA17B7038300AECD97 /* backButtonIcon_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C03964917B7038300AECD97 /* backButtonIcon_Active.png */; };
 		4C0396BB17B7038300AECD97 /* backButtonIcon_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C03964A17B7038300AECD97 /* backButtonIcon_Active@2x.png */; };
@@ -764,6 +769,11 @@
 		4C026019172B2CA8001CC476 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		4C02601B172B4703001CC476 /* HONContactUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactUserVO.h; sourceTree = "<group>"; };
 		4C02601C172B4703001CC476 /* HONContactUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactUserVO.m; sourceTree = "<group>"; };
+		4C02D0F5189C2B18005A5B6A /* newMessageDot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newMessageDot.png; sourceTree = "<group>"; };
+		4C02D0F6189C2B18005A5B6A /* newMessageDot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newMessageDot@2x.png"; sourceTree = "<group>"; };
+		4C02D0F9189C2ED6005A5B6A /* tutorial_messages-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tutorial_messages-568h@2x.png"; sourceTree = "<group>"; };
+		4C02D0FA189C2ED6005A5B6A /* tutorial_messages.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_messages.png; sourceTree = "<group>"; };
+		4C02D0FB189C2ED6005A5B6A /* tutorial_messages@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tutorial_messages@2x.png"; sourceTree = "<group>"; };
 		4C03962E17B3350700AECD97 /* HONChallengeDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeDetailsViewController.h; sourceTree = "<group>"; };
 		4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONChallengeDetailsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C03964917B7038300AECD97 /* backButtonIcon_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backButtonIcon_Active.png; sourceTree = "<group>"; };
@@ -2079,6 +2089,9 @@
 		4C41A1471801274300CE93D2 /* Tutorials */ = {
 			isa = PBXGroup;
 			children = (
+				4C02D0F9189C2ED6005A5B6A /* tutorial_messages-568h@2x.png */,
+				4C02D0FA189C2ED6005A5B6A /* tutorial_messages.png */,
+				4C02D0FB189C2ED6005A5B6A /* tutorial_messages@2x.png */,
 				4C6541961845216200C936CD /* tutorial_closeButton_Active.png */,
 				4C80A40818542F5100F8D7EE /* tutorial_profilePhoto_Active.png */,
 				4C80A40918542F5100F8D7EE /* tutorial_profilePhoto_Active@2x.png */,
@@ -3420,6 +3433,8 @@
 		4CFA8B7B1891BE4800DCCCB1 /* Messages */ = {
 			isa = PBXGroup;
 			children = (
+				4C02D0F5189C2B18005A5B6A /* newMessageDot.png */,
+				4C02D0F6189C2B18005A5B6A /* newMessageDot@2x.png */,
 				4CF75038189847A7009E39E4 /* messageOverlay.png */,
 				4CF75039189847A7009E39E4 /* messageOverlay@2x.png */,
 				4CFA8B9018920DD600DCCCB1 /* messageReplyCellBackground.png */,
@@ -3673,6 +3688,7 @@
 				4CA8EC1A18502E2300F91363 /* tutorial_activity@2x.png in Resources */,
 				4CA7427B18236B2C00E96E31 /* profileVerifiedButton_Active.png in Resources */,
 				4CCE7539184463B500FF09F7 /* suggestedCellBackground@2x.png in Resources */,
+				4C02D0FD189C2ED6005A5B6A /* tutorial_messages.png in Resources */,
 				4C1BA89A17F51DAF006024B2 /* exploreSearch_Active@2x.png in Resources */,
 				4C11AA5E182E46CD005A876B /* defaultAvatarTab_640x960.png in Resources */,
 				4C6541B218453E8900C936CD /* CartoGothicStd-Bold.otf in Resources */,
@@ -3778,6 +3794,7 @@
 				4C80A4071853F1F600F8D7EE /* banner_activity@2x.png in Resources */,
 				4C3CB1D117E43A020076BF78 /* cameraBackgroundHeader.png in Resources */,
 				4C8FB4201824B33400B33FD8 /* heartLike_Icon.png in Resources */,
+				4C02D0F7189C2B18005A5B6A /* newMessageDot.png in Resources */,
 				4CD82AD91782BAE50001D4F4 /* icon_58x58.png in Resources */,
 				4C9B925718285BC700A060B2 /* unfollow_nonActive@2x.png in Resources */,
 				4C5C714117737F8C00FA6F51 /* searchInputBackground.png in Resources */,
@@ -3789,7 +3806,9 @@
 				4C25EEE017EFEF0600F6DBAB /* registerButton_nonActive@2x.png in Resources */,
 				4C7E2B40182EDB2E00D48E1C /* defaultAvatarLarge_640x1136.jpg in Resources */,
 				4C8FB3D818247F5B00B33FD8 /* header_modal@2x.png in Resources */,
+				4C02D0FC189C2ED6005A5B6A /* tutorial_messages-568h@2x.png in Resources */,
 				4C80A40E18542F5100F8D7EE /* tutorial_profilePhoto_nonActive.png in Resources */,
+				4C02D0F8189C2B18005A5B6A /* newMessageDot@2x.png in Resources */,
 				4CF7504218986715009E39E4 /* tabMenu_messagesButton_Active.png in Resources */,
 				4CBA313817F60CE5008CEDD6 /* nayButton_nonActive.png in Resources */,
 				4CCE75521844807400FF09F7 /* splashText_selfieclub@2x.png in Resources */,
@@ -3974,6 +3993,7 @@
 				4CE5309517C2D43F00F7B4AD /* heartAnimation@2x.png in Resources */,
 				4C41A162180128DF00CE93D2 /* tutorial_emotion@2x.png in Resources */,
 				4C8FB3FB1824876D00B33FD8 /* cameraInputField.png in Resources */,
+				4C02D0FE189C2ED6005A5B6A /* tutorial_messages@2x.png in Resources */,
 				4CCE753C184463B500FF09F7 /* suggestedFollowOffButton_nonActive.png in Resources */,
 				4C9B928118287AED00A060B2 /* MPArrowRight.png in Resources */,
 				4C9E3B6A1825CBBE004878F9 /* icon_1024x1024.png in Resources */,

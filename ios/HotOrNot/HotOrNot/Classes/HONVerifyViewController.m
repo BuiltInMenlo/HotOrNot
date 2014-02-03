@@ -162,7 +162,7 @@
 	[_tableView addSubview:_emptySetImageView];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	_headerView = [[HONHeaderView alloc] initWithTitle:[_tabInfo objectForKey:@"title"] hasTranslucency:YES];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify" hasTranslucency:YES];
 	[_headerView addButton:_profileHeaderButtonView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -456,7 +456,7 @@
 }
 
 - (void)verifyShoutoutViewCellMore:(HONVerifyShoutoutViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - More"
+	[[Mixpanel sharedInstance] track:@"Verify - Follow"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
@@ -465,6 +465,11 @@
 
 	[[HONAPICaller sharedInstance] followUserWithUserID:challengeVO.creatorVO.userID completion:^void(NSObject *result) {
 		[HONAppDelegate writeFollowingList:(NSArray *)result];
+		
+		[[[UIAlertView alloc] initWithTitle:@""
+									message:[NSString stringWithFormat:@"You are now following %@", challengeVO.creatorVO.username]
+								   delegate:nil cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	}];
 	
 	[self _removeCellForChallenge:challengeVO];

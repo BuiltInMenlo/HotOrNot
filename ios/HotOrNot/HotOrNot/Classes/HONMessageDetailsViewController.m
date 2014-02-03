@@ -14,6 +14,7 @@
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONMessageReplyViewCell.h"
+#import "HONTrivialUserVO.h"
 
 @interface HONMessageDetailsViewController () <EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -108,7 +109,21 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsMessageReply:_messageVO]];
+	NSMutableArray *recipients = [NSMutableArray array];
+	for (HONOpponentVO *vo in _messageVO.participants) {
+		BOOL isFound = NO;
+		for (HONOpponentVO *recipientVO in recipients) {
+			if (recipientVO.userID == vo.userID) {
+				isFound = YES;
+				break;
+			}
+		}
+		
+		if (!isFound)
+			[recipients addObject:vo];
+	}
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsMessageReply:_messageVO withRecipients:[recipients copy]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

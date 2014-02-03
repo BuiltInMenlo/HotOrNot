@@ -16,7 +16,7 @@
 
 #import <FacebookSDK/FacebookSDK.h>
 #import <HockeySDK/HockeySDK.h>
-#import <Tapjoy/Tapjoy.h>
+//#import <Tapjoy/Tapjoy.h>
 
 
 #import "AFNetworking.h"
@@ -57,7 +57,7 @@
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0003.json";
+NSString * const kConfigJSON = @"boot_sc0004.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
@@ -1317,9 +1317,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	//TSTapstream *tapstream = [TSTapstream instance];
 	
-	[Tapjoy requestTapjoyConnect:kTapjoyAppID
-					   secretKey:kTapjoyAppSecretKey
-						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
+//	[Tapjoy requestTapjoyConnect:kTapjoyAppID
+//					   secretKey:kTapjoyAppSecretKey
+//						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 	
 //	[KikAPIClient registerAsKikPluginWithAppID:@"com.builtinmenlo.selfieclub.kik"
 //							   withHomepageURI:@"http://www.builtinmenlo.com"

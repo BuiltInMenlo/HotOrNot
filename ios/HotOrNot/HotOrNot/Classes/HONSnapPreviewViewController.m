@@ -468,6 +468,15 @@
 	
 	[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
 		[HONAppDelegate writeFollowingList:(NSArray *)result];
+		
+		
+		[[[UIAlertView alloc] initWithTitle:@""
+									message:[NSString stringWithFormat:@"You are now following %@", _challengeVO.creatorVO.username]
+								   delegate:nil cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		
+		_hasTakenVerifyAction = YES;
+		[self _goClose];
 	}];
 }
 

@@ -15,5 +15,5 @@
 - (id)initAsNewChallenge;
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo;
 - (id)initAsMessageToRecipients:(NSArray *)recipients;
-- (id)initAsMessageReply:(HONMessageVO *)messageVO;
+- (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients;
 @end

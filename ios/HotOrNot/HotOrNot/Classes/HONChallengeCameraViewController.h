@@ -23,5 +23,5 @@ typedef enum {
 - (id)initAsNewChallenge;
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
 - (id)initAsNewMessageWithRecipients:(NSArray *)recipients;
-- (id)initAsMessageReply:(HONMessageVO *)messageVO;
+- (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients;
 @end

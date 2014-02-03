@@ -117,7 +117,7 @@
 	
 	if ([HONAppDelegate incTotalForCounter:@"messages"] == 1) {
 		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
+		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_messages-568h@2x" : @"tutorial_messages"];
 		_tutorialImageView.userInteractionEnabled = YES;
 		_tutorialImageView.alpha = 0.0;
 		

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONMatchContactsViewController : UIViewController
+@interface HONMatchContactsViewController : UIViewController <UIAlertViewDelegate, UITextFieldDelegate>
 - (id)initAsEmailVerify:(BOOL)isEmail;
 @end
