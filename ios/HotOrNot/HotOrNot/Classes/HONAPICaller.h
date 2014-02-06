@@ -122,6 +122,18 @@ extern NSString * const kAPIChallengesMessageSeen;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
+ * Clubs
+ **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+- (void)showDataErrorHUD;
+- (void)showSuccessHUD;
+//**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
+
+/**
+ * Clubs
+ **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+//**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
+
+/**
  * Invite / Social
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)followUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;

@@ -1,6 +1,6 @@
 <?php
 
-$db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
+$db_conn = mysql_connect('localhost', 'root', '') or die("Could not connect to database.");
 mysql_select_db('hotornot-dev') or die("Could not select database.");
 
 
@@ -156,10 +156,16 @@ function votesPerUser($first_date) {
 function dailyActiveUsers($first_date) {
 	$start_date = date('Y-m-d H:i:s', strtotime($first_date));
 	
-	for ($i=0; $i<14; $i++) {
+	for ($i=0; $i<7; $i++) {
 		$end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 1 day'));
 		$userID_arr = array();
 		
+		$query = 'SELECT * FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'" AND `last_login` > "'. $start_date .'" AND `last_login` < "'. $end_date .'";';
+		$result = mysql_query($query);
+		while ($obj = mysql_fetch_object($result))
+			$userID_arr[$obj->id] = true;
+		
+		/*
 		$query = 'SELECT * FROM `tblChallenges` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
 		$result = mysql_query($query);
 		while ($obj = mysql_fetch_object($result)) {
@@ -172,15 +178,9 @@ function dailyActiveUsers($first_date) {
 		
 		$query = 'SELECT * FROM `tblChallengeVotes` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
 		$result = mysql_query($query);
-		while ($obj = mysql_fetch_object($result)) {
+		while ($obj = mysql_fetch_object($result))
 			$userID_arr[$obj->user_id] = true;
-		}
-		
-		$query = 'SELECT * FROM `tblUserPokes` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
-		$result = mysql_query($query);
-		while ($obj = mysql_fetch_object($result)) {
-			$userID_arr[$obj->poker_id] = true;
-		}
+		*/
 		
 		echo ("<tr><td>". date('m-d-Y', strtotime($start_date)) ."</td><td align=\"right\" colspan=\"3\">". count($userID_arr) ."</td></tr>");
 		$start_date = $end_date;
@@ -194,6 +194,11 @@ function weeklyActiveUsers($first_date) {
 		$end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 7 days'));
 		$userID_arr = array();
 		
+		$query = 'SELECT * FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'" AND `last_login` > "'. $start_date .'" AND `last_login` < "'. $end_date .'";';
+		$result = mysql_query($query);
+		while ($obj = mysql_fetch_object($result))
+			$userID_arr[$obj->id] = true;
+			
 		$query = 'SELECT * FROM `tblChallenges` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
 		$result = mysql_query($query);
 		while ($obj = mysql_fetch_object($result)) {
@@ -206,15 +211,8 @@ function weeklyActiveUsers($first_date) {
 		
 		$query = 'SELECT * FROM `tblChallengeVotes` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
 		$result = mysql_query($query);
-		while ($obj = mysql_fetch_object($result)) {
+		while ($obj = mysql_fetch_object($result))
 			$userID_arr[$obj->user_id] = true;
-		}
-		
-		$query = 'SELECT * FROM `tblUserPokes` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
-		$result = mysql_query($query);
-		while ($obj = mysql_fetch_object($result)) {
-			$userID_arr[$obj->poker_id] = true;
-		}
 		
 		echo ("<tr><td>". date('m-d-Y', strtotime($start_date)) ." / ". date('m-d-Y', strtotime($end_date)) ."</td><td align=\"right\" colspan=\"3\">". count($userID_arr) ."</td></tr>");
 		$start_date = $end_date;
@@ -242,11 +240,10 @@ function monthlyActiveUsers($first_date) {
 		$userID_arr[$obj->user_id] = true;
 	}
 	
-	$query = 'SELECT * FROM `tblUserPokes` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
+	$query = 'SELECT * FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'" AND `last_login` > "'. $start_date .'" AND `last_login` < "'. $end_date .'";';
 	$result = mysql_query($query);
-	while ($obj = mysql_fetch_object($result)) {
-		$userID_arr[$obj->poker_id] = true;
-	}
+	while ($obj = mysql_fetch_object($result))
+		$userID_arr[$obj->id] = true;
 	
 	echo ("<tr><td>". date('m-d-Y', strtotime($start_date)) ." / ". date('m-d-Y', strtotime($end_date)) ."</td><td align=\"right\" colspan=\"3\">". count($userID_arr) ."</td></tr>");
 }
@@ -274,6 +271,7 @@ function monthlyActiveUsers($first_date) {
 	<h3><a href="#weekly_active_users">Weekly Active Users</a></h3>
 	<h3><a href="#monthly_active_users">Monthly Active Users</a></h3>
 	<hr /><hr />
+<!--
 <a name="snaps_per_day" /><a href="#top">TOP</a><table><tr><td width="100" align="center">DATE</td><td colspan="3" align="center">SNAP TOTALS</td></tr>
 <?php snapsPerDay('2013-01-21 08:00:00'); ?>
 
@@ -286,16 +284,16 @@ function monthlyActiveUsers($first_date) {
 </table><hr /><a name="votes_per_user" /><a href="#top">TOP</a><table><td width="100" align="center">USER</td><td colspan="3" align="center">VOTE TOTALS</td></tr>
 <?php votesPerUser('2013-01-21 08:00:00'); ?>
 
-</table><hr /><a name="daily_active_users" /><a href="#top">TOP</a><table><td width="100" align="center">DATE</td><td colspan="3" align="center">USER TOTALS</td></tr>
+</table><hr />--><a name="daily_active_users" /><a href="#top">TOP</a><table><td width="100" align="center">DATE</td><td colspan="3" align="center">USER TOTALS</td></tr>
 <?php dailyActiveUsers('2013-01-21 08:00:00'); ?>
 
-</table><hr /><a name="weekly_active_users" /><a href="#top">TOP</a><table><td width="100" align="center">DATE</td><td colspan="3" align="center">USER TOTALS</td></tr>
+</table><hr /><!--<a name="weekly_active_users" /><a href="#top">TOP</a><table><td width="100" align="center">DATE</td><td colspan="3" align="center">USER TOTALS</td></tr>
 <?php weeklyActiveUsers('2013-01-21 08:00:00'); ?>
 
 </table><hr /><a name="monthly_active_users" /><a href="#top">TOP</a><table><td width="100" align="center">DATE</td><td colspan="3" align="center">USER TOTALS</td></tr>
 <?php monthlyActiveUsers('2013-01-21 08:00:00'); ?>
 
-</table></body>
+</table>--></body>
 </html>
 
 <?php
