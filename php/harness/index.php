@@ -14,8 +14,15 @@ function dailyActiveUsers($first_date) {
 		$end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 1 day'));
 		$userID_arr = array();
 		
-		$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
+		$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. date('Y-m-d H:i:s', strtotime($first_date)) .'" AND `added` < "'. $end_date .'";';
 		$signup_tot = mysql_num_rows(mysql_query($query));
+		
+		
+		//$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime($start_date) .'" AND `added` < "'. strtotime($end_date) .'";';
+		//$result = mysql_query($query);
+		//while ($obj = mysql_fetch_object($result))
+		//	$userID_arr[$obj->user_id] = true;
+		
 		
 		/*
 		$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'" AND `last_login` > "'. $start_date .'" AND `last_login` < "'. $end_date .'";';
@@ -50,11 +57,16 @@ function weeklyActiveUsers($first_date) {
 	$start_date = date('Y-m-d H:i:s', strtotime($first_date));
 	
 	for ($i=0; $i<4; $i++) {
-		$end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 6 days'));
+		$end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 7 days'));
 		$userID_arr = array();
 		
-		$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
+		$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. date('Y-m-d H:i:s', strtotime($first_date)) .'" AND `added` < "'. $end_date .'";';
 		$signup_tot = mysql_num_rows(mysql_query($query));
+		
+		//$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime($start_date) .'" AND `added` < "'. strtotime($end_date) .'";';
+		//$result = mysql_query($query);
+		//while ($obj = mysql_fetch_object($result))
+		//	$userID_arr[$obj->user_id] = true;
 			
 		/*
 		$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'" AND `last_login` > "'. $start_date .'" AND `last_login` < "'. $end_date .'";';
@@ -81,8 +93,8 @@ function weeklyActiveUsers($first_date) {
 		
 		
 		echo ("<tr><td>". date('m-d-Y', strtotime($start_date)) ." / ". date('m-d-Y', strtotime($end_date)) ."</td><td align=\"right\">". count($userID_arr) ." / ". $signup_tot ." = ". number_format((count($userID_arr) / $signup_tot) * 100, 2) ."% (". $vote_tot .")</td></tr>");
-		//$start_date = $end_date;
-		$start_date = date('Y-m-d H:i:s', strtotime($end_date .' + 1 day'));
+		$start_date = $end_date;
+		//$start_date = date('Y-m-d H:i:s', strtotime($end_date .' + 1 day'));
 	}
 }
 
@@ -91,9 +103,14 @@ function monthlyActiveUsers($first_date) {
 	$end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 30 days'));
 	$userID_arr = array();
 	
-	$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
+	$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. date('Y-m-d H:i:s', strtotime($first_date)) .'" AND `added` < "'. $end_date .'";';
 	$signup_tot = mysql_num_rows(mysql_query($query));
-		
+	
+	//$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime($start_date) .'" AND `added` < "'. strtotime($end_date) .'";';
+	//$result = mysql_query($query);
+	//while ($obj = mysql_fetch_object($result))
+	//	$userID_arr[$obj->user_id] = true;
+	
 	/*
 	$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'" AND `last_login` > "'. $start_date .'" AND `last_login` < "'. $end_date .'";';
 	$result = mysql_query($query);
@@ -156,8 +173,10 @@ function monthlyActiveUsers($first_date) {
 	<a name="monthly_active_users" /><a href="#top">TOP</a><table>
 		<tr><td width="100%" colspan="2" align="center">MAUs</td></tr>
 		<tr><td width="100" align="center">DATE</td><td align="center">TOTALS</td></tr>
-			<?php monthlyActiveUsers('2013-12-04 00:00:00'); //monthlyActiveUsers('2013-11-26 00:00:00'); ?>
-			<?php monthlyActiveUsers('2014-01-02 00:00:00'); //monthlyActiveUsers('2013-12-26 00:00:00'); ?>
+			<?php monthlyActiveUsers('2013-11-26 00:00:00'); ?>
+			<?php //monthlyActiveUsers('2013-12-04 00:00:00'); ?>
+			<?php monthlyActiveUsers('2013-12-26 00:00:00'); ?>
+			<?php //monthlyActiveUsers('2014-01-02 00:00:00'); ?>
 	</table>
 	
 	<hr/>
@@ -167,39 +186,65 @@ $userID_arr = array();
 $start_date = date('Y-m-d H:i:s', strtotime('2013-11-26 00:00:00'));
 $end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 1 day'));
 
-$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
+	
+$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "2013-11-26" AND `added` < "2013-11-27";';
 $result = mysql_query($query);
 while ($user_obj = mysql_fetch_object($result)) {
-	$query = 'SELECT `user_id` FROM `tblChallengeVotes` WHERE `user_id` = '. $user_obj->id .' AND `added` > "'. $start_date .'" AND `added` < "'. date('Y-m-d H:i:s', strtotime($start_date .' + 7 days')) .'";';
+	$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `user_id` = '. $user_obj->id .' AND `added` > "'. strtotime("2013-11-26") .'" AND `added` < "'. strtotime("2013-12-03") .'";';
+	$result = mysql_query($query);
+	while ($obj = mysql_fetch_object($result))
+		$userID_arr[$obj->user_id] = true;
+		
+	$query = 'SELECT `user_id` FROM `tblChallengeVotes` WHERE `user_id` = '. $user_obj->id .' AND `added` > "2013-11-27" AND `added` < "2013-12-03";';
 	$res = mysql_query($query);
 	while ($obj = mysql_fetch_object($res)) {
 		$userID_arr[$user_obj->id] = true;
 	}
 }
 
-echo ("Day 1 users active over following 6 days: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<br />");
+//echo ("Day 1 users active over following 6 days: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<br />");
 
 $userID_arr = array();
 $start_date = date('Y-m-d H:i:s', strtotime('2013-11-26 00:00:00'));
 $end_date = date('Y-m-d H:i:s', strtotime($start_date .' + 1 day'));
 
-$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
+/*
+$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime($start_date) .'" AND `added` < "'. strtotime($end_date) .'";';
+$result = mysql_query($query);
+while ($obj = mysql_fetch_object($result))
+	$userID_arr[$obj->user_id] = true;
+*/
+	
+$query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "2013-11-26" AND `added` < "2013-11-27";';
 $result = mysql_query($query);
 while ($user_obj = mysql_fetch_object($result)) {
-	$query = 'SELECT `user_id` FROM `tblChallengeVotes` WHERE `user_id` = '. $user_obj->id .' AND `added` > "'. date('Y-m-d H:i:s', strtotime($start_date .' + 7 days')) .'" AND `added` < "'. date('Y-m-d H:i:s', strtotime($start_date .' + 8 days')) .'";';
+	$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime("2013-11-27") .'" AND `added` < "'. strtotime("2013-12-03") .'";';
+	$result = mysql_query($query);
+	while ($obj = mysql_fetch_object($result))
+		$userID_arr[$obj->user_id] = true;
+		
+	$query = 'SELECT `user_id` FROM `tblChallengeVotes` WHERE `user_id` = '. $user_obj->id .' AND `added` > "2013-11-27" AND `added` < "2013-12-03";';
 	$res = mysql_query($query);
 	while ($obj = mysql_fetch_object($res)) {
 		$userID_arr[$user_obj->id] = true;
 	}
 }
 
-echo ("Day 1 users active on day 7: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<hr />");
+//echo ("Day 1 users active only on day 7: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<hr />");
 
 
 
 
 $userID_arr = array();
 $start_date = date('Y-m-d H:i:s', strtotime('2013-11-26 00:00:00'));
+
+/*
+$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime($start_date) .'" AND `added` < "'. strtotime($end_date) .'";';
+$result = mysql_query($query);
+while ($obj = mysql_fetch_object($result))
+	$userID_arr[$obj->user_id] = true;
+*/
+	
 $query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
 $result = mysql_query($query);
 while ($user_obj = mysql_fetch_object($result)) {
@@ -210,10 +255,18 @@ while ($user_obj = mysql_fetch_object($result)) {
 	}
 }
 
-echo ("Day 1 users active over following 27 days: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<br />");
+//echo ("Day 1 users active over following 27 days: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<br />");
 
 $userID_arr = array();
 $start_date = date('Y-m-d H:i:s', strtotime('2013-11-26 00:00:00'));
+
+/*
+$query = 'SELECT `user_id` FROM `tblFlaggedUserApprovals` WHERE `added` > "'. strtotime($start_date) .'" AND `added` < "'. strtotime($end_date) .'";';
+$result = mysql_query($query);
+while ($obj = mysql_fetch_object($result))
+	$userID_arr[$obj->user_id] = true;
+*/
+	
 $query = 'SELECT `id` FROM `tblUsers` WHERE `added` > "'. $start_date .'" AND `added` < "'. $end_date .'";';
 $result = mysql_query($query);
 while ($user_obj = mysql_fetch_object($result)) {
@@ -224,7 +277,7 @@ while ($user_obj = mysql_fetch_object($result)) {
 	}
 }
 
-echo ("Day 1 users active on day 28: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<hr />");
+//echo ("Day 1 users active only on day 28: ". count($userID_arr) ." / ". mysql_num_rows($result) ." = (". number_format((count($userID_arr) / mysql_num_rows($result)) * 100, 2) ."%)<hr />");
 
 ?>
 

@@ -141,7 +141,7 @@
 }
 
 - (void)_retrieveChallenges {
-	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUsername:_userVO.username completion:^(NSObject *result){
 		_challenges = [NSMutableArray array];
 		
 		for (NSDictionary *dict in (NSArray *)result) {
