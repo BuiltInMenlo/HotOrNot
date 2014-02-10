@@ -411,7 +411,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [NSString stringWithFormat:@"%d", userID],
 							 @"action"		: [NSString stringWithFormat:@"%d", 10],
 							 @"isPrivate"	: @"N"};

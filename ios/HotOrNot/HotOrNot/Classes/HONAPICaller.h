@@ -82,7 +82,7 @@ extern NSString * const kAPIChallengesMessageSeen;
 - (void)recreateUserWithCompletion:(void (^)(NSObject *result))completion;
 - (void)registerNewUserWithCompletion:(void (^)(NSObject *result))completion;
 - (void)retrieveAlertsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-- (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
 - (void)retrieveFollowingUsersForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
