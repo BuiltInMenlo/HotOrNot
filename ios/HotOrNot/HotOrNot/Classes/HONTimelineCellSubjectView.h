@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class HONChallengeVO;
+
 @protocol HONTimelineCellSubjectViewDelegate;
 @interface HONTimelineCellSubjectView : UIView
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username;
+- (void)updateChallenge:(HONChallengeVO *)challengeVO;
 
-@property (nonatomic, assign) id <HONTimelineCellSubjectViewDelegate> delegate;
+@property (nonatomic, weak) id <HONTimelineCellSubjectViewDelegate> delegate;
 @end
 
 
