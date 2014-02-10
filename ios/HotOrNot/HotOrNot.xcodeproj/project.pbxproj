@@ -760,6 +760,7 @@
 		4CFA8BA318920E4A00DCCCB1 /* nextButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CFA8B9B18920E4900DCCCB1 /* nextButton_nonActive@2x.png */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */; };
+		E46816DA18A7FB86006B59FE /* HONFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E46816D918A7FB86006B59FE /* HONFeedViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1724,6 +1725,8 @@
 		B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONSearchSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchSubjectVO.h; sourceTree = "<group>"; };
 		B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchSubjectVO.m; sourceTree = "<group>"; };
+		E46816D818A7FB86006B59FE /* HONFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HONFeedViewController.h; path = Feed/HONFeedViewController.h; sourceTree = "<group>"; };
+		E46816D918A7FB86006B59FE /* HONFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HONFeedViewController.m; path = Feed/HONFeedViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2892,6 +2895,7 @@
 		4CA8DA531613D00900B7B13C /* Tabs */ = {
 			isa = PBXGroup;
 			children = (
+				E46816D718A7FB26006B59FE /* Feed */,
 				4C32B9A315FAB5F00023A0EE /* Home */,
 				4CD42F25188B40E500264845 /* Messages */,
 				4C32B9A415FAB5FA0023A0EE /* Alerts */,
@@ -3445,6 +3449,15 @@
 				4CFA8B7F1891BE6300DCCCB1 /* greenDot@2x.png */,
 			);
 			name = Messages;
+			sourceTree = "<group>";
+		};
+		E46816D718A7FB26006B59FE /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				E46816D818A7FB86006B59FE /* HONFeedViewController.h */,
+				E46816D918A7FB86006B59FE /* HONFeedViewController.m */,
+			);
+			name = Feed;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4143,6 +4156,7 @@
 				4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */,
 				4CED33BD1840070900282A19 /* HONSuggestedFollowViewController.m in Sources */,
 				4C86C43217FF736E007DC458 /* HONFollowersViewController.m in Sources */,
+				E46816DA18A7FB86006B59FE /* HONFeedViewController.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */,
