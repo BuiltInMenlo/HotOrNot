@@ -15,18 +15,21 @@
 #import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
 
-@interface HONTimelineCellHeaderView()
-@property (nonatomic, retain) HONChallengeVO *challengeVO;
-@end
-
 @implementation HONTimelineCellHeaderView
-@synthesize delegate = _delegate;
 
-- (id)initWithChallenge:(HONChallengeVO *)vo {
+- (id)initWithChallenge:(HONChallengeVO *)vo
+{
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)])) {
-		//self.backgroundColor = [UIColor whiteColor];
-		_challengeVO = vo;
-		
+		self.challengeVO = vo;
+	}
+	return self;
+}
+
+- (void)setChallengeVO:(HONChallengeVO *)challengeVO
+{
+	_challengeVO = challengeVO;
+	
+	if (_challengeVO != nil) {
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
 		[self addSubview:avatarImageView];
 		
@@ -40,9 +43,9 @@
 		};
 		
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_challengeVO.creatorVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
-									   success:successBlock
-									   failure:failureBlock];
+							   placeholderImage:nil
+										success:successBlock
+										failure:failureBlock];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		avatarButton.frame = avatarImageView.frame;
@@ -72,12 +75,7 @@
 																								options:NSStringDrawingTruncatesLastVisibleLine
 																							 attributes:@{NSFontAttributeName:nameLabel.font}
 																								context:nil].size;
-			
-		} //else
-//			size = [nameLabel.text sizeWithFont:nameLabel.font constrainedToSize:CGSizeMake(maxNameWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		
-//		nameLabel.text = (size.width >= maxNameWidth) ? _challengeVO.creatorVO.username : [_challengeVO.creatorVO.username stringByAppendingString:@"…"];
-//		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxNameWidth, size.width), size.height);
+		}
 		
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		profileButton.frame = nameLabel.frame;
@@ -85,40 +83,37 @@
 		[self addSubview:profileButton];
 		
 		/*
-		HONEmotionVO *emotionVO = [self _creatorEmotionVO];
-		CGFloat maxSubjectWidth = 320.0 - ((nameLabel.frame.size.width + 90.0) + ((int)(emotionVO != nil) * 22.0));
-		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 9.0, maxSubjectWidth, 18.0)];
-		subjectLabel.font = [[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.text = _challengeVO.subjectName;
-		[self addSubview:subjectLabel];
-		
-		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
-			size = [subjectLabel.text boundingRectWithSize:CGSizeMake(maxSubjectWidth, 18.0)
-												   options:NSStringDrawingTruncatesLastVisibleLine
-												attributes:@{NSFontAttributeName:subjectLabel.font}
-												   context:nil].size;
-		} //else
-//			size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(maxSubjectWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		
-		subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(maxSubjectWidth, size.width), 18.0);
-		
-//		NSLog(@"NAME:_[%@]_ <|> SUB:_[%@]_", NSStringFromCGSize(nameLabel.frame.size), NSStringFromCGSize(subjectLabel.frame.size));
-		
-		if (emotionVO != nil) {
-			UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(subjectLabel.frame.origin.x + subjectLabel.frame.size.width + 6.0, 10.0, 18.0, 18.0)];
-			emoticonImageView.image = [UIImage imageNamed:@"emoticon_white"];
-			[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlSmallWhite] placeholderImage:nil];
-			[self addSubview:emoticonImageView];
-		}
-		*/
+		 HONEmotionVO *emotionVO = [self _creatorEmotionVO];
+		 CGFloat maxSubjectWidth = 320.0 - ((nameLabel.frame.size.width + 90.0) + ((int)(emotionVO != nil) * 22.0));
+		 
+		 UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + (nameLabel.frame.size.width + 3.0), 9.0, maxSubjectWidth, 18.0)];
+		 subjectLabel.font = [[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+		 subjectLabel.textColor = [UIColor whiteColor];
+		 subjectLabel.backgroundColor = [UIColor clearColor];
+		 subjectLabel.text = _challengeVO.subjectName;
+		 [self addSubview:subjectLabel];
+		 
+		 if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+		 size = [subjectLabel.text boundingRectWithSize:CGSizeMake(maxSubjectWidth, 18.0)
+		 options:NSStringDrawingTruncatesLastVisibleLine
+		 attributes:@{NSFontAttributeName:subjectLabel.font}
+		 context:nil].size;
+		 } //else
+		 //			size = [subjectLabel.text sizeWithFont:subjectLabel.font constrainedToSize:CGSizeMake(maxSubjectWidth, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		 
+		 subjectLabel.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y, MIN(maxSubjectWidth, size.width), 18.0);
+		 
+		 //		NSLog(@"NAME:_[%@]_ <|> SUB:_[%@]_", NSStringFromCGSize(nameLabel.frame.size), NSStringFromCGSize(subjectLabel.frame.size));
+		 
+		 if (emotionVO != nil) {
+		 UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(subjectLabel.frame.origin.x + subjectLabel.frame.size.width + 6.0, 10.0, 18.0, 18.0)];
+		 emoticonImageView.image = [UIImage imageNamed:@"emoticon_white"];
+		 [emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlSmallWhite] placeholderImage:nil];
+		 [self addSubview:emoticonImageView];
+		 }
+		 */
 	}
-	
-	return (self);
 }
-
 
 #pragma mark - Navigation
 - (void)_goProfile {

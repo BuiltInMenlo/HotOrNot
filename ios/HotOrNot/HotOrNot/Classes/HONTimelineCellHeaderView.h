@@ -15,7 +15,8 @@
 @interface HONTimelineCellHeaderView : UIView
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 
-@property (nonatomic, assign) id <HONTimelineCellHeaderViewDelegate> delegate;
+@property(nonatomic, strong) HONChallengeVO *challengeVO;
+@property(nonatomic, weak) id <HONTimelineCellHeaderViewDelegate> delegate;
 @end
 
 @protocol HONTimelineCellHeaderViewDelegate <NSObject>
