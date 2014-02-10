@@ -44,6 +44,7 @@
 #import "HONTabBarController.h"
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
+#import "HONFeedViewController.h"
 #import "HONAlertsViewController.h"
 #import "HONMessagesViewController.h"
 #import "HONChallengeDetailsViewController.h"
@@ -1156,7 +1157,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
-	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
+	NSArray *navigationControllers = @[
+									   //[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONFeedViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
