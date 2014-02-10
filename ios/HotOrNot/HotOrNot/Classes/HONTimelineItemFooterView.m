@@ -76,8 +76,13 @@
 #pragma mark - Public APIs
 - (void)updateChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	
 	_participantsLabel.text = [self _captionForParticipants];
+	
+	CGSize size = [_participantsLabel.text boundingRectWithSize:CGSizeMake(200.0, 19.0)
+												 options:NSStringDrawingTruncatesLastVisibleLine
+											  attributes:@{NSFontAttributeName:_participantsLabel.font}
+												 context:nil].size;
+	_participantsLabel.frame = CGRectMake(_participantsLabel.frame.origin.x, _participantsLabel.frame.origin.y, MIN(200.0, size.width), _participantsLabel.frame.size.height);
 }
 
 
