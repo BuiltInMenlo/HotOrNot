@@ -124,8 +124,6 @@ extern NSString * const kAPIChallengesMessageSeen;
 /**
  * Clubs
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)showDataErrorHUD;
-- (void)showSuccessHUD;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
