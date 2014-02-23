@@ -1,17 +1,16 @@
 #!/bin/bash
 
 #// dev //#
-#-- wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
-
-#// avicii - staging //#
-#-- wipe_url="http://api-dev.letsvolley.com/admin/wipe_user.php"
+wipe_url="http://volley:teamvolleypassword@admin-stage.letsvolley.com/admin/wipe_user.php"
 
 #// live //#
-#-- wipe_url="http://130.letsvolley.com/admin/wipe_user.php"
+#-- wipe_url="http://volley:teamvolleypassword@admin.letsvolley.com/admin/wipe_user.php"
 
 
-wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
-tier_name=$(echo "${wipe_url}" | cut -d \/ -f 3 | cut -d \. -f1)
+##--#--#--#--#--#--#--#--#:#--#--#--#--#--#--#--#--##
+
+
+tier_name=$(echo "${wipe_url}" | cut -d \/ -f 3 | cut -d \. -f1 | cut -d \@ -f2)
 
 username="snap"
 if [ $1 ]; then
@@ -63,6 +62,21 @@ if $isKill_flg; then # --/> passed in the kill param
 		
 	else # --/> no pID
 		printf "Didn't find the simulator running...\n"; fi
+
+	# delete app from simulator(s)
+	app_paths=$(find ~/Library/Application\ Support/iPhone\ Simulator -name "Selfieclub.app")
+	if [ ! -z "$app_paths" ]; then
+		printf "Deleting Selfieclub from simulator(s)..."
+		
+		for (( i=1; i<=`echo "${app_paths}" | wc -l`; i++ )); do
+			curr_line=$(echo "${app_paths}" | sed -n "${i}"p);
+			parent_path=$(dirname "$curr_line")
+			rm -R "${parent_path}"
+		done
+		printf " Success!\n"
+		
+	else
+		printf "Didn't find the app installed...\n"; fi
 fi
 
 
@@ -78,3 +92,5 @@ else printf "Not found!\n"; fi
 
 #-- exit w/o error
 exit 0;
+
+# // [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=] // #

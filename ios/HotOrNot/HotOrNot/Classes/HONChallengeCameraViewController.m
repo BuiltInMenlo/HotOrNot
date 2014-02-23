@@ -267,10 +267,10 @@
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 				
 				else if (_selfieSubmitType == HONSelfieSubmitTypeCreateMessage)
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
 				
 				else if (_selfieSubmitType == HONSelfieSubmitTypeReplyMessage) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGE" object:nil];
 				}
 				

@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 
 
-#define __DEV_BUILD__ 0
+#define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 #define __FORCE_REGISTER__ 0

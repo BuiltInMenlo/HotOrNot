@@ -15,7 +15,6 @@
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONMessageVO.h"
-#import "HONCreateSnapButtonView.h"
 #import "HONMessageRecipientsViewController.h"
 #import "HONMessageItemViewCell.h"
 #import "HONAlertItemViewCell.h"
@@ -40,10 +39,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedMessagesTab:) name:@"SELECTED_MESSAGES_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareMessagesTab:) name:@"TARE_MESSAGES_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshMessagesTab:) name:@"REFRESH_MESSAGES_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshMessagesTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshMessages:) name:@"REFRESH_MESSAGES" object:nil];
 	}
 	
 	return (self);
@@ -82,6 +78,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_messages = [NSMutableArray array];
 	
@@ -98,15 +95,21 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	
 	UIButton *createMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createMessageButton.frame = CGRectMake(-2.0, 0.0, 44.0, 44.0);
+	createMessageButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
 	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessage_nonActive"] forState:UIControlStateNormal];
 	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessage_Active"] forState:UIControlStateHighlighted];
 	[createMessageButton addTarget:self action:@selector(_goCreateMessage) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Messages" hasTranslucency:YES];
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Messages" hasTranslucency:NO];
+	[_headerView addButton:closeButton];
 	[_headerView addButton:createMessageButton];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
 	[self _retreiveMessages];
@@ -179,19 +182,15 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessageRecipientsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self.navigationController pushViewController:[[HONMessageRecipientsViewController alloc] init] animated:YES];
 }
 
-- (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Messages - Create Volley"
+- (void)_goClose {
+	[[Mixpanel sharedInstance] track:@"Messages - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goTakeAvatar {
@@ -266,32 +265,13 @@
 
 
 #pragma mark - Notifications
-- (void)_selectedMessagesTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
-	//[self _retrieveChallenges];
-	
-	if (_tutorialImageView != nil) {
-		[_tutorialImageView removeFromSuperview];
-		_tutorialImageView = nil;
-	}
-}
-
-- (void)_refreshMessagesTab:(NSNotification *)notification {
-	//	NSLog(@"_refreshHomeTab");
+- (void)_refreshMessages:(NSNotification *)notification {
+	//	NSLog(@"_refreshMessages");
 	
 	if (_tableView.contentOffset.y < 150.0)
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	
 	[self _retreiveMessages];
-}
-
-- (void)_tareMessagesTab:(NSNotification *)notification {
-	NSLog(@"::|> tareMessagesTab <|::");
-	
-	if (_tableView.contentOffset.y > 0) {
-		_tableView.pagingEnabled = NO;
-		[_tableView setContentOffset:CGPointZero animated:YES];
-	}
 }
 
 

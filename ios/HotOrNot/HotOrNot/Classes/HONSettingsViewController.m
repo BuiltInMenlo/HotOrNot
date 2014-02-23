@@ -402,6 +402,8 @@
 				NSArray *totals = @[@"background_total",
 									@"timeline_total",
 									@"timelineRefresh_total",
+									@"clubs_total",
+									@"clubsRefresh_total",
 									@"messages_total",
 									@"messagesRefresh_total",
 									@"alerts_total",

@@ -88,12 +88,11 @@
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
-	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(8.0, 10.0, 64.0, 24.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonIcon_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonIcon_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -102,7 +101,7 @@
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	
 	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Select" hasTranslucency:YES];
-	[_headerView addButton:closeButton];
+	[_headerView addButton:backButton];
 	[_headerView addButton:nextButton];
 	[self.view addSubview:_headerView];
 	
@@ -135,12 +134,12 @@
 
 
 #pragma mark - Navigation
-- (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Message Recipients - Cancel"
+- (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Message Recipients - Back"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goNext {

@@ -10,13 +10,20 @@
 
 #import "HONFeedViewController.h"
 
+#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONChallengeVO.h"
 
+#import "HONRegisterViewController.h"
+#import "HONImagePickerViewController.h"
+#import "HONUserProfileViewController.h"
+#import "HONMessagesViewController.h"
+#import "HONSuggestedFollowViewController.h"
 #import "HONChallengeDetailsViewController.h"
 
 #import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
+#import "HONMessagesButtonView.h"
 #import "HONCreateSnapButtonView.h"
 
 #import "HONImageLoadingView.h"
@@ -34,14 +41,8 @@
 //#import "HONTimelineItemViewCell.h"
 //#import "HONOpponentVO.h"
 //#import "HONUserVO.h"
-//#import "HONRegisterViewController.h"
-//#import "HONImagePickerViewController.h"
-
-//#import "HONVotersViewController.h"
-//#import "HONCommentsViewController.h"
 
 //#import "HONAddContactsViewController.h"
-//#import "HONSuggestedFollowViewController.h"
 //#import "HONMatchContactsViewController.h"
 
 //#import "HONColorAuthority.h"
@@ -50,7 +51,7 @@
 //#import "HONImagingDepictor.h"
 
 //#import "HONSnapPreviewViewController.h"
-//#import "HONUserProfileViewController.h"
+
 //#import "HONChangeAvatarViewController.h"
 
 
@@ -96,6 +97,8 @@
 - (id)init
 {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_HOME_TAB" object:nil];
+		
 		self.automaticallyAdjustsScrollViewInsets = NO;
 		_pagedItemControllers = [NSMutableDictionary new];
 		_enqueuedItemControllers = [NSMutableSet new];
@@ -127,12 +130,10 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithBrandingWithTranslucency:YES];
 	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
-//#if __FORCE_SUGGEST__ == 1
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-//#endif
 	
 //	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 //		[self _goRegistration];
@@ -296,6 +297,9 @@
 	}
 }
 
+
+#pragma mark - ScrollView Delegates
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
 }
@@ -353,65 +357,72 @@
 		[self _goRegistration];
 	else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"passed_registration"] && ([_challenges count] == 0))
 		[self _refreshChallengesFromServer];
+	
+#if __FORCE_SUGGEST__ == 1
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
+		[self _goSuggested];
+#endif
 }
 
 #pragma mark - Actions
 
-- (NSDictionary *)_defaultAnalyticsProperties
-{
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
-	});
-	return properties;
-}
-
 - (void)_goRefresh
 {
-	[[Mixpanel sharedInstance] track:@"Timeline - Refresh" properties:[self _defaultAnalyticsProperties]];
+	[[Mixpanel sharedInstance] track:@"Timeline - Refresh" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[HONAppDelegate incTotalForCounter:@"timeline"];
 	[self _refreshChallengesFromServer];
 }
 
 - (void)_goProfile
 {
-//	[[Mixpanel sharedInstance] track:@"Timeline - Profile" properties:[self _defaultAnalyticsProperties]];
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//	
-//	[self _removeTutorialBubbles];
-//	
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[[Mixpanel sharedInstance] track:@"Timeline - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goMessages {
+	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSuggested {
+	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goCreateChallenge
 {
-//	[[Mixpanel sharedInstance] track:@"Timeline - Create Volley" properties:[self _defaultAnalyticsProperties]];
-//	
-//	[self _removeTutorialBubbles];
-//	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:nil];
+	[[Mixpanel sharedInstance] track:@"Timeline - Create Volley" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRegistration
 {
-//	[[Mixpanel sharedInstance] track:@"Register User" properties:[self _defaultAnalyticsProperties]];
-//	[[Mixpanel sharedInstance] track:@"Start First Run" properties:[self _defaultAnalyticsProperties]];
-//	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:nil];
+	[[Mixpanel sharedInstance] track:@"Register User" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[Mixpanel sharedInstance] track:@"Start First Run" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goTakeAvatar
 {
-//	[[Mixpanel sharedInstance] track:@"Timeline - Take New Avatar" properties:[self _defaultAnalyticsProperties]];
+//	[[Mixpanel sharedInstance] track:@"Timeline - Take New Avatar" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
 //	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
 //		if (_tutorialImageView != nil) {
@@ -443,7 +454,7 @@
 
 - (void)_goAddContacts
 {
-//	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends" properties:[self _defaultAnalyticsProperties]];
+//	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
@@ -451,7 +462,7 @@
 
 - (void)_goMatchPhone
 {
-//	[[Mixpanel sharedInstance] track:@"Timeline - Match Phone" properties:[self _defaultAnalyticsProperties]];
+//	[[Mixpanel sharedInstance] track:@"Timeline - Match Phone" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
@@ -459,7 +470,7 @@
 
 - (void)_goCreateClub
 {
-//	[Mixpanel sharedInstance] track:@"Timeline - Create Club" properties:[self _defaultAnalyticsProperties]];
+//	[Mixpanel sharedInstance] track:@"Timeline - Create Club" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
@@ -505,13 +516,10 @@
 //	}
 //}
 
-//- (void)_refreshHomeTab:(NSNotification *)notification
-//{
-//	if (_tableView.contentOffset.y < 150.0)
-//		[_tableView setContentOffset:CGPointZero animated:YES];
-//	
-//	[self _retrieveChallenges];
-//}
+- (void)_refreshHomeTab:(NSNotification *)notification
+{
+	[self _refreshChallengesFromServer];
+}
 
 //- (void)_refreshLikeCount:(NSNotification *)notification
 //{
@@ -554,15 +562,6 @@
 //	}
 }
 
-#pragma mark - UI Presentation
-
-- (void)_removeTutorialBubbles
-{
-//	for (HONTimelineItemViewCell *cell in _cells) {
-//		[cell removeTutorialBubble];
-//	}
-}
-
 #pragma mark - TimelineItemCell Delegates
 
 /*
@@ -576,7 +575,6 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	[self _removeTutorialBubbles];
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = userID;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -627,7 +625,6 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	[cell showTapOverlay];
-	[self _removeTutorialBubbles];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -643,7 +640,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	[self _removeTutorialBubbles];
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
@@ -656,7 +652,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	[self _removeTutorialBubbles];
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
@@ -670,8 +665,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
-	
-	[self _removeTutorialBubbles];
 	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO];
 	_snapPreviewViewController.delegate = self;
@@ -688,9 +681,11 @@
 }
 */
 
+
+#pragma mark - FeedItem Delegates
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController showChallenge:(HONChallengeVO *)challengeVO
 {
-	NSMutableDictionary *properties = [[self _defaultAnalyticsProperties] mutableCopy];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName];
 	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenge" properties:properties];
 	
@@ -699,9 +694,8 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-#pragma mark - SnapPreview Delegates
-
 /*
+#pragma mark - SnapPreview Delegates
 - (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController upvoteOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO
 {
 //	_challengeVO = challengeVO;
@@ -800,8 +794,7 @@
 //	}
 }
 
-#pragma mark - Alert View Delegate
-
+//#pragma mark - Alert View Delegate
 //- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 //{
 //	if (alertView.tag == HONTimelineAlertTypeInvite) {
@@ -840,6 +833,11 @@
 //}
 
 @end
+
+//]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=]>>
+
+#pragma mark -
+#pragma mark - HONFeedItemViewController Implementation -
 
 @implementation HONFeedItemViewController
 {

@@ -213,9 +213,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_activityButton setSelected:NO];
 			[_discoverButton setSelected:NO];
 			
-			totalKey = @"messages";
-			mpEvent = @"Messages";
-			notificationName = @"MESSAGES_TAB";
+			totalKey = @"clubs";
+			mpEvent = @"Clubs";
+			notificationName = @"CLUBS_TAB";
 			break;
 			
 		case 2:

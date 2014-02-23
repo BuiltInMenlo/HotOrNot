@@ -699,7 +699,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							break;
 							
 						case 1:
-							notificationName = @"REFRESH_MESSAGES_TAB";
+							notificationName = @"REFRESH_CLUBS_TAB";
 							break;
 							
 						case 2:
@@ -1158,7 +1158,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[
-									   //[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONFeedViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
@@ -1185,6 +1184,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"background_total",
 						   @"timeline_total",
 						   @"timelineRefresh_total",
+						   @"clubs_total",
+						   @"clubsRefresh_total",
 						   @"messages_total",
 						   @"messagesRefresh_total",
 						   @"alerts_total",

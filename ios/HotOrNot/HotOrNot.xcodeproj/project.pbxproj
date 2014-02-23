@@ -704,6 +704,8 @@
 		4CEC303D17DA5E270016AAE1 /* HONChallengeCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC303C17DA5E270016AAE1 /* HONChallengeCameraViewController.m */; };
 		4CEC304117DACC9B0016AAE1 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC304017DACC9B0016AAE1 /* UIImage+ImageEffects.m */; };
 		4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEC304217DAD3140016AAE1 /* Accelerate.framework */; };
+		4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC4B0618B9517F00F39C92 /* HONAnalyticsParams.m */; };
+		4CEC4B0B18B9552A00F39C92 /* HONMessagesButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC4B0A18B9552A00F39C92 /* HONMessagesButtonView.m */; };
 		4CED1C19177D46C100A32F2B /* NBNumberFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C0C177D46C100A32F2B /* NBNumberFormat.m */; };
 		4CED1C1A177D46C100A32F2B /* NBPhoneMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C0E177D46C100A32F2B /* NBPhoneMetaData.m */; };
 		4CED1C1B177D46C100A32F2B /* NBPhoneMetaDataGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C10177D46C100A32F2B /* NBPhoneMetaDataGenerator.m */; };
@@ -1658,6 +1660,10 @@
 		4CEC303F17DACC9B0016AAE1 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		4CEC304017DACC9B0016AAE1 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		4CEC304217DAD3140016AAE1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		4CEC4B0518B9517F00F39C92 /* HONAnalyticsParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAnalyticsParams.h; sourceTree = "<group>"; };
+		4CEC4B0618B9517F00F39C92 /* HONAnalyticsParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAnalyticsParams.m; sourceTree = "<group>"; };
+		4CEC4B0918B9552A00F39C92 /* HONMessagesButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessagesButtonView.h; sourceTree = "<group>"; };
+		4CEC4B0A18B9552A00F39C92 /* HONMessagesButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessagesButtonView.m; sourceTree = "<group>"; };
 		4CED1C0B177D46C100A32F2B /* NBNumberFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNumberFormat.h; sourceTree = "<group>"; };
 		4CED1C0C177D46C100A32F2B /* NBNumberFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNumberFormat.m; sourceTree = "<group>"; };
 		4CED1C0D177D46C100A32F2B /* NBPhoneMetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBPhoneMetaData.h; sourceTree = "<group>"; };
@@ -1839,6 +1845,7 @@
 		4C148F7917815B9F00EBD245 /* _obsolete */ = {
 			isa = PBXGroup;
 			children = (
+				4CEC4B0418B9427500F39C92 /* Tabs */,
 				4C45FF4A16DED015002F1080 /* Comments */,
 				4C45FF4B16DED0B6002F1080 /* Voters */,
 				4C45910A18918ABC0014FA7E /* VO */,
@@ -1919,21 +1926,19 @@
 			name = VO;
 			sourceTree = "<group>";
 		};
-		4C32B9A315FAB5F00023A0EE /* Home */ = {
+		4C32B9A315FAB5F00023A0EE /* Home Feed */ = {
 			isa = PBXGroup;
 			children = (
+				E46816D818A7FB86006B59FE /* HONFeedViewController.h */,
+				E46816D918A7FB86006B59FE /* HONFeedViewController.m */,
 				4C35547F185538BC008B1F48 /* HONTimelineCellSubjectView.h */,
 				4C355480185538BC008B1F48 /* HONTimelineCellSubjectView.m */,
-				4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */,
-				4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */,
-				4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */,
-				4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */,
 				4CC6AD1217B1F266004E7A3F /* HONTimelineCellHeaderView.h */,
 				4CC6AD1317B1F266004E7A3F /* HONTimelineCellHeaderView.m */,
 				4CA7426018232F0100E96E31 /* HONTimelineItemFooterView.h */,
 				4CA7426118232F0100E96E31 /* HONTimelineItemFooterView.m */,
 			);
-			name = Home;
+			name = "Home Feed";
 			sourceTree = "<group>";
 		};
 		4C32B9A415FAB5FA0023A0EE /* Alerts */ = {
@@ -2158,6 +2163,8 @@
 		4C45FF4616DECE63002F1080 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				4CEC4B0518B9517F00F39C92 /* HONAnalyticsParams.h */,
+				4CEC4B0618B9517F00F39C92 /* HONAnalyticsParams.m */,
 				4CE0399C185727150005256F /* HONAPICaller.h */,
 				4CE0399D185727150005256F /* HONAPICaller.m */,
 				4C4591071891888A0014FA7E /* HONChallengeAssistant.h */,
@@ -2388,9 +2395,11 @@
 			children = (
 				4C148F7917815B9F00EBD245 /* _obsolete */,
 				4CF84495166503AC00C0CC5B /* Categories */,
+				4CEC4B0818B9541400F39C92 /* Top Nav */,
 				4C62676A15F9776900AA7FCE /* Root */,
 				4CA8DA531613D00900B7B13C /* Tabs */,
 				4C32B99C15FA75870023A0EE /* VO */,
+				4C45FF4616DECE63002F1080 /* Utils */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -2421,15 +2430,12 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				4CF7504818989DFA009E39E4 /* Clubs */,
-				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C86C43617FFA8D2007DC458 /* Followers / Following */,
 				4C0CA3F5175151FA00DD0652 /* Search / Invite */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C45FF4516DECE40002F1080 /* Views */,
 				4CEEFC8017E155EE0006A640 /* View Controllers */,
 				4C148F7E17815CA900EBD245 /* Settings */,
-				4C45FF4616DECE63002F1080 /* Utils */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
@@ -2813,6 +2819,8 @@
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */,
 				4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */,
+				4CEC4B0918B9552A00F39C92 /* HONMessagesButtonView.h */,
+				4CEC4B0A18B9552A00F39C92 /* HONMessagesButtonView.m */,
 				4C1435CB17D3C19A00ACBF41 /* HONProfileHeaderButtonView.h */,
 				4C1435CC17D3C19A00ACBF41 /* HONProfileHeaderButtonView.m */,
 			);
@@ -2895,9 +2903,8 @@
 		4CA8DA531613D00900B7B13C /* Tabs */ = {
 			isa = PBXGroup;
 			children = (
-				E46816D718A7FB26006B59FE /* Feed */,
-				4C32B9A315FAB5F00023A0EE /* Home */,
-				4CD42F25188B40E500264845 /* Messages */,
+				4C32B9A315FAB5F00023A0EE /* Home Feed */,
+				4CF7504818989DFA009E39E4 /* Clubs */,
 				4C32B9A415FAB5FA0023A0EE /* Alerts */,
 				4C32B99815FA6F4C0023A0EE /* Verify */,
 			);
@@ -3281,6 +3288,26 @@
 			path = ImageEffects;
 			sourceTree = "<group>";
 		};
+		4CEC4B0418B9427500F39C92 /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */,
+				4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */,
+				4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */,
+				4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */,
+			);
+			name = Tabs;
+			sourceTree = "<group>";
+		};
+		4CEC4B0818B9541400F39C92 /* Top Nav */ = {
+			isa = PBXGroup;
+			children = (
+				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
+				4CD42F25188B40E500264845 /* Messages */,
+			);
+			name = "Top Nav";
+			sourceTree = "<group>";
+		};
 		4CED1C09177D46C100A32F2B /* libPhoneNumber */ = {
 			isa = PBXGroup;
 			children = (
@@ -3449,15 +3476,6 @@
 				4CFA8B7F1891BE6300DCCCB1 /* greenDot@2x.png */,
 			);
 			name = Messages;
-			sourceTree = "<group>";
-		};
-		E46816D718A7FB26006B59FE /* Feed */ = {
-			isa = PBXGroup;
-			children = (
-				E46816D818A7FB86006B59FE /* HONFeedViewController.h */,
-				E46816D918A7FB86006B59FE /* HONFeedViewController.m */,
-			);
-			name = Feed;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4146,6 +4164,7 @@
 				4C62674115F96E5600AA7FCE /* HONVerifyViewController.m in Sources */,
 				4C62674215F96E5600AA7FCE /* HONTimelineViewController.m in Sources */,
 				4CED1C19177D46C100A32F2B /* NBNumberFormat.m in Sources */,
+				4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */,
 				4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */,
 				4C0B691F179E06C200D3E12A /* HONSnapPreviewViewController.m in Sources */,
 				4C32B99B15FA6F720023A0EE /* HONVerifyShoutoutViewCell.m in Sources */,
@@ -4161,6 +4180,7 @@
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */,
 				4C6BBC861615455000145996 /* HONSnapCameraOverlayView.m in Sources */,
+				4CEC4B0B18B9552A00F39C92 /* HONMessagesButtonView.m in Sources */,
 				4CCA4168181C1BDE00FC9863 /* HONChallengeDetailsGridView.m in Sources */,
 				4C8CBC4C179CFAA600C95189 /* TSEvent.m in Sources */,
 				4C980586188C9B2800E4FEA4 /* HONMessageDetailsViewController.m in Sources */,
