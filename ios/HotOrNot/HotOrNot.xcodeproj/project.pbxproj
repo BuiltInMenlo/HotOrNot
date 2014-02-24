@@ -1929,6 +1929,8 @@
 		4C32B9A315FAB5F00023A0EE /* Home Feed */ = {
 			isa = PBXGroup;
 			children = (
+				4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */,
+				4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */,
 				E46816D818A7FB86006B59FE /* HONFeedViewController.h */,
 				E46816D918A7FB86006B59FE /* HONFeedViewController.m */,
 				4C35547F185538BC008B1F48 /* HONTimelineCellSubjectView.h */,
@@ -3293,8 +3295,6 @@
 			children = (
 				4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */,
 				4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */,
-				4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */,
-				4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */,
 			);
 			name = Tabs;
 			sourceTree = "<group>";

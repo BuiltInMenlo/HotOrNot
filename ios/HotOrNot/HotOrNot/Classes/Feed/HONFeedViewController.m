@@ -12,6 +12,10 @@
 
 #import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
+#import "HONColorAuthority.h"
+#import "HONFontAllocator.h"
+
 #import "HONChallengeVO.h"
 
 #import "HONRegisterViewController.h"
@@ -31,7 +35,6 @@
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineItemFooterView.h"
 
-#import "HONDeviceTraits.h"
 
 @interface HONFeedItemViewController : UIViewController
 @property(nonatomic, weak) HONFeedViewController *feedViewController;
@@ -45,9 +48,7 @@
 //#import "HONAddContactsViewController.h"
 //#import "HONMatchContactsViewController.h"
 
-//#import "HONColorAuthority.h"
 
-//#import "HONFontAllocator.h"
 //#import "HONImagingDepictor.h"
 
 //#import "HONSnapPreviewViewController.h"
@@ -149,19 +150,19 @@
 	UIView *emptyStateView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 335.0)];
 	[emptyStateView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_noFollowers"]]];
 	
-//	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	inviteButton.frame = CGRectMake(0.0, 200.0, 320.0, 45.0);
-//	[inviteButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
-//	[inviteButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
-//	[inviteButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
-//	[inviteButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
-//	[inviteButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
-//	[inviteButton setTitle:@"Find friends to follow" forState:UIControlStateNormal];
-//	[inviteButton setTitle:@"Find friends to follow" forState:UIControlStateHighlighted];
-//	inviteButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-//	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
-//	[emptyStateView addSubview:inviteButton];
-//	
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(0.0, 200.0, 320.0, 45.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
+	[inviteButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
+	[inviteButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[inviteButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
+	[inviteButton setTitle:@"Find friends to follow" forState:UIControlStateNormal];
+	[inviteButton setTitle:@"Find friends to follow" forState:UIControlStateHighlighted];
+	inviteButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
+	[emptyStateView addSubview:inviteButton];
+//
 //	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	createClubButton.frame = CGRectMake(0.0, 245.0, 320.0, 45.0);
 //	[createClubButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
@@ -176,7 +177,7 @@
 //	[emptyStateView addSubview:createClubButton];
 //	
 //	UIButton *matchPhoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	matchPhoneButton.frame = CGRectMake(0.0, 290.0, 320.0, 45.0);
+//	matchPhoneButton.frame = CGRectMake(0.0, 245.0//290.0, 320.0, 45.0);
 //	[matchPhoneButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
 //	[matchPhoneButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
 //	[matchPhoneButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
@@ -236,7 +237,7 @@
 		if (prefetchRange.length > 0) {
 			NSMutableArray *imagesToFetch = [NSMutableArray array];
 			for (NSUInteger i = prefetchRange.location; i < NSMaxRange(prefetchRange); i++) {
-				HONChallengeVO *vo = _challenges[i];
+				HONChallengeVO *vo = [_challenges objectAtIndex:i];
 				NSString *type = [[HONDeviceTraits sharedInstance] isRetina4Inch] ? kSnapLargeSuffix : kSnapTabSuffix;
 				NSString *url = [vo.creatorVO.imagePrefix stringByAppendingString:type];
 				[imagesToFetch addObject:[NSURL URLWithString:url]];
@@ -378,11 +379,13 @@
 	[[Mixpanel sharedInstance] track:@"Timeline - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController popViewControllerAnimated:YES];
+	
+//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+//	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
@@ -468,13 +471,6 @@
 //	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goCreateClub
-{
-//	[Mixpanel sharedInstance] track:@"Timeline - Create Club" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
-}
 
 #pragma mark - Notifications
 
@@ -681,8 +677,7 @@
 }
 */
 
-
-#pragma mark - FeedItem Delegates
+#pragma mark - FeedItem Delegate Replacement
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController showChallenge:(HONChallengeVO *)challengeVO
 {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
@@ -837,7 +832,7 @@
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=]>>
 
 #pragma mark -
-#pragma mark - HONFeedItemViewController Implementation -
+#pragma mark - HONFeedItemViewController Implementation
 
 @implementation HONFeedItemViewController
 {

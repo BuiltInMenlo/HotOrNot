@@ -342,7 +342,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	NSLog(@"QUEUEING : |]%@]>{%@)_", NSStringFromRange(range), tag);
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) { };
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {};
 	
 	for (int i=0; i<range.length - range.location; i++) {
 //		NSLog(@"s+ArT_l0Ad. --> (#%02d) \"%@\"", (range.location + i), [urls objectAtIndex:i]);
@@ -1157,8 +1157,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
-	NSArray *navigationControllers = @[
-									   [[UINavigationController alloc] initWithRootViewController:[[HONFeedViewController alloc] init]],
+	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],									   
 									   [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];

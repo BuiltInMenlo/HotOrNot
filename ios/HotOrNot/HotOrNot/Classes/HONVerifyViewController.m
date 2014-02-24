@@ -124,17 +124,17 @@
 - (void)_cacheNextImagesWithRange:(NSRange)range {
 	NSLog(@"RANGE:[%@]", NSStringFromRange(range));
 	
-	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) { };
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
-	
+	NSMutableArray *imagesToFetch = [NSMutableArray array];
 	for (int i=range.location; i<MIN(range.length, [_challenges count]); i++) {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:i];
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[vo.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-						 placeholderImage:nil
-								  success:successBlock
-								  failure:failureBlock];
+		NSString *type = [[HONDeviceTraits sharedInstance] isRetina4Inch] ? kSnapLargeSuffix : kSnapTabSuffix;
+		NSString *url = [vo.creatorVO.imagePrefix stringByAppendingString:type];
+		[imagesToFetch addObject:[NSURL URLWithString:url]];
 	}
+	
+	if ([imagesToFetch count] > 0)
+		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(0, [imagesToFetch count]) fromURLs:imagesToFetch withTag:@"verify"];
+	
 }
 
 
