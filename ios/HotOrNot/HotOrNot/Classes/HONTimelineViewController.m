@@ -25,9 +25,12 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONHeaderView.h"
+#import "HONMessagesButtonView.h"
 #import "HONAddContactsViewController.h"
 #import "HONSuggestedFollowViewController.h"
 #import "HONMatchContactsViewController.h"
+#import "HONMessagesViewController.h"
+#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
@@ -48,6 +51,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) NSMutableArray *clubs;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
@@ -97,7 +101,7 @@
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 			[_challenges addObject:vo];
 		}
-		
+				
 		if ([_challenges count] > 0 && _imageQueueLocation < [_challenges count]) {
 			int cnt = 0;
 			NSMutableArray *imageQueue = [NSMutableArray arrayWithCapacity:MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length)];
@@ -125,6 +129,24 @@
 	}];
 }
 
+- (void)_retrieveClubs {
+	[[HONAPICaller sharedInstance] retrieveFeaturedClubsWithCompletion:^(NSObject *result) {
+	
+//		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+//		[[NSUserDefaults standardUserDefaults] setObject:[[(NSDictionary *)result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
+//		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"search_users"] forKey:@"search_users"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		_clubs = [NSMutableArray array];
+		for (NSDictionary *dict in (NSArray *)result) {
+			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+			[_challenges addObject:vo];
+		}
+		
+		[_tableView reloadData];
+	}];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -133,6 +155,7 @@
 	
 	_imageQueueLocation = 0;
 	_challenges = [NSMutableArray array];
+	_clubs = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
@@ -194,16 +217,19 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 
-	_headerView = [[HONHeaderView alloc] initWithBrandingWithTranslucency:YES];
+	_headerView = [[HONHeaderView alloc] initWithoutBackground];
 	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
+		[self performSelector:@selector(_retrieveClubs) withObject:nil afterDelay:0.33];
 		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
+	}
 }
 
 - (void)viewDidLoad {
@@ -237,16 +263,20 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+		
+	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goMessages {
+	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
-	[self.navigationController popViewControllerAnimated:YES];
-	
-//	[self _removeTutorialBubbles];
-//	
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goCreateChallenge {
@@ -440,9 +470,6 @@
 
 #pragma mark - UI Presentation
 - (void)_removeTutorialBubbles {
-	for (HONTimelineItemViewCell *cell in _cells) {
-		[cell removeTutorialBubble];
-	}
 }
 
 
@@ -510,6 +537,13 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell shareChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Timeline - Share Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showChallenge:(HONChallengeVO *)challengeVO {

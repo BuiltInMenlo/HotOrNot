@@ -15,18 +15,17 @@
 #import "HONImageLoadingView.h"
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineCellSubjectView.h"
-#import "HONTimelineItemFooterView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
 #import "HONOpponentVO.h"
 
 
-@interface HONTimelineItemViewCell() <HONTimelineCellHeaderViewDelegate, HONTimelineCellSubjectViewDelegate, HONTimelineItemFooterViewDelegate>
+@interface HONTimelineItemViewCell() <HONTimelineCellHeaderViewDelegate, HONTimelineCellSubjectViewDelegate>
 @property (nonatomic, strong) UIView *heroHolderView;
+@property (nonatomic, strong) UIView *footerView;
 @property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) NSMutableArray *voters;
-@property (nonatomic, strong) HONTimelineItemFooterView *timelineItemFooterView;
 @property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic) BOOL isBanner;
@@ -54,19 +53,6 @@
 #pragma mark - Public APIs
 - (void)updateChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	
-	[_timelineItemFooterView updateChallenge:_challengeVO];
-}
-
-- (void)removeTutorialBubble {
-	if (_tutorialImageView != nil) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tutorialImageView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}];
-	}
 }
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
@@ -112,7 +98,7 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:(([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:([UIScreen mainScreen].bounds.size.height - 169.0) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
 	timelineCellSubjectView.delegate = self;
 	[self.contentView addSubview:timelineCellSubjectView];
 	
@@ -128,13 +114,29 @@
 	
 	
 	HONTimelineCellHeaderView *creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:_challengeVO];
-	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 64.0);
+	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 37.0);
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
-	_timelineItemFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:[UIScreen mainScreen].bounds.size.height - 106.0 withChallenge:_challengeVO];
-	_timelineItemFooterView.delegate = self;
-	[self.contentView addSubview:_timelineItemFooterView];
+	
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 101.0, 320.0, 44.0)];
+	[self.contentView addSubview:_footerView];
+	
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:shareButton];
+	
+	UIButton *chevronButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	chevronButton.frame = CGRectMake(280.0, 0.0, 44.0, 44.0);
+	[chevronButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_nonActive"] forState:UIControlStateNormal];
+	[chevronButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_Active"] forState:UIControlStateHighlighted];
+	[chevronButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:chevronButton];
+	
+	
 	
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
 	
@@ -154,7 +156,7 @@
 	}
 	
 	if (_isBanner) {
-		_timelineItemFooterView.frame = CGRectOffset(_timelineItemFooterView.frame, 0.0, -80.0);
+		_footerView.frame = CGRectOffset(_footerView.frame, 0.0, -80.0);
 		
 		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 130.0, 320.0, 80.0)];
 		[self.contentView addSubview:bannerImageView];
@@ -206,6 +208,14 @@
 	
 	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
 }
+
+- (void)_goShare {
+	[self.delegate timelineItemViewCell:self shareChallenge:_challengeVO];
+}
+
+
+
+
 
 - (void)_goJoinChallenge {
 	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _heroHolderView.frame.size.height)];
@@ -277,23 +287,6 @@
 #pragma mark - TimelineSubject Deletegates
 - (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView {
 	[self _goCreatorProfile];
-}
-
-#pragma mark - TimelineItemFooter Delegates
-- (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
-	[self _goJoinChallenge];
-}
-
-- (void)footerView:(HONTimelineItemFooterView *)cell likeChallenge:(HONChallengeVO *)challengeVO {
-	[self _goLike];
-}
-
-- (void)footerView:(HONTimelineItemFooterView *)cell showDetailsForChallenge:(HONChallengeVO *)challengeVO {
-	[self _goDetails];
-}
-
-- (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[self.delegate timelineItemViewCell:self showProfileForUserID:opponentVO.userID forChallenge:_challengeVO];
 }
 
 

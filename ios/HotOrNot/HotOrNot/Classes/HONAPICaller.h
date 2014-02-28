@@ -50,6 +50,18 @@ extern NSString * const kAPIGetMessages;
 extern NSString * const kAPICreateMessage;
 extern NSString * const kAPIChallengesMessageSeen;
 
+extern NSString * const kAPIClubsCreate;
+extern NSString * const kAPIClubsInvite;
+extern NSString * const kAPIClubsProcessImage;
+extern NSString * const kAPIClubsGet;
+extern NSString * const kAPIClubsJoin;
+extern NSString * const kAPIClubsQuit;
+extern NSString * const kAPIClubsBlock;
+extern NSString * const kAPIClubsUnblock;
+extern NSString * const kAPIClubsFeatured;
+extern NSString * const kAPIUsersGetClubs;
+extern NSString * const kAPIUsersGetClubInvites;
+
 
 @interface HONAPICaller : NSObject
 
@@ -84,6 +96,8 @@ extern NSString * const kAPIChallengesMessageSeen;
 - (void)retrieveAlertsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
+- (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)retrieveClubsForInvitedUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveFollowingUsersForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)removeAllChallengesForUserWithCompletion:(void (^)(NSObject *result))completion;
@@ -124,11 +138,14 @@ extern NSString * const kAPIChallengesMessageSeen;
 /**
  * Clubs
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-//**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
-
-/**
- * Clubs
- **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+//- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+//- (void)createClubWithUserID:(int)userID withName:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion;
+//- (void)inviteUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID ownerID:(int)ownerID withContacts:(NSArray *)contacts completion:(void (^)(NSObject *result))completion;
+//- (void)joinClubWithClubID:(int)clubID withOwnerID:(int)ownerID withRequstingUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+//- (void)quitUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+//- (void)retrieveClubByClubID:(int)clubID toClubWithID:(int)clubID clubOwnerID:(int)ownerID withContacts:(NSArray *)contacts completion:(void (^)(NSObject *result))completion;
+- (void)retrieveFeaturedClubsWithCompletion:(void (^)(NSObject *result))completion;
+//- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

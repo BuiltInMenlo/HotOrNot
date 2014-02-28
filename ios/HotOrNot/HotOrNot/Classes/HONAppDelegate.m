@@ -46,7 +46,7 @@
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
 #import "HONAlertsViewController.h"
-#import "HONMessagesViewController.h"
+#import "HONUserClubsViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONUserProfileViewController.h"
@@ -1158,7 +1158,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],									   
-									   [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	

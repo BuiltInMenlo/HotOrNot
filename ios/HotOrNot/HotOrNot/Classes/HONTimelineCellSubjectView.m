@@ -15,7 +15,7 @@
 #import "HONEmotionVO.h"
 #import "HONChallengeVO.h"
 
-#define kMAX_WIDTH 280.0f
+#define kMAX_WIDTH 300.0f
 #define kSPECIAL_COLOR [UIColor colorWithRed:0.424 green:1.000 blue:0.000 alpha:1.0]
 
 @implementation HONTimelineCellSubjectView
@@ -27,20 +27,18 @@
 }
 
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username {
-	if ((self = [super initWithFrame:CGRectMake(20.0, offsetY, 320.0, 70.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(10.0, offsetY, 300.0, 70.0)])) {
 		_username = username;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, self.frame.size.height)];
-		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:28];
-		_captionLabel.textColor = [UIColor whiteColor];
-		_captionLabel.numberOfLines = 0;
+		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:40];
 		_captionLabel.backgroundColor = [UIColor clearColor];
-		_captionLabel.textAlignment = NSTextAlignmentCenter;
+		_captionLabel.textColor = [UIColor whiteColor];
+		_captionLabel.shadowColor = [UIColor blackColor];
+		_captionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		[self addSubview:_captionLabel];
 
 		[self _captionForSubject:subjectName];
-
-		[self _layoutCaption];
 		[self _updateEmotion];
 	}
 	
@@ -74,20 +72,9 @@
 {
 	_username = challengeVO.creatorVO.username;
 	[self _captionForSubject:challengeVO.subjectName];
-	[self _layoutCaption];
 	[self _updateEmotion];
 }
 
-- (void)_layoutCaption
-{
-	_size = [_caption boundingRectWithSize:CGSizeMake(kMAX_WIDTH, _captionLabel.frame.size.height)
-								   options:NSStringDrawingUsesLineFragmentOrigin
-								attributes:@{NSFontAttributeName:_captionLabel.font}
-								   context:nil].size;
-	if (_size.width > kMAX_WIDTH)
-		_size = CGSizeMake(kMAX_WIDTH, _size.height);
-	_captionLabel.frame = CGRectMake(_captionLabel.frame.origin.x, _captionLabel.frame.origin.y, _captionLabel.frame.size.width, _size.height);
-}
 
 #pragma mark - Navigation
 - (void)_goProfile {

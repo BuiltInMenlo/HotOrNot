@@ -10,6 +10,19 @@
 #import "HONChallengeVO.h"
 
 typedef enum {
+	HONHomeFeedItemTypeSelfieOP = 0,
+	HONHomeFeedItemTypeSelfieReply,
+	HONHomeFeedItemTypeSelfieVerify,
+	HONHomeFeedItemTypeAvatar,
+	HONHomeFeedItemTypeMessage,
+	HONHomeFeedItemTypeClubOP,
+	HONHomeFeedItemTypeClubReply,
+	HONHomeFeedItemTypeAppBanner,
+	HONHomeFeedItemTypeWebBanner
+} HONHomeFeedItemType;
+
+
+typedef enum {
 	HONTimelineAlertTypeInvite = 0,
 	HONTimelineAlertTypeInviteConfirm	
 } HONTimelineAlertType;

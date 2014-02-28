@@ -33,8 +33,10 @@
 		_participantsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
 		_participantsLabel.textColor = [UIColor whiteColor];
 		_participantsLabel.backgroundColor = [UIColor clearColor];
+		_participantsLabel.shadowColor = [UIColor blackColor];
+		_participantsLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_participantsLabel.text = [self _captionForParticipants];
-		[self addSubview:_participantsLabel];
+//		[self addSubview:_participantsLabel];
 		
 		CGSize size;
 		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
@@ -50,7 +52,7 @@
 		UIButton *participantsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		participantsButton.frame = _participantsLabel.frame;
 		[participantsButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:participantsButton];
+//		[self addSubview:participantsButton];
 		
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -59,14 +61,14 @@
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:joinButton];
-		
+//
 		_likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_likeButton.frame = CGRectMake(266.0, 0.0, 44.0, 44.0);
-		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_nonActive"] forState:UIControlStateNormal];
-		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_Active"] forState:UIControlStateHighlighted];
-		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_Tapped"] forState:UIControlStateSelected];
-		[_likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_likeButton];
+//		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_nonActive"] forState:UIControlStateNormal];
+//		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_Active"] forState:UIControlStateHighlighted];
+//		[_likeButton setBackgroundImage:[UIImage imageNamed:@"timelineLikeButton_Tapped"] forState:UIControlStateSelected];
+//		[_likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:_likeButton];
 	}
 	
 	return (self);
@@ -141,7 +143,7 @@
 	int challengers = [_challengeVO.challengers count];
 	
 	if (challengers == 0 && score == 0)
-		return (@"Be the first to like & reply");
+		return (@"");
 	
 	
 	NSString *caption = @"";
@@ -150,9 +152,9 @@
 		caption = (score > 0) ? [caption stringByAppendingString:@" & "] : [caption stringByAppendingString:@"… "];
 		
 	} else
-		caption = @"Be the first to reply… ";
+		caption = @" ";
 	
-	caption = (score > 0) ? [caption stringByAppendingString:[NSString stringWithFormat:@"%d like%@", score, (score == 1) ? @"" : @"s"]] : [caption stringByAppendingString:@"Be the first to like"];
+	caption = (score > 0) ? [caption stringByAppendingString:[NSString stringWithFormat:@"%d like%@", score, (score == 1) ? @"" : @"s"]] : [caption stringByAppendingString:@""];
 	
 	return (caption);
 }

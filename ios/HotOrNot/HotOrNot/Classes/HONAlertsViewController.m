@@ -11,6 +11,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAlertsViewController.h"
+#import "HONAnalyticsParams.h"
 #import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
@@ -18,9 +19,11 @@
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONHeaderView.h"
+#import "HONMessagesButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONAlertItemViewCell.h"
 #import "HONUserProfileViewController.h"
+#import "HONMessagesViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
@@ -122,9 +125,9 @@
 	_emptySetImageView.hidden = YES;
 //	[_tableView addSubview:_emptySetImageView];
 	
-	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Activity" hasTranslucency:YES];
-	[_headerView addButton:_profileHeaderButtonView];
+	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
@@ -168,6 +171,14 @@
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goMessages {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }

@@ -17,11 +17,11 @@
 @implementation HONMessagesButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(50.0, 5.0, 44.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(48.0, 11.0, 34.0, 34.0)])) {
 		_messagesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_messagesButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
-		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
+		_messagesButton.frame = CGRectMake(0.0, 0.0, 34.0, 34.0);
+		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDM_nonActive"] forState:UIControlStateNormal];
+		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDM_Active"] forState:UIControlStateHighlighted];
 		[_messagesButton addTarget:target action:action forControlEvents:UIControlEventTouchDown];
 		[self addSubview:_messagesButton];
 	}

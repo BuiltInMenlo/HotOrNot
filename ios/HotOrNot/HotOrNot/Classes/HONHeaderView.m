@@ -16,6 +16,13 @@
 @implementation HONHeaderView
 @synthesize title = _title;
 
+- (id)initWithoutBackground {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
+	}
+	
+	return (self);
+}
+
 - (id)initWithBrandingWithTranslucency:(BOOL)isTranslucent {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		self.backgroundColor = (isTranslucent) ? [UIColor clearColor] : [UIColor whiteColor];

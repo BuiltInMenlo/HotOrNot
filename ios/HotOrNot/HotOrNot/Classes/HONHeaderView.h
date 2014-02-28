@@ -12,6 +12,7 @@
 #import "HONCreateSnapButtonView.h"
 
 @interface HONHeaderView : UIView
+- (id)initWithoutBackground;
 - (id)initWithBrandingWithTranslucency:(BOOL)isTranslucent;
 - (id)initWithTitle:(NSString *)title hasTranslucency:(BOOL)isTranslucent;
 - (id)initAsModalWithTitle:(NSString *)title hasTranslucency:(BOOL)isTranslucent;

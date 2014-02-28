@@ -73,7 +73,7 @@ if $isKill_flg; then # --/> passed in the kill param
 			parent_path=$(dirname "$curr_line")
 			rm -R "${parent_path}"
 		done
-		printf " Success!\n"
+		printf " Done!\n"
 		
 	else
 		printf "Didn't find the app installed...\n"; fi

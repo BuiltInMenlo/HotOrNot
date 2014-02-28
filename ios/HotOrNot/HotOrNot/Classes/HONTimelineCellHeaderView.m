@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineCellHeaderView.h"
@@ -30,53 +32,38 @@
 	_challengeVO = challengeVO;
 	
 	if (_challengeVO != nil) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
-		[self addSubview:avatarImageView];
+		UIView *avatarsView = [self _avatarStackView];
+		[self addSubview:avatarsView];
 		
-		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			avatarImageView.image = image;
-		};
-		
-		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_challengeVO.creatorVO.avatarPrefix forAvatarBucket:YES completion:nil];
-			avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
-		};
-		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_challengeVO.creatorVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-							   placeholderImage:nil
-										success:successBlock
-										failure:failureBlock];
-		
-		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = avatarImageView.frame;
-		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:avatarButton];
-		
-		
-		CGSize size;
-		CGFloat maxNameWidth = 120.0;
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(47.0, 14.0, maxNameWidth, 18.0)];
-		nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.text = _challengeVO.creatorVO.username;
-		[self addSubview:nameLabel];
-		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 17.0, 50.0, 14.0)];
-		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
-		timeLabel.textAlignment = NSTextAlignmentRight;
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0 + (avatarsView.frame.origin.x + avatarsView.frame.size.width), 19.0, 50.0, 12.0)];
+		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];
 		timeLabel.textColor = [UIColor whiteColor];
 		timeLabel.backgroundColor = [UIColor clearColor];
+		timeLabel.shadowColor = [UIColor blackColor];
+		timeLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 		[self addSubview:timeLabel];
 		
+		CGSize size;
+		CGFloat maxNameWidth = 280.0;
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((320.0 - maxNameWidth) * 0.5, 68.0, maxNameWidth, 24.0)];
+		nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
+		nameLabel.textColor = [UIColor whiteColor];
+		nameLabel.backgroundColor = [UIColor clearColor];
+		nameLabel.shadowColor = [UIColor blackColor];
+		nameLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+		nameLabel.textAlignment = NSTextAlignmentCenter;
+		nameLabel.text = _challengeVO.creatorVO.username;
+		[self addSubview:nameLabel];
+		
 		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
-			size = [[_challengeVO.creatorVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 19.0)
-																								options:NSStringDrawingTruncatesLastVisibleLine
-																							 attributes:@{NSFontAttributeName:nameLabel.font}
-																								context:nil].size;
+			size = [_challengeVO.creatorVO.username boundingRectWithSize:CGSizeMake(maxNameWidth, nameLabel.frame.size.height)
+																 options:NSStringDrawingTruncatesLastVisibleLine
+															  attributes:@{NSFontAttributeName:nameLabel.font}
+																 context:nil].size;
 		}
 		
+		nameLabel.frame = CGRectMake((320.0 - size.width) * 0.5, nameLabel.frame.origin.y, size.width, size.height);
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		profileButton.frame = nameLabel.frame;
 		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
@@ -133,6 +120,49 @@
 	}
 	
 	return (emotionVO);
+}
+
+- (UIView *)_avatarStackView {
+	NSMutableArray *avatars = [NSMutableArray arrayWithObject:_challengeVO.creatorVO.avatarPrefix];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 50.0, 50.0)];
+	
+	if ([_challengeVO.challengers count] >= 2) {
+		[avatars addObject:[_challengeVO.challengers firstObject]];
+		[avatars addObject:[_challengeVO.challengers objectAtIndex:1]];
+	
+	} else if ([_challengeVO.challengers count] == 1) {
+		[avatars addObject:[_challengeVO.challengers firstObject]];
+	}
+	
+	CGFloat width = 50.0 + (([avatars count] - 1) * 30.0);
+	holderView.frame = CGRectMake((320.0 - width) * 0.5, 0.0, width, 50.0);
+	
+	for (int i=[avatars count] - 1; i>=0; i--) {
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 30.0), 0.0, 50.0, 50.0)];
+		[holderView addSubview:avatarImageView];
+		
+		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			avatarImageView.image = image;
+			
+//			CALayer *mask = [CALayer layer];
+//			mask.contents = (id)[[UIImage imageNamed:@"mask.png"] CGImage];
+//			mask.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+//			avatarImageView.layer.mask = mask;
+//			avatarImageView.layer.masksToBounds = YES;
+		};
+		
+		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_challengeVO.creatorVO.avatarPrefix forAvatarBucket:YES completion:nil];
+			avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+		};
+		
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[avatars objectAtIndex:i] stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+							   placeholderImage:nil
+										success:successBlock
+										failure:failureBlock];
+	}
+	
+	return (holderView);
 }
 
 @end
