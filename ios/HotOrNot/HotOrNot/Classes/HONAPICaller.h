@@ -87,7 +87,7 @@ extern NSString * const kAPIUsersGetClubInvites;
 /**
  * Users
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)checkForAvailableUsername:(NSString *)username andEmail:(NSString *)email completion:(void (^)(NSObject *result))completion;
+- (void)checkForAvailableUsername:(NSString *)username andPhone:(NSString *)phone completion:(void (^)(NSObject *result))completion;
 - (void)deactivateUserWithCompletion:(void (^)(NSObject *result))completion;
 - (void)finalizeUserWithDictionary:(NSDictionary *)dict completion:(void (^)(NSObject *result))completion;
 - (void)flagUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;

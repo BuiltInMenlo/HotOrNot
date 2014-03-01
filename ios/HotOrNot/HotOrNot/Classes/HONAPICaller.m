@@ -230,10 +230,10 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 #pragma mark - Users
-- (void)checkForAvailableUsername:(NSString *)username andEmail:(NSString *)email completion:(void (^)(NSObject *result))completion {
+- (void)checkForAvailableUsername:(NSString *)username andPhone:(NSString *)phone completion:(void (^)(NSObject *result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: username,
-							 @"password"	: email};
+							 @"password"	: phone};
 	
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPICheckNameAndEmail, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];

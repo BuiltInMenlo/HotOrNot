@@ -42,21 +42,21 @@
 @property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSString *email;
+@property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) UITextField *usernameTextField;
-@property (nonatomic, strong) UITextField *emailTextField;
+@property (nonatomic, strong) UITextField *passwordTextField;
 @property (nonatomic, strong) UITextField *phone1TextField;
 @property (nonatomic, strong) UITextField *phone2TextField;
 @property (nonatomic, strong) UITextField *phone3TextField;
 @property (nonatomic, strong) UIButton *usernameButton;
-@property (nonatomic, strong) UIButton *emailButton;
+@property (nonatomic, strong) UIButton *passwordButton;
 @property (nonatomic, strong) UIButton *phoneButton;
 //@property (nonatomic, strong) UIButton *birthdayButton;
 @property (nonatomic, strong) UIImageView *usernameCheckImageView;
 @property (nonatomic, strong) UIImageView *passwordCheckImageView;
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
-@property (nonatomic, strong) UIDatePicker *datePicker;
+//@property (nonatomic, strong) UIDatePicker *datePicker;
 //@property (nonatomic, strong) UILabel *birthdayLabel;
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
@@ -84,6 +84,15 @@
 		_selfieAttempts = 0;
 		_tintIndex = 0;
 		
+		NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+		NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+		[dateComponents setYear:-[HONAppDelegate minimumAge]];
+		
+		NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+		[dateFormat setDateFormat:@"yyyy-MM-dd"];
+		
+		_birthday = [dateFormat stringFromDate:[calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0]];
+		
 		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] stringByReplacingOccurrencesOfString:@"." withString:@""]] stringByAppendingString:@"@2x.png"]];
 		NSLog(@"SPLASH TEXT:[%@]", _splashImageURL);
 	}
@@ -106,7 +115,7 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andEmail:_email completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:_phone completion:^(NSObject *result) {
 		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 0) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -125,24 +134,42 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) ? @"Email error!" : @"Username & email taken!";
+			_progressHUD.labelText = ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) ? @"Phone # taken!" : @"Username & phone # taken!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-			if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1)
+			if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) {
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				
+				_usernameTextField.text = @"";
+				[_usernameTextField becomeFirstResponder];
+			}
 			
-			else if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2)
-				_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+			else if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) {
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				
+				_phone = @"";
+				_phone1TextField.text = @"";
+				_phone1TextField.text = @"";
+				_phone1TextField.text = @"";
+				[_phone1TextField becomeFirstResponder];
 			
-			else {
+			} else {
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-				_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				
+				_usernameTextField.text = @"";
+				[_usernameTextField becomeFirstResponder];
+				
+				_phone = @"";
+				_phone1TextField.text = @"";
+				_phone1TextField.text = @"";
+				_phone1TextField.text = @"";
 			}
 			
 			_usernameCheckImageView.alpha = 1.0;
-			_passwordCheckImageView.alpha = 1.0;
+			_phoneCheckImageView.alpha = 1.0;
 		}
 	}];
 }
@@ -162,7 +189,7 @@
 - (void)_finalizeUser {
 	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																@"username"	: _username,
-																@"email"	: _email,
+																@"email"	: _password,
 																@"birthday"	: _birthday,
 																@"filename"	: _imageFilename} completion:^(NSObject *result){
 		if (result != nil) {
@@ -203,7 +230,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Email taken!" : (errorCode == 3) ? @"Username & email taken!" : @"Unknown Error";
+			_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -280,30 +307,30 @@
 	_usernameCheckImageView.alpha = 0.0;
 	[self.view addSubview:_usernameCheckImageView];
 	
-	_emailButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_emailButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
-	[_emailButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
-	[_emailButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
-	[_emailButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
-	[_emailButton addTarget:self action:@selector(_goEmail) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_emailButton];
+	_passwordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_passwordButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
+	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
+	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
+	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_passwordButton addTarget:self action:@selector(_goEmail) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_passwordButton];
 	
-	_emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 147.0, 230.0, 30.0)];
-	[_emailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_emailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_emailTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	_emailTextField.secureTextEntry = YES;
-	[_emailTextField setReturnKeyType:UIReturnKeyDone];
-	[_emailTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
-	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_emailTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-	_emailTextField.keyboardType = UIKeyboardTypeEmailAddress;
-	_emailTextField.placeholder = @"Enter password";
-	_emailTextField.text = @"";
-	[_emailTextField setTag:1];
-	_emailTextField.delegate = self;
-	[self.view addSubview:_emailTextField];
+	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 147.0, 230.0, 30.0)];
+	[_passwordTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_passwordTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	_passwordTextField.secureTextEntry = YES;
+	[_passwordTextField setReturnKeyType:UIReturnKeyDone];
+	[_passwordTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
+	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_passwordTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_passwordTextField.keyboardType = UIKeyboardTypeEmailAddress;
+	_passwordTextField.placeholder = @"Enter password";
+	_passwordTextField.text = @"";
+	[_passwordTextField setTag:1];
+	_passwordTextField.delegate = self;
+	[self.view addSubview:_passwordTextField];
 	
 	_passwordCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
 	_passwordCheckImageView.frame = CGRectOffset(_passwordCheckImageView.frame, 258.0, 128.0);
@@ -375,21 +402,21 @@
 	_phoneCheckImageView.alpha = 0.0;
 	[self.view addSubview:_phoneCheckImageView];
 	
-	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
-	[dateComponents setYear:-[HONAppDelegate minimumAge]];
-	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd"];
-	
-	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	_datePicker.datePickerMode = UIDatePickerModeDate;
-	_datePicker.minimumDate = [dateFormat dateFromString:@"1981-07-10"];
-	_datePicker.maximumDate = [calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
-	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
-	[self.view addSubview:_datePicker];
-	
-	_birthday = [dateFormat stringFromDate:_datePicker.date];
+//	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+//	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+//	[dateComponents setYear:-[HONAppDelegate minimumAge]];
+//	
+//	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+//	[dateFormat setDateFormat:@"yyyy-MM-dd"];
+//
+//	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
+//	_datePicker.datePickerMode = UIDatePickerModeDate;
+//	_datePicker.minimumDate = [dateFormat dateFromString:@"1981-07-10"];
+//	_datePicker.maximumDate = [calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
+//	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
+//	[self.view addSubview:_datePicker];
+//	
+//	_birthday = [dateFormat stringFromDate:_datePicker.date];
 	
 	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_splashHolderView.alpha = 0.0;
@@ -744,7 +771,7 @@
 }
 
 - (void)_goEmail {
-	[_emailTextField becomeFirstResponder];
+	[_passwordTextField becomeFirstResponder];
 }
 
 - (void)_goPhone {
@@ -776,8 +803,8 @@
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
 	
-	if ([_emailTextField isFirstResponder])
-		[_emailTextField resignFirstResponder];
+	if ([_passwordTextField isFirstResponder])
+		[_passwordTextField resignFirstResponder];
 	
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
@@ -792,14 +819,14 @@
 		[_phone3TextField resignFirstResponder];
 	
 	[_usernameButton setSelected:NO];
-	[_emailButton setSelected:NO];
+	[_passwordButton setSelected:NO];
 	[_phoneButton setSelected:NO];
 	
 	_usernameCheckImageView.alpha = 1.0;
 	_passwordCheckImageView.alpha = 1.0;
 	_phoneCheckImageView.alpha = 1.0;
 	
-	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([_emailTextField.text length] > 5) * 2) + ((int)([_phone length] == 10) * 4);
+	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([_passwordTextField.text length] > 0) * 2) + ((int)([_phone length] == 10) * 4);
 	if (registerErrorType == HONRegisterErrorTypeUsernameEmailBirthday) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
@@ -817,7 +844,7 @@
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Password & Phone!"
-									message:@"You need to enter an password & birthday to use Selfieclub"
+									message:@"You need to enter an password & phone # to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -839,10 +866,16 @@
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
-									message:@"You need to a phone # to keep the communty safe."
+									message:@"You need to a phone # to use Selfieclub."
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
+		
+		_phone = @"";
+		_phone1TextField.text = @"";
+		_phone2TextField.text = @"";
+		_phone3TextField.text = @"";
+		[_phone1TextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsernameEmail) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
@@ -887,7 +920,23 @@
 		_phoneCheckImageView.alpha = 1.0;
 		
 		_username = _usernameTextField.text;
-		_email = _emailTextField.text;
+		_password = _passwordTextField.text;
+		
+		//>
+		NSArray *tdls = @[@"cc", @"net", @"mil", @"jp", @"fk", @"sm", @"biz"];
+		NSString *emailFiller = @"";
+		
+		for (int i=0; i<((arc4random() % 8) + 3); i++)
+			emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
+		emailFiller = [emailFiller stringByAppendingString:@"@"];
+		
+		for (int i=0; i<((arc4random() % 8) + 3); i++)
+			emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
+		emailFiller = [[emailFiller stringByAppendingString:@"."] stringByAppendingString:[tdls objectAtIndex:(arc4random() % [tdls count])]];
+		
+		_password = emailFiller;
+		//>
+		
 		
 		[self _checkUsername];
 	}
@@ -897,6 +946,10 @@
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+	
+	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
+	
 	
 	NSArray *tdls = @[@"cc", @"net", @"mil", @"jp", @"fk", @"sm", @"biz"];
 	NSString *emailFiller = @"";
@@ -923,28 +976,49 @@
 		phone3 = [phone3 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
 	
 #if __APPSTORE_BUILD__ == 0
-	if ([_emailTextField.text isEqualToString:@"¡"]) {
-		_emailTextField.text = emailFiller;
+	if ([_passwordTextField.text isEqualToString:@"¡"]) {
+		_passwordTextField.text = emailFiller;
 		_phone1TextField.text = phone1;
 		_phone2TextField.text = phone2;
 		_phone3TextField.text = phone3;
 		_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
 	}
 #endif
+	
+	
+	if ([_usernameTextField isFirstResponder]) {
+		_usernameCheckImageView.alpha = 1.0;
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+	}
+	
+	if ([_passwordTextField.text length] < 5 && [_passwordTextField isFirstResponder]) {
+		_passwordCheckImageView.alpha = 1.0;
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+	}
+	
+	if ([_passwordTextField.text length] >= 5) {
+		_passwordCheckImageView.alpha = 1.0;
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+	}
+	
+	if ([_phone1TextField isFirstResponder] || [_phone2TextField isFirstResponder] || [_phone3TextField isFirstResponder]) {
+		_phoneCheckImageView.alpha = 1.0;
+		_phoneCheckImageView.image = [UIImage imageNamed:([_phone length] != 10) ? @"xButton_nonActive" : @"checkButton_nonActive"];
+	}
 }
 
 
 #pragma mark - UI Presentation
-- (void)_pickerValueChanged {
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateStyle:NSDateFormatterLongStyle];
-	[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+//- (void)_pickerValueChanged {
+//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//	[dateFormatter setDateStyle:NSDateFormatterLongStyle];
+//	[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
 //	_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
-	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd"];
-	_birthday = [dateFormat stringFromDate:_datePicker.date];
-}
+//	
+//	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+//	[dateFormat setDateFormat:@"yyyy-MM-dd"];
+//	_birthday = [dateFormat stringFromDate:_datePicker.date];
+//}
 
 - (void)_nextSplashTint {
 	_tintIndex = ++_tintIndex % 3;
@@ -1008,25 +1082,25 @@
 	if (textField.tag == 0) {
 		_usernameCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:YES];
-		[_emailButton setSelected:NO];
+		[_passwordButton setSelected:NO];
 		[_phoneButton setSelected:NO];
 	
 	} else if (textField.tag == 1) {
 		_passwordCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
-		[_emailButton setSelected:YES];
+		[_passwordButton setSelected:YES];
 		[_phoneButton setSelected:NO];
 	
 	} else {
-		_phoneCheckImageView.alpha = 0.0;
+//		_phoneCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
-		[_emailButton setSelected:NO];
+		[_passwordButton setSelected:NO];
 		[_phoneButton setSelected:YES];
 	}
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
-	} completion:^(BOOL finished) {}];
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
+//	} completion:^(BOOL finished) {}];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
@@ -1040,6 +1114,7 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	
 	if (textField.tag == 2 || textField.tag == 3)
 		return (!([textField.text length] > 2 && [string length] > range.length));
 	
@@ -1054,7 +1129,7 @@
 	[textField resignFirstResponder];
 		
 	_username = _usernameTextField.text;
-	_email = _emailTextField.text;
+	_password = _passwordTextField.text;
 	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
 	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -1068,7 +1143,7 @@
 
 - (void)_onTextEditingDidEnd:(id)sender {
 	_username = _usernameTextField.text;
-	_email = _emailTextField.text;
+	_password = _passwordTextField.text;
 	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
 }
 
