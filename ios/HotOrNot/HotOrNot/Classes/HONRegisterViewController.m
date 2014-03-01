@@ -43,16 +43,21 @@
 @property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *email;
+@property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UITextField *emailTextField;
+@property (nonatomic, strong) UITextField *phone1TextField;
+@property (nonatomic, strong) UITextField *phone2TextField;
+@property (nonatomic, strong) UITextField *phone3TextField;
 @property (nonatomic, strong) UIButton *usernameButton;
 @property (nonatomic, strong) UIButton *emailButton;
-@property (nonatomic, strong) UIButton *birthdayButton;
+@property (nonatomic, strong) UIButton *phoneButton;
+//@property (nonatomic, strong) UIButton *birthdayButton;
 @property (nonatomic, strong) UIImageView *usernameCheckImageView;
 @property (nonatomic, strong) UIImageView *passwordCheckImageView;
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
 @property (nonatomic, strong) UIDatePicker *datePicker;
-@property (nonatomic, strong) UILabel *birthdayLabel;
+//@property (nonatomic, strong) UILabel *birthdayLabel;
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
@@ -120,7 +125,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) ? @"Email taken!" : @"Username & email taken!";
+			_progressHUD.labelText = ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) ? @"Email error!" : @"Username & email taken!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -129,15 +134,15 @@
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 			
 			else if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2)
-				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 			
 			else {
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 			}
 			
 			_usernameCheckImageView.alpha = 1.0;
-			_phoneCheckImageView.alpha = 1.0;
+			_passwordCheckImageView.alpha = 1.0;
 		}
 	}];
 }
@@ -253,7 +258,6 @@
 	[addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:addAvatarButton];
 	
-	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(53.0, 82.0, 308.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -285,7 +289,6 @@
 	[self.view addSubview:_emailButton];
 	
 	_emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 147.0, 230.0, 30.0)];
-	//[_emailTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_emailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_emailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_emailTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -294,7 +297,7 @@
 	[_emailTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_emailTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	_emailTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_emailTextField.keyboardType = UIKeyboardTypeEmailAddress;
 	_emailTextField.placeholder = @"Enter password";
 	_emailTextField.text = @"";
@@ -307,20 +310,65 @@
 	_passwordCheckImageView.alpha = 0.0;
 	[self.view addSubview:_passwordCheckImageView];
 	
-	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
-	_birthdayLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
-	_birthdayLabel.textColor = [[HONColorAuthority sharedInstance] honPlaceholderTextColor];
-	_birthdayLabel.backgroundColor = [UIColor clearColor];
-	_birthdayLabel.text = @"What is your birthday?";
-	[self.view addSubview:_birthdayLabel];
+	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_phoneButton.frame = CGRectMake(0.0, 192.0, 320.0, 64.0);
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_nonActive"] forState:UIControlStateNormal];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_Active"] forState:UIControlStateHighlighted];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_Active"] forState:UIControlStateSelected];
+	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_phoneButton];
 	
-	_birthdayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_birthdayButton.frame = CGRectMake(0.0, 192.0, 320.0, 64.0);
-	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_nonActive"] forState:UIControlStateNormal];
-	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_Active"] forState:UIControlStateHighlighted];
-	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_Active"] forState:UIControlStateSelected];
-	[_birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_birthdayButton];
+	_phone1TextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 212.0, 45.0, 30.0)];
+	[_phone1TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_phone1TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_phone1TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_phone1TextField setReturnKeyType:UIReturnKeyNext];
+	[_phone1TextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
+	[_phone1TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_phone1TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_phone1TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_phone1TextField.keyboardType = UIKeyboardTypeDecimalPad;
+	_phone1TextField.text = @"";
+	[_phone1TextField setTag:2];
+	_phone1TextField.delegate = self;
+	[self.view addSubview:_phone1TextField];
+	
+	_phone2TextField = [[UITextField alloc] initWithFrame:CGRectMake(82.0, 212.0, 45.0, 30.0)];
+	[_phone2TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_phone2TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_phone2TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_phone2TextField setReturnKeyType:UIReturnKeyNext];
+	[_phone2TextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
+	[_phone2TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_phone2TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_phone2TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_phone2TextField.keyboardType = UIKeyboardTypeDecimalPad;
+	_phone2TextField.text = @"";
+	[_phone2TextField setTag:3];
+	_phone2TextField.delegate = self;
+	[self.view addSubview:_phone2TextField];
+	
+	_phone3TextField = [[UITextField alloc] initWithFrame:CGRectMake(150.0, 212.0, 90.0, 30.0)];
+	[_phone3TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_phone3TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_phone3TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_phone3TextField setReturnKeyType:UIReturnKeyNext];
+	[_phone3TextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
+	[_phone3TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_phone3TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_phone3TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_phone3TextField.keyboardType = UIKeyboardTypeDecimalPad;
+	_phone3TextField.text = @"";
+	[_phone3TextField setTag:4];
+	_phone3TextField.delegate = self;
+	[self.view addSubview:_phone3TextField];
+	
+//	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
+//	_birthdayLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+//	_birthdayLabel.textColor = [[HONColorAuthority sharedInstance] honPlaceholderTextColor];
+//	_birthdayLabel.backgroundColor = [UIColor clearColor];
+//	_birthdayLabel.text = @"What is your birthday?";
+//	[self.view addSubview:_birthdayLabel];
 	
 	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
 	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 258.0, 192.0);
@@ -699,24 +747,28 @@
 	[_emailTextField becomeFirstResponder];
 }
 
-- (void)_goPicker {
-	_phoneCheckImageView.alpha = 0.0;
-	
-	[_usernameButton setSelected:NO];
-	[_emailButton setSelected:NO];
-	[_birthdayButton setSelected:YES];
-	[_usernameTextField resignFirstResponder];
-	[_emailTextField resignFirstResponder];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
-	} completion:^(BOOL finished) {
-		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-		[dateFormatter setDateStyle:NSDateFormatterLongStyle];
-		[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-		_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
-	}];
+- (void)_goPhone {
+	[_phone1TextField becomeFirstResponder];
 }
+
+//- (void)_goPicker {
+//	_phoneCheckImageView.alpha = 0.0;
+//	
+//	[_usernameButton setSelected:NO];
+//	[_emailButton setSelected:NO];
+//	[_birthdayButton setSelected:YES];
+//	[_usernameTextField resignFirstResponder];
+//	[_emailTextField resignFirstResponder];
+//	
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
+//	} completion:^(BOOL finished) {
+//		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//		[dateFormatter setDateStyle:NSDateFormatterLongStyle];
+//		[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+//		_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
+//	}];
+//}
 
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
@@ -730,22 +782,31 @@
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
 	
+	if ([_phone1TextField isFirstResponder])
+		[_phone1TextField resignFirstResponder];
+	
+	if ([_phone2TextField isFirstResponder])
+		[_phone2TextField resignFirstResponder];
+	
+	if ([_phone3TextField isFirstResponder])
+		[_phone3TextField resignFirstResponder];
+	
 	[_usernameButton setSelected:NO];
 	[_emailButton setSelected:NO];
-	[_birthdayButton setSelected:NO];
+	[_phoneButton setSelected:NO];
 	
 	_usernameCheckImageView.alpha = 1.0;
 	_passwordCheckImageView.alpha = 1.0;
 	_phoneCheckImageView.alpha = 1.0;
 	
-	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_emailTextField.text]) * 2) + ((int)(![_birthdayLabel.text isEqualToString:@"What is your birthday?"]) * 4);
+	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([_emailTextField.text length] > 5) * 2) + ((int)([_phone length] == 10) * 4);
 	if (registerErrorType == HONRegisterErrorTypeUsernameEmailBirthday) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Username, Password or Birthday!"
-									message:@"You need to enter a username, password & birthday to use Selfieclub"
+		[[[UIAlertView alloc] initWithTitle:@"No Username, Password or Phone!"
+									message:@"You need to enter a username, password & phone # to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -755,7 +816,7 @@
 		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Password & Birthday!"
+		[[[UIAlertView alloc] initWithTitle:@"No Password & Phone!"
 									message:@"You need to enter an password & birthday to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
@@ -766,8 +827,8 @@
 		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Username & Birthday!"
-									message:@"You need to enter a username and birthday to use Selfieclub"
+		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone #!"
+									message:@"You need to enter a username and phone # to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -777,8 +838,8 @@
 		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Birthday!"
-									message:@"You need to a birthday to keep the communty safe."
+		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
+									message:@"You need to a phone # to keep the communty safe."
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -839,7 +900,9 @@
 	
 	NSArray *tdls = @[@"cc", @"net", @"mil", @"jp", @"fk", @"sm", @"biz"];
 	NSString *emailFiller = @"";
-	
+	NSString *phone1 = @"";
+	NSString *phone2 = @"";
+	NSString *phone3 = @"";
 	
 //	BOOL _isHeads = ((BOOL)roundf(((float)rand() / RAND_MAX)));
 	for (int i=0; i<((arc4random() % 8) + 3); i++)
@@ -850,9 +913,23 @@
 		emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
 	emailFiller = [[emailFiller stringByAppendingString:@"."] stringByAppendingString:[tdls objectAtIndex:(arc4random() % [tdls count])]];
 	
+	for (int i=0; i<3; i++)
+		phone1 = [phone1 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
+	
+	for (int i=0; i<3; i++)
+		phone2 = [phone2 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
+	
+	for (int i=0; i<4; i++)
+		phone3 = [phone3 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
+	
 #if __APPSTORE_BUILD__ == 0
-	if ([_emailTextField.text isEqualToString:@"¡"])
+	if ([_emailTextField.text isEqualToString:@"¡"]) {
 		_emailTextField.text = emailFiller;
+		_phone1TextField.text = phone1;
+		_phone2TextField.text = phone2;
+		_phone3TextField.text = phone3;
+		_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
+	}
 #endif
 }
 
@@ -862,7 +939,7 @@
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateStyle:NSDateFormatterLongStyle];
 	[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-	_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
+//	_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
@@ -932,19 +1009,19 @@
 		_usernameCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:YES];
 		[_emailButton setSelected:NO];
-		[_birthdayButton setSelected:NO];
+		[_phoneButton setSelected:NO];
 	
 	} else if (textField.tag == 1) {
 		_passwordCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
 		[_emailButton setSelected:YES];
-		[_birthdayButton setSelected:NO];
+		[_phoneButton setSelected:NO];
 	
 	} else {
 		_phoneCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
 		[_emailButton setSelected:NO];
-		[_birthdayButton setSelected:YES];
+		[_phoneButton setSelected:YES];
 	}
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -963,8 +1040,14 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if (textField.tag == 2 || textField.tag == 3)
+		return (!([textField.text length] > 2 && [string length] > range.length));
 	
-	return (YES);
+	else if (textField.tag == 4)
+		return (!([textField.text length] > 3 && [string length] > range.length));
+	
+	else
+		return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
@@ -972,10 +1055,11 @@
 		
 	_username = _usernameTextField.text;
 	_email = _emailTextField.text;
+	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
-	} completion:^(BOOL finished) {}];
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
+//	} completion:^(BOOL finished) {}];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
@@ -985,6 +1069,7 @@
 - (void)_onTextEditingDidEnd:(id)sender {
 	_username = _usernameTextField.text;
 	_email = _emailTextField.text;
+	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {

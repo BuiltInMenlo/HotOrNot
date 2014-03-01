@@ -14,6 +14,7 @@
 @interface HONAllowContactViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+@property (nonatomic, retain) HONTrivialUserVO *userVO;
 @property (nonatomic, assign) id <HONAllowContactViewCellDelegate> delegate;
 @end
 

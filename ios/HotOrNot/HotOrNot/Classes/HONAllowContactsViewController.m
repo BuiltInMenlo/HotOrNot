@@ -15,6 +15,7 @@
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONAllowContactViewCell.h"
+#import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONUserClubVO.h"
 
@@ -38,8 +39,8 @@
 						  @"CONTACTS",
 						  @"CLUBS"];
 		
-//		_smsRecipients = @"";
-//		_emailRecipients = @"";
+		_smsRecipients = @"";
+		_emailRecipients = @"";
 		
 		_inAppContacts = [NSMutableArray array];
 		_nonAppContacts = [NSMutableArray array];
@@ -321,8 +322,8 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowHeader"]];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(3.0, 3.0, 200.0, 24.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 4.0, 200.0, 16.0)];
+	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = [_headerTitles objectAtIndex:section];
@@ -337,12 +338,19 @@
 	if (cell == nil)
 		cell = [[HONAllowContactViewCell alloc] init];
 	
-//	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_subscribers objectAtIndex:indexPath.row];
-//	
-//	cell.userVO = vo;
-//	cell.delegate = self;
-//	[cell toggleSelected:([HONAppDelegate isFollowingUser:vo.userID])];
+	if (indexPath.section == 0)
+		cell.userVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
+		
+	else if (indexPath.section == 1) {
+		HONContactUserVO *vo = (HONContactUserVO *)[_nonAppContacts objectAtIndex:indexPath.row];
+		cell.userVO = [HONTrivialUserVO userWithDictionary:@{@"id"			: @"0",
+															 @"username"	: vo.fullName,
+															 @"img_url"		: [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
+	}
+	
+	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	cell.delegate = self;
 	
 	return (cell);
 }

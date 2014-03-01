@@ -21,7 +21,7 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo
 {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 92.0)])) {
 		self.challengeVO = vo;
 	}
 	return self;
@@ -34,6 +34,11 @@
 	if (_challengeVO != nil) {
 		UIView *avatarsView = [self _avatarStackView];
 		[self addSubview:avatarsView];
+		
+		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		avatarButton.frame = avatarsView.frame;
+		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:avatarButton];
 		
 		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0 + (avatarsView.frame.origin.x + avatarsView.frame.size.width), 19.0, 50.0, 12.0)];
 		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];

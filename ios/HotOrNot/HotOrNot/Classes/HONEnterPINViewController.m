@@ -93,6 +93,8 @@
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
+	
+	[_pinTextField becomeFirstResponder];
 }
 
 - (void)viewDidLoad {
@@ -129,7 +131,16 @@
 - (void)_goNext {
 	[[Mixpanel sharedInstance] track:@"Validate PIN - Next" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
-	[self.navigationController pushViewController:[[HONAllowContactsViewController alloc] init] animated:YES];
+	_pin = _pinTextField.text;
+	if ([_pin length] < 4) {
+		[[[UIAlertView alloc] initWithTitle:@"Invalid Pin!"
+									message:@"Pin numbers need to be 4 numbers"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	
+	} else
+		[self.navigationController pushViewController:[[HONAllowContactsViewController alloc] init] animated:YES];
 }
 
 - (void)_goResend {
@@ -167,7 +178,6 @@
 	[textField resignFirstResponder];
 	
 	_pin = _pinTextField.text;
-	
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
