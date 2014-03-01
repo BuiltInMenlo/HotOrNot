@@ -35,14 +35,14 @@
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
-		[self addSubview:_checkButton];
+		[self.contentView addSubview:_checkButton];
 		
 		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_inviteButton.frame = CGRectMake(212.0, 10.0, 104.0, 44.0);
 		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
 		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_inviteButton];
+		[self.contentView addSubview:_inviteButton];
 	}
 	
 	return (self);
@@ -56,14 +56,14 @@
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.fullName;
-	[self addSubview:nameLabel];
+	[self.contentView addSubview:nameLabel];
 	
 	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 30.0, 180.0, 18.0)];
 	contactLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
 	contactLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
 	contactLabel.backgroundColor = [UIColor clearColor];
 	contactLabel.text = (_userVO.isSMSAvailable) ? _userVO.rawNumber : _userVO.email;
-	[self addSubview:contactLabel];
+	[self.contentView addSubview:contactLabel];
 }
 
 

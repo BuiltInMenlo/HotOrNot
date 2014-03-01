@@ -17,14 +17,22 @@
 #import "HONProfileHeaderButtonView.h"
 #import "HONMessagesButtonView.h"
 #import "HONCreateSnapButtonView.h"
+#import "HONUserClubViewCell.h"
 #import "HONUserProfileViewController.h"
 #import "HONMessagesViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONUserClubDetailsViewController.h"
+#import "HONCreateClubViewController.h"
+#import "HONUserClubSettingsViewController.h"
+#import "HONUserClubsSearchViewController.h"
+#import "HONUserClubInviteViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONUserClubVO.h"
 
 
-@interface HONUserClubsViewController () <EGORefreshTableHeaderDelegate>
+#import "HONTrivialUserVO.h"
+
+@interface HONUserClubsViewController () <EGORefreshTableHeaderDelegate, HONUserClubViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONUserClubVO *ownClub;
 @property (nonatomic, strong) NSMutableArray *joinedClubs;
@@ -41,7 +49,7 @@
 	if ((self = [super init])) {
 		_defaultCaptions = @[@"Quick Links",
 							 @"Find friends who have a Selfieclub",
-							 @"Invite friends to my selfieclub",
+							 @"Invite friends to my Selfieclub",
 							 @"Verify my phone number"];
 	}
 	
@@ -163,12 +171,38 @@
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goInviteFriends {
-	[[Mixpanel sharedInstance] track:@"Clubs - Invite Friends" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+- (void)_goClubSettings:(HONUserClubVO *)userClubVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"club"] = [NSString stringWithFormat:@"%d - %@", userClubVO.clubID, userClubVO.clubName];
+	[[Mixpanel sharedInstance] track:@"Clubs - Settings" properties:properties];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goInviteContacts {
-	[[Mixpanel sharedInstance] track:@"Clubs - Invite Contacts" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+- (void)_goClubDetails:(HONUserClubVO *)userClubVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"club"] = [NSString stringWithFormat:@"%d - %@", userClubVO.clubID, userClubVO.clubName];
+	[[Mixpanel sharedInstance] track:@"Clubs - Details" properties:properties];
+	
+	[self.navigationController pushViewController:[[HONUserClubDetailsViewController alloc] init] animated:YES];
+}
+
+- (void)_goFindSelfieclubs {
+	[[Mixpanel sharedInstance] track:@"Clubs - Find Selfieclubs" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsSearchViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goInviteFriends {
+	[[Mixpanel sharedInstance] track:@"Clubs - Invite Friends" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubInviteViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goVerifyPhone {
@@ -179,6 +213,17 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+
+#pragma mark - UserClubViewCell Delegates
+- (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"club"] = [NSString stringWithFormat:@"%d - %@", userClubVO.clubID, userClubVO.clubName];
+	[[Mixpanel sharedInstance] track:@"Clubs - Settings" properties:properties];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubSettingsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
 
 
 #pragma mark - RefreshTableHeader Delegates
@@ -210,19 +255,31 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONUserClubViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[UITableViewCell alloc] init];
+		cell = [[HONUserClubViewCell alloc] init];
 	
 	
 	if (indexPath.section == 0) {
+		if (_ownClub == nil) {
+			cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
+			cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+			cell.textLabel.text = @"Tap here to start your own Selfieclub";
+			cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+			cell.textLabel.textAlignment = NSTextAlignmentCenter;
 		
-	
+		} else {
+			cell.userClubVO = _ownClub;
+			cell.delegate = self;
+		}
+		
 	} else if (indexPath.section == 1) {
-		
+		cell.userClubVO = [_joinedClubs objectAtIndex:indexPath.row];
+		cell.delegate = self;
 	
 	} else {
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
 		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.row];
 		
@@ -266,14 +323,37 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (indexPath.section == 2) {
+	if (indexPath.section == 0) {
+		if (_ownClub == nil) {
+			[[Mixpanel sharedInstance] track:@"Clubs - Create Club" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			
+		} else
+			[self _goClubDetails:_ownClub];
+		
+	} else if (indexPath.section == 1)
+		[self _goClubDetails:(HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row]];
+		
+	else if (indexPath.section == 2) {
 		switch (indexPath.row - 1) {
 			case 0:
-				[self _goInviteFriends];
+				[self _goFindSelfieclubs];
 				break;
 				
 			case 1:
-				[self _goInviteContacts];
+				if (_ownClub != nil)
+					[self _goInviteFriends];
+				
+				else {
+					[[[UIAlertView alloc] initWithTitle:@"You Don't Have a Selfieclub!"
+												message:@"You need to create your Selfieclub before inviting someone."
+											   delegate:nil
+									  cancelButtonTitle:@"OK"
+									  otherButtonTitles:nil] show];
+				}
 				break;
 				
 			case 2:

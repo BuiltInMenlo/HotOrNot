@@ -15,6 +15,7 @@
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];
 	
+	vo.dictionary = dictionary;
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];

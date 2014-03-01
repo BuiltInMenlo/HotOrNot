@@ -25,7 +25,7 @@
 		
 		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
 		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 20.0);
-		[self addSubview:_chevronImageView];
+		[self.contentView addSubview:_chevronImageView];
 	}
 	
 	return (self);

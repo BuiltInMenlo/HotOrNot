@@ -115,7 +115,7 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:_phone completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:_password completion:^(NSObject *result) {
 		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 0) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -1000,6 +1000,12 @@
 		_passwordCheckImageView.alpha = 1.0;
 		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
 	}
+	
+	if ([_phone1TextField isFirstResponder] && [_phone1TextField.text length] == 3)
+		[_phone2TextField becomeFirstResponder];
+	
+	if ([_phone2TextField isFirstResponder] && [_phone2TextField.text length] == 3)
+		[_phone3TextField becomeFirstResponder];
 	
 	if ([_phone1TextField isFirstResponder] || [_phone2TextField isFirstResponder] || [_phone3TextField isFirstResponder]) {
 		_phoneCheckImageView.alpha = 1.0;

@@ -8,9 +8,9 @@
 
 #import "UIImageView+AFNetworking.h"
 
+#import "HONInviteUserViewCell.h"
 #import "HONAPICaller.h"
 #import "HONFontAllocator.h"
-#import "HONInviteUserViewCell.h"
 #import "HONColorAuthority.h"
 #import "HONImagingDepictor.h"
 
@@ -37,14 +37,14 @@
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
-		[self addSubview:_checkButton];
+		[self.contentView addSubview:_checkButton];
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_followButton.frame = CGRectMake(212.0, 10.0, 104.0, 44.0);
 		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_nonActive"] forState:UIControlStateNormal];
 		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_followButton];
+		[self.contentView addSubview:_followButton];
 	}
 	
 	return (self);
@@ -54,7 +54,7 @@
 	_userVO = userVO;
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
 	avatarImageView.alpha = 0.0;
-	[self addSubview:avatarImageView];
+	[self.contentView addSubview:avatarImageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
@@ -77,14 +77,12 @@
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-//	[avatarImageView setImageWithURL:[NSURL URLWithString:[_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
-	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
-	[self addSubview:nameLabel];
+	[self.contentView addSubview:nameLabel];
 }
 
 - (void)toggleSelected:(BOOL)isSelected {

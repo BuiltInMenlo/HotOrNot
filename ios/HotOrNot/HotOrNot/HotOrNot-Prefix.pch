@@ -20,6 +20,7 @@
 	#import <SystemConfiguration/SystemConfiguration.h>
 	#import <MobileCoreServices/MobileCoreServices.h>
 	#import "HONAppDelegate.h"
+	#import "HONAnalyticsParams.h"
 	#import "Mixpanel.h"
 	#import "TestFlight.h"
 #endif
