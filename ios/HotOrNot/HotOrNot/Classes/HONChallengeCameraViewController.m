@@ -257,8 +257,8 @@
 			[tracker fireEvent:e];
 			
 			
+//			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
@@ -419,8 +419,8 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -486,8 +486,8 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
@@ -559,8 +559,8 @@
 			}
 		
 			if (_hasSubmitted) {
+//				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
@@ -575,8 +575,8 @@
 		}
 			
 		if (_hasSubmitted) {
+//			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
@@ -618,7 +618,7 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 #pragma mark - ImagePicker Delegates
@@ -675,8 +675,8 @@
 		[self _showOverlay];
 		
 	} else {
+//		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 		[self dismissViewControllerAnimated:YES completion:^(void) {
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		}];

@@ -88,10 +88,11 @@
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
+	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(8.0, 10.0, 64.0, 24.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonIcon_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonIcon_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];

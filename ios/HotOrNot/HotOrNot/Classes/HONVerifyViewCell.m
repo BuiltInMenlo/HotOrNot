@@ -108,11 +108,6 @@
 		[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
 		[buttonHolderView addSubview:dispproveButton];
 		
-		
-		if (![HONAppDelegate hasTakenSelfie])
-			[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"needSelfieHeroBubble"]]];
-		
-		
 		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 		lpGestureRecognizer.minimumPressDuration = 0.25;
 		[_imageHolderView addGestureRecognizer:lpGestureRecognizer];

@@ -10,7 +10,6 @@
 
 
 @interface HONGenericRowViewCell()
-@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *chevronImageView;
 @end
 
@@ -22,8 +21,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
-		[self addSubview:_bgImageView];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
 		
 		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
 		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 20.0);
@@ -38,12 +36,12 @@
 }
 
 - (void)didSelect {
-	_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_Active"];
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackgroundTapped"]];
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
 }
 
 @end

@@ -132,16 +132,9 @@
 - (void)_retrieveClubs {
 	[[HONAPICaller sharedInstance] retrieveFeaturedClubsWithCompletion:^(NSObject *result) {
 	
-//		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-//		[[NSUserDefaults standardUserDefaults] setObject:[[(NSDictionary *)result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-//		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"search_users"] forKey:@"search_users"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
-		
 		_clubs = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
-			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
-			[_challenges addObject:vo];
-		}
+		for (NSDictionary *dict in (NSArray *)result)
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:dict]];
 		
 		[_tableView reloadData];
 	}];
@@ -169,6 +162,7 @@
 	
 	_emptyTimelineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 335.0)];
 	[_emptyTimelineView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_noFollowers"]]];
+	_emptyTimelineView.hidden = YES;
 	[_tableView addSubview:_emptyTimelineView];
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -16,6 +16,8 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONRegisterViewController.h"
+#import "HONEnterPINViewController.h"
+#import "HONAnalyticsParams.h"
 #import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
@@ -38,15 +40,17 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *rotatingTintView;
 @property (nonatomic, strong) NSTimer *tintTimer;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *email;
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UITextField *emailTextField;
-@property (nonatomic, retain) UIButton *usernameButton;
-@property (nonatomic, retain) UIButton *emailButton;
-@property (nonatomic, retain) UIButton *birthdayButton;
+@property (nonatomic, strong) UIButton *usernameButton;
+@property (nonatomic, strong) UIButton *emailButton;
+@property (nonatomic, strong) UIButton *birthdayButton;
+@property (nonatomic, strong) UIImageView *usernameCheckImageView;
+@property (nonatomic, strong) UIImageView *passwordCheckImageView;
+@property (nonatomic, strong) UIImageView *phoneCheckImageView;
 @property (nonatomic, strong) UIDatePicker *datePicker;
 @property (nonatomic, strong) UILabel *birthdayLabel;
 @property (nonatomic, strong) NSString *birthday;
@@ -67,18 +71,15 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Register - Show" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"username"];
-		
-		[[Mixpanel sharedInstance] track:@"Register - Show"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
 		_imageFilename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
 		_tintIndex = 0;
 		
-		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[HONAppDelegate brandedAppName] lowercaseString]] stringByAppendingString:@"@2x.png"]];
+		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] stringByReplacingOccurrencesOfString:@"." withString:@""]] stringByAppendingString:@"@2x.png"]];
 		NSLog(@"SPLASH TEXT:[%@]", _splashImageURL);
 	}
 	
@@ -107,15 +108,9 @@
 				_progressHUD = nil;
 			}
 			
-			if ([HONAppDelegate switchEnabledForKey:@"firstrun_camera"])
-				[self _goCamera];
-			
-			else {
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-				[self _finalizeUser];
-			}
+			[[NSUserDefaults standardUserDefaults] setObject:([_imageFilename length] == 0) ? @"YES" : @"NO" forKey:@"skipped_selfie"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			[self _finalizeUser];
 			
 		} else {
 			if (_progressHUD == nil)
@@ -130,7 +125,19 @@
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-			[_usernameTextField becomeFirstResponder];
+			if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1)
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+			
+			else if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2)
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+			
+			else {
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+			}
+			
+			_usernameCheckImageView.alpha = 1.0;
+			_phoneCheckImageView.alpha = 1.0;
 		}
 	}];
 }
@@ -143,7 +150,7 @@
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-avatars" withFilename:_imageFilename completion:^(NSObject *result){
-		[self _finalizeUser];
+//		[self _finalizeUser];
 	}];
 }
 
@@ -162,10 +169,7 @@
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 			
-			[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
+			[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 			
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
 			[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
@@ -182,15 +186,7 @@
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 			}];
 			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-				
-				if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-				
-				else
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
-			}];
+			[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			
 		} else {
 			int errorCode = [[(NSDictionary *)result objectForKey:@"result"] intValue];
@@ -207,11 +203,19 @@
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-			if (errorCode == 2)
-				[_emailTextField becomeFirstResponder];
+			if (errorCode == 1)
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 			
-			else
-				[_usernameTextField becomeFirstResponder];
+			else if (errorCode == 2)
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+			
+			else {
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+			}
+			
+			_usernameCheckImageView.alpha = 1.0;
+			_phoneCheckImageView.alpha = 1.0;
 		}
 	}];
 }
@@ -222,25 +226,44 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Register" hasTranslucency:NO];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Get started" hasTranslucency:NO];
+	[self.view addSubview:headerView];
+	
+	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:nextButton];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, 64.0, 320.0, 64.0);
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
+	
+	UIButton *addAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	addAvatarButton.frame = CGRectMake(5.0, 80.0, 32.0, 32.0);
+	addAvatarButton.backgroundColor = [UIColor greenColor];
+	[addAvatarButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
+	[addAvatarButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateHighlighted];
+	[addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:addAvatarButton];
+	
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(53.0, 82.0, 308.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[UIColor blackColor]];
+	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = @"Enter username";
 	_usernameTextField.text = @"";
@@ -248,13 +271,16 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 128.0);
-	[self.view addSubview:divider1ImageView];
+	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 64.0);
+	_usernameCheckImageView.alpha = 0.0;
+	[self.view addSubview:_usernameCheckImageView];
 	
 	_emailButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_emailButton.frame = CGRectMake(0.0, 129.0, 320.0, 64.0);
-	[_emailButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
+	_emailButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
+	[_emailButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
+	[_emailButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
+	[_emailButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
 	[_emailButton addTarget:self action:@selector(_goEmail) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_emailButton];
 	
@@ -263,21 +289,23 @@
 	[_emailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_emailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_emailTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	_emailTextField.secureTextEntry = YES;
 	[_emailTextField setReturnKeyType:UIReturnKeyDone];
-	[_emailTextField setTextColor:[UIColor blackColor]];
+	[_emailTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_emailTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_emailTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	_emailTextField.keyboardType = UIKeyboardTypeEmailAddress;
-	_emailTextField.placeholder = @"Enter email";
+	_emailTextField.placeholder = @"Enter password";
 	_emailTextField.text = @"";
 	[_emailTextField setTag:1];
 	_emailTextField.delegate = self;
 	[self.view addSubview:_emailTextField];
 	
-	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 193.0);
-	[self.view addSubview:divider2ImageView];
+	_passwordCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_passwordCheckImageView.frame = CGRectOffset(_passwordCheckImageView.frame, 258.0, 128.0);
+	_passwordCheckImageView.alpha = 0.0;
+	[self.view addSubview:_passwordCheckImageView];
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 212.0, 296.0, 30.0)];
 	_birthdayLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
@@ -287,14 +315,17 @@
 	[self.view addSubview:_birthdayLabel];
 	
 	_birthdayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_birthdayButton.frame = CGRectMake(0.0, 194.0, 320.0, 64.0);
-	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
+	_birthdayButton.frame = CGRectMake(0.0, 192.0, 320.0, 64.0);
+	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_nonActive"] forState:UIControlStateNormal];
+	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_Active"] forState:UIControlStateHighlighted];
+	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowNumBackround_Active"] forState:UIControlStateSelected];
 	[_birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_birthdayButton];
 	
-	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
-	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 258.0);
-	[self.view addSubview:divider3ImageView];
+	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 258.0, 192.0);
+	_phoneCheckImageView.alpha = 0.0;
+	[self.view addSubview:_phoneCheckImageView];
 	
 	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
@@ -304,21 +335,13 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
 	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	//_datePicker.date = (![[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] || [[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) ? [dateFormat dateFromString:@"1970-01-01"] : [dateFormat dateFromString:[[[[HONAppDelegate infoForUser] objectForKey:@"age"]componentsSeparatedByString:@" "] objectAtIndex:0]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
-	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
+	_datePicker.minimumDate = [dateFormat dateFromString:@"1981-07-10"];
 	_datePicker.maximumDate = [calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
 	
 	_birthday = [dateFormat stringFromDate:_datePicker.date];
-	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 269.0, 320.0, 53.0) : CGRectMake(254.0, 28.0, 59.0, 24.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"submitUsernameButton_nonActive" : @"smallSubmit_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"submitUsernameButton_Active" : @"smallSubmit_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:submitButton];
 	
 	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_splashHolderView.alpha = 0.0;
@@ -359,21 +382,20 @@
 										   success:successBlock
 										   failure:failureBlock];
 		
+		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		loginButton.frame = CGRectMake(212.0, -8.0, 104.0, 44.0);
+		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
+		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
+		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+		[_splashHolderView addSubview:loginButton];
 		
 		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (190.0 - (((int)![[HONDeviceTraits sharedInstance] isRetina4Inch]) * 19.0)), 320.0, 64.0);
-		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_nonActive"] forState:UIControlStateNormal];
-		[signupButton setBackgroundImage:[UIImage imageNamed:@"registerButton_Active"] forState:UIControlStateHighlighted];
+		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 320.0, 74.0);
+		[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_nonActive"] forState:UIControlStateNormal];
+		[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_Active"] forState:UIControlStateHighlighted];
 		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
 		[_splashHolderView addSubview:signupButton];
 
-		//>>
-//		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		loginButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (103.0 - (((int)![[HONDeviceTraits sharedInstance] isRetina4Inch]) * 18.0)), 320.0, 49.0);
-//		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
-//		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
-//		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-//		[_splashHolderView addSubview:loginButton];
 		
 		if (_isFirstAppearance) {
 			_isFirstAppearance = NO;
@@ -404,15 +426,6 @@
 					_splashHolderView.alpha = 1.0;
 				} completion:^(BOOL finished) {
 				}];
-				
-#if __DEV_BUILD__ == 1
-				UIButton *easterEggButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				easterEggButton.frame = CGRectMake(154.0, 16.0, 16.0, 8.0);
-				easterEggButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColorByName:@"fuschia" atOpacity:0.875];
-				[easterEggButton addTarget:self action:@selector(_goFillForm) forControlEvents:UIControlEventTouchDown];
-				[_splashHolderView addSubview:easterEggButton];
-#endif
-
 			}
 		}
 	
@@ -427,23 +440,11 @@
 
 
 #pragma mark - Navigation
-- (void)_goFillForm {
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd"];
-	
-	_usernameTextField.text = @"snap";
-	_emailTextField.text = @"snap@snap.com";
-	_datePicker.date = [dateFormat dateFromString:@"1996-07-10"];
-	
-	_birthdayLabel.text = [dateFormat stringFromDate:_datePicker.date];
-	[self _goCloseSplash];
-}
-
-
 - (void)_goCloseSplash {
-	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Register - Close Splash" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	if (_tintTimer != nil) {
 		[_tintTimer invalidate];
@@ -474,10 +475,7 @@
 }
 
 - (void)_goLogin {
-	[[Mixpanel sharedInstance] track:@"Register - Login"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Register - Login" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 		if ([MFMailComposeViewController canSendMail]) {
@@ -517,11 +515,8 @@
 }
 
 - (void)_goCamera {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Camera %@Available", ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? @"" : @"Not "]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Camera %@Available", ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? @"" : @"Not "] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		
 	UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
 	imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
 	imagePickerController.view.backgroundColor = [UIColor whiteColor];
@@ -633,9 +628,7 @@
 }
 
 - (void)_goFlipCamera {
-	[[Mixpanel sharedInstance] track:@"Register - Switch Camera"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Register - Switch Camera" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	if (self.profileImagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		self.profileImagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -647,19 +640,14 @@
 }
 
 - (void)_goCameraRoll {
-	[[Mixpanel sharedInstance] track:@"Register - Camera Roll"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Register - Camera Roll" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	self.profileImagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	self.profileImagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)_goChangeTint {
-	[[Mixpanel sharedInstance] track:@"Register - Change Tint Overlay"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Register - Change Tint Overlay" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
@@ -670,10 +658,8 @@
 }
 
 - (void)_goSkip {
-	[[Mixpanel sharedInstance] track:@"Register - Skip Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Register - Skip Photo" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+
 	_imageFilename = @"";
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -682,9 +668,7 @@
 }
 
 - (void)_goTakePhoto {
-	[[Mixpanel sharedInstance] track:@"Register - Take Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Register - Take Photo" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
@@ -716,6 +700,8 @@
 }
 
 - (void)_goPicker {
+	_phoneCheckImageView.alpha = 0.0;
+	
 	[_usernameButton setSelected:NO];
 	[_emailButton setSelected:NO];
 	[_birthdayButton setSelected:YES];
@@ -733,69 +719,112 @@
 }
 
 - (void)_goSubmit {
-	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-
+	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	if ([_usernameTextField isFirstResponder])
+		[_usernameTextField resignFirstResponder];
+	
+	if ([_emailTextField isFirstResponder])
+		[_emailTextField resignFirstResponder];
+	
+	if ([_usernameTextField isFirstResponder])
+		[_usernameTextField resignFirstResponder];
+	
+	[_usernameButton setSelected:NO];
+	[_emailButton setSelected:NO];
+	[_birthdayButton setSelected:NO];
+	
+	_usernameCheckImageView.alpha = 1.0;
+	_passwordCheckImageView.alpha = 1.0;
+	_phoneCheckImageView.alpha = 1.0;
 	
 	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_emailTextField.text]) * 2) + ((int)(![_birthdayLabel.text isEqualToString:@"What is your birthday?"]) * 4);
 	if (registerErrorType == HONRegisterErrorTypeUsernameEmailBirthday) {
-		[[[UIAlertView alloc] initWithTitle:@"No Username, Email or Birthday!"
-									message:@"You need to enter a username, email & birthday address to start snapping"
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		
+		[[[UIAlertView alloc] initWithTitle:@"No Username, Password or Birthday!"
+									message:@"You need to enter a username, password & birthday to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_usernameTextField becomeFirstResponder];
 	 
 	} else if (registerErrorType == HONRegisterErrorTypeEmailBirthday) {
-		[[[UIAlertView alloc] initWithTitle:@"No Email & Birthday!"
-									message:@"You need to enter an email address & birthday to start snapping"
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		
+		[[[UIAlertView alloc] initWithTitle:@"No Password & Birthday!"
+									message:@"You need to enter an password & birthday to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_usernameTextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsernameBirthday) {
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Birthday!"
-									message:@"You need to enter a username and birthday to start snapping"
+									message:@"You need to enter a username and birthday to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_emailTextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeBirthday) {
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		
 		[[[UIAlertView alloc] initWithTitle:@"No Birthday!"
 									message:@"You need to a birthday to keep the communty safe."
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[self _goPicker];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsernameEmail) {
-		[[[UIAlertView alloc] initWithTitle:@"No Username & Email!"
-									message:@"You need to enter a username and email address to start snapping"
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		
+		[[[UIAlertView alloc] initWithTitle:@"No Username & Password!"
+									message:@"You need to enter a username and password use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_usernameTextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeEmail) {
-		[[[UIAlertView alloc] initWithTitle:@"No email!"
-									message:[NSString stringWithFormat:@"You need to enter a valid email address to use %@", [HONAppDelegate brandedAppName]]
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		
+		[[[UIAlertView alloc] initWithTitle:@"No Password!"
+									message:@"You need to enter a password to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_emailTextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-									message:@"You need to enter a username to start snapping"
+									message:@"You need to enter a username to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		[_usernameTextField becomeFirstResponder];
 	
 	} else {
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		
+		_usernameCheckImageView.alpha = 1.0;
+		_passwordCheckImageView.alpha = 1.0;
+		_phoneCheckImageView.alpha = 1.0;
+		
 		_username = _usernameTextField.text;
 		_email = _emailTextField.text;
 		
@@ -823,7 +852,7 @@
 	
 #if __APPSTORE_BUILD__ == 0
 	if ([_emailTextField.text isEqualToString:@"¡"])
-		_emailTextField.text = emailFiller;//@"dfsfhsdfo@fssf.com";
+		_emailTextField.text = emailFiller;
 #endif
 }
 
@@ -853,7 +882,7 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 
@@ -893,21 +922,29 @@
 		_profileCameraOverlayView.alpha = 0.0;
 		
 	} else
-		[self _finalizeUser];
+		[self dismissViewControllerAnimated:NO completion:nil];
 }
 
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	if (textField.tag == 0) {
+		_usernameCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:YES];
 		[_emailButton setSelected:NO];
 		[_birthdayButton setSelected:NO];
 	
-	} else {
+	} else if (textField.tag == 1) {
+		_passwordCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
 		[_emailButton setSelected:YES];
 		[_birthdayButton setSelected:NO];
+	
+	} else {
+		_phoneCheckImageView.alpha = 0.0;
+		[_usernameButton setSelected:NO];
+		[_emailButton setSelected:NO];
+		[_birthdayButton setSelected:YES];
 	}
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -963,10 +1000,8 @@
 	}
 	
 	else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Skip Photo %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Skip Photo %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+
 		if (buttonIndex == 1) {
 			_imageFilename = @"";
 			[self.profileImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
@@ -1009,9 +1044,7 @@
 			break;
 	}
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Login Message %@", mpAction]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Login Message %@", mpAction] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_mailComposeViewController dismissViewControllerAnimated:YES completion:^(void) {

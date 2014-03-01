@@ -21,7 +21,6 @@
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONUserProfileViewController.h"
-#import "HONMessagesViewController.h"
 #import "HONSuggestedFollowViewController.h"
 #import "HONChallengeDetailsViewController.h"
 
@@ -91,7 +90,7 @@
 	HONFeedItemViewController *_appearingItemController;
 	HONFeedItemViewController *_disappearingItemController;
 	
-	NSArray *_challenges;
+	NSMutableArray *_challenges;
 	NSUInteger _prefetchIndex;
 }
 
@@ -129,9 +128,14 @@
 	_pagedScrollView.alwaysBounceHorizontal = YES;
 	[self.view addSubview:_pagedScrollView];
 	
-	_headerView = [[HONHeaderView alloc] initWithBrandingWithTranslucency:YES];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	
+	_headerView = [[HONHeaderView alloc] initWithoutBackground];
+	[_headerView addButton:backButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
 	
@@ -209,7 +213,7 @@
 
 - (void)_didFinishRefreshingWithResults:(NSArray *)results
 {
-	_challenges = results;
+	_challenges = [results mutableCopy];
 	[self _updateEmptyState];
 	[self _prefetchChallenges];
 	
@@ -374,9 +378,9 @@
 	[self _refreshChallengesFromServer];
 }
 
-- (void)_goProfile
+- (void)_goBack
 {
-	[[Mixpanel sharedInstance] track:@"Timeline - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[Mixpanel sharedInstance] track:@"Timeline - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
 	[self.navigationController popViewControllerAnimated:YES];
@@ -388,16 +392,8 @@
 //	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goMessages {
-	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_goSuggested {
-	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[Mixpanel sharedInstance] track:@"Timeline - Suggested" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -611,21 +607,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 }
 
-- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO
-{
-//	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Join Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-	
-	[cell showTapOverlay];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}
+
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO
 {
@@ -688,6 +670,59 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
+
+- (void)feedItem:(HONFeedItemViewController *)feedItemViewController upvoteChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username];
+	[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenge" properties:properties];
+	
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSObject *result) {
+		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+		
+		int cnt = 0;
+		for (HONChallengeVO *vo in _challenges) {
+			if (vo.challengeID == challengeVO.challengeID) {
+				[_challenges replaceObjectAtIndex:cnt withObject:challengeVO];
+				break;
+			}
+			
+			cnt++;
+		}
+	}];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+}
+
+- (void)feedItem:(HONFeedItemViewController *)feedItemViewController joinChallenge:(HONChallengeVO *)challengeVO
+{
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName];
+	[[Mixpanel sharedInstance] track:@"Timeline - Join Challenge" properties:properties];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)feedItem:(HONFeedItemViewController *)feedItemViewController shareChallenge:(HONChallengeVO *)challengeVO fromParticipant:(HONOpponentVO *)opponentVO withImage:(UIImage *)image {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName];
+	[[Mixpanel sharedInstance] track:@"Timeline - Share Challenge" properties:properties];
+	
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], challengeVO.subjectName, opponentVO.username];
+	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], challengeVO.subjectName, opponentVO.username, [HONAppDelegate shareURL]];
+	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], challengeVO.subjectName, opponentVO.username, [HONAppDelegate shareURL]];
+	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:0], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+																							@"image"			: image,
+																							@"url"				: [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix],
+																							@"mp_event"			: @"Timeline Details",
+																							@"view_controller"	: self}];
+
+}
+
 
 /*
 #pragma mark - SnapPreview Delegates
@@ -837,6 +872,7 @@
 @implementation HONFeedItemViewController
 {
 	UIView *_heroHolderView;
+	UIView *_footerView;
 	HONImageLoadingView *_loadingIndicatorView;
 	UIImageView *_heroImageView;
 	HONTimelineCellSubjectView *_timelineSubjectView;
@@ -870,24 +906,44 @@
 	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
 	
-	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:floor((CGRectGetHeight(bounds) - 44.0) * 0.5) withSubjectName:nil withUsername:nil];
-	//timelineCellSubjectView.delegate = self;
-	[self.view addSubview:_timelineSubjectView];
-	
-	_creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:nil];
-	_creatorHeaderView.frame = CGRectOffset(_creatorHeaderView.frame, 0.0, 64.0);
-	//_creatorHeaderView.delegate = self;
-	[self.view addSubview:_creatorHeaderView];
-	
-	_timelineFooterView = [[HONTimelineItemFooterView alloc] initAtPosY:CGRectGetHeight(bounds) - 106.0 withChallenge:nil];
-	//_timelineFooterView.delegate = self;
-	[self.view addSubview:_timelineFooterView];
-	
 	_detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_detailsButton.frame = bounds;
 	[_detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_detailsButton];
-
+	
+	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:CGRectGetHeight(bounds) - 169.0 withSubjectName:nil withUsername:nil];
+	//timelineCellSubjectView.delegate = self;
+	[self.view addSubview:_timelineSubjectView];
+	
+	_creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:nil];
+	_creatorHeaderView.frame = CGRectOffset(_creatorHeaderView.frame, 0.0, 37.0);
+	//_creatorHeaderView.delegate = self;
+	[self.view addSubview:_creatorHeaderView];
+	
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 101.0, 320.0, 44.0)];
+	[self.view addSubview:_footerView];
+	
+	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likeButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:likeButton];
+	
+	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	replyButton.frame = CGRectMake(113.0, 0.0, 94.0, 44.0);
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:replyButton];
+	
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = CGRectMake(280.0, 0.0, 94.0, 44.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:shareButton];
+	
 //	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 //	lpGestureRecognizer.minimumPressDuration = 0.25;
 //	[self addGestureRecognizer:lpGestureRecognizer];
@@ -988,6 +1044,18 @@
 	}];
 	
 	[_feedViewController feedItem:self showChallenge:_challenge];
+}
+
+- (void)_goLike {
+	[_feedViewController feedItem:self upvoteChallenge:_challenge forParticipant:_challenge.creatorVO];
+}
+
+- (void)_goReply {
+	[_feedViewController feedItem:self joinChallenge:_challenge];
+}
+
+- (void)_goShare {
+	[_feedViewController feedItem:self shareChallenge:_challenge fromParticipant:_challenge.creatorVO withImage:_heroImageView.image];
 }
 
 @end

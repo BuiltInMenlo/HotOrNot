@@ -124,10 +124,6 @@
 	[followButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:followButton];
 	
-	if (![HONAppDelegate hasTakenSelfie])
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"needSelfieHeroBubble"]]];
-	
-	
 	if (_isInviteCell) {
 		buttonHolderView.frame = CGRectOffset(buttonHolderView.frame, 0.0, -80.0);
 		followButton.frame = CGRectOffset(followButton.frame, 0.0, -80.0);

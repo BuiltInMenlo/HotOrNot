@@ -357,36 +357,38 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
-	
-	// first time asking for access
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+	if (ABAddressBookRequestAccessWithCompletion) {
+		ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+		NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
+		
+		// first time asking for access
+		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+			ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+				[self _retrieveContacts];
+			});
+			
+			// already granted access
+		} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+			[[Mixpanel sharedInstance] track:@"Address Book - Granted"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			
+			
 			[self _retrieveContacts];
-		});
-		
-		// already granted access
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[[Mixpanel sharedInstance] track:@"Address Book - Granted"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		
-		[self _retrieveContacts];
-		
-		// denied permission
-	} else {
-		[[Mixpanel sharedInstance] track:@"Address Book - Denied"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-															message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
-														   delegate:nil
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView show];
+			
+			// denied permission
+		} else {
+			[[Mixpanel sharedInstance] track:@"Address Book - Denied"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
+																message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
+															   delegate:nil
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView show];
+		}
 	}
 }
 

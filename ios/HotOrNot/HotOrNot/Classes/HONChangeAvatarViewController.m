@@ -74,7 +74,7 @@
 				[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+//				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 			}
 			
@@ -186,7 +186,7 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 
