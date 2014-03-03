@@ -204,18 +204,18 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Add friends" hasTranslucency:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Add friends"];
 	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(251.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;

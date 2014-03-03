@@ -19,7 +19,6 @@
 @property (nonatomic, retain) UITextField *textField;
 @property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic) BOOL isEmail;
 @property (nonatomic) float submitButtonOriginY;
 @end
@@ -74,15 +73,15 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"Enter your %@", (_isEmail) ? @"email" : @"phone #"]];
+	[self.view addSubview:headerView];
+	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	cancelButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:[NSString stringWithFormat:@"Enter your %@", (_isEmail) ? @"email" : @"phone #"] hasTranslucency:NO];
-	[_headerView addButton:cancelButton];
-	[self.view addSubview:_headerView];
+	[headerView addButton:cancelButton];
 	
 	_textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 82.0, 308.0, 30.0)];
 	//[_textField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];

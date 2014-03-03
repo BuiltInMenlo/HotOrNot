@@ -29,7 +29,6 @@
 @interface HONMessagesViewController () <EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSMutableArray *messages;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @end
@@ -95,22 +94,22 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Messages"];
+	[self.view addSubview:headerView];
+	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:closeButton];
 	
 	UIButton *createMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createMessageButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
 	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessage_nonActive"] forState:UIControlStateNormal];
 	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessage_Active"] forState:UIControlStateHighlighted];
 	[createMessageButton addTarget:self action:@selector(_goCreateMessage) forControlEvents:UIControlEventTouchUpInside];
-	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Messages" hasTranslucency:NO];
-	[_headerView addButton:closeButton];
-	[_headerView addButton:createMessageButton];
-	[self.view addSubview:_headerView];
+	[headerView addButton:createMessageButton];
 	
 	[self _retreiveMessages];
 }

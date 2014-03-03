@@ -46,7 +46,6 @@
 @interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
@@ -211,11 +210,11 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 
-	_headerView = [[HONHeaderView alloc] initWithoutBackground];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:headerView];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];

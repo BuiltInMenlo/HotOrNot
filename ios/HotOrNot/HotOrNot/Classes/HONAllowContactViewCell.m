@@ -53,12 +53,14 @@
 - (void)setUserVO:(HONTrivialUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0,40.0, 40.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 8.0, kTableCellAvatarSize.width * 0.5, kTableCellAvatarSize.height * 0.5)];
 	avatarImageView.alpha = 0.0;
 	[self addSubview:avatarImageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
+		
+		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatar.png"]];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];
@@ -68,6 +70,7 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userVO.avatarPrefix forAvatarBucket:YES completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatar.png"]];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];

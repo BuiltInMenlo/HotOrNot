@@ -17,14 +17,16 @@
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
+@property (nonatomic) BOOL isModal;
 @end
 
 
 @implementation HONUserClubInviteViewController
 
-- (id)init {
+
+- (id)initAsModal:(BOOL)isModal {
 	if ((self = [super init])) {
-		
+		_isModal = isModal;
 	}
 	
 	return (self);
@@ -68,19 +70,16 @@
 //	_refreshTableHeaderView.scrollView = _tableView;
 //	[_tableView addSubview:_refreshTableHeaderView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Invite Friends" hasTranslucency:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite Friends"];
 	[self.view addSubview:headerView];
 	
-//	NSLog(@"self.tabBarController.presentingViewController:[%@]", self.tabBarController.presentingViewController);
-//	NSLog(@"self.presentingViewController.presentedViewController:[%@]", self.presentingViewController.presentedViewController);
-//	NSLog(@"MODAL:[%d]", (self.presentingViewController.presentedViewController == self || self.navigationController.presentingViewController.presentedViewController == self.navigationController || [self.tabBarController.presentingViewController isKindOfClass:[UITabBarController class]]));
-	
-	if ([self.parentViewController.presentedViewController isEqual:self]) {
+	if (_isModal) {
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+		[headerView addButton:closeButton];
 		
 	} else {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -109,12 +108,15 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	
+	NSLog(@"SELF:[%@]\nSELF.NC:[%@]", self, self.navigationController);
+	NSLog(@"[self.tabBarController.presentingViewController isKindOfClass:[UITabBarController class]](%d)", [self.tabBarController.presentingViewController isKindOfClass:[UITabBarController class]]);
+	NSLog(@"self.navigationController.presentingViewController.presentedViewController:[%@]", self.navigationController.presentingViewController.presentedViewController);
+	NSLog(@"self.presentingViewController.presentedViewController:[%@]", self.presentingViewController.presentedViewController);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
-	NSLog(@"(self.modalPresentationStyle:[%d]", self.modalPresentationStyle);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

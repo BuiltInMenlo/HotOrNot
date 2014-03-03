@@ -22,7 +22,6 @@
 @property (nonatomic, strong) NSMutableArray *following;
 @property (nonatomic, strong) NSMutableArray *selectedRecipients;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @end
 
@@ -101,10 +100,10 @@
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Select" hasTranslucency:YES];
-	[_headerView addButton:backButton];
-	[_headerView addButton:nextButton];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
+	[headerView addButton:backButton];
+	[headerView addButton:nextButton];
+	[self.view addSubview:headerView];
 	
 	[self _buildRecipients];
 }

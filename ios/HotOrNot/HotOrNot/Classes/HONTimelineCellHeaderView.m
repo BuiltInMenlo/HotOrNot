@@ -17,6 +17,8 @@
 #import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
 
+const CGSize kAvatarSize = {48.0f, 48.0f};
+
 @implementation HONTimelineCellHeaderView
 
 - (id)initWithChallenge:(HONChallengeVO *)vo
@@ -128,8 +130,10 @@
 }
 
 - (UIView *)_avatarStackView {
+	
+	
 	NSMutableArray *avatars = [NSMutableArray arrayWithObject:_challengeVO.creatorVO.avatarPrefix];
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 50.0, 50.0)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kAvatarSize.width, kAvatarSize.height)];
 	
 	if ([_challengeVO.challengers count] >= 2) {
 		[avatars addObject:[_challengeVO.challengers firstObject]];
@@ -139,21 +143,21 @@
 		[avatars addObject:[_challengeVO.challengers firstObject]];
 	}
 	
-	CGFloat width = 50.0 + (([avatars count] - 1) * 30.0);
-	holderView.frame = CGRectMake((320.0 - width) * 0.5, 0.0, width, 50.0);
+	CGFloat width = kAvatarSize.width + (([avatars count] - 1) * 30.0);
+	holderView.frame = CGRectMake((320.0 - width) * 0.5, 0.0, width, kAvatarSize.height);
 	
-	for (int i=[avatars count] - 1; i>=0; i--) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 30.0), 0.0, 50.0, 50.0)];
+	for (int i=[avatars count]-1; i>=0; i--) {
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 30.0), 0.0, kAvatarSize.width, kAvatarSize.height)];
 		[holderView addSubview:avatarImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			avatarImageView.image = image;
 			
-//			CALayer *mask = [CALayer layer];
-//			mask.contents = (id)[[UIImage imageNamed:@"mask.png"] CGImage];
-//			mask.frame = CGRectMake(0, 0, image.size.width, image.size.height);
-//			avatarImageView.layer.mask = mask;
-//			avatarImageView.layer.masksToBounds = YES;
+			CALayer *mask = [CALayer layer];
+			mask.contents = (id)[[UIImage imageNamed:@"maskAvatar.png"] CGImage];
+			mask.frame = CGRectMake(0.0, 0.0, kAvatarSize.width, kAvatarSize.height);
+			avatarImageView.layer.mask = mask;
+			avatarImageView.layer.masksToBounds = YES;
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {

@@ -11,6 +11,8 @@
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
+const CGSize kAvatarSize;
+
 @protocol HONTimelineCellHeaderViewDelegate;
 @interface HONTimelineCellHeaderView : UIView
 - (id)initWithChallenge:(HONChallengeVO *)vo;

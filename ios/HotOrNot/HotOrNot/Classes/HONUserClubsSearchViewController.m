@@ -71,7 +71,7 @@
 //	_refreshTableHeaderView.scrollView = _tableView;
 //	[_tableView addSubview:_refreshTableHeaderView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Find Selfieclubs" hasTranslucency:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Find Selfieclubs"];
 	[self.view addSubview:headerView];
 	
 	NSLog(@"self.navigationController.presentingViewController.presentedViewController:[%@]", self.navigationController.presentingViewController.presentedViewController);

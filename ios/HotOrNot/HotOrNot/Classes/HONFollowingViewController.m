@@ -66,7 +66,7 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Following" hasTranslucency:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Following"];
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	

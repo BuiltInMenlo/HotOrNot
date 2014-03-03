@@ -53,7 +53,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Enter pin" hasTranslucency:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Enter pin"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -64,7 +64,7 @@
 	[headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	nextButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
@@ -72,13 +72,13 @@
 	
 	
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_pinButton.frame = CGRectMake(0.0, 64.0, 320.0, 64.0);
+	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowPinBackround_nonActive"] forState:UIControlStateNormal];
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowPinBackround_Active"] forState:UIControlStateHighlighted];
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowPinBackround_Active"] forState:UIControlStateSelected];
 	[self.view addSubview:_pinButton];
 	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0, 82.0, 75.0, 30.0)];
+	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0, 94.0, 77.0, 30.0)];
 	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -86,13 +86,20 @@
 	[_pinTextField setTextColor:[[HONColorAuthority sharedInstance] honDarkGreyTextColor]];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
 	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
 	_pinTextField.textAlignment = NSTextAlignmentCenter;
-//	_pinTextField.placeholder = @"PIN";
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
+	
+	
+	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	resendButton.frame = CGRectMake(234.0, 88.0, 74.0, 44.0);
+	[resendButton setBackgroundImage:[UIImage imageNamed:@"resendButton_nonActive"] forState:UIControlStateNormal];
+	[resendButton setBackgroundImage:[UIImage imageNamed:@"resendButton_Active"] forState:UIControlStateHighlighted];
+	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:resendButton];
 	
 	[_pinTextField becomeFirstResponder];
 }
@@ -145,6 +152,9 @@
 
 - (void)_goResend {
 	[[Mixpanel sharedInstance] track:@"Validate PIN - Resend" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	_pinTextField.text = @"";
+	[_pinTextField resignFirstResponder];
 }
 
 
@@ -155,9 +165,7 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-
-//		_usernameCheckImageView.alpha = 0.0;
-		[_pinButton setSelected:YES];
+	[_pinButton setSelected:YES];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_textFieldTextDidChangeChange:)
@@ -176,6 +184,7 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
+	[_pinButton setSelected:NO];
 	
 	_pin = _pinTextField.text;
 	[[NSNotificationCenter defaultCenter] removeObserver:self

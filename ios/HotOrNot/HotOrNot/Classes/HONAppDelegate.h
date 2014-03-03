@@ -14,7 +14,7 @@
 #define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
-#define __FORCE_REGISTER__ 0
+#define __FORCE_REGISTER__ 1
 
 #define __FORCE_SUGGEST__ 0
 #define __IGNORE_SUSPENDED__ 0
@@ -68,7 +68,7 @@ extern NSString * const kAPIHost;
 
 
 // view heights
-const CGFloat kNavBarHeaderHeight;
+const CGFloat kNavHeaderHeight;
 const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
@@ -80,11 +80,11 @@ const CGFloat kHUDErrorTime;
 const CGFloat kProfileTime;
 
 // image sizes
+const CGSize kTableCellAvatarSize;
 const CGSize kSnapThumbSize;
 const CGSize kSnapTabSize;
 const CGSize kSnapMediumSize;
 const CGSize kSnapLargeSize;
-const CGFloat kAvatarDim;
 
 
 extern NSString * const kSnapThumbSuffix;

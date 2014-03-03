@@ -205,19 +205,20 @@
 //	[_refreshTableHeaderView setTag:666];
 //	[_scrollView addSubview:_refreshTableHeaderView];
 	
+	_headerView = [[HONHeaderView alloc] initWithTitle:@" "];
+	[self.view addSubview:_headerView];
+	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addButton:doneButton];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"" hasTranslucency:YES];
 	[_headerView addButton:_verifyButton];
-	[_headerView addButton:doneButton];
-	[self.view addSubview:_headerView];
+	
 	
 	_footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
 	[self.view addSubview:_footerToolbar];

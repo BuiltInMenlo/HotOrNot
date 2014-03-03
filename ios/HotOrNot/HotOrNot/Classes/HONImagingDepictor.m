@@ -216,6 +216,15 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	layer.transform = transform;
 }
 
++ (void)maskImageView:(UIImageView *)imageView withMask:(UIImage *)maskImage {
+	CALayer *maskLayer = [CALayer layer];
+	maskLayer.contents = (id)[maskImage CGImage];
+	maskLayer.frame = CGRectMake(0.0, 0.0, imageView.frame.size.width, imageView.frame.size.height);
+	
+	imageView.layer.mask = maskLayer;
+	imageView.layer.masksToBounds = YES;
+}
+
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
 	UIGraphicsBeginImageContext(size);
 	

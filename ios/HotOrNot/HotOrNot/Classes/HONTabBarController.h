@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+
+typedef enum {
+	HONTabBarButtonTypeHome = 0,
+	HONTabBarButtonTypeClubs,
+	HONTabBarButtonTypeActivity,
+	HONTabBarButtonTypeVerify
+} HONTabBarButtonType;
+
+
 const CGSize kTabSize;
 
 @interface HONTabBarController : UITabBarController

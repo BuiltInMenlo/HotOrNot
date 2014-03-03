@@ -33,7 +33,7 @@
 
 #import "EGORefreshTableHeaderView.h"
 
-#define kHeaderOffset 64.0f
+#define kHeaderOffset 76.0f
 #define kLoadingTheshold 40.0f
 
 

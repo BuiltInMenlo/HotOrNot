@@ -74,22 +74,22 @@
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
 		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Suggested"];
+	[self.view addSubview:headerView];
+	
 //	UIButton *selectAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	selectAllButton.frame = CGRectMake(10.0, 10.0, 74.0, 24.0);
 //	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_nonActive"] forState:UIControlStateNormal];
 //	[selectAllButton setBackgroundImage:[UIImage imageNamed:@"followAll_Active"] forState:UIControlStateHighlighted];
 //	[selectAllButton addTarget:self action:@selector(_goSelectAll) forControlEvents:UIControlEventTouchUpInside];
+//	[headerView addButton:selectAllButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Suggested" hasTranslucency:NO];
-//	[headerView addButton:selectAllButton];
 	[headerView addButton:doneButton];
-	[self.view addSubview:headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];

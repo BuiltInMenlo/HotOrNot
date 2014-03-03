@@ -38,6 +38,7 @@ const CGFloat kSnapRatio;
 
 + (double)totalLuminance:(UIImage *)image;
 
++ (void)maskImageView:(UIImageView *)imageView withMask:(UIImage *)maskImage;
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
 + (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;

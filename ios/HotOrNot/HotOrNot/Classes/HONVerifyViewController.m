@@ -52,7 +52,6 @@
 @property (nonatomic) int imageQueueLocation;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSDictionary *tabInfo;
 @property (nonatomic) BOOL isScrollingIgnored;
 @end
@@ -164,11 +163,11 @@
 	_emptySetImageView.hidden = YES;
 	[_tableView addSubview:_emptySetImageView];
 	
-	_headerView = [[HONHeaderView alloc] initWithoutBackground];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:headerView];
 	
 	[self _retrieveVerifyList];
 }

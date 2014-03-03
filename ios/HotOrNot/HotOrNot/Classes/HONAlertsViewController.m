@@ -41,7 +41,6 @@
 @property (nonatomic, strong) NSMutableArray *alertItems;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) NSMutableArray *headers;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -125,11 +124,11 @@
 	_emptySetImageView.hidden = YES;
 //	[_tableView addSubview:_emptySetImageView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Activity" hasTranslucency:YES];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Activity"];
+	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:headerView];
 	
 	[self _retrieveAlerts];
 }

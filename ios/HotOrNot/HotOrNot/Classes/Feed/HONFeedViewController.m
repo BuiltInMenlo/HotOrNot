@@ -134,7 +134,7 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	
-	_headerView = [[HONHeaderView alloc] initWithoutBackground];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[_headerView addButton:backButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
@@ -938,7 +938,7 @@
 	[_footerView addSubview:replyButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(280.0, 0.0, 94.0, 44.0);
+	shareButton.frame = CGRectMake(220.0, 0.0, 94.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];

@@ -22,7 +22,6 @@
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -75,15 +74,15 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
+	[self.view addSubview:headerView];
+	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Settings" hasTranslucency:NO];
-	[_headerView addButton:closeButton];
-	[self.view addSubview:_headerView];
+	[headerView addButton:closeButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -402,6 +401,8 @@
 				NSArray *totals = @[@"background_total",
 									@"timeline_total",
 									@"timelineRefresh_total",
+									@"feedItem_total",
+									@"feedItemRefresh_total",
 									@"clubs_total",
 									@"clubsRefresh_total",
 									@"messages_total",

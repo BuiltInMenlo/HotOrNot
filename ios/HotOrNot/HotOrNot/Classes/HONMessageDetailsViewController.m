@@ -19,7 +19,6 @@
 @interface HONMessageDetailsViewController () <EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @end
 
@@ -68,22 +67,22 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:((HONOpponentVO *)[_messageVO.participants lastObject]).username];
+	[self.view addSubview:headerView];
+	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:backButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	replyButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"messageReplyButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"messageReplyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:((HONOpponentVO *)[_messageVO.participants lastObject]).username hasTranslucency:YES];
-	[_headerView addButton:backButton];
-	[_headerView addButton:replyButton];
-	[self.view addSubview:_headerView];
+	[headerView addButton:replyButton];
 }
 
 #pragma mark - Navigation

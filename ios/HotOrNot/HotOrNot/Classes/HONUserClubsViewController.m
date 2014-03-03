@@ -37,7 +37,6 @@
 @property (nonatomic, strong) HONUserClubVO *ownClub;
 @property (nonatomic, strong) NSMutableArray *joinedClubs;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSArray *defaultCaptions;
 @end
@@ -105,11 +104,11 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs" hasTranslucency:YES];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[_headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
+	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:headerView];
 	
 	[self _retrieveClubs];
 }
@@ -152,7 +151,7 @@
 	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
@@ -160,7 +159,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goCreateChallenge {
@@ -168,7 +167,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goClubSettings:(HONUserClubVO *)userClubVO {
@@ -178,7 +177,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goClubDetails:(HONUserClubVO *)userClubVO {
@@ -194,13 +193,13 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsSearchViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goInviteFriends {
 	[[Mixpanel sharedInstance] track:@"Clubs - Invite Friends" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubInviteViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubInviteViewController alloc] initAsModal:YES]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -222,7 +221,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -329,7 +328,7 @@
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			[self presentViewController:navigationController animated:YES completion:nil];
 			
 		} else
 			[self _goClubDetails:_ownClub];
@@ -344,16 +343,16 @@
 				break;
 				
 			case 1:
-				if (_ownClub != nil)
+//				if (_ownClub != nil)
 					[self _goInviteFriends];
 				
-				else {
-					[[[UIAlertView alloc] initWithTitle:@"You Don't Have a Selfieclub!"
-												message:@"You need to create your Selfieclub before inviting someone."
-											   delegate:nil
-									  cancelButtonTitle:@"OK"
-									  otherButtonTitles:nil] show];
-				}
+//				else {
+//					[[[UIAlertView alloc] initWithTitle:@"You Don't Have a Selfieclub!"
+//												message:@"You need to create your Selfieclub before inviting someone."
+//											   delegate:nil
+//									  cancelButtonTitle:@"OK"
+//									  otherButtonTitles:nil] show];
+//				}
 				break;
 				
 			case 2:

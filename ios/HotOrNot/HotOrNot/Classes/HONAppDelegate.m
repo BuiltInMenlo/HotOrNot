@@ -84,7 +84,7 @@ NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
 // view heights
-const CGFloat kNavBarHeaderHeight = 77.0f;
+const CGFloat kNavHeaderHeight = 77.0;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
@@ -96,11 +96,11 @@ const CGFloat kHUDErrorTime = 1.5f;
 const CGFloat kProfileTime = 0.25f;
 
 // image sizes
+const CGSize kTableCellAvatarSize = {96.0f, 96.0f};
 const CGSize kSnapThumbSize = {80.0f, 80.0f};
 const CGSize kSnapTabSize = {320.0f, 480.0f};
 const CGSize kSnapMediumSize = {160.0f, 160.0f};
 const CGSize kSnapLargeSize = {320.0f, 568.0f};
-const CGFloat kAvatarDim = 200.0f;
 
 NSString * const kSnapThumbSuffix = @"Small_160x160.jpg";
 NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
@@ -128,6 +128,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
+@property (nonatomic, strong) UIView *statusBarOverlayView;
 @end
 
 
@@ -848,6 +849,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
+- (void)_toggleStatusBarTint:(NSNotification *)notification {
+	BOOL willFadeIn = ([[notification object] isEqualToString:@"YES"]);
+	
+	[UIView animateWithDuration:0.33
+					 animations:^(void) {_statusBarOverlayView.alpha = (int)willFadeIn;}
+					 completion:^(BOOL finished) {}];
+}
+
 
 #pragma mark - UI Presentation
 - (void)_showOKAlert:(NSString *)title withMessage:(NSString *)message {
@@ -925,6 +934,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleStatusBarTint:) name:@"TOGGLE_STATUS_BAR_TINT" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
@@ -1179,6 +1189,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window.rootViewController = self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor clearColor];
+	
+	_statusBarOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
+	_statusBarOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
+	_statusBarOverlayView.alpha = 0.0;
+	[self.window addSubview:_statusBarOverlayView];
+	
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
 }
 
 - (void)_establishUserDefaults {
@@ -1186,6 +1203,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"background_total",
 						   @"timeline_total",
 						   @"timelineRefresh_total",
+						   @"feedItem_total",
+						   @"feedItemRefresh_total",
 						   @"clubs_total",
 						   @"clubsRefresh_total",
 						   @"messages_total",

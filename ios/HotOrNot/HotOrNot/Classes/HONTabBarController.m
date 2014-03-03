@@ -32,9 +32,8 @@ const CGSize kTabSize = {80.0, 50.0};
 
 - (id)init {
 	if ((self = [super init])) {
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleTabs:) name:@"TOGGLE_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateWithActivityTab:) name:@"UPDATE_WITH_ACTIVITY_TAB" object:nil];
 	}
 	
 	return (self);
@@ -60,19 +59,10 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	[self _addCustomTabs];
 	
-//	if (![HONAppDelegate hasTakenSelfie]) {
-//		_avatarNeededButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_avatarNeededButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - (kTabSize.height + 54.0), 44.0, 44.0);
-//		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_nonActive"] forState:UIControlStateNormal];
-//		[_avatarNeededButton setBackgroundImage:[UIImage imageNamed:@"needSeflieButton_Active"] forState:UIControlStateHighlighted];
-//		[_avatarNeededButton addTarget:self action:@selector(_goProfileAvatar) forControlEvents:UIControlEventTouchUpInside];
-//		[self.view addSubview:_avatarNeededButton];
-//	}
-	
 //	[self _createPopoverBadge];
 }
 
-#pragma mark - Presentation
+#pragma mark - UI Presentation
 -(void)_addCustomTabs {
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
@@ -91,17 +81,17 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_homeButton];
-	[_homeButton setTag:0];
+	[_homeButton setTag:HONTabBarButtonTypeHome];
 	
 	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_clubsButton.frame = CGRectMake(kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_nonActive"] forState:UIControlStateNormal];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_Tapped"] forState:UIControlStateHighlighted];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_Active"] forState:UIControlStateSelected];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_messagesButton_nonActive"] forState:UIControlStateDisabled];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateNormal];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Active"] forState:UIControlStateSelected];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_clubsButton];
-	[_clubsButton setTag:1];
+	[_clubsButton setTag:HONTabBarButtonTypeClubs];
 	
 	_activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_activityButton.frame = CGRectMake(kTabSize.width * 2.0, 0.0, kTabSize.width, kTabSize.height);
@@ -111,7 +101,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
 	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_activityButton];
-	[_activityButton setTag:2];
+	[_activityButton setTag:HONTabBarButtonTypeActivity];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(kTabSize.width * 3.0, 0.0, kTabSize.width, kTabSize.height);
@@ -121,7 +111,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateDisabled];
 	[_tabHolderView addSubview:_verifyButton];
-	[_verifyButton setTag:3];
+	[_verifyButton setTag:HONTabBarButtonTypeVerify];
 	
 	[_homeButton setSelected:YES];
 	[self _toggleTabButtonsEnabled:YES];
@@ -180,7 +170,7 @@ const CGSize kTabSize = {80.0, 50.0};
 
 #pragma mark - Navigation
 - (void)_goTabButton:(id)sender event:(UIEvent *)event {
-	int tabID = [sender tag];
+	HONTabBarButtonType tarBarButtonType = [sender tag];
 	
 //	UITouch *touch = [[event allTouches] anyObject];
 	
@@ -188,53 +178,59 @@ const CGSize kTabSize = {80.0, 50.0};
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";
 	
-	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
+	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tarBarButtonType];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 
 	
-	switch(tabID) {
-		case 0:
+	switch (tarBarButtonType) {
+		case HONTabBarButtonTypeHome:
+			totalKey = @"timeline";
+			mpEvent = @"Timeline";
+			notificationName = @"HOME_TAB";
+			
 			[_homeButton setSelected:YES];
 			[_clubsButton setSelected:NO];
 			[_activityButton setSelected:NO];
 			[_verifyButton setSelected:NO];
-			
-			totalKey = @"timeline";
-			mpEvent = @"Timeline";
-			notificationName = @"HOME_TAB";
 			break;
 			
-		case 1:
+		case HONTabBarButtonTypeClubs:
+			totalKey = @"clubs";
+			mpEvent = @"Clubs";
+			notificationName = @"CLUBS_TAB";
+			
 			[_homeButton setSelected:NO];
 			[_clubsButton setSelected:YES];
 			[_activityButton setSelected:NO];
 			[_verifyButton setSelected:NO];
-			
-			totalKey = @"clubs";
-			mpEvent = @"Clubs";
-			notificationName = @"CLUBS_TAB";
 			break;
 			
-		case 2:
+		case HONTabBarButtonTypeActivity:
+			totalKey = @"alerts";
+			mpEvent = @"Alerts";
+			notificationName = @"ALERTS_TAB";
+			
 			[_homeButton setSelected:NO];
 			[_clubsButton setSelected:NO];
 			[_activityButton setSelected:YES];
 			[_verifyButton setSelected:NO];
 			
-			totalKey = @"alerts";
-			mpEvent = @"Alerts";
-			notificationName = @"ALERTS_TAB";
+			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
+			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
+			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
+			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
 			break;
 			
-		case 3:
+		case HONTabBarButtonTypeVerify:
+			totalKey = @"verify";
+			mpEvent = @"Verify";
+			notificationName = @"VERIFY_TAB";
+			
 			[_homeButton setSelected:NO];
 			[_clubsButton setSelected:NO];
 			[_activityButton setSelected:NO];
 			[_verifyButton setSelected:YES];
-			
-			totalKey = @"verify";
-			mpEvent = @"Verify";
-			notificationName = @"VERIFY_TAB";
 			break;
 			
 		default:
@@ -254,60 +250,54 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	[HONAppDelegate incTotalForCounter:totalKey];
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-	self.selectedIndex = tabID;
+	self.selectedIndex = tarBarButtonType;
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tarBarButtonType] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (void)_goProfileAvatar {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 
 #pragma mark - Notifications
-- (void)_showTabs:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabSize.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-		_tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height - 49.0, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, -44.0);
-		
-		_tabHolderView.alpha = 1.0;
-		_tabBarView.alpha = 1.0;
-		
-	} completion:^(BOOL finished) {
-		_avatarNeededButton.hidden = NO;
+- (void)_toggleTabs:(NSNotification *)notification {
+	if ([[notification object] isEqualToString:@"SHOW"]) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			_avatarNeededButton.alpha = 1.0;
+			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabSize.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+			_tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height - 49.0, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, -44.0);
+			
+			_tabHolderView.alpha = 1.0;
+			_tabBarView.alpha = 1.0;
+			
+		} completion:^(BOOL finished) {
+			_avatarNeededButton.hidden = NO;
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_avatarNeededButton.alpha = 1.0;
+			}];
 		}];
-	}];
-	
-}
-
-- (void)_hideTabs:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-		_tabBarView.frame = _tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, 44.0);
 		
-		_tabHolderView.alpha = 0.0;
-		_tabBarView.alpha = 0.0;
-		
-		_avatarNeededButton.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		_avatarNeededButton.hidden = YES;
-	}];
-}
-
-- (void)_refreshProfile:(NSNotification *)notification {
-	if (_avatarNeededButton != nil) {
-		_avatarNeededButton.hidden = YES;
-		[_avatarNeededButton removeFromSuperview];
-		_avatarNeededButton = nil;
+	} else {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+			_tabBarView.frame = _tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, 44.0);
+			
+			_tabHolderView.alpha = 0.0;
+			_tabBarView.alpha = 0.0;
+			
+			_avatarNeededButton.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			_avatarNeededButton.hidden = YES;
+		}];
 	}
+}
+
+- (void)_updateWithActivityTab:(NSNotification *)notification {
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_nonActive"] forState:UIControlStateNormal];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_Tapped"] forState:UIControlStateHighlighted];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_Active"] forState:UIControlStateSelected];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_nonActive"] forState:UIControlStateDisabled];
 }
 
 

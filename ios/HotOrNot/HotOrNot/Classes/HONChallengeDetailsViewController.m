@@ -52,7 +52,6 @@
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) int opponentCounter;
 @property (nonatomic) int challengeID;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -105,12 +104,6 @@
 //	_bgHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 //	[self.view addSubview:_bgHolderView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (kDetailsHeroImageHeight + 44.0) + (kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + ([_challengeVO.challengers count] % 4 != 0)))));
 	_scrollView.pagingEnabled = NO;
@@ -118,6 +111,16 @@
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_challengeVO.subjectName];
+	[self.view addSubview:headerView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:closeButton];
 	
 	//NSLog(@"_scrollView.contentSize:[%@] ROWS:[%d/%d] (%d)", NSStringFromCGSize(_scrollView.contentSize), ([_challengeVO.challengers count] / 4) + 1, [_challengeVO.challengers count], (int)(kSnapThumbSize.height * (([_challengeVO.challengers count] / 4) + 1)));
 	
@@ -128,9 +131,8 @@
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:_challengeVO.subjectName hasTranslucency:YES];
-	[_headerView addButton:closeButton];
-	[self.view addSubview:_headerView];
+	
+	
 	
 	if (_challengeVO != nil) {
 		[self _participantCheck];

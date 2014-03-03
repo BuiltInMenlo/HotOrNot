@@ -51,7 +51,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Create Club" hasTranslucency:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Club"];
 	[self.view addSubview:headerView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -102,7 +102,7 @@
 
 - (void)_goNext {
 	[[Mixpanel sharedInstance] track:@"Create Club - Next" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] init] animated:YES];
+	[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initAsModal:NO] animated:YES];
 }
 
 

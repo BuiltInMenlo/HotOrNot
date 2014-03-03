@@ -15,7 +15,6 @@
 
 @interface HONSuspendedViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSString *message;
 @property (nonatomic, strong) NSString *passcode;
 @property (nonatomic, strong) UITextField *passcodeTextField;
@@ -55,8 +54,8 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Account Suspended" hasTranslucency:YES];
-	[self.view addSubview:_headerView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Account Suspended"];
+	[self.view addSubview:headerView];
 	
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 20.0)];
