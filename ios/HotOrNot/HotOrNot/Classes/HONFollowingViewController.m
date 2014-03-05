@@ -186,14 +186,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-	bgImageView.backgroundColor = [UIColor whiteColor];
-	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = ((HONTrivialUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:((HONTrivialUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID] animated:YES];
+//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+//	userPofileViewController.userID = ((HONTrivialUserVO *)[_subscribees objectAtIndex:indexPath.row]).userID;
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

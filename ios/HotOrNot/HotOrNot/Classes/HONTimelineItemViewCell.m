@@ -114,23 +114,23 @@
 	
 	
 	HONTimelineCellHeaderView *creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:_challengeVO];
-	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 37.0);
+	creatorHeaderView.frame = CGRectOffset(creatorHeaderView.frame, 0.0, 35.0);
 	creatorHeaderView.delegate = self;
 	[self.contentView addSubview:creatorHeaderView];
 	
 	
-	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 101.0, 320.0, 44.0)];
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 103.0, 320.0, 44.0)];
 	[self.contentView addSubview:_footerView];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	shareButton.frame = CGRectMake(2.0, 0.0, 94.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:shareButton];
 	
 	UIButton *chevronButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	chevronButton.frame = CGRectMake(280.0, 0.0, 44.0, 44.0);
+	chevronButton.frame = CGRectMake(280.0, 3.0, 44.0, 44.0);
 	[chevronButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_nonActive"] forState:UIControlStateNormal];
 	[chevronButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_Active"] forState:UIControlStateHighlighted];
 	[chevronButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];

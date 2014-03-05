@@ -145,21 +145,19 @@
 }
 
 - (void)_goProfile {
-	[[Mixpanel sharedInstance] track:@"Clubs - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[Mixpanel sharedInstance] track:@"Clubs - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];	
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	//:/>
+//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
 	[[Mixpanel sharedInstance] track:@"Clubs - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
 }
 
 - (void)_goCreateChallenge {
@@ -247,7 +245,7 @@
 	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"MY SELFIECLUB" : @"SELFIECLUBS I HAVE JOINED";
+	label.text = (section == 0) ? @"MY CLUBS" : @"CLUBS I HAVE JOINED";
 	[imageView addSubview:label];
 	
 	return (imageView);

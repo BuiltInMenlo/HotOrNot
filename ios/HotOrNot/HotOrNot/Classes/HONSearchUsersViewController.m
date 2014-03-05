@@ -331,11 +331,13 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONTrivialUserVO *vo = [_users objectAtIndex:indexPath.row];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = vo.userID;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
+	
+//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+//	userPofileViewController.userID = vo.userID;
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

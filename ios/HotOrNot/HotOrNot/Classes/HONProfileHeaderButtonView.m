@@ -15,11 +15,11 @@
 @implementation HONProfileHeaderButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(8.0, 10.0, 34.0, 34.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(8.0, 4.0, 34.0, 34.0)])) {
 		//BOOL isVerified = (BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue];
 		
 		_profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_profileButton.frame = CGRectMake(0.0, 1.0, 34.0, 34.0);
+		_profileButton.frame = CGRectMake(0.0, 0.0, 34.0, 34.0);
 		[_profileButton setBackgroundImage:[UIImage imageNamed:@"headerProfile_nonActive"] forState:UIControlStateNormal];
 		[_profileButton setBackgroundImage:[UIImage imageNamed:@"headerProfile_Active"] forState:UIControlStateHighlighted];
 		[_profileButton setBackgroundImage:[UIImage imageNamed:@"headerProfile_Active"] forState:UIControlStateSelected];

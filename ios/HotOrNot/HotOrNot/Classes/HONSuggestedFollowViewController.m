@@ -287,9 +287,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONTrivialUserVO *vo = [_users objectAtIndex:indexPath.row];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = vo.userID;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }

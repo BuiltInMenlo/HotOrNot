@@ -2,8 +2,8 @@
 //  HONVerifyViewCell.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 11/1/13 @ 12:52 PM.
-//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//  Created by Matthew Holcombe on 09.07.12.
+//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
 #import "UIImageView+AFNetworking.h"
@@ -11,20 +11,19 @@
 #import "HONVerifyViewCell.h"
 #import "HONAPICaller.h"
 #import "HONDeviceTraits.h"
-#import "HONVerifyCellHeaderView.h"
 #import "HONOpponentVO.h"
 #import "HONImageLoadingView.h"
-
+#import "HONVerifyCellHeaderView.h"
 
 @interface HONVerifyViewCell() <HONVerifyCellHeaderViewDelegate>
 @property (nonatomic, strong) UIView *imageHolderView;
-@property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @end
 
 @implementation HONVerifyViewCell
 @synthesize delegate = _delegate;
 @synthesize challengeVO = _challengeVO;
+@synthesize indexPath = _indexPath;
 @synthesize isInviteCell = _isInviteCell;
 
 + (NSString *)cellReuseIdentifier {
@@ -35,6 +34,8 @@
 	if ((self = [super init])) {
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyRowBackground"]];
 		_isInviteCell = isInviteCell;
+		
+		//self.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:1.0 alpha:0.5];
 	}
 	
 	return (self);
@@ -46,71 +47,109 @@
 	_imageHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.contentView addSubview:_imageHolderView];
 	
-	if (_isInviteCell)
-		_imageHolderView.backgroundColor = [UIColor greenColor];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView asLargeLoader:NO];
+	[imageLoadingView startAnimating];
+	[_imageHolderView addSubview:imageLoadingView];
 	
-	else {
-		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageHolderView asLargeLoader:NO];
-		[imageLoadingView startAnimating];
-		[_imageHolderView addSubview:imageLoadingView];
+	UIImageView *heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	heroImageView.alpha = 0.0;
+	heroImageView.userInteractionEnabled = YES;
+	[_imageHolderView addSubview:heroImageView];
+	
+	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		//_heroImageView.alpha = 1.0 - ((int)[[HONDeviceTraits sharedInstance] isRetina4Inch]);
+		heroImageView.alpha = (int)((request.URL == nil));// || (![[HONDeviceTraits sharedInstance] isRetina4Inch]));
+		heroImageView.image = image;
+				
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			heroImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[imageLoadingView stopAnimating];
+			[imageLoadingView removeFromSuperview];
+		}];
+	};
+	
+	//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);
+	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:challengeVO.creatorVO.imagePrefix forAvatarBucket:YES completion:nil];
+	};
+	
+	[heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:successBlock
+								  failure:failureBlock];
+	
+	
+	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	previewButton.frame = heroImageView.frame;
+	[previewButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:previewButton];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
+	
+	
+	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
+	headerView.frame = CGRectOffset(headerView.frame, 0.0, 35.0);
+	headerView.delegate = self;
+	[self.contentView addSubview:headerView];
+	
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
+//	[self.contentView addSubview:buttonHolderView];
+	
+	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_Active"] forState:UIControlStateHighlighted];
+	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:approveButton];
+	
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:skipButton];
+	
+	UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
+	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
+	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
+	[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:shoutoutButton];
+	
+	UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	followButton.frame = CGRectMake(11.0, [UIScreen mainScreen].bounds.size.height - 95.0, 94.0, 44.0);
+	[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+	[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+	[followButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+//	[self.contentView addSubview:followButton];
+	
+	if (_isInviteCell) {
+		buttonHolderView.frame = CGRectOffset(buttonHolderView.frame, 0.0, -80.0);
+		followButton.frame = CGRectOffset(followButton.frame, 0.0, -80.0);
 		
-		_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_heroImageView.userInteractionEnabled = YES;
-		[_imageHolderView addSubview:_heroImageView];
+		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 130.0, 320.0, 80.0)];
+		[self.contentView addSubview:bannerImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			//_heroImageView.alpha = 1.0 - ((int)[[HONDeviceTraits sharedInstance] isRetina4Inch]);
-			_heroImageView.alpha = (int)((request.URL == nil));// || (![[HONDeviceTraits sharedInstance] isRetina4Inch]));
-			_heroImageView.image = image;
-				
-//			if ([[HONDeviceTraits sharedInstance] isRetina4Inch]) {
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_heroImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				[imageLoadingView stopAnimating];
-				[imageLoadingView removeFromSuperview];
-			}];
-		
-//			} else
-//				gradientImageView.alpha = 1.0;
+			bannerImageView.image = image;
 		};
 		
-		//NSLog(@"CREATOR IMAGE:[%@]", [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]);
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:challengeVO.creatorVO.imagePrefix forAvatarBucket:YES completion:nil];
+			bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
 		};
 		
-		[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
-									   success:successBlock
-									   failure:failureBlock];
+		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_verify.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+							   placeholderImage:nil
+										success:successBlock
+										failure:failureBlock];
 		
-		HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
-		headerView.frame = CGRectOffset(headerView.frame, 0.0, 64.0);
-		headerView.delegate = self;
-		[self.contentView addSubview:headerView];
-		
-		
-		UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 210.0, 64.0, 142.0)];
-		[self.contentView addSubview:buttonHolderView];
-		
-		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
-		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
-		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
-		[buttonHolderView addSubview:approveButton];
-		
-		UIButton *dispproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dispproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-		[dispproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-		[dispproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-		[buttonHolderView addSubview:dispproveButton];
-		
-		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-		lpGestureRecognizer.minimumPressDuration = 0.25;
-		[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
+		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		bannerButton.frame = bannerImageView.frame;
+		[bannerButton addTarget:self action:@selector(_goBanner) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:bannerButton];
 	}
 }
 
@@ -129,15 +168,35 @@
 
 #pragma mark - Navigation
 - (void)_goApprove {
-	[self.delegate verifyViewCellApprove:self forChallenge:_challengeVO];
+	[self.delegate verifyViewCell:self approveChallenge:_challengeVO];
 }
 
 - (void)_goDisprove {
-	[self.delegate verifyViewCellDisprove:self forChallenge:_challengeVO];
+	[self.delegate verifyViewCell:self disapproveChallenge:_challengeVO];
+}
+
+- (void)_goSkip {
+	[self.delegate verifyViewCell:self skipChallenge:_challengeVO];
+}
+
+- (void)_goMore {
+	[self.delegate verifyViewCell:self moreActionsForChallenge:_challengeVO];
+}
+
+- (void)_goShoutout {
+	[self.delegate verifyViewCell:self shoutoutChallenge:_challengeVO];
 }
 
 - (void)_goUserProfile {
 	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
+}
+
+- (void)_goPreview {
+	[self.delegate verifyViewCell:self fullSizeDisplayForChallenge:_challengeVO];
+}
+
+- (void)_goBanner {
+	[self.delegate verifyViewCell:self bannerTappedForChallenge:_challengeVO];
 }
 
 
@@ -145,9 +204,24 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
 		[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
-	
+		
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
+}
+
+- (void)_goTint {
+	UIView *tintView = [[UIView alloc] initWithFrame:self.contentView.frame];
+	[self.contentView addSubview:tintView];
+	
+	CGFloat hue = (((float)(arc4random() % RAND_MAX)) / RAND_MAX);
+	CGFloat sat = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (1/2));
+	CGFloat bri = MAX((((float)(arc4random() % RAND_MAX)) / RAND_MAX), (2/3));
+	UIColor *color = [UIColor colorWithHue:hue saturation:sat brightness:bri alpha:(2/3)];
+	
+	[UIView beginAnimations:@"fade" context:nil];
+	[UIView setAnimationDuration:0.33];
+	[self.contentView setBackgroundColor:color];
+	[UIView commitAnimations];
 }
 
 

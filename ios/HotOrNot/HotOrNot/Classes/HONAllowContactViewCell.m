@@ -60,7 +60,7 @@
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
 		
-		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatar.png"]];
+		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];
@@ -70,7 +70,7 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userVO.avatarPrefix forAvatarBucket:YES completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
-		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatar.png"]];
+		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];

@@ -28,7 +28,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:(withBG) ? @"navHeaderBackground" : @""]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 40.0, 200.0, 21.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 40.0, 170.0, 21.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:21];
 		_titleLabel.textColor = [UIColor whiteColor];

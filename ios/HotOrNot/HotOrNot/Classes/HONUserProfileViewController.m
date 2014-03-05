@@ -76,12 +76,23 @@
 - (id)init {
 	if ((self = [super init])) {
 		_isFollowing = NO;
+		_userID = 0;
 		
-		self.view.backgroundColor = [UIColor whiteColor];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
 	}
 	
 	return (self);
+}
+
+- (id)initWithUserID:(int)userID {
+	if ((self = [super init])) {
+		_isFollowing = NO;
+		_userID = userID;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfile:) name:@"REFRESH_PROFILE" object:nil];
+	}
+	
+	return  (self);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -193,6 +204,8 @@
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
+	
 	_scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
 //	_scrollView.frame = CGRectOffset(_scrollView.frame, 0.0, 0.0);
 	_scrollView.showsHorizontalScrollIndicator = NO;
@@ -208,20 +221,30 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@" "];
 	[self.view addSubview:_headerView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:doneButton];
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addButton:backButton];
+	
+//	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+//	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+//	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+//	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+//	[_headerView addButton:doneButton];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[_headerView addButton:_verifyButton];
+//	[_headerView addButton:_verifyButton];
 	
 	
 	_footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
 	[self.view addSubview:_footerToolbar];
+	
+	if (_userID != 0)
+		[self _retrieveUser];
 }
 
 - (void)viewDidLoad {
@@ -266,6 +289,11 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
+	[[Mixpanel sharedInstance] track:@"User Profile - Done"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	
 	if ([HONAppDelegate totalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
 															message:@"Get more subscribers now, tap OK."
@@ -290,7 +318,6 @@
 		
 		if ([self parentViewController] != nil) {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 			}];
 		
@@ -299,6 +326,16 @@
 			[self.view removeFromSuperview];
 		}
 	}
+}
+
+- (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"User Profile - Back"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goChangeAvatar {
@@ -455,7 +492,8 @@
 - (void)_goSubscribers {
 	[[Mixpanel sharedInstance] track:@"User Profile - Followers"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowersViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
@@ -465,7 +503,8 @@
 - (void)_goSubscribees {
 	[[Mixpanel sharedInstance] track:@"User Profile - Following"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowingViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
@@ -839,12 +878,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = opponentVO.userID;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:opponentVO.userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
@@ -927,7 +961,6 @@
 		}
 		
 		[self dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 		}];
 		
 	} else if (alertView.tag == HONUserProfileAlertTypeDeleteChallenge) {
@@ -1011,7 +1044,6 @@
 		
 		} else {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			}];
 		}
 	}

@@ -97,12 +97,12 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Messages"];
 	[self.view addSubview:headerView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:closeButton];
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:backButton];
 	
 	UIButton *createMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createMessageButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
@@ -117,32 +117,32 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-	if ([HONAppDelegate incTotalForCounter:@"messages"] == 1) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_messages-568h@2x" : @"tutorial_messages"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:avatarButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
-		[UIView animateWithDuration:0.33 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
-	}
+//	if ([HONAppDelegate incTotalForCounter:@"messages"] == 1) {
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_messages-568h@2x" : @"tutorial_messages"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		
+//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
+//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:closeButton];
+//		
+//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
+//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
+//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
+//		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:avatarButton];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+//		
+//		[UIView animateWithDuration:0.33 animations:^(void) {
+//			_tutorialImageView.alpha = 1.0;
+//		}];
+//	}
 }
 
 - (void)viewDidUnload {
@@ -184,12 +184,12 @@
 	[self.navigationController pushViewController:[[HONMessageRecipientsViewController alloc] init] animated:YES];
 }
 
-- (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Messages - Close"
+- (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Messages - Back"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goTakeAvatar {

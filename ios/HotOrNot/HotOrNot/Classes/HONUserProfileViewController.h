@@ -32,5 +32,7 @@ typedef enum {
 
 
 @interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+- (id)initWithUserID:(int)userID;
+
 @property (nonatomic) int userID;
 @end

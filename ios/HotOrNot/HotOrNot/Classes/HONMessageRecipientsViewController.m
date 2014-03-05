@@ -88,22 +88,22 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
+	[self.view addSubview:headerView];
+	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
-	[headerView addButton:backButton];
 	[headerView addButton:nextButton];
-	[self.view addSubview:headerView];
 	
 	[self _buildRecipients];
 }

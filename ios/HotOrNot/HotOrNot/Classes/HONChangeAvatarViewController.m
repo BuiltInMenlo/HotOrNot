@@ -177,7 +177,6 @@
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 		}];
 	}
 }
@@ -203,8 +202,6 @@
 			_cameraOverlayView = nil;
 			_imagePicker.cameraOverlayView = nil;
 			_imagePicker = nil;
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 		}];
 	}];
 }

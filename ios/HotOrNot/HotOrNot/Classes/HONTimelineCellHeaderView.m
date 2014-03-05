@@ -17,7 +17,7 @@
 #import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
 
-const CGSize kAvatarSize = {48.0f, 48.0f};
+const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 
 @implementation HONTimelineCellHeaderView
 
@@ -34,6 +34,7 @@ const CGSize kAvatarSize = {48.0f, 48.0f};
 	_challengeVO = challengeVO;
 	
 	if (_challengeVO != nil) {
+//		UIView *avatarsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kAvatarSize.width, kAvatarSize.height)];
 		UIView *avatarsView = [self _avatarStackView];
 		[self addSubview:avatarsView];
 		
@@ -42,7 +43,7 @@ const CGSize kAvatarSize = {48.0f, 48.0f};
 		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:avatarButton];
 		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0 + (avatarsView.frame.origin.x + avatarsView.frame.size.width), 19.0, 50.0, 12.0)];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0 + (avatarsView.frame.origin.x + avatarsView.frame.size.width), 21.0, 50.0, 12.0)];
 		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];
 		timeLabel.textColor = [UIColor whiteColor];
 		timeLabel.backgroundColor = [UIColor clearColor];
@@ -53,7 +54,7 @@ const CGSize kAvatarSize = {48.0f, 48.0f};
 		
 		CGSize size;
 		CGFloat maxNameWidth = 280.0;
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((320.0 - maxNameWidth) * 0.5, 68.0, maxNameWidth, 24.0)];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((320.0 - maxNameWidth) * 0.5, 71.0, maxNameWidth, 24.0)];
 		nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
 		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.backgroundColor = [UIColor clearColor];
@@ -129,35 +130,30 @@ const CGSize kAvatarSize = {48.0f, 48.0f};
 	return (emotionVO);
 }
 
+
+#pragma mark - UI Presentation
 - (UIView *)_avatarStackView {
-	
-	
 	NSMutableArray *avatars = [NSMutableArray arrayWithObject:_challengeVO.creatorVO.avatarPrefix];
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kAvatarSize.width, kAvatarSize.height)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kFeedItemAvatarSize.width, kFeedItemAvatarSize.height)];
 	
 	if ([_challengeVO.challengers count] >= 2) {
-		[avatars addObject:[_challengeVO.challengers firstObject]];
-		[avatars addObject:[_challengeVO.challengers objectAtIndex:1]];
+		[avatars addObject:((HONOpponentVO *)[_challengeVO.challengers firstObject]).avatarPrefix];
+		[avatars addObject:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:1]).avatarPrefix];
 	
 	} else if ([_challengeVO.challengers count] == 1) {
-		[avatars addObject:[_challengeVO.challengers firstObject]];
+		[avatars addObject:((HONOpponentVO *)[_challengeVO.challengers firstObject]).avatarPrefix];
 	}
 	
-	CGFloat width = kAvatarSize.width + (([avatars count] - 1) * 30.0);
-	holderView.frame = CGRectMake((320.0 - width) * 0.5, 0.0, width, kAvatarSize.height);
+	CGFloat width = kFeedItemAvatarSize.width + (([avatars count] - 1) * 30.0);
+	holderView.frame = CGRectMake((320.0 - width) * 0.5, 0.0, width, kFeedItemAvatarSize.height);
 	
 	for (int i=[avatars count]-1; i>=0; i--) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 30.0), 0.0, kAvatarSize.width, kAvatarSize.height)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 30.0), 0.0, kFeedItemAvatarSize.width, kFeedItemAvatarSize.height)];
 		[holderView addSubview:avatarImageView];
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			avatarImageView.image = image;
-			
-			CALayer *mask = [CALayer layer];
-			mask.contents = (id)[[UIImage imageNamed:@"maskAvatar.png"] CGImage];
-			mask.frame = CGRectMake(0.0, 0.0, kAvatarSize.width, kAvatarSize.height);
-			avatarImageView.layer.mask = mask;
-			avatarImageView.layer.masksToBounds = YES;
+			[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {

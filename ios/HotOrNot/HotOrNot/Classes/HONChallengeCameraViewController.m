@@ -147,7 +147,6 @@
 //			
 //			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 //			}];
 //		}
 //	}];
@@ -273,8 +272,6 @@
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGE" object:nil];
 				}
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			}];
 		}
 	}
@@ -423,7 +420,6 @@
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 	}];
 }
 
@@ -489,7 +485,6 @@
 //	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
@@ -564,7 +559,6 @@
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 				}];
 			}
 		}];
@@ -580,7 +574,6 @@
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 				
 //			if (_isFirstCamera && [HONAppDelegate switchEnabledForKey:@"share_volley"])
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SELF" object:(_rawImage.size.width >= 1936.0) ? [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)] : _rawImage];

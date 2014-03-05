@@ -72,7 +72,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshLikeCount:) name:@"REFRESH_LIKE_COUNT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showHomeTutorial:) name:@"SHOW_HOME_TUTORIAL" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showHomeTutorial:) name:@"SHOW_HOME_TUTORIAL" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 	}
 	
@@ -142,6 +142,8 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	NSLog(@"<</ loadView \\>>");
+	
 	[super loadView];
 	_isFirstLoad = YES;
 	
@@ -220,12 +222,15 @@
 		[self _goRegistration];
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+		
 		[self performSelector:@selector(_retrieveClubs) withObject:nil afterDelay:0.33];
 		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
 	}
 }
 
 - (void)viewDidLoad {
+	NSLog(@"<</ viewDidLoad \\>>");
 	[super viewDidLoad];
 	
 	[HONAppDelegate incTotalForCounter:@"timeline"];
@@ -233,6 +238,28 @@
 #if __FORCE_SUGGEST__ == 1
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 #endif
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	NSLog(@"<</ viewWillAppear \\>>");
+	[super viewWillAppear:animated];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"]];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	NSLog(@"<</ viewDidAppear \\>>");
+	[super viewDidAppear:animated];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"]];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	
+}
+- (void)viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
 }
 
 - (void)viewDidUnload {
@@ -255,29 +282,21 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-		
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
 	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
 }
 
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Timeline - Create Volley"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self _removeTutorialBubbles];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -461,11 +480,6 @@
 }
 
 
-#pragma mark - UI Presentation
-- (void)_removeTutorialBubbles {
-}
-
-
 #pragma mark - TimelineItemCell Delegates
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Timeline - Show Profile"
@@ -474,12 +488,7 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	[self _removeTutorialBubbles];
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = userID;
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:userID]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
@@ -525,8 +534,6 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	[cell showTapOverlay];
-	[self _removeTutorialBubbles];
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -561,7 +568,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	[self _removeTutorialBubbles];
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
@@ -573,7 +579,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	[self _removeTutorialBubbles];
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
@@ -586,8 +591,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
-	
-	[self _removeTutorialBubbles];
 	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO];
 	_snapPreviewViewController.delegate = self;
@@ -680,7 +683,7 @@
 	
 	if (cell == nil) {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
-		cell = [[HONTimelineItemViewCell alloc] initAsBannerCell:((indexPath.section % 5 == 0) && indexPath.section != 0)];
+		cell = [[HONTimelineItemViewCell alloc] initAsBannerCell:((indexPath.section % 5 == -1) && indexPath.section != 0)];
 		cell.challengeVO = vo;
 	}
 	

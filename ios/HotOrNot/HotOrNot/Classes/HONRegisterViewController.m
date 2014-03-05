@@ -348,7 +348,7 @@
 	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_phoneButton];
 	
-	_phone1TextField = [[UITextField alloc] initWithFrame:CGRectMake(17.0, 222.0, 37.0, 30.0)];
+	_phone1TextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 222.0, 45.0, 30.0)];
 	[_phone1TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_phone1TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phone1TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -363,7 +363,7 @@
 	_phone1TextField.delegate = self;
 	[_formHolderView addSubview:_phone1TextField];
 	
-	_phone2TextField = [[UITextField alloc] initWithFrame:CGRectMake(82.0, 222.0, 37.0, 30.0)];
+	_phone2TextField = [[UITextField alloc] initWithFrame:CGRectMake(81.0, 222.0, 45.0, 30.0)];
 	[_phone2TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_phone2TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phone2TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -378,7 +378,7 @@
 	_phone2TextField.delegate = self;
 	[_formHolderView addSubview:_phone2TextField];
 	
-	_phone3TextField = [[UITextField alloc] initWithFrame:CGRectMake(147.0, 222.0, 45.0, 30.0)];
+	_phone3TextField = [[UITextField alloc] initWithFrame:CGRectMake(147.0, 222.0, 55.0, 30.0)];
 	[_phone3TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_phone3TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phone3TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -453,7 +453,7 @@
 	
 	
 	UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	loginButton.frame = CGRectMake(212.0, -8.0, 104.0, 44.0);
+	loginButton.frame = CGRectMake(212.0, -4.0, 104.0, 44.0);
 	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
 	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
 	[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
