@@ -34,63 +34,15 @@
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineItemFooterView.h"
 
-
 @interface HONFeedItemViewController : UIViewController
 @property(nonatomic, weak) HONFeedViewController *feedViewController;
 @property(nonatomic, strong) HONChallengeVO *challenge;
-@end
-
-//#import "HONTimelineItemViewCell.h"
-//#import "HONOpponentVO.h"
-//#import "HONUserVO.h"
-
-//#import "HONAddContactsViewController.h"
-//#import "HONMatchContactsViewController.h"
-
-
-//#import "HONImagingDepictor.h"
-
-//#import "HONSnapPreviewViewController.h"
-
-//#import "HONChangeAvatarViewController.h"
-
-
-//#import "EGORefreshTableHeaderView.h"
-//#import "MBProgressHUD.h"
-//#import "UIImageView+AFNetworking.h"
-//#import "UIImage+ImageEffects.h"
-
-@interface HONFeedViewController () <UIScrollViewDelegate>
-//<HONTimelineItemViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
-//@property (nonatomic, strong) UITableView *tableView;
-//@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-//@property (nonatomic, strong) HONHeaderView *headerView;
-//@property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
-//@property (nonatomic, strong) HONChallengeVO *challengeVO;
-//@property (nonatomic, strong) HONOpponentVO *opponentVO;
-//@property (nonatomic, strong) NSMutableArray *challenges;
-//@property (nonatomic, strong) NSMutableArray *cells;
-//@property (nonatomic, strong) MBProgressHUD *progressHUD;
-//@property (nonatomic, strong) UIImageView *tutorialImageView;
-//@property (nonatomic, strong) UIView *emptyTimelineView;
-//@property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
-//@property (nonatomic) BOOL isScrollingDown;
-//@property (nonatomic) BOOL isFirstLoad;
-//@property (nonatomic) int imageQueueLocation;
 @end
 
 @implementation HONFeedViewController
 {
 	HONHeaderView *_headerView;
 	UIView *_emptyStateView;
-	
-	UIScrollView *_pagedScrollView;
-	NSMutableDictionary *_pagedItemControllers;
-	NSMutableSet *_enqueuedItemControllers;
-	HONFeedItemViewController *_appearingItemController;
-	HONFeedItemViewController *_disappearingItemController;
-	
-	NSMutableArray *_challenges;
 	NSUInteger _prefetchIndex;
 }
 
@@ -98,12 +50,6 @@
 {
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_HOME_TAB" object:nil];
-		
-		self.automaticallyAdjustsScrollViewInsets = NO;
-		_pagedItemControllers = [NSMutableDictionary new];
-		_enqueuedItemControllers = [NSMutableSet new];
-		[_enqueuedItemControllers addObject:[HONFeedItemViewController new]];
-		[_enqueuedItemControllers addObject:[HONFeedItemViewController new]];
 	}
 	return self;
 }
@@ -117,16 +63,9 @@
 {
 	[super viewDidLoad];
 	
-	[HONAppDelegate incTotalForCounter:@"timeline"];
+	[self.pagedScrollView registerClass:[HONFeedItemViewController class] forViewControllerReuseIdentifier:@"FeedItem"];
 	
-	_pagedScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-	_pagedScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	_pagedScrollView.delegate = self;
-	_pagedScrollView.pagingEnabled = YES;
-	_pagedScrollView.showsHorizontalScrollIndicator = NO;
-	_pagedScrollView.showsVerticalScrollIndicator = NO;
-	_pagedScrollView.alwaysBounceHorizontal = YES;
-	[self.view addSubview:_pagedScrollView];
+	[HONAppDelegate incTotalForCounter:@"timeline"];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
@@ -138,7 +77,6 @@
 	[_headerView addButton:backButton];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:_headerView];
-	
 	
 //	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 //		[self _goRegistration];
@@ -217,9 +155,7 @@
 	[self _updateEmptyState];
 	[self _prefetchChallenges];
 	
-	_pagedScrollView.contentOffset = CGPointZero;
-	[self _clearFeedItems];
-	[self _refreshFeedItems];
+	[self.pagedScrollView reloadData];
 }
 
 - (void)_updateEmptyState
@@ -252,104 +188,24 @@
 	}
 }
 
-#pragma mark - Scrolling
+#pragma mark - JLBPagedViewDataSource
 
-- (void)_refreshFeedItems
+- (NSUInteger)numberOfItemsForPagedView:(JLBPagedView *)pagedView
 {
-	_pagedScrollView.contentSize = CGSizeMake(_pagedScrollView.bounds.size.width * [_challenges count], self.view.bounds.size.height);
-	
-	NSInteger currentIndex = [self _pageIndexForOffset:_pagedScrollView.contentOffset.x];
-	[self _loadFeedItemAtIndex:currentIndex];
-	[self _loadFeedItemAtIndex:(currentIndex + 1)];
-	[self _loadFeedItemAtIndex:(currentIndex + 2)];
+	return [_challenges count];
 }
 
-- (void)_clearFeedItems
+- (id)pagedView:(JLBPagedView *)pagedView itemAtIndex:(NSUInteger)index
 {
-	for (HONFeedItemViewController *itemViewController in [_pagedItemControllers allValues]) {
-		[itemViewController willMoveToParentViewController:nil];
-		[itemViewController.view removeFromSuperview];
-		[itemViewController removeFromParentViewController];
-		[self _enqueueFeedItemViewController:itemViewController];
-	}
-	[_pagedItemControllers removeAllObjects];
+	return (index < [_challenges count]) ? _challenges[index] : nil;
 }
 
-- (NSInteger)_pageIndexForOffset:(CGFloat)offset
+- (id)pagedView:(JLBPagedView *)pagedView viewControllerForItem:(id)item atIndex:(NSUInteger)index
 {
-	return offset / _pagedScrollView.bounds.size.width;
-}
-
-- (void)_loadFeedItemAtIndex:(NSInteger)index
-{
-	if (index >= [_challenges count])
-		return;
-	
-	HONFeedItemViewController *itemViewController = _pagedItemControllers[@(index)];
-	if (itemViewController == nil) {
-		itemViewController = [self _dequeueFeedItemViewController];
-		itemViewController.challenge = _challenges[index];
-		_pagedItemControllers[@(index)] = itemViewController;
-	}
-	
-	if (itemViewController.parentViewController == nil) {
-		CGFloat pageWidth = _pagedScrollView.bounds.size.width;
-		itemViewController.view.frame = CGRectMake(index * pageWidth, 0.0, _pagedScrollView.bounds.size.width, _pagedScrollView.bounds.size.height);
-		
-		[self addChildViewController:itemViewController];
-		[_pagedScrollView addSubview:itemViewController.view];
-		[itemViewController didMoveToParentViewController:self];
-	}
-}
-
-
-#pragma mark - ScrollView Delegates
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-	//_timelineScrollDirection = (velocity.y > 0.0) ? HONTimelineScrollDirectionDown : HONTimelineScrollDirectionUp;
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-	if (!decelerate)
-		[self _refreshFeedItems];
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-	[self _refreshFeedItems];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
-{
-	[self _refreshFeedItems];
-}
-
-#pragma mark - Feed Items
-
-- (HONFeedItemViewController *)_dequeueFeedItemViewController
-{
-	HONFeedItemViewController *itemViewController = [_enqueuedItemControllers anyObject];
-	if (itemViewController != nil)
-		[_enqueuedItemControllers removeObject:itemViewController];
-	else
-		itemViewController = [[HONFeedItemViewController alloc] init];
-	itemViewController.feedViewController = self;
-	return itemViewController;
-}
-
-- (void)_enqueueFeedItemViewController:(HONFeedItemViewController *)itemViewController
-{
-	if (itemViewController != nil) {
-		itemViewController.feedViewController = nil;
-		itemViewController.challenge = nil;
-		[_enqueuedItemControllers addObject:itemViewController];
-	}
+	HONFeedItemViewController *feedItemViewController = [pagedView dequeueReusableViewControllerWithIdentifier:@"FeedItem" forIndex:index];
+	feedItemViewController.feedViewController = self;
+	feedItemViewController.challenge = item;
+	return feedItemViewController;
 }
 
 #pragma mark - State
@@ -680,15 +536,17 @@
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSObject *result) {
 		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
 		
-		int cnt = 0;
-		for (HONChallengeVO *vo in _challenges) {
+		NSMutableArray *mutableChallenges = [_challenges mutableCopy];
+		__block NSUInteger foundIndex = NSNotFound;
+		[mutableChallenges enumerateObjectsUsingBlock:^(HONChallengeVO *vo, NSUInteger idx, BOOL *stop) {
 			if (vo.challengeID == challengeVO.challengeID) {
-				[_challenges replaceObjectAtIndex:cnt withObject:challengeVO];
-				break;
+				foundIndex = idx;
+				*stop = YES;
 			}
-			
-			cnt++;
-		}
+		}];
+		if (foundIndex != NSNotFound)
+			[mutableChallenges replaceObjectAtIndex:foundIndex withObject:challengeVO];
+		_challenges = [mutableChallenges copy];
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];

@@ -8,5 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONFeedViewController : UIViewController
+#import "JLBPagedViewController.h"
+
+@interface HONFeedViewController : JLBPagedViewController
+@property(nonatomic, strong) NSArray *challenges;
 @end

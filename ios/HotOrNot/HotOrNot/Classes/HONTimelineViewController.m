@@ -42,6 +42,7 @@
 #import "HONChangeAvatarViewController.h"
 #import "HONProfileHeaderButtonView.h"
 
+#import "JLBPopSlideTransition.h"
 
 @interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -545,12 +546,11 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	
-	[self.navigationController pushViewController:[[HONFeedViewController alloc] init] animated:YES];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
+	HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
+	feedViewController.challenges = _challenges;
+	JLBPopSlideTransition *transition = [JLBPopSlideTransition new];
+	feedViewController.transitioningDelegate = transition;
+	[self presentViewController:feedViewController animated:YES completion:nil];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO {
