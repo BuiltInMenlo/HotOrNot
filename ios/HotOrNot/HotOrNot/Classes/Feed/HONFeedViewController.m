@@ -41,7 +41,6 @@
 
 @implementation HONFeedViewController
 {
-	HONHeaderView *_headerView;
 	UIView *_emptyStateView;
 	NSUInteger _prefetchIndex;
 }
@@ -65,24 +64,16 @@
 	
 	[self.pagedScrollView registerClass:[HONFeedItemViewController class] forViewControllerReuseIdentifier:@"FeedItem"];
 	
-	[HONAppDelegate incTotalForCounter:@"timeline"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[_headerView addButton:backButton];
-	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	[self.view addSubview:_headerView];
-	
-//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
-//		[self _goRegistration];
-	
-//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"])
-//		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
+	[headerView addButton:backButton];
 }
 
 #pragma mark - Empty State
@@ -237,15 +228,7 @@
 - (void)_goBack
 {
 	[[Mixpanel sharedInstance] track:@"Timeline - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
 	[self.navigationController popViewControllerAnimated:YES];
-	
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSuggested {
@@ -380,36 +363,6 @@
 //	}
 //}
 
-- (void)_showHomeTutorial:(NSNotification *)notification
-{
-//	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 1) {
-//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
-//		_tutorialImageView.userInteractionEnabled = YES;
-//		_tutorialImageView.alpha = 0.0;
-//		
-//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:closeButton];
-//		
-//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-//		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:avatarButton];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-//		
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
-//	}
-}
-
 #pragma mark - TimelineItemCell Delegates
 
 /*
@@ -420,8 +373,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = userID;
@@ -461,32 +412,6 @@
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
-}
-
-
-
-- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO
-{
-	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Comments"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-	
-	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:challengeVO] animated:YES];
-}
-
-- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showVoters:(HONChallengeVO *)challengeVO
-{
-	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Show Voters"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-	
-	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO

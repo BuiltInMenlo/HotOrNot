@@ -10,7 +10,11 @@
 
 #import "HONVerifyCellHeaderView.h"
 #import "HONAPICaller.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
+
+const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 
 
 @interface HONVerifyCellHeaderView ()
@@ -23,16 +27,16 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)])) {
-//		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 100.0)])) {
+//		self.backgroundColor = [UIColor greenColor];
 		_opponentVO = opponentVO;
 		
-		_verifyTabInfo = [HONAppDelegate infoForABTab];
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake((320.0 - kVerifyAvatarSize.width) * 0.5, 0.0, kVerifyAvatarSize.width, kVerifyAvatarSize.height)];
 		[self addSubview:avatarImageView];
-		
+				
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			avatarImageView.image = image;
+			[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
@@ -50,30 +54,25 @@
 		[self addSubview:avatarButton];
 		
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 8.0, 220.0, 19.0)];
-		nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:13];
-		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"name_format"], _opponentVO.username];
-		[self addSubview:nameLabel];
-//
-//		CGSize size = [nameLabel.text boundingRectWithSize:CGSizeMake(220.0, 22.0)
-//												   options:NSStringDrawingTruncatesLastVisibleLine
-//												attributes:@{NSFontAttributeName:nameLabel.font}
-//												   context:nil].size;
-//		nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, size.width, nameLabel.frame.size.height);
+		NSMutableParagraphStyle *paragraphStyle  = [[NSMutableParagraphStyle alloc] init];
+		paragraphStyle.alignment = NSTextAlignmentCenter;
+		paragraphStyle.minimumLineHeight = 23.0;
+		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
 		
-		UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 25.0, 265.0, 17.0)];
-		messageLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-		messageLabel.textColor = [UIColor whiteColor];
-		messageLabel.backgroundColor = [UIColor clearColor];
-		messageLabel.text = [NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"cta_txt"], _opponentVO.username];
-		[self addSubview:messageLabel];
+		CGFloat width = 260.0;
+		UILabel *ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 62.0, width, 33.0)];
+		ctaLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:13];
+		ctaLabel.textColor = [UIColor whiteColor];
+		ctaLabel.backgroundColor = [UIColor clearColor];
+		ctaLabel.shadowColor = [UIColor blackColor];
+		ctaLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+		ctaLabel.numberOfLines = 2;
+		ctaLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCTAFormat] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_opponentVO.username] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+		[self addSubview:ctaLabel];
 		
-//		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		nameButton.frame = nameLabel.frame;
-//		[nameButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-//		[self addSubview:nameButton];
+		[ctaLabel sizeToFit];
+		ctaLabel.frame = CGRectMake(ctaLabel.frame.origin.x, ctaLabel.frame.origin.y, width, ctaLabel.frame.size.height);
+		self.frame = CGRectMake(0.0, 0.0, 320.0, ctaLabel.frame.origin.y + ctaLabel.frame.size.height);
 	}
 	
 	return (self);

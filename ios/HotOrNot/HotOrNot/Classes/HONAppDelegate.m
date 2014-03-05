@@ -162,6 +162,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_AB"] objectAtIndex:(int)[HONAppDelegate switchEnabledForKey:@"verify_tab"]]);
 }
 
++ (NSString *)verifyCTAFormat {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"verify_cta"]);
+}
+
 + (NSString *)smsInviteFormat {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_formats"] objectForKey:@"sms"]);
 }
@@ -637,6 +641,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"kik_card"] forKey:@"kik_card"];
+				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_cta"] forKey:@"verify_cta"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
 				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
@@ -1063,10 +1068,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 				
-			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+			} else
 				[self _retrieveConfigJSON];
-			}
 		}
 	}
 }
@@ -1090,9 +1093,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
 			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC);
 			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void){
-				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-				userPofileViewController.userID = [[path objectAtIndex:1] intValue];
-				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:userPofileViewController] animated:YES completion:nil];
+				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[path objectAtIndex:1] intValue]]] animated:YES completion:nil];
 			});
 		
 		} else if ([[path objectAtIndex:0] isEqualToString:@"invite"]) {
@@ -1194,8 +1195,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	_statusBarOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
 	_statusBarOverlayView.alpha = 0.0;
 	[self.window addSubview:_statusBarOverlayView];
-	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
 }
 
 - (void)_establishUserDefaults {
@@ -1489,9 +1488,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView show];
 		
 	} else if (pushType == HONPushTypeShowUserProfile) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-		navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
 		
 	} else if (pushType == HONPushTypeShowAddContacts) {
 		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1503,11 +1500,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
 	
 	} else {
-		if ([notification objectForKey:@"user"] != nil) {
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-			userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-			navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		}
+		if ([notification objectForKey:@"user"] != nil)
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
 	}
 	
 	if (navigationController != nil) {
@@ -1543,9 +1537,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[alertView show];
 		
 	} else if (pushType == HONPushTypeShowUserProfile) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-		navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
 		
 	} else if (pushType == HONPushTypeShowAddContacts) {
 		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -1557,11 +1549,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[self _challengeObjectFromPush:[[notification objectForKey:@"challenge"] intValue] cancelNextPushes:YES];
 	
 	} else {
-		if ([notification objectForKey:@"user"] != nil) {
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-			userPofileViewController.userID = [[notification objectForKey:@"user"] intValue];
-			navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-		}
+		if ([notification objectForKey:@"user"] != nil)
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[notification objectForKey:@"user"] intValue]]];
 	}
 	
 	if (navigationController != nil) {
@@ -1702,9 +1691,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		if (buttonIndex == 1) {
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-			userPofileViewController.userID = _userID;
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:_userID]];
 			[navigationController setNavigationBarHidden:YES];
 			
 			if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {

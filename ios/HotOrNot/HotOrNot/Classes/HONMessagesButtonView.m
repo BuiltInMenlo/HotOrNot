@@ -17,7 +17,7 @@
 @implementation HONMessagesButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(48.0, 11.0, 34.0, 34.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(48.0, 4.0, 34.0, 34.0)])) {
 		_messagesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_messagesButton.frame = CGRectMake(0.0, 0.0, 34.0, 34.0);
 		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDM_nonActive"] forState:UIControlStateNormal];

@@ -164,22 +164,17 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	
-	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
+//	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMessagesViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
 }
 
 - (void)_goCreateChallenge {
@@ -306,34 +301,34 @@
 - (void)_selectedAlertsTab:(NSNotification *)notification {
 	NSLog(@"_selectedAlertsTab");
 	
-	if ([HONAppDelegate incTotalForCounter:@"alerts"] == 1) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:avatarButton];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-		
-		if (_tutorialImageView != nil) {
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				_tutorialImageView.alpha = 1.0;
-			}];
-		}
-	}
+//	if ([HONAppDelegate incTotalForCounter:@"alerts"] == 1) {
+//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
+//		_tutorialImageView.userInteractionEnabled = YES;
+//		_tutorialImageView.alpha = 0.0;
+//		
+//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
+//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:closeButton];
+//		
+//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
+//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
+//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
+//		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
+//		[_tutorialImageView addSubview:avatarButton];
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
+//		
+//		if (_tutorialImageView != nil) {
+//			[UIView animateWithDuration:0.33 animations:^(void) {
+//				_tutorialImageView.alpha = 1.0;
+//			}];
+//		}
+//	}
 }
 
 - (void)_refreshAlertsTab:(NSNotification *)notification {
@@ -392,20 +387,31 @@
 - (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO {
 	NSLog(@"alertItemViewCell:[%@]", alertItemVO.dictionary);
 	
+	NSString *mpAlertType;
+	NSDictionary *mpParams;
+	
+	
 	UIViewController *viewController;
-	UINavigationController *navigationController;
+//	UINavigationController *navigationController;
 	
 	if (alertItemVO.triggerType == HONAlertCellTypeVerify) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = alertItemVO.userID;
+		mpAlertType = @"Verify";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
 		viewController = userPofileViewController;
 		
 	} else if (alertItemVO.triggerType == HONAlertCellTypeFollow) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = alertItemVO.userID;
+		mpAlertType = @"Follow";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
 		viewController = userPofileViewController;
 		
 	} else if (alertItemVO.triggerType == HONAlertCellTypeLike) {
+		mpAlertType = @"Like";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		
 		[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:alertItemVO.challengeID completion:^(NSObject *result){
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]]];
 			[navigationController setNavigationBarHidden:YES];
@@ -413,11 +419,16 @@
 		}];
 		
 	} else if (alertItemVO.triggerType == HONAlertCellTypeShoutout) {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = alertItemVO.userID;
+		mpAlertType = @"Shoutout";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
 		viewController = userPofileViewController;
 		
 	} else if (alertItemVO.triggerType == HONAlertCellTypeReply) {
+		mpAlertType = @"Reply";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		
 		[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:alertItemVO.challengeID completion:^(NSObject *result){
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]]];
 			[navigationController setNavigationBarHidden:YES];
@@ -425,16 +436,23 @@
 		}];
 		
 	} else {
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-		userPofileViewController.userID = alertItemVO.userID;
+		mpAlertType = @"Profile";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
 		viewController = userPofileViewController;
 	}
 	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Activity Alerts - Select %@ Row", mpAlertType]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [mpParams objectForKey:@"participant"], @"participant", nil]];
 	
 	if (viewController != nil) {
-		navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		[self.navigationController pushViewController:viewController animated:YES];
+//		navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+//		[navigationController setNavigationBarHidden:YES];
+//		[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
@@ -512,7 +530,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (80.0);
+	return (80.0 * 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

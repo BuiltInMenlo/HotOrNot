@@ -11,6 +11,8 @@
 #import "HONOpponentVO.h"
 
 
+const CGSize kVerifyAvatarSize;
+
 @protocol HONVerifyCellHeaderViewDelegate;
 @interface HONVerifyCellHeaderView : UIView
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO;
