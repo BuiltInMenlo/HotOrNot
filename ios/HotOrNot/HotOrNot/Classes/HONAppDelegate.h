@@ -68,23 +68,23 @@ extern NSString * const kAPIHost;
 
 
 // view heights
-const CGFloat kNavHeaderHeight;
-const CGFloat kSearchHeaderHeight;
-const CGFloat kOrthodoxTableHeaderHeight;
-const CGFloat kOrthodoxTableCellHeight;
-const CGFloat kDetailsHeroImageHeight;
+extern const CGFloat kNavHeaderHeight;
+extern const CGFloat kSearchHeaderHeight;
+extern const CGFloat kOrthodoxTableHeaderHeight;
+extern const CGFloat kOrthodoxTableCellHeight;
+extern const CGFloat kDetailsHeroImageHeight;
 
 // animation params
-const CGFloat kHUDTime;
-const CGFloat kHUDErrorTime;
-const CGFloat kProfileTime;
+extern const CGFloat kHUDTime;
+extern const CGFloat kHUDErrorTime;
+extern const CGFloat kProfileTime;
 
 // image sizes
-const CGSize kTableCellAvatarSize;
-const CGSize kSnapThumbSize;
-const CGSize kSnapTabSize;
-const CGSize kSnapMediumSize;
-const CGSize kSnapLargeSize;
+extern const CGSize kTableCellAvatarSize;
+extern const CGSize kSnapThumbSize;
+extern const CGSize kSnapTabSize;
+extern const CGSize kSnapMediumSize;
+extern const CGSize kSnapLargeSize;
 
 
 extern NSString * const kSnapThumbSuffix;
@@ -92,7 +92,7 @@ extern NSString * const kSnapMediumSuffix;
 extern NSString * const kSnapTabSuffix;
 extern NSString * const kSnapLargeSuffix;
 
-const BOOL kIsImageCacheEnabled;
+extern const BOOL kIsImageCacheEnabled;
 extern NSString * const kTwilioSMS;
 
 // network error descriptions
