@@ -196,15 +196,15 @@
 
 #pragma mark - Navigation
 - (void)_goDetails {
-	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _heroHolderView.frame.size.height)];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[self.contentView addSubview:tappedOverlayView];
-	
-	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		tappedOverlayView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[tappedOverlayView removeFromSuperview];
-	}];
+//	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _heroHolderView.frame.size.height)];
+//	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+//	[self.contentView addSubview:tappedOverlayView];
+//	
+//	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+//		tappedOverlayView.alpha = 0.0;
+//	} completion:^(BOOL finished) {
+//		[tappedOverlayView removeFromSuperview];
+//	}];
 	
 	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
 }
