@@ -670,9 +670,9 @@
 	} else {
 //		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:^(void) {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-		}];
+		
+		// We want to dismiss the image picker + ourselves so we need to call dismiss on our parent.
+		[self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
