@@ -121,6 +121,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
+@property (nonatomic, strong) UIImageView *launchImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic) BOOL isFromBackground;
@@ -975,16 +976,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d", [HONAppDelegate totalForCounter:@"boot"]], @"boot_total", nil]];
 		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		bgImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"main_bg-568h@2x" : @"main_bg"];
-		[self.window addSubview:bgImageView];
-		
-//		self.tabBarController = [[HONTabBarController alloc] init];
-//		self.tabBarController.delegate = self;
-//		self.tabBarController.view.hidden = YES;
-//		
-//		self.window.rootViewController = self.tabBarController;
-//		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+		self.launchImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		self.launchImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"main_bg-568h@2x" : @"main_bg"];
+		[self.window addSubview:self.launchImageView];
 		[self.window makeKeyAndVisible];
 		
 		[self _initUrbanAirship];
@@ -1189,12 +1183,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	self.window.rootViewController = self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-	self.window.backgroundColor = [UIColor clearColor];
+	self.window.backgroundColor = [UIColor blackColor];
 	
 	_statusBarOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
 	_statusBarOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
 	_statusBarOverlayView.alpha = 0.0;
 	[self.window addSubview:_statusBarOverlayView];
+	[self.launchImageView removeFromSuperview];
+	self.launchImageView = nil;
 }
 
 - (void)_establishUserDefaults {
