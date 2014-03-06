@@ -791,6 +791,7 @@
 		E4BFFE7318C738C500BD8DFA /* JLBAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4BFFE7018C738C500BD8DFA /* JLBAnimation.mm */; };
 		E4BFFE7418C738C500BD8DFA /* JLBAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = E4BFFE7218C738C500BD8DFA /* JLBAnimator.m */; };
 		E4BFFE7718C738EF00BD8DFA /* JLBPopSlideTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = E4BFFE7618C738EF00BD8DFA /* JLBPopSlideTransition.m */; };
+		E4BFFE7D18C86DCB00BD8DFA /* UIView+HONSnapshot.m in Sources */ = {isa = PBXBuildFile; fileRef = E4BFFE7C18C86DCB00BD8DFA /* UIView+HONSnapshot.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1802,6 +1803,8 @@
 		E4BFFE7218C738C500BD8DFA /* JLBAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JLBAnimator.m; sourceTree = "<group>"; };
 		E4BFFE7518C738EF00BD8DFA /* JLBPopSlideTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JLBPopSlideTransition.h; path = JLBPaging/JLBPopSlideTransition.h; sourceTree = "<group>"; };
 		E4BFFE7618C738EF00BD8DFA /* JLBPopSlideTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JLBPopSlideTransition.m; path = JLBPaging/JLBPopSlideTransition.m; sourceTree = "<group>"; };
+		E4BFFE7B18C86DCB00BD8DFA /* UIView+HONSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+HONSnapshot.h"; path = "JLBPaging/UIView+HONSnapshot.h"; sourceTree = "<group>"; };
+		E4BFFE7C18C86DCB00BD8DFA /* UIView+HONSnapshot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+HONSnapshot.m"; path = "JLBPaging/UIView+HONSnapshot.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3621,6 +3624,8 @@
 				E4BFFE6C18C733F700BD8DFA /* JLBPagedViewController.m */,
 				E4BFFE7518C738EF00BD8DFA /* JLBPopSlideTransition.h */,
 				E4BFFE7618C738EF00BD8DFA /* JLBPopSlideTransition.m */,
+				E4BFFE7B18C86DCB00BD8DFA /* UIView+HONSnapshot.h */,
+				E4BFFE7C18C86DCB00BD8DFA /* UIView+HONSnapshot.m */,
 			);
 			name = JLBPaging;
 			sourceTree = "<group>";
@@ -4442,6 +4447,7 @@
 				4C6A3E1817669D7400B6CD4D /* HONInviteUserViewCell.m in Sources */,
 				4CC5F89117F9123B00BCA1DE /* AFHTTPRequestOperation.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONAddContactViewCell.m in Sources */,
+				E4BFFE7D18C86DCB00BD8DFA /* UIView+HONSnapshot.m in Sources */,
 				4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */,
 				4C8CBC4E179CFAA600C95189 /* TSLogging.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,

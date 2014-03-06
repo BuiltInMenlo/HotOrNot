@@ -79,6 +79,16 @@
 	_interactiveDismissGesture.enabled = atFirstPage;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gesture shouldReceiveTouch:(UITouch *)touch
+{
+	BOOL result = YES;
+	if (gesture == _interactiveDismissGesture) {
+		UIView *hitView = [self.view hitTest:[touch locationInView:self.view] withEvent:nil];
+		result = ((hitView == nil) || ![hitView isKindOfClass:[UIControl class]]);
+	}
+	return result;
+}
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gesture
 {
 	BOOL result = YES;
@@ -106,6 +116,7 @@
 	switch (_interactiveDismissGesture.state) {
 		case UIGestureRecognizerStateBegan: {
 			_pagedScrollView.scrollEnabled = NO;
+			
 			[self dismissViewControllerAnimated:YES completion:nil];
 			break;
 		}

@@ -8,6 +8,8 @@
 #import "JLBPopSlideTransition.h"
 #import "JLBAnimator.h"
 
+#import "UIView+HONSnapshot.h"
+
 #import <objc/runtime.h>
 
 static const void *kJLBTransitionPresentedControllerKey = &kJLBTransitionPresentedControllerKey;
@@ -19,6 +21,8 @@ static const void *kJLBTransitionPresentedControllerKey = &kJLBTransitionPresent
 {
 	BOOL _isDismissed;
 	CGFloat _lastPercentComplete;
+	
+	UIImageView *_originalBlurredImageView;
 	
 	id<UIViewControllerContextTransitioning> _interactiveTransitionContext;
 	UIViewController *_interactiveFromViewController;
@@ -91,25 +95,57 @@ static const void *kJLBTransitionPresentedControllerKey = &kJLBTransitionPresent
 	UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
 	UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
 	
+	// Generate a blur of the view that's going away
+	UIImage *blurredFromImage = [fromViewController.view blurRect:fromViewController.view.bounds withRadius:30.0 andSaturationBoost:1.0 andOverlayColor:[UIColor colorWithWhite:0.0 alpha:0.35]];
+	_originalBlurredImageView = [[UIImageView alloc] initWithImage:blurredFromImage];
+	_originalBlurredImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	_originalBlurredImageView.alpha = 0.0;
+	_originalBlurredImageView.frame = fromViewController.view.bounds;
+	[fromViewController.view addSubview:_originalBlurredImageView];
+	
 	// Add the appearing view controller to the transition container
 	CGRect finalAppearingFrame = [transitionContext finalFrameForViewController:toViewController];
 	toViewController.view.frame = CGRectOffset(finalAppearingFrame, CGRectGetWidth(containerView.bounds), 0.0);
 	[containerView addSubview:toViewController.view];
-
-	// The appearing view slides in to the cover the screen while the existing view slides a bit slower to create a parallax effect
-	CGRect finalDisappearingFrame = CGRectOffset(fromViewController.view.frame, -floor(0.75 * CGRectGetWidth(containerView.bounds)), 0.0);
 	
+	// Scale back the disappearing view and start to fade it out
+	CGAffineTransform fromFinalTransform = CGAffineTransformMakeScale(0.92, 0.92);
+	CGFloat fromFinalAlpha = 0.5;
+
 	[UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
 		toViewController.view.frame = finalAppearingFrame;
-		fromViewController.view.frame = finalDisappearingFrame;
+		fromViewController.view.transform = fromFinalTransform;
+		fromViewController.view.alpha = fromFinalAlpha;
+		_originalBlurredImageView.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		[transitionContext completeTransition:YES];
+		fromViewController.view.alpha = 1.0;
+		[_originalBlurredImageView removeFromSuperview];
 	}];
 }
 
 - (void)_animateDismissTransition:(id<UIViewControllerContextTransitioning>)transitionContext
 {
+	UIView *containerView = [transitionContext containerView];
+	UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+	UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
 	
+	// Prep the view we're going back to
+	toViewController.view.transform = CGAffineTransformMakeScale(0.92, 0.92);
+	toViewController.view.alpha = 0.5;
+	[containerView insertSubview:toViewController.view atIndex:0];
+	_originalBlurredImageView.frame = toViewController.view.bounds;
+	[toViewController.view addSubview:_originalBlurredImageView];
+	
+	[UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
+		toViewController.view.transform = CGAffineTransformIdentity;
+		toViewController.view.alpha = 1.0;
+		fromViewController.view.frame = CGRectOffset(fromViewController.view.frame, CGRectGetWidth(containerView.bounds), 0.0);
+		_originalBlurredImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[transitionContext completeTransition:YES];
+		[_originalBlurredImageView removeFromSuperview];
+	}];
 }
 
 - (void)startInteractiveTransition:(id<UIViewControllerContextTransitioning>)transitionContext
@@ -122,9 +158,11 @@ static const void *kJLBTransitionPresentedControllerKey = &kJLBTransitionPresent
 	[containerView addSubview:_interactiveToViewController.view];
 	[containerView bringSubviewToFront:_interactiveFromViewController.view];
 	
-	CGFloat offset = CGRectGetWidth(containerView.bounds);
+	_originalBlurredImageView.frame = _interactiveToViewController.view.bounds;
+	[_interactiveToViewController.view addSubview:_originalBlurredImageView];
+	
 	_toFinalFrame = [transitionContext finalFrameForViewController:_interactiveToViewController];
-	_toStartFrame = CGRectOffset(_toFinalFrame, -offset + 100.0, 0.0);
+	_toStartFrame = _toFinalFrame;
 	_interactiveToViewController.view.frame = _toStartFrame;
 	
 	_fromStartFrame = _interactiveFromViewController.view.frame;
@@ -137,10 +175,20 @@ static const void *kJLBTransitionPresentedControllerKey = &kJLBTransitionPresent
 	[fromAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:1.0 value:[NSValue valueWithCGRect:_fromFinalFrame]]];
 	[_animator addAnimation:fromAnimation withKey:@"pop slide" toView:_interactiveFromViewController.view];
 	
-	JLBAnimation *toAnimation = [JLBAnimation animationWithKeyPath:@"frame"];
-	[toAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:0.0 value:[NSValue valueWithCGRect:_toStartFrame]]];
-	[toAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:1.0 value:[NSValue valueWithCGRect:_toFinalFrame]]];
-	[_animator addAnimation:toAnimation withKey:@"pop slide" toView:_interactiveToViewController.view];
+	JLBAnimation *toFadeAnimation = [JLBAnimation animationWithKeyPath:@"alpha"];
+	[toFadeAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:0.0 value:@(0.5)]];
+	[toFadeAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:1.0 value:@(1.0)]];
+	[_animator addAnimation:toFadeAnimation withKey:@"to fade" toView:_interactiveToViewController.view];
+	
+	JLBAnimation *blurFadeAnimation = [JLBAnimation animationWithKeyPath:@"alpha"];
+	[blurFadeAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:0.4 value:@(1.0)]];
+	[blurFadeAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:1.0 value:@(0.0)]];
+	[_animator addAnimation:blurFadeAnimation withKey:@"blur fade out" toView:_originalBlurredImageView];
+	
+	JLBAnimation *toScaleAnimation = [JLBAnimation animationWithKeyPath:@"transform"];
+	[toScaleAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:0.0 value:[NSValue valueWithCGAffineTransform:CGAffineTransformMakeScale(0.92, 0.92)]]];
+	[toScaleAnimation addKeyFrame:[JLBAnimationKeyFrame keyFrameWithTime:1.0 value:[NSValue valueWithCGAffineTransform:CGAffineTransformIdentity]]];
+	[_animator addAnimation:toScaleAnimation withKey:@"to scale" toView:_interactiveToViewController.view];
 }
 
 - (void)updateInteractiveTransition:(CGFloat)percentComplete

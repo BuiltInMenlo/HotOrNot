@@ -34,6 +34,8 @@
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineItemFooterView.h"
 
+#import "JLBPopSlideTransition.h"
+
 @interface HONFeedItemViewController : UIViewController
 @property(nonatomic, weak) HONFeedViewController *feedViewController;
 @property(nonatomic, strong) HONChallengeVO *challenge;
@@ -51,6 +53,11 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_HOME_TAB" object:nil];
 	}
 	return self;
+}
+
+- (JLBPopSlideTransition *)_popSlideTransition
+{
+	return (JLBPopSlideTransition *)self.transitioningDelegate;
 }
 
 - (BOOL)shouldAutorotate
@@ -228,7 +235,8 @@
 - (void)_goBack
 {
 	[[Mixpanel sharedInstance] track:@"Timeline - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self.navigationController popViewControllerAnimated:YES];
+	[[self _popSlideTransition] setInteractiveDismissEnabled:NO];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goSuggested {
@@ -661,7 +669,6 @@
 	HONTimelineCellSubjectView *_timelineSubjectView;
 	HONTimelineCellHeaderView *_creatorHeaderView;
 	HONTimelineItemFooterView *_timelineFooterView;
-	UIButton *_detailsButton;
 }
 
 - (id)init
@@ -686,14 +693,8 @@
 	[_heroHolderView addSubview:_loadingIndicatorView];
 	
 	_heroImageView = [[UIImageView alloc] initWithFrame:bounds];
-	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
-	
-	_detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_detailsButton.frame = bounds;
-	[_detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_detailsButton];
-	
+
 	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:CGRectGetHeight(bounds) - 169.0 withSubjectName:nil withUsername:nil];
 	//timelineCellSubjectView.delegate = self;
 	[self.view addSubview:_timelineSubjectView];
@@ -813,21 +814,6 @@
 }
 
 #pragma mark - Actions
-
-- (void)_goDetails
-{
-	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:self.view.bounds];
-	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[self.view addSubview:tappedOverlayView];
-	
-	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		tappedOverlayView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[tappedOverlayView removeFromSuperview];
-	}];
-	
-	[_feedViewController feedItem:self showChallenge:_challenge];
-}
 
 - (void)_goLike {
 	[_feedViewController feedItem:self upvoteChallenge:_challenge forParticipant:_challenge.creatorVO];
