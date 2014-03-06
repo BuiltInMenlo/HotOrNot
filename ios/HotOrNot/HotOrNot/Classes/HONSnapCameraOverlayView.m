@@ -44,17 +44,19 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"cameraOverlayFade-568h@2x" : @"cameraOverlayFade"]]];
+		
 		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 		[self addSubview:_tintedMatteView];
 		
 		_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-		_headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[self addSubview:_headerBGView];
 		
 		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 141.0, 320.0, 141.0)];
-		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+		gutterView.backgroundColor = [UIColor whiteColor];
 		[self addSubview:gutterView];
+		
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_flipButton.frame = CGRectMake(3.0, 3.0, 44.0, 44.0);
@@ -85,7 +87,7 @@
 		[self addSubview:_takePhotoButton];
 		
 		_cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cameraRollButton.frame = CGRectMake(249.0, [UIScreen mainScreen].bounds.size.height - 42.0, 64.0, 44.0);
+		_cameraRollButton.frame = CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 42.0, 74.0, 44.0);
 		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[_cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];

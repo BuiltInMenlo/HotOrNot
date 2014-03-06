@@ -622,6 +622,8 @@
 		4CBA314017F60CF6008CEDD6 /* yayButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313C17F60CF6008CEDD6 /* yayButton_nonActive.png */; };
 		4CBA314117F60CF6008CEDD6 /* yayButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBA313D17F60CF6008CEDD6 /* yayButton_nonActive@2x.png */; };
 		4CBE874C16371D24004084DF /* HONTermsConditionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE874B16371D22004084DF /* HONTermsConditionsViewController.m */; };
+		4CBEDC5318C8499600E1DC81 /* cameraOverlayFade.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBEDC5118C8499600E1DC81 /* cameraOverlayFade.png */; };
+		4CBEDC5418C8499600E1DC81 /* cameraOverlayFade@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBEDC5218C8499600E1DC81 /* cameraOverlayFade@2x.png */; };
 		4CC4D14116390BA400E2B217 /* push_02.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4CC4D14016390BA400E2B217 /* push_02.caf */; };
 		4CC5F89017F9123B00BCA1DE /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC5F87E17F9123B00BCA1DE /* AFHTTPClient.m */; };
 		4CC5F89117F9123B00BCA1DE /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC5F88017F9123B00BCA1DE /* AFHTTPRequestOperation.m */; };
@@ -1536,6 +1538,8 @@
 		4CBA313D17F60CF6008CEDD6 /* yayButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yayButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CBE874A16371D1E004084DF /* HONTermsConditionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTermsConditionsViewController.h; sourceTree = "<group>"; };
 		4CBE874B16371D22004084DF /* HONTermsConditionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTermsConditionsViewController.m; sourceTree = "<group>"; };
+		4CBEDC5118C8499600E1DC81 /* cameraOverlayFade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraOverlayFade.png; sourceTree = "<group>"; };
+		4CBEDC5218C8499600E1DC81 /* cameraOverlayFade@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraOverlayFade@2x.png"; sourceTree = "<group>"; };
 		4CC4D14016390BA400E2B217 /* push_02.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = push_02.caf; sourceTree = "<group>"; };
 		4CC5F87D17F9123B00BCA1DE /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		4CC5F87E17F9123B00BCA1DE /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
@@ -3522,6 +3526,8 @@
 		4CEEFC8217E15BEB0006A640 /* FX */ = {
 			isa = PBXGroup;
 			children = (
+				4CBEDC5118C8499600E1DC81 /* cameraOverlayFade.png */,
+				4CBEDC5218C8499600E1DC81 /* cameraOverlayFade@2x.png */,
 				4C3CB1CF17E43A020076BF78 /* cameraBackgroundHeader.png */,
 				4C3CB1D017E43A020076BF78 /* cameraBackgroundHeader@2x.png */,
 			);
@@ -3851,6 +3857,7 @@
 				4C663EE318C0199D00EDB1A2 /* headerProfile_Active@2x.png in Resources */,
 				4CCE7538184463B500FF09F7 /* suggestedCellBackground.png in Resources */,
 				4CA8EBEC184E990D00F91363 /* timelineLikeButton_nonActive@2x.png in Resources */,
+				4CBEDC5318C8499600E1DC81 /* cameraOverlayFade.png in Resources */,
 				4CA8EC0618501E1900F91363 /* loginButton_Active@2x.png in Resources */,
 				4C41070118C14DC5009E9F9E /* firstRunRowNumBackround_Active.png in Resources */,
 				4CA8EC0718501E1900F91363 /* loginButton_nonActive.png in Resources */,
@@ -4164,6 +4171,7 @@
 				4CA8EC2818504DBB00F91363 /* main_bg@2x.png in Resources */,
 				4CE5307B17C1796600F7B4AD /* profileButton_nonActive@2x.png in Resources */,
 				4CE5308017C1808000F7B4AD /* likeButton_Active.png in Resources */,
+				4CBEDC5418C8499600E1DC81 /* cameraOverlayFade@2x.png in Resources */,
 				4C41070318C14DC5009E9F9E /* firstRunRowNumBackround_nonActive.png in Resources */,
 				4CA8EC4418510B0000F91363 /* dislikeOverlayAnimation@2x.png in Resources */,
 				4CE5308117C1808000F7B4AD /* likeButton_Active@2x.png in Resources */,

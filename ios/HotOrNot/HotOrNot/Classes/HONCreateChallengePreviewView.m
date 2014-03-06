@@ -170,7 +170,7 @@
 	_cancelButton.alpha = 0.75;
 	[self addSubview:_cancelButton];
 	
-	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 50.0 + (45.0 * (_recipients != nil)), 320.0, 215.0 + ([[HONDeviceTraits sharedInstance] isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
+	_subjectsView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 179.0 + (45.0 * (_recipients != nil)), 320.0, 215.0 + ([[HONDeviceTraits sharedInstance] isRetina4Inch] * 88.0)) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
 	_subjectsView.hidden = YES;
 	_subjectsView.delegate = self;
 	_subjectsView.isJoinVolley = _selfieSubmitType;
