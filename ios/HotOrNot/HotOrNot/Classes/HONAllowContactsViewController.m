@@ -112,10 +112,21 @@
 - (void)_retrieveFeaturedClubs {
 	[[HONAPICaller sharedInstance] retrieveFeaturedClubsWithCompletion:^(NSObject *result) {
 		_clubs = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
-			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
-			[_clubs addObject:vo];
-		}
+		for (NSDictionary *dict in (NSArray *)result)
+			[_clubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+		
+		
+		[_clubs addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: @"82169",
+																 @"username"	: @"DoveSelfie",
+																 @"img_url"		: @"https://d3j8du2hyvd35p.cloudfront.net/d68d766e33594de4bb65da6280dd5b9b_dae17c43b4ad40399dd47635420126c0-1394177349"}]];
+		
+		[_clubs addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: @"66197",
+																 @"username"	: @"MacMakeUp",
+																 @"img_url"		: @"https://d3j8du2hyvd35p.cloudfront.net/ffddb88e6fe44aa48f910f6f8bf4dc96_5a537e5fa04a4f53ab834d8c04fbd190-1394171042"}]];
+		
+		[_clubs addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: @"90781",
+																 @"username"	: @"1DFans",
+																 @"img_url"		: @"https://d3j8du2hyvd35p.cloudfront.net/46a7627f2d458ebbedd54fe64cb9149762489a1a9e1c8fca213d217cf09067d4-1379198239"}]];
 		
 		[_tableView reloadData];
 	}];
@@ -346,8 +357,9 @@
 		cell.userVO = [HONTrivialUserVO userWithDictionary:@{@"id"			: @"0",
 															 @"username"	: vo.fullName,
 															 @"img_url"		: [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
-	}
 	
+	} else if (indexPath.section == 2)
+		cell.userVO = (HONTrivialUserVO *)[_clubs objectAtIndex:indexPath.row];
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	cell.delegate = self;

@@ -44,7 +44,9 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"cameraOverlayFade-568h@2x" : @"cameraOverlayFade"]]];
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"cameraOverlayFade-568h@2x" : @"cameraOverlayFade"]];
+		gradientImageView.frame = self.frame;
+		[self addSubview:gradientImageView];
 		
 		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];

@@ -335,6 +335,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//	[self dismissViewControllerAnimated:YES completion:nil];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

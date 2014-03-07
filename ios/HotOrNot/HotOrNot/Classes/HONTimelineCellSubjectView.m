@@ -29,6 +29,7 @@
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:CGRectMake(10.0, offsetY, 300.0, 70.0)])) {
 		_username = username;
+		_caption = subjectName;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, self.frame.size.height)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:40];
@@ -36,10 +37,11 @@
 		_captionLabel.textColor = [UIColor whiteColor];
 		_captionLabel.shadowColor = [UIColor blackColor];
 		_captionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+		_captionLabel.text = _caption;
 		[self addSubview:_captionLabel];
 
-		[self _captionForSubject:subjectName];
-		[self _updateEmotion];
+//		[self _captionForSubject:subjectName];
+//		[self _updateEmotion];
 	}
 	
 	return self;

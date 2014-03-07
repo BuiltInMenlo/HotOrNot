@@ -695,7 +695,7 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:bounds];
 	[_heroHolderView addSubview:_heroImageView];
 
-	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:CGRectGetHeight(bounds) - 169.0 withSubjectName:nil withUsername:nil];
+	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:CGRectGetHeight(bounds) - 105.0 withSubjectName:nil withUsername:nil];
 	//timelineCellSubjectView.delegate = self;
 	[self.view addSubview:_timelineSubjectView];
 	
@@ -704,7 +704,7 @@
 	//_creatorHeaderView.delegate = self;
 	[self.view addSubview:_creatorHeaderView];
 	
-	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 101.0, 320.0, 44.0)];
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 44.0, 320.0, 44.0)];
 	[self.view addSubview:_footerView];
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -770,6 +770,8 @@
 	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];
 	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:(kIsImageCacheEnabled ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData) timeoutInterval:[HONAppDelegate timeoutInterval]];
 	
+	NSLog(@"IMAGE:[%@]", imageUrl);
+	
 	__weak HONFeedItemViewController *weakSelf = self;
 	[_heroImageView setImageWithURLRequest:imageRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		[weakSelf _heroImageFinishedLoadingWithImage:image];
@@ -797,6 +799,10 @@
 {
 	_heroImageView.image = image;
 	
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"selfieFadeOverlay-568h@2x" : @"selfieFadeOverlay"]];
+	gradientImageView.frame = _heroImageView.frame;
+	[_heroImageView addSubview:gradientImageView];
+	
 	[UIView animateWithDuration:0.25 animations:^{
 		_loadingIndicatorView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -811,6 +817,10 @@
 	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:opponent.imagePrefix forAvatarBucket:NO completion:nil];
 	_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 	[_heroImageView setImageWithURL:[NSURL URLWithString:[opponent.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
+	
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"selfieFadeOverlay-568h@2x" : @"selfieFadeOverlay"]];
+	gradientImageView.frame = _heroImageView.frame;
+	[_heroImageView addSubview:gradientImageView];
 }
 
 #pragma mark - Actions
