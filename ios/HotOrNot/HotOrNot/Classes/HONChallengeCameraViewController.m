@@ -80,6 +80,18 @@
 		
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
+		
+		NSMutableArray *participants = [NSMutableArray arrayWithObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID],
+																											  @"username"	: _challengeVO.creatorVO.username,
+																											  @"img_url"	: _challengeVO.creatorVO.avatarPrefix}]];
+		
+		for (HONOpponentVO *vo in _challengeVO.challengers) {
+			[participants addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID],
+																		   @"username"	: _challengeVO.creatorVO.username,
+																		   @"img_url"	: _challengeVO.creatorVO.avatarPrefix}]];
+		}
+		
+		_recipients = [participants copy];
 	}
 	
 	return (self);
@@ -143,8 +155,8 @@
 //		}
 //		if (_hasSubmitted) {
 //			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-//			
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+//
 //			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 //			}];
@@ -256,8 +268,9 @@
 			[tracker fireEvent:e];
 			
 			
-//			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-//			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 			
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
@@ -388,7 +401,10 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -418,8 +434,9 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
@@ -484,8 +501,9 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 }
 
@@ -556,9 +574,9 @@
 			}
 		
 			if (_hasSubmitted) {
-//				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 				}];
@@ -571,9 +589,9 @@
 		}
 			
 		if (_hasSubmitted) {
-//			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:@"Y"];
 				
@@ -613,7 +631,7 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 #pragma mark - ImagePicker Delegates
@@ -656,6 +674,9 @@
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
+		
 		float scale = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -670,8 +691,10 @@
 		[self _showOverlay];
 		
 	} else {
-//		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+		
 		
 		// We want to dismiss the image picker + ourselves so we need to call dismiss on our parent.
 		[self.presentingViewController dismissViewControllerAnimated:YES completion:nil];

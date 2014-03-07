@@ -45,15 +45,15 @@
 								  success:successBlock
 								  failure:failureBlock];
 		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 23.0, 200.0, 24.0)];
-		label.font = [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:20];
-		label.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(49.0, 20.0, 200.0, 24.0)];
+		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:20];
+		label.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 		label.backgroundColor = [UIColor clearColor];
 		label.text = _emotionVO.hastagName;
 		[self.contentView addSubview:label];
 		
 		_priceImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"freeButton_nonActive"]];
-		_priceImageView.frame = CGRectOffset(_priceImageView.frame, 247.0, 10.0);
+		_priceImageView.frame = CGRectOffset(_priceImageView.frame, 248.0, 10.0);
 		[self addSubview:_priceImageView];
 	}
 	

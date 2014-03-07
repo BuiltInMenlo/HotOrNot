@@ -96,7 +96,7 @@
 	[self.contentView addSubview:headerView];
 	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
-//	[self.contentView addSubview:buttonHolderView];
+	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
