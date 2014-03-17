@@ -165,6 +165,29 @@
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
+	
+	UIView *toggleListView = [[UIView alloc] initWithFrame:CGRectMake(100.0, 40.0, 120.0, 32.0)];
+	toggleListView.backgroundColor = [UIColor greenColor];
+	[self.view addSubview:toggleListView];
+	
+	
+	UIButton *discoverButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	discoverButton.frame = CGRectMake(0.0, 0.0, 60.0, 32.0);
+	discoverButton.backgroundColor = [UIColor redColor];
+//	[discoverButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+//	[discoverButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+	[discoverButton addTarget:self action:@selector(_goDiscoverList) forControlEvents:UIControlEventTouchDown];
+	[toggleListView addSubview:discoverButton];
+	
+	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	friendsButton.frame = CGRectMake(60.0, 0.0, 60.0, 32.0);
+	friendsButton.backgroundColor = [UIColor greenColor];
+//	[friendsButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+//	[friendsButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+	[friendsButton addTarget:self action:@selector(_goFriendsList) forControlEvents:UIControlEventTouchDown];
+	[toggleListView addSubview:friendsButton];
+
+	
 	[self _retrieveVerifyList];
 }
 
@@ -254,6 +277,23 @@
 	}];
 }
 
+- (void)_goDiscoverList {
+	[[Mixpanel sharedInstance] track:@"Verify - Discover List"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	[self _retrieveVerifyList];
+}
+
+- (void)_goFriendsList {
+	[[Mixpanel sharedInstance] track:@"Verify - Friends List"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	[self _retrieveVerifyList];
+}
+
+
 
 #pragma mark - Notifications
 - (void)_selectedVerifyTab:(NSNotification *)notification {
@@ -274,14 +314,14 @@
 //		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
 //		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
 //		[_tutorialImageView addSubview:closeButton];
-//		
+//
 //		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
 //		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
 //		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
 //		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
 //		[_tutorialImageView addSubview:avatarButton];
-//		
+//
 //		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 //	}
 //	

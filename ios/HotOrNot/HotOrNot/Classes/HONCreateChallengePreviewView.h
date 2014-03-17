@@ -17,7 +17,6 @@
 @interface HONCreateChallengePreviewView : UIView <UIAlertViewDelegate, UITextFieldDelegate>
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieSubmitType)selfieSubmitType withSubject:(NSString *)subject withRecipients:(NSArray *)recipients;
 - (void)uploadComplete;
-- (void)showKeyboard;
 
 @property (nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;
 @end

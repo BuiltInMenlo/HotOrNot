@@ -146,8 +146,20 @@
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
 	
-	} else
-		[self.navigationController pushViewController:[[HONAllowContactsViewController alloc] init] animated:YES];
+	} else {
+//		[self.navigationController pushViewController:[[HONAllowContactsViewController alloc] init] animated:YES];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+			
+			if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+			
+			else
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
+		}];
+		
+	}
 }
 
 - (void)_goResend {

@@ -12,7 +12,7 @@
 typedef enum {
 	HONTabBarButtonTypeHome = 0,
 	HONTabBarButtonTypeClubs,
-	HONTabBarButtonTypeActivity,
+//	HONTabBarButtonTypeActivity,
 	HONTabBarButtonTypeVerify
 } HONTabBarButtonType;
 

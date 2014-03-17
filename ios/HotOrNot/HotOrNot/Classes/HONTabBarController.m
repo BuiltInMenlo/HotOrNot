@@ -93,15 +93,17 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_tabHolderView addSubview:_clubsButton];
 	[_clubsButton setTag:HONTabBarButtonTypeClubs];
 	
-	_activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_activityButton.frame = CGRectMake(kTabSize.width * 2.0, 0.0, kTabSize.width, kTabSize.height);
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
-	[_tabHolderView addSubview:_activityButton];
-	[_activityButton setTag:HONTabBarButtonTypeActivity];
+//	_activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_activityButton.frame = CGRectMake(kTabSize.width * 2.0, 0.0, kTabSize.width, kTabSize.height);
+//	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
+//	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
+//	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
+//	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+//	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
+//	[_tabHolderView addSubview:_activityButton];
+//	[_activityButton setTag:HONTabBarButtonTypeActivity];
+	
+	
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(kTabSize.width * 3.0, 0.0, kTabSize.width, kTabSize.height);
@@ -205,22 +207,22 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_verifyButton setSelected:NO];
 			break;
 			
-		case HONTabBarButtonTypeActivity:
-			totalKey = @"alerts";
-			mpEvent = @"Alerts";
-			notificationName = @"ALERTS_TAB";
-			
-			[_homeButton setSelected:NO];
-			[_clubsButton setSelected:NO];
-			[_activityButton setSelected:YES];
-			[_verifyButton setSelected:NO];
-			
-			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
-			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
-			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
-			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
-			break;
+//		case HONTabBarButtonTypeActivity:
+//			totalKey = @"alerts";
+//			mpEvent = @"Alerts";
+//			notificationName = @"ALERTS_TAB";
+//			
+//			[_homeButton setSelected:NO];
+//			[_clubsButton setSelected:NO];
+//			[_activityButton setSelected:YES];
+//			[_verifyButton setSelected:NO];
+//			
+//			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
+//			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
+//			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
+//			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
+//			[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
+//			break;
 			
 		case HONTabBarButtonTypeVerify:
 			totalKey = @"verify";

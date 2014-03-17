@@ -16,22 +16,26 @@
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
-	vo.userClubStatusType = [[dictionary objectForKey:@"status_id"] intValue];
-	vo.userClubExpoType = [[dictionary objectForKey:@"expo_id"] intValue];
-	vo.userClubConentType = [[dictionary objectForKey:@"content_id"] intValue];
+//	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
+//	vo.userClubStatusType = [[dictionary objectForKey:@"status_id"] intValue];
+//	vo.userClubExpoType = [[dictionary objectForKey:@"expo_id"] intValue];
+//	vo.userClubConentType = [[dictionary objectForKey:@"content_id"] intValue];
 	
-	vo.totalPendingMembers = [[dictionary objectForKey:@"pending"] intValue];
-	vo.totalActiveMembers = [[dictionary objectForKey:@"following"] intValue];
+	vo.clubName = [dictionary objectForKey:@"name"];
+//	vo.emotionName = [dictionary objectForKey:@"suject"];
+//	vo.creatorName = [dictionary objectForKey:@"creator"];
 	
-	vo.coverImagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [dictionary objectForKey:@"img"]];
+//	vo.totalPendingMembers = [[dictionary objectForKey:@"pending"] intValue];
+//	vo.totalActiveMembers = [[dictionary objectForKey:@"following"] intValue];
+	
+	vo.coverImagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
-	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
-	vo.updatedDate = [dateFormat dateFromString:[dictionary objectForKey:@"updated"]];
+//	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
+//	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
+//	vo.updatedDate = [dateFormat dateFromString:[dictionary objectForKey:@"updated"]];
 	
 	
 	return (vo);

@@ -33,6 +33,7 @@
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) UIButton *controlsButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) HONVolleyEmotionsPickerView *emotionsPickerView;
@@ -68,12 +69,8 @@
 #pragma mark - Puplic APIs
 - (void)uploadComplete {
 	NSLog(@"uploadComplete");
+//	[self _raiseKeyboard];
 	[_cancelButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-}
-
-- (void)showKeyboard {
-	[_emotionTextField becomeFirstResponder];
-	[self _raiseKeyboard];
 }
 
 
@@ -83,6 +80,11 @@
 	_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(ABS(self.frame.size.width - (_previewImage.size.width * 0.5)) * -0.5, ABS(self.frame.size.height - (_previewImage.size.height * 0.5)) * ((self.frame.size.height < (_previewImage.size.height * 0.5)) ? -0.5 : 0.0), _previewImage.size.width * 0.5, _previewImage.size.height * 0.5)];
 	_previewImageView.image = _previewImage;
 	[self addSubview:_previewImageView];
+	
+	_controlsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_controlsButton.frame = self.frame;
+	[_controlsButton addTarget:self action:@selector(_raiseKeyboard) forControlEvents:UIControlEventTouchDown];
+	[self addSubview:_controlsButton];
 	
 //	_blurredImageView = [[UIImageView alloc] initWithImage:[_previewImage applyBlurWithRadius:8.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil]];
 //	_blurredImageView.frame = _previewImageView.frame;
@@ -98,12 +100,12 @@
 	_blackMatteView.alpha = 0.0;
 	[self addSubview:_blackMatteView];
 	
-	_previewBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_previewBackButton.frame = self.frame;
-	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
-	
+//	_previewBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_previewBackButton.frame = self.frame;
+//	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
 	_headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+	
 	_headerView.backgroundColor = [UIColor whiteColor];
 	[self addSubview:_headerView];
 	
@@ -183,7 +185,7 @@
 	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
-	_emotionsPickerView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 178.0, 320.0, 174.0) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
+	_emotionsPickerView = [[HONVolleyEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, 178.0, 320.0, [UIScreen mainScreen].bounds.size.height - 178.0) AsComposeSubjects:(_selfieSubmitType == HONSelfieSubmitTypeCreateChallenge)];
 	_emotionsPickerView.hidden = YES;
 	_emotionsPickerView.delegate = self;
 	_emotionsPickerView.isJoinVolley = _selfieSubmitType;
@@ -206,7 +208,7 @@
 	previewButton.frame = CGRectMake(91.0, 2.0, 64.0, 44.0);
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
-	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
+	[previewButton addTarget:self action:@selector(_goTogglePreview) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -219,16 +221,12 @@
 
 
 #pragma mark - Navigation
-- (void)_goToggleKeyboard {
+- (void)_goTogglePreview {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Create Volley - Toggle Preview %@", ([_emotionTextField isFirstResponder]) ? @"Down" : @"Up"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	if ([_emotionTextField isFirstResponder])
-		[self _dropKeyboardAndRemove:NO];
-	
-	else
-		[self _raiseKeyboard];
+	[self _dropKeyboardAndRemove:NO];
 }
 
 - (void)_goBack {
@@ -263,7 +261,7 @@
 		[_emotionTextField resignFirstResponder];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_blackMatteView.alpha = 0.33;
-			_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
+//			_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
 			_placeholderLabel.alpha = 0.0;
 			_emotionTextField.alpha = 0.0;
 			_cancelButton.alpha = 0.0;
@@ -302,8 +300,8 @@
 
 #pragma mark - UI Presentation
 - (void)_raiseKeyboard {
-	[_emotionTextField becomeFirstResponder];
-	[_previewBackButton removeFromSuperview];
+	//[_emotionTextField becomeFirstResponder];
+//	[_previewBackButton removeFromSuperview];
 	
 	_emotionsPickerView.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -315,7 +313,7 @@
 		_emotionBGView.alpha = 1.0;
 		_blackMatteView.alpha = 0.0;
 		_emotionsPickerView.alpha = 1.0;
-		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
+//		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
 		_buttonHolderView.alpha = 1.0;
 		_cancelButton.alpha = 1.0;
 	}completion:^(BOOL finished) {
@@ -335,7 +333,7 @@
 		_emotionBGView.alpha = 0.0;
 		_blackMatteView.alpha = 0.0;
 		_emotionsPickerView.alpha = 0.0;
-		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
+//		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
 	} completion:^(BOOL finished) {
 		_emotionsPickerView.hidden = YES;
 		
@@ -348,8 +346,8 @@
 			}
 		}
 		
-		else
-			[self addSubview:_previewBackButton];
+//		else
+//			[self addSubview:_previewBackButton];
 	}];
 }
 

@@ -653,7 +653,6 @@
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage asSubmittingType:_selfieSubmitType withSubject:_subjectName withRecipients:_recipients];
 	_previewView.delegate = self;
-	[_previewView showKeyboard];
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		[_cameraOverlayView submitStep:_previewView];

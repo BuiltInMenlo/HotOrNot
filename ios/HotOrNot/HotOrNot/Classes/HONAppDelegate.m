@@ -1165,10 +1165,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
-	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],									   
+//	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
+//									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
+//									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
+//									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
+	
+	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
+	
 	
 	for (UINavigationController *navigationController in navigationControllers) {
 		[navigationController setNavigationBarHidden:YES animated:NO];
@@ -1176,6 +1181,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([navigationController.navigationBar respondsToSelector:@selector(setShadowImage:)])
 			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
 	}
+	
 	
 	self.tabBarController = [[HONTabBarController alloc] init];
 	self.tabBarController.viewControllers = navigationControllers;

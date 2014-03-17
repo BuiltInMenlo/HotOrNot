@@ -39,6 +39,7 @@
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSArray *defaultCaptions;
+@property (nonatomic, strong) NSArray *bakedClubs;
 @end
 
 
@@ -50,6 +51,10 @@
 							 @"Find friends who have a Selfieclub",
 							 @"Invite friends to my Selfieclub",
 							 @"Verify my phone number"];
+		
+		_bakedClubs = @[@"Club I",
+						@"Club II",
+						@"Club III"];
 	}
 	
 	return (self);
@@ -78,6 +83,12 @@
 		
 		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"])
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+		
+		for (NSString *clubName in _bakedClubs) {
+			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"	: @"0",
+																		@"name"	: clubName,
+																		@"img"	: [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
+		}
 		
 		[_tableView reloadData];
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
