@@ -17,7 +17,6 @@
 #import "HONTermsConditionsViewController.h"
 #import "HONHeaderView.h"
 #import "HONUsernameViewController.h"
-#import "HONTimelineViewController.h"
 
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UITableView *tableView;

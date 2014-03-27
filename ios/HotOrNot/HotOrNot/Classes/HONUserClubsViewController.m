@@ -27,6 +27,7 @@
 #import "HONUserClubsSearchViewController.h"
 #import "HONUserClubInviteViewController.h"
 #import "HONMatchContactsViewController.h"
+#import "HONTimelineViewController.h"
 #import "HONUserClubVO.h"
 
 
@@ -52,9 +53,9 @@
 							 @"Invite friends to my Selfieclub",
 							 @"Verify my phone number"];
 		
-		_bakedClubs = @[@"Club I",
-						@"Club II",
-						@"Club III"];
+		_bakedClubs = @[@{@"name": @"BFFs", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/823ded776ab04e59a53eb166db67a78d_c54b3a029c25457389a188ac8a6dff24-1391186184Large_640x1136.jpg"},
+						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"},
+						@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
 	}
 	
 	return (self);
@@ -84,10 +85,10 @@
 		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"])
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		for (NSString *clubName in _bakedClubs) {
+		for (NSDictionary *club in _bakedClubs) {
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"	: @"0",
-																		@"name"	: clubName,
-																		@"img"	: [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
+																		@"name"	: [club objectForKey:@"name"],
+																		@"img"	: [club objectForKey:@"img"]}]];//[[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
 		}
 		
 		[_tableView reloadData];
@@ -117,7 +118,7 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
@@ -342,10 +343,11 @@
 		} else
 			[self _goClubDetails:_ownClub];
 		
-	} else if (indexPath.section == 1)
-		[self _goClubDetails:(HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row]];
+	} else if (indexPath.section == 1) {
+		//[self _goClubDetails:(HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row]];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] init] animated:YES];
 		
-	else if (indexPath.section == 2) {
+	} else if (indexPath.section == 2) {
 		switch (indexPath.row - 1) {
 			case 0:
 				[self _goFindSelfieclubs];

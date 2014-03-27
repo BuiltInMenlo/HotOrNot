@@ -14,7 +14,7 @@
 @class HONChallengeCameraViewController;
 
 @protocol HONCreateChallengePreviewViewDelegate;
-@interface HONCreateChallengePreviewView : UIView <UIAlertViewDelegate, UITextFieldDelegate>
+@interface HONCreateChallengePreviewView : UIView <UIActionSheetDelegate, UIAlertViewDelegate, UITextFieldDelegate>
 - (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieSubmitType)selfieSubmitType withSubject:(NSString *)subject withRecipients:(NSArray *)recipients;
 - (void)uploadComplete;
 

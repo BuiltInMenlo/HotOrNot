@@ -105,7 +105,7 @@
 //	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
 	_headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	
+	_headerView.alpha = 0.0;
 	_headerView.backgroundColor = [UIColor whiteColor];
 	[self addSubview:_headerView];
 	
@@ -129,6 +129,12 @@
 	_toGroupLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	_toGroupLabel.text = recipientNames;
 	[_headerView addSubview:_toGroupLabel];
+	
+	
+	UIButton *toGroupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	toGroupButton.frame = _toGroupLabel.frame;
+	[toGroupButton addTarget:self action:@selector(_goSelectRecipients) forControlEvents:UIControlEventTouchDown];
+	[_headerView addSubview:toGroupButton];
 	
 //	UIImageView *replyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyArrow"]];
 //	replyImageView.frame = CGRectOffset(_replyImageView.frame, 8.0, 12.0 + (45.0 * (_recipients != nil)));
@@ -189,7 +195,7 @@
 	_emotionsPickerView.hidden = YES;
 	_emotionsPickerView.delegate = self;
 	_emotionsPickerView.isJoinVolley = _selfieSubmitType;
-	[self addSubview:_emotionsPickerView];
+//	[self addSubview:_emotionsPickerView];
 	
 	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 48.0, 320.0, 48.0)];
 	_buttonHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
@@ -221,6 +227,15 @@
 
 
 #pragma mark - Navigation
+- (void)_goSelectRecipients {
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"All My Followers", @"Club Members", @"DM Recipients", nil];
+	[actionSheet showInView:self];
+}
+
 - (void)_goTogglePreview {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Create Volley - Toggle Preview %@", ([_emotionTextField isFirstResponder]) ? @"Down" : @"Up"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -364,6 +379,25 @@
 	_placeholderLabel.text = @"";
 	
 	_emotionTextField.text = emotionVO.hastagName;
+}
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		
+	
+	} else if (buttonIndex == 2) {
+		
+	
+	} else if (buttonIndex == 3) {
+		
+	
+	} else if (buttonIndex == 4) {
+		
+	} else {
+		
+	}
 }
 
 

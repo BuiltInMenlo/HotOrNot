@@ -13,6 +13,13 @@ typedef enum {
 	HONUserProfileTypeOpponent
 } HONUserProfileType;
 
+typedef enum {
+	HONAlertItemTypeVerify = 1,
+	HONAlertItemTypeFollow,
+	HONAlertItemTypeLike,
+	HONAlertItemTypeShoutout,
+	HONAlertItemTypeReply
+} HONAlertItemType;
 
 typedef enum {
 	HONUserProfileActionSheetTypeVerify = 0,

@@ -14,15 +14,19 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAddContactsViewController.h"
+#import "HONMessagesViewController.h"
+#import "HONImagePickerViewController.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
+#import "HONMessagesButtonView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONInviteUserViewCell.h"
 #import "HONAddContactViewCell.h"
 #import "HONUserProfileViewController.h"
+#import "HONRegisterViewController.h"
 
 
 @interface HONAddContactsViewController ()<HONInviteUserViewCellDelegate, HONAddContactViewCellDelegate>
@@ -43,8 +47,16 @@
 
 @implementation HONAddContactsViewController
 
-- (id)initAsFirstRun:(BOOL)isFirstRun {
+- (id)init {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
+	}
+	
+	return (self);
+}
+
+- (id)initAsFirstRun:(BOOL)isFirstRun {
+	if ((self = [self init])) {
 		[[Mixpanel sharedInstance] track:@"Add Contacts - Open"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
@@ -321,6 +333,8 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_smsRecipients = @"";
@@ -329,24 +343,24 @@
 	_selectedNonAppContacts = [NSMutableArray array];
 	_selectedInAppContacts = [NSMutableArray array];
 	
-	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteAllButton.frame = CGRectMake(10.0, 0.0, 64.0, 44.0);
-	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
-	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
-	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+//	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	inviteAllButton.frame = CGRectMake(10.0, 0.0, 64.0, 44.0);
+//	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
+//	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
+//	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+//	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+//	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+//	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+//	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Friends"];
-	[headerView addButton:inviteAllButton];
-	[headerView addButton:closeButton];
-	[self.view addSubview:headerView];
+	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];	[self.view addSubview:headerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 76.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 76.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -390,6 +404,9 @@
 			[alertView show];
 		}
 	}
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
+		[self _goRegistration];
 }
 
 - (void)viewDidLoad {
@@ -418,6 +435,43 @@
 
 
 #pragma mark - Navigation
+- (void)_goRegistration {
+	[[Mixpanel sharedInstance] track:@"Register User"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[Mixpanel sharedInstance] track:@"Start First Run"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:^(void) {}];
+}
+
+- (void)_goProfile {
+	[[Mixpanel sharedInstance] track:@"Add Contacts - Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
+}
+
+- (void)_goMessages {
+	[[Mixpanel sharedInstance] track:@"Timeline - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
+}
+
+- (void)_goCreateChallenge {
+	[[Mixpanel sharedInstance] track:@"Timeline - Create Volley"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
 - (void)_goClose {
 	[[Mixpanel sharedInstance] track:@"Add Contacts - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -467,6 +521,10 @@
 
 
 #pragma mark - Notifications
+- (void)_showFirstRun:(NSNotification *)notification {
+	NSLog(@"SHOW_FIRST_RUN");
+	[self _goRegistration];
+}
 
 
 #pragma mark - UI Presentation

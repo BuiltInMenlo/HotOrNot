@@ -298,7 +298,7 @@ static HONAPICaller *sharedInstance = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@\n%@", [[self class] description], [error localizedFailureReason], result);
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {

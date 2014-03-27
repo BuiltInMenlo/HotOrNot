@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #// dev //#
-wipe_url="http://volley:teamvolleypassword@admin-stage.letsvolley.com/admin/wipe_user.php"
+wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
 
 #// live //#
-#-- wipe_url="http://volley:teamvolleypassword@admin.letsvolley.com/admin/wipe_user.php"
+#-- wipe_url="http://admin.letsvolley.com/admin/wipe_user.php"
 
 
 ##--#--#--#--#--#--#--#--#:#--#--#--#--#--#--#--#--##
@@ -82,7 +82,7 @@ fi
 
 # call wipe user
 printf "Wiping '%s' from tier (%s)... " "${username}" "${tier_name}"
-result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
+result=$(curl --request POST --location "${wipe_url}" --user "volley:\$uper\$mack" --data-urlencode "username=${username}" --silent)
 isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 
 #-- check for user JSON

@@ -42,4 +42,44 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (properties);
 }
 
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toChallenge:(HONChallengeVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName];
+	
+	return ([properties copy]);
+}
+
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toChallengeCreator:(HONOpponentVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"creator"] = [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username];
+	
+	return ([properties copy]);
+}
+
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toParticipant:(HONOpponentVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username];
+	
+	return ([properties copy]);
+}
+
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toCohortUser:(HONUserVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"cohort"] = [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username];
+	
+	return ([properties copy]);
+}
+
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toTrivalUser:(HONTrivialUserVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"cohort"] = [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username];
+	
+	return ([properties copy]);
+}
+
+- (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties {
+	[[Mixpanel sharedInstance] track:event
+						  properties:properties];
+}
+
 @end

@@ -1197,6 +1197,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[self.window addSubview:_statusBarOverlayView];
 	[self.launchImageView removeFromSuperview];
 	self.launchImageView = nil;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 }
 
 - (void)_establishUserDefaults {

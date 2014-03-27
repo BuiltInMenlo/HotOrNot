@@ -1,7 +1,5 @@
 #!/bin/bash
 
-api_endpt="admin/wipe_user.php"
-
 
 if [ ! ${!#} ]; then
 	exit 0;
@@ -42,14 +40,24 @@ done
 
  # --/> use stage 
 if $isStage_flg; then api_subdomain="admin-stage"
-else api_subdomain="api"; fi
+else api_subdomain="admin"; fi
 
-wipe_url="http://${api_subdomain}.letsvolley.com/${api_endpt}"
+block_url="http://${api_subdomain}.letsvolley.com/admin/block_user.php"
+wipe_url="http://${api_subdomain}.letsvolley.com/admin/wipe_user.php"
 
+
+# call block user
+printf "Blocking user '%s' from (%s.letsvolley.com)... " "${username}" "${api_subdomain}"
+result=$(curl --request POST --location "${block_url}" --user "volley:\$uper\$mack" --data-urlencode "username=${username}" --silent)
+isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
+
+#-- check for user json
+if [ "$isUser" ]; then printf "Completed!\n"
+else printf "Not found!\n"; fi
 
 # call wipe user
-printf "Wiping user '%s' from (%s.letsvolley)... " "${username}" "${api_subdomain}"
-result=$(curl --request POST "${wipe_url}" --silent --data-urlencode "username=${username}")
+printf "Wiping user '%s' from (%s.letsvolley.com)... " "${username}" "${api_subdomain}"
+result=$(curl --request POST --location "${wipe_url}" --user "volley:\$uper\$mack" --data-urlencode "username=${username}" --silent)
 isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 
 #-- check for user json

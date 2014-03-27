@@ -219,7 +219,20 @@
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 			}];
 			
-			[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
+			
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+				
+				if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+				
+				else
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
+			}];
+			
+			
+//			[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			
 		} else {
 			int errorCode = [[(NSDictionary *)result objectForKey:@"result"] intValue];
@@ -257,6 +270,9 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
+	
 	
 	_formHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_formHolderView.hidden = YES;
@@ -322,14 +338,14 @@
 	[_passwordTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_passwordTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	_passwordTextField.secureTextEntry = YES;
+//	_passwordTextField.secureTextEntry = YES;
 	[_passwordTextField setReturnKeyType:UIReturnKeyDone];
 	[_passwordTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_passwordTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 	_passwordTextField.keyboardType = UIKeyboardTypeEmailAddress;
-	_passwordTextField.placeholder = @"Enter password";
+	_passwordTextField.placeholder = @"Enter email";
 	_passwordTextField.text = @"";
 	[_passwordTextField setTag:1];
 	_passwordTextField.delegate = self;
@@ -880,7 +896,7 @@
 	_passwordCheckImageView.alpha = 1.0;
 	_phoneCheckImageView.alpha = 1.0;
 	
-	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([_passwordTextField.text length] > 0) * 2) + ((int)([_phone length] == 10) * 4);
+	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_passwordTextField.text]) * 2) + ((int)([_phone length] == 10) * 4);
 	if (registerErrorType == HONRegisterErrorTypeUsernameEmailBirthday) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
@@ -1045,12 +1061,12 @@
 		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
 	}
 	
-	if ([_passwordTextField.text length] < 5 && [_passwordTextField isFirstResponder]) {
+	if (![HONAppDelegate isValidEmail:_passwordTextField.text] && [_passwordTextField isFirstResponder]) {
 		_passwordCheckImageView.alpha = 1.0;
 		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
 	}
 	
-	if ([_passwordTextField.text length] >= 5) {
+	if ([HONAppDelegate isValidEmail:_passwordTextField.text]) {
 		_passwordCheckImageView.alpha = 1.0;
 		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
 	}

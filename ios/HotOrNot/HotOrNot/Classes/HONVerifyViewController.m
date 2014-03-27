@@ -17,7 +17,6 @@
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
-#import "HONTimelineViewController.h"
 #import "HONDeviceTraits.h"
 #import "HONImagingDepictor.h"
 #import "HONCreateSnapButtonView.h"
@@ -161,14 +160,14 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
 	
 	UIView *toggleListView = [[UIView alloc] initWithFrame:CGRectMake(100.0, 40.0, 120.0, 32.0)];
 	toggleListView.backgroundColor = [UIColor greenColor];
-	[self.view addSubview:toggleListView];
+//	[self.view addSubview:toggleListView];
 	
 	
 	UIButton *discoverButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -203,9 +202,7 @@
 #pragma mark - Navigation
 - (void)_goProfile {
 	[[Mixpanel sharedInstance] track:@"Verify - Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
@@ -215,21 +212,14 @@
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Verify - Create Volley"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-
+	[[Mixpanel sharedInstance] track:@"Verify - Create Volley" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Verify - Refresh"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Verify - Refresh" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[self _retrieveVerifyList];
 	
 	if ([HONAppDelegate incTotalForCounter:@"verifyRefresh"] == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
@@ -244,10 +234,7 @@
 }
 
 - (void)_goTakeAvatar {
-	[[Mixpanel sharedInstance] track:@"Verify - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Verify - Take New Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {
 			_tutorialImageView.alpha = 0.0;
@@ -278,18 +265,12 @@
 }
 
 - (void)_goDiscoverList {
-	[[Mixpanel sharedInstance] track:@"Verify - Discover List"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Verify - Discover List" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[self _retrieveVerifyList];
 }
 
 - (void)_goFriendsList {
-	[[Mixpanel sharedInstance] track:@"Verify - Friends List"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Verify - Friends List" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[self _retrieveVerifyList];
 }
 
@@ -400,10 +381,9 @@
 
 #pragma mark - VerifyViewCell Delegates
 - (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
+	[[Mixpanel sharedInstance] track:@"Verify - Show Profile" properties:properties];
 	
 	_challengeVO = challengeVO;
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:challengeVO.creatorVO.userID] animated:YES];
@@ -413,12 +393,10 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell approveChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Approve"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
+	[[Mixpanel sharedInstance] track:@"Verify - Approve" properties:properties];
 	
-
 	if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
 		[[HONAPICaller sharedInstance] followUserWithUserID:challengeVO.creatorVO.userID completion:^void(NSObject *result) {
 			[HONAppDelegate writeFollowingList:(NSArray *)result];
@@ -431,10 +409,9 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell disapproveChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Dissaprove"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
+	[[Mixpanel sharedInstance] track:@"Verify - Dissaprove" properties:properties];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Disprove Confirm"
 														message:@"FO SHO?"
@@ -446,6 +423,10 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell skipChallenge:(HONChallengeVO *)challengeVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
+	[[Mixpanel sharedInstance] track:@"Verify - Dissaprove" properties:properties];
+	
 	[[Mixpanel sharedInstance] track:@"Verify - Skip"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",

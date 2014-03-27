@@ -13,6 +13,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewController.h"
+#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONChallengeAssistant.h"
 #import "HONColorAuthority.h"
@@ -30,26 +31,30 @@
 #import "HONSettingsViewController.h"
 #import "HONImageLoadingView.h"
 #import "HONUserProfileGridView.h"
+#import "HONActionAlertItemView.h"
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
+#import "HONAlertItemVO.h"
 
 #import "HONFollowingViewController.h"
 #import "HONFollowersViewController.h"
 
 
-@interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONUserProfileViewController () <HONActionAlertItemViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (readonly, nonatomic, assign) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) NSMutableArray *alertItems;
 @property (nonatomic, strong) UIButton *verifyButton;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONUserProfileGridView *profileGridView;
+@property (nonatomic, strong) UIView *actionAlertsHolderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
@@ -135,7 +140,12 @@
 			
 			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userVO.userID completion:^(NSObject *result){
 				_followingCounter = [(NSArray *)result count];
-				[self _retrieveChallenges];
+				
+				if (_userProfileType == HONUserProfileTypeUser)
+					[self _retrieveAlerts];
+				
+				else
+					[self _retrieveChallenges];
 			}];
 			
 		} else {
@@ -176,9 +186,31 @@
 				[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 				_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
 			}
-			
-			[self _remakeGrid];
 		}
+		
+		[self _remakeGrid];
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+	}];
+}
+
+- (void)_retrieveAlerts {
+	[[HONAPICaller sharedInstance] retrieveAlertsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+		_alertItems = [NSMutableArray array];
+		for (NSDictionary *dict in (NSArray *)result) {
+			if (dict != nil)
+				[_alertItems addObject:[HONAlertItemVO alertWithDictionary:dict]];
+		}
+		
+		if ([_scrollView.subviews count] <= 1) {
+			[self _orphanUI];
+			[self _adoptUI];
+		}
+		
+		[self _remakeActionAlerts];
 		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
@@ -289,10 +321,8 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"User Profile - Done"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Done"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty] toCohortUser:_userVO]];
 	
 	if ([HONAppDelegate totalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
@@ -329,10 +359,9 @@
 }
 
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"User Profile - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Back"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							  toCohortUser:_userVO]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 //	[self dismissViewControllerAnimated:YES completion:nil];
@@ -340,9 +369,8 @@
 }
 
 - (void)_goChangeAvatar {
-	[[Mixpanel sharedInstance] track:@"User Profile - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Take New Avatar"
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -356,10 +384,9 @@
 }
 
 - (void)_goVerify {
-	[[Mixpanel sharedInstance] track:@"User Profile - Verify User"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Verify User" properties:properties];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
@@ -372,10 +399,9 @@
 }
 
 - (void)_goSubscribe {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Subscribe%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Subscribe" properties:properties];
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
@@ -388,10 +414,9 @@
 }
 
 - (void)_goUnsubscribe {
-	[[Mixpanel sharedInstance] track:@"User Profile - Unsubscribe"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Unsubscribe" properties:properties];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:[NSString stringWithFormat:@"You will no longer receive %@ updates from %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", _userVO.username]
@@ -403,10 +428,9 @@
 }
 
 - (void)_goShoutout {
-	[[Mixpanel sharedInstance] track:@"User Profile - Shoutout"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Shoutout" properties:properties];
 	
 	[[HONAPICaller sharedInstance] createShoutoutChallengeWithUserID:_userVO.userID completion:^(NSObject *result) {
 		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
@@ -414,17 +438,13 @@
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-		
-//		if (![result isEqual:[NSNull null]])
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
 	}];
 }
 
 - (void)_goFlag {
-	[[Mixpanel sharedInstance] track:@"User Profile - Flag"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Flag" properties:properties];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
@@ -437,9 +457,7 @@
 }
 
 - (void)_goInviteFriends {
-	[[Mixpanel sharedInstance] track:@"User Profile - Find People"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"User Profile - Find People" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
@@ -452,9 +470,7 @@
 }
 
 - (void)_goShare {
-	[[Mixpanel sharedInstance] track:@"User Profile - Share"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"User Profile - Share" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -470,9 +486,7 @@
 }
 
 - (void)_goFAQ {
-	[[Mixpanel sharedInstance] track:@"User Profile - Show FAQ"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"User Profile - Show FAQ" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -480,9 +494,7 @@
 }
 
 - (void)_goSettings {
-	[[Mixpanel sharedInstance] track:@"User Profile - Settings"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"User Profile - Settings" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -491,10 +503,9 @@
 
 
 - (void)_goSubscribers {
-	[[Mixpanel sharedInstance] track:@"User Profile - Followers"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Followers" properties:properties];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowersViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
@@ -502,10 +513,9 @@
 }
 
 - (void)_goSubscribees {
-	[[Mixpanel sharedInstance] track:@"User Profile - Following"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"participant", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Following" properties:properties];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFollowingViewController alloc] initWithUserID:_userID]];
 	[navigationController setNavigationBarHidden:YES];
@@ -513,10 +523,7 @@
 }
 
 - (void)_goVolleys {
-	[[Mixpanel sharedInstance] track:@"User Profile - Volleys"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Selfies" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[_scrollView scrollRectToVisible:CGRectMake(0.0, 268.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0), 320.0, MIN([UIScreen mainScreen].bounds.size.height - 8.0, (268.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0)) + _profileGridView.frame.size.height)) animated:YES];
 }
 
@@ -598,6 +605,28 @@
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
 	[_scrollView addSubview:_profileGridView];
+}
+
+- (void)_remakeActionAlerts {
+	if (_actionAlertsHolderView != nil) {
+		[_actionAlertsHolderView removeFromSuperview];
+		_actionAlertsHolderView = nil;
+	}
+	
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 344.0 + ([_alertItems count] * 49.0)));
+	_actionAlertsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 324.0, 320.0, [_alertItems count] * 49.0)];
+	[_scrollView addSubview:_actionAlertsHolderView];
+	
+	CGFloat offset = 0.0;
+	for (HONAlertItemVO *vo in _alertItems) {
+		HONActionAlertItemView *alertItemView = [[HONActionAlertItemView alloc] initWithFrame:CGRectMake(0.0, offset, 320.0, 49.0)];
+		alertItemView.frame = CGRectOffset(alertItemView.frame, 0.0, offset);
+		alertItemView.actionAlertItemVO = vo;
+		alertItemView.delegate = self;
+		[_actionAlertsHolderView addSubview:alertItemView];
+		
+		offset += 49.0;
+	}
 }
 
 - (void)_adoptUI {
@@ -740,13 +769,6 @@
 		[reportButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:reportButton];
 	}
-	
-	float gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
-	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[[HONChallengeAssistant sharedInstance] mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
-	_profileGridView.delegate = self;
-	_profileGridView.clipsToBounds = YES;
-	[_scrollView addSubview:_profileGridView];
 }
 
 - (void)_makeFooterBar {
@@ -854,15 +876,27 @@
 }
 
 
+#pragma mark - ActionAlertItemView Delegates
+- (void)alertActionItemView:(HONActionAlertItemView *)actionAlertItemView alertActionItem:(HONAlertItemVO *)actionAlertItemVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", actionAlertItemVO.userID, actionAlertItemVO.username];
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Action Alert %@", (actionAlertItemVO.triggerType == HONAlertItemTypeVerify) ? @"Verify" : (actionAlertItemVO.triggerType == HONAlertItemTypeFollow) ? @"Follow" : (actionAlertItemVO.triggerType == HONAlertItemTypeLike) ? @"Like" : (actionAlertItemVO.triggerType == HONAlertItemTypeShoutout) ? @"Shoutout" : (actionAlertItemVO.triggerType == HONAlertItemTypeReply) ? @"Reply" : @"Profile"]
+						  properties:properties];
+	
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:actionAlertItemVO.userID] animated:YES];
+}
+
+
 #pragma mark - GridView Delegates
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 //	NSLog(@"participantGridView:[%@]showPreview:[%@]forChallenge:[%d]", participantGridView, opponentVO.dictionary, challengeVO.challengeID);
 	
-	[[Mixpanel sharedInstance] track:(_userProfileType == HONUserProfileTypeUser) ? [NSString stringWithFormat:@"User Profile - Remove Selfie%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"] : [NSString stringWithFormat:@"User Profile - Show Preview%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName];
+	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username];
+	[[Mixpanel sharedInstance] track:@"User Profile - Followers"
+						  properties:properties];
+	
 	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initFromProfileWithOpponent:opponentVO forChallenge:challengeVO];
 	_snapPreviewViewController.delegate = self;

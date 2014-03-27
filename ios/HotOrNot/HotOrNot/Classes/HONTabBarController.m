@@ -74,7 +74,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	bgImageView.hidden = YES;
 	
 	_homeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_homeButton.frame = CGRectMake(0.0, 0.0, kTabSize.width, kTabSize.height);
+	_homeButton.frame = CGRectMake(0.0, 0.0, 107.0, kTabSize.height);
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
 	[_homeButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
@@ -84,7 +84,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_homeButton setTag:HONTabBarButtonTypeHome];
 	
 	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
+	_clubsButton.frame = CGRectMake(107.0, 0.0, 106.0, kTabSize.height);
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateNormal];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Active"] forState:UIControlStateSelected];
@@ -104,9 +104,8 @@ const CGSize kTabSize = {80.0, 50.0};
 //	[_activityButton setTag:HONTabBarButtonTypeActivity];
 	
 	
-	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_verifyButton.frame = CGRectMake(kTabSize.width * 3.0, 0.0, kTabSize.width, kTabSize.height);
+	_verifyButton.frame = CGRectMake(213.0, 0.0, 107.0, kTabSize.height);
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateNormal];
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Tapped"] forState:UIControlStateHighlighted];
 	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateSelected];

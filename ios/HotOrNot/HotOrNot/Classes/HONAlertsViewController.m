@@ -126,7 +126,7 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Activity"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
@@ -160,10 +160,7 @@
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[[Mixpanel sharedInstance] track:@"Activity Alerts - Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 //	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 //	userPofileViewController.userID = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
@@ -178,10 +175,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -189,16 +183,14 @@
 
 - (void)_goRefresh {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Refresh"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	[self _retrieveAlerts];
 }
 
 - (void)_goAddContacts {
-	[[Mixpanel sharedInstance] track:@"Activity Alerts - Invite Friends"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley"
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -207,8 +199,7 @@
 
 - (void)_goMatchPhone {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Match Phone"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -217,8 +208,7 @@
 
 - (void)_goMatchEmail {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Match Email"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:YES]];
 	[navigationController setNavigationBarHidden:YES];
@@ -226,9 +216,8 @@
 }
 
 - (void)_goSearch {
-	[[Mixpanel sharedInstance] track:@"Activity Alerts - Search"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Create Volley"
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSearchUsersViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -237,8 +226,7 @@
 
 - (void)_goSuggested {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Suggested Follow"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -246,9 +234,8 @@
 }
 
 - (void)_goTakeAvatar {
-	[[Mixpanel sharedInstance] track:@"Activity Alerts - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Suggested Follow"
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		if (_tutorialImageView != nil) {
@@ -281,8 +268,7 @@
 
 - (void)_goShare {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Share"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];

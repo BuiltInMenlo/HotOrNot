@@ -158,7 +158,6 @@
 			else
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
 		}];
-		
 	}
 }
 

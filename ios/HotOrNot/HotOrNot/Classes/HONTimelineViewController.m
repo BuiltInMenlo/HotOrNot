@@ -74,7 +74,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showHomeTutorial:) name:@"SHOW_HOME_TUTORIAL" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 	}
 	
 	return (self);
@@ -144,6 +143,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [UIColor whiteColor];
 	_isFirstLoad = YES;
 	
 	_imageQueueLocation = 0;
@@ -212,10 +212,17 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+//	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
+	
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:backButton];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];
@@ -245,7 +252,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"]];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -262,6 +269,14 @@
 
 
 #pragma mark - Navigation
+- (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)_goRefresh {
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
