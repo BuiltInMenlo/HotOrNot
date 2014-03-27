@@ -220,7 +220,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"Your profile photo helps the %@ community know your real.",[HONAppDelegate brandedAppName]]
+														message:@"Your profile photo helps the Selfieclub community know your real."
 													   delegate:self
 											  cancelButtonTitle:@"No Thanks"
 											  otherButtonTitles:@"Take Photo", nil];
@@ -274,25 +274,6 @@
 		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:[[UIApplication sharedApplication] delegate].window asLargeLoader:YES];
 		_imageLoadingView.alpha = 0.0;
 		[self addSubview:_imageLoadingView];
-		
-//		_verifyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
-//		_verifyImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
-//											[UIImage imageNamed:@"overlayLoader002"],
-//											[UIImage imageNamed:@"overlayLoader003"], nil];
-//		_verifyImageView.animationDuration = 0.5f;
-//		_verifyImageView.animationRepeatCount = 0;
-//		_verifyImageView.alpha = 0.0;
-//		[_verifyImageView startAnimating];
-//		[self addSubview:_verifyImageView];
-		
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_verifyImageView.alpha = 1.0;
-//		} completion:nil];
-		
-	} else {
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_verifyImageView.alpha = 0.0;
-//		} completion:nil];
 	}
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {

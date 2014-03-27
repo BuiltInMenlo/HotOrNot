@@ -13,7 +13,7 @@
 #import "HONHeaderView.h"
 
 
-@interface HONUserClubsSearchViewController () <EGORefreshTableHeaderDelegate>
+@interface HONUserClubsSearchViewController () //<EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSMutableArray *userClubs;

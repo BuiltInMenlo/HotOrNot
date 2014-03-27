@@ -27,14 +27,14 @@
 #import "HONAPICaller.h"
 #import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
+#import "HONTutorialView.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONMessagesButtonView.h"
 #import "HONUserProfileViewController.h"
 #import "HONMessagesViewController.h"
 #import "HONChangeAvatarViewController.h"
 
-
-@interface HONVerifyViewController() <EGORefreshTableHeaderDelegate, HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate>
+@interface HONVerifyViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTutorialViewDelegate, HONVerifyViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -43,7 +43,7 @@
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int imageQueueLocation;
@@ -113,7 +113,7 @@
 					break;
 				
 			}
-			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"verify" : @"follow"];
+			[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"verify"];
 		}
 	}];
 }
@@ -223,7 +223,7 @@
 	[self _retrieveVerifyList];
 	
 	if ([HONAppDelegate incTotalForCounter:@"verifyRefresh"] == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub with your friends?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -231,37 +231,6 @@
 		[alertView setTag:HONVerifyAlertTypeShare];
 		[alertView show];
 	}
-}
-
-- (void)_goTakeAvatar {
-	[[Mixpanel sharedInstance] track:@"Verify - Take New Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
-	}];
-}
-
-- (void)_goRemoveTutorial {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}
-	}];
 }
 
 - (void)_goDiscoverList {
@@ -280,42 +249,17 @@
 - (void)_selectedVerifyTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedVerifyTab <|::");
 	
-//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
-//	[self _retrieveChallenges];
-	
-//	if ([HONAppDelegate incTotalForCounter:@"verify"] == 1) {
-//		_tutorialImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_verify-568h@2x" : @"tutorial_verify"];
-//		_tutorialImageView.userInteractionEnabled = YES;
-//		_tutorialImageView.alpha = 0.0;
+//	if ([HONAppDelegate incTotalForCounter:@"verify"] == 0) {
+//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_verify"]];
+//		_tutorialView.delegate = self;
 //		
-//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:closeButton];
-//
-//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-//		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:avatarButton];
-//
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-//	}
-//	
-//	
-//	if (_tutorialImageView != nil) {
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
 //	}
 }
 
 - (void)_refreshVerifyTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+	NSLog(@"::|> _refreshVerifyTab <|::");
 	[self _retrieveVerifyList];
 }
 
@@ -376,6 +320,30 @@
 			_emptySetImageView.hidden = [_challenges count] > 0;
 		}
 	}
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Verify - Close Tutorial" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Verify - Tutorial Take Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	}];
 }
 
 
@@ -612,7 +580,7 @@
 				break;
 			
 		}
-		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"verify" : @"follow"];
+		[HONAppDelegate cacheNextImagesWithRange:NSMakeRange(_imageQueueLocation - cnt, _imageQueueLocation) fromURLs:imageQueue withTag:@"verify"];
 	}
 }
 

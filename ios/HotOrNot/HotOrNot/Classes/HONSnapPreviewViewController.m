@@ -229,48 +229,38 @@
 	
 	// <*] buttons [*>
 	//~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~~*~._
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - (159.0 + (((_snapPreviewType == HONSnapPreviewTypeVerify) && [HONAppDelegate switchEnabledForKey:@"verify_tab"]) * 80.0)), 64.0, 219.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - (159.0 + (((_snapPreviewType == HONSnapPreviewTypeVerify)) * 80.0)), 64.0, 219.0)];
 	_buttonHolderView.alpha = 0.0;
 	[self.view addSubview:_buttonHolderView];
 	
 	if (_snapPreviewType == HONSnapPreviewTypeVerify) {
 		UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[approveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"yayVerifyButton_nonActive" : @"yayButton_nonActive"] forState:UIControlStateNormal];
-		[approveButton setBackgroundImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"yayVerifyButton_Active" : @"yayButton_Active"] forState:UIControlStateHighlighted];
+		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_nonActive"] forState:UIControlStateNormal];
+		[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_Active"] forState:UIControlStateHighlighted];
 		[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:approveButton];
 		
-		if ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) {
-			UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
-			[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
-			[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-			[_buttonHolderView addSubview:skipButton];
-			
-			UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
-			[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
-			[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
-			[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
-			[_buttonHolderView addSubview:shoutoutButton];
-			
-			UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			followButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 45.0, 94.0, 44.0);
-			[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-			[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
-			[followButton addTarget:self action:@selector(_goFollowUser) forControlEvents:UIControlEventTouchUpInside];
-			[self.view addSubview:followButton];
-			
-		} else {
-			UIButton *disapproveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			disapproveButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-			[disapproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
-			[disapproveButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
-			[disapproveButton addTarget:self action:@selector(_goDisprove) forControlEvents:UIControlEventTouchUpInside];
-			[_buttonHolderView addSubview:disapproveButton];
-		}
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+		[_buttonHolderView addSubview:skipButton];
+		
+		UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
+		[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
+		[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
+		[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
+		[_buttonHolderView addSubview:shoutoutButton];
+		
+		UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		followButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 45.0, 94.0, 44.0);
+		[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
+		[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+		[followButton addTarget:self action:@selector(_goFollowUser) forControlEvents:UIControlEventTouchUpInside];
+		[self.view addSubview:followButton];
 		
 //]~=~=~=~=~=~=~=~=~=~=~=~=~=~[¡]~=~=~=~=~=~=~=~=~=~=~=~=~=~[//
 	} else {
@@ -343,7 +333,7 @@
 	}];
 	
 	if ([HONAppDelegate incTotalForCounter:@"like"] == 0 && [HONAppDelegate switchEnabledForKey:@"like_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub with your friends?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
@@ -386,7 +376,7 @@
 }
 
 - (void)_goApprove {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Approve", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Verify Approve"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
@@ -401,7 +391,7 @@
 		_hasTakenVerifyAction = YES;
 		
 		if ([HONAppDelegate incTotalForCounter:@"verifyAction"] == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Share %@ with your friends?", [HONAppDelegate brandedAppName]]
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub with your friends?"
 																message:@"Get more subscribers now, tap OK."
 															   delegate:self
 													  cancelButtonTitle:@"Cancel"
@@ -423,7 +413,7 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:[[HONAppDelegate infoForABTab] objectForKey:@"nay_format"], _opponentVO.username]
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[HONAppDelegate verifyCopyForKey:@"nay_txt"]
 														message:@""
 													   delegate:self
 											  cancelButtonTitle:@"Cancel"
@@ -433,7 +423,7 @@
 }
 
 - (void)_goSkip {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Skip", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Verify Skip"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
@@ -442,7 +432,7 @@
 }
 
 - (void)_goShoutout {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - %@ Shoutout", ([HONAppDelegate switchEnabledForKey:@"verify_tab"]) ? @"Verify" : @"Follow"]
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Verify Shoutout"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];

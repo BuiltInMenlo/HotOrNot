@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUserClubsSearchViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONUserClubsSearchViewController : UIViewController //<UITableViewDataSource, UITableViewDelegate>
 
 @end

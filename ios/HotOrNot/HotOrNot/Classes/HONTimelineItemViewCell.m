@@ -66,6 +66,9 @@
 	_heroHolderView.backgroundColor = [UIColor whiteColor];
 	[self.contentView addSubview:_heroHolderView];
 	
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieFullSizeGradientOverlay"]];
+	gradientImageView.frame = _heroHolderView.frame;
+	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_heroHolderView asLargeLoader:NO];
 	imageLoadingView.frame = CGRectOffset(imageLoadingView.frame, 0.0, 40.0);
 	[imageLoadingView startAnimating];
@@ -76,9 +79,6 @@
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_heroImageView.image = image;
-		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"selfieFadeOverlay-568h@2x" : @"selfieFadeOverlay"]];
-		gradientImageView.frame = _heroImageView.frame;
 		[_heroImageView addSubview:gradientImageView];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -92,13 +92,10 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_heroOpponentVO.imagePrefix forAvatarBucket:NO completion:nil];
 		_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 		[_heroImageView setImageWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
-		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"selfieFadeOverlay-568h@2x" : @"selfieFadeOverlay"]];
-		gradientImageView.frame = _heroImageView.frame;
 		[_heroImageView addSubview:gradientImageView];
 	};
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_heroImageView = [[UIImageView alloc] initWithFrame:_heroHolderView.frame];
 	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
 	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

@@ -187,7 +187,7 @@
 	
 	
 	if ([HONAppDelegate totalForCounter:@"search"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -378,7 +378,7 @@
 			}
 			
 			if ([HONAppDelegate totalForCounter:@"search"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
 																	message:@"Get more subscribers now, tap OK."
 																   delegate:self
 														  cancelButtonTitle:@"No"

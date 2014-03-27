@@ -397,31 +397,7 @@
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
-				NSArray *totals = @[@"background_total",
-									@"timeline_total",
-									@"timelineRefresh_total",
-									@"feedItem_total",
-									@"feedItemRefresh_total",
-									@"clubs_total",
-									@"clubsRefresh_total",
-									@"messages_total",
-									@"messagesRefresh_total",
-									@"alerts_total",
-									@"alertsRefresh_total",
-									@"verify_total",
-									@"verifyRefresh_total",
-									@"verifyAction_total",
-									@"search_total",
-									@"popular_total"
-									@"preview_total",
-									@"details_total",
-									@"camera_total",
-									@"join_total",
-									@"profile_total",
-									@"like_total"];
-				
-				for (NSString *key in totals)
-					[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+				[HONAppDelegate resetTotals];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];

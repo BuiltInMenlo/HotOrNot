@@ -51,16 +51,19 @@
 	[imageLoadingView startAnimating];
 	[_imageHolderView addSubview:imageLoadingView];
 	
-	UIImageView *heroImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieFullSizeGradientOverlay"]];
+	gradientImageView.frame = _imageHolderView.frame;
+	
+	UIImageView *heroImageView = [[UIImageView alloc] initWithFrame:_imageHolderView.frame];
 	heroImageView.alpha = 0.0;
 	heroImageView.userInteractionEnabled = YES;
 	[_imageHolderView addSubview:heroImageView];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		//_heroImageView.alpha = 1.0 - ((int)[[HONDeviceTraits sharedInstance] isRetina4Inch]);
-		heroImageView.alpha = (int)((request.URL == nil));// || (![[HONDeviceTraits sharedInstance] isRetina4Inch]));
+		heroImageView.alpha = 0.0;
 		heroImageView.image = image;
-				
+		[heroImageView addSubview:gradientImageView];
+		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			heroImageView.alpha = 1.0;
 		} completion:^(BOOL finished) {

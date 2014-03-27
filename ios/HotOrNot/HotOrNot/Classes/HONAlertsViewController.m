@@ -19,6 +19,7 @@
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONHeaderView.h"
+#import "HONTutorialView.h"
 #import "HONMessagesButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONAlertItemViewCell.h"
@@ -36,12 +37,12 @@
 #import "HONMatchContactsViewController.h"
 
 
-@interface HONAlertsViewController () <HONAlertItemViewCellDelegate, EGORefreshTableHeaderDelegate>
+@interface HONAlertsViewController () <EGORefreshTableHeaderDelegate, HONAlertItemViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSMutableArray *alertItems;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) NSMutableArray *headers;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -233,39 +234,6 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goTakeAvatar {
-	[[Mixpanel sharedInstance] track:@"Activity Alerts - Suggested Follow"
-						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	}];
-}
-
-- (void)_goRemoveTutorial {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}
-	}];
-}
-
 - (void)_goShare {
 	[[Mixpanel sharedInstance] track:@"Activity Alerts - Share"
 						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
@@ -288,32 +256,11 @@
 	NSLog(@"_selectedAlertsTab");
 	
 //	if ([HONAppDelegate incTotalForCounter:@"alerts"] == 1) {
-//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_activity-568h@2x" : @"tutorial_activity"];
-//		_tutorialImageView.userInteractionEnabled = YES;
-//		_tutorialImageView.alpha = 0.0;
+//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_verify"]];
+//		_tutorialView.delegate = self;
 //		
-//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:closeButton];
-//		
-//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-//		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:avatarButton];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-//		
-//		if (_tutorialImageView != nil) {
-//			[UIView animateWithDuration:0.33 animations:^(void) {
-//				_tutorialImageView.alpha = 1.0;
-//			}];
-//		}
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
 //	}
 }
 
@@ -323,6 +270,7 @@
 - (void)_tareAlertsTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 }
+
 
 #pragma mark - UI Presentation
 - (void)_removeCellForAlertItem:(HONAlertItemVO *)alertItemVO {
@@ -360,6 +308,30 @@
 			_emptySetImageView.hidden = [_alertItems count] > 0;
 		}
 	}
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Close Tutorial" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Activity Alerts - Tutorial Take Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	}];
 }
 
 

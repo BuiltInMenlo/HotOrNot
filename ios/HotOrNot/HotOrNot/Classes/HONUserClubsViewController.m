@@ -13,6 +13,7 @@
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONHeaderView.h"
+#import "HONTutorialView.h"
 #import "HONFontAllocator.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONMessagesButtonView.h"
@@ -21,6 +22,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONMessagesViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONChangeAvatarViewController.h"
 #import "HONUserClubDetailsViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubSettingsViewController.h"
@@ -33,8 +35,9 @@
 
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <EGORefreshTableHeaderDelegate, HONUserClubViewCellDelegate>
+@interface HONUserClubsViewController () <EGORefreshTableHeaderDelegate, HONTutorialViewDelegate, HONUserClubViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) HONUserClubVO *ownClub;
 @property (nonatomic, strong) NSMutableArray *joinedClubs;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
@@ -56,6 +59,11 @@
 		_bakedClubs = @[@{@"name": @"BFFs", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/823ded776ab04e59a53eb166db67a78d_c54b3a029c25457389a188ac8a6dff24-1391186184Large_640x1136.jpg"},
 						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"},
 						@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedClubsTab:) name:@"SELECTED_CLUBS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUB_TAB" object:nil];
 	}
 	
 	return (self);
@@ -159,12 +167,6 @@
 - (void)_goProfile {
 	[[Mixpanel sharedInstance] track:@"Clubs - Profile" properties:[[HONAnalyticsParams sharedInstance] userProperty]];	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
-	
-	//:/>
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
@@ -220,6 +222,55 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - Notifications
+- (void)_selectedClubsTab:(NSNotification *)notification {
+	NSLog(@"::|> _selectedClubsTab <|::");
+	
+//	if ([HONAppDelegate incTotalForCounter:@"clubs"] == 0) {
+//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_messages"]];
+//		_tutorialView.delegate = self;
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
+//	}
+}
+
+- (void)_refreshClubsTab:(NSNotification *)notification {
+	NSLog(@"::|> _refreshClubsTab <|::");
+	
+	[self _retrieveClubs];
+}
+- (void)_tareClubsTab:(NSNotification *)notification {
+	NSLog(@"::|> _tareClubsTab <|::");
+	
+	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"CLubs - Close Tutorial" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Clubs - Tutorial Take Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	}];
 }
 
 

@@ -1,50 +1,60 @@
 #!/bin/bash
 
-#// dev //#
-wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
-
-#// live //#
-#-- wipe_url="http://admin.letsvolley.com/admin/wipe_user.php"
-
 
 ##--#--#--#--#--#--#--#--#:#--#--#--#--#--#--#--#--##
 
 
-tier_name=$(echo "${wipe_url}" | cut -d \/ -f 3 | cut -d \. -f1 | cut -d \@ -f2)
-
+#-- default username
 username="snap"
-if [ $1 ]; then
-	username=${1}; fi
 
+#-- set tier to stage
+subdomain_api="admin-stage"
 
-isKill_flg=true
-while getopts "s" optname # --//> there's a '-s'
-	do # --/ loop thru the params
-		case "$optname" in #  -/> set flag based on char
+#-- parameter flags
+isKillSimulator_flg=true
+isPurgeUser_flg=true
 
-		"s") # )-/> passed in '-s'
-			isKill_flg=false
-			;;
+#-- check for parameter flags
+while getopts "klp" optname # --//> there's a '-k' '-l' or '-p'
+	do
+		case "$optname" in
+			"k") # )-/> passed in '-k'
+				#-- set to not kill simulator
+				isKillSimulator_flg=false
+				;;
+				
+			"l") # )-/> passed in '-l'
+				#-- set tier to live
+				subdomain_api="admin"
+				;;
 
-		"?") # )-/> anything else
-			echo "Unknown option $OPTARG"
-			exit 1
-			;;
+			"p") # )-/> passed in '-p'
+				#-- set to don't purge user
+				isPurgeUser_flg=false
+				;;
 
-		":") # )-/> no arg
-			echo "No argument value for option $OPTARG"
-			exit 1
-			;;
+			"?") # )-/> anything else
+				echo "Unknown option $OPTARG"
+				exit 1;
+				;;
 
-		*) # )-/> shouldn't occur
-			echo "Unknown error"
-			exit 1
-			;;
+			":") # )-/> no arg
+				echo "No argument value for option $OPTARG"
+				exit 1;
+				;;
+
+			*) # )-/> shouldn't occur
+				echo "Unknown error"
+				exit 1;
+				;;
 	esac
 done
 
-if $isKill_flg; then # --/> passed in the kill param
-	# store pid of the processes
+
+#-- kill the simulator
+if $isKillSimulator_flg; then
+	
+	# store pIDs of the processes
 	simulator_pid=`ps aux -cj | grep -i "iPhone Simulator" | awk '{print $2}'`
 	bridge_pid=`ps aux -cj | grep -i "SimulatorBridge" | awk '{print $2}'`
 	
@@ -58,11 +68,11 @@ if $isKill_flg; then # --/> passed in the kill param
 		if [ $bridge_pid ]; then # --/> terminate the process
 			kill -15 $bridge_pid; fi
 		
-		printf " Success!\n"
+		echo " Success!"
 		
-	else # --/> no pID
-		printf "Didn't find the simulator running...\n"; fi
-
+	else # --/> no pID(s)
+		echo "Didn't find the simulator running..."; fi
+		
 	# delete app from simulator(s)
 	app_paths=$(find ~/Library/Application\ Support/iPhone\ Simulator -name "Selfieclub.app")
 	if [ ! -z "$app_paths" ]; then
@@ -73,24 +83,55 @@ if $isKill_flg; then # --/> passed in the kill param
 			parent_path=$(dirname "$curr_line")
 			rm -R "${parent_path}"
 		done
-		printf " Done!\n"
+		echo " Done!"
 		
-	else
-		printf "Didn't find the app installed...\n"; fi
-fi
+	else echo "Didn't find the app installed..."; fi
+else echo "Skipping simulator cleanup..."; fi
 
 
-# call wipe user
-printf "Wiping '%s' from tier (%s)... " "${username}" "${tier_name}"
-result=$(curl --request POST --location "${wipe_url}" --user "volley:\$uper\$mack" --data-urlencode "username=${username}" --silent)
-isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
 
-#-- check for user JSON
-if [ "$isUser" ]; then printf "Completed!\n"
-else printf "Not found!\n"; fi
+# block & wipe from db
+if $isPurgeUser_flg; then
+	
+	#-- api attribs
+	block_url="http://${subdomain_api}.letsvolley.com/admin/block_user.php"
+	wipe_url="http://${subdomain_api}.letsvolley.com/admin/wipe_user.php"
+	login_api="volley:\$uper\$mack"
+	
+	
+	#-- call block user
+	printf "\nBlocking user '%s' from (%s.letsvolley.com)... " "${username}" "${subdomain_api}"
+	result=$(curl --request POST --location "${block_url}" --user "${login_api}" --data-urlencode "username=${username}" --silent | sed -E 's/\<(\/)?pre\>//g' | grep --max-count 1 --only-matching "${username}")
+
+	#-- check result for username
+	if [ -n "$result" ]; then echo "Completed!"
+
+		#-- call wipe user
+		printf "Wiping user '%s' from (%s.letsvolley.com)... " "${username}" "${subdomain_api}"
+		result=$(curl --request POST --location "${wipe_url}" --user "${login_api}" --data-urlencode "username=${username}" --silent | sed -E 's/\<(\/)?pre\>//g' | grep --max-count 1 --only-matching "${username}")
+
+		#-- check result for username
+		if [ -n "$result" ]; then echo "Completed!" ; else echo "Not found!"; fi
+		
+	else printf "Not found!\nSkipping wipe...\n"; fi		
+else printf "\nSkipping purge of user '%s' from (%s.letsvolley.com)...\n" "${username}" "${subdomain_api}"; fi
+
 
 
 #-- exit w/o error
 exit 0;
 
-# // [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=] // #
+
+##--#--#--#--#--#--#--#--#:#--#--#--#--#--#--#--#--##
+
+
+#// dev //#
+#-- http://api-stage.letsvolley.com/admin/wipe_user.php
+
+#// live //#
+#-- http://admin.letsvolley.com/admin/wipe_user.php
+
+
+#// not found result //#
+#-- result="Array ( [0] => blocking: [1] => BIM_Model_User Object ( ) )"
+

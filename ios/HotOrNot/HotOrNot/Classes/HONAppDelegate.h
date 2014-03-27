@@ -110,7 +110,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)s3BucketForType:(NSString *)bucketType;
 
 + (int)minimumAge;
-+ (NSRange)ageRangeAsSeconds:(BOOL)isInSeconds;
 
 + (int)profileSubscribeThreshold;
 
@@ -119,7 +118,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (int)totalForCounter:(NSString *)key;
 
 + (CGFloat)minSnapLuminosity;
-+ (NSDictionary *)infoForABTab;
++ (NSString *)verifyCopyForKey:(NSString *)key;
 
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
@@ -132,12 +131,10 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)composeEmotions;
 + (NSArray *)replyEmotions;
 
-+ (NSString *)verifyCTAFormat;
 + (NSDictionary *)stickerForSubject:(NSString *)subject;
 + (NSString *)kikCardURL;
 + (NSString *)shareURL;
 
-+ (NSString *)brandedAppName;
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 + (NSArray *)inviteCelebs;
@@ -164,6 +161,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)addFollowingToList:(NSDictionary *)followingUser;
 + (void)writeFollowingList:(NSArray *)followingUsers;
 + (BOOL)isFollowingUser:(int)userID;
+
++ (void)resetTotals;
 
 
 + (UIViewController *)appTabBarController;

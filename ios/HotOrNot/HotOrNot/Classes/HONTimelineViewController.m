@@ -25,6 +25,7 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONHeaderView.h"
+#import "HONTutorialView.h"
 #import "HONMessagesButtonView.h"
 #import "HONAddContactsViewController.h"
 #import "HONSuggestedFollowViewController.h"
@@ -44,7 +45,7 @@
 
 #import "JLBPopSlideTransition.h"
 
-@interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
+@interface HONTimelineViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTimelineItemViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -54,7 +55,7 @@
 @property (nonatomic, strong) NSMutableArray *clubs;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) UIView *emptyTimelineView;
 @property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
 @property (nonatomic) BOOL isScrollingDown;
@@ -73,7 +74,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshLikeCount:) name:@"REFRESH_LIKE_COUNT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showHomeTutorial:) name:@"SHOW_HOME_TUTORIAL" object:nil];
 	}
 	
 	return (self);
@@ -224,15 +224,15 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:backButton];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
-		[self _goRegistration];
-	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-		
-		[self performSelector:@selector(_retrieveClubs) withObject:nil afterDelay:0.33];
-		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
-	}
+//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
+//		[self _goRegistration];
+//	
+//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+//		
+//		[self performSelector:@selector(_retrieveClubs) withObject:nil afterDelay:0.33];
+//		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
+//	}
 }
 
 - (void)viewDidLoad {
@@ -326,38 +326,6 @@
 	[self presentViewController:navigationController animated:NO completion:^(void) {}];
 }
 
-- (void)_goTakeAvatar {
-	[[Mixpanel sharedInstance] track:@"Timeline - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	}];
-}
-
-- (void)_goRemoveTutorial {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
-	}];
-}
-
 - (void)_goAddContacts {
 	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -392,7 +360,7 @@
 #pragma mark - Notifications
 - (void)_showInvite:(NSNotification *)notification {
 	if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Find & invite friends to %@?", [HONAppDelegate brandedAppName]]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find & invite friends to Selfieclub?"
 															message:@""
 														   delegate:self
 												  cancelButtonTitle:@"Cancel"
@@ -418,17 +386,22 @@
 }
 
 - (void)_selectedHomeTab:(NSNotification *)notification {
+	NSLog(@"::|> _selectedHomeTab <|::");
+	
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	//[self _retrieveChallenges];
 	
-	if (_tutorialImageView != nil) {
-		[_tutorialImageView removeFromSuperview];
-		_tutorialImageView = nil;
-	}
+//	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 1) {
+//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_home"]];
+//		_tutorialView.delegate = self;
+//		
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
+//	}
 }
 
 - (void)_refreshHomeTab:(NSNotification *)notification {
-//	NSLog(@"_refreshHomeTab");
+	NSLog(@"::|> _refreshHomeTab <|::");
 	
 	if (_tableView.contentOffset.y < 150.0)
 		[_tableView setContentOffset:CGPointZero animated:YES];
@@ -457,35 +430,6 @@
 	
 //	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 //	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
-}
-
-- (void)_showHomeTutorial:(NSNotification *)notification {
-	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 1) {
-//		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-//		_tutorialImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"tutorial_home-568h@2x" : @"tutorial_home"];
-//		_tutorialImageView.userInteractionEnabled = YES;
-//		_tutorialImageView.alpha = 0.0;
-//		
-//		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		closeButton.frame = CGRectMake(241.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-//		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-//		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:closeButton];
-//		
-//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-//		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-//		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-//		[_tutorialImageView addSubview:avatarButton];
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
-//		
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_tutorialImageView.alpha = 1.0;
-//		}];
-	}
 }
 
 
@@ -612,6 +556,30 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	[self _goCreateChallenge];
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Timeline - Close Tutorial" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
+	[[Mixpanel sharedInstance] track:@"Timeline - Tutorial Take Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	}];
 }
 
 

@@ -1,19 +1,20 @@
 #!/bin/bash
 
 
-if [ ! ${!#} ]; then
-	exit 0;
-else
-	username="${!#}"; fi
+#-- check for username param
+if [ ! ${!#} ]; then 
+	exit 1;
+else username="${!#}"; fi
 
-
-isStage_flg=false
+#-- set tier to live
+subdomain_api="admin"
 while getopts "s" optname # --//> there's a '-s'
 	do # --/ loop thru the params
-		case "$optname" in #  -/> set flag based on char
+		case "$optname" in
 
 		"s") # )-/> passed in '-s'
-			isStage_flg=true
+			#-- set tier to stage
+			subdomain_api="admin-stage"
 			;;
 
 		"?") # )-/> anything else
@@ -34,35 +35,26 @@ while getopts "s" optname # --//> there's a '-s'
 done
 
 
-
-
-
-
- # --/> use stage 
-if $isStage_flg; then api_subdomain="admin-stage"
-else api_subdomain="admin"; fi
-
-block_url="http://${api_subdomain}.letsvolley.com/admin/block_user.php"
-wipe_url="http://${api_subdomain}.letsvolley.com/admin/wipe_user.php"
+ #-- api attribs
+block_url="http://${subdomain_api}.letsvolley.com/admin/block_user.php"
+wipe_url="http://${subdomain_api}.letsvolley.com/admin/wipe_user.php"
+login_api="volley:\$uper\$mack"
 
 
 # call block user
-printf "Blocking user '%s' from (%s.letsvolley.com)... " "${username}" "${api_subdomain}"
-result=$(curl --request POST --location "${block_url}" --user "volley:\$uper\$mack" --data-urlencode "username=${username}" --silent)
-isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
+printf "Blocking user '%s' from (%s.letsvolley.com)... " "${username}" "${subdomain_api}"
+result=$(curl --request POST --location "${block_url}" --user "${login_api}" --data-urlencode "username=${username}" --silent | sed -E 's/\<(\/)?pre\>//g' | grep --max-count 1 --only-matching "${username}")
 
 #-- check for user json
-if [ "$isUser" ]; then printf "Completed!\n"
-else printf "Not found!\n"; fi
+if [ -n "$result" ]; then echo "Completed!"
+	
+	# call wipe user
+	printf "Wiping user '%s' from (%s.letsvolley.com)... " "${username}" "${subdomain_api}"
+	result=$(curl --request POST --location "${wipe_url}" --user "${login_api}" --data-urlencode "username=${username}" --silent | sed -E 's/\<(\/)?pre\>//g' | grep --max-count 1 --only-matching "${username}")
 
-# call wipe user
-printf "Wiping user '%s' from (%s.letsvolley.com)... " "${username}" "${api_subdomain}"
-result=$(curl --request POST --location "${wipe_url}" --user "volley:\$uper\$mack" --data-urlencode "username=${username}" --silent)
-isUser=$(echo "${result}" | sed 's/\[//g; s/\]//g' | grep --max-count 1 --only-matching "${username}")
-
-#-- check for user json
-if [ "$isUser" ]; then printf "Completed!\n"
-else printf "Not found!\n"; fi
+	#-- check for user json
+	if [ -n "$result" ]; then echo "Completed!" ; else echo "Not found!"; fi
+else echo "Not found!"; fi
 
 
 #-- exit w/o error
@@ -74,10 +66,9 @@ exit 0;
 #// dev
 #-- http://api-stage.letsvolley.com/admin/wipe_user.php
 
-#// staging / avicii
-#-- http://api-dev.letsvolley.com/admin/wipe_user.php
-
 #// live
-#-- http://130.letsvolley.com/admin/wipe_user.php
 #-- http://admin.letsvolley.com/admin/wipe_user.php
 
+
+#// not found result
+#-- result="Array ( [0] => blocking: [1] => BIM_Model_User Object ( ) )"

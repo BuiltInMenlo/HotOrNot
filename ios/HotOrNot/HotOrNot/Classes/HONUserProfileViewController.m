@@ -325,7 +325,7 @@
 									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty] toCohortUser:_userVO]];
 	
 	if ([HONAppDelegate totalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Invite your friends to %@?", [HONAppDelegate brandedAppName]]
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
 															message:@"Get more subscribers now, tap OK."
 														   delegate:self
 												  cancelButtonTitle:@"No"
@@ -392,7 +392,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Verify & follow user", @"Verify user only", [NSString stringWithFormat:@"This user does not look %d to %d", [HONAppDelegate ageRangeAsSeconds:NO].location, [HONAppDelegate ageRangeAsSeconds:NO].length], nil];
+													otherButtonTitles:@"Verify & follow user", @"Verify user only", @"This user does not belong", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:HONUserProfileActionSheetTypeVerify];
 	[actionSheet showInView:self.view];
@@ -405,7 +405,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive %@ updates from %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", _userVO.username]
+														message:[@"You will receive Selfieclub updates from " stringByAppendingString:_userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -419,7 +419,7 @@
 	[[Mixpanel sharedInstance] track:@"User Profile - Unsubscribe" properties:properties];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will no longer receive %@ updates from %@", ([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"Volley" : @"Selfieclub", _userVO.username]
+														message:[@"You will no longer receive Selfieclub updates from %@" stringByAppendingString:_userVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
@@ -491,6 +491,12 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goSelfies {
+	[[Mixpanel sharedInstance] track:@"User Profile - Show Selfies" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	
 }
 
 - (void)_goSettings {
@@ -613,8 +619,8 @@
 		_actionAlertsHolderView = nil;
 	}
 	
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 344.0 + ([_alertItems count] * 49.0)));
-	_actionAlertsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 324.0, 320.0, [_alertItems count] * 49.0)];
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 393.0 + ([_alertItems count] * 49.0)));
+	_actionAlertsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 373.0, 320.0, [_alertItems count] * 49.0)];
 	[_scrollView addSubview:_actionAlertsHolderView];
 	
 	CGFloat offset = 0.0;
@@ -746,6 +752,13 @@
 		[helpButton setBackgroundImage:[UIImage imageNamed:@"helpButton_Active"] forState:UIControlStateHighlighted];
 		[helpButton addTarget:self action:@selector(_goFAQ) forControlEvents:UIControlEventTouchUpInside];
 		[_scrollView addSubview:helpButton];
+		
+		UIButton *selfiesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		selfiesButton.frame = CGRectMake(0.0, 324.0, 320.0, 45.0);
+		[selfiesButton setBackgroundImage:[UIImage imageNamed:@"helpButton_nonActive"] forState:UIControlStateNormal];
+		[selfiesButton setBackgroundImage:[UIImage imageNamed:@"helpButton_Active"] forState:UIControlStateHighlighted];
+		[selfiesButton addTarget:self action:@selector(_goSelfies) forControlEvents:UIControlEventTouchUpInside];
+		[_scrollView addSubview:selfiesButton];
 		
 	} else {
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -27,7 +27,6 @@
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *changeTintButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic) int tintIndex;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -44,7 +43,7 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"cameraOverlayFade-568h@2x" : @"cameraOverlayFade"]];
+		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]];
 		gradientImageView.frame = self.frame;
 		[self addSubview:gradientImageView];
 		
@@ -111,28 +110,6 @@
 	}];
 	
 	if (isTutorial) {
-//		_infoImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//		_infoImageView.image = [UIImage imageNamed:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
-//		[self addSubview:_infoImageView];
-//		
-//		UIButton *tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		tutorialButton.frame = _infoImageView.frame;
-//		[tutorialButton addTarget:self action:@selector(_goCloseTutorial:) forControlEvents:UIControlEventTouchUpInside];
-//		[self addSubview:tutorialButton];
-//		
-//		_headerBGImageView.hidden = YES;
-//		_flipButton.hidden = YES;
-//		_cancelButton.hidden = YES;
-//		_takePhotoButton.hidden = YES;
-		
-		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate switchEnabledForKey:@"volley_brand"]) ? @"tutorial_camera_volley" : @"tutorial_camera_selfieclub"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 185.0);
-		_tutorialImageView.alpha = 0.0;
-		[self addSubview:_tutorialImageView];
-	
-		[UIView animateWithDuration:0.33 animations:^(void) {
-			_tutorialImageView.alpha = 1.0;
-		}];
 	}
 }
 
@@ -165,20 +142,6 @@
 	_cameraRollButton.hidden = NO;
 	_cancelButton.hidden = NO;
 	_takePhotoButton.hidden = NO;
-	
-	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = _tutorialImageView.frame;
-	[closeTutorialButton addTarget:self action:@selector(_goCloseBubble) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialImageView addSubview:closeTutorialButton];
-}
-
-- (void)_goCloseBubble {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tutorialImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[_tutorialImageView removeFromSuperview];
-		_tutorialImageView = nil;
-	}];
 }
 
 - (void)_goFlipCamera {
@@ -198,8 +161,6 @@
 }
 
 - (void)_goTakePhoto {
-	[self _goCloseBubble];
-	
 	_blackMatteView.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_blackMatteView.alpha = 1.0;

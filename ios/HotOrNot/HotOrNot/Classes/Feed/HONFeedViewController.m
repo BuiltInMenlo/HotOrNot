@@ -266,38 +266,6 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-- (void)_goTakeAvatar
-{
-//	[[Mixpanel sharedInstance] track:@"Timeline - Take New Avatar" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		if (_tutorialImageView != nil) {
-//			_tutorialImageView.alpha = 0.0;
-//		}
-//	} completion:^(BOOL finished) {
-//		if (_tutorialImageView != nil) {
-//			[_tutorialImageView removeFromSuperview];
-//			_tutorialImageView = nil;
-//		}
-//		
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:NO completion:nil];
-//	}];
-}
-
-- (void)_goRemoveTutorial
-{
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		if (_tutorialImageView != nil) {
-//			_tutorialImageView.alpha = 0.0;
-//		}
-//	} completion:^(BOOL finished) {
-//		if ([HONAppDelegate switchEnabledForKey:@"firstrun_invite"])
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_INVITE" object:nil];
-//	}];
-}
-
 - (void)_goAddContacts
 {
 //	[[Mixpanel sharedInstance] track:@"Timeline - Invite Friends" properties:[[HONAnalyticsSupport sharedInstance] userProperty]];
@@ -799,7 +767,7 @@
 {
 	_heroImageView.image = image;
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"selfieFadeOverlay-568h@2x" : @"selfieFadeOverlay"]];
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieFullSizeGradientOverlay"]];
 	gradientImageView.frame = _heroImageView.frame;
 	[_heroImageView addSubview:gradientImageView];
 	
@@ -818,7 +786,7 @@
 	_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 	[_heroImageView setImageWithURL:[NSURL URLWithString:[opponent.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[[HONDeviceTraits sharedInstance] isRetina4Inch] ? @"selfieFadeOverlay-568h@2x" : @"selfieFadeOverlay"]];
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieFullSizeGradientOverlay"]];
 	gradientImageView.frame = _heroImageView.frame;
 	[_heroImageView addSubview:gradientImageView];
 }

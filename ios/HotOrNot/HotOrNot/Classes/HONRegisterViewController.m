@@ -219,7 +219,6 @@
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 			}];
 			
-			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
@@ -454,7 +453,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", [[HONAppDelegate brandedAppName] lowercaseString]]];
+		splashTxtImageView.image = [UIImage imageNamed:@"splashBG"];
 		
 		[UIView animateWithDuration:0.33 animations:^(void) {
 			_splashHolderView.alpha = 1.0;
@@ -510,7 +509,7 @@
 //		};
 //		
 //		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//			splashTxtImageView.image = [UIImage imageNamed:[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"splashText_%@-568h@2x" : @"splashText_%@", [[HONAppDelegate brandedAppName] lowercaseString]]];
+//			splashTxtImageView.image = [UIImage imageNamed:@"splashBG"];
 //		};
 //		
 //		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

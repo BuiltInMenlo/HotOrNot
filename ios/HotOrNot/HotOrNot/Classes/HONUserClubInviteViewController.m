@@ -12,7 +12,7 @@
 #import "HONUserClubInviteViewController.h"
 #import "HONHeaderView.h"
 
-@interface HONUserClubInviteViewController () <EGORefreshTableHeaderDelegate>
+@interface HONUserClubInviteViewController () //<EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;

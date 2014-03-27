@@ -67,7 +67,7 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 		ctaLabel.shadowColor = [UIColor blackColor];
 		ctaLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		ctaLabel.numberOfLines = 2;
-		ctaLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCTAFormat] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_opponentVO.username] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+		ctaLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"cta_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_opponentVO.username] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 		[self addSubview:ctaLabel];
 		
 		[ctaLabel sizeToFit];
