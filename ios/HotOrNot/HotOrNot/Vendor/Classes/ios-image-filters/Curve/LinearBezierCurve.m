@@ -12,7 +12,7 @@
 @implementation LinearBezierCurve
 
 +(LinearBezierCurve *)linearCurveWithStartPoint:(CGPoint)start endPoint:(CGPoint)end {
-	return [[[LinearBezierCurve alloc] initWithStartPoint:start endPoint:end] autorelease];
+	return [[LinearBezierCurve alloc] initWithStartPoint:start endPoint:end];
 }
 
 -(id)initWithStartPoint:(CGPoint)start endPoint:(CGPoint)end {

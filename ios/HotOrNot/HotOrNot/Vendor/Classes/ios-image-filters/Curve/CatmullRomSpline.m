@@ -14,7 +14,7 @@
 
 
 +(CatmullRomSpline *)catmullRomSplineAtPoint:(CGPoint)start {
-	return [[[CatmullRomSpline alloc] initAtPoint:start] autorelease];
+	return [[CatmullRomSpline alloc] initAtPoint:start];
 }
  
 

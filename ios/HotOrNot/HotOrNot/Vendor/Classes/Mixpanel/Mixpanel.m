@@ -130,7 +130,7 @@ static Mixpanel *sharedInstance = nil;
         NSLog(@"%@ warning empty api token", self);
     }
     if (self = [self init]) {
-        self.people = [[[MixpanelPeople alloc] initWithMixpanel:self] autorelease];
+        self.people = [[MixpanelPeople alloc] initWithMixpanel:self];
         self.apiToken = apiToken;
         _flushInterval = flushInterval;
         self.flushOnBackground = YES;
@@ -145,7 +145,7 @@ static Mixpanel *sharedInstance = nil;
         self.taskId = UIBackgroundTaskInvalid;
         NSString *label = [NSString stringWithFormat:@"com.mixpanel.%@.%p", apiToken, self];
         _serialQueue = dispatch_queue_create([label UTF8String], DISPATCH_QUEUE_SERIAL);
-        self.dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+        self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
         [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
 
@@ -690,7 +690,7 @@ static Mixpanel *sharedInstance = nil;
             break;
         }
 
-        NSString *response = [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease];
+        NSString *response = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
         if ([response intValue] == 0) {
             NSLog(@"%@ %@ api rejected some items", self, endpoint);
         };

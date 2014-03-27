@@ -868,9 +868,9 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 		{0, -0.2, 1.8, -0.2, 0},
 		{0, 0.0, -0.2,  0.0, 0}};
 		
-	NSMutableArray *kernel = [[[NSMutableArray alloc] initWithCapacity:5] autorelease];
+	NSMutableArray *kernel = [[NSMutableArray alloc] initWithCapacity:5];
 	for (int i = 0; i < 5; i++) {
-		NSMutableArray *row = [[[NSMutableArray alloc] initWithCapacity:5] autorelease];
+		NSMutableArray *row = [[NSMutableArray alloc] initWithCapacity:5];
 		for (int j = 0; j < 5; j++) {
 			[row addObject:[NSNumber numberWithDouble:dKernel[i][j]]];
 		}
@@ -886,9 +886,9 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 		{0, 1.0, -4.0, 1.0, 0},
 		{0, 0.0, 1.0,  0.0, 0}};
 	
-	NSMutableArray *kernel = [[[NSMutableArray alloc] initWithCapacity:5] autorelease];
+	NSMutableArray *kernel = [[NSMutableArray alloc] initWithCapacity:5];
 	for (int i = 0; i < 5; i++) {
-		NSMutableArray *row = [[[NSMutableArray alloc] initWithCapacity:5] autorelease];
+		NSMutableArray *row = [[NSMutableArray alloc] initWithCapacity:5];
 		for (int j = 0; j < 5; j++) {
 			[row addObject:[NSNumber numberWithDouble:dKernel[i][j]]];
 		}
@@ -899,7 +899,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 
 + (NSArray*) makeKernel:(int)length
 {
-	NSMutableArray *kernel = [[[NSMutableArray alloc] initWithCapacity:10] autorelease];
+	NSMutableArray *kernel = [[NSMutableArray alloc] initWithCapacity:10];
 	int radius = length / 2;
 	
 	double m = 1.0f/(2*M_PI*radius*radius);
@@ -908,7 +908,7 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 	
 	for (int y = 0-radius; y < length-radius; y++)
 	{
-		NSMutableArray *row = [[[NSMutableArray alloc] initWithCapacity:10] autorelease];
+		NSMutableArray *row = [[NSMutableArray alloc] initWithCapacity:10];
         for (int x = 0-radius; x < length-radius; x++)
         {
 			double dist = (x*x) + (y*y);
@@ -920,11 +920,11 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 	}
 	
 	//for Kernel-Sum of 1.0
-	NSMutableArray *finalKernel = [[[NSMutableArray alloc] initWithCapacity:length] autorelease];
+	NSMutableArray *finalKernel = [[NSMutableArray alloc] initWithCapacity:length];
 	for (int y = 0; y < length; y++)
 	{
 		NSMutableArray *row = [kernel objectAtIndex:y];
-		NSMutableArray *newRow = [[[NSMutableArray alloc] initWithCapacity:length] autorelease];
+		NSMutableArray *newRow = [[NSMutableArray alloc] initWithCapacity:length];
         for (int x = 0; x < length; x++)
         {
 			NSNumber *value = [row objectAtIndex:x];
@@ -945,9 +945,9 @@ void filterAdjust(UInt8 *pixelBuf, UInt32 offset, void *context)
 //		{4.0f/273.0f, 16.0f/273.0f, 26.0f/273.0f, 16.0f/273.0f, 4.0f/273.0f},             
 //		{1.0f/273.0f, 4.0f/273.0f, 7.0f/273.0f, 4.0f/273.0f, 1.0f/273.0f}};
 //	
-//	NSMutableArray *kernel = [[[NSMutableArray alloc] initWithCapacity:5] autorelease];
+//	NSMutableArray *kernel = [[NSMutableArray alloc] initWithCapacity:5];
 //	for (int i = 0; i < 5; i++) {
-//		NSMutableArray *row = [[[NSMutableArray alloc] initWithCapacity:5] autorelease];
+//		NSMutableArray *row = [[NSMutableArray alloc] initWithCapacity:5];
 //		for (int j = 0; j < 5; j++) {
 //			[row addObject:[NSNumber numberWithDouble:dKernel[i][j]]];
 //		}

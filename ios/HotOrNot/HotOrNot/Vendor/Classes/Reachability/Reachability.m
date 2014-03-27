@@ -312,7 +312,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	if (ref) {
 		
-		Reachability *r = [[[self alloc] initWithReachabilityRef: ref] autorelease];
+		Reachability *r = [[self alloc] initWithReachabilityRef: ref];
 		
 		r.key = hostName;
 
@@ -350,7 +350,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 	if (ref) {
 		
-		Reachability *r = [[[self alloc] initWithReachabilityRef: ref] autorelease];
+		Reachability *r = [[self alloc] initWithReachabilityRef: ref];
 		
 		r.key = [self makeAddressKey: hostAddress->sin_addr.s_addr];
 		

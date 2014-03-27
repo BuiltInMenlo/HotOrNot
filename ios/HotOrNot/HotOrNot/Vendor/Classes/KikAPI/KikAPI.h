@@ -223,9 +223,9 @@ typedef enum KikAPIDataType
  * myMessage.title = @"Hello world";
  * myMessage.description = @"This is my first Kik message";
  * [myMessage setPreviewFromImage:[UIImage imageNamed:@"resource_name_of_my_image.png"]];
- * myMessage.androidURIs = [[[NSArray alloc] initWithObjects:@"market://details?id=com.kik.myapplication", nil] autorelease];
- * myMessage.iphoneURIs = [[[NSArray alloc] initWithObjects:@"http://itunes.com/apps/myapplication/38492348923", nil] autorelease];
- * myMessage.genericURIs = [[[NSArray alloc] initWithObjects:@"http://www.mysite.com/myapplication", nil] autorelease];
+ * myMessage.androidURIs = [[NSArray alloc] initWithObjects:@"market://details?id=com.kik.myapplication", nil];
+ * myMessage.iphoneURIs = [[NSArray alloc] initWithObjects:@"http://itunes.com/apps/myapplication/38492348923", nil];
+ * myMessage.genericURIs = [[NSArray alloc] initWithObjects:@"http://www.mysite.com/myapplication", nil];
  *
  * // Remember to hold onto the conversation ID so that you can automatically send the message to the right conversation
  * [KikAPIClient sendMessage:myMessage toConversation:conversationID];

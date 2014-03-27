@@ -14,7 +14,7 @@
 @implementation Spline
 
 +(Spline *)splineAtPoint:(CGPoint)start {
-	return [[[Spline alloc] initAtPoint:start] autorelease];
+	return [[Spline alloc] initAtPoint:start];
 }
 
 -(id)initAtPoint:(CGPoint)start {

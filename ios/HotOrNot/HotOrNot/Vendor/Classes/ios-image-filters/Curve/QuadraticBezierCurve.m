@@ -14,7 +14,7 @@
 @implementation QuadraticBezierCurve
 
 +(QuadraticBezierCurve *)quadraticCurveWithStartPoint:(CGPoint)start controlPoint:(CGPoint)control endPoint:(CGPoint)end {
-	return [[[QuadraticBezierCurve alloc] initWithStartPoint:start controlPoint:control endPoint:end] autorelease];
+	return [[QuadraticBezierCurve alloc] initWithStartPoint:start controlPoint:control endPoint:end];
 }
 
 -(id)initWithStartPoint:(CGPoint)start controlPoint:(CGPoint)control endPoint:(CGPoint)end {
@@ -57,9 +57,6 @@
 	QuadraticBezierCurve *curve2 = [[QuadraticBezierCurve alloc] initWithStartPoint:mid controlPoint:ctrl2 endPoint:p2];
 	
 	NSArray *result = [NSArray arrayWithObjects:curve1, curve2, nil];
-	
-	[curve1 release];
-	[curve2 release];
 	
 	return result;
 }
