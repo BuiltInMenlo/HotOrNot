@@ -70,7 +70,7 @@
 	};
 	
 	void (^avatarFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_messageReplyVO.avatarPrefix forAvatarBucket:YES completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_messageReplyVO.avatarPrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
 	};
 	
 	void (^challengeSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -80,7 +80,7 @@
 	};
 	
 	void (^challengeFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_messageReplyVO.avatarPrefix forAvatarBucket:NO completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_messageReplyVO.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
 	};
 	
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

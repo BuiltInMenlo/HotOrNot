@@ -156,8 +156,8 @@
 	
 	_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_cancelButton.frame = CGRectMake(249.0, 0.0, 64.0, 44.0);
-	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelGreyButton_nonActive"] forState:UIControlStateNormal];
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelGreyButton_Active"] forState:UIControlStateHighlighted];
 	_cancelButton.alpha = 0.75;
 	[_headerView addSubview:_cancelButton];
 	

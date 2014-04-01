@@ -12,6 +12,14 @@
 
 #import "HONOpponentVO.h"
 
+
+typedef enum {
+	HONS3BucketTypeAvatars = 0,
+	HONS3BucketTypeSelfies,
+	HONS3BucketTypeClubs
+} HONS3BucketType;
+
+
 // api endpts
 extern NSString * const kAPIChallenges;
 extern NSString * const kAPIComments;
@@ -62,9 +70,12 @@ extern NSString * const kAPIClubsFeatured;
 extern NSString * const kAPIUsersGetClubs;
 extern NSString * const kAPIUsersGetClubInvites;
 
+// network times
+extern const CGFloat kNotifiyDelay;
+
+
 
 @interface HONAPICaller : NSObject
-
 + (HONAPICaller *)sharedInstance;
 
 
@@ -77,11 +88,19 @@ extern NSString * const kAPIUsersGetClubInvites;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
+ * Config
+ **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
+- (void)retreiveBootConfigWithEpoch:(int)timestamp completion:(void (^)(NSObject *result))completion;
+//**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
+
+/**
  * Images
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket completion:(void (^)(NSObject *result))completion;
-- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion;
-- (void)uploadPhotosToS3:(NSArray *)imageData intoBucket:(NSString *)bucket withFilename:(NSString *)filename completion:(void (^)(NSObject *result))completion;
+- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType completion:(void (^)(NSObject *result))completion;
+- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion;
+//- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket completion:(void (^)(NSObject *result))completion;
+//- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion;
+- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
@@ -139,7 +158,7 @@ extern NSString * const kAPIUsersGetClubInvites;
  * Clubs
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 //- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-//- (void)createClubWithUserID:(int)userID withName:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion;
+- (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion;
 //- (void)inviteUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID ownerID:(int)ownerID withContacts:(NSArray *)contacts completion:(void (^)(NSObject *result))completion;
 //- (void)joinClubWithClubID:(int)clubID withOwnerID:(int)ownerID withRequstingUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //- (void)quitUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;

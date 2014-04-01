@@ -14,16 +14,26 @@
 @end
 
 @implementation HONInAppContactViewCell
+@synthesize delegate = _delegate;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
 
+//- (id <HONInAppContactViewCellDelegate>)delegate {
+//	return (_delegate);
+//}
+//
+//- (void)setDelegate:(id <HONInAppContactViewCellDelegate>)delegate {
+//	if (_delegate != delegate)
+//		_delegate = delegate;
+//}
+
 
 - (id)init {
 	if ((self = [super init])) {
 		_inviteCheckButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteCheckButton.frame = CGRectMake(212.0, 10.0, 104.0, 44.0);
+		_inviteCheckButton.frame = CGRectMake(128.0, 10.0, 104.0, 44.0);
 		[_inviteCheckButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
 		[_inviteCheckButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteCheckButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
@@ -42,13 +52,35 @@
 }
 
 
-#pragma mark - Navigation
-- (void)_goUninvite {
+#pragma mark - Public APIs
+- (void)setUserVO:(HONTrivialUserVO *)userVO {
+	[super setUserVO:userVO];
 	
+	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, _nameLabel.frame.size.width - 50.0, _nameLabel.frame.size.height);
 }
 
+
+#pragma mark - Navigation
 - (void)_goInvite {
+	_inviteCheckButton.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_inviteButton.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		_inviteButton.hidden = YES;
+	}];
 	
+	[self.delegate inAppContactViewCell:self inviteUser:self.userVO toggleSelected:YES];
+}
+
+- (void)_goUninvite {
+	_inviteButton.hidden = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_inviteButton.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		_inviteCheckButton.hidden = YES;
+	}];
+	
+	[self.delegate inAppContactViewCell:self inviteUser:self.userVO toggleSelected:NO];
 }
 
 

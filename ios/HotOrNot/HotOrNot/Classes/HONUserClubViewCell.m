@@ -51,7 +51,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userClubVO.coverImagePrefix forAvatarBucket:YES completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userClubVO.coverImagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
 		
 		coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {

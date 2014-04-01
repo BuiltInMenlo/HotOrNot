@@ -63,16 +63,12 @@
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	
-	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-avatars" withFilename:_imagePrefix completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imagePrefix completion:^(NSObject *result) {		
 		[_cameraOverlayView uploadComplete];
 		
 		[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:_imagePrefix completion:^(NSObject *result){
 			if (![[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 //				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];

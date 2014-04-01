@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "MBProgressHUD.h"
 
 #import "HONCreateClubViewController.h"
 #import "HONAnalyticsParams.h"
@@ -16,6 +17,17 @@
 #import "HONUserClubInviteViewController.h"
 
 @interface HONCreateClubViewController ()
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UIView *formHolderView;
+@property (nonatomic, strong) UIButton *clubNameButton;
+@property (nonatomic, strong) UIButton *blurbButton;
+@property (nonatomic, strong) UITextField *clubNameTextField;
+@property (nonatomic, strong) UITextField *blurbTextField;
+@property (nonatomic, strong) UIImageView *clubNameCheckImageView;
+@property (nonatomic, strong) UIImageView *blurbCheckImageView;
+@property (nonatomic, strong) NSString *clubName;
+@property (nonatomic, strong) NSString *clubBlurb;
+@property (nonatomic, strong) NSString *clubImagePrefix;
 @end
 
 
@@ -23,7 +35,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		_clubName = @"";
+		_clubBlurb = @"";
+		_clubImagePrefix = @"";
 	}
 	
 	return (self);
@@ -43,6 +57,31 @@
 
 
 #pragma mark - Data Calls
+- (void)_submitClub {
+	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:_clubBlurb withImagePrefix:_clubImagePrefix completion:^(NSObject *result) {
+		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) {
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initAsModal:NO] animated:YES];
+			
+		} else {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			
+			[_progressHUD setYOffset:-80.0];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = @"Error!";
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+		}
+	}];
+}
 
 
 #pragma mark - View lifecycle
@@ -51,13 +90,83 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
+	_formHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	[self.view addSubview:_formHolderView];
+	
+	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_clubNameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_clubNameButton addTarget:self action:@selector(_goClubName) forControlEvents:UIControlEventTouchUpInside];
+	[_formHolderView addSubview:_clubNameButton];
+	
+	UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	addImageButton.frame = CGRectMake(8.0, 85.0, 48.0, 48.0);
+	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
+	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
+	[addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+	[_formHolderView addSubview:addImageButton];
+	
+	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 92.0, 308.0, 30.0)];
+	//[_clubNameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_clubNameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_clubNameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_clubNameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_clubNameTextField setReturnKeyType:UIReturnKeyDone];
+	[_clubNameTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
+	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_clubNameTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_clubNameTextField.placeholder = @"Enter club name";
+	_clubNameTextField.text = @"";
+	[_clubNameTextField setTag:0];
+	_clubNameTextField.delegate = self;
+	[_formHolderView addSubview:_clubNameTextField];
+	
+	_clubNameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_clubNameCheckImageView.frame = CGRectOffset(_clubNameCheckImageView.frame, 257.0, 77.0);
+	_clubNameCheckImageView.alpha = 0.0;
+	[_formHolderView addSubview:_clubNameCheckImageView];
+	
+	_blurbButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_blurbButton.frame = CGRectMake(0.0, 141.0, 320.0, 128.0);
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_blurbButton addTarget:self action:@selector(_goBlurb) forControlEvents:UIControlEventTouchUpInside];
+	[_formHolderView addSubview:_blurbButton];
+	
+	_blurbTextField = [[UITextField alloc] initWithFrame:CGRectMake(17.0, 157.0, 250.0, 90.0)];
+	[_blurbTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_blurbTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_blurbTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_blurbTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_blurbTextField setReturnKeyType:UIReturnKeyDone];
+	[_blurbTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
+	[_blurbTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_blurbTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_blurbTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_blurbTextField.keyboardType = UIKeyboardTypeEmailAddress;
+	_blurbTextField.placeholder = @"Enter club caption";
+	_blurbTextField.text = @"";
+	[_blurbTextField setTag:1];
+	_blurbTextField.delegate = self;
+	[_formHolderView addSubview:_blurbTextField];
+	
+	_blurbCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_blurbCheckImageView.frame = CGRectOffset(_blurbCheckImageView.frame, 257.0, 141.0);
+	_blurbCheckImageView.alpha = 0.0;
+	[_formHolderView addSubview:_blurbCheckImageView];
+	
+	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Club"];
 	[self.view addSubview:headerView];
-	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"xButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"xButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:closeButton];
 	
@@ -70,6 +179,7 @@
 }
 
 - (void)viewDidLoad {
+//	[_blurbTextField addObserver:self forKeyPath:@"contentSize" options:(NSKeyValueObservingOptionNew) context:NULL];
 	[super viewDidLoad];
 }
 
@@ -102,8 +212,115 @@
 
 - (void)_goNext {
 	[[Mixpanel sharedInstance] track:@"Create Club - Next" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initAsModal:NO] animated:YES];
+	
+	if ([_clubNameTextField isFirstResponder])
+		[_clubNameTextField resignFirstResponder];
+	
+	if ([_blurbTextField isFirstResponder])
+		[_blurbTextField resignFirstResponder];
+	
+	
+	[_clubNameButton setSelected:NO];
+	[_blurbButton setSelected:NO];
+	
+	if ([_clubName length] == 0) {
+		[_clubNameButton setSelected:YES];
+		[_clubNameTextField becomeFirstResponder];
+		
+		_clubNameCheckImageView.alpha = 1.0;
+		_clubNameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		
+		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
+									message:@"You need to enter a name for your club!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	
+	} else
+		[self _submitClub];
 }
 
+- (void)_goClubName {
+	[[Mixpanel sharedInstance] track:@"Create Club - Enter Name" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+}
+
+- (void)_goCamera {
+	[[Mixpanel sharedInstance] track:@"Create Club - Choose Image" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+}
+
+- (void)_goBlurb {
+	[[Mixpanel sharedInstance] track:@"Create Club - Enter Description" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+}
+
+
+#pragma mark - Notifications
+//-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+//	UITextView *tv = object;
+//	CGFloat topCorrect = MAX(0.0, ([tv bounds].size.height - [tv contentSize].height * [tv zoomScale]) * 0.5);
+//	//CGFloat topCorrect = ([tv bounds].size.height - [tv contentSize].height * [tv zoomScale]) * 0.5;
+//	//topCorrect = (topCorrect < 0.0) ? 0.0 : topCorrect;
+//	tv.contentOffset = (CGPoint){.x = 0, .y = -topCorrect};
+//}
+
+- (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+	if ([_clubNameTextField isFirstResponder]) {
+		_clubNameCheckImageView.alpha = 1.0;
+		_clubNameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+	
+	} else if ([_blurbTextField isFirstResponder]) {
+		_blurbCheckImageView.alpha = 1.0;
+		_blurbCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+	}
+}
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	if (textField.tag == 0) {
+		_clubNameCheckImageView.alpha = 0.0;
+		[_clubNameButton setSelected:YES];
+		[_blurbButton setSelected:NO];
+		
+	} else if (textField.tag == 1) {
+		_blurbCheckImageView.alpha = 0.0;
+		[_clubNameButton setSelected:NO];
+		[_blurbButton setSelected:YES];
+	}
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	return (YES);
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	_clubName = _clubNameTextField.text;
+	_clubBlurb = _blurbTextField.text;
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:@"UITextFieldTextDidChangeNotification"
+												  object:textField];
+}
+
+- (void)_onTextEditingDidEnd:(id)sender {
+	_clubName = _clubNameTextField.text;
+	_clubBlurb = _blurbTextField.text;
+}
+
+- (void)_onTextEditingDidEndOnExit:(id)sender {
+}
 
 @end

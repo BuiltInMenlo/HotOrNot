@@ -167,7 +167,6 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (UIViewController *)appTabBarController;
 
-+ (BOOL)hasTakenSelfie;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingConfigServer;

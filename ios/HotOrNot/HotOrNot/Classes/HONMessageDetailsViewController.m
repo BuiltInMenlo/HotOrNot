@@ -79,8 +79,8 @@
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	replyButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"messageReplyButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"messageReplyButton_Active"] forState:UIControlStateHighlighted];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:replyButton];
 }

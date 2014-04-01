@@ -85,7 +85,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_alertItemVO.avatarPrefix forAvatarBucket:YES completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_alertItemVO.avatarPrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
 	};
 	
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_alertItemVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]

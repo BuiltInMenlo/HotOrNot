@@ -393,14 +393,13 @@
 								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
 								   @"deactivated"	: @"YES"}];
 			
-			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"is_deactivated"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
 			[[HONAPICaller sharedInstance] deactivateUserWithCompletion:^(NSObject *result) {
 				[HONAppDelegate resetTotals];
 				
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"is_deactivated"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
 				[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 				[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				

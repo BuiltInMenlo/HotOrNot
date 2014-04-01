@@ -165,15 +165,15 @@
 //		[alertView setTag:1];
 //		[alertView show];
 		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 //		[self dismissViewControllerAnimated:YES completion:nil];
 	}
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 }
 
 - (void)_goSelectAll {
@@ -342,7 +342,7 @@
 			}
 		}
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:nil];
 		
 	} else if (alertView.tag == 2) {

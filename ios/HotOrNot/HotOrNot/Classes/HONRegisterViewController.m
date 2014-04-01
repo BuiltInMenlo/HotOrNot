@@ -123,8 +123,6 @@
 				_progressHUD = nil;
 			}
 			
-			[[NSUserDefaults standardUserDefaults] setObject:([_imageFilename length] == 0) ? @"YES" : @"NO" forKey:@"skipped_selfie"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
 			[self _finalizeUser];
 			
 		} else {
@@ -182,7 +180,7 @@
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-avatars" withFilename:_imageFilename completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imageFilename completion:^(NSObject *result) {
 //		[self _finalizeUser];
 	}];
 }
@@ -221,13 +219,13 @@
 			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 				
 				if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 				
 				else
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_HOME_TUTORIAL" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 			}];
 			
 			
@@ -271,7 +269,6 @@
 	[super loadView];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
-	
 	
 	_formHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_formHolderView.hidden = YES;
@@ -805,9 +802,6 @@
 	[[Mixpanel sharedInstance] track:@"Register - Skip Photo" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 
 	_imageFilename = @"";
-	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
 	[self _finalizeUser];
 }
 
@@ -830,9 +824,6 @@
 	}];
 	
 	[self.profileImagePickerController performSelector:@selector(takePicture) withObject:nil afterDelay:0.25];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"skipped_selfie"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)_goUsername {

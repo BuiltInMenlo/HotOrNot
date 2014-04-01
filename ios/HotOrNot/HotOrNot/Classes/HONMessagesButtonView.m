@@ -20,8 +20,8 @@
 	if ((self = [super initWithFrame:CGRectMake(48.0, 4.0, 34.0, 34.0)])) {
 		_messagesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_messagesButton.frame = CGRectMake(0.0, 0.0, 34.0, 34.0);
-		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDM_nonActive"] forState:UIControlStateNormal];
-		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDM_Active"] forState:UIControlStateHighlighted];
+		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDMButton_nonActive"] forState:UIControlStateNormal];
+		[_messagesButton setBackgroundImage:[UIImage imageNamed:@"headerDMButton_Active"] forState:UIControlStateHighlighted];
 		[_messagesButton addTarget:target action:action forControlEvents:UIControlEventTouchDown];
 		[self addSubview:_messagesButton];
 	}

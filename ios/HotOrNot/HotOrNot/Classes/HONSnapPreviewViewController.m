@@ -118,7 +118,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_opponentVO.imagePrefix forAvatarBucket:NO completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_opponentVO.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
 		
 		[_imageLoadingView stopAnimating];
 		[UIView animateWithDuration:0.33 animations:^(void) {
@@ -471,7 +471,7 @@
 }
 
 - (void)_goMore {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - More Sheet%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"Volley Preview - More Sheet"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
@@ -558,7 +558,7 @@
 }
 
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Join Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"Volley Preview - Join Challenge"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];

@@ -1,5 +1,5 @@
 //
-//  HONUserClubsViewController.h
+//  HONUserClubViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 02/27/2014 @ 10:31 .

@@ -49,7 +49,7 @@
 #import "HONUserClubsViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
-#import "HONAddFriendsViewController.h"
+#import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
@@ -325,8 +325,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (void)resetTotals {
 	NSArray *totalKeys = @[@"boot_total",
 						   @"background_total",
-						   @"friends_total",
-						   @"friendsRefresh_total",
+						   @"contacts_total",
+						   @"contactsRefresh_total",
 						   @"timeline_total",
 						   @"timelineRefresh_total",
 						   @"feedItem_total",
@@ -495,10 +495,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
 }
 
-+ (BOOL)hasTakenSelfie {
-	return (YES);
-}
-
 + (BOOL)hasNetwork {
 	[[Reachability reachabilityForInternetConnection] startNotifier];
 	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
@@ -605,6 +601,97 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
+	[[HONAPICaller sharedInstance] retreiveBootConfigWithEpoch:(int)[[NSDate date] timeIntervalSince1970] completion:^(NSObject *result) {
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[(NSDictionary *)result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"service_url"] forKey:@"service_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"splash_image"] forKey:@"splash_image"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"share_templates"] forKey:@"share_templates"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"kik_card"] forKey:@"kik_card"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"verify_copy"] forKey:@"verify_copy"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"share_url"] forKey:@"share_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[(NSDictionary *)result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[(NSDictionary *)result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[(NSDictionary *)result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"min_age"] forKey:@"min_age"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
+		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[(NSDictionary *)result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"stickers"] forKey:@"stickers"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"search_hashtags"] forKey:@"search_subjects"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"search_users"] forKey:@"search_users"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"popular_people"] forKey:@"popular_people"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"special_subjects"] forKey:@"special_subjects"];
+		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"switches"] forKey:@"switches"];
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
+														   @"banners"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
+														   @"challenges"	: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
+														   @"emoticons"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
+														   @"stickers"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[(NSDictionary *)result objectForKey:@"invite_formats"] objectForKey:@"sms"],
+														   @"email"		: [[(NSDictionary *)result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"instagram"],
+														   @"twitter"	: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"twitter"],
+														   @"facebook"	: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"facebook"],
+														   @"sms"		: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"sms"],
+														   @"email"		: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
+		
+		
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		
+		
+		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
+		
+		
+		if ([[[(NSDictionary *)result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
+			[self _showOKAlert:[[(NSDictionary *)result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[(NSDictionary *)result objectForKey:@"boot_alert"] objectForKey:@"message"]];
+		
+		
+		[self _writeShareTemplates];
+		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
+		[self _registerUser];
+		
+		if (_isFromBackground) {
+			NSString *notificationName = @"";
+			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
+				case 0:
+					notificationName = @"REFRESH_CONTACTS_TAB";
+					break;
+					
+				case 1:
+					notificationName = @"REFRESH_CLUBS_TAB";
+					break;
+					
+//				case 2:
+//					notificationName = @"REFRESH_ALERTS_TAB";
+//					break;
+					
+				case 2:
+					notificationName = @"REFRESH_VERIFY_TAB";
+					break;
+					
+				default:
+					notificationName = @"REFRESH_ALL_TABS";
+					break;
+			}
+			
+			NSLog(@"REFRESHING:[%@]", notificationName);
+			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+			_isFromBackground = NO;
+		}
+	}];
+	
+	/*
 	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
 	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
@@ -642,9 +729,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				_progressHUD = nil;
 				
 			} else {
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"branding"] forKey:@"branding"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 				[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
@@ -708,18 +792,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					NSString *notificationName = @"";
 					switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
 						case 0:
-							notificationName = @"REFRESH_HOME_TAB";
+							notificationName = @"REFRESH_CONTACTS_TAB";
 							break;
 							
 						case 1:
 							notificationName = @"REFRESH_CLUBS_TAB";
 							break;
 							
-						case 2:
-							notificationName = @"REFRESH_ALERTS_TAB";
-							break;
+//						case 2:
+//							notificationName = @"REFRESH_ALERTS_TAB";
+//							break;
 							
-						case 3:
+						case 2:
 							notificationName = @"REFRESH_VERIFY_TAB";
 							break;
 						
@@ -748,6 +832,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
+	 */
 }
 
 - (void)_registerUser {
@@ -938,7 +1023,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 #if __FORCE_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 #endif
 	
@@ -1175,7 +1259,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
 //									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
-	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]],
+	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
@@ -1216,9 +1300,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"skipped_selfie"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"skipped_selfie"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];

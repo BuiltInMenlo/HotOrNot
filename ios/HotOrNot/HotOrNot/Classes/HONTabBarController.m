@@ -33,7 +33,6 @@ const CGSize kTabSize = {80.0, 50.0};
 - (id)init {
 	if ((self = [super init])) {
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleTabs:) name:@"TOGGLE_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateWithActivityTab:) name:@"UPDATE_WITH_ACTIVITY_TAB" object:nil];
 	}
 	
 	return (self);
@@ -185,9 +184,9 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	switch (tarBarButtonType) {
 		case HONTabBarButtonTypeHome:
-			totalKey = @"timeline";
-			mpEvent = @"Timeline";
-			notificationName = @"HOME_TAB";
+			totalKey = @"contacts";
+			mpEvent = @"Contacts";
+			notificationName = @"CONTACTS_TAB";
 			
 			[_homeButton setSelected:YES];
 			[_clubsButton setSelected:NO];
@@ -291,14 +290,6 @@ const CGSize kTabSize = {80.0, 50.0};
 			_avatarNeededButton.hidden = YES;
 		}];
 	}
-}
-
-- (void)_updateWithActivityTab:(NSNotification *)notification {
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_nonActive"] forState:UIControlStateNormal];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_Tapped"] forState:UIControlStateHighlighted];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_Active"] forState:UIControlStateSelected];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_Active"] forState:UIControlStateSelected|UIControlStateHighlighted];
-	[_activityButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButtonUpdate_nonActive"] forState:UIControlStateDisabled];
 }
 
 

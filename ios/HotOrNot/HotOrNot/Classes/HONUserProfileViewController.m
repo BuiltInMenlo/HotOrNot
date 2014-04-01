@@ -29,6 +29,7 @@
 #import "HONSuggestedFollowViewController.h"
 #import "HONFAQViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONProfileSelfieGridViewController.h"
 #import "HONImageLoadingView.h"
 #import "HONUserProfileGridView.h"
 #import "HONActionAlertItemView.h"
@@ -58,7 +59,6 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UILabel *selfiesLabel;
 @property (nonatomic, strong) UILabel *followersLabel;
 @property (nonatomic, strong) UILabel *followingLabel;
@@ -127,25 +127,20 @@
 			
 			_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) ? HONUserProfileTypeUser : HONUserProfileTypeOpponent;
 			
-			[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateNormal];
-			[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userNotVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
+			[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userUnverifiedButton_nonActive"] forState:UIControlStateNormal];
+			[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_nonActive" : @"userUnverifiedButton_nonActive"] forState:UIControlStateHighlighted];
 			
 //			[_verifyButton setBackgroundImage:[UIImage imageNamed:@"userVerifiedButton_nonActive"] forState:UIControlStateNormal];
 //			[_verifyButton setBackgroundImage:[UIImage imageNamed:@"userVerifiedButton_nonActive"] forState:UIControlStateHighlighted];
 			
 			if (_userProfileType == HONUserProfileTypeOpponent) {
-				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_Active" : @"userNotVerifiedButton_Active"] forState:UIControlStateHighlighted];
+				[_verifyButton setBackgroundImage:[UIImage imageNamed:((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue]) ? @"userVerifiedButton_Active" : @"userUnverifiedButton_Active"] forState:UIControlStateHighlighted];
 				[_verifyButton addTarget:self action:@selector(_goVerify) forControlEvents:UIControlEventTouchUpInside];
 			}
 			
 			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userVO.userID completion:^(NSObject *result){
 				_followingCounter = [(NSArray *)result count];
-				
-				if (_userProfileType == HONUserProfileTypeUser)
-					[self _retrieveAlerts];
-				
-				else
-					[self _retrieveChallenges];
+				[self _retrieveChallenges];
 			}];
 			
 		} else {
@@ -162,60 +157,51 @@
 }
 
 - (void)_retrieveChallenges {
+	_challenges = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUsername:_userVO.username completion:^(NSObject *result){
-		_challenges = [NSMutableArray array];
+		for (NSDictionary *dict in (NSArray *)result)
+			[_challenges addObject:[HONChallengeVO challengeWithDictionary:dict]];
 		
-		for (NSDictionary *dict in (NSArray *)result) {
-			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+		
+		if (_userProfileType == HONUserProfileTypeUser)
+			[self _retrieveAlerts];
+		
+		else {
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
 			
-			if (vo != nil)
-				[_challenges addObject:vo];
-		}
-		
-		if ([_scrollView.subviews count] <= 1) {
 			[self _orphanUI];
 			[self _adoptUI];
-			
-//			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-			
-		} else {
-			if (_selfiesLabel != nil) {
-				_userVO.totalVolleys--;
-				
-				NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-				[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-				_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
-			}
+			[self _remakeGrid];
 		}
 		
-		[self _remakeGrid];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+//		if (_selfiesLabel != nil) {
+//			_userVO.totalVolleys--;
+//			
+			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+			_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
+//		}
 	}];
 }
 
 - (void)_retrieveAlerts {
+	
+	_alertItems = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveAlertsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
-		_alertItems = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
-			if (dict != nil)
-				[_alertItems addObject:[HONAlertItemVO alertWithDictionary:dict]];
-		}
-		
-		if ([_scrollView.subviews count] <= 1) {
-			[self _orphanUI];
-			[self _adoptUI];
-		}
-		
-		[self _remakeActionAlerts];
+		for (NSDictionary *dict in (NSArray *)result)
+			[_alertItems addObject:[HONAlertItemVO alertWithDictionary:dict]];
 		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
+		
+		[self _orphanUI];
+		[self _adoptUI];
+		[self _remakeActionAlerts];
 	}];
 }
 
@@ -238,8 +224,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-//	_scrollView.frame = CGRectOffset(_scrollView.frame, 0.0, 0.0);
+	_scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_scrollView.showsHorizontalScrollIndicator = NO;
 //	_scrollView.delegate = self;
 	[self.view addSubview:_scrollView];
@@ -254,18 +239,11 @@
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	backButton.frame = CGRectMake(15.0, 0.0, 64.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
-	
-//	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-//	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-//	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-//	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-//	[_headerView addButton:doneButton];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_verifyButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
@@ -296,17 +274,6 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 	
 	if ([HONAppDelegate incTotalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser) {
-		_tutorialImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-		_tutorialImageView.userInteractionEnabled = YES;
-		_tutorialImageView.hidden = YES;
-		_tutorialImageView.alpha = 0.0;
-		
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = _tutorialImageView.frame;
-		[closeButton addTarget:self action:@selector(_goRemoveTutorial) forControlEvents:UIControlEventTouchDown];
-		[_tutorialImageView addSubview:closeButton];
-		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialImageView];
 	}
 }
 
@@ -348,7 +315,7 @@
 		
 		if ([self parentViewController] != nil) {
 			[self dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 			}];
 		
 		} else {
@@ -363,8 +330,7 @@
 									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
 																							  toCohortUser:_userVO]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
-//	[self dismissViewControllerAnimated:YES completion:nil];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -495,8 +461,7 @@
 
 - (void)_goSelfies {
 	[[Mixpanel sharedInstance] track:@"User Profile - Show Selfies" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
-	
+	[self.navigationController pushViewController:[[HONProfileSelfieGridViewController alloc] initAtPos:77.0 forChallenges:_challenges asPrimaryOpponent:[[HONChallengeAssistant sharedInstance] mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]] animated:YES];
 }
 
 - (void)_goSettings {
@@ -533,19 +498,6 @@
 	[_scrollView scrollRectToVisible:CGRectMake(0.0, 268.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0), 320.0, MIN([UIScreen mainScreen].bounds.size.height - 8.0, (268.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0)) + _profileGridView.frame.size.height)) animated:YES];
 }
 
-- (void)_goRemoveTutorial {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		if (_tutorialImageView != nil) {
-			_tutorialImageView.alpha = 0.0;
-		}
-	} completion:^(BOOL finished) {
-		if (_tutorialImageView != nil) {
-			[_tutorialImageView removeFromSuperview];
-			_tutorialImageView = nil;
-		}
-	}];
-}
-
 - (void)_goTapHoldAlert {
 	[[[UIAlertView alloc] initWithTitle:@"Tap and hold to view full screen!"
 								message:@""
@@ -558,8 +510,7 @@
 
 #pragma mark - Notifications
 - (void)_refreshProfile:(NSNotification *)notification {
-	[self _orphanUI];
-	[_scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
+	//[_scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height) animated:YES];
 	[self _retrieveUser];
 }
 
@@ -578,20 +529,31 @@
 		_avatarImageView = nil;
 	}
 	
-	if (_selfiesLabel) {
+	if (_selfiesLabel != nil) {
 		[_selfiesLabel removeFromSuperview];
 		_selfiesLabel = nil;
 	}
 	
-	if (_followersLabel) {
+	if (_followersLabel != nil) {
 		[_followersLabel removeFromSuperview];
 		_followersLabel = nil;
 	}
 	
-	if (_followingLabel) {
+	if (_followingLabel != nil) {
 		[_followingLabel removeFromSuperview];
 		_followingLabel = nil;
 	}
+	
+	if (_actionAlertsHolderView != nil) {
+		[_actionAlertsHolderView removeFromSuperview];
+		_actionAlertsHolderView = nil;
+	}
+	
+	if (_profileGridView != nil) {
+		[_profileGridView removeFromSuperview];
+		_profileGridView = nil;
+	}
+	
 	
 	for (UIView *view in _scrollView.subviews) {
 		if (view.tag != 666)
@@ -600,13 +562,9 @@
 }
 
 - (void)_remakeGrid {
-	if (_profileGridView != nil) {
-		[_profileGridView removeFromSuperview];
-		_profileGridView = nil;
-	}
-	
 	CGFloat gridPos = 324.0 + ((int)(_userProfileType == HONUserProfileTypeOpponent) * 45.0);
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, (gridPos + 44.0) + (kSnapThumbSize.height * (([self _numberOfImagesForGrid] / 4) + ([self _numberOfImagesForGrid] % 4 != 0)))));
+	
 	_profileGridView = [[HONUserProfileGridView alloc] initAtPos:gridPos forChallenges:_challenges asPrimaryOpponent:[[HONChallengeAssistant sharedInstance] mostRecentOpponentInChallenge:[_challenges firstObject] byUserID:_userID]];
 	_profileGridView.delegate = self;
 	_profileGridView.clipsToBounds = YES;
@@ -614,12 +572,6 @@
 }
 
 - (void)_remakeActionAlerts {
-	if (_actionAlertsHolderView != nil) {
-		[_actionAlertsHolderView removeFromSuperview];
-		_actionAlertsHolderView = nil;
-	}
-	
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 393.0 + ([_alertItems count] * 49.0)));
 	_actionAlertsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 373.0, 320.0, [_alertItems count] * 49.0)];
 	[_scrollView addSubview:_actionAlertsHolderView];
 	
@@ -633,6 +585,8 @@
 		
 		offset += 49.0;
 	}
+	
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 393.0 + offset));
 }
 
 - (void)_adoptUI {
@@ -661,7 +615,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:_userVO.avatarPrefix forAvatarBucket:YES completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userVO.avatarPrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
 		_avatarImageView.alpha = 1.0;
 		_avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];
@@ -697,7 +651,7 @@
 	_selfiesLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_selfiesLabel.backgroundColor = [UIColor clearColor];
 	_selfiesLabel.textAlignment = NSTextAlignmentCenter;
-	_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.totalVolleys]], (_userVO.totalVolleys == 1) ? @"" : @"s"];
+	_selfiesLabel.text = [NSString stringWithFormat:@"%@ Selfie%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_challenges count]]], ([_challenges count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_selfiesLabel];
 	
 	_followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(106.0, 196.0, 107.0, 18.0)];
@@ -943,7 +897,7 @@
 }
 
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Remove Selfie%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"User Profile - Remove Selfie"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",

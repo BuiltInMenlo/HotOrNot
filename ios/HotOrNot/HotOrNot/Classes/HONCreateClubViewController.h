@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONCreateClubViewController : UIViewController
+@interface HONCreateClubViewController : UIViewController <UITextFieldDelegate>
 
 @end

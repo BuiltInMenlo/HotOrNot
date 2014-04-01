@@ -364,7 +364,7 @@
 	
 	NSLog(@"upvoteCreatorForChallenge:[%@]", _opponentVO.dictionary);
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Upvote Challenge%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenge"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
@@ -395,7 +395,7 @@
 //	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Show Photo Detail%@", ([HONAppDelegate hasTakenSelfie]) ? @"" : @" Blocked"]
+	[[Mixpanel sharedInstance] track:@"Timeline - Show Photo Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
@@ -782,7 +782,7 @@
 - (void)_heroImageFinishedLoadingWithError:(NSError *)error
 {
 	HONOpponentVO *opponent = _challenge.creatorVO;
-	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:opponent.imagePrefix forAvatarBucket:NO completion:nil];
+	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:opponent.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
 	_heroImageView.frame = CGRectMake(_heroImageView.frame.origin.x, _heroImageView.frame.origin.y, kSnapLargeSize.width, kSnapLargeSize.height);
 	[_heroImageView setImageWithURL:[NSURL URLWithString:[opponent.imagePrefix stringByAppendingString:kSnapLargeSuffix]] placeholderImage:nil];
 	

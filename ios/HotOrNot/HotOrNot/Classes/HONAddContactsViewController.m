@@ -23,12 +23,12 @@
 #import "HONMessagesButtonView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
-#import "HONInviteUserViewCell.h"
-#import "HONAddContactViewCell.h"
+#import "HONFollowContactViewCell.h"
+#import "HONInviteContactViewCell.h"
 #import "HONUserProfileViewController.h"
 
 
-@interface HONAddContactsViewController ()<HONInviteUserViewCellDelegate, HONAddContactViewCellDelegate>
+@interface HONAddContactsViewController ()<HONFollowContactViewCellDelegate, HONInviteContactViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
@@ -150,7 +150,7 @@
 		
 		if ([_selectedNonAppContacts count] == 0) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 			
 			[self dismissViewControllerAnimated:YES completion:^(void){
 			}];
@@ -419,12 +419,12 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 		
 		for (int i=0; i<[_inAppContacts count]; i++) {
-			HONInviteUserViewCell *cell = (HONInviteUserViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+			HONFollowContactViewCell *cell = (HONFollowContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 			[cell toggleSelected:NO];
 		}
 		
 		for (int i=0; i<[_nonAppContacts count]; i++) {
-			HONAddContactViewCell *cell = (HONAddContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
+			HONInviteContactViewCell *cell = (HONInviteContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
 			[cell toggleSelected:NO];
 		}
 		
@@ -452,19 +452,19 @@
 		}
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_HOME_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:^(void){
 		}];
 	}
 }
 
 
-#pragma mark - InviteUserViewCell Delegates
-- (void)inviteUserViewCell:(HONInviteUserViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
+#pragma mark - FollowContactViewCell Delegates
+- (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	
 	_hasUpdated = YES;
 	if (isSelected){
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Select In App Contact"
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Select Follow In-App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
@@ -472,7 +472,7 @@
 		[_selectedInAppContacts addObject:userVO];
 	
 	} else {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect In App Contact"
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Follow In-App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
@@ -492,17 +492,17 @@
 }
 
 
-#pragma mark - AddContactCell Delegates
-- (void)addContactViewCell:(HONAddContactViewCell *)cell user:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
+#pragma mark - InviteContactCell Delegates
+- (void)inviteContactViewCell:(HONInviteContactViewCell *)viewCell inviteUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	if (isSelected) {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Select Non App Contact"
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Select Invite Non App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
 		
 		[_selectedNonAppContacts addObject:userVO];
 	} else {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Non App Contact"
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Invite Non App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
@@ -547,10 +547,10 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		HONInviteUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONFollowContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONInviteUserViewCell alloc] init];
+			cell = [[HONFollowContactViewCell alloc] init];
 			cell.userVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
@@ -573,10 +573,10 @@
 		return (cell);
 		
 	} else {
-		HONAddContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONInviteContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONAddContactViewCell alloc] init];
+			cell = [[HONInviteContactViewCell alloc] init];
 			cell.userVO = (HONContactUserVO *)[_nonAppContacts objectAtIndex:indexPath.row];
 		}
 		
@@ -609,9 +609,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-		
 	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
+	
+	[[Mixpanel sharedInstance] track:@"Add Contacts - Select In-App Contact Row"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
@@ -629,12 +629,12 @@
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 			
 			for (int i=0; i<[_inAppContacts count]; i++) {
-				HONInviteUserViewCell *cell = (HONInviteUserViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+				HONFollowContactViewCell *cell = (HONFollowContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 				[cell toggleSelected:YES];
 			}
 			
 			for (int i=0; i<[_nonAppContacts count]; i++) {
-				HONAddContactViewCell *cell = (HONAddContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
+				HONInviteContactViewCell *cell = (HONInviteContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
 				[cell toggleSelected:YES];
 			}
 			

@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONAddContactViewCell.h"
+#import "HONInviteContactViewCell.h"
 
-@interface HONNonAppContactViewCell : HONAddContactViewCell
+@interface HONNonAppContactViewCell : HONInviteContactViewCell
 + (NSString *)cellReuseIdentifier;
 @end

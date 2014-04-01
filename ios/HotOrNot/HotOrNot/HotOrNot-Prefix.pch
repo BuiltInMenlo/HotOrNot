@@ -14,7 +14,7 @@
 #define VolleyJSONLog(...)
 #endif
 
-#ifdef VOLLEY_JSON_LOG
+#ifdef VIEW_CONTROLLER_LOG
 #define ViewControllerLog(...) NSLog(__VA_ARGS__)
 #else
 #define ViewControllerLog(...)
