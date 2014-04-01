@@ -949,6 +949,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_toggleStatusBarTint:(NSNotification *)notification {
 	BOOL willFadeIn = ([[notification object] isEqualToString:@"YES"]);
 	
+	//[[UIApplication sharedApplication] setStatusBarHidden:!willFadeIn withAnimation:UIStatusBarAnimationNone];
+	
 	[UIView animateWithDuration:0.33
 					 animations:^(void) {_statusBarOverlayView.alpha = (int)willFadeIn;}
 					 completion:^(BOOL finished) {}];

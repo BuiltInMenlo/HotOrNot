@@ -33,6 +33,7 @@
 
 
 @implementation HONClubCoverCameraViewController
+@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -58,30 +59,30 @@
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {
-	_imagePrefix = [NSString stringWithFormat:@"%@-%@_%@", [[[HONDeviceTraits sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _imagePrefix);
+	NSString *filename = [NSString stringWithFormat:@"%@-%@_%@", [[[HONDeviceTraits sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	_imagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], filename];
+	
+	NSLog(@"FILE PREFIX: %@", _imagePrefix);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imagePrefix completion:^(NSObject *result) {
+	[self.delegate clubCoverCameraViewController:self didFinishProcessingImage:largeImage withPrefix:_imagePrefix];
+	
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeClubs withFilename:filename completion:^(NSObject *result) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
 		[_cameraOverlayView uploadComplete];
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 		
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _imagePrefix] forBucketType:HONS3BucketTypeClubs completion:^(NSObject *result) {}];
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 		
-		[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:_imagePrefix completion:^(NSObject *result){
-			if (![[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
-				
-//				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
-			}
-			
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-		}];
+//		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 	}];
 }
 
@@ -184,9 +185,9 @@
 	[canvasView addSubview:overlayTintView];
 	
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
-	
-	[self _uploadPhotos:processedImage];
-	[self dismissViewControllerAnimated:NO completion:^(void) {}];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[self _uploadPhotos:processedImage];
+	}];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -203,7 +204,9 @@
 		_imagePicker.cameraOverlayView = _cameraOverlayView;
 		
 	} else {
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
@@ -224,7 +227,10 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		//[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 			_cameraOverlayView = nil;

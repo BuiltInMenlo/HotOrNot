@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONClubCoverCameraViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@class HONClubCoverCameraViewController;
+@protocol HONClubCoverCameraViewControllerDelegate
+- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix;
+//- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didBeginUploadWithImagePrefix:(NSString *)imagePrefix;
+@end
 
+@interface HONClubCoverCameraViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@property (nonatomic, assign) id <HONClubCoverCameraViewControllerDelegate> delegate;
 @end

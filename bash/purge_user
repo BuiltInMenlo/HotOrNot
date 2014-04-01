@@ -56,6 +56,9 @@ login_api="volley:\$uper\$mack"
 #// 	result=$(curl --request POST --location "${block_url}" --user "${login_api}" --data-urlencode "username=${username}" --silent | sed -E 's/\<(\/)?pre\>//g' | grep --max-count 1 --only-matching "${username}")	
 #// fi
 
+#//printf "Confirm purge user '%s' from %s.letsvolley.com? [Y/n]" "${username}" "${subdomain_api}" ; read affirm
+#//if [[ -n "$affirm" || "$affirm" == "Y"]]; then affirm=
+
 # call block user
 printf "Blocking user '%s' from (%s.letsvolley.com)... " "${username}" "${subdomain_api}"
 result=$(curl --request POST --location "${block_url}" --user "${login_api}" --data-urlencode "username=${username}" --silent | sed -E 's/\<(\/)?pre\>//g' | grep --max-count 1 --only-matching "${username}")

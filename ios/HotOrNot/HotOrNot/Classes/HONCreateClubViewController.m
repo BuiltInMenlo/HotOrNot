@@ -13,13 +13,15 @@
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
 #import "HONUserClubInviteViewController.h"
 
-@interface HONCreateClubViewController ()
+@interface HONCreateClubViewController () <HONClubCoverCameraViewControllerDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *formHolderView;
+@property (nonatomic, strong) UIImageView *clubCoverImageView;
 @property (nonatomic, strong) UIButton *clubNameButton;
 @property (nonatomic, strong) UIButton *blurbButton;
 @property (nonatomic, strong) UITextField *clubNameTextField;
@@ -102,11 +104,19 @@
 	[_clubNameButton addTarget:self action:@selector(_goClubName) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_clubNameButton];
 	
+	_clubCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] highlightedImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"]];
+	_clubCoverImageView.frame = CGRectOffset(_clubCoverImageView.frame, 8.0, 85.0);
+	[_formHolderView addSubview:_clubCoverImageView];
+	
+	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	
 	UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	addImageButton.frame = CGRectMake(8.0, 85.0, 48.0, 48.0);
-	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
-	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
-	[addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+	addImageButton.frame = _clubCoverImageView.frame;//CGRectMake(8.0, 85.0, 48.0, 48.0);
+//	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
+//	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
+	[addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+//	[addImageButton addTarget:self action:@selector(_buttonTouchDown:) forControlEvents:UIControlEventTouchDown];
+//	[addImageButton addTarget:self action:@selector(_buttonTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:addImageButton];
 	
 	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 92.0, 308.0, 30.0)];
@@ -241,6 +251,17 @@
 		[self _submitClub];
 }
 
+
+- (void)_buttonTouchDown:(id)sender {
+	UIButton *button = (UIButton *)sender;
+}
+
+- (void)_buttonTouchUpInside:(id)sender {
+	UIButton *button = (UIButton *)sender;
+}
+
+
+
 - (void)_goClubName {
 	[[Mixpanel sharedInstance] track:@"Create Club - Enter Name" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 }
@@ -249,7 +270,13 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Choose Image"
 									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubCoverCameraViewController alloc] init]];
+	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
+	clubCoverCameraViewController.delegate = self;
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubCoverCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -281,6 +308,17 @@
 	}
 }
 
+
+#pragma mark - ClubCoverCameraViewController Delegates
+- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix {
+	NSLog(@"\n**_[clubCoverCameraViewController:didFinishProcessingImage:(%@)withPrefix:(%@)]_**\n", NSStringFromCGSize(image.size), imagePrefix);
+	
+	UIImage *thumbImage = [HONImagingDepictor scaleImage:[HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+	_clubCoverImageView.image = thumbImage;
+//	_clubCoverImageView.hi
+	
+	_clubImagePrefix = imagePrefix;
+}
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {

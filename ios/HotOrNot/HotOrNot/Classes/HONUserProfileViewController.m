@@ -319,7 +319,6 @@
 			}];
 		
 		} else {
-//			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 			[self.view removeFromSuperview];
 		}
 	}

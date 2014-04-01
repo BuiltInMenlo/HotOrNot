@@ -225,52 +225,18 @@ static HONAPICaller *sharedInstance = nil;
 	
 }
 
-/*
-- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket completion:(void (^)(NSObject *result))completion {
-	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForURL:imageURL forAvatarBucket:isAvatarBucket preDelay:kNotifiyDelay completion:completion];
-}
-
-- (void)notifyToCreateImageSizesForURL:(NSString *)imageURL forAvatarBucket:(BOOL)isAvatarBucket preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion {
-	NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:imageURL]};
-	
-	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
-	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void){
-		VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], (isAvatarBucket) ? kAPIProcessUserImage : kAPIProcessChallengeImage, params);
-		AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
-		[httpClient postPath:(isAvatarBucket) ? kAPIProcessUserImage : kAPIProcessChallengeImage parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			NSError *error = nil;
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			
-			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-				[[HONAPICaller sharedInstance] showDataErrorHUD];
-				
-			} else {
-				VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-				
-				if (completion)
-					completion(result);
-			}
-			
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], (isAvatarBucket) ? kAPIProcessUserImage : kAPIProcessChallengeImage, [error localizedDescription]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-		}];
-	});
-}*/
-
 - (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(NSObject *result))completion {
 	NSString *bucketName = (bucketType == HONS3BucketTypeAvatars) ? @"hotornot-avatars" : (bucketType == HONS3BucketTypeSelfies) ? @"hotornot-challenges" : (bucketType == HONS3BucketTypeClubs) ? @"hotornot-challenges" : @"hotornot-challenges";
 	
 	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucketName];
 	por1.data = [imageData objectAtIndex:0];
-	por1.requestTag = [NSString stringWithFormat:@"%@|%@", por1.bucket, kSnapLargeSuffix];
+	por1.requestTag = [NSString stringWithFormat:@"%@|%@|%d", por1.bucket, kSnapLargeSuffix, bucketType];
 	por1.contentType = @"image/jpeg";
 	por1.delegate = self;
 	
 	S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapTabSuffix] inBucket:bucketName];
 	por2.data = [imageData objectAtIndex:1];
-	por2.requestTag = [NSString stringWithFormat:@"%@|%@", por2.bucket, kSnapTabSuffix];
+	por2.requestTag = [NSString stringWithFormat:@"%@|%@|%d", por2.bucket, kSnapTabSuffix, bucketType];
 	por2.contentType = @"image/jpeg";
 	por2.delegate = self;
 	
@@ -1680,11 +1646,33 @@ static HONAPICaller *sharedInstance = nil;
 	NSArray *tag = [request.requestTag componentsSeparatedByString:@"|"];
 	NSLog(@"\nAWS didCompleteWithResponse:\n[%@] - %@", tag, request.url);
 	
+	HONS3BucketType bucketType = (HONS3BucketType)[[tag objectAtIndex:2] intValue];
+	
 	if ([[tag objectAtIndex:1] isEqualToString:kSnapLargeSuffix]) {
-		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"])
+		switch ((HONS3BucketType)[[tag objectAtIndex:2] intValue]) {
+			case HONS3BucketTypeAvatars:
+				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+				break;
+				
+			case HONS3BucketTypeClubs:
+				break;
+				
+			case HONS3BucketTypeSelfies:
+				break;
+				
+			default:
+				break;
+		}
+		
+		if (bucketType == HONS3BucketTypeAvatars)
 			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@", request.url] forBucketType:([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) ? HONS3BucketTypeAvatars : HONS3BucketTypeSelfies completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@", request.url] forBucketType:bucketType completion:nil];
+		
+		
+//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@", request.url] forBucketType:([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) ? HONS3BucketTypeAvatars : HONS3BucketTypeSelfies completion:nil];
+//		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"])
+//			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		
 		/*
 		NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:[NSString stringWithFormat:@"%@", request.url]]};
