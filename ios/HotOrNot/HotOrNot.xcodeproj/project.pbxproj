@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0113D91898B243007461DB /* HONCreateClubViewController.m */; };
+		4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */; };
+		4C0204EE18EA6FF000FAE532 /* HONClubCoverCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0204ED18EA6FF000FAE532 /* HONClubCoverCameraViewController.m */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
 		4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C02601C172B4703001CC476 /* HONContactUserVO.m */; };
 		4C02D0F7189C2B18005A5B6A /* newMessageDot.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C02D0F5189C2B18005A5B6A /* newMessageDot.png */; };
@@ -704,6 +706,10 @@
 /* Begin PBXFileReference section */
 		4C0113D81898B243007461DB /* HONCreateClubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateClubViewController.h; sourceTree = "<group>"; };
 		4C0113D91898B243007461DB /* HONCreateClubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateClubViewController.m; sourceTree = "<group>"; };
+		4C0204E918EA6F9800FAE532 /* HONClubCoverCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCoverCameraOverlayView.h; sourceTree = "<group>"; };
+		4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubCoverCameraOverlayView.m; sourceTree = "<group>"; };
+		4C0204EC18EA6FF000FAE532 /* HONClubCoverCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCoverCameraViewController.h; sourceTree = "<group>"; };
+		4C0204ED18EA6FF000FAE532 /* HONClubCoverCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubCoverCameraViewController.m; sourceTree = "<group>"; };
 		4C026019172B2CA8001CC476 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		4C02601B172B4703001CC476 /* HONContactUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactUserVO.h; sourceTree = "<group>"; };
 		4C02601C172B4703001CC476 /* HONContactUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactUserVO.m; sourceTree = "<group>"; };
@@ -1675,6 +1681,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C0204E818EA6F5300FAE532 /* Club Camera */ = {
+			isa = PBXGroup;
+			children = (
+				4C0204E918EA6F9800FAE532 /* HONClubCoverCameraOverlayView.h */,
+				4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */,
+				4C0204EC18EA6FF000FAE532 /* HONClubCoverCameraViewController.h */,
+				4C0204ED18EA6FF000FAE532 /* HONClubCoverCameraViewController.m */,
+			);
+			name = "Club Camera";
+			sourceTree = "<group>";
+		};
 		4C0AAAEA170C94F400BB32BD /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -3384,6 +3401,7 @@
 		4CF7504818989DFA009E39E4 /* Clubs */ = {
 			isa = PBXGroup;
 			children = (
+				4C0204E818EA6F5300FAE532 /* Club Camera */,
 				4C2400E518C2858700C9AE53 /* HONUserClubViewCell.h */,
 				4C2400E618C2858700C9AE53 /* HONUserClubViewCell.m */,
 				4C663EDB18BFBC1800EDB1A2 /* HONUserClubsViewController.h */,
@@ -4025,11 +4043,13 @@
 				4C8FB3C91824406800B33FD8 /* HONVerifyCellHeaderView.m in Sources */,
 				4C41084418C16EDE009E9F9E /* HONAllowContactViewCell.m in Sources */,
 				4C43224618E343FC0035FF06 /* HONActionAlertItemView.m in Sources */,
+				4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */,
 				4CD42F2B188B89CF00264845 /* HONMessageItemViewCell.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				4C4591091891888A0014FA7E /* HONChallengeAssistant.m in Sources */,
 				4C62674115F96E5600AA7FCE /* HONVerifyViewController.m in Sources */,
 				4C62674215F96E5600AA7FCE /* HONTimelineViewController.m in Sources */,
+				4C0204EE18EA6FF000FAE532 /* HONClubCoverCameraViewController.m in Sources */,
 				4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */,
 				4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */,
 				4C0B691F179E06C200D3E12A /* HONSnapPreviewViewController.m in Sources */,

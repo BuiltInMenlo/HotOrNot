@@ -12,6 +12,7 @@
 #import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONHeaderView.h"
 #import "HONTutorialView.h"
 #import "HONFontAllocator.h"
@@ -54,7 +55,8 @@
 		_defaultCaptions = @[@"Quick Links",
 							 @"Find friends who have a Selfieclub",
 							 @"Invite friends to my Selfieclub",
-							 @"Verify my phone number"];
+							 @"Verify my phone number",
+							 @""];
 		
 		_bakedClubs = @[@{@"name": @"BFFs", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/823ded776ab04e59a53eb166db67a78d_c54b3a029c25457389a188ac8a6dff24-1391186184Large_640x1136.jpg"},
 						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"},
@@ -294,7 +296,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? [_joinedClubs count] : 4);
+	return ((section == 0) ? 1 : (section == 1) ? [_joinedClubs count] : [_defaultCaptions count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -364,7 +366,7 @@
 		return (63.0);
 	
 	else
-		return (43.0);
+		return ((indexPath.row < 4) ? 43.0 : ([_joinedClubs count] < 3 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 0.0 : 50.0);
 	
 //	if (indexPath.row == [_alertItems count] + 5)
 //		return ((([_alertItems count] + 5) > 7 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 49.0 : 0.0);

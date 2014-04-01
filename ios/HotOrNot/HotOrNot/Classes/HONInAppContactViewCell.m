@@ -20,15 +20,6 @@
 	return (NSStringFromClass(self));
 }
 
-//- (id <HONInAppContactViewCellDelegate>)delegate {
-//	return (_delegate);
-//}
-//
-//- (void)setDelegate:(id <HONInAppContactViewCellDelegate>)delegate {
-//	if (_delegate != delegate)
-//		_delegate = delegate;
-//}
-
 
 - (id)init {
 	if ((self = [super init])) {

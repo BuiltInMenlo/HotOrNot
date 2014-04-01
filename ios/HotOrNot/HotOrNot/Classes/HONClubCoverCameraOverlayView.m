@@ -1,19 +1,20 @@
 //
-//  HONAvatarCameraOverlayView.m
+//  HONClubCoverCameraOverlayView.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 06.19.13 @ 09:23 AM.
-//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 03/31/2014 @ 20:52 .
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "HONAvatarCameraOverlayView.h"
+#import "HONClubCoverCameraOverlayView.h"
 #import "HONDeviceTraits.h"
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 
-@interface HONAvatarCameraOverlayView ()
+
+@interface HONClubCoverCameraOverlayView ()
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIView *submitHolderView;
@@ -26,11 +27,10 @@
 @property (nonatomic) int tintIndex;
 @end
 
-@implementation HONAvatarCameraOverlayView
+@implementation HONClubCoverCameraOverlayView
 @synthesize delegate = _delegate;
 
 
-#pragma mark - View Lifecycle
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_tintIndex = 0;
@@ -190,7 +190,7 @@
 
 #pragma mark - Navigation
 - (void)_goOKInfo {
-	[UIView animateWithDuration:0.25 animations:^(void){
+	[UIView animateWithDuration:0.25 animations:^(void) {
 		_infoHolderImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[_infoHolderImageView removeFromSuperview];
@@ -213,15 +213,15 @@
 }
 
 - (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Skip Photo"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Skip Photo"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"Your profile photo helps the Selfieclub community know your real."
+														message:@"Choosing a cover photo for your club"
 													   delegate:self
-											  cancelButtonTitle:@"No Thanks"
+											  cancelButtonTitle:@"Cancel"
 											  otherButtonTitles:@"Take Photo", nil];
 	[alertView setTag:0];
 	[alertView show];
@@ -252,7 +252,7 @@
 }
 
 - (void)_goChangeTint {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Change Tint Overlay"
+	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Change Tint Overlay"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -285,17 +285,17 @@
 	if (alertView.tag == 0) {
 		switch(buttonIndex) {
 			case 0:
-				[[Mixpanel sharedInstance] track:@"Change Avatar - Skip Photo Confirm"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+				[[Mixpanel sharedInstance] track:@"Club Cover Photo - Skip Photo Confirm"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 				
 				[self.delegate cameraOverlayViewCloseCamera:self];
 				break;
 				
 			case 1:
-				[[Mixpanel sharedInstance] track:@"Change Avatar - Skip Photo Cancel"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+				[[Mixpanel sharedInstance] track:@"Club Cover Photo - Skip Photo Cancel"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 				
 				[self _goCameraBack];
 				break;

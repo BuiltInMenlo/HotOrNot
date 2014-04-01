@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol HONAvatarCameraOverlayDelegate;
-@interface HONAvatarCameraOverlayView : UIView
+@interface HONAvatarCameraOverlayView : UIView <UIAlertViewDelegate>
 - (void)addPreview:(UIImage *)image;
 - (void)addPreviewAsFlipped:(UIImage *)image;
 - (void)removePreview;

@@ -14,6 +14,7 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
+#import "HONClubCoverCameraViewController.h"
 #import "HONUserClubInviteViewController.h"
 
 @interface HONCreateClubViewController ()
@@ -245,7 +246,12 @@
 }
 
 - (void)_goCamera {
-	[[Mixpanel sharedInstance] track:@"Create Club - Choose Image" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Choose Image"
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubCoverCameraViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goBlurb {

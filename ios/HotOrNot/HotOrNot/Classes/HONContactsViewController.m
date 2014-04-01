@@ -14,6 +14,7 @@
 #import "HONContactsViewController.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
+#import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONTutorialView.h"
@@ -31,8 +32,7 @@
 @interface HONContactsViewController () <HONInviteContactViewCellDelegate, HONInAppContactViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
-@property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
-@property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
+@property (nonatomic, strong) NSMutableArray *clubInviteContacts;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) NSString *smsRecipients;
@@ -130,12 +130,8 @@
 	}];
 }
 
-- (void)_followUsers {
-	NSString *userIDs = @"";
-	for (HONTrivialUserVO *vo in _selectedInAppContacts)
-		userIDs = [userIDs stringByAppendingFormat:@"%d|", vo.userID];
-	
-	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSObject *result){
+- (void)_followUserWithID:(int)userID {
+	[[HONAPICaller sharedInstance] followUserWithUserID:userID completion:^(NSObject *result) {
 		[HONAppDelegate writeFollowingList:(NSArray *)result];
 		
 		if (_progressHUD != nil) {
@@ -143,67 +139,45 @@
 			_progressHUD = nil;
 		}
 		
-		if ([_selectedNonAppContacts count] == 0) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-			
-			[self dismissViewControllerAnimated:YES completion:^(void){
-			}];
-		}
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 	}];
 }
 
-- (void)_sendInvites {
-	NSMutableArray *emails = [NSMutableArray array];
-	NSMutableArray *numbers = [NSMutableArray array];
-	for (HONContactUserVO *vo in _selectedNonAppContacts) {
-		if (vo.isSMSAvailable)
-			[numbers addObject:vo];
+- (void)_unfollowUserWithID:(int)userID {
+	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:userID completion:^(NSObject *result) {
+		[HONAppDelegate writeFollowingList:(NSArray *)result];
 		
-		else
-			[emails addObject:vo];
-	}
-	
-	_inviteTypeCounter = 0;
-	_inviteTypeTotal = ((int)[numbers count] > 0) + ((int)[emails count] > 0);
-	
-	if (_inviteTypeTotal > 0) {
-		TSTapstream *tracker = [TSTapstream instance];
-		
-		TSEvent *e = [TSEvent eventWithName:@"Invite Friends" oneTimeOnly:YES];
-		[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
-		[tracker fireEvent:e];
-		
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.taskInProgress = YES;
-		
-		if ([emails count] > 0) {
-			NSString *addresses = @"";
-			for (HONContactUserVO *vo in emails)
-				addresses = [addresses stringByAppendingFormat:@"%@|", vo.email];
-			
-			[[HONAPICaller sharedInstance] sendEmailInvitesFromDelimitedList:[addresses substringToIndex:[addresses length] - 1] completion:^(NSObject *result){
-				_inviteTypeCounter++;
-				[self _checkInviteComplete];
-			}];
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
 		}
 		
-		if ([numbers count] > 0) {
-			NSString *phoneNumbers = @"";
-			for (HONContactUserVO *vo in numbers) {
-				if (vo.isSMSAvailable)
-					phoneNumbers = [phoneNumbers stringByAppendingFormat:@"%@|", vo.mobileNumber];
-			}
-			
-			[[HONAPICaller sharedInstance] sendSMSInvitesFromDelimitedList:[phoneNumbers substringToIndex:[phoneNumbers length] - 1] completion:^(NSObject *result){
-				_inviteTypeCounter++;
-				[self _checkInviteComplete];
-			}];
-		}
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+	}];
+}
+
+- (void)_sendInviteToContact:(HONContactUserVO *)vo {
+	TSTapstream *tracker = [TSTapstream instance];
+	
+	TSEvent *e = [TSEvent eventWithName:@"Invite Friends" oneTimeOnly:YES];
+	[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
+	[tracker fireEvent:e];
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	
+	if (vo.isSMSAvailable) {
+		[[HONAPICaller sharedInstance] sendSMSInvitesFromDelimitedList:vo.mobileNumber completion:^(NSObject *result) {}];
+	
+	} else {
+		[[HONAPICaller sharedInstance] sendEmailInvitesFromDelimitedList:vo.email completion:^(NSObject *result) {}];
 	}
 }
 
@@ -302,14 +276,13 @@
 	_smsRecipients = @"";
 	_emailRecipients = @"";
 	_inAppContacts = [NSMutableArray array];
-	_selectedNonAppContacts = [NSMutableArray array];
-	_selectedInAppContacts = [NSMutableArray array];
-	
+	_clubInviteContacts = [NSMutableArray array];
+
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Friends"];
-	[self.view addSubview:headerView];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 //	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 76.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 76.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
@@ -528,26 +501,14 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		
-		[_selectedInAppContacts addObject:userVO];
+		[self _followUserWithID:userVO.userID];
 		
 	} else {
 		[[Mixpanel sharedInstance] track:@"Contacts - Deselect Follow In-App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		
-		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
-			for (HONTrivialUserVO *dropVO in _inAppContacts) {
-				if (vo.userID == dropVO.userID) {
-					[removeVOs addObject:vo];
-				}
-			}
-		}
-		
-		[_selectedInAppContacts removeObjectsInArray:removeVOs];
-		removeVOs = nil;
+		[self _unfollowUserWithID:userVO.userID];
 	}
 }
 
@@ -558,7 +519,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
 		
-		[_selectedInAppContacts addObject:userVO];
+		[_clubInviteContacts addObject:userVO];
 		
 	} else {
 		[[Mixpanel sharedInstance] track:@"Contacts - Deselect Invite In-App Contact"
@@ -567,7 +528,7 @@
 										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
 		
 		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
+		for (HONTrivialUserVO *vo in _clubInviteContacts) {
 			for (HONTrivialUserVO *dropVO in _inAppContacts) {
 				if (vo.userID == dropVO.userID) {
 					[removeVOs addObject:vo];
@@ -575,7 +536,7 @@
 			}
 		}
 		
-		[_selectedInAppContacts removeObjectsInArray:removeVOs];
+		[_clubInviteContacts removeObjectsInArray:removeVOs];
 		removeVOs = nil;
 	}
 }
@@ -588,40 +549,30 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
-		
-		[_selectedNonAppContacts addObject:userVO];
+		[self _sendInviteToContact:userVO];
 		
 	} else {
 		[[Mixpanel sharedInstance] track:@"Contacts - Deselect Invite Non App Contact"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
 										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
-		
-		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONContactUserVO *vo in _selectedNonAppContacts) {
-			for (HONContactUserVO *dropVO in _nonAppContacts) {
-				if ([vo.mobileNumber isEqualToString:dropVO.mobileNumber]) {
-					[removeVOs addObject:vo];
-				}
-			}
-		}
-		
-		[_selectedNonAppContacts removeObjectsInArray:removeVOs];
-		removeVOs = nil;
 	}
 }
 
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_inAppContacts count] : [_nonAppContacts count]);
+	return ((section == 0) ? [_inAppContacts count] : (section == 1 ) ? [_nonAppContacts count] : 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (3);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	if (section == 2)
+		return (nil);
+	
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	headerImageView.userInteractionEnabled = YES;
 	
@@ -644,13 +595,6 @@
 			cell.userVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
-		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
-			if (cell.userVO.userID == vo.userID) {
-				[cell toggleSelected:YES];
-				break;
-			}
-		}
-		
 		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
 			if (cell.userVO.userID == vo.userID) {
 				[cell toggleSelected:YES];
@@ -662,7 +606,7 @@
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		return (cell);
 		
-	} else {
+	} else if (indexPath.section == 1) {
 		HONNonAppContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
@@ -670,14 +614,16 @@
 			cell.userVO = (HONContactUserVO *)[_nonAppContacts objectAtIndex:indexPath.row];
 		}
 		
-		for (HONContactUserVO *vo in _selectedNonAppContacts) {
-			if ([cell.userVO.fullName isEqualToString:vo.fullName]) {
-				[cell toggleSelected:YES];
-				break;
-			}
-		}
-		
 		cell.delegate = self;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		return (cell);
+		
+	} else {
+		UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		
+		if (cell == nil)
+			cell = [[UITableViewCell alloc] init];
+		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 	}
@@ -686,11 +632,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return ((indexPath.section == 0 || indexPath.section == 1) ? kOrthodoxTableCellHeight : ([_inAppContacts count] + [_nonAppContacts count] > 5 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 50.0: 0.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);
+	return ((section == 0 || section == 1) ? kOrthodoxTableHeaderHeight : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
