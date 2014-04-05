@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUserClubInviteViewController : UIViewController //<UITableViewDataSource, UITableViewDelegate>
+@interface HONUserClubInviteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 - (id)initAsModal:(BOOL)isModal;
 @end

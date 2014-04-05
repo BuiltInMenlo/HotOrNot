@@ -6,10 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @protocol HONSearchBarHeaderViewDelegate;
-
 @interface HONSearchBarHeaderView : UIView <UITextFieldDelegate>
 - (void)toggleFocus:(BOOL)isFocused;
 - (void)backgroundingReset;

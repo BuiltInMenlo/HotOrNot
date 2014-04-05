@@ -52,7 +52,6 @@
 @property (nonatomic, strong) UIButton *usernameButton;
 @property (nonatomic, strong) UIButton *passwordButton;
 @property (nonatomic, strong) UIButton *phoneButton;
-//@property (nonatomic, strong) UIButton *birthdayButton;
 @property (nonatomic, strong) UIImageView *usernameCheckImageView;
 @property (nonatomic, strong) UIImageView *passwordCheckImageView;
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
@@ -66,7 +65,6 @@
 @property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *formHolderView;
 @property (nonatomic, strong) UIView *splashHolderView;
-@property (nonatomic, strong) NSString *splashImageURL;
 @property (nonatomic) int tintIndex;
 
 @property (nonatomic) int selfieAttempts;
@@ -93,9 +91,6 @@
 		[dateFormat setDateFormat:@"yyyy-MM-dd"];
 		
 		_birthday = [dateFormat stringFromDate:[calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0]];
-		
-		_splashImageURL = [[[NSUserDefaults standardUserDefaults] objectForKey:@"splash_image"] stringByAppendingString:[[NSString stringWithFormat:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? @"_%@-568h" : @"_%@", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] stringByReplacingOccurrencesOfString:@"." withString:@""]] stringByAppendingString:@"@2x.png"]];
-		NSLog(@"SPLASH TEXT:[%@]", _splashImageURL);
 	}
 	
 	return (self);
@@ -268,13 +263,10 @@
 - (void)loadView {
 	[super loadView];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
-	
 	_formHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_formHolderView.hidden = YES;
 	[self.view addSubview:_formHolderView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Get started"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Welcome"];
 	[_formHolderView addSubview:headerView];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -306,7 +298,7 @@
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
+	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
@@ -336,7 +328,7 @@
 	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 //	_passwordTextField.secureTextEntry = YES;
 	[_passwordTextField setReturnKeyType:UIReturnKeyDone];
-	[_passwordTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
+	[_passwordTextField setTextColor:[UIColor blackColor]];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_passwordTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
@@ -365,7 +357,7 @@
 	[_phone1TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phone1TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_phone1TextField setReturnKeyType:UIReturnKeyNext];
-	[_phone1TextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
+	[_phone1TextField setTextColor:[UIColor blackColor]];
 	[_phone1TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_phone1TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_phone1TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
@@ -380,7 +372,7 @@
 	[_phone2TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phone2TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_phone2TextField setReturnKeyType:UIReturnKeyNext];
-	[_phone2TextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
+	[_phone2TextField setTextColor:[UIColor blackColor]];
 	[_phone2TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_phone2TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_phone2TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
@@ -395,7 +387,7 @@
 	[_phone3TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phone3TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_phone3TextField setReturnKeyType:UIReturnKeyNext];
-	[_phone3TextField setTextColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
+	[_phone3TextField setTextColor:[UIColor blackColor]];
 	[_phone3TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_phone3TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_phone3TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
@@ -433,50 +425,69 @@
 //	
 //	_birthday = [dateFormat stringFromDate:_datePicker.date];
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
+		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){
+			if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
+				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+				[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			}
+		}];
+	}
+	
+	[_usernameTextField becomeFirstResponder];
+	[_usernameButton setSelected:YES];
+	
+	
+	
+	
+	
 	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_splashHolderView.alpha = 0.0;
+	_splashHolderView.hidden = YES;
 	[self.view addSubview:_splashHolderView];
 	
-	UIImageView *splashTxtImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	[_splashHolderView addSubview:splashTxtImageView];
-	
-	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		splashTxtImageView.image = image;
-		
-		[UIView animateWithDuration:0.33 animations:^(void) {
-			_splashHolderView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-	};
-	
-	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		splashTxtImageView.image = [UIImage imageNamed:@"splashBG"];
-		
-		[UIView animateWithDuration:0.33 animations:^(void) {
-			_splashHolderView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-	};
-	
-	[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
-									   success:successBlock
-									   failure:failureBlock];
-	
-	
-	UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	loginButton.frame = CGRectMake(212.0, -4.0, 104.0, 44.0);
-	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
-	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
-	[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-	[_splashHolderView addSubview:loginButton];
-	
-	UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 320.0, 74.0);
-	[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_nonActive"] forState:UIControlStateNormal];
-	[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_Active"] forState:UIControlStateHighlighted];
-	[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-	[_splashHolderView addSubview:signupButton];
+//	UIImageView *splashTxtImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//	[_splashHolderView addSubview:splashTxtImageView];
+//	
+//	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//		splashTxtImageView.image = image;
+//		
+//		[UIView animateWithDuration:0.33 animations:^(void) {
+//			_splashHolderView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//		}];
+//	};
+//	
+//	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//		splashTxtImageView.image = [UIImage imageNamed:@"splashBG"];
+//		
+//		[UIView animateWithDuration:0.33 animations:^(void) {
+//			_splashHolderView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//		}];
+//	};
+//	
+//	[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+//							  placeholderImage:nil
+//									   success:successBlock
+//									   failure:failureBlock];
+//	
+//	
+//	UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	loginButton.frame = CGRectMake(212.0, -4.0, 104.0, 44.0);
+//	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
+//	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
+//	[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+//	[_splashHolderView addSubview:loginButton];
+//	
+//	UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 320.0, 74.0);
+//	[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_nonActive"] forState:UIControlStateNormal];
+//	[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_Active"] forState:UIControlStateHighlighted];
+//	[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
+//	[_splashHolderView addSubview:signupButton];
 }
 
 - (void)viewDidLoad {
@@ -577,6 +588,7 @@
 		
 //	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	
 //	if (_tintTimer != nil) {
 //		[_tintTimer invalidate];
@@ -596,23 +608,21 @@
 		}];
 	}
 	
-	_formHolderView.hidden = NO;
-	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
 	
-	[UIView animateWithDuration:0.5 delay:0.33 options:UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-		_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
-		
-	}  completion:^(BOOL finished) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-	}];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	[UIView setAnimationDelay:0.33];
-	_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
+//	[UIView animateWithDuration:0.5 delay:0.33 options:UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+//		_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
+//		
+//	}  completion:^(BOOL finished) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+//	}];
+//	
+//	[UIView beginAnimations:nil context:NULL];
+//	[UIView setAnimationDuration:0.5];
+//	[UIView setAnimationDelay:0.33];
+//	_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
+//	[UIView commitAnimations];
 }
 
 - (void)_goLogin {

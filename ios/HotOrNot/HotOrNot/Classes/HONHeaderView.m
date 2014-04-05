@@ -31,7 +31,7 @@
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 40.0, 170.0, 21.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:21];
-		_titleLabel.textColor = [UIColor whiteColor];
+		_titleLabel.textColor = [UIColor blackColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];

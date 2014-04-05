@@ -108,12 +108,10 @@
 	_clubCoverImageView.frame = CGRectOffset(_clubCoverImageView.frame, 8.0, 85.0);
 	[_formHolderView addSubview:_clubCoverImageView];
 	
-	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
-	
 	UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	addImageButton.frame = _clubCoverImageView.frame;//CGRectMake(8.0, 85.0, 48.0, 48.0);
-//	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
-//	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
+	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
+	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
 	[addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
 //	[addImageButton addTarget:self action:@selector(_buttonTouchDown:) forControlEvents:UIControlEventTouchDown];
 //	[addImageButton addTarget:self action:@selector(_buttonTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
@@ -234,36 +232,29 @@
 	[_clubNameButton setSelected:NO];
 	[_blurbButton setSelected:NO];
 	
-	if ([_clubName length] == 0) {
-		[_clubNameButton setSelected:YES];
-		[_clubNameTextField becomeFirstResponder];
-		
-		_clubNameCheckImageView.alpha = 1.0;
-		_clubNameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		
-		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
-									message:@"You need to enter a name for your club!"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	
-	} else
-		[self _submitClub];
+//	if ([_clubName length] == 0) {
+//		[_clubNameButton setSelected:YES];
+//		[_clubNameTextField becomeFirstResponder];
+//		
+//		_clubNameCheckImageView.alpha = 1.0;
+//		_clubNameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+//		
+//		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
+//									message:@"You need to enter a name for your club!"
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//	
+//	} else
+		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initAsModal:NO] animated:YES];//[self _submitClub];
 }
-
-
-- (void)_buttonTouchDown:(id)sender {
-	UIButton *button = (UIButton *)sender;
-}
-
-- (void)_buttonTouchUpInside:(id)sender {
-	UIButton *button = (UIButton *)sender;
-}
-
 
 
 - (void)_goClubName {
 	[[Mixpanel sharedInstance] track:@"Create Club - Enter Name" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_clubNameButton setSelected:YES];
+	[_blurbButton setSelected:NO];
 }
 
 - (void)_goCamera {
@@ -283,6 +274,9 @@
 
 - (void)_goBlurb {
 	[[Mixpanel sharedInstance] track:@"Create Club - Enter Description" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	[_blurbButton setSelected:YES];
+	[_clubNameButton setSelected:NO];
 }
 
 
@@ -315,8 +309,6 @@
 	
 	UIImage *thumbImage = [HONImagingDepictor scaleImage:[HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 	_clubCoverImageView.image = thumbImage;
-//	_clubCoverImageView.hi
-	
 	_clubImagePrefix = imagePrefix;
 }
 

@@ -16,4 +16,5 @@
 @property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarPrefix;
+@property (nonatomic, retain) NSString *altID;
 @end

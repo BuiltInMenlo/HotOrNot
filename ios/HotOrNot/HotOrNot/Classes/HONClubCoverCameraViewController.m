@@ -166,6 +166,12 @@
 	}
 }
 
+-(void)_destroyCamera {
+	_cameraOverlayView = nil;
+	_imagePicker.cameraOverlayView = nil;
+	_imagePicker = nil;
+}
+
 
 #pragma mark - Navigation
 
@@ -232,11 +238,13 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		//[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			_cameraOverlayView = nil;
-			_imagePicker.cameraOverlayView = nil;
-			_imagePicker = nil;
-		//}];
+		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+				[self _destroyCamera];
+			}];
+		
+		} else
+			[self _destroyCamera];
 	}];
 }
 

@@ -12,17 +12,23 @@
 @implementation NSDictionary (NullReplacement)
 
 - (NSDictionary *)dictionaryByReplacingNullsWithBlanks {
-	const NSMutableDictionary *replaced = [self mutableCopy];
+	const NSMutableDictionary *replaced = [NSMutableDictionary dictionaryWithDictionary: self];
+    const id nul = [NSNull null];
+    const NSString *blank = @"";
 	
-	for (NSString *key in self) {
-		id obj = [self objectForKey:key];
+    for (NSString *key in self) {
+        const id object = [self objectForKey:key];
 		
-		if (obj == [NSNull null]) [replaced setObject:@"" forKey:key];
-		else if ([obj isKindOfClass:[NSDictionary class]]) [replaced setObject:[obj dictionaryByReplacingNullsWithBlanks] forKey:key];
-		else if ([obj isKindOfClass:[NSArray class]]) [replaced setObject:[obj arrayByReplacingNullsWithBlanks] forKey:key];
-	}
+        if (object == nul) {
+            [replaced setObject: blank forKey:key];
+        }
+		
+        else if ([object isKindOfClass:[NSDictionary class]]) {
+            [replaced setObject:[(NSDictionary *) object dictionaryByReplacingNullsWithBlanks] forKey:key];
+        }
+    }
 	
-	return ([NSDictionary dictionaryWithDictionary:[replaced copy]]);
+    return [NSDictionary dictionaryWithDictionary:[replaced copy]];
 }
 
 @end
