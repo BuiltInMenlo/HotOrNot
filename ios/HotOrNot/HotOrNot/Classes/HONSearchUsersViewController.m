@@ -13,7 +13,7 @@
 #import "HONSearchUserViewCell.h"
 #import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
-#import "HONSearchBarHeaderView.h"
+#import "HONSearchBarView.h"
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -22,14 +22,14 @@
 #import "HONUserVO.h"
 
 
-@interface HONSearchUsersViewController () <HONSearchBarHeaderViewDelegate, HONSearchUserViewCellDelegate>
+@interface HONSearchUsersViewController () <HONSearchBarViewDelegate, HONSearchUserViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSMutableArray *selectedUsers;
 @property (nonatomic, strong) NSMutableArray *addUsers;
 @property (nonatomic, strong) NSMutableArray *removeUsers;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
+@property (nonatomic, strong) HONSearchBarView *searchHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) BOOL hasUpdated;
 @end
@@ -253,11 +253,12 @@
 }
 
 
-#pragma mark - SearchBar Delegates
-- (void)searchBarHeaderFocus:(HONSearchBarHeaderView *)searchBarHeaderView {
-}
-
-- (void)searchBarHeaderCancel:(HONSearchBarHeaderView *)searchBarHeaderView {
+#pragma mark - SearchBarHeader Delegates
+- (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
+	[[Mixpanel sharedInstance] track:@"Search Users - Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_users = [NSMutableArray array];
 	for (NSDictionary *dict in [HONAppDelegate searchUsers])
 		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
@@ -265,7 +266,12 @@
 	[_tableView reloadData];
 }
 
-- (void)searchBarHeader:(HONSearchBarHeaderView *)searchBarHeaderView enteredSearch:(NSString *)searchQuery {
+- (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
+	[[Mixpanel sharedInstance] track:@"Contacts - Select Follow In-App Contact"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  searchQuery, @"query", nil]];
+	
 	[self _retrieveUsers:searchQuery];
 }
 
@@ -280,7 +286,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+	_searchHeaderView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
 	_searchHeaderView.delegate = self;
 	
 	return (_searchHeaderView);

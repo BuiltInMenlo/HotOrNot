@@ -40,7 +40,7 @@
 	vo.dictionary = dictionary;
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];//([dictionary objectForKey:@"id"] != [NSNull null]) ? [[dictionary objectForKey:@"id"] intValue] : 0;
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = [dictionary objectForKey:@"img_url"];//([dictionary objectForKey:@"img_url"] != [NSNull null]) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]] : [@"%@/defaultAvatar" stringByAppendingString:[HONAppDelegate s3BucketForType:@"avatars"]];
+	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];//([dictionary objectForKey:@"img_url"] != [NSNull null]) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]] : [@"%@/defaultAvatar" stringByAppendingString:[HONAppDelegate s3BucketForType:@"avatars"]];
 	vo.altID = ([dictionary objectForKey:@"alt_id"] != [NSNull null]) ? [dictionary objectForKey:@"alt_id"] : @"";
 	
 	return (vo);

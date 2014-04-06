@@ -35,11 +35,8 @@
 
 @interface HONRegisterViewController ()
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
-//@property (nonatomic, strong) UIImagePickerController *splashImagePickerController;
 @property (nonatomic, strong) UIImagePickerController *profileImagePickerController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UIView *rotatingTintView;
-@property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *password;
@@ -55,16 +52,12 @@
 @property (nonatomic, strong) UIImageView *usernameCheckImageView;
 @property (nonatomic, strong) UIImageView *passwordCheckImageView;
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
-//@property (nonatomic, strong) UIDatePicker *datePicker;
-//@property (nonatomic, strong) UILabel *birthdayLabel;
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIButton *changeTintButton;
-@property (nonatomic, strong) UIImageView *tutorialImageView;
 @property (nonatomic, strong) UIView *formHolderView;
-@property (nonatomic, strong) UIView *splashHolderView;
 @property (nonatomic) int tintIndex;
 
 @property (nonatomic) int selfieAttempts;
@@ -175,9 +168,7 @@
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imageFilename completion:^(NSObject *result) {
-//		[self _finalizeUser];
-	}];
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imageFilename completion:^(NSObject *result) {}];
 }
 
 - (void)_finalizeUser {
@@ -191,6 +182,8 @@
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
+			
+			[[HONAPICaller sharedInstance] submitPhoneNumberForContactsMatching:_phone completion:^(NSObject *result) {}];
 			
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
@@ -409,22 +402,6 @@
 	_phoneCheckImageView.alpha = 0.0;
 	[_formHolderView addSubview:_phoneCheckImageView];
 	
-//	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-//	NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
-//	[dateComponents setYear:-[HONAppDelegate minimumAge]];
-//	
-//	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-//	[dateFormat setDateFormat:@"yyyy-MM-dd"];
-//
-//	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-//	_datePicker.datePickerMode = UIDatePickerModeDate;
-//	_datePicker.minimumDate = [dateFormat dateFromString:@"1981-07-10"];
-//	_datePicker.maximumDate = [calendar dateByAddingComponents:dateComponents toDate:[[NSDate alloc] init] options:0];
-//	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
-//	[_formHolderView addSubview:_datePicker];
-//	
-//	_birthday = [dateFormat stringFromDate:_datePicker.date];
-	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	
@@ -439,55 +416,6 @@
 	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
-	
-	
-	
-	
-	
-	_splashHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_splashHolderView.hidden = YES;
-	[self.view addSubview:_splashHolderView];
-	
-//	UIImageView *splashTxtImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//	[_splashHolderView addSubview:splashTxtImageView];
-//	
-//	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//		splashTxtImageView.image = image;
-//		
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_splashHolderView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-//	};
-//	
-//	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//		splashTxtImageView.image = [UIImage imageNamed:@"splashBG"];
-//		
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_splashHolderView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
-//	};
-//	
-//	[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-//							  placeholderImage:nil
-//									   success:successBlock
-//									   failure:failureBlock];
-//	
-//	
-//	UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	loginButton.frame = CGRectMake(212.0, -4.0, 104.0, 44.0);
-//	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
-//	[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
-//	[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-//	[_splashHolderView addSubview:loginButton];
-//	
-//	UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 320.0, 74.0);
-//	[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_nonActive"] forState:UIControlStateNormal];
-//	[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_Active"] forState:UIControlStateHighlighted];
-//	[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-//	[_splashHolderView addSubview:signupButton];
 }
 
 - (void)viewDidLoad {
@@ -496,135 +424,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
-//	_rotatingTintView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//	_rotatingTintView.backgroundColor = SPLASH_BLUE_TINT_COLOR;
-//	[_splashHolderView addSubview:_rotatingTintView];
-//	
-//	if (_tintTimer != nil) {
-//		[_tintTimer invalidate];
-//		_tintTimer = nil;
-//	}
-//	
-//	_tintTimer = [NSTimer scheduledTimerWithTimeInterval:SPLASH_TINT_TIMER_DURATION target:self selector:@selector(_nextSplashTint) userInfo:nil repeats:YES];
-//	
-//	UIImageView *splashTxtImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//	[_splashHolderView addSubview:splashTxtImageView];
-//	
-//	if ([HONAppDelegate switchEnabledForKey:@"splash_camera"]) {
-//		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//			splashTxtImageView.image = image;
-//		};
-//		
-//		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//			splashTxtImageView.image = [UIImage imageNamed:@"splashBG"];
-//		};
-//		
-//		[splashTxtImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_splashImageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-//								  placeholderImage:nil
-//										   success:successBlock
-//										   failure:failureBlock];
-//		
-//		UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		loginButton.frame = CGRectMake(212.0, -8.0, 104.0, 44.0);
-//		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_nonActive"] forState:UIControlStateNormal];
-//		[loginButton setBackgroundImage:[UIImage imageNamed:@"loginButton_Active"] forState:UIControlStateHighlighted];
-//		[loginButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-//		[_splashHolderView addSubview:loginButton];
-//		
-//		UIButton *signupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		signupButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 320.0, 74.0);
-//		[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_nonActive"] forState:UIControlStateNormal];
-//		[signupButton setBackgroundImage:[UIImage imageNamed:@"getStartedButton_Active"] forState:UIControlStateHighlighted];
-//		[signupButton addTarget:self action:@selector(_goCloseSplash) forControlEvents:UIControlEventTouchUpInside];
-//		[_splashHolderView addSubview:signupButton];
-//
-//		
-//		if (_isFirstAppearance) {
-//			_isFirstAppearance = NO;
-//			
-//			if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//				UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-//				imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-//				imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-//				imagePickerController.delegate = nil;
-//				imagePickerController.showsCameraControls = NO;
-//				imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f);
-//				imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//				
-//				imagePickerController.cameraOverlayView = _splashHolderView;
-//				self.splashImagePickerController = imagePickerController;
-//				
-//				[self presentViewController:self.splashImagePickerController animated:NO completion:^(void) {
-//					[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-//						_splashHolderView.alpha = 1.0;
-//					} completion:^(BOOL finished) {
-//					}];
-//				}];
-//				
-//			} else {
-//				[self.view addSubview:_splashHolderView];
-//				
-//				[UIView animateWithDuration:0.33 animations:^(void) {
-//					_splashHolderView.alpha = 1.0;
-//				} completion:^(BOOL finished) {
-//				}];
-//			}
-//		}
-//	
-//	} else {
-//		[self.view addSubview:_splashHolderView];
-//		
-//		[UIView animateWithDuration:0.33 animations:^(void) {
-//			_splashHolderView.alpha = 1.0;
-//		} completion:^(BOOL finished) {}];
-//	}
 }
 
 
 #pragma mark - Navigation
-- (void)_goCloseSplash {
-	[[Mixpanel sharedInstance] track:@"Register - Close Splash" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-		
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-	
-//	if (_tintTimer != nil) {
-//		[_tintTimer invalidate];
-//		_tintTimer = nil;
-//	}
-//	
-//	_tintIndex = 0;
-//	[self.splashImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
-	_imageFilename = @"";
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
-		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){
-			if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
-				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
-				[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			}
-		}];
-	}
-	
-	[_usernameTextField becomeFirstResponder];
-	[_usernameButton setSelected:YES];
-	
-//	[UIView animateWithDuration:0.5 delay:0.33 options:UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
-//		_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
-//		
-//	}  completion:^(BOOL finished) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-//	}];
-//	
-//	[UIView beginAnimations:nil context:NULL];
-//	[UIView setAnimationDuration:0.5];
-//	[UIView setAnimationDelay:0.33];
-//	_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
-//	[UIView commitAnimations];
-}
-
 - (void)_goLogin {
 	[[Mixpanel sharedInstance] track:@"Register - Login" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
@@ -636,18 +439,6 @@
 			[_mailComposeViewController setSubject:@"Selfieclub - Help! I need to log back in"];
 			[_mailComposeViewController setMessageBody:[NSString stringWithFormat:@"My name is %@ and I need to log back into my account. Please help, my email is %@. Thanks!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"email"]] isHTML:NO];
 			
-//			if (self.splashImagePickerController != nil)
-//				[self.splashImagePickerController presentViewController:_mailComposeViewController animated:YES completion:^(void) {}];
-//			
-//			else
-//				[self presentViewController:_mailComposeViewController animated:YES completion:^(void) {}];
-//			
-//			[_rotatingTintView.layer removeAllAnimations];
-//			if (_tintTimer != nil) {
-//				[_tintTimer invalidate];
-//				_tintTimer = nil;
-//			}
-		
 		} else {
 			[[[UIAlertView alloc] initWithTitle:@"Email Error"
 										message:@"Cannot send email from this device!"
@@ -716,11 +507,6 @@
 		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[_profileCameraOverlayView addSubview:gutterView];
 		
-		_tutorialImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tutorial_1stRun"]];
-		_tutorialImageView.frame = CGRectOffset(_tutorialImageView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - 185.0);
-		_tutorialImageView.alpha = 0.0;
-		[_profileCameraOverlayView addSubview:_tutorialImageView];
-		
 		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
 		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_nonActive"] forState:UIControlStateNormal];
@@ -768,9 +554,6 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			takePhotoButton.alpha = 1.0;
 		} completion:^(BOOL finished) {
-			[UIView animateWithDuration:0.33 animations:^(void) {
-				_tutorialImageView.alpha = 1.0;
-			}];
 		}];
 	}
 	
@@ -847,25 +630,6 @@
 - (void)_goPhone {
 	[_phone1TextField becomeFirstResponder];
 }
-
-//- (void)_goPicker {
-//	_phoneCheckImageView.alpha = 0.0;
-//	
-//	[_usernameButton setSelected:NO];
-//	[_emailButton setSelected:NO];
-//	[_birthdayButton setSelected:YES];
-//	[_usernameTextField resignFirstResponder];
-//	[_emailTextField resignFirstResponder];
-//	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
-//	} completion:^(BOOL finished) {
-//		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//		[dateFormatter setDateStyle:NSDateFormatterLongStyle];
-//		[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-//		_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
-//	}];
-//}
 
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
@@ -1096,15 +860,6 @@
 //	_birthday = [dateFormat stringFromDate:_datePicker.date];
 //}
 
-- (void)_nextSplashTint {
-	_tintIndex = ++_tintIndex % 3;
-	
-	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:SPLASH_TINT_FADE_DURATION];
-	[_rotatingTintView setBackgroundColor:(_tintIndex == 0) ? SPLASH_BLUE_TINT_COLOR : (_tintIndex == 1) ? SPLASH_MAGENTA_TINT_COLOR : SPLASH_GREEN_TINT_COLOR];
-	[UIView commitAnimations];
-}
-
 
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
@@ -1241,8 +996,6 @@
 		if (buttonIndex == 1) {
 			_imageFilename = @"";
 			[self.profileImagePickerController dismissViewControllerAnimated:NO completion:^(void) {}];
-			
-			_splashHolderView.frame = CGRectOffset(_splashHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 			
 			[_usernameTextField becomeFirstResponder];
 			[_usernameButton setSelected:YES];

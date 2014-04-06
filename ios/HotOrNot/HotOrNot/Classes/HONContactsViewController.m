@@ -18,6 +18,7 @@
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONTutorialView.h"
+#import "HONSearchBarView.h"
 #import "HONMessagesButtonView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
@@ -29,15 +30,17 @@
 #import "HONMessagesViewController.h"
 #import "HONUserProfileViewController.h"
 
-@interface HONContactsViewController () <HONInviteContactViewCellDelegate, HONInAppContactViewCellDelegate, HONTutorialViewDelegate>
+@interface HONContactsViewController () <HONInAppContactViewCellDelegate, HONInviteContactViewCellDelegate, HONSearchBarViewDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIImageView *contactsBlockedImageView;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic) BOOL isDataSourceContacts;
 @property (nonatomic) int inviteTypeCounter;
 @property (nonatomic) int inviteTypeTotal;
 @end
@@ -181,9 +184,15 @@
 	}
 }
 
+- (void)_searchUsersWithUsername:(NSString *)username {
+	_isDataSourceContacts = NO;
+}
+
 
 #pragma mark - Device Functions
 - (void)_retrieveContacts {
+	_isDataSourceContacts = YES;
+	
 	NSMutableArray *unsortedContacts = [NSMutableArray array];
 	_nonAppContacts = [NSMutableArray array];
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -284,16 +293,24 @@
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 76.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 76.0) style:UITableViewStylePlain];
+	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, 76.0, 320.0, kSearchHeaderHeight)];
+	searchBarView.delegate = self;
+	[self.view addSubview:searchBarView];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 76.0 + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (76.0 + kSearchHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	_contactsBlockedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
+	_contactsBlockedImageView.frame = _tableView.frame;
+	_contactsBlockedImageView.hidden = YES;
+	[_tableView addSubview:_contactsBlockedImageView];
 	
 	if (ABAddressBookRequestAccessWithCompletion) {
 		ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -320,12 +337,14 @@
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-																message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
-															   delegate:nil
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:nil];
-			[alertView show];
+			_contactsBlockedImageView.hidden = NO;
+			
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
+//																message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
+//															   delegate:nil
+//													  cancelButtonTitle:@"OK"
+//													  otherButtonTitles:nil];
+//			[alertView show];
 		}
 	}
 	
@@ -491,6 +510,28 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	}];
+}
+
+
+#pragma mark - SearchBarHeader Delegates
+- (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
+}
+
+- (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
+	[[Mixpanel sharedInstance] track:@"Contacts - Search Users Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	
+	[_tableView reloadData];
+}
+
+- (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
+	[[Mixpanel sharedInstance] track:@"Contacts - Search Users Submit"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  searchQuery, @"query", nil]];
+	
+	[self _searchUsersWithUsername:searchQuery];
 }
 
 

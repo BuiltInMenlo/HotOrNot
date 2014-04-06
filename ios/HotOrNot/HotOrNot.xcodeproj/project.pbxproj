@@ -272,7 +272,7 @@
 		4C4824E3182A285A00630526 /* profileCameraButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4824DF182A285A00630526 /* profileCameraButton_Active@2x.png */; };
 		4C4824E4182A285A00630526 /* profileCameraButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4824E0182A285A00630526 /* profileCameraButton_nonActive.png */; };
 		4C4824E5182A285A00630526 /* profileCameraButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4824E1182A285A00630526 /* profileCameraButton_nonActive@2x.png */; };
-		4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */; };
+		4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarView.m */; };
 		4C48DE6818275BD8003CB309 /* findFriends_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C48DE5618275BD8003CB309 /* findFriends_Active.png */; };
 		4C48DE6918275BD8003CB309 /* findFriends_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C48DE5718275BD8003CB309 /* findFriends_Active@2x.png */; };
 		4C48DE6A18275BD8003CB309 /* findFriends_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C48DE5818275BD8003CB309 /* findFriends_nonActive.png */; };
@@ -1130,8 +1130,8 @@
 		4C4824DF182A285A00630526 /* profileCameraButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profileCameraButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C4824E0182A285A00630526 /* profileCameraButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = profileCameraButton_nonActive.png; sourceTree = "<group>"; };
 		4C4824E1182A285A00630526 /* profileCameraButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profileCameraButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C48745616BF0E36007D901B /* HONSearchBarHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchBarHeaderView.h; sourceTree = "<group>"; };
-		4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchBarHeaderView.m; sourceTree = "<group>"; };
+		4C48745616BF0E36007D901B /* HONSearchBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchBarView.h; sourceTree = "<group>"; };
+		4C48745716BF0E36007D901B /* HONSearchBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchBarView.m; sourceTree = "<group>"; };
 		4C48DE5618275BD8003CB309 /* findFriends_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = findFriends_Active.png; sourceTree = "<group>"; };
 		4C48DE5718275BD8003CB309 /* findFriends_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "findFriends_Active@2x.png"; sourceTree = "<group>"; };
 		4C48DE5818275BD8003CB309 /* findFriends_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = findFriends_nonActive.png; sourceTree = "<group>"; };
@@ -1727,9 +1727,9 @@
 			children = (
 				4C382FFA178B8AD700C7FA7C /* HONSearchUserViewCell.h */,
 				4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */,
+				4C48745616BF0E36007D901B /* HONSearchBarView.h */,
+				4C48745716BF0E36007D901B /* HONSearchBarView.m */,
 				4C382FF7178B8AA200C7FA7C /* HONSearchUsersViewController.h */,
-				4C48745616BF0E36007D901B /* HONSearchBarHeaderView.h */,
-				4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */,
 				4C382FF8178B8AA200C7FA7C /* HONSearchUsersViewController.m */,
 				4C6A3E1617669D7400B6CD4D /* HONFollowContactViewCell.h */,
 				4C6A3E1717669D7400B6CD4D /* HONFollowContactViewCell.m */,
@@ -4124,7 +4124,7 @@
 				4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */,
 				4C4328D618E3A9FA0035FF06 /* MPSurveyNavigationController.m in Sources */,
 				4CD42F2E188B8EC900264845 /* HONMessageVO.m in Sources */,
-				4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */,
+				4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */,
 				4C4328AC18E3A9FA0035FF06 /* EGORefreshTableHeaderView.m in Sources */,
 				4C4328E918E3A9FA0035FF06 /* TSLogging.m in Sources */,
 				4C70F9DC189082B900ED5C4E /* HONMessageRecipientsViewController.m in Sources */,
