@@ -1291,6 +1291,52 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
+- (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *))completion {
+	[[HONAPICaller sharedInstance] inviteInAppUsers:inAppUsers toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:[NSArray array] completion:completion];
+}
+
+- (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(NSObject *result))completion {
+	
+	NSString *userIDs = @"";
+	for (HONTrivialUserVO *vo in inAppUsers)
+		userIDs = [userIDs stringByAppendingFormat:@"%d,", vo.userID];
+	
+	NSString *contacts = @"";
+	for (HONContactUserVO *vo in nonAppContacts)
+		contacts = [contacts stringByAppendingFormat:@"%@:::%@:::%@|||,", vo.fullName, vo.mobileNumber, vo.email];
+	
+	NSDictionary *params = @{@"clubID"		: [NSString stringWithFormat:@"%d", clubID],
+							 @"userID"		: [NSString stringWithFormat:@"%d", ownerID],
+							 @"users"		: ([inAppUsers count] > 0) ? [userIDs substringToIndex:[userIDs length] - 1] : @"",
+							 @"nonUsers"	: ([nonAppContacts count] > 0) ? [contacts substringToIndex:[contacts length] - 3] : @""};
+	
+	VolleyJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsInvite, params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+	[httpClient postPath:kAPIClubsInvite parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			VolleyJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsInvite, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)inviteNonAppUsers:(NSArray *)contacts toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *))completion {
+	[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray array] toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:contacts completion:completion];
+}
+
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(NSObject *result))completion {
 	VolleyJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsFeatured);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];

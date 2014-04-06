@@ -22,6 +22,7 @@
 #import "HONMessagesButtonView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
+#import "HONUserClubVO.h"
 #import "HONInAppContactViewCell.h"
 #import "HONNonAppContactViewCell.h"
 #import "HONRegisterViewController.h"
@@ -31,9 +32,11 @@
 #import "HONUserProfileViewController.h"
 
 @interface HONContactsViewController () <HONInAppContactViewCellDelegate, HONInviteContactViewCellDelegate, HONSearchBarViewDelegate, HONTutorialViewDelegate>
-@property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
+@property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
+@property (nonatomic, strong) NSMutableArray *searchUsers;
+@property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIImageView *contactsBlockedImageView;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
@@ -56,7 +59,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showContactsTutorial:) name:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 	}
@@ -78,6 +80,13 @@
 
 
 #pragma mark - Data Calls
+- (void)_retreiveUserClub {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
+			_userClubVO = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
+	}];
+}
+
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] sendDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
@@ -133,31 +142,13 @@
 	}];
 }
 
-- (void)_followUserWithID:(int)userID {
-	[[HONAPICaller sharedInstance] followUserWithUserID:userID completion:^(NSObject *result) {
-		[HONAppDelegate writeFollowingList:(NSArray *)result];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+- (void)_inviteInAppContact:(HONTrivialUserVO *)userVO toClub:(HONUserClubVO *)clubVO {
+	[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:userVO] toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSObject *result) {
 	}];
 }
 
-- (void)_unfollowUserWithID:(int)userID {
-	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:userID completion:^(NSObject *result) {
-		[HONAppDelegate writeFollowingList:(NSArray *)result];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+- (void)_inviteNonAppContact:(HONContactUserVO *)contactUserVO toClub:(HONUserClubVO *)clubVO {
+	[[HONAPICaller sharedInstance] inviteNonAppUsers:[NSArray arrayWithObject:contactUserVO] toClubWithID:clubVO.clubID withClubOwnerID:clubVO.ownerID completion:^(NSObject *result) {
 	}];
 }
 
@@ -186,6 +177,10 @@
 
 - (void)_searchUsersWithUsername:(NSString *)username {
 	_isDataSourceContacts = NO;
+	
+	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSObject *result) {
+		
+	}];
 }
 
 
@@ -311,6 +306,8 @@
 	_contactsBlockedImageView.frame = _tableView.frame;
 	_contactsBlockedImageView.hidden = YES;
 	[_tableView addSubview:_contactsBlockedImageView];
+	
+	[self _retreiveUserClub];
 	
 	if (ABAddressBookRequestAccessWithCompletion) {
 		ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -535,68 +532,56 @@
 }
 
 
-#pragma mark - FollowContactViewCell Delegates
-- (void)followContactUserViewCell:(HONFollowContactViewCell *)cell followUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	if (isSelected){
-		[[Mixpanel sharedInstance] track:@"Contacts - Select Follow In-App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		[self _followUserWithID:userVO.userID];
-		
-	} else {
-		[[Mixpanel sharedInstance] track:@"Contacts - Deselect Follow In-App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		[self _unfollowUserWithID:userVO.userID];
-	}
+#pragma mark - InAppContactViewCell Delegates
+- (void)avatarViewCell:(HONBaseAvatarViewCell *)viewCell showProfileForUser:(HONTrivialUserVO *)vo {
+	[[Mixpanel sharedInstance] track:@"Contacts - Show Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"contact", nil]];
+	
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
 
-- (void)inAppContactViewCell:(HONFollowContactViewCell *)viewCell inviteUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	if (isSelected){
-		[[Mixpanel sharedInstance] track:@"Contacts - Select Invite In-App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
+- (void)inAppContactViewCell:(HONInAppContactViewCell *)viewCell addUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Contacts - %@elect Invite In-App Contact", (isSelected) ? @"S" : @"Des"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
+	
+	if (_userClubVO != nil)
+		[self _inviteInAppContact:userVO toClub:_userClubVO];
+	
+	else {
+		[viewCell toggleSelected:NO];
 		
-		[_clubInviteContacts addObject:userVO];
-		
-	} else {
-		[[Mixpanel sharedInstance] track:@"Contacts - Deselect Invite In-App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		
-		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONTrivialUserVO *vo in _clubInviteContacts) {
-			for (HONTrivialUserVO *dropVO in _inAppContacts) {
-				if (vo.userID == dropVO.userID) {
-					[removeVOs addObject:vo];
-				}
-			}
-		}
-		
-		[_clubInviteContacts removeObjectsInArray:removeVOs];
-		removeVOs = nil;
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+															message:@"You need to create your own club before inviting anyone."
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView show];
 	}
 }
 
 
-#pragma mark - InviteContactCell Delegates
-- (void)inviteContactViewCell:(HONInviteContactViewCell *)cell inviteUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	if (isSelected) {
-		[[Mixpanel sharedInstance] track:@"Contacts - Select Invite Non App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
-		[self _sendInviteToContact:userVO];
+#pragma mark - InviteContactViewCell Delegates
+- (void)inviteContactViewCell:(HONInviteContactViewCell *)viewCell inviteUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Contacts - %@elect Invite Non App Contact", (isSelected) ? @"S" : @"Des"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
+									  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+	
+	if (_userClubVO != nil)
+		[self _inviteNonAppContact:userVO toClub:_userClubVO];//[self _sendInviteToContact:userVO];
 		
-	} else {
-		[[Mixpanel sharedInstance] track:@"Contacts - Deselect Invite Non App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+	else {
+		[viewCell toggleSelected:NO];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+															message:@"You need to create your own club before inviting anyone."
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView show];
 	}
 }
 

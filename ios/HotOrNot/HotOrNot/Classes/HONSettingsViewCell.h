@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONGenericRowViewCell.h"
+#import "HONBaseRowViewCell.h"
 
-@interface HONSettingsViewCell : HONGenericRowViewCell
+@interface HONSettingsViewCell : HONBaseRowViewCell
 + (NSString *)cellReuseIdentifier;
 
 - (id)initWithCaption:(NSString *)caption;

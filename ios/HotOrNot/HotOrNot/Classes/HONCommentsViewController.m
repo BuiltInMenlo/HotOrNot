@@ -13,7 +13,7 @@
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
-#import "HONGenericRowViewCell.h"
+#import "HONBaseRowViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
 #import "HONImagePickerViewController.h"

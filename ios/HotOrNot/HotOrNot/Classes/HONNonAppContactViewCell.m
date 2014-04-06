@@ -26,5 +26,8 @@
 	return (self);
 }
 
+- (void)toggleSelected:(BOOL)isSelected {
+	[super toggleSelected:isSelected];
+}
 
 @end

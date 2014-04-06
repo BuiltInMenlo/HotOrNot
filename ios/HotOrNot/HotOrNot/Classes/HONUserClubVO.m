@@ -10,7 +10,7 @@
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, userClubStatusType, userClubExpoType, userClubConentType, actionsPerMinute, totalPendingMembers, totalActiveMembers, totalBannedMembers, totalHistoricMembers, totalAllMembers, totalEntries, coverImagePrefix, creatorID, creatorName, creatorImagePrefix, creatorBirthdate, addedDate, startedDate, updatedDate;
+@synthesize clubID, userClubStatusType, userClubExpoType, userClubConentType, actionsPerMinute, totalPendingMembers, totalActiveMembers, totalBannedMembers, totalHistoricMembers, totalAllMembers, totalEntries, coverImagePrefix, ownerID, ownerName, ownerImagePrefix, ownerBirthdate, addedDate, startedDate, updatedDate;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
@@ -48,9 +48,9 @@
 	self.coverImagePrefix = nil;
 	self.emotionName = nil;
 	self.hastagName = nil;
-	self.creatorName = nil;
-	self.creatorImagePrefix = nil;
-	self.creatorBirthdate = nil;
+	self.ownerName = nil;
+	self.ownerImagePrefix = nil;
+	self.ownerBirthdate = nil;
 	self.addedDate = nil;
 	self.startedDate = nil;
 	self.updatedDate = nil;

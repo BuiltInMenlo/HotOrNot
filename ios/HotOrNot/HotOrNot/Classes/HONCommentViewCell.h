@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONGenericRowViewCell.h"
+#import "HONBaseRowViewCell.h"
 #import "HONCommentVO.h"
 
-@interface HONCommentViewCell : HONGenericRowViewCell
+@interface HONCommentViewCell : HONBaseRowViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, strong) HONCommentVO *commentVO;

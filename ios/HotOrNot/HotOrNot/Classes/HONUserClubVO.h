@@ -49,10 +49,10 @@ typedef enum {
 @property (nonatomic, retain) NSString *emotionName;
 @property (nonatomic, retain) NSString *hastagName;
 
-@property (nonatomic) int creatorID;
-@property (nonatomic, retain) NSString *creatorName;
-@property (nonatomic, retain) NSString *creatorImagePrefix;
-@property (nonatomic, retain) NSDate *creatorBirthdate;
+@property (nonatomic) int ownerID;
+@property (nonatomic, retain) NSString *ownerName;
+@property (nonatomic, retain) NSString *ownerImagePrefix;
+@property (nonatomic, retain) NSDate *ownerBirthdate;
 
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;

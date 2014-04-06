@@ -8,16 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONFollowContactViewCell.h"
+#import "HONBaseAvatarViewCell.h"
 
 
 @class HONInAppContactViewCell;
-@protocol HONInAppContactViewCellDelegate <HONFollowContactViewCellDelegate>
-- (void)inAppContactViewCell:(HONFollowContactViewCell *)viewCell inviteUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
+@protocol HONInAppContactViewCellDelegate <HONBaseAvatarViewCellDelegate>
+- (void)inAppContactViewCell:(HONInAppContactViewCell *)viewCell addUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
 @end
 
-@interface HONInAppContactViewCell : HONFollowContactViewCell
+@interface HONInAppContactViewCell : HONBaseAvatarViewCell
 + (NSString *)cellReuseIdentifier;
+- (void)toggleSelected:(BOOL)isSelected;
 
 @property (nonatomic, assign) id<HONInAppContactViewCellDelegate> delegate;
 @end

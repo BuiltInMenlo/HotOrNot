@@ -10,7 +10,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONVotersViewController.h"
-#import "HONGenericRowViewCell.h"
+#import "HONBaseRowViewCell.h"
 #import "HONAPICaller.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"

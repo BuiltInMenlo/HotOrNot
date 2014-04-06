@@ -86,7 +86,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		_joinedClubs = [NSMutableArray array];
 		
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)

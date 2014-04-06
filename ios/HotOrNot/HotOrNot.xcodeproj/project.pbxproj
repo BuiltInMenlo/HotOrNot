@@ -487,7 +487,7 @@
 		4CA0A6C718173CF400045594 /* freeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6C318173CF400045594 /* freeButton_Active@2x.png */; };
 		4CA0A6C818173CF400045594 /* freeButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6C418173CF400045594 /* freeButton_nonActive.png */; };
 		4CA0A6C918173CF400045594 /* freeButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA0A6C518173CF400045594 /* freeButton_nonActive@2x.png */; };
-		4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */; };
+		4CA34C5516F6B6550000751E /* HONBaseRowViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONBaseRowViewCell.m */; };
 		4CA485C516EC109A00DE0F24 /* tabMenuBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485B316EC109A00DE0F24 /* tabMenuBackground@2x.png */; };
 		4CA7426218232F0100E96E31 /* HONTimelineItemFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA7426118232F0100E96E31 /* HONTimelineItemFooterView.m */; };
 		4CA74265182368F600E96E31 /* lowerInfoBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA74263182368F600E96E31 /* lowerInfoBackground.png */; };
@@ -669,7 +669,7 @@
 		4CEC4B0B18B9552A00F39C92 /* HONMessagesButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC4B0A18B9552A00F39C92 /* HONMessagesButtonView.m */; };
 		4CED33BD1840070900282A19 /* HONSuggestedFollowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED33BC1840070900282A19 /* HONSuggestedFollowViewController.m */; };
 		4CED977118E42FFF00482813 /* TopNavElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CED977018E42FFF00482813 /* TopNavElements.xcassets */; };
-		4CED977418E45FD000482813 /* HONBasicTabSectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED977318E45FD000482813 /* HONBasicTabSectionViewController.m */; };
+		4CED977418E45FD000482813 /* HONBaseTabSectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED977318E45FD000482813 /* HONBaseTabSectionViewController.m */; };
 		4CED977818E46B7F00482813 /* HONBasicSelfieGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED977718E46B7F00482813 /* HONBasicSelfieGridViewController.m */; };
 		4CED977B18E46BA800482813 /* HONProfileSelfieGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED977A18E46BA800482813 /* HONProfileSelfieGridViewController.m */; };
 		4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1C95161A238C00C54FBF /* CoreData.framework */; };
@@ -1379,8 +1379,8 @@
 		4CA0A6C318173CF400045594 /* freeButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "freeButton_Active@2x.png"; sourceTree = "<group>"; };
 		4CA0A6C418173CF400045594 /* freeButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = freeButton_nonActive.png; sourceTree = "<group>"; };
 		4CA0A6C518173CF400045594 /* freeButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "freeButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CA34C5316F6B6550000751E /* HONGenericRowViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGenericRowViewCell.h; sourceTree = "<group>"; };
-		4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGenericRowViewCell.m; sourceTree = "<group>"; };
+		4CA34C5316F6B6550000751E /* HONBaseRowViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBaseRowViewCell.h; sourceTree = "<group>"; };
+		4CA34C5416F6B6550000751E /* HONBaseRowViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBaseRowViewCell.m; sourceTree = "<group>"; };
 		4CA485B316EC109A00DE0F24 /* tabMenuBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabMenuBackground@2x.png"; sourceTree = "<group>"; };
 		4CA7426018232F0100E96E31 /* HONTimelineItemFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemFooterView.h; sourceTree = "<group>"; };
 		4CA7426118232F0100E96E31 /* HONTimelineItemFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemFooterView.m; sourceTree = "<group>"; };
@@ -1592,8 +1592,8 @@
 		4CED33BB1840070900282A19 /* HONSuggestedFollowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSuggestedFollowViewController.h; sourceTree = "<group>"; };
 		4CED33BC1840070900282A19 /* HONSuggestedFollowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSuggestedFollowViewController.m; sourceTree = "<group>"; };
 		4CED977018E42FFF00482813 /* TopNavElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TopNavElements.xcassets; sourceTree = "<group>"; };
-		4CED977218E45FD000482813 /* HONBasicTabSectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBasicTabSectionViewController.h; sourceTree = "<group>"; };
-		4CED977318E45FD000482813 /* HONBasicTabSectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBasicTabSectionViewController.m; sourceTree = "<group>"; };
+		4CED977218E45FD000482813 /* HONBaseTabSectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBaseTabSectionViewController.h; sourceTree = "<group>"; };
+		4CED977318E45FD000482813 /* HONBaseTabSectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBaseTabSectionViewController.m; sourceTree = "<group>"; };
 		4CED977618E46B7F00482813 /* HONBasicSelfieGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBasicSelfieGridViewController.h; sourceTree = "<group>"; };
 		4CED977718E46B7F00482813 /* HONBasicSelfieGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBasicSelfieGridViewController.m; sourceTree = "<group>"; };
 		4CED977918E46BA800482813 /* HONProfileSelfieGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONProfileSelfieGridViewController.h; sourceTree = "<group>"; };
@@ -1818,22 +1818,22 @@
 				4C106076184D989700B361A6 /* HONAlertItemVO.m */,
 				4C32B99D15FA75BC0023A0EE /* HONChallengeVO.h */,
 				4C32B99E15FA75BC0023A0EE /* HONChallengeVO.m */,
+				4C02601B172B4703001CC476 /* HONContactUserVO.h */,
+				4C02601C172B4703001CC476 /* HONContactUserVO.m */,
 				4CCA4159181BE4D100FC9863 /* HONEmotionVO.h */,
 				4CCA415A181BE4D100FC9863 /* HONEmotionVO.m */,
-				4CB77BAE18BC03200074C625 /* HONUserClubVO.h */,
-				4CB77BAF18BC03200074C625 /* HONUserClubVO.m */,
 				4CC6AD0F17B1ACE9004E7A3F /* HONOpponentVO.h */,
 				4CC6AD1017B1ACE9004E7A3F /* HONOpponentVO.m */,
 				4CD42F2C188B8EC900264845 /* HONMessageVO.h */,
 				4CD42F2D188B8EC900264845 /* HONMessageVO.m */,
-				B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */,
-				B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */,
-				4C02601B172B4703001CC476 /* HONContactUserVO.h */,
-				4C02601C172B4703001CC476 /* HONContactUserVO.m */,
-				4CFA8B7818918E8C00DCCCB1 /* HONTrivialUserVO.h */,
-				4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */,
 				B3BE3EAC1608E43800E7E2B7 /* HONSearchSubjectVO.h */,
 				B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */,
+				4CFA8B7818918E8C00DCCCB1 /* HONTrivialUserVO.h */,
+				4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */,
+				4CB77BAE18BC03200074C625 /* HONUserClubVO.h */,
+				4CB77BAF18BC03200074C625 /* HONUserClubVO.m */,
+				B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */,
+				B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */,
 			);
 			name = VO;
 			sourceTree = "<group>";
@@ -1933,15 +1933,15 @@
 			name = Header;
 			sourceTree = "<group>";
 		};
-		4C3ABB21182A0FBA00131757 /* TableCells */ = {
+		4C3ABB21182A0FBA00131757 /* TableView */ = {
 			isa = PBXGroup;
 			children = (
-				4CA34C5316F6B6550000751E /* HONGenericRowViewCell.h */,
-				4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */,
 				4C3ABB22182A119F00131757 /* HONBaseAvatarViewCell.h */,
 				4C3ABB23182A119F00131757 /* HONBaseAvatarViewCell.m */,
+				4CA34C5316F6B6550000751E /* HONBaseRowViewCell.h */,
+				4CA34C5416F6B6550000751E /* HONBaseRowViewCell.m */,
 			);
-			name = TableCells;
+			name = TableView;
 			sourceTree = "<group>";
 		};
 		4C41070918C15050009E9F9E /* UI */ = {
@@ -2534,7 +2534,7 @@
 		4C45FF4516DECE40002F1080 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				4C3ABB21182A0FBA00131757 /* TableCells */,
+				4C3ABB21182A0FBA00131757 /* TableView */,
 				4C9E3B5C18259CC0004878F9 /* Nav */,
 				4CCA416C181C1BF700FC9863 /* Challenge Grid */,
 				4C2DD84118E3F29600BC8759 /* HONTutorialView.h */,
@@ -3029,8 +3029,8 @@
 				4C2DD82F18E3B41900BC8759 /* Contacts */,
 				4CF7504818989DFA009E39E4 /* Clubs */,
 				4C32B99815FA6F4C0023A0EE /* Verify */,
-				4CED977218E45FD000482813 /* HONBasicTabSectionViewController.h */,
-				4CED977318E45FD000482813 /* HONBasicTabSectionViewController.m */,
+				4CED977218E45FD000482813 /* HONBaseTabSectionViewController.h */,
+				4CED977318E45FD000482813 /* HONBaseTabSectionViewController.m */,
 			);
 			name = Tabs;
 			sourceTree = "<group>";
@@ -4075,7 +4075,7 @@
 				4CED33BD1840070900282A19 /* HONSuggestedFollowViewController.m in Sources */,
 				4C86C43217FF736E007DC458 /* HONFollowersViewController.m in Sources */,
 				E46816DA18A7FB86006B59FE /* HONFeedViewController.m in Sources */,
-				4CED977418E45FD000482813 /* HONBasicTabSectionViewController.m in Sources */,
+				4CED977418E45FD000482813 /* HONBaseTabSectionViewController.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				4CB77BB018BC03200074C625 /* HONUserClubVO.m in Sources */,
@@ -4142,7 +4142,7 @@
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
 				4C4328AB18E3A9FA0035FF06 /* EGOImageView.m in Sources */,
 				4C41071F18C16300009E9F9E /* HONEnterPINViewController.m in Sources */,
-				4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */,
+				4CA34C5516F6B6550000751E /* HONBaseRowViewCell.m in Sources */,
 				4C4328A918E3A9FA0035FF06 /* EGOImageLoadConnection.m in Sources */,
 				4C43280918E3A9FA0035FF06 /* AFJSONRequestOperation.m in Sources */,
 				4CCA4165181C19D400FC9863 /* HONBasicParticipantGridView.m in Sources */,

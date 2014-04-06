@@ -27,6 +27,7 @@
 		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
 			formattedNumber = [[NSString new] stringByAppendingFormat:@"1%@", formattedNumber];
 		
+		vo.email = @"";
 		vo.mobileNumber = [[NSString new] stringByAppendingFormat:@"+%@", formattedNumber];
 	} else
 		vo.mobileNumber = @"";

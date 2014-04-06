@@ -12,4 +12,5 @@
 
 @interface HONNonAppContactViewCell : HONInviteContactViewCell
 + (NSString *)cellReuseIdentifier;
+- (void)toggleSelected:(BOOL)isSelected;
 @end

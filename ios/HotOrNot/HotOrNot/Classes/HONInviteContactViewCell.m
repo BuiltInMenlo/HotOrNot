@@ -71,6 +71,7 @@
 	_inviteButton.alpha = (int)!isSelected;
 	_inviteButton.hidden = isSelected;
 	
+	_checkButton.alpha = (int)isSelected;
 	_checkButton.hidden = !isSelected;
 }
 
@@ -82,9 +83,8 @@
 		_inviteButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_inviteButton.hidden = YES;
+		[self.delegate inviteContactViewCell:self inviteUser:_userVO toggleSelected:YES];
 	}];
-	
-	[self.delegate inviteContactViewCell:self inviteUser:_userVO toggleSelected:YES];
 }
 
 - (void)_goUninvite {
@@ -93,9 +93,8 @@
 		_inviteButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_checkButton.hidden = YES;
+		[self.delegate inviteContactViewCell:self inviteUser:_userVO toggleSelected:NO];
 	}];
-	
-	[self.delegate inviteContactViewCell:self inviteUser:_userVO toggleSelected:NO];
 }
 
 @end
