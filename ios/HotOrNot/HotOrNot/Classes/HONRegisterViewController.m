@@ -127,14 +127,14 @@
 			_progressHUD = nil;
 			
 			if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) {
-				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
 				_usernameTextField.text = @"";
 				[_usernameTextField becomeFirstResponder];
 			}
 			
 			else if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) {
-				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
 				_phone = @"";
 				_phone1TextField.text = @"";
@@ -143,8 +143,8 @@
 				[_phone1TextField becomeFirstResponder];
 			
 			} else {
-				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
 				_usernameTextField.text = @"";
 				[_usernameTextField becomeFirstResponder];
@@ -205,7 +205,7 @@
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 			}];
 			
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 				
@@ -235,14 +235,14 @@
 			_progressHUD = nil;
 			
 			if (errorCode == 1)
-				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 			
 			else if (errorCode == 2)
-				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 			
 			else {
-				_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-				_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 			}
 			
 			_usernameCheckImageView.alpha = 1.0;
@@ -302,7 +302,7 @@
 	_usernameTextField.delegate = self;
 	[_formHolderView addSubview:_usernameTextField];
 	
-	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 257.0, 77.0);
 	_usernameCheckImageView.alpha = 0.0;
 	[_formHolderView addSubview:_usernameCheckImageView];
@@ -332,7 +332,7 @@
 	_passwordTextField.delegate = self;
 	[_formHolderView addSubview:_passwordTextField];
 	
-	_passwordCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_passwordCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_passwordCheckImageView.frame = CGRectOffset(_passwordCheckImageView.frame, 257.0, 141.0);
 	_passwordCheckImageView.alpha = 0.0;
 	[_formHolderView addSubview:_passwordCheckImageView];
@@ -397,12 +397,12 @@
 //	_birthdayLabel.text = @"What is your birthday?";
 //	[_formHolderView addSubview:_birthdayLabel];
 	
-	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 257.0, 205.0);
 	_phoneCheckImageView.alpha = 0.0;
 	[_formHolderView addSubview:_phoneCheckImageView];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
@@ -490,7 +490,7 @@
 		[_profileCameraOverlayView addSubview:headerBGView];
 		
 		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flipButton.frame = CGRectMake(3.0, 3.0, 44.0, 44.0);
+		flipButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
 		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -516,16 +516,16 @@
 		
 		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 118.0, 94.0, 94.0);
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
-		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		takePhotoButton.alpha = 0.0;
 		[_profileCameraOverlayView addSubview:takePhotoButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(249.0, [UIScreen mainScreen].bounds.size.height - 42.0, 64.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+		cameraRollButton.frame = CGRectMake(220.0, [UIScreen mainScreen].bounds.size.height - 42.0, 93.0, 44.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_nonActive"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 		[_profileCameraOverlayView addSubview:cameraRollButton];
 		
@@ -662,9 +662,9 @@
 	
 	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] > 0) * 1) + ((int)([HONAppDelegate isValidEmail:_passwordTextField.text]) * 2) + ((int)([_phone length] == 10) * 4);
 	if (registerErrorType == HONRegisterErrorTypeUsernameEmailBirthday) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username, Password or Phone!"
 									message:@"You need to enter a username, password & phone # to use Selfieclub"
@@ -673,9 +673,9 @@
 						  otherButtonTitles:nil] show];
 	 
 	} else if (registerErrorType == HONRegisterErrorTypeEmailBirthday) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Password & Phone!"
 									message:@"You need to enter an password & phone # to use Selfieclub"
@@ -684,9 +684,9 @@
 						  otherButtonTitles:nil] show];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsernameBirthday) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone #!"
 									message:@"You need to enter a username and phone # to use Selfieclub"
@@ -695,9 +695,9 @@
 						  otherButtonTitles:nil] show];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeBirthday) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
 									message:@"You need to a phone # to use Selfieclub."
@@ -712,9 +712,9 @@
 		[_phone1TextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsernameEmail) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Password!"
 									message:@"You need to enter a username and password use Selfieclub"
@@ -723,9 +723,9 @@
 						  otherButtonTitles:nil] show];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeEmail) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Password!"
 									message:@"You need to enter a password to use Selfieclub"
@@ -734,9 +734,9 @@
 						  otherButtonTitles:nil] show];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to use Selfieclub"
@@ -745,9 +745,9 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
 		_usernameCheckImageView.alpha = 1.0;
 		_passwordCheckImageView.alpha = 1.0;
@@ -822,17 +822,17 @@
 	
 	if ([_usernameTextField isFirstResponder]) {
 		_usernameCheckImageView.alpha = 1.0;
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 	}
 	
 	if (![HONAppDelegate isValidEmail:_passwordTextField.text] && [_passwordTextField isFirstResponder]) {
 		_passwordCheckImageView.alpha = 1.0;
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 	}
 	
 	if ([HONAppDelegate isValidEmail:_passwordTextField.text]) {
 		_passwordCheckImageView.alpha = 1.0;
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 	}
 	
 	if ([_phone1TextField isFirstResponder] && [_phone1TextField.text length] == 3)
@@ -843,7 +843,7 @@
 	
 	if ([_phone1TextField isFirstResponder] || [_phone2TextField isFirstResponder] || [_phone3TextField isFirstResponder]) {
 		_phoneCheckImageView.alpha = 1.0;
-		_phoneCheckImageView.image = [UIImage imageNamed:([_phone length] != 10) ? @"xButton_nonActive" : @"checkButton_nonActive"];
+		_phoneCheckImageView.image = [UIImage imageNamed:([_phone length] != 10) ? @"xIcon" : @"checkmarkIcon"];
 	}
 }
 
@@ -864,7 +864,6 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 
@@ -1035,7 +1034,7 @@
 	
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Login Message %@", mpAction] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_mailComposeViewController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }

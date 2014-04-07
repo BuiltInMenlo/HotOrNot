@@ -8,7 +8,6 @@
 
 @protocol HONSearchBarViewDelegate;
 @interface HONSearchBarView : UIView <UITextFieldDelegate>
-- (void)toggleFocus:(BOOL)isFocused;
 - (void)backgroundingReset;
 
 @property(nonatomic, assign) id <HONSearchBarViewDelegate> delegate;

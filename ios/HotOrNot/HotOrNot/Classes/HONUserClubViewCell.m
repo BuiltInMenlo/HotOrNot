@@ -21,14 +21,10 @@
 @synthesize delegate = _delegate;
 @synthesize userClubVO = _userClubVO;
 
-+ (NSString *)cellReuseIdentifier {
-	return (NSStringFromClass(self));
-}
-
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
+		[self hideChevron];
 	}
 	
 	return (self);
@@ -42,6 +38,8 @@
 	UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
 	coverImageView.alpha = 0.0;
 	[self.contentView addSubview:coverImageView];
+	
+	[HONImagingDepictor maskImageView:coverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		coverImageView.image = image;
@@ -71,17 +69,17 @@
 	nameLabel.text = _userClubVO.clubName;
 	[self.contentView addSubview:nameLabel];
 	
-	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(280.0, 0.0, 44.0, 44.0);
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_nonActive"] forState:UIControlStateNormal];
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_Active"] forState:UIControlStateHighlighted];
-	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:settingsButton];
+	UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	editButton.frame = CGRectMake(220.0, 0.0, 74.0, 64.0);
+	[editButton setBackgroundImage:[UIImage imageNamed:@"editButton_nonActive"] forState:UIControlStateNormal];
+	[editButton setBackgroundImage:[UIImage imageNamed:@"editButton_Active"] forState:UIControlStateHighlighted];
+	[editButton addTarget:self action:@selector(_goEdit) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:editButton];
 }
 
 
 #pragma mark - Navigation
-- (void)_goSettings {
+- (void)_goEdit {
 	[self.delegate userClubViewCell:self settingsForClub:_userClubVO];
 }
 

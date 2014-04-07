@@ -75,7 +75,6 @@ NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 
 
 NSString * const kFacebookAppID = @"600550136636754";
-NSString * const kTestFlightAppToken = @"e12a9b35-36fc-481b-bb50-4c8ca3e91dc7";
 NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 NSString * const kChartboostAppID = @"";
@@ -85,9 +84,9 @@ NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
 // view heights
-const CGFloat kNavHeaderHeight = 77.0;
-const CGFloat kSearchHeaderHeight = 49.0f;
-const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
+const CGFloat kNavHeaderHeight = 64.0;
+const CGFloat kSearchHeaderHeight = 43.0f;
+const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
@@ -130,7 +129,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
-@property (nonatomic, strong) UIView *statusBarOverlayView;
+//@property (nonatomic, strong) UIView *statusBarOverlayView;
 @end
 
 
@@ -690,149 +689,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_isFromBackground = NO;
 		}
 	}];
-	
-	/*
-	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
-	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
-	VolleyJSONLog(@"_/:[%@]—//> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
-	[httpClient postPath:configURLWithTimestamp parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
-			
-		} else {
-//			VolleyJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
-			
-			if ([result isEqual:[NSNull null]]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-				
-			} else {
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-				[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"kik_card"] forKey:@"kik_card"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_copy"] forKey:@"verify_copy"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
-				[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_age"] forKey:@"min_age"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
-				[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"stickers"] forKey:@"stickers"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_hashtags"] forKey:@"search_subjects"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"popular_people"] forKey:@"popular_people"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"special_subjects"] forKey:@"special_subjects"];
-				[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
-																					@"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
-																					@"challenges"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
-																					@"emoticons"	: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
-																					@"stickers"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
-
-				[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
-																   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
-																   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
-																   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
-																   @"sms"		: [[result objectForKey:@"share_formats"] objectForKey:@"sms"],
-																   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
-
-				
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-				
-				
-				NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
-				
-				
-				if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
-					[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
-				
-				
-				[self _writeShareTemplates];
-				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
-				[self _registerUser];
-				
-				if (_isFromBackground) {
-					NSString *notificationName = @"";
-					switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
-						case 0:
-							notificationName = @"REFRESH_CONTACTS_TAB";
-							break;
-							
-						case 1:
-							notificationName = @"REFRESH_CLUBS_TAB";
-							break;
-							
-//						case 2:
-//							notificationName = @"REFRESH_ALERTS_TAB";
-//							break;
-							
-						case 2:
-							notificationName = @"REFRESH_VERIFY_TAB";
-							break;
-						
-						default:
-							notificationName = @"REFRESH_ALL_TABS";
-							break;
-					}
-					
-					NSLog(@"REFRESHING:[%@]", notificationName);
-					[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-					_isFromBackground = NO;
-				}
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], kConfigURL, kConfigJSON, [error localizedDescription]);
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-	 */
 }
 
 - (void)_registerUser {
@@ -946,15 +802,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
-- (void)_toggleStatusBarTint:(NSNotification *)notification {
-	BOOL willFadeIn = ([[notification object] isEqualToString:@"YES"]);
-	
-	//[[UIApplication sharedApplication] setStatusBarHidden:!willFadeIn withAnimation:UIStatusBarAnimationNone];
-	
-	[UIView animateWithDuration:0.33
-					 animations:^(void) {_statusBarOverlayView.alpha = (int)willFadeIn;}
-					 completion:^(BOOL finished) {}];
-}
+//- (void)_toggleStatusBarTint:(NSNotification *)notification {
+//	BOOL willFadeIn = ([[notification object] isEqualToString:@"YES"]);
+//	
+//	[UIView animateWithDuration:0.33
+//					 animations:^(void) {_statusBarOverlayView.alpha = (int)willFadeIn;}
+//					 completion:^(BOOL finished) {}];
+//}
 
 
 #pragma mark - UI Presentation
@@ -1014,7 +868,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) withAnimation:UIStatusBarAnimationNone];
+//	[[UIApplication sharedApplication] setStatusBarHidden:([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) withAnimation:UIStatusBarAnimationNone];
 }
 
 
@@ -1031,7 +885,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleStatusBarTint:) name:@"TOGGLE_STATUS_BAR_TINT" object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleStatusBarTint:) name:@"TOGGLE_STATUS_BAR_TINT" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
@@ -1282,15 +1136,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor blackColor];
 	
-	_statusBarOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
-	_statusBarOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
-	_statusBarOverlayView.alpha = 0.0;
-	[self.window addSubview:_statusBarOverlayView];
+//	_statusBarOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
+//	_statusBarOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
+//	_statusBarOverlayView.alpha = 0.0;
+//	[self.window addSubview:_statusBarOverlayView];
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-	}
+//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
+//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+//	}
 	
 //	[self.launchImageView removeFromSuperview];
 //	self.launchImageView = nil;
@@ -1385,8 +1239,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #if __APPSTORE_BUILD__ == 0
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:kHockeyAppToken delegate:self];
 	[[BITHockeyManager sharedHockeyManager] startManager];
-	
-	[TestFlight takeOff:kTestFlightAppToken];
 #endif
 	
 	[Mixpanel sharedInstanceWithToken:kMixPanelToken];

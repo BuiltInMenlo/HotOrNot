@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "HONContactUserVO.h"
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 #import "HONTrivialUserVO.h"
@@ -21,6 +22,7 @@
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toChallengeCreator:(HONOpponentVO *)vo;
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toCohortUser:(HONUserVO *)vo;
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toParticipant:(HONOpponentVO *)vo;
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toTrivalUser:(HONTrivialUserVO *)vo;
 
 - (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties;

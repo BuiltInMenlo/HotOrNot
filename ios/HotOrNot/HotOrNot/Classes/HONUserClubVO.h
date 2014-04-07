@@ -46,8 +46,7 @@ typedef enum {
 @property (nonatomic) CGFloat actionsPerMinute;
 @property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, retain) NSString *coverImagePrefix;
-@property (nonatomic, retain) NSString *emotionName;
-@property (nonatomic, retain) NSString *hastagName;
+@property (nonatomic, retain) NSString *blurb;
 
 @property (nonatomic) int ownerID;
 @property (nonatomic, retain) NSString *ownerName;
@@ -55,7 +54,6 @@ typedef enum {
 @property (nonatomic, retain) NSDate *ownerBirthdate;
 
 @property (nonatomic, retain) NSDate *addedDate;
-@property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;
 
 @end

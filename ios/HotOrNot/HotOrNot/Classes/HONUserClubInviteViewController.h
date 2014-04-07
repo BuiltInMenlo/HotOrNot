@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUserClubInviteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-- (id)initAsModal:(BOOL)isModal;
+#import "HONUserClubVO.h"
+
+typedef enum {
+	HONUserClubInviteTypeNone = 0,
+	HONUserClubInviteTypeInApp = 1 << 0,
+	HONUserClubInviteTypeNonApp = 1 << 1,
+	
+} HONUserClubInviteType;
+
+@interface HONUserClubInviteViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+- (id)initWithClub:(HONUserClubVO *)userClub asModal:(BOOL)isModal;
 @end

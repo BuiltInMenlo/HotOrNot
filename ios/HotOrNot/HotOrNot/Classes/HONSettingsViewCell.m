@@ -29,7 +29,7 @@
 
 - (id)initWithCaption:(NSString *)caption {
 	if ((self = [super init])) {
-		[super hideChevron];
+		[self hideChevron];
 		
 		_caption = caption;
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];

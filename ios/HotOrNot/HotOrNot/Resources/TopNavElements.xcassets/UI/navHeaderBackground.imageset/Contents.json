@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "navHeaderBackground.png"
+      "filename" : "mainHeader.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "navHeaderBackground@2x.png"
+      "filename" : "mainHeader@2x.png"
     }
   ],
   "info" : {

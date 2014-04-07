@@ -21,15 +21,10 @@
 @synthesize delegate = _delegate;
 @synthesize userVO = _userVO;
 
-+ (NSString *)cellReuseIdentifier {
-	return (NSStringFromClass(self));
-}
-
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
-		
+		[self hideChevron];
 	}
 	
 	return (self);
@@ -44,10 +39,10 @@
 	_avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:_avatarImageView];
 	
+	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.image = image;
-		
-		[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_avatarImageView.alpha = 1.0;
@@ -76,10 +71,21 @@
 	[self.contentView addSubview:_nameLabel];
 }
 
+- (void)didSelect {
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellSelectedBG"]];
+	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
+}
+
 
 #pragma mark - Navigation
 - (void)_goProfile {
 	[self.delegate avatarViewCell:self showProfileForUser:_userVO];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_resetBG {
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 }
 
 

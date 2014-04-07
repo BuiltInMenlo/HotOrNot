@@ -155,7 +155,6 @@
 //		}
 //		if (_hasSubmitted) {
 //			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 //
 //			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
@@ -267,8 +266,6 @@
 			[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
 			[tracker fireEvent:e];
 			
-			
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 			
@@ -401,7 +398,6 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
@@ -434,7 +430,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
@@ -501,7 +496,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[self _cancelUpload];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
@@ -574,7 +568,6 @@
 			}
 		
 			if (_hasSubmitted) {
-				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
@@ -589,7 +582,6 @@
 		}
 			
 		if (_hasSubmitted) {
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
@@ -631,7 +623,6 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 #pragma mark - ImagePicker Delegates
@@ -690,7 +681,6 @@
 		[self _showOverlay];
 		
 	} else {
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 		

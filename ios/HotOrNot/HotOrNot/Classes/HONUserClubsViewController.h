@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUserClubsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONUserClubsViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @end

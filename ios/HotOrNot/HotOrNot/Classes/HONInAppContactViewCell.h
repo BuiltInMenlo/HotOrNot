@@ -17,7 +17,6 @@
 @end
 
 @interface HONInAppContactViewCell : HONBaseAvatarViewCell
-+ (NSString *)cellReuseIdentifier;
 - (void)toggleSelected:(BOOL)isSelected;
 
 @property (nonatomic, assign) id<HONInAppContactViewCellDelegate> delegate;

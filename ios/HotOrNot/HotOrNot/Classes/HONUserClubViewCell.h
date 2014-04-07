@@ -6,20 +6,16 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
+#import "HONBaseRowViewCell.h"
 #import "HONUserClubVO.h"
 
 
-@protocol HONUserClubViewCellDelegate;
-@interface HONUserClubViewCell : UITableViewCell
-+ (NSString *)cellReuseIdentifier;
-
-@property (nonatomic, strong) HONUserClubVO *userClubVO;
-@property (nonatomic, assign) id <HONUserClubViewCellDelegate> delegate;
-@end
-
-
+@class HONUserClubViewCell;
 @protocol HONUserClubViewCellDelegate <NSObject>
 - (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO;
+@end
+
+@interface HONUserClubViewCell : HONBaseRowViewCell
+@property (nonatomic, strong) HONUserClubVO *userClubVO;
+@property (nonatomic, assign) id <HONUserClubViewCellDelegate> delegate;
 @end

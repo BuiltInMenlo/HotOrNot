@@ -23,5 +23,5 @@
 
 
 @protocol HONSearchUserViewCellDelegate <NSObject>
-- (void)searchUserViewCell:(HONSearchUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
+- (void)searchUserViewCell:(HONSearchUserViewCell *)viewCell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
 @end

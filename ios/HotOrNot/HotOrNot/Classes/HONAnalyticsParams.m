@@ -70,6 +70,13 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return ([properties copy]);
 }
 
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toContactUser:(HONContactUserVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"cohort"] = [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email];
+	
+	return ([properties copy]);
+}
+
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toTrivalUser:(HONTrivialUserVO *)vo {
 	NSMutableDictionary *properties = [dict mutableCopy];
 	properties[@"cohort"] = [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username];

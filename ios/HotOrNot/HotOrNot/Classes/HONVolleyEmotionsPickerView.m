@@ -75,11 +75,11 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (24.0);
+	return (kOrthodoxTableHeaderHeight);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowHeader"]];
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 4.0, 200.0, 16.0)];
 	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];

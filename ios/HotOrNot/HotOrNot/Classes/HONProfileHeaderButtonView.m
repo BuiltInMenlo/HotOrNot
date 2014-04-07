@@ -15,14 +15,14 @@
 @implementation HONProfileHeaderButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(8.0, 4.0, 34.0, 34.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 4.0, 93.0, 44.0)])) {
 		//BOOL isVerified = (BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue];
 		
 		_profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_profileButton.frame = CGRectMake(0.0, 0.0, 34.0, 34.0);
-		[_profileButton setBackgroundImage:[UIImage imageNamed:@"headerProfileButton_nonActive"] forState:UIControlStateNormal];
-		[_profileButton setBackgroundImage:[UIImage imageNamed:@"headerProfileButton_Active"] forState:UIControlStateHighlighted];
-		[_profileButton setBackgroundImage:[UIImage imageNamed:@"headerProfileButton_Active"] forState:UIControlStateSelected];
+		_profileButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+		[_profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+		[_profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
+		[_profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateSelected];
 		[_profileButton addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_profileButton];
 		

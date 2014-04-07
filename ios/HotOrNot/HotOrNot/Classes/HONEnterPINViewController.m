@@ -11,7 +11,6 @@
 #import "HONAnalyticsParams.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
-#import "HONAllowContactsViewController.h"
 #import "HONHeaderView.h"
 
 @interface HONEnterPINViewController ()
@@ -57,7 +56,7 @@
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
@@ -147,7 +146,6 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-//		[self.navigationController pushViewController:[[HONAllowContactsViewController alloc] init] animated:YES];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];

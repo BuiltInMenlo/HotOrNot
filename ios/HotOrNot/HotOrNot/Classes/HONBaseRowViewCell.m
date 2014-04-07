@@ -21,7 +21,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 		
 		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
 		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 20.0);
@@ -36,12 +36,12 @@
 }
 
 - (void)didSelect {
-	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackgroundTapped"]];
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellSelectedBG"]];
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 }
 
 @end

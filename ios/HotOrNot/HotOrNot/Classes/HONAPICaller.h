@@ -13,6 +13,7 @@
 #import "HONContactUserVO.h"
 #import "HONOpponentVO.h"
 #import "HONTrivialUserVO.h"
+#import "HONUserClubVO.h"
 
 
 typedef enum {
@@ -61,6 +62,7 @@ extern NSString * const kAPICreateMessage;
 extern NSString * const kAPIChallengesMessageSeen;
 
 extern NSString * const kAPIClubsCreate;
+extern NSString * const kAPIClubsEdit;
 extern NSString * const kAPIClubsInvite;
 extern NSString * const kAPIClubsProcessImage;
 extern NSString * const kAPIClubsGet;
@@ -161,9 +163,13 @@ extern const CGFloat kNotifiyDelay;
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 //- (void)blockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion;
+- (void)editClubWithClubID:(int)clubID withTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion;
 - (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(NSObject *result))completion;
 - (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *result))completion;
 - (void)inviteNonAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *result))completion;
+- (void)joinClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)leaveClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //- (void)joinClubWithClubID:(int)clubID withOwnerID:(int)ownerID withRequstingUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //- (void)quitUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //- (void)retrieveClubByClubID:(int)clubID toClubWithID:(int)clubID clubOwnerID:(int)ownerID withContacts:(NSArray *)contacts completion:(void (^)(NSObject *result))completion;

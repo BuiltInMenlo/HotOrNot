@@ -31,18 +31,18 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowBackground"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(212.0, 10.0, 104.0, 44.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(212.0, 10.0, 74.0, 64.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self.contentView addSubview:_checkButton];
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_followButton.frame = CGRectMake(212.0, 10.0, 104.0, 44.0);
+		_followButton.frame = _checkButton.frame;
 		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_nonActive"] forState:UIControlStateNormal];
 		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
@@ -59,6 +59,7 @@
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
+	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
@@ -95,6 +96,7 @@
 	_followButton.alpha = (int)!isSelected;
 	_followButton.hidden = isSelected;
 	
+	_checkButton.alpha = (int)isSelected;
 	_checkButton.hidden = !isSelected;
 }
 
@@ -106,9 +108,8 @@
 		_followButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_followButton.hidden = YES;
+		[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:YES];
 	}];
-	
-	[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:YES];
 }
 
 - (void)_goUnfollow {
@@ -117,9 +118,8 @@
 		_followButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_checkButton.hidden = YES;
+		[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:NO];
 	}];
-	
-	[self.delegate searchUserViewCell:self user:_trivialUserVO toggleSelected:NO];
 }
 
 @end

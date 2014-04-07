@@ -70,7 +70,6 @@
 			if (![[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 				
-//				[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 			}
 			
@@ -181,7 +180,6 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 

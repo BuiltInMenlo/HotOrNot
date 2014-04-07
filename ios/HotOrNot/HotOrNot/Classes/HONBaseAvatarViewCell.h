@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONBaseRowViewCell.h"
 #import "HONTrivialUserVO.h"
 
 @class HONBaseAvatarViewCell;
@@ -13,12 +14,10 @@
 - (void)avatarViewCell:(HONBaseAvatarViewCell *)viewCell showProfileForUser:(HONTrivialUserVO *)vo;
 @end
 
-@interface HONBaseAvatarViewCell : UITableViewCell {
+@interface HONBaseAvatarViewCell : HONBaseRowViewCell {
 	UIImageView *_avatarImageView;
 	UILabel *_nameLabel;
 }
-
-+ (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, retain) HONTrivialUserVO *userVO;
 @property (nonatomic, assign) id<HONBaseAvatarViewCellDelegate> delegate;

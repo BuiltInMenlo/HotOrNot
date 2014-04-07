@@ -68,7 +68,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initAsModal:NO] animated:YES];
+			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:(NSDictionary *)result] asModal:NO] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)
@@ -134,7 +134,7 @@
 	_clubNameTextField.delegate = self;
 	[_formHolderView addSubview:_clubNameTextField];
 	
-	_clubNameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_clubNameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_clubNameCheckImageView.frame = CGRectOffset(_clubNameCheckImageView.frame, 257.0, 77.0);
 	_clubNameCheckImageView.alpha = 0.0;
 	[_formHolderView addSubview:_clubNameCheckImageView];
@@ -164,7 +164,7 @@
 	_blurbTextField.delegate = self;
 	[_formHolderView addSubview:_blurbTextField];
 	
-	_blurbCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkButton_nonActive"]];
+	_blurbCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_blurbCheckImageView.frame = CGRectOffset(_blurbCheckImageView.frame, 257.0, 141.0);
 	_blurbCheckImageView.alpha = 0.0;
 	[_formHolderView addSubview:_blurbCheckImageView];
@@ -172,10 +172,11 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Club"];
 	[self.view addSubview:headerView];
+	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"xButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"xButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:closeButton];
 	
@@ -232,21 +233,22 @@
 	[_clubNameButton setSelected:NO];
 	[_blurbButton setSelected:NO];
 	
-//	if ([_clubName length] == 0) {
-//		[_clubNameButton setSelected:YES];
-//		[_clubNameTextField becomeFirstResponder];
-//		
-//		_clubNameCheckImageView.alpha = 1.0;
-//		_clubNameCheckImageView.image = [UIImage imageNamed:@"xButton_nonActive"];
-//		
-//		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
-//									message:@"You need to enter a name for your club!"
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
-//	
-//	} else
-		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initAsModal:NO] animated:YES];//[self _submitClub];
+	if ([_clubName length] == 0) {
+		[_clubNameButton setSelected:YES];
+		[_clubNameTextField becomeFirstResponder];
+		
+		_clubNameCheckImageView.alpha = 1.0;
+		_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		
+		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
+									message:@"You need to enter a name for your club!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	
+	} else
+		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:nil asModal:NO] animated:YES];
+		//[self _submitClub];
 }
 
 
@@ -281,24 +283,16 @@
 
 
 #pragma mark - Notifications
-//-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-//	UITextView *tv = object;
-//	CGFloat topCorrect = MAX(0.0, ([tv bounds].size.height - [tv contentSize].height * [tv zoomScale]) * 0.5);
-//	//CGFloat topCorrect = ([tv bounds].size.height - [tv contentSize].height * [tv zoomScale]) * 0.5;
-//	//topCorrect = (topCorrect < 0.0) ? 0.0 : topCorrect;
-//	tv.contentOffset = (CGPoint){.x = 0, .y = -topCorrect};
-//}
-
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
 	if ([_clubNameTextField isFirstResponder]) {
 		_clubNameCheckImageView.alpha = 1.0;
-		_clubNameCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_clubNameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 	
 	} else if ([_blurbTextField isFirstResponder]) {
 		_blurbCheckImageView.alpha = 1.0;
-		_blurbCheckImageView.image = [UIImage imageNamed:@"checkButton_nonActive"];
+		_blurbCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 	}
 }
 

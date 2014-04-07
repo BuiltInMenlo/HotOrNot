@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "HONUserClubVO.h"
 
-@interface HONUserClubSettingsViewController : UIViewController
-
+@interface HONUserClubSettingsViewController : UIViewController <UITextFieldDelegate>
+- (id)initWithClub:(HONUserClubVO *)userClubVO;
 @end

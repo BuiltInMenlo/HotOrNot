@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONUserClubDetailsViewController : UIViewController
+#import "HONUserClubVO.h"
 
+@interface HONUserClubDetailsViewController : UIViewController
+- (id)initWithClub:(HONUserClubVO *)userClubVO;
 @end
