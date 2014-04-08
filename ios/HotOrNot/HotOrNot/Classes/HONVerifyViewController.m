@@ -6,32 +6,26 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
-#import "UIImage+ImageEffects.h"
 
 #import "HONVerifyViewController.h"
+#import "HONAPICaller.h"
+#import "HONImagingDepictor.h"
+#import "HONDeviceTraits.h"
+#import "HONTutorialView.h"
+#import "HONHeaderView.h"
+#import "HONVerifyFlagButtonView.h"
+#import "HONCreateSnapButtonView.h"
 #import "HONVerifyViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
-#import "HONImagePickerViewController.h"
-#import "HONDeviceTraits.h"
-#import "HONImagingDepictor.h"
-#import "HONCreateSnapButtonView.h"
 #import "HONAddContactsViewController.h"
+#import "HONImagePickerViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONAnalyticsParams.h"
-#import "HONAPICaller.h"
-#import "HONImagingDepictor.h"
-#import "HONHeaderView.h"
-#import "HONTutorialView.h"
-#import "HONProfileHeaderButtonView.h"
-#import "HONMessagesButtonView.h"
 #import "HONUserProfileViewController.h"
-#import "HONMessagesViewController.h"
 #import "HONChangeAvatarViewController.h"
 
 @interface HONVerifyViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTutorialViewDelegate, HONVerifyViewCellDelegate>
@@ -138,8 +132,10 @@
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor blackColor];
+	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	[_tableView setBackgroundColor:[UIColor blackColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -152,39 +148,16 @@
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
+	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyEmpty"]];
 	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
 	_emptySetImageView.hidden = YES;
 	[_tableView addSubview:_emptySetImageView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Verify" hasBackground:NO];
+	[headerView addButton:[[HONVerifyFlagButtonView alloc] initWithTarget:self action:@selector(_goFlag)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:YES]];
+	[headerView toggleLightStyle:YES];
 	[self.view addSubview:headerView];
-	
-	
-	UIView *toggleListView = [[UIView alloc] initWithFrame:CGRectMake(100.0, 40.0, 120.0, 32.0)];
-	toggleListView.backgroundColor = [UIColor greenColor];
-//	[self.view addSubview:toggleListView];
-	
-	
-	UIButton *discoverButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	discoverButton.frame = CGRectMake(0.0, 0.0, 60.0, 32.0);
-	discoverButton.backgroundColor = [UIColor redColor];
-//	[discoverButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-//	[discoverButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-	[discoverButton addTarget:self action:@selector(_goDiscoverList) forControlEvents:UIControlEventTouchDown];
-	[toggleListView addSubview:discoverButton];
-	
-	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(60.0, 0.0, 60.0, 32.0);
-	friendsButton.backgroundColor = [UIColor greenColor];
-//	[friendsButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-//	[friendsButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-	[friendsButton addTarget:self action:@selector(_goFriendsList) forControlEvents:UIControlEventTouchDown];
-	[toggleListView addSubview:friendsButton];
-
 	
 	[self _retrieveVerifyList];
 }
@@ -193,32 +166,54 @@
 	[super viewDidLoad];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewWillAppear:animated];
+	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	[super viewDidAppear:animated];
+}
+
 - (void)viewDidUnload {
 	[super viewDidUnload];
 }
 
 
 #pragma mark - Navigation
-- (void)_goProfile {
-	[[Mixpanel sharedInstance] track:@"Verify - Profile"
-						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
-}
-
-- (void)_goMessages {
-	[[Mixpanel sharedInstance] track:@"Verify - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
+- (void)_goFlag {
+	NSIndexPath *indexPath = (NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject];
+	_challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Flag"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							  toChallenge:_challengeVO]];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Flag this user?"
+														message:@""
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"OK", nil];
+	[alertView setTag:HONVerifyAlertTypeFlag];
+	[alertView show];
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Verify - Create Volley" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Create Snap"
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Verify - Refresh" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Refresh"
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
 	[self _retrieveVerifyList];
 	
 	if ([HONAppDelegate incTotalForCounter:@"verifyRefresh"] == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
@@ -231,17 +226,6 @@
 		[alertView show];
 	}
 }
-
-- (void)_goDiscoverList {
-	[[Mixpanel sharedInstance] track:@"Verify - Discover List" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self _retrieveVerifyList];
-}
-
-- (void)_goFriendsList {
-	[[Mixpanel sharedInstance] track:@"Verify - Friends List" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self _retrieveVerifyList];
-}
-
 
 
 #pragma mark - Notifications
@@ -285,16 +269,13 @@
 - (void)_removeCellForChallenge:(HONChallengeVO *)challengeVO {
 	UITableViewCell *tableCell;
 	
-		for (HONVerifyViewCell *cell in _cells) {
-			if (cell.challengeVO.challengeID == challengeVO.challengeID) {
-				tableCell = (UITableViewCell *)cell;
-				[_cells removeObject:tableCell];
-				break;
-			}
+	for (HONVerifyViewCell *cell in _cells) {
+		if (cell.challengeVO.challengeID == challengeVO.challengeID) {
+			tableCell = (UITableViewCell *)cell;
+			[_cells removeObject:tableCell];
+			break;
 		}
-			
-	
-	NSLog(@"TABLECELL:[%@]", ((HONVerifyViewCell *)tableCell).challengeVO.creatorVO.username);
+	}
 	
 	int ind = -1;
 	for (HONChallengeVO *vo in _challenges) {
@@ -306,11 +287,8 @@
 		}
 	}
 	
-	NSLog(@"CHALLENGE:(%d)[%@]", ind, challengeVO.creatorVO.username);
-	
 	if (tableCell != nil) {
-		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:ind];// [_tableView indexPathForCell:tableCell];
-		NSLog(@"INDEX PATH:[%d/%d]", indexPath.section, [_challenges count]);
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:ind];
 		
 		if (indexPath != nil) {
 			[_tableView beginUpdates];
@@ -324,8 +302,9 @@
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[Mixpanel sharedInstance] track:@"Verify - Close Tutorial" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Close Tutorial"
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
 		_tutorialView = nil;
@@ -333,7 +312,8 @@
 }
 
 - (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[Mixpanel sharedInstance] track:@"Verify - Tutorial Take Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Tutorial Take Avatar"
+									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -348,21 +328,18 @@
 
 #pragma mark - VerifyViewCell Delegates
 - (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
-	[[Mixpanel sharedInstance] track:@"Verify - Show Profile" properties:properties];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Show Profile"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
 	
 	_challengeVO = challengeVO;
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:challengeVO.creatorVO.userID] animated:YES];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:challengeVO.creatorVO.userID]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell approveChallenge:(HONChallengeVO *)challengeVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
-	[[Mixpanel sharedInstance] track:@"Verify - Approve" properties:properties];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Approve"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
 	
 	if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
 		[[HONAPICaller sharedInstance] followUserWithUserID:challengeVO.creatorVO.userID completion:^void(NSObject *result) {
@@ -372,16 +349,16 @@
 	
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:challengeVO.creatorVO.userID asLegit:YES completion:nil];
 	[self _removeCellForChallenge:challengeVO];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"approveAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"yayOverlay"]]];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell disapproveChallenge:(HONChallengeVO *)challengeVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
-	[[Mixpanel sharedInstance] track:@"Verify - Dissaprove" properties:properties];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Dissaprove"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Disprove Confirm"
-														message:@"FO SHO?"
+														message:@""
 													   delegate:self
 											  cancelButtonTitle:@"Nah"
 											  otherButtonTitles:@"Fo Shizzle!", nil];
@@ -390,42 +367,35 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell skipChallenge:(HONChallengeVO *)challengeVO {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	properties[@"opponent"] = [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username];
-	[[Mixpanel sharedInstance] track:@"Verify - Dissaprove" properties:properties];
-	
-	[[Mixpanel sharedInstance] track:@"Verify - Skip"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Skip"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
+		
 	_challengeVO = challengeVO;
 	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
 	[self _removeCellForChallenge:challengeVO];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dislikeOverlayAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nayOverlay"]]];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell shoutoutChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Shoutout"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Shoutout"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
+		
 	_challengeVO = challengeVO;
 	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:challengeVO.challengeID completion:nil];
 	
 	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
 	[self _removeCellForChallenge:challengeVO];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutOutOverlayAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutoutOverlay"]]];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell moreActionsForChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - More Shelf"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - More Shelf"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
 	
 	_challengeVO = challengeVO;
 	[self _removeCellForChallenge:challengeVO];
@@ -440,10 +410,10 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell fullSizeDisplayForChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Preview"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Preview"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
+	
 	_challengeVO = challengeVO;
 	[cell showTapOverlay];
 	
@@ -454,10 +424,10 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell bannerTappedForChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Banner"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Banner"
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							   toChallenge:challengeVO]];
+	
 	_challengeVO = challengeVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -536,7 +506,7 @@
 	HONVerifyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONVerifyViewCell alloc] initAsInviteCell:((indexPath.section % 5) == -1 && indexPath.section > 0)];
+		cell = [[HONVerifyViewCell alloc] initAsBannerCell:((indexPath.section % 5) == -1 && indexPath.section > 0)];
 	
 	cell.delegate = self;
 	cell.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
@@ -592,11 +562,10 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Follow" : (buttonIndex == 1) ? @"Approve" : @" Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve & Follow" : (buttonIndex == 1) ? @"Approve" : @" Cancel"]
+										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																								   toChallenge:_challengeVO]];
+				
 		if (buttonIndex == 0) {
 			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
 				[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^void(NSObject *result) {
@@ -611,10 +580,9 @@
 		}
 	
 	} else if (actionSheet.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - More Sheet %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Verify - More Sheet %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
+										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																								   toChallenge:_challengeVO]];
 		
 		[self _removeCellForChallenge:_challengeVO];
 		if (buttonIndex == 0) {
@@ -641,9 +609,9 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONVerifyAlertTypeShare) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Verify - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																								   toChallenge:_challengeVO]];
 		
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
@@ -654,13 +622,22 @@
 		}
 	
 	} else if (alertView.tag == HONVerifyAlertTypeDisproveConfirm) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Verify - Dissaprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																								   toChallenge:_challengeVO]];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:nil];
+			[self _removeCellForChallenge:_challengeVO];
+		}
+	
+	} else if (alertView.tag == HONVerifyAlertTypeFlag) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Verify - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																								   toChallenge:_challengeVO]];
+		
+		if (buttonIndex == 1) {
+			[[HONAPICaller sharedInstance] flagChallengeByChallengeID:_challengeVO.challengeID completion:nil];
 			[self _removeCellForChallenge:_challengeVO];
 		}
 	}

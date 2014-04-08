@@ -8,13 +8,13 @@
 #warning "This project uses features only available in iOS SDK 4.0 and later."
 #endif
 
-#ifdef VOLLEY_JSON_LOG
-#define VolleyJSONLog(...) NSLog(__VA_ARGS__)
+#if SC_JSON_LOG == 1
+#define SelfieclubJSONLog(...) NSLog(__VA_ARGS__)
 #else
-#define VolleyJSONLog(...)
+#define SelfieclubJSONLog(...)
 #endif
 
-#ifdef VIEW_CONTROLLER_LOG
+#if VIEW_CONTROLLER_LOG == 1
 #define ViewControllerLog(...) NSLog(__VA_ARGS__)
 #else
 #define ViewControllerLog(...)
@@ -27,6 +27,4 @@
 	#import <MobileCoreServices/MobileCoreServices.h>
 	#import "HONAppDelegate.h"
 	#import "HONAnalyticsParams.h"
-	#import "Mixpanel.h"
-	#import "TestFlight.h"
 #endif

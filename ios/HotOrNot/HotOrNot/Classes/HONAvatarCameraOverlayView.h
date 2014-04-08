@@ -6,20 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-@protocol HONAvatarCameraOverlayDelegate;
-@interface HONAvatarCameraOverlayView : UIView <UIAlertViewDelegate>
-- (void)addPreview:(UIImage *)image;
-- (void)addPreviewAsFlipped:(UIImage *)image;
-- (void)removePreview;
-- (void)uploadComplete;
-- (void)animateAccept;
-- (void)resetControls;
-
-@property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
-@end
-
+@class HONAvatarCameraOverlayView;
 @protocol HONAvatarCameraOverlayDelegate <NSObject>
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
@@ -29,4 +16,15 @@
 - (void)cameraOverlayViewChangeFlash:(HONAvatarCameraOverlayView *)previewView;
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)previewView;
 - (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)previewView;
+@end
+
+@interface HONAvatarCameraOverlayView : UIView <UIAlertViewDelegate>
+- (void)addPreview:(UIImage *)image;
+- (void)addPreviewAsFlipped:(UIImage *)image;
+- (void)removePreview;
+- (void)uploadComplete;
+- (void)animateAccept;
+- (void)resetControls;
+
+@property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end

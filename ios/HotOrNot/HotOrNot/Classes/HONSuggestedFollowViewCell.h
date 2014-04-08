@@ -9,7 +9,11 @@
 #import "HONTrivialUserVO.h"
 
 
-@protocol HONSuggestedFollowViewCellDelegate;
+@class HONSuggestedFollowViewCell;
+@protocol HONSuggestedFollowViewCellDelegate <NSObject>
+- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
+@end
+
 @interface HONSuggestedFollowViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
@@ -17,9 +21,3 @@
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, assign) id <HONSuggestedFollowViewCellDelegate> delegate;
 @end
-
-
-@protocol HONSuggestedFollowViewCellDelegate <NSObject>
-- (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected;
-@end
-

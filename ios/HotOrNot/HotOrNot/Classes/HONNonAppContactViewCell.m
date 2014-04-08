@@ -25,7 +25,7 @@
 		[self hideChevron];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(212.0, 10.0, 74.0, 64.0);
+		_checkButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
@@ -46,14 +46,14 @@
 - (void)setUserVO:(HONContactUserVO *)userVO {
 	_userVO = userVO;
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 14.0, 180.0, 20.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 14.0, 240.0, 20.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userVO.fullName;
 	[self.contentView addSubview:nameLabel];
 	
-	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 30.0, 180.0, 18.0)];
+	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 30.0, 240.0, 18.0)];
 	contactLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:15];
 	contactLabel.textColor = [[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.455];
 	contactLabel.backgroundColor = [UIColor clearColor];

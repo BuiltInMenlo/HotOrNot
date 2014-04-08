@@ -6,9 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-
 typedef enum {
 	HONImagingDepictorShareTemplateTypeDefault = 0,
 	HONImagingDepictorShareTemplateTypeInstagram,

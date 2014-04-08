@@ -158,13 +158,13 @@ const CGSize kInstagramSize = {612.0, 612.0};
 }
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
-	VolleyJSONLog(@"%@ —/> (%@)", [[self class] description], url);
+	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: Failed Request - %@", [[self class] description], [error localizedDescription]);
+		SelfieclubJSONLog(@"AFNetworking [-] %@: Failed Request - %@", [[self class] description], [error localizedDescription]);
 		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
@@ -173,7 +173,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 }
 
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
-	VolleyJSONLog(@"%@ —/> (%@)", [[self class] description], url);
+	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
 		imageView.image = image;
@@ -182,7 +182,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], url, [error localizedDescription]);
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], url, [error localizedDescription]);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
 		[[NSUserDefaults standardUserDefaults] synchronize];

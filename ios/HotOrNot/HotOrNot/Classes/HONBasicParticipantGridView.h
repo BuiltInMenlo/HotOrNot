@@ -18,7 +18,16 @@ typedef enum {
 } HONParticipantGridViewType;
 
 
-@protocol HONParticipantGridViewDelegate;
+@class HONBasicParticipantGridView;
+@protocol HONParticipantGridViewDelegate <NSObject>
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+
+@optional
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showDetailsForChallenge:(HONChallengeVO *)challengeVO;
+@end
+
 @interface HONBasicParticipantGridView : UIView {
 	HONParticipantGridViewType _participantGridViewType;
 	HONOpponentVO *_heroOpponentVO;
@@ -43,14 +52,4 @@ typedef enum {
 - (UIView *)createItemForParticipant:(HONOpponentVO *)opponentVO fromChallenge:(HONChallengeVO *)challengeVO;
 
 @property (nonatomic, assign) id <HONParticipantGridViewDelegate> delegate;
-@end
-
-
-@protocol HONParticipantGridViewDelegate <NSObject>
-- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-
-@optional
-- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView removeParticipantItem:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-- (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showDetailsForChallenge:(HONChallengeVO *)challengeVO;
 @end

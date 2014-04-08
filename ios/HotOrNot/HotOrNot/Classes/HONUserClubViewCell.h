@@ -12,10 +12,13 @@
 
 @class HONUserClubViewCell;
 @protocol HONUserClubViewCellDelegate <NSObject>
+@optional
+- (void)userClubViewCell:(HONUserClubViewCell *)cell acceptInviteForClub:(HONUserClubVO *)userClubVO;
 - (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO;
 @end
 
 @interface HONUserClubViewCell : HONBaseRowViewCell
+- (id)initAsInviteCell:(BOOL)isInvite;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, assign) id <HONUserClubViewCellDelegate> delegate;
 @end

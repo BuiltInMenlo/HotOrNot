@@ -14,6 +14,7 @@
 #import "HONSuggestedFollowViewCell.h"
 #import "HONTrivialUserVO.h"
 #import "HONHeaderView.h"
+#import "HONTableHeaderView.h"
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -232,15 +233,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:13];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Follow popular people";
-	[headerImageView addSubview:label];
-	
-	return (nil);
+	return ([[HONTableHeaderView alloc] initWithTitle:@"FOLLOW POPULAR PEOPLE"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

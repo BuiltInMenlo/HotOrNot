@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @interface HONProfileHeaderButtonView : UIView
 - (id)initWithTarget:(id)target action:(SEL)action;
 - (void)toggleSelected:(BOOL)isSelected;

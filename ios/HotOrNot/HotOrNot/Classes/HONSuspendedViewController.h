@@ -8,7 +8,6 @@
 
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
-#import <UIKit/UIKit.h>
 
 @interface HONSuspendedViewController : UIViewController <MFMailComposeViewControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>
 

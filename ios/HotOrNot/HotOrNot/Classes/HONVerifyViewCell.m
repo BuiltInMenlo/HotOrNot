@@ -11,31 +11,31 @@
 #import "HONVerifyViewCell.h"
 #import "HONAPICaller.h"
 #import "HONDeviceTraits.h"
+#import "HONFontAllocator.h"
 #import "HONOpponentVO.h"
+#import "HONEmotionVO.h"
 #import "HONImageLoadingView.h"
-#import "HONVerifyCellHeaderView.h"
+//#import "HONVerifyCellHeaderView.h"
 
-@interface HONVerifyViewCell() <HONVerifyCellHeaderViewDelegate>
+@interface HONVerifyViewCell() //<HONVerifyCellHeaderViewDelegate>
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
+@property (nonatomic) BOOL isBannerCell;
 @end
 
 @implementation HONVerifyViewCell
 @synthesize delegate = _delegate;
 @synthesize challengeVO = _challengeVO;
 @synthesize indexPath = _indexPath;
-@synthesize isInviteCell = _isInviteCell;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsInviteCell:(BOOL)isInviteCell {
+- (id)initAsBannerCell:(BOOL)isBannerCell {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyRowBackground"]];
-		_isInviteCell = isInviteCell;
-		
-		//self.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:1.0 alpha:0.5];
+		_isBannerCell = isBannerCell;
+		self.backgroundColor = [UIColor blackColor];
 	}
 	
 	return (self);
@@ -92,46 +92,75 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
-	
-	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
-	headerView.frame = CGRectOffset(headerView.frame, 0.0, 35.0);
-	headerView.delegate = self;
-	[self.contentView addSubview:headerView];
+//	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
+//	headerView.frame = CGRectOffset(headerView.frame, 0.0, 35.0);
+//	headerView.delegate = self;
+//	[self.contentView addSubview:headerView];
 	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_nonActive"] forState:UIControlStateNormal];
-	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayVerifyButton_Active"] forState:UIControlStateHighlighted];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
+	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
-	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_nonActive"] forState:UIControlStateNormal];
-	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayVerifyButton_Active"] forState:UIControlStateHighlighted];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:skipButton];
 	
 	UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
-	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_nonActive"] forState:UIControlStateNormal];
-	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutout_Active"] forState:UIControlStateHighlighted];
+	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutoutButton_nonActive"] forState:UIControlStateNormal];
+	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutoutButton_Active"] forState:UIControlStateHighlighted];
 	[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:shoutoutButton];
 	
-	UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	followButton.frame = CGRectMake(11.0, [UIScreen mainScreen].bounds.size.height - 95.0, 94.0, 44.0);
-	[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-	[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
-	[followButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-//	[self.contentView addSubview:followButton];
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 124.0, 320.0, 75.0)];
+	[self.contentView addSubview:footerView];
 	
-	if (_isInviteCell) {
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
+	usernameLabel.textColor = [UIColor whiteColor];
+	usernameLabel.backgroundColor = [UIColor clearColor];
+	usernameLabel.shadowColor = [UIColor blackColor];
+	usernameLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	usernameLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"name_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_challengeVO.creatorVO.username] attributes:nil];
+	[footerView addSubview:usernameLabel];
+	
+	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 28.0, 200.0, 24.0)];
+	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
+	emotionLabel.textColor = [UIColor whiteColor];
+	emotionLabel.backgroundColor = [UIColor clearColor];
+	emotionLabel.shadowColor = [UIColor blackColor];
+	emotionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	emotionLabel.text = [HONAppDelegate verifyCopyForKey:@"sub_txt"];
+	[footerView addSubview:emotionLabel];
+	
+	CGSize size = [[HONAppDelegate verifyCopyForKey:@"sub_txt"] boundingRectWithSize:emotionLabel.frame.size
+																			 options:NSStringDrawingTruncatesLastVisibleLine
+																		  attributes:@{NSFontAttributeName:emotionLabel.font}
+																			 context:nil].size;
+	
+//	HONEmotionVO *emotionVO = [self _challengeEmotion];
+//	if (emotionVO != nil && [_challengeVO.challengers count] > 0) {
+//		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(emotionLabel.frame.origin.x + size.width, 20.0, 30.0, 30.0)];
+//		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlLarge] placeholderImage:nil];
+//		[footerView addSubview:emoticonImageView];
+//	}
+	
+	UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-LG"]];
+	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + size.width) + 9.0, 24.0, 45.0, 45.0);
+	[footerView addSubview:emoticonImageView];
+	
+	if (_isBannerCell) {
 		buttonHolderView.frame = CGRectOffset(buttonHolderView.frame, 0.0, -80.0);
-		followButton.frame = CGRectOffset(followButton.frame, 0.0, -80.0);
+		footerView.frame = CGRectOffset(footerView.frame, 0.0, -80.0);
 		
 		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 130.0, 320.0, 80.0)];
 		[self.contentView addSubview:bannerImageView];
@@ -227,15 +256,28 @@
 	[UIView commitAnimations];
 }
 
+- (HONEmotionVO *)_challengeEmotion {
+	HONEmotionVO *emotionVO;
+	
+	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
+		if ([vo.hastagName isEqualToString:_challengeVO.subjectName]) {
+			emotionVO = vo;
+			break;
+		}
+	}
+	
+	return (emotionVO);
+}
+
 
 #pragma mark - VerifyCellHeader Delegates
-- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
-	[[Mixpanel sharedInstance] track:@"Verify - Header Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
-	
-	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
-}
+//- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
+//	[[Mixpanel sharedInstance] track:@"Verify - Header Show Profile"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+//	
+//	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
+//}
 
 @end

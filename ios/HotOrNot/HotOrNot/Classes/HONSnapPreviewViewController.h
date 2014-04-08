@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
@@ -29,16 +27,7 @@ typedef enum {
 } HONSnapPreviewAlertType;
 
 
-
-@protocol HONSnapPreviewViewControllerDelegate;
-@interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate, UIActionSheetDelegate>
-- (id)initWithVerifyChallenge:(HONChallengeVO *)vo;
-- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-- (id)initFromProfileWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-
-@property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;
-@end
-
+@class HONSnapPreviewViewController;
 @protocol HONSnapPreviewViewControllerDelegate <NSObject>
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController;
 @optional
@@ -46,4 +35,12 @@ typedef enum {
 - (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController upvoteOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController joinChallenge:(HONChallengeVO *)challengeVO;
 - (void)snapPreviewViewController:(HONSnapPreviewViewController *)snapPreviewViewController removeVerifyChallenge:(HONChallengeVO *)challengeVO;
+@end
+
+@interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate, UIActionSheetDelegate>
+- (id)initWithVerifyChallenge:(HONChallengeVO *)vo;
+- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (id)initFromProfileWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+
+@property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;
 @end

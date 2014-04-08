@@ -6,9 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-
 typedef enum {
 	HONTabBarButtonTypeHome = 0,
 	HONTabBarButtonTypeClubs,

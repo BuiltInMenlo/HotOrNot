@@ -10,13 +10,13 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserClubSettingsViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
+#import "HONUserClubInviteViewController.h"
 
 
 @interface HONUserClubSettingsViewController () <HONClubCoverCameraViewControllerDelegate>
@@ -71,7 +71,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)
@@ -101,9 +101,9 @@
 	
 	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_clubNameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
-	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
-	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG"] forState:UIControlStateNormal];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateHighlighted];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateSelected];
 	[_clubNameButton addTarget:self action:@selector(_goClubName) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_clubNameButton];
 	
@@ -168,9 +168,9 @@
 	
 	_blurbButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_blurbButton.frame = CGRectMake(0.0, 141.0, 320.0, 128.0);
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG"] forState:UIControlStateNormal];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateHighlighted];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateSelected];
 	[_blurbButton addTarget:self action:@selector(_goBlurb) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_blurbButton];
 	
@@ -207,12 +207,12 @@
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:closeButton];
 	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:submitButton];
+	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:nextButton];
 }
 
 - (void)viewDidLoad {
@@ -246,8 +246,8 @@
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)_goSubmit {
-	[[Mixpanel sharedInstance] track:@"Edit Club - Submit" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+- (void)_goNext {
+	[[Mixpanel sharedInstance] track:@"Edit Club - Next" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	if ([_clubNameTextField isFirstResponder])
 		[_clubNameTextField resignFirstResponder];
@@ -273,7 +273,7 @@
 						  otherButtonTitles:nil] show];
 		
 	} else
-		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
 //	[self _updateClub];
 }
 

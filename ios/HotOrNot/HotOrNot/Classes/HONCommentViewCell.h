@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONBaseRowViewCell.h"
 #import "HONCommentVO.h"
 

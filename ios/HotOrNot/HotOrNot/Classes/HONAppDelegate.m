@@ -8,7 +8,6 @@
 
 #import <AddressBook/AddressBook.h>
 #import <AVFoundation/AVFoundation.h>
-#import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
 #import <Social/SLServiceTypes.h>
@@ -87,7 +86,7 @@ NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 const CGFloat kNavHeaderHeight = 64.0;
 const CGFloat kSearchHeaderHeight = 43.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
-const CGFloat kOrthodoxTableCellHeight = 63.0f;
+const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
 // animation params
@@ -96,7 +95,7 @@ const CGFloat kHUDErrorTime = 1.5f;
 const CGFloat kProfileTime = 0.25f;
 
 // image sizes
-const CGSize kTableCellAvatarSize = {96.0f, 96.0f};
+const CGSize kSnapAvatarSize = {48.0f, 48.0f};
 const CGSize kSnapThumbSize = {80.0f, 80.0f};
 const CGSize kSnapTabSize = {320.0f, 480.0f};
 const CGSize kSnapMediumSize = {160.0f, 160.0f};
@@ -1172,16 +1171,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[[HONChallengeAssistant sharedInstance] emptyChallengeDictionaryWithID:i] forKey:[NSString stringWithFormat:@"empty_challenge_%d", i]];
 		
 #if __FORCE_REGISTER__ == 1
-	for (NSString *key in totalKeys)
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	[HONAppDelegate resetTotals];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 #endif
 	
 #if __RESET_TOTALS__ == 1
-	for (NSString *key in totalKeys)
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+	[HONAppDelegate resetTotals];
 #endif
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];

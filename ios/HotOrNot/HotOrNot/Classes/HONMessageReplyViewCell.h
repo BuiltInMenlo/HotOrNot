@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONOpponentVO.h"
 
+@class HONMessageReplyViewCell;
+@protocol HONMessageReplyViewCellDelegate <NSObject>
+@end
 
-@protocol HONMessageReplyViewCellDelegate;
 @interface HONMessageReplyViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
@@ -19,8 +19,4 @@
 
 @property (nonatomic, strong) HONOpponentVO *messageReplyVO;
 @property (nonatomic, assign) id <HONMessageReplyViewCellDelegate> delegate;
-@end
-
-
-@protocol HONMessageItemViewCellDelegate <NSObject>
 @end

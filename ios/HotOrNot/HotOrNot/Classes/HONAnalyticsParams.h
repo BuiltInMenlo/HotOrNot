@@ -6,13 +6,14 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "Mixpanel.h"
 
 #import "HONContactUserVO.h"
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserVO.h"
+#import "HONUserClubVO.h"
 
 @interface HONAnalyticsParams : NSObject
 + (HONAnalyticsParams *)sharedInstance;
@@ -24,6 +25,7 @@
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toParticipant:(HONOpponentVO *)vo;
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)prependProperties:(NSDictionary *)dict toTrivalUser:(HONTrivialUserVO *)vo;
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toUserClub:(HONUserClubVO *)vo;
 
 - (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties;
 @end

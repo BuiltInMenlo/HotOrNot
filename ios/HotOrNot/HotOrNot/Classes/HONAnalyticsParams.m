@@ -84,6 +84,15 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return ([properties copy]);
 }
 
+- (NSDictionary *)prependProperties:(NSDictionary *)dict toUserClub:(HONUserClubVO *)vo {
+	NSMutableDictionary *properties = [dict mutableCopy];
+	properties[@"club"] = [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName];
+	
+	return ([properties copy]);
+}
+
+
+
 - (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties {
 	[[Mixpanel sharedInstance] track:event
 						  properties:properties];

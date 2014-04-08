@@ -9,7 +9,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONCreateClubViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
@@ -62,13 +61,13 @@
 #pragma mark - Data Calls
 - (void)_submitClub {
 	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:_clubBlurb withImagePrefix:_clubImagePrefix completion:^(NSObject *result) {
-		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) {
+		if ((NSDictionary *)result != nil) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:(NSDictionary *)result] asModal:NO] animated:YES];
+			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:(NSDictionary *)result]] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)
@@ -98,15 +97,17 @@
 	
 	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_clubNameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
-	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
-	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG"] forState:UIControlStateNormal];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateHighlighted];
+	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateSelected];
 	[_clubNameButton addTarget:self action:@selector(_goClubName) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_clubNameButton];
 	
 	_clubCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] highlightedImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"]];
 	_clubCoverImageView.frame = CGRectOffset(_clubCoverImageView.frame, 8.0, 85.0);
 	[_formHolderView addSubview:_clubCoverImageView];
+	
+	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 	
 	UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	addImageButton.frame = _clubCoverImageView.frame;//CGRectMake(8.0, 85.0, 48.0, 48.0);
@@ -141,9 +142,9 @@
 	
 	_blurbButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_blurbButton.frame = CGRectMake(0.0, 141.0, 320.0, 128.0);
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_nonActive"] forState:UIControlStateNormal];
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateHighlighted];
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBackround_Active"] forState:UIControlStateSelected];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG"] forState:UIControlStateNormal];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateHighlighted];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateSelected];
 	[_blurbButton addTarget:self action:@selector(_goBlurb) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_blurbButton];
 	
@@ -189,7 +190,6 @@
 }
 
 - (void)viewDidLoad {
-//	[_blurbTextField addObserver:self forKeyPath:@"contentSize" options:(NSKeyValueObservingOptionNew) context:NULL];
 	[super viewDidLoad];
 }
 
@@ -247,8 +247,8 @@
 						  otherButtonTitles:nil] show];
 	
 	} else
-		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:nil asModal:NO] animated:YES];
-		//[self _submitClub];
+		[self _submitClub];
+//		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:nil] animated:YES];
 }
 
 

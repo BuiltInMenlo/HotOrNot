@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONChallengeVO.h"
 
 @interface HONVotersViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>

@@ -6,9 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-
 @protocol HONCameraOverlayViewDelegate;
 @interface HONBaseCameraOverlayView : UIView
 
@@ -164,9 +161,6 @@
 //  Created by Matthew Holcombe on 03.03.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
-
-#import <UIKit/UIKit.h>
-
 
 @protocol HONRegisterCameraOverlayViewDelegate;
 @interface HONRegisterCameraOverlayView : UIView
@@ -412,8 +406,6 @@
 //  Created by Matthew Holcombe on 04.30.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
-
-#import <UIKit/UIKit.h>
 
 @protocol HONAvatarCameraOverlayViewDelegate;
 @interface HONAvatarCameraOverlayView : UIView

@@ -6,10 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "HONOpponentVO.h"
+#import "HONUserVO.h"
 
 @interface HONTrivialUserVO : NSObject
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary;
++ (HONTrivialUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO;
++ (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

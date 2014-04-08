@@ -18,6 +18,7 @@
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
+#import "HONTableHeaderView.h"
 #import "HONTutorialView.h"
 #import "HONSearchBarView.h"
 #import "HONMessagesButtonView.h"
@@ -319,7 +320,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Friends"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 //	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
 	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
@@ -396,6 +397,8 @@
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewWillAppear:animated];
+	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -540,6 +543,10 @@
 
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
+	_isDataSourceContacts = NO;
+	
+	_searchUsers = [NSMutableArray array];
+	[_tableView reloadData];
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
@@ -636,22 +643,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	if (!_isDataSourceContacts)
-		return (nil);
-	
 	if (section == 2)
 		return (nil);
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 4.0, 200.0, 16.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"FRIENDS" : @"CONTACTS";
-	[imageView addSubview:label];
-	
-	return (imageView);
+	return ([[HONTableHeaderView alloc] initWithTitle:(_isDataSourceContacts) ? (section == 0) ? @"FRIENDS" : @"CONTACTS" : @"SEARCH RESULTS"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -718,11 +713,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	if (_isDataSourceContacts)
-		return ((section == 0 || section == 1) ? kOrthodoxTableHeaderHeight : 0.0);
-	
-	else
-		return (0.0);
+	return ((_isDataSourceContacts) ? (section == 0 || section == 1) ? kOrthodoxTableHeaderHeight : 0.0 : kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

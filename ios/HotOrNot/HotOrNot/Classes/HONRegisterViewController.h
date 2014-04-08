@@ -7,16 +7,22 @@
 //
 
 #import <MessageUI/MFMailComposeViewController.h>
-#import <UIKit/UIKit.h>
+
+//typedef enum {
+//	HONRegisterErrorTypeUsernamePasswordPhone = 0,
+//	HONRegisterErrorTypePasswordPhone,
+//	HONRegisterErrorTypeUsernamePhone,
+//	HONRegisterErrorTypePhone,
+//	HONRegisterErrorTypeUsernamePassword,
+//	HONRegisterErrorTypePassword,
+//	HONRegisterErrorTypeUsername
+//} HONRegisterErrorType;
 
 typedef enum {
-	HONRegisterErrorTypeUsernameEmailBirthday = 0,
-	HONRegisterErrorTypeEmailBirthday,
-	HONRegisterErrorTypeUsernameBirthday,
-	HONRegisterErrorTypeBirthday,
-	HONRegisterErrorTypeUsernameEmail,
-	HONRegisterErrorTypeEmail,
-	HONRegisterErrorTypeUsername
+	HONRegisterErrorTypeNone		= 0,
+	HONRegisterErrorTypeUsername	= 1 << 0,
+	HONRegisterErrorTypePassword	= 1 << 1,
+	HONRegisterErrorTypePhone		= 1 << 2
 } HONRegisterErrorType;
 
 @interface HONRegisterViewController : UIViewController <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>

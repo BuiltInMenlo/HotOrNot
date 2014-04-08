@@ -12,6 +12,7 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
+#import "HONTableHeaderView.h"
 #import "HONMessageRecipientViewCell.h"
 #import "HONImagePickerViewController.h"
 #import "HONTrivialUserVO.h"
@@ -222,15 +223,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraTableHeader"]];
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 0.0, 320.0, kOrthodoxTableHeaderHeight - 1.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-	label.textColor = [[HONColorAuthority sharedInstance] honDarkGreyTextColor]; //	[[HONColorAuthority sharedInstance] honPercentGreyscaleColor:0.467]
-	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Following" : @"Followers";
-	[headerImageView addSubview:label];
-	
-	return (headerImageView);
+	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"FOLLOWING" : @"FOLLOWERS"]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {

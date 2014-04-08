@@ -6,20 +6,18 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONOpponentVO.h"
 
 
 const CGSize kVerifyAvatarSize;
 
-@protocol HONVerifyCellHeaderViewDelegate;
+@class HONVerifyCellHeaderView;
+@protocol HONVerifyCellHeaderViewDelegate <NSObject>
+- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO;
+@end
+
 @interface HONVerifyCellHeaderView : UIView
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO;
 
 @property (nonatomic, assign) id <HONVerifyCellHeaderViewDelegate> delegate;
-@end
-
-@protocol HONVerifyCellHeaderViewDelegate <NSObject>
-- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO;
 @end

@@ -9,7 +9,6 @@
 
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
-#import <UIKit/UIKit.h>
 
 typedef enum {
 	HONSettingsCellTypeHelp = 0,

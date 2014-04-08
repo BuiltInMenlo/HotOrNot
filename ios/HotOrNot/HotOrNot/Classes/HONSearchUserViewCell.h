@@ -6,11 +6,13 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONTrivialUserVO.h"
 
-@protocol HONSearchUserViewCellDelegate;
+@class HONSearchUserViewCell;
+@protocol HONSearchUserViewCellDelegate <NSObject>
+- (void)searchUserViewCell:(HONSearchUserViewCell *)viewCell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
+@end
+
 @interface HONSearchUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)toggleSelected:(BOOL)isSelected;
@@ -19,9 +21,4 @@
 @property (nonatomic) BOOL isSelected;
 
 @property (nonatomic, assign) id <HONSearchUserViewCellDelegate> delegate;
-@end
-
-
-@protocol HONSearchUserViewCellDelegate <NSObject>
-- (void)searchUserViewCell:(HONSearchUserViewCell *)viewCell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected;
 @end

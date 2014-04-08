@@ -8,7 +8,6 @@
 
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MessageUI/MFMessageComposeViewController.h>
-#import <UIKit/UIKit.h>
 
 
 #define __DEV_BUILD__ 1
@@ -80,13 +79,13 @@ extern const CGFloat kHUDErrorTime;
 extern const CGFloat kProfileTime;
 
 // image sizes
-extern const CGSize kTableCellAvatarSize;
+extern const CGSize kSnapAvatarSize;
 extern const CGSize kSnapThumbSize;
 extern const CGSize kSnapTabSize;
 extern const CGSize kSnapMediumSize;
 extern const CGSize kSnapLargeSize;
 
-
+// image size suffixes
 extern NSString * const kSnapThumbSuffix;
 extern NSString * const kSnapMediumSuffix;
 extern NSString * const kSnapTabSuffix;

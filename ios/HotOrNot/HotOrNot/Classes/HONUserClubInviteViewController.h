@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONUserClubVO.h"
 
 typedef enum {
@@ -18,5 +16,5 @@ typedef enum {
 } HONUserClubInviteType;
 
 @interface HONUserClubInviteViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
-- (id)initWithClub:(HONUserClubVO *)userClub asModal:(BOOL)isModal;
+- (id)initWithClub:(HONUserClubVO *)userClub;
 @end

@@ -9,7 +9,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONUserClubDetailsViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"

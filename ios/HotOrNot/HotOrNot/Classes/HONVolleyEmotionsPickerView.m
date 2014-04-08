@@ -9,6 +9,7 @@
 #import "HONVolleyEmotionsPickerView.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
+#import "HONTableHeaderView.h"
 #import "HONUserVO.h"
 #import "HONEmotionVO.h"
 #import "HONCreateEmotionViewCell.h"
@@ -79,16 +80,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 4.0, 200.0, 16.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = (_isJoinVolley) ? @"TOP EMOTIONS" : @"TOP EMOTIONS";
-	[imageView addSubview:label];
-	
-	return (imageView);
+	return ([[HONTableHeaderView alloc] initWithTitle:@"TOP EMOTIONS"]);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

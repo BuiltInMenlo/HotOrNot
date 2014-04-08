@@ -9,8 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "HONFeedViewController.h"
-
-#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONDeviceTraits.h"
 #import "HONColorAuthority.h"
@@ -72,7 +70,7 @@
 	[self.pagedScrollView registerClass:[HONFeedItemViewController class] forViewControllerReuseIdentifier:@"FeedItem"];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

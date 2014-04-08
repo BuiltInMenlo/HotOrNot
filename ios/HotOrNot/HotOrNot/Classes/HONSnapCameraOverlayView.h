@@ -6,19 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONCreateChallengePreviewView.h"
 
-@protocol HONSnapCameraOverlayViewDelegate;
-@interface HONSnapCameraOverlayView : UIView
-- (id)initWithFrame:(CGRect)frame;
-- (void)introWithTutorial:(BOOL)isTutorial;
-- (void)submitStep:(HONCreateChallengePreviewView *)previewView;
-@property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;
-@end
-
-
+@class HONSnapCameraOverlayView;
 @protocol HONSnapCameraOverlayViewDelegate <NSObject>
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
@@ -27,4 +17,11 @@
 - (void)cameraOverlayViewChangeFlash:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView;
+@end
+
+@interface HONSnapCameraOverlayView : UIView
+- (id)initWithFrame:(CGRect)frame;
+- (void)introWithTutorial:(BOOL)isTutorial;
+- (void)submitStep:(HONCreateChallengePreviewView *)previewView;
+@property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;
 @end

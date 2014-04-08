@@ -15,6 +15,7 @@
 #import "HONImagingDepictor.h"
 
 @interface HONUserClubViewCell ()
+@property (nonatomic) BOOL isInviteCell;
 @end
 
 @implementation HONUserClubViewCell
@@ -22,9 +23,11 @@
 @synthesize userClubVO = _userClubVO;
 
 
-- (id)init {
+- (id)initAsInviteCell:(BOOL)isInvite {
 	if ((self = [super init])) {
 		[self hideChevron];
+		
+		_isInviteCell = isInvite;
 	}
 	
 	return (self);
@@ -35,7 +38,7 @@
 - (void)setUserClubVO:(HONUserClubVO *)userClubVO {
 	_userClubVO = userClubVO;
 	
-	UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
+	UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
 	coverImageView.alpha = 0.0;
 	[self.contentView addSubview:coverImageView];
 	
@@ -62,24 +65,28 @@
 								   success:imageSuccessBlock
 								   failure:imageFailureBlock];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 23.0, 200.0, 18.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userClubVO.clubName;
 	[self.contentView addSubview:nameLabel];
 	
-	UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	editButton.frame = CGRectMake(220.0, 0.0, 74.0, 64.0);
-	[editButton setBackgroundImage:[UIImage imageNamed:@"editButton_nonActive"] forState:UIControlStateNormal];
-	[editButton setBackgroundImage:[UIImage imageNamed:@"editButton_Active"] forState:UIControlStateHighlighted];
-	[editButton addTarget:self action:@selector(_goEdit) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:editButton];
+	UIButton *takeActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	takeActionButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
+	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_nonActive" : @"editButton_nonActive"] forState:UIControlStateNormal];
+	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_Active" : @"editButton_Active"] forState:UIControlStateHighlighted];
+	[takeActionButton addTarget:self action:(_isInviteCell) ? @selector (_goAcceptInvite) : @selector(_goEditSettings) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:takeActionButton];
 }
 
 
 #pragma mark - Navigation
-- (void)_goEdit {
+- (void)_goAcceptInvite {
+	[self.delegate userClubViewCell:self acceptInviteForClub:_userClubVO];
+}
+
+- (void)_goEditSettings {
 	[self.delegate userClubViewCell:self settingsForClub:_userClubVO];
 }
 

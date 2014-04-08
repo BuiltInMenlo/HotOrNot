@@ -8,7 +8,6 @@
 
 
 #import "HONEnterPINViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"

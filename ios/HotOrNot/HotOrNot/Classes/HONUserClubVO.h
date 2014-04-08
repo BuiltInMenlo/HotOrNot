@@ -6,9 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-
 typedef enum {
 	HONUserClubStatusTypePending = 0,
 	HONUserClubStatusTypeActive,

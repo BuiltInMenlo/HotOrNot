@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @interface HONCreateSnapButtonView : UIView
-- (id)initWithTarget:(id)target action:(SEL)action;
+- (id)initWithTarget:(id)target action:(SEL)action asLightStyle:(BOOL)isLightStyle;
 @end

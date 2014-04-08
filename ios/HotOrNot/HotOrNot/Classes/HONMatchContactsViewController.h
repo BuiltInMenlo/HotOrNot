@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @interface HONMatchContactsViewController : UIViewController <UIAlertViewDelegate, UITextFieldDelegate>
 - (id)initAsEmailVerify:(BOOL)isEmail;
 @end

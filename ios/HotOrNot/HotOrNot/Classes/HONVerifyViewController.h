@@ -6,11 +6,10 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 typedef enum {
 	HONVerifyAlertTypeShare = 0,
 	HONVerifyAlertTypeDisproveConfirm,
+	HONVerifyAlertTypeFlag
 } HONVerifyAlertType;
 
 

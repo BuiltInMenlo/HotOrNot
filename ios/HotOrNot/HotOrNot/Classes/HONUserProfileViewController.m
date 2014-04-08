@@ -13,7 +13,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONChallengeAssistant.h"
 #import "HONColorAuthority.h"
@@ -267,14 +266,15 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewDidAppear:animated];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 	
-	if ([HONAppDelegate incTotalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser) {
-	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"RESET_PROFILE_BUTTON" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -289,7 +289,8 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Done"
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty] toCohortUser:_userVO]];
+									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
+																							  toCohortUser:_userVO]];
 	
 	if ([HONAppDelegate totalForCounter:@"profile"] == 0 && _userProfileType == HONUserProfileTypeUser && [HONAppDelegate switchEnabledForKey:@"profile_invite"]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"

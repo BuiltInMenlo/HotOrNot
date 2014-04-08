@@ -6,23 +6,21 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
 const CGSize kFeedItemAvatarSize;
 
-@protocol HONTimelineCellHeaderViewDelegate;
+@class HONTimelineCellHeaderView;
+@protocol HONTimelineCellHeaderViewDelegate <NSObject>
+- (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+@optional
+- (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showDetails:(HONChallengeVO *)challengeVO;
+@end
+
 @interface HONTimelineCellHeaderView : UIView
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, weak) id <HONTimelineCellHeaderViewDelegate> delegate;
-@end
-
-@protocol HONTimelineCellHeaderViewDelegate <NSObject>
-- (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-@optional
-- (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showDetails:(HONChallengeVO *)challengeVO;
 @end

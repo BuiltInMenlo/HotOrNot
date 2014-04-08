@@ -6,10 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONBaseAvatarViewCell.h"
-
 
 @class HONInAppContactViewCell;
 @protocol HONInAppContactViewCellDelegate <HONBaseAvatarViewCellDelegate>

@@ -6,19 +6,16 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @class HONChallengeVO;
 
-@protocol HONTimelineCellSubjectViewDelegate;
+@class HONTimelineCellSubjectView;
+@protocol HONTimelineCellSubjectViewDelegate <NSObject>
+- (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView;
+@end
+
 @interface HONTimelineCellSubjectView : UIView
 - (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username;
 - (void)updateChallenge:(HONChallengeVO *)challengeVO;
 
 @property (nonatomic, weak) id <HONTimelineCellSubjectViewDelegate> delegate;
-@end
-
-
-@protocol HONTimelineCellSubjectViewDelegate <NSObject>
-- (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView;
 @end

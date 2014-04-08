@@ -35,7 +35,7 @@
 - (void)setUserVO:(HONTrivialUserVO *)userVO {
 	_userVO = userVO;
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
 	_avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:_avatarImageView];
 	
@@ -63,7 +63,7 @@
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 130.0, 22.0)];
+	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	_nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	_nameLabel.backgroundColor = [UIColor clearColor];

@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONProfileHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
 
@@ -15,8 +13,9 @@
 - (id)initWithTitle:(NSString *)title;
 - (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG;
 
-- (void)leftAlignTitle;
 - (void)addButton:(UIView *)buttonView;
+- (void)leftAlignTitle;
+- (void)toggleLightStyle:(BOOL)isLightStyle;
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;

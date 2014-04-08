@@ -6,26 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONChallengeVO.h"
 #import "HONOpponentVO.h"
 
 
-@protocol HONVerifyViewCellDelegate;
-@interface HONVerifyViewCell : UITableViewCell
-+ (NSString *)cellReuseIdentifier;
-
-
-- (id)initAsInviteCell:(BOOL)isInviteCell;
-- (void)showTapOverlay;
-
-@property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) NSIndexPath *indexPath;
-@property (nonatomic) BOOL isInviteCell;
-@property (nonatomic, assign) id <HONVerifyViewCellDelegate> delegate;
-@end
-
+@class HONVerifyViewCell;
 @protocol HONVerifyViewCellDelegate <NSObject>
 - (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCell:(HONVerifyViewCell *)cell approveChallenge:(HONChallengeVO *)challengeVO;
@@ -36,4 +21,16 @@
 - (void)verifyViewCell:(HONVerifyViewCell *)cell fullSizeDisplayForChallenge:(HONChallengeVO *)challengeVO;
 @optional
 - (void)verifyViewCell:(HONVerifyViewCell *)cell bannerTappedForChallenge:(HONChallengeVO *)challengeVO;
+@end
+
+
+@interface HONVerifyViewCell : UITableViewCell
++ (NSString *)cellReuseIdentifier;
+
+- (id)initAsBannerCell:(BOOL)isBannerCell;
+- (void)showTapOverlay;
+
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) NSIndexPath *indexPath;
+@property (nonatomic, assign) id <HONVerifyViewCellDelegate> delegate;
 @end

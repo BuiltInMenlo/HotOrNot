@@ -18,6 +18,7 @@
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
+#import "HONTableHeaderView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
 #import "HONUserClubVO.h"
@@ -37,16 +38,14 @@
 @property (nonatomic, strong) UIImageView *contactsBlockedImageView;
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
-@property (nonatomic) BOOL isModal;
 @end
 
 
 @implementation HONUserClubInviteViewController
 
-- (id)initWithClub:(HONUserClubVO *)userClub asModal:(BOOL)isModal {
+- (id)initWithClub:(HONUserClubVO *)userClub {
 	if ((self = [super init])) {
 		_userClubVO = userClub;
-		_isModal = isModal;
 		
 		if (_userClubVO == nil) {
 			_userClubVO = [HONUserClubVO clubWithDictionary:@{@"id"				: @"32",
@@ -299,22 +298,12 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite Friends"];
 	[self.view addSubview:headerView];
 	
-	if (_isModal) {
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addButton:closeButton];
-		
-	} else {
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addButton:backButton];
-	}
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(222.0, 0.0, 93.0, 44.0);
@@ -487,17 +476,7 @@
 	if (section == 2)
 		return (nil);
 	
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
-	headerImageView.userInteractionEnabled = YES;
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"FRIENDS" : @"CONTACTS";
-	[headerImageView addSubview:label];
-	
-	return (headerImageView);
+	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"FRIENDS" : @"CONTACTS"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

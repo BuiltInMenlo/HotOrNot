@@ -6,11 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONChallengeVO.h"
 
 @interface HONCommentsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 @end

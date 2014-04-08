@@ -6,11 +6,13 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONAlertItemVO.h"
 
-@protocol HONAlertItemViewCellDelegate;
+@class HONAlertItemViewCell;
+@protocol HONAlertItemViewCellDelegate <NSObject>
+- (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO;
+@end
+
 @interface HONAlertItemViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
@@ -19,9 +21,4 @@
 
 @property (nonatomic, assign) id <HONAlertItemViewCellDelegate> delegate;
 @property (nonatomic, retain) HONAlertItemVO *alertItemVO;
-@end
-
-
-@protocol HONAlertItemViewCellDelegate <NSObject>
-- (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO;
 @end

@@ -11,7 +11,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAlertsViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
@@ -120,7 +119,7 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noMoreToVerify"]];
+	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyEmpty"]];
 	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
 	_emptySetImageView.hidden = YES;
 //	[_tableView addSubview:_emptySetImageView];
@@ -128,7 +127,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Activity"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 //	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
 	[self _retrieveAlerts];
@@ -488,7 +487,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (80.0 * 0.0);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

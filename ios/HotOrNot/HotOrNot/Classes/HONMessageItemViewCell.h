@@ -6,11 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONMessageVO.h"
 
-@protocol HONMessageItemViewCellDelegate;
+@class HONMessageItemViewCell;
+@protocol HONMessageItemViewCellDelegate <NSObject>
+- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForUserID:(int)userID forMessage:(HONMessageVO *)messageVO;
+@end
+
 @interface HONMessageItemViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
@@ -19,8 +21,4 @@
 
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, assign) id <HONMessageItemViewCellDelegate> delegate;
-@end
-
-@protocol HONMessageItemViewCellDelegate <NSObject>
-- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForUserID:(int)userID forMessage:(HONMessageVO *)messageVO;
 @end

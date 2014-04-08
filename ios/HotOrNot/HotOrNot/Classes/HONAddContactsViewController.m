@@ -20,6 +20,7 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
+#import "HONTableHeaderView.h"
 #import "HONMessagesButtonView.h"
 #import "HONTrivialUserVO.h"
 #import "HONContactUserVO.h"
@@ -532,17 +533,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBG"]];
-	headerImageView.userInteractionEnabled = YES;
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
-	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	label.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Friends on Selfieclub" : @"Invite contacts";
-	[headerImageView addSubview:label];
-	
-	return (headerImageView);
+	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"FRIENDS" : @"CONTACTS"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

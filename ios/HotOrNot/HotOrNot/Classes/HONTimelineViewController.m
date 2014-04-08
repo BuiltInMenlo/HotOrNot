@@ -31,7 +31,6 @@
 #import "HONSuggestedFollowViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONMessagesViewController.h"
-#import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
@@ -214,7 +213,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
 //	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 //	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
-	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -646,12 +645,6 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-//	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 5.0)];
-//	footerView.backgroundColor = [UIColor greenColor];
-//	footerView.alpha = 0.0;
-//	
-//	return (footerView);
-	
 	return (nil);
 }
 
@@ -673,7 +666,6 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	//return (kSnapTabSize.height + ((int)(indexPath.section == [_challenges count] - 1) * 47.0));
 	return (self.view.frame.size.height);
 }
 

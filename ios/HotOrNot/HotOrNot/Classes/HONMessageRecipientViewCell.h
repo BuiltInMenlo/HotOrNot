@@ -6,11 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HONTrivialUserVO.h"
 
-@protocol HONMessageRecipientViewCellDelegate;
+@class HONMessageRecipientViewCell;
+@protocol HONMessageRecipientViewCellDelegate <NSObject>
+- (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONTrivialUserVO *)userVO;
+@end
+
 @interface HONMessageRecipientViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
@@ -18,9 +20,4 @@
 
 @property (nonatomic, strong) HONTrivialUserVO *userVO;
 @property (nonatomic, assign) id <HONMessageRecipientViewCellDelegate> delegate;
-@end
-
-
-@protocol HONMessageRecipientViewCellDelegate <NSObject>
-- (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONTrivialUserVO *)userVO;
 @end

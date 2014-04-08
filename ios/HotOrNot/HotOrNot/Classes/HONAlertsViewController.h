@@ -6,9 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-
 typedef enum {
 	HONAlertCellTypeVerify = 1,
 	HONAlertCellTypeFollow,

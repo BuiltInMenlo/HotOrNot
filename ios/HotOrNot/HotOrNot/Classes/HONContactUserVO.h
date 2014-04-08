@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 @interface HONContactUserVO : NSObject
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary;
 

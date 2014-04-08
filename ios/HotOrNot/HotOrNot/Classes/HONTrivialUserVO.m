@@ -46,6 +46,21 @@
 	return (vo);
 }
 
++ (HONTrivialUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO {
+	return([HONTrivialUserVO userWithDictionary:@{@"id"			: [opponentVO.dictionary objectForKey:@"id"],
+												  @"username"	: [opponentVO.dictionary objectForKey:@"username"],
+												  @"img_url"	: [opponentVO.dictionary objectForKey:@"avatar"],
+												  @"alt_id"		: [[[HONAppDelegate cleanImagePrefixURL:[opponentVO.dictionary objectForKey:@"avatar"]] componentsSeparatedByString:@"/"] lastObject]}]);
+}
+
++ (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO {
+	return([HONTrivialUserVO userWithDictionary:@{@"id"			: [userVO.dictionary objectForKey:@"id"],
+												  @"username"	: [userVO.dictionary objectForKey:@"username"],
+												  @"img_url"	: [userVO.dictionary objectForKey:@"avatar_url"],
+												  @"alt_id"		: [userVO.dictionary objectForKey:@"device_token"]}]);
+}
+
+
 - (void)dealloc {
 	self.dictionary = nil;
 	self.username = nil;

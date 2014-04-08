@@ -6,7 +6,5 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @interface HONUsernameViewController : UIViewController <UITextFieldDelegate>
 @end

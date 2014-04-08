@@ -28,7 +28,6 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 
 - (id)initWithOpponent:(HONOpponentVO *)opponentVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 100.0)])) {
-//		self.backgroundColor = [UIColor greenColor];
 		_opponentVO = opponentVO;
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake((320.0 - kVerifyAvatarSize.width) * 0.5, 0.0, kVerifyAvatarSize.width, kVerifyAvatarSize.height)];

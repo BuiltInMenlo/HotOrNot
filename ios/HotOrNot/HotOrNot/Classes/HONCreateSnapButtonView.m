@@ -9,22 +9,25 @@
 #import "HONCreateSnapButtonView.h"
 
 @interface HONCreateSnapButtonView()
-@property (nonatomic, strong) UIButton *createSnapButton;
 @end
 
 @implementation HONCreateSnapButtonView
 
-- (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(219.0, 0.0, 93.0, 44.0)])) {
-		_createSnapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_createSnapButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-		[_createSnapButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_nonActive"] forState:UIControlStateNormal];
-		[_createSnapButton setBackgroundImage:[UIImage imageNamed:@"headerCameraButton_Active"] forState:UIControlStateHighlighted];
-		[_createSnapButton addTarget:target action:action forControlEvents:UIControlEventTouchDown];
-		[self addSubview:_createSnapButton];
+- (id)initWithTarget:(id)target action:(SEL)action asLightStyle:(BOOL)isLightStyle {
+	if ((self = [super initWithFrame:CGRectMake(226.0, 0.0, 93.0, 44.0)])) {
+		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+		button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+		[button setBackgroundImage:[UIImage imageNamed:(isLightStyle) ? @"headerCameraWhiteButton_nonActive" : @"headerCameraButton_nonActive"] forState:UIControlStateNormal];
+		[button setBackgroundImage:[UIImage imageNamed:(isLightStyle) ? @"headerCameraWhiteButton_Active" : @"headerCameraButton_Active"] forState:UIControlStateHighlighted];
+		[button addTarget:target action:action forControlEvents:UIControlEventTouchDown];
+		[self addSubview:button];
 	}
 	
 	return (self);
 }
+
+
+#pragma mark - Navigation
+
 
 @end

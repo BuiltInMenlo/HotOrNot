@@ -28,10 +28,10 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:(withBG) ? @"navHeaderBackground" : @""]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 40.0, 170.0, 21.0)];
-		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[[HONFontAllocator sharedInstance] cartoGothicBook] fontWithSize:21];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 32.0, 170.0, 19.0)];
+		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 		_titleLabel.textColor = [UIColor blackColor];
+		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
@@ -40,18 +40,25 @@
 	return (self);
 }
 
-- (void)addButton:(UIView *)buttonView {
-	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 26.0);
-	[self addSubview:buttonView];
-}
 
 - (void)setTitle:(NSString *)title {
 	_title = title;
 	_titleLabel.text = _title;
 }
 
+
+- (void)addButton:(UIView *)buttonView {
+	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 19.0);
+	[self addSubview:buttonView];
+}
+
 - (void)leftAlignTitle {
 	_titleLabel.textAlignment = NSTextAlignmentLeft;
+}
+
+- (void)toggleLightStyle:(BOOL)isLightStyle {
+	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor blackColor];
+	_titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
 }
 
 
