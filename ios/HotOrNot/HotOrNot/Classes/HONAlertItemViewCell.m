@@ -13,6 +13,7 @@
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONAlertItemVO.h"
+#import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 
 @interface HONAlertItemViewCell ()
@@ -26,42 +27,17 @@
 @synthesize delegate = _delegate;
 @synthesize alertItemVO = _alertItemVO;
 
-+ (NSString *)cellReuseIdentifier {
-	return (NSStringFromClass(self));
-}
-
-
 - (id)init {
 	if ((self = [super init])) {
-		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityChevron"]];
-		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 279.0, 2.0);
-		_chevronImageView.hidden = YES;
-		[self.contentView addSubview:_chevronImageView];
 	}
 	
 	return (self);
 }
-
-- (id)initWithBackground:(BOOL)hasBackground {
-	if ((self = [self init])) {
-		if (hasBackground)
-			self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityBackground"]];
-	}
-	
-	return (self);
-}
-
-
-- (void)removeChevron {
-	[_chevronImageView removeFromSuperview];
-	_chevronImageView = nil;
-}
-
 
 - (void)setAlertItemVO:(HONAlertItemVO *)alertItemVO {
 	_alertItemVO = alertItemVO;
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 7.0, 34.0, 34.0)];
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
 	[self.contentView addSubview:imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
@@ -71,6 +47,8 @@
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, imageHolderView.frame.size.width, imageHolderView.frame.size.height)];
 	_avatarImageView.userInteractionEnabled = YES;
 	[imageHolderView addSubview:_avatarImageView];
+	
+	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.alpha = (int)((request.URL == nil));
@@ -93,39 +71,30 @@
 									 success:successBlock
 									 failure:failureBlock];
 	
-	CGSize size = [_alertItemVO.username boundingRectWithSize:CGSizeMake(90.0, 22.0)
-													  options:NSStringDrawingTruncatesLastVisibleLine
-												   attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14]}
-													  context:nil].size;
-	
-	
-	if (size.width > 90.0)
-		size = CGSizeMake(90.0, size.height);
-	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(51.0, 14.0, size.width, 17.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _alertItemVO.username;
+	nameLabel.text = [NSString stringWithFormat:@"%@ %@", _alertItemVO.username, _alertItemVO.message];
 	[self.contentView addSubview:nameLabel];
 	
-	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 225.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
-	messageLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	messageLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
-	messageLabel.backgroundColor = [UIColor clearColor];
-	messageLabel.text = _alertItemVO.message;
-	[self.contentView addSubview:messageLabel];
+//	UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake((nameLabel.frame.origin.x + nameLabel.frame.size.width) + 4.0, nameLabel.frame.origin.y, 225.0 - nameLabel.frame.size.width, nameLabel.frame.size.height)];
+//	messageLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+//	messageLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
+//	messageLabel.backgroundColor = [UIColor clearColor];
+//	messageLabel.text = _alertItemVO.message;
+//	[self.contentView addSubview:messageLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 14.0, 50.0, 17.0)];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.text = [HONAppDelegate timeSinceDate:_alertItemVO.sentDate];
-	[self addSubview:timeLabel];
+//	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(255.0, 14.0, 50.0, 17.0)];
+//	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+//	timeLabel.textAlignment = NSTextAlignmentRight;
+//	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+//	timeLabel.backgroundColor = [UIColor clearColor];
+//	timeLabel.text = [HONAppDelegate timeSinceDate:_alertItemVO.sentDate];
+//	[self addSubview:timeLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(0.0, 0.0, 320.0, 49.0);
+	selectButton.frame = CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight);
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:selectButton];

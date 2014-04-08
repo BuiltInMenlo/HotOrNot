@@ -35,8 +35,17 @@ typedef enum {
 	HONUserProfileAlertTypeShowProfileBlocked
 } HONUserProfileAlertType;
 
+typedef enum {
+	HONActivityAlertTypeVerify = 1,
+	HONActivityAlertTypeFollow,
+	HONActivityAlertTypeLike,
+	HONActivityAlertTypeShoutout,
+	HONActivityAlertTypeReply
+} HONActivityAlert;
 
-@interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+
+
+@interface HONUserProfileViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 - (id)initWithUserID:(int)userID;
 
 @property (nonatomic) int userID;

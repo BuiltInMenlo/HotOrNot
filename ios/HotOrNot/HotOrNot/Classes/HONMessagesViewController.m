@@ -274,9 +274,9 @@
 		HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONAlertItemViewCell alloc] initWithBackground:(indexPath.row < 3)];
+			cell = [[HONAlertItemViewCell alloc] init];
 		
-		[cell removeChevron];
+		[cell hideChevron];
 		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		cell.textLabel.text = (indexPath.row == 0) ? @"Find friends to follow" : (indexPath.row == 1) ? @"Find clubs to join" : (indexPath.row == 2) ? @"Verify you phone number" : @"";

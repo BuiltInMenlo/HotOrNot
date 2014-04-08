@@ -237,12 +237,11 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Invite Friends" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
 	if (_ownClub == nil) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
-															message:@"You need to create your own club before inviting anyone."
-														   delegate:nil
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView show];
+		[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+									message:@"You need to create your own club before inviting anyone."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	
 	} else {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubInviteViewController alloc] initWithClub:_ownClub]];

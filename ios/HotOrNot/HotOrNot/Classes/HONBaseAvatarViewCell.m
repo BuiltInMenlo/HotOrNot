@@ -67,7 +67,7 @@
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 	_nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	_nameLabel.backgroundColor = [UIColor clearColor];
-	_nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
+	_nameLabel.text = _userVO.username;
 	[self.contentView addSubview:_nameLabel];
 }
 

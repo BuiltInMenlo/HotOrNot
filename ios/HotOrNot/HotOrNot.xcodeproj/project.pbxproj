@@ -30,7 +30,6 @@
 		4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C0EC00617FE50E7001CF22A /* Twitter.framework */; };
 		4C0F5EE317C9508000894551 /* HONCreateEmotionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F5EE217C9508000894551 /* HONCreateEmotionViewCell.m */; };
 		4C106066184D916100B361A6 /* HONAlertItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C106065184D916100B361A6 /* HONAlertItemViewCell.m */; };
-		4C106069184D92D000B361A6 /* HONAlertsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C106068184D92D000B361A6 /* HONAlertsViewController.m */; };
 		4C106077184D989700B361A6 /* HONAlertItemVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C106076184D989700B361A6 /* HONAlertItemVO.m */; };
 		4C11AA47182DF9F8005A876B /* searchTile.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C11AA45182DF9F8005A876B /* searchTile.png */; };
 		4C11AA48182DF9F8005A876B /* searchTile@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C11AA46182DF9F8005A876B /* searchTile@2x.png */; };
@@ -502,8 +501,6 @@
 		4C0F5EE217C9508000894551 /* HONCreateEmotionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateEmotionViewCell.m; sourceTree = "<group>"; };
 		4C106064184D916100B361A6 /* HONAlertItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertItemViewCell.h; sourceTree = "<group>"; };
 		4C106065184D916100B361A6 /* HONAlertItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlertItemViewCell.m; sourceTree = "<group>"; };
-		4C106067184D92D000B361A6 /* HONAlertsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertsViewController.h; sourceTree = "<group>"; };
-		4C106068184D92D000B361A6 /* HONAlertsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlertsViewController.m; sourceTree = "<group>"; };
 		4C106075184D989700B361A6 /* HONAlertItemVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertItemVO.h; sourceTree = "<group>"; };
 		4C106076184D989700B361A6 /* HONAlertItemVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlertItemVO.m; sourceTree = "<group>"; };
 		4C11AA45182DF9F8005A876B /* searchTile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchTile.png; sourceTree = "<group>"; };
@@ -1379,10 +1376,6 @@
 		4C32B9A415FAB5FA0023A0EE /* Alerts */ = {
 			isa = PBXGroup;
 			children = (
-				4C106064184D916100B361A6 /* HONAlertItemViewCell.h */,
-				4C106065184D916100B361A6 /* HONAlertItemViewCell.m */,
-				4C106067184D92D000B361A6 /* HONAlertsViewController.h */,
-				4C106068184D92D000B361A6 /* HONAlertsViewController.m */,
 			);
 			name = Alerts;
 			sourceTree = "<group>";
@@ -2534,6 +2527,8 @@
 		4CED977518E46B1800482813 /* User Profile */ = {
 			isa = PBXGroup;
 			children = (
+				4C106064184D916100B361A6 /* HONAlertItemViewCell.h */,
+				4C106065184D916100B361A6 /* HONAlertItemViewCell.m */,
 				4C43224418E343FC0035FF06 /* HONActionAlertItemView.h */,
 				4C43224518E343FC0035FF06 /* HONActionAlertItemView.m */,
 				4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */,
@@ -3113,7 +3108,6 @@
 				4C106066184D916100B361A6 /* HONAlertItemViewCell.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
-				4C106069184D92D000B361A6 /* HONAlertsViewController.m in Sources */,
 				4C2DD83218E3B47400BC8759 /* HONInAppContactViewCell.m in Sources */,
 				4C43280618E3A9FA0035FF06 /* AFHTTPClient.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,

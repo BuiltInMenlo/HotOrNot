@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONBaseRowViewCell.h"
 #import "HONAlertItemVO.h"
 
 @class HONAlertItemViewCell;
@@ -13,11 +14,7 @@
 - (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO;
 @end
 
-@interface HONAlertItemViewCell : UITableViewCell
-+ (NSString *)cellReuseIdentifier;
-
-- (id)initWithBackground:(BOOL)hasBackground;
-- (void)removeChevron;
+@interface HONAlertItemViewCell : HONBaseRowViewCell
 
 @property (nonatomic, assign) id <HONAlertItemViewCellDelegate> delegate;
 @property (nonatomic, retain) HONAlertItemVO *alertItemVO;
