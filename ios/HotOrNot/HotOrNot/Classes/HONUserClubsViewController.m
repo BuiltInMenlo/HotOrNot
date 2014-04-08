@@ -60,6 +60,9 @@
 						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"},
 						@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
 		
+		_joinedClubs = [NSMutableArray array];
+		_invitedClubs = [NSMutableArray array];
+		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedClubsTab:) name:@"SELECTED_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -84,7 +87,12 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
-	_joinedClubs = [NSMutableArray array];
+	for (NSDictionary *club in _bakedClubs) {
+		[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"	: [NSString stringWithFormat:@"%d", arc4random() - 100],
+																	@"name"	: [club objectForKey:@"name"],
+																	@"img"	: [club objectForKey:@"img"]}]];
+	}
+	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
@@ -93,45 +101,39 @@
 		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"])
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		for (NSDictionary *club in _bakedClubs) {
-			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"	: [NSString stringWithFormat:@"%d", arc4random() - 100],
-																		@"name"	: [club objectForKey:@"name"],
-																		@"img"	: [club objectForKey:@"img"]}]];
-		}
-		
-		[self _retreiveClubInvites];
+		[_tableView reloadData];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
 - (void)_retreiveClubInvites {
-	_invitedClubs = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveClubInvitesForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		_invitedClubs = [NSMutableArray array];
-		
-		for (NSDictionary *dict in (NSArray *)result) {
-			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-		}
-	}];
-	
 	for (NSDictionary *club in _bakedClubs) {
 		[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", arc4random() - 200],
 																	 @"name"	: [club objectForKey:@"name"],
 																	 @"img"		: [club objectForKey:@"img"]}]];//[[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
 	}
 	
-	[_tableView reloadData];
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+	[[HONAPICaller sharedInstance] retrieveClubInvitesForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		for (NSDictionary *dict in (NSArray *)result) {
+			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+		}
+		
+		[_tableView reloadData];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+	}];
 }
 
 - (void)_joinClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		[self _retrieveClubs];
+		[self _retreiveClubInvites];
 	}];
 }
 
 - (void)_leaveClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] leaveClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		[self _retrieveClubs];
+		[self _retreiveClubInvites];
 	}];
 }
 
@@ -162,6 +164,7 @@
 	[self.view addSubview:headerView];
 	
 	[self _retrieveClubs];
+	[self _retreiveClubInvites];
 }
 
 - (void)viewDidLoad {
@@ -194,7 +197,12 @@
 #pragma mark - Navigation
 - (void)_goRefresh {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Refresh" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	_joinedClubs = [NSMutableArray array];
+	_invitedClubs = [NSMutableArray array];
+	
 	[self _retrieveClubs];
+	[self _retreiveClubInvites];
 }
 
 - (void)_goProfile {
@@ -281,6 +289,7 @@
 	NSLog(@"::|> _refreshClubsTab <|::");
 	
 	[self _retrieveClubs];
+	[self _retreiveClubInvites];
 }
 - (void)_tareClubsTab:(NSNotification *)notification {
 	NSLog(@"::|> _tareClubsTab <|::");

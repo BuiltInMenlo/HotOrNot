@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../../VolleyBackend/classes/BIM/App/Clubs.php</string>
+	<string>../../VolleyBackend/classes/BIM/Model/User.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -83,6 +83,36 @@
 			<key>firstVisibleLine</key>
 			<integer>205</integer>
 		</dict>
+		<key>../../VolleyBackend/classes/BIM/Controller/Users.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>40</integer>
+				<key>line</key>
+				<integer>72</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>50</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>34</integer>
+				<key>line</key>
+				<integer>72</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>55</integer>
+				<key>line</key>
+				<integer>72</integer>
+			</dict>
+		</dict>
 		<key>../../VolleyBackend/classes/BIM/DAO/Mysql/Club.php</key>
 		<dict>
 			<key>caret</key>
@@ -160,25 +190,104 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>34</integer>
+				<integer>23</integer>
 				<key>line</key>
-				<integer>257</integer>
+				<integer>238</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>129</integer>
+			<integer>223</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>18</integer>
+				<key>line</key>
+				<integer>238</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>29</integer>
+				<key>line</key>
+				<integer>238</integer>
+			</dict>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/Model/User.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>43</integer>
+				<key>line</key>
+				<integer>888</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>871</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>39</integer>
+				<key>line</key>
+				<integer>888</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>60</integer>
+				<key>line</key>
+				<integer>888</integer>
+			</dict>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/Model/Volley.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>25</integer>
+				<key>line</key>
+				<integer>172</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>157</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>172</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>25</integer>
+				<key>line</key>
+				<integer>172</integer>
+			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>../../VolleyBackend/classes/BIM/App/Clubs.php</string>
 		<string>../../VolleyBackend/classes/BIM/Model/Club.php</string>
+		<string>../../VolleyBackend/classes/BIM/Model/Volley.php</string>
+		<string>../../VolleyBackend/classes/BIM/Model/User.php</string>
+		<string>../../VolleyBackend/classes/BIM/Controller/Users.php</string>
 		<string>../../VolleyBackend/classes/BIM/DAO/Mysql/Club.php</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{88, 85}, {1116, 743}}</string>
+	<string>{{50, 4}, {1116, 743}}</string>
 </dict>
 </plist>

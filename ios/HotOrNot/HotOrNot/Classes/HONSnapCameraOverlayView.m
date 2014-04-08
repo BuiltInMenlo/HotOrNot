@@ -35,7 +35,7 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
-	if ((self = [super initWithFrame:frame])) {//[UIColor colorWithRed:0.012 green:0.333 blue:0.827 alpha:1.0]
+	if ((self = [super initWithFrame:frame])) {
 		
 		_tintIndex = 0;
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
@@ -53,12 +53,7 @@
 		
 		_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		[self addSubview:_headerBGView];
-		
-		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 141.0, 320.0, 141.0)];
-		gutterView.backgroundColor = [UIColor whiteColor];
-		[self addSubview:gutterView];
-		
-		
+				
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_flipButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
@@ -67,7 +62,7 @@
 		[_headerBGView addSubview:_flipButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(220.0, 3.0, 93.0, 44.0);
+		_cancelButton.frame = CGRectMake(222.0, 0.0, 93.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelWhiteButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -81,14 +76,14 @@
 		[self addSubview:_changeTintButton];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 118.0, 94.0, 94.0);
+		_takePhotoButton.frame = CGRectMake(112.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_takePhotoButton];
 		
 		_cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cameraRollButton.frame = CGRectMake(220.0, [UIScreen mainScreen].bounds.size.height - 42.0, 93.0, 44.0);
+		_cameraRollButton.frame = CGRectMake(222.0, [UIScreen mainScreen].bounds.size.height - 45.0, 93.0, 44.0);
 		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_nonActive"] forState:UIControlStateNormal];
 		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_Active"] forState:UIControlStateHighlighted];
 		[_cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];

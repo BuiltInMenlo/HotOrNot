@@ -329,7 +329,7 @@ static HONAPICaller *sharedInstance = nil;
 							 @"password"	: [dict objectForKey:@"email"],
 							 @"age"			: [dict objectForKey:@"birthday"],
 							 @"token"		: [HONAppDelegate deviceToken],
-							 @"imgURL"		: ([[dict objectForKey:@"filename"] length] == 0) ? [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix] : [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], [[dict objectForKey:@"filename"] stringByAppendingString:kSnapLargeSuffix]]};
+							 @"imgURL"		: [[HONAppDelegate s3BucketForType:@"avatars"] stringByAppendingString:([[dict objectForKey:@"filename"] length] == 0) ? @"/defaultAvatar" : [@"/" stringByAppendingString:[dict objectForKey:@"filename"]]]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];

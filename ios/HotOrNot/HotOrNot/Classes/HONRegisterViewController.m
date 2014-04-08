@@ -94,7 +94,7 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:_password completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSObject *result) {
 		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 0) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -168,7 +168,7 @@
 																@"username"	: _username,
 																@"email"	: _password,
 																@"birthday"	: @"0000-00-00 00:00:00",
-																@"filename"	: _imageFilename} completion:^(NSObject *result){
+																@"filename"	: _imageFilename} completion:^(NSObject *result) {
 		if (result != nil) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -856,6 +856,11 @@
 	[canvasView addSubview:overlayTintView];
 	
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 	
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self _uploadPhotos:processedImage];

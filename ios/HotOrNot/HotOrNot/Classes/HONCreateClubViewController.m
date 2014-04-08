@@ -19,8 +19,8 @@
 
 @interface HONCreateClubViewController () <HONClubCoverCameraViewControllerDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UIView *formHolderView;
 @property (nonatomic, strong) UIImageView *clubCoverImageView;
+@property (nonatomic, strong) UIButton *addImageButton;
 @property (nonatomic, strong) UIButton *clubNameButton;
 @property (nonatomic, strong) UIButton *blurbButton;
 @property (nonatomic, strong) UITextField *clubNameTextField;
@@ -92,8 +92,22 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_formHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	[self.view addSubview:_formHolderView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Add Club"];
+	[self.view addSubview:headerView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(1.0, 1.0, 93.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:closeButton];
+	
+	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextButton.frame = CGRectMake(227.0, 1.0, 93.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:nextButton];
 	
 	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_clubNameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
@@ -101,54 +115,51 @@
 	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateHighlighted];
 	[_clubNameButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateSelected];
 	[_clubNameButton addTarget:self action:@selector(_goClubName) forControlEvents:UIControlEventTouchUpInside];
-	[_formHolderView addSubview:_clubNameButton];
+	[self.view addSubview:_clubNameButton];
 	
-	_clubCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] highlightedImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"]];
-	_clubCoverImageView.frame = CGRectOffset(_clubCoverImageView.frame, 8.0, 85.0);
-	[_formHolderView addSubview:_clubCoverImageView];
+	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
+	[self.view addSubview:_clubCoverImageView];
 	
 	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
 	
-	UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	addImageButton.frame = _clubCoverImageView.frame;//CGRectMake(8.0, 85.0, 48.0, 48.0);
-	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
-	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
-	[addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
-//	[addImageButton addTarget:self action:@selector(_buttonTouchDown:) forControlEvents:UIControlEventTouchDown];
-//	[addImageButton addTarget:self action:@selector(_buttonTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
-	[_formHolderView addSubview:addImageButton];
+	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_addImageButton.frame = _clubCoverImageView.frame;
+	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"defaultAvatarBackground"] forState:UIControlStateNormal];
+	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"defaultAvatarBackground"] forState:UIControlStateHighlighted];
+	[_addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+	[self.view addSubview:_addImageButton];
 	
-	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 92.0, 308.0, 30.0)];
+	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(64.0, 87.0, 220.0, 22.0)];
 	//[_clubNameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_clubNameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_clubNameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_clubNameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_clubNameTextField setReturnKeyType:UIReturnKeyDone];
-	[_clubNameTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
+	[_clubNameTextField setTextColor:[UIColor blackColor]];
 	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_clubNameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_clubNameTextField.placeholder = @"Enter club name";
+	_clubNameTextField.placeholder = @"Club Name";
 	_clubNameTextField.text = @"";
 	[_clubNameTextField setTag:0];
 	_clubNameTextField.delegate = self;
-	[_formHolderView addSubview:_clubNameTextField];
+	[self.view addSubview:_clubNameTextField];
 	
 	_clubNameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_clubNameCheckImageView.frame = CGRectOffset(_clubNameCheckImageView.frame, 257.0, 77.0);
+	_clubNameCheckImageView.frame = CGRectOffset(_clubNameCheckImageView.frame, 258.0, 65.0);
 	_clubNameCheckImageView.alpha = 0.0;
-	[_formHolderView addSubview:_clubNameCheckImageView];
+	[self.view addSubview:_clubNameCheckImageView];
 	
 	_blurbButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_blurbButton.frame = CGRectMake(0.0, 141.0, 320.0, 128.0);
+	_blurbButton.frame = CGRectMake(0.0, 128.0, 320.0, 128.0);
 	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG"] forState:UIControlStateNormal];
 	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateHighlighted];
 	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellSelectedBG"] forState:UIControlStateSelected];
 	[_blurbButton addTarget:self action:@selector(_goBlurb) forControlEvents:UIControlEventTouchUpInside];
-	[_formHolderView addSubview:_blurbButton];
+	[self.view addSubview:_blurbButton];
 	
-	_blurbTextField = [[UITextField alloc] initWithFrame:CGRectMake(17.0, 157.0, 250.0, 90.0)];
+	_blurbTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 141.0, 250.0, 22.0)];
 	[_blurbTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_blurbTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_blurbTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -157,36 +168,18 @@
 	[_blurbTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
 	[_blurbTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_blurbTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_blurbTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
+	_blurbTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
 	_blurbTextField.keyboardType = UIKeyboardTypeEmailAddress;
-	_blurbTextField.placeholder = @"Enter club caption";
+	_blurbTextField.placeholder = @"Club description";
 	_blurbTextField.text = @"";
 	[_blurbTextField setTag:1];
 	_blurbTextField.delegate = self;
-	[_formHolderView addSubview:_blurbTextField];
+	[self.view addSubview:_blurbTextField];
 	
 	_blurbCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_blurbCheckImageView.frame = CGRectOffset(_blurbCheckImageView.frame, 257.0, 141.0);
+	_blurbCheckImageView.frame = CGRectOffset(_blurbCheckImageView.frame, 258.0, 123.0);
 	_blurbCheckImageView.alpha = 0.0;
-	[_formHolderView addSubview:_blurbCheckImageView];
-	
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Club"];
-	[self.view addSubview:headerView];
-	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:closeButton];
-	
-	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:nextButton];
+	[self.view addSubview:_blurbCheckImageView];
 }
 
 - (void)viewDidLoad {
@@ -304,6 +297,9 @@
 	UIImage *thumbImage = [HONImagingDepictor scaleImage:[HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 	_clubCoverImageView.image = thumbImage;
 	_clubImagePrefix = imagePrefix;
+	
+	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
+	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
 }
 
 #pragma mark - TextField Delegates
