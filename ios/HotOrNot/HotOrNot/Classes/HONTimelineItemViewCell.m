@@ -43,7 +43,6 @@
 	if ((self = [super init])) {
 		_isBanner = isBanner;
 		self.backgroundColor = [UIColor whiteColor];
-		[self.contentView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineBackground"]]];
 	}
 	
 	return (self);
@@ -133,14 +132,6 @@
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:shareButton];
-	
-	UIButton *chevronButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	chevronButton.frame = CGRectMake(280.0, 3.0, 44.0, 44.0);
-	[chevronButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_nonActive"] forState:UIControlStateNormal];
-	[chevronButton setBackgroundImage:[UIImage imageNamed:@"feedChevron_Active"] forState:UIControlStateHighlighted];
-	[chevronButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
-	[_footerView addSubview:chevronButton];
-	
 	
 	
 	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];

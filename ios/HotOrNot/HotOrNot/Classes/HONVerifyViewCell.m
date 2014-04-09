@@ -97,6 +97,43 @@
 //	headerView.delegate = self;
 //	[self.contentView addSubview:headerView];
 	
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 124.0, 320.0, 75.0)];
+	[self.contentView addSubview:footerView];
+	
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
+	usernameLabel.textColor = [UIColor whiteColor];
+	usernameLabel.backgroundColor = [UIColor clearColor];
+	usernameLabel.shadowColor = [UIColor blackColor];
+	usernameLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	usernameLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"name_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_challengeVO.creatorVO.username] attributes:nil];
+	[footerView addSubview:usernameLabel];
+	
+	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 28.0, 200.0, 24.0)];
+	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
+	emotionLabel.textColor = [UIColor whiteColor];
+	emotionLabel.backgroundColor = [UIColor clearColor];
+	emotionLabel.shadowColor = [UIColor blackColor];
+	emotionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	emotionLabel.text = [HONAppDelegate verifyCopyForKey:@"sub_txt"];
+	[footerView addSubview:emotionLabel];
+	
+//	CGSize size = [[HONAppDelegate verifyCopyForKey:@"sub_txt"] boundingRectWithSize:emotionLabel.frame.size
+//																			 options:NSStringDrawingTruncatesLastVisibleLine
+//																		  attributes:@{NSFontAttributeName:emotionLabel.font}
+//																			 context:nil].size;
+	
+//	HONEmotionVO *emotionVO = [self _challengeEmotion];
+//	if (emotionVO != nil && [_challengeVO.challengers count] > 0) {
+//		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(emotionLabel.frame.origin.x + size.width, 20.0, 30.0, 30.0)];
+//		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlLarge] placeholderImage:nil];
+//		[footerView addSubview:emoticonImageView];
+//	}
+	
+//	UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-LG"]];
+//	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + size.width) + 9.0, 24.0, 45.0, 45.0);
+//	[footerView addSubview:emoticonImageView];
+	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
@@ -114,49 +151,12 @@
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:skipButton];
 	
-	UIButton *shoutoutButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shoutoutButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
-	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutoutButton_nonActive"] forState:UIControlStateNormal];
-	[shoutoutButton setBackgroundImage:[UIImage imageNamed:@"shoutoutButton_Active"] forState:UIControlStateHighlighted];
-	[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:shoutoutButton];
-	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 124.0, 320.0, 75.0)];
-	[self.contentView addSubview:footerView];
-	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
-	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
-	usernameLabel.textColor = [UIColor whiteColor];
-	usernameLabel.backgroundColor = [UIColor clearColor];
-	usernameLabel.shadowColor = [UIColor blackColor];
-	usernameLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	usernameLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"name_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_challengeVO.creatorVO.username] attributes:nil];
-	[footerView addSubview:usernameLabel];
-	
-	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 28.0, 200.0, 24.0)];
-	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
-	emotionLabel.textColor = [UIColor whiteColor];
-	emotionLabel.backgroundColor = [UIColor clearColor];
-	emotionLabel.shadowColor = [UIColor blackColor];
-	emotionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	emotionLabel.text = [HONAppDelegate verifyCopyForKey:@"sub_txt"];
-	[footerView addSubview:emotionLabel];
-	
-	CGSize size = [[HONAppDelegate verifyCopyForKey:@"sub_txt"] boundingRectWithSize:emotionLabel.frame.size
-																			 options:NSStringDrawingTruncatesLastVisibleLine
-																		  attributes:@{NSFontAttributeName:emotionLabel.font}
-																			 context:nil].size;
-	
-//	HONEmotionVO *emotionVO = [self _challengeEmotion];
-//	if (emotionVO != nil && [_challengeVO.challengers count] > 0) {
-//		UIImageView *emoticonImageView = [[UIImageView alloc] initWithFrame:CGRectMake(emotionLabel.frame.origin.x + size.width, 20.0, 30.0, 30.0)];
-//		[emoticonImageView setImageWithURL:[NSURL URLWithString:emotionVO.urlLarge] placeholderImage:nil];
-//		[footerView addSubview:emoticonImageView];
-//	}
-	
-	UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-LG"]];
-	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + size.width) + 9.0, 24.0, 45.0, 45.0);
-	[footerView addSubview:emoticonImageView];
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_nonActive"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_Active"] forState:UIControlStateHighlighted];
+	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+	[buttonHolderView addSubview:inviteButton];
 	
 	if (_isBannerCell) {
 		buttonHolderView.frame = CGRectOffset(buttonHolderView.frame, 0.0, -80.0);
@@ -213,6 +213,11 @@
 
 - (void)_goMore {
 	[self.delegate verifyViewCell:self moreActionsForChallenge:_challengeVO];
+}
+
+- (void)_goInvite {
+	NSLog(@"=-=-=-=-=-=-=-= ¡¡WTF MOFO!! =-=-=-=-=-=-=-=-=-=");
+	[self.delegate verifyViewCell:self inviteChallenge:_challengeVO];
 }
 
 - (void)_goShoutout {

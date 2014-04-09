@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "profileButton_Active.png"
+      "filename" : "activityButton_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "profileButton_Active@2x.png"
+      "filename" : "activityButton_Active@2x.png"
     }
   ],
   "info" : {

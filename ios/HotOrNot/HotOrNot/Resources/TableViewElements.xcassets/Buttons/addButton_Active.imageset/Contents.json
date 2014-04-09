@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "mainRowAddButton_Active.png"
+      "filename" : "addTextButton_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "mainRowAddButton_Active@2x.png"
+      "filename" : "addTextButton_Active@2x.png"
     }
   ],
   "info" : {

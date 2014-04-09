@@ -7,6 +7,7 @@
 //
 
 #import "EGORefreshTableHeaderView.h"
+#import "JLBPopSlideTransition.h"
 
 #import "HONUserClubsViewController.h"
 #import "HONAPICaller.h"
@@ -28,6 +29,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONUserClubSettingsViewController.h"
 #import "HONUserClubInviteViewController.h"
+#import "HONFeedViewController.h"
 #import "HONUserClubVO.h"
 
 
@@ -134,6 +136,24 @@
 	[[HONAPICaller sharedInstance] leaveClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		[self _retrieveClubs];
 		[self _retreiveClubInvites];
+	}];
+}
+
+
+- (void)_retrieveChallenges {
+	NSMutableArray *challenges = [NSMutableArray array];
+	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+		for (NSDictionary *dict in (NSArray *)result) {
+			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+			[challenges addObject:vo];
+		}
+		
+		
+		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
+		feedViewController.challenges = challenges;
+		JLBPopSlideTransition *transition = [JLBPopSlideTransition new];
+		feedViewController.transitioningDelegate = transition;
+		[self presentViewController:feedViewController animated:YES completion:nil];
 	}];
 }
 
@@ -464,11 +484,12 @@
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
 				
-			} else
-				[self.navigationController pushViewController:[[HONUserClubDetailsViewController alloc] initWithClub:_ownClub] animated:YES];
+			} else {
+				[self _retrieveChallenges];
+			}
 		
 		} else {
-			[self.navigationController pushViewController:[[HONUserClubDetailsViewController alloc] initWithClub:(HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row - 1]] animated:YES];
+			[self _retrieveChallenges];
 		}
 		
 	} else if (indexPath.section == 1) {

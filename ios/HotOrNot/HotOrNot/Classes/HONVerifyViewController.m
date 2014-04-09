@@ -21,6 +21,7 @@
 #import "HONVerifyViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
+#import "HONUserClubVO.h"
 #import "HONAddContactsViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONSnapPreviewViewController.h"
@@ -36,6 +37,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) NSMutableArray *friends;
@@ -59,6 +61,11 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareVerifyTab:) name:@"TARE_VERIFY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_VERIFY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+			if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
+				_userClubVO = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
+		}];
 	}
 	
 	return (self);
@@ -378,18 +385,26 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nayOverlay"]]];
 }
 
-- (void)verifyViewCell:(HONVerifyViewCell *)cell shoutoutChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Shoutout"
+- (void)verifyViewCell:(HONVerifyViewCell *)cell inviteChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"=-=-=-=-=-=-=-= ¡¡WTF!! =-=-=-=-=-=-=-=-=-=");
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Invite"
 									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
 																							   toChallenge:challengeVO]];
-		
-	_challengeVO = challengeVO;
-	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:challengeVO.challengeID completion:nil];
 	
-	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
-	[self _removeCellForChallenge:challengeVO];
+	if (_userClubVO == nil) {
+		[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+									message:@"You need to create your own club before inviting anyone."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutoutOverlay"]]];
+	} else {
+		[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONTrivialUserVO userFromOpponentVO:challengeVO.creatorVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
+			[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
+			[self _removeCellForChallenge:challengeVO];
+		}];
+	}
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell moreActionsForChallenge:(HONChallengeVO *)challengeVO {

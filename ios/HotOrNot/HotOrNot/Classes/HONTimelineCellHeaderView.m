@@ -34,23 +34,22 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 	_challengeVO = challengeVO;
 	
 	if (_challengeVO != nil) {
-//		UIView *avatarsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kAvatarSize.width, kAvatarSize.height)];
-		UIView *avatarsView = [self _avatarStackView];
-		[self addSubview:avatarsView];
-		
-		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = avatarsView.frame;
-		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:avatarButton];
-		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0 + (avatarsView.frame.origin.x + avatarsView.frame.size.width), 21.0, 50.0, 12.0)];
-		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];
-		timeLabel.textColor = [UIColor whiteColor];
-		timeLabel.backgroundColor = [UIColor clearColor];
-		timeLabel.shadowColor = [UIColor blackColor];
-		timeLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-		timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
-		[self addSubview:timeLabel];
+//		UIView *avatarsView = [self _avatarStackView];
+//		[self addSubview:avatarsView];
+//		
+//		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		avatarButton.frame = avatarsView.frame;
+//		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:avatarButton];
+//		
+//		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0 + (avatarsView.frame.origin.x + avatarsView.frame.size.width), 21.0, 50.0, 12.0)];
+//		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];
+//		timeLabel.textColor = [UIColor whiteColor];
+//		timeLabel.backgroundColor = [UIColor clearColor];
+//		timeLabel.shadowColor = [UIColor blackColor];
+//		timeLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+//		timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
+//		[self addSubview:timeLabel];
 		
 		CGSize size;
 		CGFloat maxNameWidth = 280.0;
