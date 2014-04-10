@@ -34,7 +34,7 @@
 		_focusedBGImageView.alpha = 0.0;
 		[self addSubview:_focusedBGImageView];
 		
-		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 10.0, 296.0, 22.0)];
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 11.0, 296.0, 22.0)];
 		[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];

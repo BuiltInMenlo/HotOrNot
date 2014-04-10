@@ -104,7 +104,7 @@
 				}
 			}
 			
-			if (!isFound)
+			if (!isFound && [_inAppContacts count] < 4)
 				[_inAppContacts addObject:vo];
 		}
 		
@@ -133,7 +133,7 @@
 				}
 			}
 			
-			if (!isFound)
+			if (!isFound && [_inAppContacts count] < 4)
 				[_inAppContacts addObject:vo];
 		}
 		
@@ -242,6 +242,12 @@
 		if ([lName length] == 0)
 			lName = @"";
 		
+		
+		NSData *imageData = nil;
+		if (ABPersonHasImageData(ref))
+			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
+		
+		
 		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
 		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
 		
@@ -268,7 +274,8 @@
 			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
 																			 @"l_name"	: lName,
 																			 @"phone"	: phoneNumber,
-																			 @"email"	: email}];
+																			 @"email"	: email,
+																			 @"image"	: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"defaultAvatarBackground"])}];
 			[unsortedContacts addObject:vo.dictionary];
 			
 			if (vo.isSMSAvailable)
@@ -309,6 +316,13 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
+//	[[HONAPICaller sharedInstance] followUserWithUserID:2394 completion:nil]; //
+//	[[HONAPICaller sharedInstance] followUserWithUserID:11822 completion:nil];
+//	[[HONAPICaller sharedInstance] followUserWithUserID:9419 completion:nil];
+	
+//	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:2394 completion:nil];
+//	[[HONAPICaller sharedInstance] followUserWithUserID:86493 completion:nil];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
@@ -556,7 +570,6 @@
 	
 	_isDataSourceContacts = YES;
 	[_tableView reloadData];
-//	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
@@ -609,7 +622,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
 	
 	if (_userClubVO != nil)
-		[self _inviteNonAppContact:userVO toClub:_userClubVO];//[self _sendInviteToContact:userVO];
+		[self _inviteNonAppContact:userVO toClub:_userClubVO];
 		
 	else {
 		[viewCell toggleSelected:NO];

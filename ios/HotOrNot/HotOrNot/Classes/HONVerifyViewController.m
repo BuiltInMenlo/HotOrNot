@@ -386,8 +386,6 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell inviteChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"=-=-=-=-=-=-=-= ¡¡WTF!! =-=-=-=-=-=-=-=-=-=");
-	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Invite"
 									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
 																							   toChallenge:challengeVO]];

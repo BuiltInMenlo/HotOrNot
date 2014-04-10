@@ -67,6 +67,8 @@
 {
 	[super viewDidLoad];
 	
+	self.view.backgroundColor = [UIColor blackColor];
+	
 	[self.pagedScrollView registerClass:[HONFeedItemViewController class] forViewControllerReuseIdentifier:@"FeedItem"];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
@@ -635,9 +637,9 @@
 	UIView *_footerView;
 	HONImageLoadingView *_loadingIndicatorView;
 	UIImageView *_heroImageView;
-	HONTimelineCellSubjectView *_timelineSubjectView;
-	HONTimelineCellHeaderView *_creatorHeaderView;
-	HONTimelineItemFooterView *_timelineFooterView;
+//	HONTimelineCellSubjectView *_timelineSubjectView;
+//	HONTimelineCellHeaderView *_creatorHeaderView;
+//	HONTimelineItemFooterView *_timelineFooterView;
 }
 
 - (id)init
@@ -653,6 +655,8 @@
 	
 	CGRect bounds = self.view.bounds;
 	
+	self.view.backgroundColor = [UIColor blackColor];
+	
 	_heroHolderView = [[UIView alloc] initWithFrame:bounds];
 	_heroHolderView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:_heroHolderView];
@@ -664,38 +668,63 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:bounds];
 	[_heroHolderView addSubview:_heroImageView];
 
-	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:CGRectGetHeight(bounds) - 105.0 withSubjectName:nil withUsername:nil];
-	//timelineCellSubjectView.delegate = self;
-	[self.view addSubview:_timelineSubjectView];
+//	_timelineSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:CGRectGetHeight(bounds) - 105.0 withSubjectName:nil withUsername:nil];
+//	timelineCellSubjectView.delegate = self;
+//	[self.view addSubview:_timelineSubjectView];
+//	
+//	_creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:nil];
+//	_creatorHeaderView.frame = CGRectOffset(_creatorHeaderView.frame, 0.0, 37.0);
+//	_creatorHeaderView.delegate = self;
+//	[self.view addSubview:_creatorHeaderView];
 	
-	_creatorHeaderView = [[HONTimelineCellHeaderView alloc] initWithChallenge:nil];
-	_creatorHeaderView.frame = CGRectOffset(_creatorHeaderView.frame, 0.0, 37.0);
-	//_creatorHeaderView.delegate = self;
-	[self.view addSubview:_creatorHeaderView];
+	UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 114.0, 320.0, 69.0)];
+	[self.view addSubview:infoView];
 	
-	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 44.0, 320.0, 44.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
+	usernameLabel.textColor = [UIColor whiteColor];
+	usernameLabel.backgroundColor = [UIColor clearColor];
+	usernameLabel.shadowColor = [UIColor blackColor];
+	usernameLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	usernameLabel.text = _challenge.creatorVO.username;
+	[infoView addSubview:usernameLabel];
+	
+	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 26.0, 70.0, 20.0)];
+	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
+	emotionLabel.textColor = [UIColor whiteColor];
+	emotionLabel.backgroundColor = [UIColor clearColor];
+	emotionLabel.shadowColor = [UIColor blackColor];
+	emotionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	emotionLabel.text = @"- is feeling";
+	[infoView addSubview:emotionLabel];
+	
+	UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-SM"]];
+	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + emotionLabel.frame.size.width), 16.0, 44.0, 44.0);
+	[infoView addSubview:emoticonImageView];
+	
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 57.0, 320.0, 44.0)];
 	[self.view addSubview:_footerView];
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(0.0, 0.0, 94.0, 44.0);
+	likeButton.frame = CGRectMake(1.0, 3.0, 94.0, 44.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:likeButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(113.0, 0.0, 94.0, 44.0);
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_nonActive"] forState:UIControlStateNormal];
-	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyButton_Active"] forState:UIControlStateHighlighted];
+	replyButton.frame = CGRectMake(97.0, 0.0, 94.0, 44.0);
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
+	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:replyButton];
 	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(220.0, 0.0, 94.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
-	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[_footerView addSubview:shareButton];
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(238.0, 8.0, 94.0, 44.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:moreButton];
 	
 //	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 //	lpGestureRecognizer.minimumPressDuration = 0.25;
@@ -731,9 +760,9 @@
 	_loadingIndicatorView.alpha = 1.0;
 	[_loadingIndicatorView startAnimating];
 	
-	_creatorHeaderView.challengeVO = _challenge;
-	[_timelineFooterView updateChallenge:_challenge];
-	[_timelineSubjectView updateChallenge:_challenge];
+//	_creatorHeaderView.challengeVO = _challenge;
+//	[_timelineFooterView updateChallenge:_challenge];
+//	[_timelineSubjectView updateChallenge:_challenge];
 	
 	HONOpponentVO *opponent = _challenge.creatorVO;
 	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];

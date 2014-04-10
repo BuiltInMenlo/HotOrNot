@@ -29,6 +29,12 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBackground"]];
+		[self hideChevron];
+		
+		UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
+		chevronImageView.frame = CGRectOffset(chevronImageView.frame, 294.0, 9.0);
+		[self.contentView addSubview:chevronImageView];
 	}
 	
 	return (self);
@@ -37,7 +43,13 @@
 - (void)setAlertItemVO:(HONAlertItemVO *)alertItemVO {
 	_alertItemVO = alertItemVO;
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
+	if (_alertItemVO.userID == 131795) {
+		_alertItemVO.username = @"selfielover";
+		_alertItemVO.avatarPrefix = @"https://d3j8du2hyvd35p.cloudfront.net/c6d8484284ea433cb38230b885a88a40_b8d329e3e587426f9dacb5dffdb91e93-1397110043";
+	}
+	
+//	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 9.0, 25.0, 25.0)];
 	[self.contentView addSubview:imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
@@ -71,8 +83,8 @@
 									 success:successBlock
 									 failure:failureBlock];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(41.0, 12.0, 195.0, 17.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"%@ %@", _alertItemVO.username, _alertItemVO.message];

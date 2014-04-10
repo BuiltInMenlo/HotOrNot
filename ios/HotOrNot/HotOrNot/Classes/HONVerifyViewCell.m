@@ -97,11 +97,11 @@
 //	headerView.delegate = self;
 //	[self.contentView addSubview:headerView];
 	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 124.0, 320.0, 75.0)];
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 118.0, 320.0, 69.0)];
 	[self.contentView addSubview:footerView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
-	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.shadowColor = [UIColor blackColor];
@@ -109,8 +109,8 @@
 	usernameLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"name_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_challengeVO.creatorVO.username] attributes:nil];
 	[footerView addSubview:usernameLabel];
 	
-	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 28.0, 200.0, 24.0)];
-	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
+	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 26.0, 200.0, 20.0)];
+	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
 	emotionLabel.textColor = [UIColor whiteColor];
 	emotionLabel.backgroundColor = [UIColor clearColor];
 	emotionLabel.shadowColor = [UIColor blackColor];
@@ -134,7 +134,7 @@
 //	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + size.width) + 9.0, 24.0, 45.0, 45.0);
 //	[footerView addSubview:emoticonImageView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(239.0, [UIScreen mainScreen].bounds.size.height - 288.0, 64.0, 219.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 316.0, 64.0, 245.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -144,15 +144,28 @@
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:approveButton];
 	
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 72.0, 64.0, 14.0)];
+	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	scoreLabel.textColor = [UIColor whiteColor];
+	scoreLabel.backgroundColor = [UIColor clearColor];
+	scoreLabel.shadowColor = [UIColor blackColor];
+	scoreLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	scoreLabel.textAlignment = NSTextAlignmentCenter;
+	scoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:((arc4random() % 100) + 5)]];
+	[buttonHolderView addSubview:scoreLabel];
+	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	skipButton.frame = CGRectMake(0.0, 78.0, 64.0, 64.0);
+	skipButton.frame = CGRectMake(0.0, 97.0, 64.0, 64.0);
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:skipButton];
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(0.0, 155.0, 64.0, 64.0);
+	inviteButton.frame = CGRectMake(0.0, 181.0, 64.0, 64.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_Active"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];

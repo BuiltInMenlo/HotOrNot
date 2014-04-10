@@ -19,7 +19,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
+		_checkButton.frame = CGRectMake(190.0, 0.0, 74.0, 64.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
@@ -32,6 +32,13 @@
 		[_addButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
 		[_addButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_addButton];
+		
+		UIButton *blockButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		blockButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
+		[blockButton setBackgroundImage:[UIImage imageNamed:@"blockButton_nonActive"] forState:UIControlStateNormal];
+		[blockButton setBackgroundImage:[UIImage imageNamed:@"blockButton_Active"] forState:UIControlStateHighlighted];
+		[blockButton addTarget:self action:@selector(_goBlock) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:blockButton];
 	}
 	
 	return (self);
@@ -41,6 +48,16 @@
 #pragma mark - Public APIs
 - (void)setUserVO:(HONTrivialUserVO *)userVO {
 	[super setUserVO:userVO];
+	
+	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, _nameLabel.frame.size.width - 55.0, _nameLabel.frame.size.height);
+}
+
+- (void)toggleSelected:(BOOL)isSelected {
+	_addButton.alpha = (int)!isSelected;
+	_addButton.hidden = isSelected;
+	
+	_checkButton.alpha = (int)isSelected;
+	_checkButton.hidden = !isSelected;
 }
 
 
@@ -65,12 +82,8 @@
 	}];
 }
 
-- (void)toggleSelected:(BOOL)isSelected {
-	_addButton.alpha = (int)!isSelected;
-	_addButton.hidden = isSelected;
+- (void)_goBlock {
 	
-	_checkButton.alpha = (int)isSelected;
-	_checkButton.hidden = !isSelected;
 }
 
 @end

@@ -95,7 +95,7 @@
 				}
 			}
 			
-			if (!isFound)
+			if (!isFound && [_inAppContacts count] < 4)
 				[_inAppContacts addObject:vo];
 		}
 		
@@ -124,7 +124,7 @@
 				}
 			}
 			
-			if (!isFound)
+			if (!isFound && [_inAppContacts count] < 4)
 				[_inAppContacts addObject:vo];
 		}
 		

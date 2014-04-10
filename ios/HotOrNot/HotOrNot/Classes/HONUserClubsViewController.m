@@ -14,6 +14,7 @@
 #import "HONColorAuthority.h"
 #import "HONDeviceTraits.h"
 #import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTutorialView.h"
@@ -46,6 +47,7 @@
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSArray *defaultCaptions;
 @property (nonatomic, strong) NSArray *bakedClubs;
+@property (nonatomic, strong) NSArray *bakedClubs2;
 @end
 
 
@@ -53,14 +55,14 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_defaultCaptions = @[@"Add friends to my club",
-							 @"Find my high school's club",
-							 @"Selfieclubs nearby"];
 		_defaultCaptions = @[];
+		_defaultCaptions = @[@"Add friends to my club",
+							 @"Find my high school's club"];
 		
 		_bakedClubs = @[@{@"name": @"BFFs", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/823ded776ab04e59a53eb166db67a78d_c54b3a029c25457389a188ac8a6dff24-1391186184Large_640x1136.jpg"},
-						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"},
-						@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
+						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"}];
+		
+		_bakedClubs2 = @[@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
 		
 		_joinedClubs = [NSMutableArray array];
 		_invitedClubs = [NSMutableArray array];
@@ -109,7 +111,7 @@
 }
 
 - (void)_retreiveClubInvites {
-	for (NSDictionary *club in _bakedClubs) {
+	for (NSDictionary *club in _bakedClubs2) {
 		[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", arc4random() - 200],
 																	 @"name"	: [club objectForKey:@"name"],
 																	 @"img"		: [club objectForKey:@"img"]}]];//[[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
@@ -290,6 +292,23 @@
 					  otherButtonTitles:nil] show];
 }
 
+- (void)_goShare {
+	[[Mixpanel sharedInstance] track:@"User Profile - Share" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [HONImagingDepictor shareTemplateImageForType:HONImagingDepictorShareTemplateTypeDefault],
+																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																							@"mp_event"			: @"User Profile - Share",
+																							@"view_controller"	: self}];
+}
+
+
 
 #pragma mark - Notifications
 - (void)_selectedClubsTab:(NSNotification *)notification {
@@ -415,11 +434,15 @@
 			if (_ownClub == nil) {
 				cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
-				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-				cell.textLabel.text = @"Tap here to start your own Selfieclub";
+				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 				cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-				cell.textLabel.textAlignment = NSTextAlignmentCenter;
-			
+				cell.textLabel.textAlignment = NSTextAlignmentLeft;
+				cell.textLabel.text = @"Create club";
+				
+				UIImageView *plusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClubButton_nonActive"]];
+				plusImageView.frame = CGRectOffset(plusImageView.frame, 258.0, 0.0);
+				[cell.contentView addSubview:plusImageView];
+				
 			} else {
 				cell.userClubVO = _ownClub;
 				cell.delegate = self;
@@ -437,7 +460,7 @@
 	} else if (indexPath.section == 2) {
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 		cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
-		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 		cell.textLabel.textAlignment = NSTextAlignmentCenter;
 		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.row];
@@ -510,8 +533,8 @@
 		else if (indexPath.row == 1)
 			[self _goFindSchoolClub];
 		
-		else if (indexPath.row == 2)
-			[self _goFindNearbyClubs];
+//		else if (indexPath.row == 2)
+//			[self _goShare];//[self _goFindNearbyClubs];
 	}
 }
 

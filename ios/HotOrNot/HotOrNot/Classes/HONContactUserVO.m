@@ -10,7 +10,7 @@
 
 @implementation HONContactUserVO
 @synthesize dictionary;
-@synthesize firstName, lastName, fullName, rawNumber, mobileNumber, email, isSMSAvailable;
+@synthesize firstName, lastName, fullName, rawNumber, mobileNumber, email, avatarImage, isSMSAvailable;
 
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary {
 	HONContactUserVO *vo = [[HONContactUserVO alloc] init];
@@ -21,6 +21,7 @@
 	vo.fullName = [NSString stringWithFormat:([vo.lastName length] > 0) ? @"%@ %@" : @"%@%@", vo.firstName, vo.lastName];
 	vo.email = [dictionary objectForKey:@"email"];
 	vo.rawNumber = [dictionary objectForKey:@"phone"];
+	vo.avatarImage = [UIImage imageWithData:[dictionary objectForKey:@"image"]];
 	
 	if ([vo.rawNumber length] > 0) {
 		NSString *formattedNumber = [[vo.rawNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().- "]] componentsJoinedByString:@""];
@@ -45,6 +46,7 @@
 	self.fullName = nil;
 	self.mobileNumber = nil;
 	self.email = nil;
+	self.avatarImage = nil;
 }
 
 @end

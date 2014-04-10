@@ -512,7 +512,6 @@
 		} else {
 			if (cell == nil) {
 				cell = [[HONAlertItemViewCell alloc] init];
-				[cell hideChevron];
 				
 				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
 				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
@@ -540,7 +539,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 0) ? kOrthodoxTableCellHeight : ([_activityAlerts count] > 5 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 48.0: 0.0);
+	return ((indexPath.section == 0) ? 44.0 : ([_activityAlerts count] > 5 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 48.0: 0.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
