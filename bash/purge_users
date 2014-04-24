@@ -1,16 +1,29 @@
 #!/bin/bash
 
 
+# \\~~*~~*[~*~]~*~~*~~*~~\_
+# \\~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~\_
+
+
 #-- change to script's dir if not already there
 if [[ `pwd` != `dirname $0` ]]; then cd `dirname $0`; fi
 	
 	
+#--#--#--#--#--#--#--#--#:#--#--#--#--#--#--#--#--#
 
 #-- set tier to live
 subdomain_api="admin"
 
+#-- api attribs
+block_url="http://${subdomain_api}.letsvolley.com/admin/block_user.php"
+wipe_url="http://${subdomain_api}.letsvolley.com/admin/wipe_user.php"
+login_api="volley:\$uper\$mack"
+
 #-- set actions to happen
 isDryRun_flg=false
+
+
+##--#--#--#--#--#--#--#--#--#--##:||:##--#--#--#--#--#--#--#--#--#--##
 
 while getopts "st" optname # --//> there's a '-s' or '-t'
 	do # --/ loop thru the params
@@ -44,10 +57,7 @@ while getopts "st" optname # --//> there's a '-s' or '-t'
 done
 
 
- #-- api attribs
-block_url="http://${subdomain_api}.letsvolley.com/admin/block_user.php"
-wipe_url="http://${subdomain_api}.letsvolley.com/admin/wipe_user.php"
-login_api="volley:\$uper\$mack"
+##--#--#--#--#--#--#--#--#--#--##:||:##--#--#--#--#--#--#--#--#--#--##
 
 
 while read line; do username="${line}" ; 
@@ -70,7 +80,7 @@ while read line; do username="${line}" ;
 	if [ -n "$result" ]; then 
 		
 		echo "Completed!"
-		printf "%s\tSucessfully blocked user '%s' from (%s.letsvolley.com)\n" "${cta_ts}" "${username}" "${subdomain_api}" >> ./purge.log
+		printf "%s\tPASS\tBLOCK\t%s.letsvolley.com\t%s\n" "${cta_ts}" "${subdomain_api}" "${username}" >> ./purge.log
 	
 		# call wipe user
 		printf "Wiping user '%s' from (%s.letsvolley.com)... " "${username}" "${subdomain_api}"
@@ -79,24 +89,31 @@ while read line; do username="${line}" ;
 		#-- check for user json
 		if [ -n "$result" ]; then 
 			echo "Completed!"
-			printf "%s\tSucessfully wiped user '%s' from (%s.letsvolley.com)\n" "${cta_ts}" "${username}" "${subdomain_api}" >> ./purge.log
+			printf "%s\tPASS\tWIPE\t%s.letsvolley.com\t%s\n" "${cta_ts}" "${subdomain_api}" "${username}" >> ./purge.log
 		
 		else 
 			echo "Not found!"
-			printf "%s\tCouldn't find user '%s' from (%s.letsvolley.com) to wipe, skipping over...\n" "${cta_ts}" "${username}" "${subdomain_api}" >> ./purge.log
+			printf "%s\tFAIL\tSANS\t%s.letsvolley.com\t%s\n" "${cta_ts}" "${subdomain_api}" "${username}" >> ./purge.log
 		fi
 	else 
 		echo "Not found!"
-		printf "%s\tCouldn't find user '%s' from (%s.letsvolley.com) to block, skipping wipe...\n" "${cta_ts}" "${username}" "${subdomain_api}" >> ./purge.log
-		
+		printf "%s\tFAIL\tSANS\t%s.letsvolley.com\t%s\n" "${cta_ts}" "${subdomain_api}" "${username}" >> ./purge.log	
 	fi
+	
+	#-- divider between each user
+	printf "[%s=]\n" $(printf "=-"%.0s {1..48})
 	
 done < ./purge.conf
 
 
+##--#--#--#--#--#--#--#--#--#--##:||:##--#--#--#--#--#--#--#--#--#--##
 
 #-- exit w/o error
 exit 0;
+
+
+# //~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~/'
+# //~~*~~*~~*~~*~~*~~*~~/'
 
 
 
