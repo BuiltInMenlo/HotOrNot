@@ -12,10 +12,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSelfieCameraPreviewView.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONEmotionsPickerDisplayView.h"

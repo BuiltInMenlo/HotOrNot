@@ -10,8 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVoterViewCell.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 @interface HONVoterViewCell()
 @end

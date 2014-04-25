@@ -11,8 +11,6 @@
 #import "UILabel+FormattedText.h"
 
 #import "HONTimelineCellSubjectView.h"
-#import "HONChallengeAssistant.h"
-#import "HONFontAllocator.h"
 #import "HONEmotionVO.h"
 #import "HONChallengeVO.h"
 

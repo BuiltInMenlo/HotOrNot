@@ -8,7 +8,6 @@
 
 #import "MBProgressHUD.h"
 
-#import "HONUtilsSuite.h"
 #import "HONFollowingViewController.h"
 #import "HONFollowUserViewCell.h"
 #import "HONHeaderView.h"

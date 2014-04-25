@@ -9,9 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONMessageItemViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 #import "HONImageLoadingView.h"
 
 @interface HONMessageItemViewCell ()

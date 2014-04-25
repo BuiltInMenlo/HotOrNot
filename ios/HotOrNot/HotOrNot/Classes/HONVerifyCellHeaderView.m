@@ -9,10 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyCellHeaderView.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 
 const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 

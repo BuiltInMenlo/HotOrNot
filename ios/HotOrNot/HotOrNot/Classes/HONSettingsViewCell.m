@@ -10,8 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSettingsViewCell.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 @interface HONSettingsViewCell()
 @property (nonatomic, strong) UIImageView *bgImageView;

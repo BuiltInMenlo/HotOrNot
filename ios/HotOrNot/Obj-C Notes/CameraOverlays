@@ -40,7 +40,6 @@
 
 #import "HONBaseCameraOverlayView.h"
 #import "HONAppDelegate.h"
-#import "HONImagingDepictor.h"
 
 @interface HONBaseCameraOverlayView ()
 @property (nonatomic, strong) UIImageView *irisImageView;
@@ -197,7 +196,6 @@
 
 #import "HONRegisterCameraOverlayView.h"
 #import "HONAppDelegate.h"
-#import "HONImagingDepictor.h"
 
 @interface HONRegisterCameraOverlayView() <UIAlertViewDelegate, HONRegisterCameraOverlayViewDelegate>
 @property (nonatomic, strong) UIImageView *irisImageView;
@@ -439,7 +437,6 @@
 
 #import "HONAvatarCameraOverlayView.h"
 #import "HONAppDelegate.h"
-#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 
 @interface HONAvatarCameraOverlayView()

@@ -10,8 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCommentViewCell.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 @implementation HONCommentViewCell
 

@@ -9,10 +9,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONCreateClubViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
 #import "HONUserClubInviteViewController.h"
@@ -260,7 +256,6 @@
 	clubCoverCameraViewController.delegate = self;
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubCoverCameraViewController];
 	[navigationController setNavigationBarHidden:YES];

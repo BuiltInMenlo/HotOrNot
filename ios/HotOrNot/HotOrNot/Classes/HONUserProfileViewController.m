@@ -15,8 +15,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONUserProfileViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONChallengeAssistant.h"
 #import "HONChangeAvatarViewController.h"
 //#import "HONSnapPreviewViewController.h"
 //#import "HONImagePickerViewController.h"

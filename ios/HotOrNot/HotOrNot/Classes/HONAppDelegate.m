@@ -33,12 +33,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
-#import "HONUtilsSuite.h"
-#import "HONChallengeAssistant.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONTabBarController.h"

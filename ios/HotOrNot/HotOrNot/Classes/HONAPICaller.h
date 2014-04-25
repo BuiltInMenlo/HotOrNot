@@ -119,6 +119,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
 - (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveClubsForInvitedUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)retrieveClubsTimelineForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveFollowingUsersForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)removeAllChallengesForUserWithCompletion:(void (^)(NSObject *result))completion;

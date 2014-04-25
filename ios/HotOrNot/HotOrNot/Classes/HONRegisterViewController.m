@@ -10,19 +10,15 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "ImageFilter.h"
-#import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
+#import "ImageFilter.h"
+#import "MBProgressHUD.h"
+
 #import "HONRegisterViewController.h"
 #import "HONEnterPINViewController.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
-#import "HONUtilsSuite.h"
-#import "HONImagingDepictor.h"
 
 
 #define SPLASH_BLUE_TINT_COLOR		[UIColor colorWithRed:0.008 green:0.373 blue:0.914 alpha:0.667]
@@ -392,7 +388,6 @@
 	[self.view addSubview:_phoneCheckImageView];
 	
 //	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
 		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){

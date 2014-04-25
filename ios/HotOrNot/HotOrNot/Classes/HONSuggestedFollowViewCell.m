@@ -9,14 +9,10 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSuggestedFollowViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONImageLoadingView.h"
 #import "HONChallengeVO.h"
 #import "HONEmotionVO.h"
+#import "HONImageLoadingView.h"
 #import "HONUserVO.h"
-#import "HONImagingDepictor.h"
 
 
 @interface HONSuggestedFollowViewCell ()

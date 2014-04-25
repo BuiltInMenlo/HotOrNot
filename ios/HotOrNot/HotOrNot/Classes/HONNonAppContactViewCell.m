@@ -7,9 +7,6 @@
 //
 
 #import "HONNonAppContactViewCell.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 
 @interface HONNonAppContactViewCell ()
 @property (nonatomic, strong) UIButton *checkButton;

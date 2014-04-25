@@ -14,13 +14,6 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
-#import "HONMainScreenOverseer.h"
-
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONOpponentVO.h"
@@ -229,7 +222,6 @@
 //		[self _goRegistration];
 //	
 //	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 //		
 //		[self performSelector:@selector(_retrieveClubs) withObject:nil afterDelay:0.33];
 //		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.33];
@@ -252,8 +244,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

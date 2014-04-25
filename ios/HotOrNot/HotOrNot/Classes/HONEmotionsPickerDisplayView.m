@@ -9,10 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONEmotionsPickerDisplayView.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONPhysicsGovernor.h"
 
 #define MAX_DISPLAYED_NAMES 5
 #define COLS_PER_ROW 5

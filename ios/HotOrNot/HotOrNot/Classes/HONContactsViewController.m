@@ -15,11 +15,6 @@
 #import "TSTapstream.h"
 
 #import "HONContactsViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONMainScreenOverseer.h"
 
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"

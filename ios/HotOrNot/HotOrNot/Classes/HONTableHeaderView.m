@@ -8,8 +8,6 @@
 
 
 #import "HONTableHeaderView.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 @interface HONTableHeaderView ()
 @end

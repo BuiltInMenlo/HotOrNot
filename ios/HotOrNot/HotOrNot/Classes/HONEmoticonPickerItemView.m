@@ -10,8 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONEmoticonPickerItemView.h"
-#import "HONUtilsSuite.h"
-#import "HONFontAllocator.h"
 
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;

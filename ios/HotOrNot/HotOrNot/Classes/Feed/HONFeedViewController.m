@@ -9,11 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "HONFeedViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONMainScreenOverseer.h"
 
 #import "HONChallengeVO.h"
 

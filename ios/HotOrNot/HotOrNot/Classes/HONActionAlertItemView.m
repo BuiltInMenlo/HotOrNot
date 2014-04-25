@@ -10,9 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONActionAlertItemView.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 #import "HONAlertItemVO.h"
 #import "HONImageLoadingView.h"
 

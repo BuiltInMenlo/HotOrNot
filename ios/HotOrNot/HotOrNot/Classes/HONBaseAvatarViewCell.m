@@ -9,10 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONBaseAvatarViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONFontAllocator.h"
-#import "HONColorAuthority.h"
-#import "HONImagingDepictor.h"
 
 @interface HONBaseAvatarViewCell ()
 @end

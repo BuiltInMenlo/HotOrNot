@@ -12,8 +12,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSelfieCameraOverlayView.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
 

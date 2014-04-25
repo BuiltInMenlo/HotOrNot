@@ -9,7 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONBasicParticipantGridView.h"
-#import "HONUtilsSuite.h"
 
 @interface HONBasicParticipantGridView () {
 	int _participantCounter;

@@ -11,10 +11,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineCellHeaderView.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
 
 const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};

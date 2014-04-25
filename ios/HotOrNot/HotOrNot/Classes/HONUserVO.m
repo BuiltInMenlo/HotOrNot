@@ -8,6 +8,7 @@
 
 
 #import "NSDictionary+NullReplacement.h"
+#import "NSString+DataTypes.h"
 
 #import "HONUserVO.h"
 
@@ -40,9 +41,9 @@
 		NSDictionary *friend = [dict dictionaryByReplacingNullsWithBlanks];
 		[vo.friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%d", [[[friend objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
-															 [NSString stringWithFormat:@"%d", 0], @"points",
-															 [NSString stringWithFormat:@"%d", 0], @"total_votes",
-															 [NSString stringWithFormat:@"%d", 0], @"pics",
+															 [@"" stringFromInt:0], @"points",
+															 [@"" stringFromInt:0], @"total_votes",
+															 [@"" stringFromInt:0], @"pics",
 															 [[friend objectForKey:@"user"] objectForKey:@"username"], @"username",
 															 [[friend objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
 	}

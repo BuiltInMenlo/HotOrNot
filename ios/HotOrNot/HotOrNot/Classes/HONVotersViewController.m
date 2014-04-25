@@ -6,12 +6,13 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 
 #import "MBProgressHUD.h"
 
 #import "HONVotersViewController.h"
 #import "HONBaseRowViewCell.h"
-#import "HONUtilsSuite.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
@@ -57,7 +58,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
-	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 5],
+	NSDictionary *params = @{@"action"		: [@"" stringFromInt:5],
 							 @"challengeID"	: [NSString stringWithFormat:@"%d", _challengeVO.challengeID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
@@ -170,8 +171,8 @@
 //												   [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
 //												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"total_votes",
 //												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
-//												   [NSString stringWithFormat:@"%d", 0], @"pics",
-//												   [NSString stringWithFormat:@"%d", 0], @"age",
+//												   [@"" stringFromInt:0], @"pics",
+//												   [@"" stringFromInt:0], @"age",
 //												   _voterVO.username, @"username",
 //												   _voterVO.fbID, @"fb_id",
 //												   _voterVO.imageURL, @"avatar_url", nil]];

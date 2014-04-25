@@ -10,9 +10,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONUsernameViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 
 

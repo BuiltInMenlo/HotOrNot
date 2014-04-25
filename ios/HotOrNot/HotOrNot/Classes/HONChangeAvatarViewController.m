@@ -15,9 +15,6 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONChangeAvatarViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 
 

@@ -9,7 +9,6 @@
 #import "NSString+DataTypes.h"
 
 #import "HONProfileSelfieGridViewController.h"
-#import "HONMainScreenOverseer.h"
 #import "HONImagePickerViewController.h"
 
 @interface HONProfileSelfieGridViewController () <HONSnapPreviewViewControllerDelegate>

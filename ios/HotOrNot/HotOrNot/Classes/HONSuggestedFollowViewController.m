@@ -18,10 +18,6 @@
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 
 @interface HONSuggestedFollowViewController () <HONSuggestedFollowViewCellDelegate>

@@ -13,10 +13,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONVerifyViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONImagingDepictor.h"
-#import "HONMainScreenOverseer.h"
 #import "HONTutorialView.h"
 #import "HONHeaderView.h"
 #import "HONVerifyFlagButtonView.h"

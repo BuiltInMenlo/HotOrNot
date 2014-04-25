@@ -10,8 +10,6 @@
 #import "NSString+DataTypes.h"
 
 #import "HONBaseTabSectionViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONMainScreenOverseer.h"
 
 #import "HONHeaderView.h"
 #import "HONCreateSnapButtonView.h"

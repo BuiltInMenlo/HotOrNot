@@ -12,7 +12,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONSelfieCameraSubmitViewController.h"
-#import "HONUtilsSuite.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONSelfieCameraClubViewCell.h"
@@ -205,18 +204,20 @@
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Create Selfie - Submit" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 	
-	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No clubs selected!"
-															message:@"Would you like to select all?"
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:0];
-		[alertView show];
-	
-	} else {
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//		NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
 		
-	}
+//		if (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateChallenge || _selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge)
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+//		
+//		else if (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateMessage)
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
+//		
+//		else if (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyMessage) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGES" object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_MESSAGE" object:nil];
+//		}
+	}];
 }
 
 - (void)_goSelectAllToggle {

@@ -11,8 +11,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONBasicSelfieGridViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONMainScreenOverseer.h"
 
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"

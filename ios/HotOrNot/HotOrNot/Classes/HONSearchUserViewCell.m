@@ -8,11 +8,7 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 #import "HONSearchUserViewCell.h"
-#import "HONImagingDepictor.h"
 
 @interface HONSearchUserViewCell()
 @property (nonatomic, strong) UIButton *followButton;

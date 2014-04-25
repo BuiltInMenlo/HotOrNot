@@ -10,8 +10,6 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONTabBarController.h"
-#import "HONUtilsSuite.h"
-#import "HONImagingDepictor.h"
 #import "HONChallengeVO.h"
 #import "HONChangeAvatarViewController.h"
 

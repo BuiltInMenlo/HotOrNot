@@ -18,9 +18,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONClubCoverCameraViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONImagingDepictor.h"
 #import "HONClubCoverCameraOverlayView.h"
 
 @interface HONClubCoverCameraViewController () <HONClubCoverCameraOverlayViewDelegate>
@@ -79,11 +76,7 @@
 		
 		[_cameraOverlayView uploadComplete];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-		
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
-		
-//		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 	}];
 }
 
@@ -212,7 +205,6 @@
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}
@@ -232,7 +224,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {

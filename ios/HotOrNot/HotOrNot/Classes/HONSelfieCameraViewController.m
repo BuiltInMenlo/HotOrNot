@@ -19,7 +19,6 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONSelfieCameraViewController.h"
-#import "HONUtilsSuite.h"
 #import "HONSelfieCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
 #import "HONSelfieCameraSubmitViewController.h"
@@ -271,8 +270,6 @@
 			[tracker fireEvent:e];
 			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-			
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
@@ -409,9 +406,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
@@ -442,7 +439,6 @@
 	
 	[self _cancelUpload];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
@@ -503,7 +499,6 @@
 	
 	[self _cancelUpload];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 }
 
@@ -515,8 +510,6 @@
 	_hasSubmitted = NO;
 	_subjectName = subject;
 	
-	
-	_isFirstAppearance = YES;
 	NSString *recipients = @"";
 	for (HONTrivialUserVO *vo in _recipients)
 		recipients = [[recipients stringByAppendingString:[NSString stringWithFormat:@"%d", vo.userID]] stringByAppendingString:@","];
@@ -524,8 +517,8 @@
 	
 	HONProtoChallengeVO *protoChallengeVO = [HONProtoChallengeVO protoChallengeWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																								@"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeEmoticonsCloudFront], _filename],
-																								@"challenge_id"	: [[NSString new] stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
-																								@"club_id"		: [[NSString new] stringFromInt:_userClubVO.clubID],
+																								@"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
+																								@"club_id"		: [@"" stringFromInt:_userClubVO.clubID],
 																								@"subject"		: _subjectName,
 																								@"recipients"	: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @""}];
 	
@@ -579,7 +572,6 @@
 		
 			if (_hasSubmitted) {
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 				}];
@@ -593,7 +585,6 @@
 			
 		if (_hasSubmitted) {
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:@"Y"];
 				
@@ -675,7 +666,6 @@
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
 		
 		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
@@ -692,8 +682,6 @@
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-		
 		
 		// We want to dismiss the image picker + ourselves so we need to call dismiss on our parent.
 		[self.presentingViewController dismissViewControllerAnimated:YES completion:nil];

@@ -7,7 +7,6 @@
 //
 
 #import "HONHeaderView.h"
-#import "HONFontAllocator.h"
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UILabel *titleLabel;

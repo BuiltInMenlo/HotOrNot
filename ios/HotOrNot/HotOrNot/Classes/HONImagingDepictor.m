@@ -8,11 +8,12 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "AFImageRequestOperation.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImage+Pixels.h"
 #import "UIImageView+AFNetworking.h"
+
+#import "AFImageRequestOperation.h"
 
 #import "HONImagingDepictor.h"
 

@@ -41,7 +41,7 @@
 }
 
 
-#pragma mark - public APIs
+#pragma mark - Public APIs
 - (void)invertSelect {
 	[self toggleSelected:!_isSelected];
 }

@@ -9,10 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONFollowContactViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONFontAllocator.h"
-#import "HONColorAuthority.h"
-#import "HONImagingDepictor.h"
 
 @interface HONFollowContactViewCell ()
 @property (nonatomic, strong) UIButton *followButton;

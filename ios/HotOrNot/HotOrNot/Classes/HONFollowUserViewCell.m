@@ -9,10 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONFollowUserViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 
 @interface HONFollowUserViewCell ()
 @property (nonatomic, strong) UIButton *checkButton;

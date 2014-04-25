@@ -8,7 +8,6 @@
 
 
 #import "HONTutorialView.h"
-#import "HONDeviceIntrinsics.h"
 
 @interface HONTutorialView ()
 @end

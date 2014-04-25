@@ -12,12 +12,6 @@
 
 #import "HONChallengeDetailsViewController.h"
 #import "HONHeaderView.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
-#import "HONMainScreenOverseer.h"
 
 #import "HONImagePickerViewController.h"
 #import "HONVotersViewController.h"

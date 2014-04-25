@@ -9,10 +9,6 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessagesViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONMessageVO.h"
 #import "HONMessageRecipientsViewController.h"

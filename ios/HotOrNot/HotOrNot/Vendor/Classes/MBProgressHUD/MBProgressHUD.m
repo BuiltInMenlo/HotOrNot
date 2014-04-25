@@ -5,7 +5,6 @@
 //
 
 #import "MBProgressHUD.h"
-#import "HONDeviceIntrinsics.h"
 
 #if __has_feature(objc_arc)
 	#define MB_AUTORELEASE(exp) exp

@@ -10,8 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
 #import "HONImageLoadingView.h"
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineCellSubjectView.h"

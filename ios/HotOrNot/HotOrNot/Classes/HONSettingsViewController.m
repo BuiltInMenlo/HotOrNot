@@ -11,8 +11,6 @@
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
 #import "HONFAQViewController.h"
 #import "HONTermsConditionsViewController.h"
 #import "HONHeaderView.h"

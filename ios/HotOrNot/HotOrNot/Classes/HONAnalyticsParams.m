@@ -9,7 +9,6 @@
 
 #import "HONAnalyticsParams.h"
 
-
 @implementation HONAnalyticsParams
 
 static HONAnalyticsParams *sharedInstance = nil;

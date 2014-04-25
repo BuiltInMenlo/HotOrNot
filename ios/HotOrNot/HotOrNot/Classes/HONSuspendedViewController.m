@@ -10,8 +10,6 @@
 
 #import "HONSuspendedViewController.h"
 #import "HONHeaderView.h"
-#import "HONUtilsSuite.h"
-#import "HONFontAllocator.h"
 
 @interface HONSuspendedViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;

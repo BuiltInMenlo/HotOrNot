@@ -7,8 +7,6 @@
 //
 
 #import "HONInviteContactViewCell.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 
 @interface HONInviteContactViewCell ()

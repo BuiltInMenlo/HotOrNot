@@ -13,10 +13,6 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONUserClubInviteViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTrivialUserVO.h"

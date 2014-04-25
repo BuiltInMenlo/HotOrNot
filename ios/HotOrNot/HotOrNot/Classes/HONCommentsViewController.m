@@ -6,13 +6,12 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "AFNetworking.h"
 #import "MBProgressHUD.h"
 
 #import "HONCommentsViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 #import "HONBaseRowViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
@@ -58,7 +57,7 @@
 #pragma mark - Data Calls
 - (void)_retrieveComments {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 1], @"action",
+									[@"" stringFromInt:1], @"action",
 									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 									nil];
 	
@@ -133,7 +132,7 @@
 	
 	/*
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 2], @"action",
+									[@"" stringFromInt:2], @"action",
 									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									_commentTextField.text, @"text",
@@ -186,7 +185,7 @@
 
 - (void)_deleteComment:(int)commentID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 8], @"action",
+							[@"" stringFromInt:8], @"action",
 							[NSString stringWithFormat:@"%d", commentID], @"commentID",
 							nil];
 	
@@ -387,11 +386,11 @@
 	
 //	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 //													   [NSString stringWithFormat:@"%d", vo.userID], @"id",
-//													   [NSString stringWithFormat:@"%d", 0], @"points",
-//													   [NSString stringWithFormat:@"%d", 0], @"total_votes",
-//													   [NSString stringWithFormat:@"%d", 0], @"pokes",
-//													   [NSString stringWithFormat:@"%d", 0], @"pics",
-//													   [NSString stringWithFormat:@"%d", 0], @"age",
+//													   [@"" stringFromInt:0], @"points",
+//													   [@"" stringFromInt:0], @"total_votes",
+//													   [@"" stringFromInt:0], @"pokes",
+//													   [@"" stringFromInt:0], @"pics",
+//													   [@"" stringFromInt:0], @"age",
 //													   vo.username, @"username",
 //													   vo.fbID, @"fb_id",
 //													   vo.avatarURL, @"avatar_url", nil]];

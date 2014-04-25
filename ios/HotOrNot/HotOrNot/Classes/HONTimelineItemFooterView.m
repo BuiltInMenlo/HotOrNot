@@ -10,8 +10,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemFooterView.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
 #import "HONEmotionVO.h"
 
 

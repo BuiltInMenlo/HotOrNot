@@ -12,9 +12,6 @@
 
 #import "HONMessageReplyViewCell.h"
 #import "HONImageLoadingView.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 @interface HONMessageReplyViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;

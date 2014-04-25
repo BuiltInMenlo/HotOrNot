@@ -9,9 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONFontAllocator.h"
 #import "HONOpponentVO.h"
 #import "HONEmotionVO.h"
 #import "HONImageLoadingView.h"

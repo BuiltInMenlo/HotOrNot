@@ -9,8 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "HONClubCoverCameraOverlayView.h"
-#import "HONDeviceIntrinsics.h"
-#import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 
 

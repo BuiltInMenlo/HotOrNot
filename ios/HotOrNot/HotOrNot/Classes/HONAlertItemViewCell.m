@@ -9,11 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAlertItemViewCell.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 #import "HONAlertItemVO.h"
-#import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 
 @interface HONAlertItemViewCell ()

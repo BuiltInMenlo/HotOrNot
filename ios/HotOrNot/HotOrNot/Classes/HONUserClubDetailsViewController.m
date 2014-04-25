@@ -9,10 +9,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONUserClubDetailsViewController.h"
-#import "HONUtilsSuite.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 
 @interface HONUserClubDetailsViewController ()

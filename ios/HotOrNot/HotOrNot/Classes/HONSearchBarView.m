@@ -7,8 +7,6 @@
 //
 
 #import "HONSearchBarView.h"
-#import "HONColorAuthority.h"
-#import "HONFontAllocator.h"
 
 @interface HONSearchBarView ()
 @property (nonatomic, strong) UIImageView *unfocusedBGImageView;

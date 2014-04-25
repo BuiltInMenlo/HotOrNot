@@ -7,7 +7,6 @@
 //
 
 #import "HONFontAllocator.h"
-#import "HONColorAuthority.h"
 
 @implementation HONFontAllocator
 static HONFontAllocator *sharedInstance = nil;
