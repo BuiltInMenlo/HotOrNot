@@ -38,6 +38,10 @@ unsigned long long unistrlen(unichar *chars) {
 	return ([[[NSString alloc] init] stringFromFloat:(float)floatVal]);
 }
 
+- (NSString *)stringFromDictionary:(NSDictionary *)dictionary {
+	return ([NSString stringWithFormat:@"%@", dictionary]);
+}
+
 - (NSString *)stringFromDouble:(double)doubleVal {
 	return ([[[NSString alloc] init] stringFromFloat:(double)doubleVal]);
 }

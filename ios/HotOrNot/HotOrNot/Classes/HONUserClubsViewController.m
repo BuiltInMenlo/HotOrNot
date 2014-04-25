@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "EGORefreshTableHeaderView.h"
 #import "JLBPopSlideTransition.h"
 
@@ -116,11 +118,6 @@
 }
 
 - (void)_retreiveClubInvites {
-//	for (NSDictionary *club in _bakedClubs2) {
-//		[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", arc4random() - 200],
-//																	 @"name"	: [club objectForKey:@"name"],
-//																	 @"img"		: [club objectForKey:@"img"]}]];//[[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
-//	}
 	
 	// --//> *** POPULATED FPO CLUB *** <//-- //
 	[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:0]]];
@@ -171,6 +168,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
@@ -198,6 +196,7 @@
 }
 
 - (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 }
 
@@ -212,7 +211,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 }
 - (void)viewWillDisappear:(BOOL)animated {

@@ -176,6 +176,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)resetTotals;
 
 
+- (void)changeTabToIndex:(NSNumber *)selectedIndex;
 + (UIViewController *)appTabBarController;
 
 + (BOOL)hasNetwork;

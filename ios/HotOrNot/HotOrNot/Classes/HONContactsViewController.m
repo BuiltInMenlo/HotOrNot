@@ -8,6 +8,8 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "NSString+DataTypes.h"
+
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "TSTapstream.h"
@@ -411,14 +413,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
@@ -429,12 +431,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidDisappear:animated];
 }
 

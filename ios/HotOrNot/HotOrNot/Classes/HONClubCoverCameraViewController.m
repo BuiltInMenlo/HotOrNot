@@ -11,9 +11,11 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
+#import "UIImage+fixOrientation.h"
+
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
-#import "UIImage+fixOrientation.h"
 
 #import "HONClubCoverCameraViewController.h"
 #import "HONUtilsSuite.h"
@@ -100,12 +102,12 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
 	if (_isFirstAppearance) {
@@ -116,12 +118,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidDisappear:animated];
 }
 

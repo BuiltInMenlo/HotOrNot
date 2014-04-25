@@ -273,7 +273,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"INIT_TAB_BAR" object:nil];
 		[self dismissViewControllerAnimated:YES completion:^(void) {}];
 	}
 }

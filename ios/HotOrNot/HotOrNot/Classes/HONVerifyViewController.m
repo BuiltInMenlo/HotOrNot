@@ -6,9 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+#import "UIImageView+AFNetworking.h"
+
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
-#import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyViewController.h"
 #import "HONUtilsSuite.h"
@@ -175,14 +177,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 }
 

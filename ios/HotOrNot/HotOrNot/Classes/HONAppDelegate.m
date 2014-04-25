@@ -17,6 +17,7 @@
 #import <HockeySDK/HockeySDK.h>
 //#import <Tapjoy/Tapjoy.h>
 
+#import "NSString+DataTypes.h"
 
 #import "AFNetworking.h"
 #import "Chartboost.h"
@@ -24,11 +25,11 @@
 #import "KikAPI.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
-#import "UAConfig.h"
-#import "UAirship.h"
-#import "UAAnalytics.h"
-#import "UAPush.h"
-#import "UATagUtils.h"
+//#import "UAConfig.h"
+//#import "UAirship.h"
+//#import "UAAnalytics.h"
+//#import "UAPush.h"
+//#import "UATagUtils.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
@@ -115,7 +116,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
+//@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate>
 #else
 @interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
 #endif
@@ -146,23 +148,23 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				@"description"		: @"FPO High School",
 				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg",
 				
-				@"owner"			: @{@"id"		: @"62899",
+				@"owner"			: @{@"id"			: @"62899",
 										@"username"	: @"smileyy_syd",
 										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/efdb098b221b41778409e4d6d3d05f83_b12db29b3dce414899da69ad55effb91-1388538981"},
 				
 				@"members"			: @[@{@"id"				: @"116900",
 										   @"username"		: @"dev_jesse",
-										   @"avatar"		: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
+										   @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
 										   @"age"			: @"1970-07-08 00:00:00",
-										   @"extern_name"	: @"Jesse Boley",
+										   @"extern_name"		: @"Jesse Boley",
 										   @"mobile_number"	: @"",
 										   @"email"			: @"jlboley@gmail.com",
 										   @"invited"		: @"2014-03-05 10:41:41"}],
 				
-				@"pending"			: @[@{@"extern_name"	: @"Ken Shabby",
+				@"pending"			: @[@{@"extern_name"		: @"Ken Shabby",
 										  @"mobile_number"	: @"+14153456723",
 										  @"email"			: @"ken.shabby@gmail.com",
-										  @"invited"		: @"2014-03-25 18:31:15"}],
+										  @"invited"			: @"2014-03-25 18:31:15"}],
 				
 				@"blocked"			: @[],
 				
@@ -175,36 +177,36 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				@"description"		: @"",
 				@"img"				: @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg",
 				
-				@"owner"			: @{@"id"		: @"10563",
+				@"owner"			: @{@"id"			: @"10563",
 										@"username"	: @"cheylaureenxo",
 										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/8268d1cb4608e0fce19ddc30d1a47a6d247769bc1301f9d1b99c2c5248ce3148-1379717258"},
 				
 				@"members"			: @[@{@"id"				: @"99629",
 										  @"username"		: @"shane5s",
 										  @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
-										  @"age"			: @"1997-02-05 16:00:00",
-										  @"extern_name"	: @"Shane Hill",
+										  @"age"				: @"1997-02-05 16:00:00",
+										  @"extern_name"		: @"Shane Hill",
 										  @"mobile_number"	: @"+14152549391",
 										  @"email"			: @"",
-										  @"invited"		: @"2014-03-15 10:21:41"},
+										  @"invited"			: @"2014-03-15 10:21:41"},
 										@{@"id"				: @"131796",
 										  @"username"		: @"jess4life",
 										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/e03d3827b9b547db9c2d64fe02389896_fcc05b136a6d4a9dac3767006f555701-1397110912",
-										  @"age"			: @"1990-04-10 06:20:36",
-										  @"extern_name"	: @"Jessica Rabbit",
+										  @"age"				: @"1990-04-10 06:20:36",
+										  @"extern_name"		: @"Jessica Rabbit",
 										  @"mobile_number"	: @"+13058531028",
 										  @"email"			: @"",
-										  @"invited"		: @"2014-04-27 03:11:33"}],
+										  @"invited"			: @"2014-04-27 03:11:33"}],
 				@"pending"			: @[],
 				
 				@"blocked"			: @[@{@"id"				: @"52802",
 										  @"username"		: @"king Afg",
 										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/2e1716ac9b1046c788a7bb67b0f38705_24f84f0bc545480aab2fe358025c03a2-1388792086",
-										  @"age"			: @"1979-12-27 14:54:37",
-										  @"extern_name"	: @"Afghan King",
+										  @"age"				: @"1979-12-27 14:54:37",
+										  @"extern_name"		: @"Afghan King",
 										  @"mobile_number"	: @"",
 										  @"email"			: @"",
-										  @"invited"		: @"2014-04-27 09:36:19"}],
+										  @"invited"			: @"2014-04-27 09:36:19"}],
 				
 				@"total_members"	: @"3",
 				@"added"			: @"2014-04-20 16:20:00"}]);
@@ -552,6 +554,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
 }
 
+- (void)changeTabToIndex:(NSNumber *)selectedIndex {
+	self.tabBarController.selectedIndex = [selectedIndex intValue];
+}
+
 + (BOOL)hasNetwork {
 	[[Reachability reachabilityForInternetConnection] startNotifier];
 	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
@@ -766,7 +772,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
-				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 				
 			} else {
 				[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
@@ -792,7 +798,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:challengeID igoringNextPushes:isCancel completion:^(NSObject *result){
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]]];
 		[navigationController setNavigationBarHidden:YES];
-		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}];
 }
 
@@ -816,10 +822,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #pragma mark - Notifications
-- (void)_changeTab:(NSNotification *)notification {
-	self.tabBarController.selectedIndex = [[notification object] intValue];
-}
-
 - (void)_showShareShelf:(NSNotification *)notification {
 	_shareInfo = [notification object];
 	
@@ -831,10 +833,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 													otherButtonTitles:@"Kik", @"Instagram", @"Twitter", @"Facebook", @"SMS", @"Email", @"Copy link", nil];
 	[actionSheet setTag:0];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
-}
-
-- (void)_initTabBar:(NSNotification *)notification {
-	[self _initTabs];
 }
 
 - (void)_playOverlayAnimation:(NSNotification *)notification {
@@ -873,9 +871,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_styleUIAppearance {
-	NSShadow *shadow = [NSShadow new];
-	[shadow setShadowColor:[UIColor clearColor]];
-	[shadow setShadowOffset:CGSizeZero];
+	NSShadow *shadow = [[HONMainScreenOverseer sharedInstance] orthodoxUIShadowAttribute];//[NSShadow new];
+//	[shadow setShadowColor:[UIColor clearColor]];
+//	[shadow setShadowOffset:CGSizeZero];
 	
 	
 	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
@@ -888,12 +886,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	[[UINavigationBar appearance] setBackgroundColor:[UIColor colorWithRed:0.008 green:0.373 blue:0.914 alpha:1.0]];
 //	[[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	
-	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
-														   NSShadowAttributeName			: shadow,
-														   NSFontAttributeName				: [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22]}];
+	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName		: [UIColor whiteColor],
+														NSShadowAttributeName				: shadow,
+														NSFontAttributeName				: [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22]}];
 	
 	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
-														   NSShadowAttributeName			: shadow,
+														NSShadowAttributeName			: shadow,
 														   NSFontAttributeName				: [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateNormal];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName	: [UIColor whiteColor],
 														   NSShadowAttributeName			: shadow,
@@ -901,24 +899,25 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButton_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButton_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	
+	// tab bar translucency
 	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
 		[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
 	
 	else
 		[[UITabBar appearance] setTintColor:[UIColor clearColor]];
 	
-	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
+//	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
-	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
-		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
+//	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
+//		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
+//	
+//	else
+//		[[UIToolbar appearance] setTintColor:[UIColor clearColor]];
 	
-	else
-		[[UIToolbar appearance] setTintColor:[UIColor clearColor]];
-	
-	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
+//	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-	[[UIToolbar appearance] setBarStyle:UIBarStyleBlackTranslucent];
+	[[UIToolbar appearance] setBarStyle:UIBarStyleDefault];
 	
 //	[[UIApplication sharedApplication] setStatusBarHidden:([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) withAnimation:UIStatusBarAnimationNone];
 }
@@ -929,6 +928,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
+	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	
+	if (launchOptions) {
+		NSLog(@"\t—//]> [%@ didFinishLaunchingWithOptions] (%@)", self.class, launchOptions);
+		[[HONMainScreenOverseer sharedInstance] promptWithAlertView:[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
+																							   message:[[NSString string] stringFromDictionary:launchOptions]
+																							  delegate:nil
+																					 cancelButtonTitle:@"OK"
+																					 otherButtonTitles:nil]];
+	}
+	
+	
 #if __FORCE_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -936,8 +947,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
 	
 
@@ -976,7 +985,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[self.window addSubview:self.launchImageView];
 		[self.window makeKeyAndVisible];
 		
-		[self _initUrbanAirship];
+//		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
 		
 		
@@ -1013,7 +1022,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBAppEvents activateApp];
-	[[UAPush shared] resetBadge];
+	//[[UAPush shared] resetBadge];
 	
 //	Chartboost *chartboost = [Chartboost sharedChartboost];
 //    chartboost.appId = kChartboostAppID;
@@ -1082,15 +1091,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
 			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC);
 			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void){
-				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[path objectAtIndex:1] intValue]]] animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[path objectAtIndex:1] intValue]]] animated:YES completion:nil];
 			});
 		
 		} else if ([[path objectAtIndex:0] isEqualToString:@"invite"]) {
-			[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]] animated:YES completion:nil];
+			[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]] animated:YES completion:nil];
 		
 		} else if ([[path objectAtIndex:0] isEqualToString:@"create"]) {
 			if ([[path objectAtIndex:1] isEqualToString:@"selfie"])
-				[[HONAppDelegate appTabBarController] presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]] animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]] animated:YES completion:nil];
 		}
 		
 		return (YES);
@@ -1102,6 +1111,39 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
+	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
+	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
+	
+	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, deviceID);//[deviceToken description]);
+	[HONAppDelegate writeDeviceToken:deviceID];
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
+	
+	[HONAppDelegate writeDeviceToken:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
+	
+	application.applicationIconBadgeNumber = 0;
+	
+	
+	[[HONMainScreenOverseer sharedInstance] promptWithAlertView:[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
+																						   message:[@"" stringFromDictionary:userInfo]
+																						  delegate:nil
+																				 cancelButtonTitle:@"OK"
+																						otherButtonTitles:nil]];
+}
+
+
+
+
+/*
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	[[UAPush shared] registerDeviceToken:deviceToken];
 	
@@ -1155,6 +1197,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	completionHandler(UIBackgroundFetchResultNoData);
 }
+*/
 
 
 #pragma mark - Startup Operations
@@ -1235,53 +1278,53 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)_initUrbanAirship {
-	/** This prevents the UA Library from registering with UIApplication by default. This will allow
-	 ** you to prompt your users at a later time. This gives your app the opportunity to explain the
-	 ** benefits of push or allows users to turn it on explicitly in a settings screen.
-	 **
-	 ** If you just want everyone to immediately be prompted for push, you can leave this line out.
-	 **/
-//	[UAPush setDefaultPushEnabledValue:NO];
-	
-	/** Set log level for debugging config loading (optional) - it will be set to the value in the loaded config upon takeOff **/
-	[UAirship setLogLevel:UALogLevelNone];
-	
-	/** Populate AirshipConfig.plist with your app's info from https://go.urbanairship.com or set runtime properties here. **/
-	UAConfig *config = [UAConfig defaultConfig];
-	
-	/** You can then programatically override the plist values, etc.: **/
-//	config.developmentAppKey = @"YourKey";
-	
-	/** Call takeOff (which creates the UAirship singleton) **/
-	[UAirship takeOff:config];
-	
-	/** Print out the application configuration for debugging (optional) **/
-	UA_LDEBUG(@"Config:\n%@", [config description]);
-	
-	/** Set the icon badge to zero on startup (optional) **/
-	[[UAPush shared] resetBadge];
-	
-	/** Set the notification types required for the app (optional).
-	 ** With the default value of push set to no,
-	 ** UAPush will record the desired remote notification types, but not register for
-	 ** push notifications as mentioned above. When push is enabled at a later time, the registration
-	 ** will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
-	 ** set it if you want to add or remove types.
-	 **/
-	[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
-	[UAPush shared].pushNotificationDelegate = self;
-	
-	NSMutableArray *tags = [NSMutableArray arrayWithArray:[UATagUtils createTags:(UATagTypeTimeZone | UATagTypeLanguage | UATagTypeCountry)]];
-	[tags addObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-	[tags addObject:[[HONDeviceIntrinsics sharedInstance] modelName]];
-	[tags addObject:[[UIDevice currentDevice] systemVersion]];
-	
-	[UAPush shared].tags = [NSArray arrayWithArray:tags];
-	[[UAPush shared] updateRegistration];
-	
-	[HONAppDelegate writeDeviceToken:@""];
-}
+//- (void)_initUrbanAirship {
+//	/** This prevents the UA Library from registering with UIApplication by default. This will allow
+//	 ** you to prompt your users at a later time. This gives your app the opportunity to explain the
+//	 ** benefits of push or allows users to turn it on explicitly in a settings screen.
+//	 **
+//	 ** If you just want everyone to immediately be prompted for push, you can leave this line out.
+//	 **/
+////	[UAPush setDefaultPushEnabledValue:NO];
+//	
+//	/** Set log level for debugging config loading (optional) - it will be set to the value in the loaded config upon takeOff **/
+//	[UAirship setLogLevel:UALogLevelNone];
+//	
+//	/** Populate AirshipConfig.plist with your app's info from https://go.urbanairship.com or set runtime properties here. **/
+//	UAConfig *config = [UAConfig defaultConfig];
+//	
+//	/** You can then programatically override the plist values, etc.: **/
+////	config.developmentAppKey = @"YourKey";
+//	
+//	/** Call takeOff (which creates the UAirship singleton) **/
+//	[UAirship takeOff:config];
+//	
+//	/** Print out the application configuration for debugging (optional) **/
+//	UA_LDEBUG(@"Config:\n%@", [config description]);
+//	
+//	/** Set the icon badge to zero on startup (optional) **/
+//	[[UAPush shared] resetBadge];
+//	
+//	/** Set the notification types required for the app (optional).
+//	 ** With the default value of push set to no,
+//	 ** UAPush will record the desired remote notification types, but not register for
+//	 ** push notifications as mentioned above. When push is enabled at a later time, the registration
+//	 ** will occur normally. This value defaults to badge, alert and sound, so it's only necessary to
+//	 ** set it if you want to add or remove types.
+//	 **/
+//	[UAPush shared].notificationTypes = (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert);
+//	[UAPush shared].pushNotificationDelegate = self;
+//	
+//	NSMutableArray *tags = [NSMutableArray arrayWithArray:[UATagUtils createTags:(UATagTypeTimeZone | UATagTypeLanguage | UATagTypeCountry)]];
+//	[tags addObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+//	[tags addObject:[[HONDeviceIntrinsics sharedInstance] modelName]];
+//	[tags addObject:[[UIDevice currentDevice] systemVersion]];
+//	
+//	[UAPush shared].tags = [NSArray arrayWithArray:tags];
+//	[[UAPush shared] updateRegistration];
+//	
+//	[HONAppDelegate writeDeviceToken:@""];
+//}
 
 - (void)_initThirdPartySDKs {
 #if __APPSTORE_BUILD__ == 0
@@ -1457,11 +1500,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[navigationController setNavigationBarHidden:YES];
 		if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 			}];
 			
 		} else
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
@@ -1505,11 +1548,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[navigationController setNavigationBarHidden:YES];
 		if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 			}];
 					
 		} else
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
@@ -1644,11 +1687,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			if ([[UIApplication sharedApplication] delegate].window.rootViewController.presentedViewController != nil) {
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-					[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 				}];
 				
 			} else
-				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

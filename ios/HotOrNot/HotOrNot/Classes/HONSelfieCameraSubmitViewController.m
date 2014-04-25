@@ -6,17 +6,19 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "MBProgressHUD.h"
 
+#import "NSString+DataTypes.h"
+
+#import "MBProgressHUD.h"
 
 #import "HONSelfieCameraSubmitViewController.h"
 #import "HONUtilsSuite.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
-#import "HONSelfieSubmitClubViewCell.h"
+#import "HONSelfieCameraClubViewCell.h"
 #import "HONUserClubVO.h"
 
-@interface HONSelfieCameraSubmitViewController () <HONSelfieSubmitClubViewCellDelegate>
+@interface HONSelfieCameraSubmitViewController () <HONSelfieCameraClubViewCellDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
 
@@ -148,6 +150,9 @@
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:submitButton];
+	
+	
+	[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
 }
 
 - (void)viewDidLoad {
@@ -158,22 +163,22 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidDisappear:animated];
 }
 
@@ -219,29 +224,33 @@
 	
 	
 	if ([_selectedClubs count] == [_allClubs count]) {
-		for (HONSelfieSubmitClubViewCell *cell in _viewCells)
-			[cell toggleSelected:NO];
+		for (HONSelfieCameraClubViewCell *cell in _viewCells) {
+			if (cell.userClubVO != nil)
+				[cell toggleSelected:NO];
+		}
 		
 		[_selectedClubs removeAllObjects];
 	
 	} else {
-		for (HONSelfieSubmitClubViewCell *cell in _viewCells)
-			[cell toggleSelected:YES];
+		for (HONSelfieCameraClubViewCell *cell in _viewCells) {
+			if (cell.userClubVO != nil)
+				[cell toggleSelected:YES];
+		}
 		
 		[_selectedClubs addObjectsFromArray:_allClubs];
 	}
 }
 
 
-#pragma mark - SelfieSubmitClubViewCell Delegates
-- (void)selfieSubmitClubViewCell:(HONSelfieSubmitClubViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
+#pragma mark - SelfieCameraClubViewCell Delegates
+- (void)selfieCameraClubViewCell:(HONSelfieCameraClubViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] selfieSubmitClubViewCell:selectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
 	if (![_selectedClubs containsObject:userClubVO])
 		[_selectedClubs addObject:userClubVO];
 }
 
-- (void)selfieSubmitClubViewCell:(HONSelfieSubmitClubViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
+- (void)selfieCameraClubViewCell:(HONSelfieCameraClubViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] selfieSubmitClubViewCell:deselectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
 	if ([_selectedClubs containsObject:userClubVO])
@@ -264,11 +273,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONSelfieSubmitClubViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONSelfieCameraClubViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONSelfieSubmitClubViewCell alloc] initAsSelectAllCell:(indexPath.section == 1)];
-	
+		cell = [[HONSelfieCameraClubViewCell alloc] initAsSelectAllCell:(indexPath.section == 1)];
 	
 	if (indexPath.section == 0) {
 		cell.userClubVO = (HONUserClubVO *)[_allClubs objectAtIndex:indexPath.row];
@@ -292,6 +300,7 @@
 	else
 		[_viewCells addObject:cell];
 	
+	[cell hideChevron];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
@@ -316,7 +325,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if (indexPath.section == 0) {
-		HONSelfieSubmitClubViewCell *cell = (HONSelfieSubmitClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+		HONSelfieCameraClubViewCell *cell = (HONSelfieCameraClubViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell invertSelect];
 		
 	} else

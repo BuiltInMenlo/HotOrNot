@@ -214,7 +214,7 @@
 		_submitImageView.alpha = 1.0;
 	} completion:nil];
 	
-	[[HONAPICaller sharedInstance] submitChallengeWithDictionary:_challengeParams completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] submitChallengeWithDictionary:_challengeParams completion:^(NSObject *result) {
 //		[UIView animateWithDuration:0.5 animations:^(void) {
 //			_submitImageView.alpha = 0.0;
 //		} completion:^(BOOL finished) {
@@ -299,7 +299,6 @@
 	
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"NO"];
 }
 
 - (void)viewDidLoad {

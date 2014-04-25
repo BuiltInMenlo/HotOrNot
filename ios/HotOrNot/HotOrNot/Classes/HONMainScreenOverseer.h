@@ -13,4 +13,6 @@
 - (void)appWindowAdoptsView:(UIView *)view;
 - (void)promptWithAlertView:(UIAlertView *)alertView;
 
+
+- (NSShadow *)orthodoxUIShadowAttribute;
 @end

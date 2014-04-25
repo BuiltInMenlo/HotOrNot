@@ -8,9 +8,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
+#import "UIImageView+AFNetworking.h"
+
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
-#import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewController.h"
 #import "HONUtilsSuite.h"
@@ -262,7 +264,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 }
 
