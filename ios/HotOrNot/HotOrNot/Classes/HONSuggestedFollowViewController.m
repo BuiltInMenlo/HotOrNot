@@ -18,7 +18,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
@@ -72,7 +72,7 @@
 	_removeUsers = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
-	for (NSDictionary *dict in [HONAppDelegate popularPeople])
+	for (NSDictionary *dict in [HONAppDelegate searchUsers])
 		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Suggested"];
@@ -310,7 +310,7 @@
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
-			for (NSDictionary *dict in [HONAppDelegate popularPeople])
+			for (NSDictionary *dict in [HONAppDelegate searchUsers])
 				[_selectedUsers addObject:[HONTrivialUserVO userWithDictionary:dict]];
 			
 			for (HONSuggestedFollowViewCell *cell in _cells)

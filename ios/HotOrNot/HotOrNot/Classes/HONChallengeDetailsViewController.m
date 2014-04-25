@@ -12,11 +12,13 @@
 
 #import "HONChallengeDetailsViewController.h"
 #import "HONHeaderView.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
+#import "HONMainScreenOverseer.h"
+
 #import "HONImagePickerViewController.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
@@ -253,7 +255,7 @@
 	[joinFooterButton setTitle:@"Reply" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7]) {
 		size = [joinFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 															  options:NSStringDrawingTruncatesLastVisibleLine
 														   attributes:@{NSFontAttributeName:joinFooterButton.titleLabel.font}
@@ -272,7 +274,7 @@
 	[shareFooterButton setTitle:@"Share" forState:UIControlStateNormal];
 	[shareFooterButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7]) {
 		size = [shareFooterButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 															   options:NSStringDrawingTruncatesLastVisibleLine
 															attributes:@{NSFontAttributeName:shareFooterButton.titleLabel.font}
@@ -291,7 +293,7 @@
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[flagButton addTarget:self action:@selector(_goFlagChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7]) {
 		size = [flagButton.titleLabel.text boundingRectWithSize:CGSizeMake(150.0, 22.0)
 														options:NSStringDrawingTruncatesLastVisibleLine
 													 attributes:@{NSFontAttributeName:flagButton.titleLabel.font}
@@ -653,19 +655,19 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-//	NSLog(@"[:|:] egoRefreshTableHeaderDidTriggerRefresh offset:[%.02f] inset:[%@] [:|:]", _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset));
+//	NSLog(@"[*:*] egoRefreshTableHeaderDidTriggerRefresh offset:[%.02f] inset:[%@] [*:*]", _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset));
 	[self _goRefresh];
 }
 
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//	NSLog(@"[:_:] scrollViewDidScroll offset:[%.02f] inset:[%@] [:_:]", scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"[*:*] scrollViewDidScroll offset:[%.02f] inset:[%@] [*:*]", scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-//	NSLog(@"[:_:] scrollViewDidEndDragging offset:[%.02f] inset:[%@] [:_:]", scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
+//	NSLog(@"[*:*] scrollViewDidEndDragging offset:[%.02f] inset:[%@] [*:*]", scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset));
 	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 

@@ -10,7 +10,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONCommentsViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONBaseRowViewCell.h"

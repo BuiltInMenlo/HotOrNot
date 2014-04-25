@@ -10,7 +10,7 @@
 
 #import "HONSuspendedViewController.h"
 #import "HONHeaderView.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONFontAllocator.h"
 
 @interface HONSuspendedViewController ()

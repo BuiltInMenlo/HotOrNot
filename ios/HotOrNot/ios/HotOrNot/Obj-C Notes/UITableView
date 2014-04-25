@@ -1,0 +1,6 @@
+NSLog(@"_tableView.bounds:(%@)", NSStringFromCGRect(_tableView.bounds));
+NSLog(@"_tableView.frame:(%@)", NSStringFromCGRect(_tableView.frame));
+NSLog(@"_tableView.contentSize:(%@)", NSStringFromCGSize(_tableView.contentSize));
+NSLog(@"_tableView.contentOffset:(%@)", NSStringFromCGPoint(_tableView.contentOffset));
+NSLog(@"_tableView.contentInset:(%@)", NSStringFromUIEdgeInsets(_tableView.contentInset));
+NSLog(@"_tableView.scrollIndicatorInsets:(%@)", NSStringFromUIEdgeInsets(_tableView.scrollIndicatorInsets));

@@ -8,15 +8,14 @@
 
 
 #import "HONImagePickerViewController.h"
-#import "HONChallengeCameraViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONTrivialUserVO.h"
 
 @interface HONImagePickerViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) NSArray *recipients;
-@property (nonatomic) BOOL isJoinChallenge;
-@property (nonatomic) BOOL isMessage;
+@property (nonatomic) HONSelfieCameraSubmitType selfieSubmitType;
 @end
 
 @implementation HONImagePickerViewController
@@ -31,8 +30,15 @@
 
 - (id)initAsNewChallenge {
 	if ((self = [self init])) {
-		_isJoinChallenge = NO;
-		_isMessage = NO;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateChallenge;
+	}
+	
+	return (self);
+}
+
+- (id)initAsNewChallengeForClub:(int)clubID {
+	if ((self = [self init])) {
+		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateClub;
 	}
 	
 	return (self);
@@ -40,8 +46,7 @@
 
 - (id)initAsMessageToRecipients:(NSArray *)recipients {
 	if ((self = [self init])) {
-		_isJoinChallenge = NO;
-		_isMessage = YES;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeCreateMessage;
 		_recipients = recipients;
 	}
 	
@@ -50,8 +55,7 @@
 
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo {
 	if ((self = [self init])) {
-		_isJoinChallenge = YES;
-		_isMessage = NO;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeReplyChallenge;
 		_challengeVO = vo;
 	}
 	
@@ -60,8 +64,7 @@
 
 - (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients {
 	if ((self= [self init])) {
-		_isJoinChallenge = YES;
-		_isMessage = YES;
+		_selfieSubmitType = HONSelfieCameraSubmitTypeReplyMessage;
 		_messageVO = messageVO;
 		_recipients = recipients;
 	}
@@ -96,21 +99,26 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if (_isMessage) {
-		if (_isJoinChallenge)
-			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsMessageReply:_messageVO withRecipients:_recipients] animated:NO];
-		
-		else
-			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewMessageWithRecipients:_recipients] animated:NO];
-			
-	} else {
-		if (_isJoinChallenge)
-			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
-		
-		else
-			[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewChallenge] animated:NO];
+	if (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateChallenge)
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge] animated:NO];
 	
-	}
+	else if (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge)
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
+	
+	else if (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateClub)
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge] animated:NO];
+	
+	else if (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub)
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
+	
+	else if (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateMessage)
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsNewMessageWithRecipients:_recipients] animated:NO];
+	
+	else if (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyMessage)
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsMessageReply:_messageVO withRecipients:_recipients] animated:NO];
+	
+	else
+		[self.navigationController pushViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge] animated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

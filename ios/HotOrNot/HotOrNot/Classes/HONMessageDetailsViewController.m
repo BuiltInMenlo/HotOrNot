@@ -10,7 +10,7 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessageDetailsViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONMessageReplyViewCell.h"

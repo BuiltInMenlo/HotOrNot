@@ -10,7 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONMatchContactsViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 

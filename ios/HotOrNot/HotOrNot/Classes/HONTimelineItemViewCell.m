@@ -10,8 +10,8 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONImageLoadingView.h"
 #import "HONTimelineCellHeaderView.h"
 #import "HONTimelineCellSubjectView.h"
@@ -97,7 +97,7 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:_heroHolderView.frame];
 	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -133,24 +133,7 @@
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:shareButton];
 	
-	
-	NSDictionary *sticker = [HONAppDelegate stickerForSubject:_challengeVO.subjectName];
-	
-	if (sticker != nil) {
-//		NSLog(@"STICKER:[%@]", [[[sticker objectForKey:@"img"] stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]);
-		UIImageView *stickerImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		[stickerImageView setImageWithURL:[NSURL URLWithString:[[[sticker objectForKey:@"img"] stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix] stringByReplacingOccurrencesOfString:@".jpg" withString:@".png"]] placeholderImage:nil];
-		[self.contentView addSubview:stickerImageView];
 		
-		if ([[sticker objectForKey:@"user_id"] intValue] != 0) {
-			UIButton *stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			stickerButton.frame = stickerImageView.frame;
-			[stickerButton setTag:[[sticker objectForKey:@"user_id"] intValue]];
-			[stickerButton addTarget:self action:@selector(_goStickerProfile:) forControlEvents:UIControlEventTouchUpInside];
-			[self.contentView addSubview:stickerButton];
-		}
-	}
-	
 	if (_isBanner) {
 		_footerView.frame = CGRectOffset(_footerView.frame, 0.0, -80.0);
 		

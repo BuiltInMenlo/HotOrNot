@@ -1,5 +1,5 @@
 //
-//  HONGenericAvatarViewCell.m
+//  HONBaseAvatarViewCell.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 11/5/13 @ 9:56 PM.
@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONBaseAvatarViewCell.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONFontAllocator.h"
 #import "HONColorAuthority.h"
 #import "HONImagingDepictor.h"
@@ -97,8 +97,6 @@
 			_avatarImageView.alpha = 1.0;
 		} completion:nil];
 	};
-	
-	NSLog(@"AVATAR:[%@]", [_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]),
 	
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil

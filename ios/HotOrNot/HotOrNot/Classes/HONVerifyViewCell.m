@@ -9,8 +9,8 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyViewCell.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONOpponentVO.h"
 #import "HONEmotionVO.h"
@@ -77,7 +77,7 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:challengeVO.creatorVO.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
 	};
 	
-	[heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
 								  failure:failureBlock];
@@ -272,19 +272,6 @@
 	[UIView setAnimationDuration:0.33];
 	[self.contentView setBackgroundColor:color];
 	[UIView commitAnimations];
-}
-
-- (HONEmotionVO *)_challengeEmotion {
-	HONEmotionVO *emotionVO;
-	
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:_challengeVO.subjectName]) {
-			emotionVO = vo;
-			break;
-		}
-	}
-	
-	return (emotionVO);
 }
 
 

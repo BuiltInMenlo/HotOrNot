@@ -32,10 +32,10 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAppDelegate.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONChallengeAssistant.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
@@ -139,6 +139,77 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @synthesize managedObjectModel = _managedObjectModel;
 
 
+
++ (NSArray *)fpoClubDictionaries {
+	return (@[@{@"id"				: @"1110001",
+				@"name"				: @"School",
+				@"description"		: @"FPO High School",
+				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg",
+				
+				@"owner"			: @{@"id"		: @"62899",
+										@"username"	: @"smileyy_syd",
+										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/efdb098b221b41778409e4d6d3d05f83_b12db29b3dce414899da69ad55effb91-1388538981"},
+				
+				@"members"			: @[@{@"id"				: @"116900",
+										   @"username"		: @"dev_jesse",
+										   @"avatar"		: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
+										   @"age"			: @"1970-07-08 00:00:00",
+										   @"extern_name"	: @"Jesse Boley",
+										   @"mobile_number"	: @"",
+										   @"email"			: @"jlboley@gmail.com",
+										   @"invited"		: @"2014-03-05 10:41:41"}],
+				
+				@"pending"			: @[@{@"extern_name"	: @"Ken Shabby",
+										  @"mobile_number"	: @"+14153456723",
+										  @"email"			: @"ken.shabby@gmail.com",
+										  @"invited"		: @"2014-03-25 18:31:15"}],
+				
+				@"blocked"			: @[],
+				
+				@"total_members"	: @"2",
+				@"added"			: @"2014-03-21 12:43:55"},
+			  
+			  
+			  @{@"id"				: @"1110002",
+				@"name"				: @"Katy Perry",
+				@"description"		: @"",
+				@"img"				: @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg",
+				
+				@"owner"			: @{@"id"		: @"10563",
+										@"username"	: @"cheylaureenxo",
+										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/8268d1cb4608e0fce19ddc30d1a47a6d247769bc1301f9d1b99c2c5248ce3148-1379717258"},
+				
+				@"members"			: @[@{@"id"				: @"99629",
+										  @"username"		: @"shane5s",
+										  @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
+										  @"age"			: @"1997-02-05 16:00:00",
+										  @"extern_name"	: @"Shane Hill",
+										  @"mobile_number"	: @"+14152549391",
+										  @"email"			: @"",
+										  @"invited"		: @"2014-03-15 10:21:41"},
+										@{@"id"				: @"131796",
+										  @"username"		: @"jess4life",
+										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/e03d3827b9b547db9c2d64fe02389896_fcc05b136a6d4a9dac3767006f555701-1397110912",
+										  @"age"			: @"1990-04-10 06:20:36",
+										  @"extern_name"	: @"Jessica Rabbit",
+										  @"mobile_number"	: @"+13058531028",
+										  @"email"			: @"",
+										  @"invited"		: @"2014-04-27 03:11:33"}],
+				@"pending"			: @[],
+				
+				@"blocked"			: @[@{@"id"				: @"52802",
+										  @"username"		: @"king Afg",
+										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/2e1716ac9b1046c788a7bb67b0f38705_24f84f0bc545480aab2fe358025c03a2-1388792086",
+										  @"age"			: @"1979-12-27 14:54:37",
+										  @"extern_name"	: @"Afghan King",
+										  @"mobile_number"	: @"",
+										  @"email"			: @"",
+										  @"invited"		: @"2014-04-27 09:36:19"}],
+				
+				@"total_members"	: @"3",
+				@"added"			: @"2014-04-20 16:20:00"}]);
+}
+
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 }
@@ -194,12 +265,23 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_age"] intValue]);
 }
 
-+ (NSString *)s3BucketForType:(NSString *)bucketType {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:bucketType]);
-}
-
-+ (int)profileSubscribeThreshold {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"profile_subscribe"] intValue]);
++ (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
+	NSString *key = @"";
+	
+	if (s3BucketType == HONAmazonS3BucketTypeAvatarsSource || s3BucketType == HONAmazonS3BucketTypeAvatarsCloudFront)
+		key = @"avatars";
+	
+	else if (s3BucketType == HONAmazonS3BucketTypeBannersSource || s3BucketType == HONAmazonS3BucketTypeBannersCloudFront)
+		key = @"banners";
+	
+	else if (s3BucketType == HONAmazonS3BucketTypeClubsSource || s3BucketType == HONAmazonS3BucketTypeClubsCloudFront)
+		key = @"challenges";
+	
+	else if (s3BucketType == HONAmazonS3BucketTypeEmotionsSource || s3BucketType == HONAmazonS3BucketTypeEmoticonsCloudFront)
+		key = @"emoticons";
+	
+	
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:key] objectAtIndex:(s3BucketType % 2)]);
 }
 
 + (BOOL)switchEnabledForKey:(NSString *)key {
@@ -222,33 +304,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]] intValue] : -1);
 }
 
-+ (NSArray *)composeEmotions {
-	NSMutableArray *emotions = [NSMutableArray array];
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"compose_emotions"])
-		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	return ([emotions copy]);
-//	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"compose_emotions"]);
-}
-
-+ (NSArray *)replyEmotions {
-	NSMutableArray *emotions = [NSMutableArray array];
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"reply_emotions"])
-		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	return ([emotions copy]);
-}
-
-+ (NSDictionary *)stickerForSubject:(NSString *)subject {
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"stickers"]) {
-//		NSLog(@"STICKER CHECK:(%@) == (%@)", [subject lowercaseString], [[dict objectForKey:@"subject"] lowercaseString]);
-		if ([[[dict objectForKey:@"subject"] lowercaseString] isEqualToString:[subject lowercaseString]])
-			return (dict);
-	}
-	
-	return (nil);
-}
-
 + (NSString *)kikCardURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
 }
@@ -257,26 +312,31 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"share_url"]);
 }
 
-+ (NSArray *)searchSubjects {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"search_subjects"]);
+
++ (NSArray *)freeEmotions {
+	NSMutableArray *emotions = [NSMutableArray array];
+	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"emotions"] objectAtIndex:0])
+		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+	
+	return ([emotions copy]);
+}
+
++ (NSArray *)paidEmotions {
+	NSMutableArray *emotions = [NSMutableArray array];
+	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"emotions"] objectAtIndex:1])
+		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+	
+	return ([emotions copy]);
+}
+
++ (NSArray *)subjectFormats {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"subject_formats"]);
 }
 
 + (NSArray *)searchUsers {
 	return ([NSMutableArray arrayWithArray:[[[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username"
 																																																  ascending:YES
 																																																   selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
-}
-
-+ (NSArray *)inviteCelebs {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_celebs"]);
-}
-
-+ (NSArray *)popularPeople {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"popular_people"]);
-}
-
-+ (NSArray *)specialSubjects {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"special_subjects"]);
 }
 
 + (NSRange)rangeForImageQueue {
@@ -480,7 +540,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSArray *)colorsForOverlayTints {
-	
 	NSMutableArray *overlayTints = [NSMutableArray arrayWithCapacity:[[[NSUserDefaults standardUserDefaults] objectForKey:@"overlay_tint_rbgas"] count]];
 	for (NSArray *rgba in [[NSUserDefaults standardUserDefaults] objectForKey:@"overlay_tint_rbgas"])
 		[overlayTints addObject:[UIColor colorWithRed:[[rgba objectAtIndex:0] floatValue] green:[[rgba objectAtIndex:1] floatValue] blue:[[rgba objectAtIndex:2] floatValue] alpha:[[rgba objectAtIndex:3] floatValue]]];
@@ -600,48 +659,46 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithEpoch:(int)[[NSDate date] timeIntervalSince1970] completion:^(NSObject *result) {
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[(NSDictionary *)result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"service_url"] forKey:@"service_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"splash_image"] forKey:@"splash_image"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"share_templates"] forKey:@"share_templates"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"kik_card"] forKey:@"kik_card"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"verify_copy"] forKey:@"verify_copy"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"share_url"] forKey:@"share_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[(NSDictionary *)result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[(NSDictionary *)result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:[[(NSDictionary *)result objectForKey:@"profile_subscribe"] intValue]] forKey:@"profile_subscribe"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"min_age"] forKey:@"min_age"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
-		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[(NSDictionary *)result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"compose_emotions"] forKey:@"compose_emotions"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"reply_emotions"] forKey:@"reply_emotions"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"stickers"] forKey:@"stickers"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"search_hashtags"] forKey:@"search_subjects"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"search_users"] forKey:@"search_users"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"invite_celebs"] forKey:@"invite_celebs"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"popular_people"] forKey:@"popular_people"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"special_subjects"] forKey:@"special_subjects"];
-		[[NSUserDefaults standardUserDefaults] setObject:[(NSDictionary *)result objectForKey:@"switches"] forKey:@"switches"];
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
-														   @"banners"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
-														   @"challenges"	: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
-														   @"emoticons"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"],
-														   @"stickers"		: [[(NSDictionary *)result objectForKey:@"s3_buckets"] objectForKey:@"stickers"]} forKey:@"s3_buckets"];
+		NSDictionary *dict = (NSDictionary *)result;
 		
-		[[NSUserDefaults standardUserDefaults] setObject:[[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[dict objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"service_url"] forKey:@"service_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"splash_image"] forKey:@"splash_image"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"share_templates"] forKey:@"share_templates"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"kik_card"] forKey:@"kik_card"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"verify_copy"] forKey:@"verify_copy"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"share_url"] forKey:@"share_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[dict objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[dict objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"min_age"] forKey:@"min_age"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
+		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[dict objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"filter_vals"] forKey:@"filter_vals"];
+		[[NSUserDefaults standardUserDefaults] setObject:@[[dict objectForKey:@"free_emotions"],
+														   [dict objectForKey:@"paid_emotions"]] forKey:@"emotions"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[(NSDictionary *)result objectForKey:@"invite_formats"] objectForKey:@"sms"],
-														   @"email"		: [[(NSDictionary *)result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"stickers"] forKey:@"stickers"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"subject_formats"] forKey:@"subject_formats"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"search_users"] forKey:@"search_users"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"switches"] forKey:@"switches"];
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
+														   @"banners"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"banners"],
+														   @"challenges"	: [[dict objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
+														   @"emoticons"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"instagram"],
-														   @"twitter"	: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"twitter"],
-														   @"facebook"	: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"facebook"],
-														   @"sms"		: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"sms"],
-														   @"email"		: [[(NSDictionary *)result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[dict objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[dict objectForKey:@"invite_formats"] objectForKey:@"sms"],
+														   @"email"		: [[dict objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[dict objectForKey:@"share_formats"] objectForKey:@"instagram"],
+														   @"twitter"	: [[dict objectForKey:@"share_formats"] objectForKey:@"twitter"],
+														   @"facebook"	: [[dict objectForKey:@"share_formats"] objectForKey:@"facebook"],
+														   @"sms"		: [[dict objectForKey:@"share_formats"] objectForKey:@"sms"],
+														   @"email"		: [[dict objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
 		
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -651,12 +708,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 		
 		
-		if ([[[(NSDictionary *)result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
-			[self _showOKAlert:[[(NSDictionary *)result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[(NSDictionary *)result objectForKey:@"boot_alert"] objectForKey:@"message"]];
+		if ([[[dict objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
+			[self _showOKAlert:[[dict objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[dict objectForKey:@"boot_alert"] objectForKey:@"message"]];
 		
 		
 		[self _writeShareTemplates];
-		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
+		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
 		[self _registerUser];
 		
 		if (_isFromBackground) {
@@ -759,10 +816,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #pragma mark - Notifications
-- (void)_addViewToWindow:(NSNotification *)notification {
-	[self.window addSubview:(UIView *)[notification object]];
-}
-
 - (void)_changeTab:(NSNotification *)notification {
 	self.tabBarController.selectedIndex = [[notification object] intValue];
 }
@@ -825,7 +878,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[shadow setShadowOffset:CGSizeZero];
 	
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7])
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
 		[[UINavigationBar appearance] setBarTintColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
 
 	else
@@ -848,7 +901,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButton_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButton_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7])
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
 		[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
 	
 	else
@@ -857,7 +910,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7])
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
 		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
 	
 	else
@@ -882,9 +935,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	[self _styleUIAppearance];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleStatusBarTint:) name:@"TOGGLE_STATUS_BAR_TINT" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_initTabBar:) name:@"INIT_TAB_BAR" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playOverlayAnimation:) name:@"PLAY_OVERLAY_ANIMATION" object:nil];
@@ -1055,7 +1106,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[UAPush shared] registerDeviceToken:deviceToken];
 	
 	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	[mixpanel.people addPushDeviceToken:deviceToken];
 	
 	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
@@ -1077,7 +1128,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSString *holderToken = [[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"];
 	
 	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[HONAppDelegate writeDeviceToken:holderToken];
@@ -1223,7 +1274,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSMutableArray *tags = [NSMutableArray arrayWithArray:[UATagUtils createTags:(UATagTypeTimeZone | UATagTypeLanguage | UATagTypeCountry)]];
 	[tags addObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
-	[tags addObject:[[HONDeviceTraits sharedInstance] modelName]];
+	[tags addObject:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	[tags addObject:[[UIDevice currentDevice] systemVersion]];
 	
 	[UAPush shared].tags = [NSArray arrayWithArray:tags];
@@ -1243,7 +1294,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
-	config.idfa = [[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO];
+	config.idfa = [[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO];
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";

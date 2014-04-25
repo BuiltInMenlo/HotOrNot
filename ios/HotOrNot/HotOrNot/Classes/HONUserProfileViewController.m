@@ -13,12 +13,8 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONChallengeAssistant.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONChangeAvatarViewController.h"
 //#import "HONSnapPreviewViewController.h"
 //#import "HONImagePickerViewController.h"
@@ -158,14 +154,10 @@
 					[_progressHUD hide:YES];
 					_progressHUD = nil;
 				}
-				
-				_refreshTableHeaderView.delegate = nil;
-				[_refreshTableHeaderView removeFromSuperview];
-				_refreshTableHeaderView = nil;
-				
-				[_tableView reloadData];
 			}
-									
+			
+			[self _retrieveAlerts];
+			
 		} else {
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
@@ -539,7 +531,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 0) ? 44.0 : ([_activityAlerts count] > 5 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 48.0: 0.0);
+	return ((indexPath.section == 0) ? 44.0 : ([_activityAlerts count] > 5 + ((int)([[HONDeviceIntrinsics sharedInstance] isPhoneType5s]) * 2)) ? 48.0: 0.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

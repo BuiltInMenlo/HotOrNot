@@ -1,0 +1,316 @@
+//
+//  EGORefreshTableHeaderView.m
+//  Demo
+//
+//  Created by Devin Doty on 10/14/09October14.
+//  Copyright 2009 enormego. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+
+//
+//  HONAppDelegate.h
+//  HotOrNot
+//
+//  Created by Matthew Holcombe on 09.06.12.
+//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//
+
+#import "EGORefreshTableHeaderView.h"
+
+#define kHeaderOffset 64.0f
+#define kLoadingTheshold 40.0f
+
+
+@interface EGORefreshTableHeaderView ()
+@property (nonatomic) EGOPullRefreshState state;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic) CGFloat tareOffset;
+@property (nonatomic) CGFloat loadingThreshold;
+@property (nonatomic) BOOL isLoading;
+@property (nonatomic) BOOL pagingEnabled;
+//@property (nonatomic) BOOL isPrepTaring;
+@end
+
+@implementation EGORefreshTableHeaderView
+@synthesize delegate = _delegate;
+@synthesize scrollView = _scrollView;
+
+- (id)initWithFrame:(CGRect)frame {
+	if (self = [super initWithFrame:frame]) {
+		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		self.backgroundColor = self.superview.backgroundColor;
+		
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+		_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, (frame.size.width - _activityIndicatorView.frame.size.width) * 0.5, frame.size.height - (_activityIndicatorView.frame.size.height + ((kLoadingTheshold - _activityIndicatorView.frame.size.height) * 0.5)));
+		[self addSubview:_activityIndicatorView];
+		
+		_isLoading = NO;
+		[self setState:EGOOPullRefreshNormal];
+	}
+	
+	return (self);
+}
+
+- (id)initWithFrame:(CGRect)frame usingTareOffset:(CGFloat)tareOffset {
+	if (self = [self initWithFrame:frame]) {
+		_tareOffset = tareOffset;
+		_loadingThreshold = _tareOffset + kLoadingTheshold;
+	}
+	
+	return (self);
+}
+
+- (id)initWithFrame:(CGRect)frame headerOverlaps:(BOOL)isOverlapping {
+	if (self = [self initWithFrame:frame usingTareOffset:((int)!isOverlapping) * kHeaderOffset]) {
+		_loadingThreshold += ((int)isOverlapping) * kHeaderOffset;
+	}
+	
+	return (self);
+}
+
+
+#pragma mark - Public API
+- (void)setScrollView:(UIScrollView *)scrollView {
+//	_isPrepTaring = YES;
+	
+	_scrollView = scrollView;
+	_scrollView.delegate = self;
+	
+//	_pagingEnabled = _scrollView.pagingEnabled;
+//	_scrollView.pagingEnabled = NO;
+	
+//	if (_scrollView.contentOffset.y != -_tareOffset)
+//		[_scrollView setContentOffset:CGPointMake(0.0, -_tareOffset)];
+	
+//	if (_scrollView.contentInset.top != _tareOffset)
+//		[_scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+}
+
+- (void)setState:(EGOPullRefreshState)aState {
+	switch (aState) {
+		case EGOOPullRefreshNormal:
+			break;
+			
+		case EGOOPullRefreshPulling:
+			break;
+						
+		case EGOOPullRefreshLoading:
+			break;
+			
+		default:
+			break;
+	}
+	
+	_state = aState;
+	if (_state == EGOOPullRefreshNormal) {
+		if (_activityIndicatorView.alpha > 0.0) {
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_activityIndicatorView.alpha = 0.0;
+			} completion:^(BOOL finished) {
+				if ([_activityIndicatorView isAnimating])
+					[_activityIndicatorView stopAnimating];
+			}];
+		}
+	
+	} else {
+		if (![_activityIndicatorView isAnimating])
+			[_activityIndicatorView startAnimating];
+		
+		if (_activityIndicatorView.alpha < 1.0) {
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_activityIndicatorView.alpha = 1.0;
+			} completion:^(BOOL finished) {}];
+		}
+	}
+}
+
+
+#pragma mark - ScrollView Methods
+- (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {
+//	NSLog(@"\n\n—|PRE]-/> svDidScroll STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f] D:[%@] L:[%@]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold, (scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+	
+	if (_state == EGOOPullRefreshNormal) {
+		[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+	
+	} else if (_state == EGOOPullRefreshLoading)
+		[scrollView setContentInset:UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, _tareOffset + 1.0), _loadingThreshold), 0.0, 0.0, 0.0)];
+	
+	
+	if (scrollView.isDragging) {
+		if (!_isLoading) {
+			if (_state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -_loadingThreshold && scrollView.contentOffset.y < _tareOffset) // resetting
+				[self setState:EGOOPullRefreshNormal];
+				
+			else if (_state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -_loadingThreshold) // passed threshold
+				[self setState:EGOOPullRefreshPulling];
+		}
+		
+		if (scrollView.contentInset.top != _tareOffset)
+			[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+	
+	} else {
+		if (scrollView.contentOffset.y > _tareOffset)
+			[scrollView setContentOffset:CGPointMake(0.0, -_tareOffset)];
+	}
+	
+	NSLog(@"\n—|POST]-/> svDidScroll STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f] D:[%@] L:[%@]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold, (scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+}
+
+- (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
+//	NSLog(@"\n\n—|PRE]-/> svDidEndDragging STATE:[%@] offset:[%.02f] inset:[%@] TH:[%.01f] D:[%@] L:[%@]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold, (scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+	
+	if (scrollView.contentOffset.y <= -_loadingThreshold && !_isLoading) { // now loading
+		if ([self.delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)])
+			[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];
+		
+		_isLoading = YES;
+//		_scrollView.pagingEnabled = NO;
+		[self setState:EGOOPullRefreshLoading];
+		[UIView beginAnimations:[NSString stringWithFormat:@"%d", EGOOPullRefreshLoading] context:nil];
+		[UIView setAnimationDelegate:self];
+		[UIView setAnimationDuration:0.25];
+		[scrollView setContentInset:UIEdgeInsetsMake(_loadingThreshold, 0.0, 0.0, 0.0)];
+		[UIView commitAnimations];
+		
+	} else
+	  [self setState:EGOOPullRefreshNormal];
+	
+	NSLog(@"\n—|POST]-/> svDidEndDragging STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f] D:[%@] L:[%@]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold, (scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+}
+
+- (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView {
+	NSLog(@"\n—|PRE]-/> svDataSourceDidFinishedLoading STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold);
+	
+	_isLoading = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		[_scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+	} completion:^(BOOL finished) {
+		NSLog(@"\n—|POST]-/> svDataSourceDidFinishedLoading STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold);
+	}];
+	
+	[self setState:EGOOPullRefreshNormal];
+	
+//	[UIView beginAnimations:[NSString stringWithFormat:@"%d", EGOOPullRefreshNormal] context:nil];
+//	[UIView setAnimationDuration:0.125];
+//	[UIView setAnimationDelegate:self];
+//	[_scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+//	[UIView commitAnimations];
+//	
+//	[self setState:EGOOPullRefreshNormal];
+}
+
+- (void)animationDidStop:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
+	NSLog(@"animationDidStop");
+//	if ([finished boolValue]) {
+//		_scrollView.pagingEnabled = _pagingEnabled;
+//	}
+	
+//	[_scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+}
+
+- (void)_scrollViewDidScroll {
+	//	NSLog(@"\n\n—|PRE]-/> svDidScroll STATE:[%@] offset:[%.02f] inset:[%@] TH:[%.01f] D:[%@] L:[%@]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold, (scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+	
+//	if (_state == EGOOPullRefreshNormal) {
+//		[_scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+		
+//	} else
+	if (_state == EGOOPullRefreshLoading)
+		[_scrollView setContentInset:UIEdgeInsetsMake(MIN(MAX(-_scrollView.contentOffset.y, 1.0), _loadingThreshold), 0.0, 0.0, 0.0)];
+	
+	
+	if (_scrollView.isDragging) {
+		if (!_isLoading) {
+			if (_state == EGOOPullRefreshPulling && _scrollView.contentOffset.y > -_loadingThreshold && _scrollView.contentOffset.y < _tareOffset) // resetting
+				[self setState:EGOOPullRefreshNormal];
+			
+			else if (_state == EGOOPullRefreshNormal && _scrollView.contentOffset.y < -_loadingThreshold) // passed threshold
+				[self setState:EGOOPullRefreshPulling];
+		}
+		
+		if (_scrollView.contentInset.top != _tareOffset)
+			[_scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+		
+	} else {
+//		if (_scrollView.contentOffset.y > _tareOffset)
+//			[_scrollView setContentOffset:CGPointMake(0.0, -_tareOffset)];
+	}
+	
+	NSLog(@"\n—|POST]-/> svDidScroll STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f] D:[%@] L:[%@]", [self _nameForState], _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset), _tareOffset, _loadingThreshold, (_scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+}
+
+- (void)_scrollViewDidEndDragging {
+	//	NSLog(@"\n\n—|PRE]-/> svDidEndDragging STATE:[%@] offset:[%.02f] inset:[%@] TH:[%.01f] D:[%@] L:[%@]", [self _nameForState], scrollView.contentOffset.y, NSStringFromUIEdgeInsets(scrollView.contentInset), _tareOffset, _loadingThreshold, (scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+	
+	if (_scrollView.contentOffset.y <= -_loadingThreshold && !_isLoading) { // now loading
+		if ([self.delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)])
+			[self.delegate egoRefreshTableHeaderDidTriggerRefresh:self];
+		
+		_isLoading = YES;
+		[self setState:EGOOPullRefreshLoading];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) completion:<#^(BOOL finished)completion#>]
+		
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.25];
+		[_scrollView setContentInset:UIEdgeInsetsMake(_loadingThreshold, 0.0, 0.0, 0.0)];
+		[UIView commitAnimations];
+		
+	} else
+		[self setState:EGOOPullRefreshNormal];
+	
+	NSLog(@"\n—|POST]-/> svDidEndDragging STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f] D:[%@] L:[%@]", [self _nameForState], _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset), _tareOffset, _loadingThreshold, (_scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	//[self egoRefreshScrollViewDidScroll:scrollView];
+	[self _scrollViewDidScroll];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+	//[self egoRefreshScrollViewDidEndDragging:scrollView];
+	[self _scrollViewDidEndDragging];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	NSLog(@"\n—|PRE]-/> svDidEndDeccelerating STATE:[%@] offset:[%.02f] inset:[%@] TO/TH:[%.01f/%.01f] D:[%@] L:[%@]", [self _nameForState], _scrollView.contentOffset.y, NSStringFromUIEdgeInsets(_scrollView.contentInset), _tareOffset, _loadingThreshold, (_scrollView.isDragging) ? @"Y" : @"N", (_isLoading) ? @"Y" : @"N");
+	
+//	if (_isPrepTaring)
+//		_isPrepTaring = NO;
+	
+//	_scrollView.pagingEnabled = _pagingEnabled;
+}
+
+
+#pragma mark - Dealloc
+- (void)dealloc {
+	self.delegate = nil;
+	
+	[super dealloc];
+}
+
+
+
+- (NSString *)_nameForState {
+	return ([(_state == EGOOPullRefreshNormal) ? @"Normal" : (_state == EGOOPullRefreshPulling) ? @"Pulling" : @"Loading" uppercaseString]);
+}
+
+@end

@@ -8,7 +8,7 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONSearchUserViewCell.h"

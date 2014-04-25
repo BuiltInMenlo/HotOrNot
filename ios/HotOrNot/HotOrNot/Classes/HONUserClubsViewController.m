@@ -10,11 +10,13 @@
 #import "JLBPopSlideTransition.h"
 
 #import "HONUserClubsViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
+#import "HONMainScreenOverseer.h"
+
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTutorialView.h"
@@ -59,10 +61,10 @@
 		_defaultCaptions = @[@"Add friends to my club",
 							 @"Find my high school's club"];
 		
-		_bakedClubs = @[@{@"name": @"BFFs", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/823ded776ab04e59a53eb166db67a78d_c54b3a029c25457389a188ac8a6dff24-1391186184Large_640x1136.jpg"},
-						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"}];
-		
-		_bakedClubs2 = @[@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
+//		_bakedClubs = @[@{@"name": @"BFFs", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/823ded776ab04e59a53eb166db67a78d_c54b3a029c25457389a188ac8a6dff24-1391186184Large_640x1136.jpg"},
+//						@{@"name": @"School", @"img": @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg"}];
+//		
+//		_bakedClubs2 = @[@{@"name": @"Katy Perry", @"img" : @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg"}];
 		
 		_joinedClubs = [NSMutableArray array];
 		_invitedClubs = [NSMutableArray array];
@@ -102,6 +104,9 @@
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
 			_ownClub = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
 				
+		// --//> *** POPULATED FPO CLUB *** <//-- //
+		[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]]];
+		
 		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"])
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
@@ -111,11 +116,15 @@
 }
 
 - (void)_retreiveClubInvites {
-	for (NSDictionary *club in _bakedClubs2) {
-		[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", arc4random() - 200],
-																	 @"name"	: [club objectForKey:@"name"],
-																	 @"img"		: [club objectForKey:@"img"]}]];//[[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
-	}
+//	for (NSDictionary *club in _bakedClubs2) {
+//		[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", arc4random() - 200],
+//																	 @"name"	: [club objectForKey:@"name"],
+//																	 @"img"		: [club objectForKey:@"img"]}]];//[[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}]];
+//	}
+	
+	// --//> *** POPULATED FPO CLUB *** <//-- //
+	[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:0]]];
+	
 	
 	[[HONAPICaller sharedInstance] retrieveClubInvitesForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		for (NSDictionary *dict in (NSArray *)result) {
@@ -149,7 +158,6 @@
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 			[challenges addObject:vo];
 		}
-		
 		
 		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
 		feedViewController.challenges = challenges;
@@ -484,7 +492,7 @@
 		return (45.0);
 	
 	else
-		return ((([_joinedClubs count] + [_invitedClubs count]) < 6 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 0.0 : 49.0);
+		return ((([_joinedClubs count] + [_invitedClubs count]) < 6 + ((int)([[HONDeviceIntrinsics sharedInstance] isPhoneType5s]) * 2)) ? 0.0 : 49.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -11,8 +11,8 @@
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFAQViewController.h"
 #import "HONTermsConditionsViewController.h"
 #import "HONHeaderView.h"
@@ -386,7 +386,7 @@
 		
 		if (buttonIndex == 1) {
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],

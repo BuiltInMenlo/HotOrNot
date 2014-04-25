@@ -15,8 +15,8 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONChangeAvatarViewController.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 
@@ -57,8 +57,8 @@
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {
-	_imagePrefix = [NSString stringWithFormat:@"%@_%@-%d", [[[HONDeviceTraits sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _imagePrefix);
+	_imagePrefix = [NSString stringWithFormat:@"%@_%@-%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], _imagePrefix);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
@@ -112,7 +112,7 @@
 		_imagePicker.delegate = self;
 		
 		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f);
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f);
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
@@ -161,7 +161,7 @@
 		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		picker.showsCameraControls = NO;
 		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f);
+		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f);
 		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		

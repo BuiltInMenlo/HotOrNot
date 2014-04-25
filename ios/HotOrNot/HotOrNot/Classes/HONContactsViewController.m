@@ -13,10 +13,12 @@
 #import "TSTapstream.h"
 
 #import "HONContactsViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
+#import "HONMainScreenOverseer.h"
+
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONTutorialView.h"
@@ -29,6 +31,7 @@
 #import "HONNonAppContactViewCell.h"
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONMessagesViewController.h"
 #import "HONUserProfileViewController.h"
@@ -60,8 +63,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareContactsTab:) name:@"TARE_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_ALL_TABS" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
+		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showContactsTutorial:) name:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 	}
@@ -95,7 +98,7 @@
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			BOOL isFound = NO;
 			for (HONTrivialUserVO *searchVO in _inAppContacts) {
 				if (searchVO.userID == vo.userID) {
@@ -123,7 +126,7 @@
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			
 			BOOL isFound = NO;
 			for (HONTrivialUserVO *searchVO in _inAppContacts) {
@@ -174,7 +177,7 @@
 	
 	if (vo.isSMSAvailable) {
 		[[HONAPICaller sharedInstance] sendSMSInvitesFromDelimitedList:vo.mobileNumber completion:^(NSObject *result) {}];
-	
+		
 	} else {
 		[[HONAPICaller sharedInstance] sendEmailInvitesFromDelimitedList:vo.email completion:^(NSObject *result) {}];
 	}
@@ -309,6 +312,11 @@
 		HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:dict];
 		[_nonAppContacts addObject:vo];
 	}
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 
@@ -317,12 +325,12 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-//	[[HONAPICaller sharedInstance] followUserWithUserID:2394 completion:nil]; //
-//	[[HONAPICaller sharedInstance] followUserWithUserID:11822 completion:nil];
-//	[[HONAPICaller sharedInstance] followUserWithUserID:9419 completion:nil];
+	//	[[HONAPICaller sharedInstance] followUserWithUserID:2394 completion:nil]; //
+	//	[[HONAPICaller sharedInstance] followUserWithUserID:11822 completion:nil];
+	//	[[HONAPICaller sharedInstance] followUserWithUserID:9419 completion:nil];
 	
-//	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:2394 completion:nil];
-//	[[HONAPICaller sharedInstance] followUserWithUserID:86493 completion:nil];
+	//	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:2394 completion:nil];
+	//	[[HONAPICaller sharedInstance] followUserWithUserID:86493 completion:nil];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
@@ -330,10 +338,10 @@
 	_emailRecipients = @"";
 	_inAppContacts = [NSMutableArray array];
 	_clubInviteContacts = [NSMutableArray array];
-
+	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Friends"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
+	//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
@@ -389,13 +397,7 @@
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 			
 			_contactsBlockedImageView.hidden = NO;
-			
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-//																message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
-//															   delegate:nil
-//													  cancelButtonTitle:@"OK"
-//													  otherButtonTitles:nil];
-//			[alertView show];
+			[self _promptForAddressBookAccess];
 		}
 	}
 	
@@ -418,6 +420,12 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, (animated) ? @"YES" : @"NO");
 	[super viewDidAppear:animated];
+	
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+		[self _promptForAddressBookAccess];
+	
+	else
+		[self _retrieveContacts];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -469,7 +477,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -485,19 +495,19 @@
 - (void)_showContactsTutorial:(NSNotification *)notification {
 	NSLog(@"::|> _showContactsTutorial <|::");
 	
-//	if ([HONAppDelegate incTotalForCounter:@"contacts"] == 0) {
-//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_contacts"]];
-//		_tutorialView.delegate = self;
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
-//		[_tutorialView introWithCompletion:nil];
-//	}
+	//	if ([HONAppDelegate incTotalForCounter:@"contacts"] == 0) {
+	//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_contacts"]];
+	//		_tutorialView.delegate = self;
+	//
+	//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
+	//		[_tutorialView introWithCompletion:nil];
+	//	}
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
 	
-//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
+	//	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	
 	if (_tutorialView != nil) {
 		[_tutorialView outroWithCompletion:^(BOOL finished) {
@@ -506,7 +516,11 @@
 		}];
 	}
 	
-	[self _retrieveContacts];
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined || ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+		[self _promptForAddressBookAccess];
+	
+	else
+		[self _retrieveContacts];
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
@@ -515,7 +529,11 @@
 	if (_tableView.contentOffset.y < 150.0)
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	
-	[self _retrieveContacts];
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined || ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+		[self _promptForAddressBookAccess];
+	
+	else
+		[self _retrieveContacts];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {
@@ -530,6 +548,15 @@
 	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
 }
 
+
+#pragma mark - UI Presentation
+- (void)_promptForAddressBookAccess {
+	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
+								message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
+							   delegate:nil
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
+}
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
@@ -623,7 +650,7 @@
 	
 	if (_userClubVO != nil)
 		[self _inviteNonAppContact:userVO toClub:_userClubVO];
-		
+	
 	else {
 		[viewCell toggleSelected:NO];
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
@@ -638,7 +665,11 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _retrieveContacts];
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined || ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
+		[self _promptForAddressBookAccess];
+	
+	else
+		[self _retrieveContacts];
 }
 
 
@@ -722,7 +753,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 0 || indexPath.section == 1) ? kOrthodoxTableCellHeight : ([_inAppContacts count] + [_nonAppContacts count] > 5 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 48.0: 0.0);
+	return ((indexPath.section == 0 || indexPath.section == 1) ? kOrthodoxTableCellHeight : ([_inAppContacts count] + [_nonAppContacts count] > 5 + ((int)([[HONDeviceIntrinsics sharedInstance] isPhoneType5s]) * 2)) ? 48.0: 0.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

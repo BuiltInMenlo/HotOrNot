@@ -17,7 +17,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONImagingDepictor.h"
 #import "HONUserVO.h"
 

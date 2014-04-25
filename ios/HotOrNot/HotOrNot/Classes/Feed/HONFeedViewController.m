@@ -9,10 +9,11 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "HONFeedViewController.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
+#import "HONMainScreenOverseer.h"
 
 #import "HONChallengeVO.h"
 
@@ -177,7 +178,7 @@
 			NSMutableArray *imagesToFetch = [NSMutableArray array];
 			for (NSUInteger i = prefetchRange.location; i < NSMaxRange(prefetchRange); i++) {
 				HONChallengeVO *vo = [_challenges objectAtIndex:i];
-				NSString *type = [[HONDeviceTraits sharedInstance] isRetina4Inch] ? kSnapLargeSuffix : kSnapTabSuffix;
+				NSString *type = [[HONDeviceIntrinsics sharedInstance] isRetina4Inch] ? kSnapLargeSuffix : kSnapTabSuffix;
 				NSString *url = [vo.creatorVO.imagePrefix stringByAppendingString:type];
 				[imagesToFetch addObject:[NSURL URLWithString:url]];
 			}
@@ -765,7 +766,7 @@
 //	[_timelineSubjectView updateChallenge:_challenge];
 	
 	HONOpponentVO *opponent = _challenge.creatorVO;
-	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];
+	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];
 	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:(kIsImageCacheEnabled ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData) timeoutInterval:[HONAppDelegate timeoutInterval]];
 	
 	NSLog(@"IMAGE:[%@]", imageUrl);

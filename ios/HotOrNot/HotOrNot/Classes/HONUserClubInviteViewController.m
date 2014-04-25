@@ -13,9 +13,9 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONUserClubInviteViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
@@ -86,7 +86,7 @@
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			BOOL isFound = NO;
 			for (HONTrivialUserVO *searchVO in _inAppContacts) {
 				if (searchVO.userID == vo.userID) {
@@ -114,7 +114,7 @@
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:@"avatars"]] stringByAppendingString:kSnapLargeSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			
 			BOOL isFound = NO;
 			for (HONTrivialUserVO *searchVO in _inAppContacts) {
@@ -312,34 +312,17 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	if (ABAddressBookRequestAccessWithCompletion) {
-		ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-		NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
-		
-		// first time asking for access
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-			ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-				[self _retrieveContacts];
-			});
-			
-			// already granted access
-		} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-			[[Mixpanel sharedInstance] track:@"Address Book - Granted"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-			
-			
-			[self _retrieveContacts];
-			
-			// denied permission
-		} else {
-			[[Mixpanel sharedInstance] track:@"Address Book - Denied"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-			
-			_contactsBlockedImageView.hidden = NO;
-		}
-	}
+	
+	BOOL hasPermission = ([[HONDeviceIntrinsics sharedInstance] hasAdressBookPermission]);
+	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Address Book Access - %@", (hasPermission) ? @"Granted" : @"Unknown / Denied"]];
+	if (hasPermission)
+		[self _retrieveContacts];
+	
+	else
+		[[HONDeviceIntrinsics sharedInstance] promptForAddressBookAccess];
+	
+	
+	_contactsBlockedImageView.hidden = !hasPermission;
 }
 
 - (void)viewDidLoad {

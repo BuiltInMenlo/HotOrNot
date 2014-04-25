@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSuggestedFollowViewCell.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONImageLoadingView.h"

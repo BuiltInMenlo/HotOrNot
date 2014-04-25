@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserClubViewCell.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"

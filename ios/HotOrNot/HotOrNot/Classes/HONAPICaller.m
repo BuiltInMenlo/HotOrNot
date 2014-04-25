@@ -10,10 +10,12 @@
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CommonCrypto/CommonHMAC.h>
 
+#import "NSString+DataTypes.h"
+
 #import "MBProgressHUD.h"
 
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONImagingDepictor.h"
 
 
@@ -124,7 +126,7 @@ static HONAPICaller *sharedInstance = nil;
 - (AFHTTPClient *)getHttpClientWithHMAC {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken] ];
-	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceTraits sharedInstance] modelName]];
+	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	
 	return (httpClient);
 }
@@ -148,7 +150,7 @@ static HONAPICaller *sharedInstance = nil;
 	
 	if( data != nil ){
 	    [data appendString:@"+"];
-	    [data appendString:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+	    [data appendString:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	    
 		token = [[[HONAPICaller sharedInstance] hmacForKey:kHMACKey withData:data] mutableCopy];
 	    [token appendString:@"+"];
@@ -262,7 +264,7 @@ static HONAPICaller *sharedInstance = nil;
 		_progressHUD = nil;
 		
 		if ([bucketName rangeOfString:@"hotornot-challenges"].location != NSNotFound)
-			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 	}
 	
 	if (completion)
@@ -329,7 +331,7 @@ static HONAPICaller *sharedInstance = nil;
 							 @"password"	: [dict objectForKey:@"email"],
 							 @"age"			: [dict objectForKey:@"birthday"],
 							 @"token"		: [HONAppDelegate deviceToken],
-							 @"imgURL"		: [[HONAppDelegate s3BucketForType:@"avatars"] stringByAppendingString:([[dict objectForKey:@"filename"] length] == 0) ? @"/defaultAvatar" : [@"/" stringByAppendingString:[dict objectForKey:@"filename"]]]};
+							 @"imgURL"		: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:([[dict objectForKey:@"filename"] length] == 0) ? @"/defaultAvatar" : [@"/" stringByAppendingString:[dict objectForKey:@"filename"]]]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -437,7 +439,7 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)retrieveAlertsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
-	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	NSDictionary *params = @{@"userID"	: [[NSString string] stringFromInt:userID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -757,7 +759,7 @@ static HONAPICaller *sharedInstance = nil;
 	NSDictionary *params = @{@"action"		: [NSString stringWithFormat:@"%d", 9],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-							 @"imgURL"		: [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], avatarPrefix] stringByAppendingString:kSnapLargeSuffix]};
+							 @"imgURL"		: [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], avatarPrefix] stringByAppendingString:kSnapLargeSuffix]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -1876,7 +1878,7 @@ static HONAPICaller *sharedInstance = nil;
 	_progressHUD = nil;
 	
 	if ([[tag firstObject] isEqualToString:@"hotornot-avatars"]) {
-		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:@"avatars"], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	}
 }

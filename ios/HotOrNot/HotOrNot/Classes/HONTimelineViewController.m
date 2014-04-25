@@ -14,6 +14,13 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 
+#import "HONUtilsSuite.h"
+#import "HONColorAuthority.h"
+#import "HONDeviceIntrinsics.h"
+#import "HONFontAllocator.h"
+#import "HONImagingDepictor.h"
+#import "HONMainScreenOverseer.h"
+
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONOpponentVO.h"
@@ -31,11 +38,6 @@
 #import "HONSuggestedFollowViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONMessagesViewController.h"
-#import "HONAPICaller.h"
-#import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
-#import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONUserProfileViewController.h"
@@ -106,7 +108,7 @@
 			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_challenges count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
 			
 			for (int i=queueRange.location; i<queueRange.length; i++) {
-				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+				[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
 				
 				cnt++;
 				_imageQueueLocation++;
@@ -709,7 +711,7 @@
 				int cnt = 0;
 				//NSLog(@"QUEUEING:#%d -/> %d\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", queueRange.location, queueRange.length);
 				for (int i=queueRange.location; i<queueRange.length; i++) {
-					[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
+					[imageQueue addObject:[NSURL URLWithString:[((HONChallengeVO *)[_challenges objectAtIndex:i]).creatorVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]];
 					
 					cnt++;
 					_imageQueueLocation++;

@@ -12,7 +12,7 @@
 
 #import "HONMessageReplyViewCell.h"
 #import "HONImageLoadingView.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
 #import "HONFontAllocator.h"
 

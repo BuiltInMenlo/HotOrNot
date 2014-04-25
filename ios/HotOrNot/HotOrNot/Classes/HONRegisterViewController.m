@@ -18,10 +18,10 @@
 #import "HONRegisterViewController.h"
 #import "HONEnterPINViewController.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONImagingDepictor.h"
 
 
@@ -152,8 +152,8 @@
 }
 
 - (void)_uploadPhotos:(UIImage *)image {
-	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[[HONDeviceTraits sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
-	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _imageFilename);
+	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], _imageFilename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
@@ -182,7 +182,7 @@
 			[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 			
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
@@ -456,7 +456,7 @@
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		imagePickerController.showsCameraControls = NO;
-		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f, ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f);
+		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.0f);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		imagePickerController.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
@@ -879,7 +879,7 @@
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		float scale = ([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
+		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		picker.showsCameraControls = NO;

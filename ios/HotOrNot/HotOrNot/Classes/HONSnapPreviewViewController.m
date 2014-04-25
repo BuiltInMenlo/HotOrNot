@@ -13,8 +13,8 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONSnapPreviewViewController.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
@@ -129,7 +129,7 @@
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	[_imageHolderView addSubview:_imageView];
 	_imageView.alpha = 0.0;
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([[HONDeviceTraits sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 					  placeholderImage:nil
 							   success:successBlock
 							   failure:failureBlock];
@@ -164,7 +164,7 @@
 	nameLabel.backgroundColor = [UIColor clearColor];
 	[headerView addSubview:nameLabel];
 	
-	if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7]) {
 		size = [[_opponentVO.username stringByAppendingString:@"…"] boundingRectWithSize:CGSizeMake(maxNameWidth, 18.0)
 																				 options:NSStringDrawingTruncatesLastVisibleLine
 																			  attributes:@{NSFontAttributeName:nameLabel.font}
@@ -184,7 +184,7 @@
 		subjectLabel.text = _opponentVO.subjectName;
 		[headerView addSubview:subjectLabel];
 		
-		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+		if ([[HONDeviceIntrinsics sharedInstance] isIOS7]) {
 			size = [subjectLabel.text boundingRectWithSize:CGSizeMake(320.0 - (nameLabel.frame.size.width + maxNameWidth), 18.0)
 												   options:NSStringDrawingTruncatesLastVisibleLine
 												attributes:@{NSFontAttributeName:nameLabel.font}
@@ -504,40 +504,6 @@
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
-}
-
-
-#pragma mark - UI Presentation
-
-
-#pragma mark - Data Tally
-- (HONEmotionVO *)_emotionForParticipant:(HONOpponentVO *)opponentVO {
-	NSLog(@"_emotionForParticipant:[%@]", opponentVO.subjectName);
-	
-	BOOL isEmotionFound = NO;
-	HONEmotionVO *emotionVO;
-	
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-//		NSLog(@"CHECKING:[%@]><[%@]", opponentVO.subjectName, vo.hastagName);
-		if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
-			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-			isEmotionFound = YES;
-			break;
-		}
-	}
-	
-	if (!isEmotionFound) {
-		for (HONEmotionVO *vo in [HONAppDelegate replyEmotions]) {
-//			NSLog(@"CHECKING:[%@]><[%@]", opponentVO.subjectName, vo.hastagName);
-			if ([vo.hastagName isEqualToString:opponentVO.subjectName]) {
-				emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
-				isEmotionFound = YES;
-				break;
-			}
-		}
-	}
-	
-	return (emotionVO);
 }
 
 

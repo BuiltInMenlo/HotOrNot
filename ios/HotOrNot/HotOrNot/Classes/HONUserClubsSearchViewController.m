@@ -9,7 +9,7 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONUserClubsSearchViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONHeaderView.h"
 
 

@@ -9,9 +9,9 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessagesViewController.h"
-#import "HONAPICaller.h"
+#import "HONUtilsSuite.h"
 #import "HONColorAuthority.h"
-#import "HONDeviceTraits.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONHeaderView.h"
 #import "HONMessageVO.h"
@@ -294,7 +294,7 @@
 		return (74.0);
 	
 	else
-		return ((([_messages count] + 5) > 7 + ((int)([[HONDeviceTraits sharedInstance] isPhoneType5s]) * 2)) ? 49.0 : 0.0);
+		return ((([_messages count] + 5) > 7 + ((int)([[HONDeviceIntrinsics sharedInstance] isPhoneType5s]) * 2)) ? 49.0 : 0.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -16,7 +16,8 @@ typedef enum {
 	HONImagingDepictorShareTemplateTypeEmail
 } HONImagingDepictorShareTemplateType;
 
-const CGFloat kSnapRatio;
+
+extern const CGFloat kSnapRatio;
 
 
 @interface HONImagingDepictor : NSObject

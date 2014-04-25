@@ -11,8 +11,8 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineCellHeaderView.h"
-#import "HONAPICaller.h"
-#import "HONDeviceTraits.h"
+#import "HONUtilsSuite.h"
+#import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONEmotionVO.h"
@@ -63,7 +63,7 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 		nameLabel.text = _challengeVO.creatorVO.username;
 		[self addSubview:nameLabel];
 		
-		if ([[HONDeviceTraits sharedInstance] isIOS7]) {
+		if ([[HONDeviceIntrinsics sharedInstance] isIOS7]) {
 			size = [_challengeVO.creatorVO.username boundingRectWithSize:CGSizeMake(maxNameWidth, nameLabel.frame.size.height)
 																 options:NSStringDrawingTruncatesLastVisibleLine
 															  attributes:@{NSFontAttributeName:nameLabel.font}
@@ -112,21 +112,6 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 #pragma mark - Navigation
 - (void)_goProfile {
 	[self.delegate timelineCellHeaderView:self showProfile:_challengeVO.creatorVO forChallenge:_challengeVO];
-}
-
-
-#pragma mark - Data Tally
-- (HONEmotionVO *)_creatorEmotionVO {
-	HONEmotionVO *emotionVO;
-	
-	for (HONEmotionVO *vo in [HONAppDelegate composeEmotions]) {
-		if ([vo.hastagName isEqualToString:_challengeVO.subjectName]) {
-			emotionVO = vo;
-			break;
-		}
-	}
-	
-	return (emotionVO);
 }
 
 
