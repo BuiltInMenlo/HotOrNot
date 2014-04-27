@@ -10,8 +10,12 @@
 typedef enum {
 	HONDebugDefaultColor = 0,
 	HONDebugBlueColor,
+	HONDebugBrownColor,
 	HONDebugFuschiaColor,
 	HONDebugGreenColor,
+	HONDebugGreyColor,
+	HONDebugOrangeColor,
+	HONDebugVioletColor,
 	HONDebugRedColor
 } HONDebugColor;
 
@@ -27,7 +31,8 @@ typedef enum {
 - (UIColor *)honDarkGreyTextColor;
 - (UIColor *)honLightGreyTextColor;
 - (UIColor *)honPlaceholderTextColor;
+
 - (UIColor *)honDebugDefaultColor;
 - (UIColor *)honDebugColor:(HONDebugColor)debugColor;
-- (UIColor *)honDebugColor:(HONDebugColor)debugColor underFlagDiscretion:(BOOL)flagDiscretion;
+
 @end

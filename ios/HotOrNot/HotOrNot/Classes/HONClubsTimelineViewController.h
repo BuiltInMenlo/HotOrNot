@@ -7,11 +7,6 @@
 //
 
 
-typedef enum {
-	HONClubTimelineRowTypeCTA = 0,
-	HONClubTimelineRowTypeSelfie
-} HONClubTimelineRowType;
-
 
 @interface HONClubsTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 @end

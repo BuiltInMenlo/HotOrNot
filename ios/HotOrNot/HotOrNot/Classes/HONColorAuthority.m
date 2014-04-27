@@ -67,38 +67,41 @@ static HONColorAuthority *sharedInstance = nil;
 }
 
 - (UIColor *)honDebugColor:(HONDebugColor)debugColor {
-	return ([[HONColorAuthority sharedInstance] honDebugColor:debugColor underFlagDiscretion:YES]);
-}
-
-
-- (UIColor *)honDebugColor:(HONDebugColor)debugColor underFlagDiscretion:(BOOL)flagDiscretion {
-	
-	if (!flagDiscretion) {
-#if ENDORSE_DEBUGING_COLORS == 1
-		if (debugColor == HONDebugDefaultColor)
-			return ([[HONColorAuthority sharedInstance] honDebugColor:HONDebugFuschiaColor]);
-		
-		else if (debugColor == HONDebugBlueColor)
-			return ([UIColor colorWithRed:0.000 green:0.000 blue:1.000 alpha:0.500]);
-		
-		else if (debugColor == HONDebugFuschiaColor)
-			return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:0.500]);
-		
-		else if (debugColor == HONDebugGreenColor)
-			return ([UIColor colorWithRed:0.000 green:1.000 blue:0.000 alpha:0.500]);
-		
-		else if (debugColor == HONDebugRedColor)
-			return ([UIColor colorWithRed:1.000 green:0.000 blue:0.000 alpha:0.500]);
-		
-		else
-			return ([[HONColorAuthority sharedInstance] honDebugDefaultColor]);
-		
-	} else
-		return ([UIColor clearColor]);
-	
-#else
+#if DEBUGING_COLORS == 0
 	return ([UIColor clearColor]);
+#else
+	
+	if (debugColor == HONDebugDefaultColor)
+		return ([[HONColorAuthority sharedInstance] honDebugColor:HONDebugFuschiaColor]);
+	
+	else if (debugColor == HONDebugBlueColor)
+		return ([[UIColor blueColor] colorWithAlphaComponent:0.500]);
+	
+	else if (debugColor == HONDebugBrownColor)
+		return ([[UIColor brownColor] colorWithAlphaComponent:0.500]);
+	
+	else if (debugColor == HONDebugFuschiaColor)
+		return ([UIColor colorWithRed:0.697 green:0.130 blue:0.811 alpha:0.500]);
+	
+	else if (debugColor == HONDebugGreenColor)
+		return ([[UIColor greenColor] colorWithAlphaComponent:0.500]);
+	
+	else if (debugColor == HONDebugGreyColor)
+		return ([[UIColor darkGrayColor] colorWithAlphaComponent:0.500]);
+	
+	else if (debugColor == HONDebugOrangeColor)
+		return ([[UIColor orangeColor] colorWithAlphaComponent:0.500]);
+	
+	else if (debugColor == HONDebugVioletColor)
+		return ([[UIColor purpleColor] colorWithAlphaComponent:0.500]);
+	
+	else if (debugColor == HONDebugRedColor)
+		return ([[UIColor redColor] colorWithAlphaComponent:0.500]);
+	
+	else
+		return ([[HONColorAuthority sharedInstance] honDebugDefaultColor]);
 #endif
 }
+
 
 @end

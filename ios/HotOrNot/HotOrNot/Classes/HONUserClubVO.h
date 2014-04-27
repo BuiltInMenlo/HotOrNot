@@ -31,9 +31,9 @@ typedef enum {
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int clubID;
-@property (nonatomic) HONUserClubStatusType userClubStatusType;
-@property (nonatomic) HONUserClubExpoType userClubExpoType;
-@property (nonatomic) HONUserClubContentType userClubConentType;
+@property (nonatomic, assign, readonly) HONUserClubStatusType userClubStatusType;
+@property (nonatomic, assign, readonly) HONUserClubExpoType userClubExpoType;
+@property (nonatomic, assign, readonly) HONUserClubContentType userClubConentType;
 @property (nonatomic) int totalPendingMembers;
 @property (nonatomic) int totalActiveMembers;
 @property (nonatomic) int totalBannedMembers;

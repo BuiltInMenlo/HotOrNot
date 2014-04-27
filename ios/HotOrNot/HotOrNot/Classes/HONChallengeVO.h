@@ -23,7 +23,7 @@ typedef enum {
 @property (nonatomic) int challengeID;
 @property (nonatomic) int clubID;
 @property (nonatomic) int statusID;
-@property (nonatomic) HONChallengeType challengeType;
+@property (nonatomic, assign) HONChallengeType challengeType;
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic) int likedByTotal;

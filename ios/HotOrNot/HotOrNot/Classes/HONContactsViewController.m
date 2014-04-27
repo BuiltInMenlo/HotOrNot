@@ -492,13 +492,13 @@
 - (void)_showContactsTutorial:(NSNotification *)notification {
 	NSLog(@"::|> _showContactsTutorial <|::");
 	
-	//	if ([HONAppDelegate incTotalForCounter:@"contacts"] == 0) {
-	//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_contacts"]];
-	//		_tutorialView.delegate = self;
-	//
-	//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
-	//		[_tutorialView introWithCompletion:nil];
-	//	}
+//	if ([HONAppDelegate incTotalForCounter:@"contacts"] == 0) {
+//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_contacts"]];
+//		_tutorialView.delegate = self;
+//
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
+//	}
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {

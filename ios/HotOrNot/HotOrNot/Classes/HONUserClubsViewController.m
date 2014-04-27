@@ -330,6 +330,7 @@
 	[self _retrieveClubs];
 	[self _retreiveClubInvites];
 }
+
 - (void)_tareClubsTab:(NSNotification *)notification {
 	NSLog(@"::|> _tareClubsTab <|::");
 	

@@ -30,7 +30,7 @@
 @property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic, strong) HONSelfieCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONSelfieCameraPreviewView *previewView;
-@property (readonly, nonatomic, assign) HONSelfieCameraSubmitType selfieSubmitType;
+@property (nonatomic, assign, readonly) HONSelfieCameraSubmitType selfieSubmitType;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;

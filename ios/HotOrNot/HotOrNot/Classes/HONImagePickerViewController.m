@@ -15,7 +15,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONMessageVO *messageVO;
 @property (nonatomic, strong) NSArray *recipients;
-@property (nonatomic) HONSelfieCameraSubmitType selfieSubmitType;
+@property (nonatomic, assign, readonly) HONSelfieCameraSubmitType selfieSubmitType;
 @end
 
 @implementation HONImagePickerViewController

@@ -13,7 +13,7 @@
 @property (nonatomic, retain) NSString *alertID;
 @property (nonatomic) int userID;
 @property (nonatomic) int challengeID;
-@property (nonatomic) HONPushTriggerType triggerType;
+@property (nonatomic, assign) HONPushTriggerType triggerType;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *message;
 @property (nonatomic, retain) NSString *avatarPrefix;

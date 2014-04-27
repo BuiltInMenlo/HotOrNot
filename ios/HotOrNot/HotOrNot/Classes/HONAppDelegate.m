@@ -40,7 +40,8 @@
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
 #import "HONAlertsViewController.h"
-#import "HONUserClubsViewController.h"
+#import "HONClubsTimelineViewController.h"
+//#import "HONUserClubsViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONContactsViewController.h"
@@ -113,7 +114,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
 @interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate>
 #else
-@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
+//@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
+@interface HONAppDelegate() <ChartboostDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) UIImageView *launchImageView;
@@ -124,7 +126,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
-//@property (nonatomic, strong) UIView *statusBarOverlayView;
 @end
 
 
@@ -143,22 +144,22 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg",
 				
 				@"owner"			: @{@"id"			: @"62899",
-										@"username"	: @"smileyy_syd",
-										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/efdb098b221b41778409e4d6d3d05f83_b12db29b3dce414899da69ad55effb91-1388538981"},
+										@"username"		: @"smileyy_syd",
+										@"avatar"		: @"https://d3j8du2hyvd35p.cloudfront.net/efdb098b221b41778409e4d6d3d05f83_b12db29b3dce414899da69ad55effb91-1388538981"},
 				
 				@"members"			: @[@{@"id"				: @"116900",
 										   @"username"		: @"dev_jesse",
-										   @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
+										   @"avatar"		: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
 										   @"age"			: @"1970-07-08 00:00:00",
-										   @"extern_name"		: @"Jesse Boley",
+										   @"extern_name"	: @"Jesse Boley",
 										   @"mobile_number"	: @"",
 										   @"email"			: @"jlboley@gmail.com",
 										   @"invited"		: @"2014-03-05 10:41:41"}],
 				
-				@"pending"			: @[@{@"extern_name"		: @"Ken Shabby",
+				@"pending"			: @[@{@"extern_name"	: @"Ken Shabby",
 										  @"mobile_number"	: @"+14153456723",
 										  @"email"			: @"ken.shabby@gmail.com",
-										  @"invited"			: @"2014-03-25 18:31:15"}],
+										  @"invited"		: @"2014-03-25 18:31:15"}],
 				
 				@"blocked"			: @[],
 				
@@ -171,36 +172,36 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				@"description"		: @"",
 				@"img"				: @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg",
 				
-				@"owner"			: @{@"id"			: @"10563",
+				@"owner"			: @{@"id"		: @"10563",
 										@"username"	: @"cheylaureenxo",
 										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/8268d1cb4608e0fce19ddc30d1a47a6d247769bc1301f9d1b99c2c5248ce3148-1379717258"},
 				
 				@"members"			: @[@{@"id"				: @"99629",
 										  @"username"		: @"shane5s",
 										  @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
-										  @"age"				: @"1997-02-05 16:00:00",
-										  @"extern_name"		: @"Shane Hill",
+										  @"age"			: @"1997-02-05 16:00:00",
+										  @"extern_name"	: @"Shane Hill",
 										  @"mobile_number"	: @"+14152549391",
 										  @"email"			: @"",
-										  @"invited"			: @"2014-03-15 10:21:41"},
+										  @"invited"		: @"2014-03-15 10:21:41"},
 										@{@"id"				: @"131796",
 										  @"username"		: @"jess4life",
 										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/e03d3827b9b547db9c2d64fe02389896_fcc05b136a6d4a9dac3767006f555701-1397110912",
-										  @"age"				: @"1990-04-10 06:20:36",
-										  @"extern_name"		: @"Jessica Rabbit",
+										  @"age"			: @"1990-04-10 06:20:36",
+										  @"extern_name"	: @"Jessica Rabbit",
 										  @"mobile_number"	: @"+13058531028",
 										  @"email"			: @"",
-										  @"invited"			: @"2014-04-27 03:11:33"}],
+										  @"invited"		: @"2014-04-27 03:11:33"}],
 				@"pending"			: @[],
 				
 				@"blocked"			: @[@{@"id"				: @"52802",
 										  @"username"		: @"king Afg",
 										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/2e1716ac9b1046c788a7bb67b0f38705_24f84f0bc545480aab2fe358025c03a2-1388792086",
-										  @"age"				: @"1979-12-27 14:54:37",
-										  @"extern_name"		: @"Afghan King",
+										  @"age"			: @"1979-12-27 14:54:37",
+										  @"extern_name"	: @"Afghan King",
 										  @"mobile_number"	: @"",
 										  @"email"			: @"",
-										  @"invited"			: @"2014-04-27 09:36:19"}],
+										  @"invited"		: @"2014-04-27 09:36:19"}],
 				
 				@"total_members"	: @"3",
 				@"added"			: @"2014-04-20 16:20:00"}]);
@@ -285,19 +286,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (int)incTotalForCounter:(NSString *)key {
-	int tot = -1;
+	key = [[key lowercaseString] stringByAppendingString:@"_total"];
+	int tot = ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) ? 0 : [[[NSUserDefaults standardUserDefaults] objectForKey:key] intValue] + 1;
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]] != nil) {
-		tot = [[[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]] intValue];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++tot] forKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tot] forKey:key];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	return (tot);
 }
 
 + (int)totalForCounter:(NSString *)key {
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_total", [key lowercaseString]]] intValue] : -1);
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:[[key lowercaseString] stringByAppendingString:@"_total"]] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:[[key lowercaseString] stringByAppendingString:@"_total"]] intValue] : -1);
 }
 
 + (NSString *)kikCardURL {
@@ -608,24 +607,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//NSLog(@"[%d][%d][%d][%d]", days, hours, mins, secs);
 	
 	if (days > 0) {
-		timeSince = [NSString stringWithFormat:@"%dd", days];
+		//timeSince = [NSString stringWithFormat:@"%d day", days];
+		timeSince = [[[@"" stringFromInt:days] stringByAppendingString:@" day"] stringByAppendingString:(days != 1) ? @"s" : @""];
 		
 	} else {
 		if (hours > 0)
-			timeSince = [NSString stringWithFormat:@"%dh", hours];
+			timeSince = [[[@"" stringFromInt:hours] stringByAppendingString:@" hr"] stringByAppendingString:(hours != 1) ? @"s" : @""];
 		
 		else {
 			if (mins > 0)
-				timeSince = [NSString stringWithFormat:@"%dm", mins];
+				timeSince = [[[@"" stringFromInt:mins] stringByAppendingString:@" min"] stringByAppendingString:(mins != 1) ? @"s" : @""];
 			
 			else
-				timeSince = [NSString stringWithFormat:@"%ds", secs];
+				timeSince = [[[@"" stringFromInt:secs] stringByAppendingString:@" sec"] stringByAppendingString:(secs != 1) ? @"s" : @""];
 		}
 	}
 	
+	timeSince = [timeSince stringByAppendingString:@" ago"];
+	
 	//NSLog(@"UTC:[%@] TIME SINCE:[%@]VAL:[%@] SECS:[%d]", [utcFormatter stringFromDate:utcDate], timeSince, [timeSince substringToIndex:[timeSince length] - 1], secs);
 	if ([[timeSince substringToIndex:[timeSince length] - 1] intValue] <= 0)
-		timeSince = @"0s";
+		timeSince = @"just now";
 	
 	return (timeSince);
 }
@@ -1197,13 +1199,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
-//	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONTimelineViewController alloc] init]],
-//									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
-//									   [[UINavigationController alloc] initWithRootViewController:[[HONAlertsViewController alloc] init]],
-//									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
-	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	
@@ -1222,19 +1219,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	self.window.rootViewController = self.tabBarController;
 	self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 	self.window.backgroundColor = [UIColor blackColor];
-	
-//	_statusBarOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
-//	_statusBarOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.667];
-//	_statusBarOverlayView.alpha = 0.0;
-//	[self.window addSubview:_statusBarOverlayView];
-	
-//	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
-//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_STATUS_BAR_TINT" object:@"YES"];
-//	}
-	
-//	[self.launchImageView removeFromSuperview];
-//	self.launchImageView = nil;
 }
 
 - (void)_establishUserDefaults {

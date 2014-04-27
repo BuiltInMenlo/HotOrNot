@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0113D91898B243007461DB /* HONCreateClubViewController.m */; };
+		4C01BACF190C52D6006CD80D /* HONTimelineItemVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C01BACE190C52D6006CD80D /* HONTimelineItemVO.m */; };
+		4C01BAD1190C6481006CD80D /* TimelineElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C01BAD0190C6481006CD80D /* TimelineElements.xcassets */; };
 		4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */; };
 		4C0204EE18EA6FF000FAE532 /* HONClubCoverCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0204ED18EA6FF000FAE532 /* HONClubCoverCameraViewController.m */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
@@ -374,7 +376,6 @@
 		4CC94FE219075F0200347A34 /* emotionSelectedOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CC94FE119075F0200347A34 /* emotionSelectedOverlay@2x.png */; };
 		4CC94FE519075F1500347A34 /* paginationLED_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CC94FE319075F1500347A34 /* paginationLED_off@2x.png */; };
 		4CC94FE619075F1500347A34 /* paginationLED_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CC94FE419075F1500347A34 /* paginationLED_on@2x.png */; };
-		4CC94FE919077DF500347A34 /* NSDictionary+Splice.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC94FE819077DF500347A34 /* NSDictionary+Splice.m */; };
 		4CC94FEC19079D4900347A34 /* HONEmotionsPickerDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC94FEB19079D4900347A34 /* HONEmotionsPickerDisplayView.m */; };
 		4CC94FEF1907D25900347A34 /* HONPhysicsGovernor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC94FEE1907D25900347A34 /* HONPhysicsGovernor.m */; };
 		4CC94FF21908017900347A34 /* HONSelfieCameraSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC94FF11908017900347A34 /* HONSelfieCameraSubmitViewController.m */; };
@@ -469,6 +470,9 @@
 /* Begin PBXFileReference section */
 		4C0113D81898B243007461DB /* HONCreateClubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateClubViewController.h; sourceTree = "<group>"; };
 		4C0113D91898B243007461DB /* HONCreateClubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateClubViewController.m; sourceTree = "<group>"; };
+		4C01BACD190C52D6006CD80D /* HONTimelineItemVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemVO.h; sourceTree = "<group>"; };
+		4C01BACE190C52D6006CD80D /* HONTimelineItemVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemVO.m; sourceTree = "<group>"; };
+		4C01BAD0190C6481006CD80D /* TimelineElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TimelineElements.xcassets; sourceTree = "<group>"; };
 		4C0204E918EA6F9800FAE532 /* HONClubCoverCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCoverCameraOverlayView.h; sourceTree = "<group>"; };
 		4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubCoverCameraOverlayView.m; sourceTree = "<group>"; };
 		4C0204EC18EA6FF000FAE532 /* HONClubCoverCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCoverCameraViewController.h; sourceTree = "<group>"; };
@@ -998,8 +1002,6 @@
 		4CC94FE119075F0200347A34 /* emotionSelectedOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "emotionSelectedOverlay@2x.png"; sourceTree = "<group>"; };
 		4CC94FE319075F1500347A34 /* paginationLED_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "paginationLED_off@2x.png"; sourceTree = "<group>"; };
 		4CC94FE419075F1500347A34 /* paginationLED_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "paginationLED_on@2x.png"; sourceTree = "<group>"; };
-		4CC94FE719077DF500347A34 /* NSDictionary+Splice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Splice.h"; sourceTree = "<group>"; };
-		4CC94FE819077DF500347A34 /* NSDictionary+Splice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Splice.m"; sourceTree = "<group>"; };
 		4CC94FEA19079D4900347A34 /* HONEmotionsPickerDisplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONEmotionsPickerDisplayView.h; sourceTree = "<group>"; };
 		4CC94FEB19079D4900347A34 /* HONEmotionsPickerDisplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONEmotionsPickerDisplayView.m; sourceTree = "<group>"; };
 		4CC94FED1907D25900347A34 /* HONPhysicsGovernor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPhysicsGovernor.h; sourceTree = "<group>"; };
@@ -1310,6 +1312,8 @@
 				B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */,
 				4CFA8B7818918E8C00DCCCB1 /* HONTrivialUserVO.h */,
 				4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */,
+				4C01BACD190C52D6006CD80D /* HONTimelineItemVO.h */,
+				4C01BACE190C52D6006CD80D /* HONTimelineItemVO.m */,
 				4CB77BAE18BC03200074C625 /* HONUserClubVO.h */,
 				4CB77BAF18BC03200074C625 /* HONUserClubVO.m */,
 				B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */,
@@ -1474,6 +1478,7 @@
 				4CF203FA18F3198600EB57B0 /* VerifiyElements.xcassets */,
 				4C2DD83D18E3EAD400BC8759 /* AnimationFrames.xcassets */,
 				4C47745D18F50A7F00D78654 /* FeedItemElements.xcassets */,
+				4C01BAD0190C6481006CD80D /* TimelineElements.xcassets */,
 			);
 			name = "Asset Calalogs";
 			sourceTree = "<group>";
@@ -2565,8 +2570,6 @@
 				4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */,
 				4CCED5D8181F7AE900D1D673 /* NSArray+NullReplacement.h */,
 				4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */,
-				4CC94FE719077DF500347A34 /* NSDictionary+Splice.h */,
-				4CC94FE819077DF500347A34 /* NSDictionary+Splice.m */,
 				4CA246C319083C8B00512295 /* NSString+DataTypes.h */,
 				4CA246C419083C8B00512295 /* NSString+DataTypes.m */,
 			);
@@ -2763,6 +2766,7 @@
 				4CC94FE519075F1500347A34 /* paginationLED_off@2x.png in Resources */,
 				4C6586C118C4077000F42371 /* firstRunPhotoButton_Active@2x.png in Resources */,
 				4C6586B818C404AE00F42371 /* resendButton_Active.png in Resources */,
+				4C01BAD1190C6481006CD80D /* TimelineElements.xcassets in Resources */,
 				4C65419D1845216200C936CD /* tutorial_closeButton_nonActive@2x.png in Resources */,
 				4C47745E18F50A7F00D78654 /* FeedItemElements.xcassets in Resources */,
 				4CDB154C180CBD1700FD93CB /* skipThis_Active@2x.png in Resources */,
@@ -2934,6 +2938,7 @@
 				4C8FB3C91824406800B33FD8 /* HONVerifyCellHeaderView.m in Sources */,
 				4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */,
 				4C43224618E343FC0035FF06 /* HONActionAlertItemView.m in Sources */,
+				4C01BACF190C52D6006CD80D /* HONTimelineItemVO.m in Sources */,
 				4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */,
 				4CD42F2B188B89CF00264845 /* HONMessageItemViewCell.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
@@ -3098,7 +3103,6 @@
 				4C4328C918E3A9FA0035FF06 /* Mixpanel.m in Sources */,
 				4CC94FDA190733C900347A34 /* HONBasePaginationView.m in Sources */,
 				4C60AF6B17CCFEF800609792 /* HONEmotionsPickerView.m in Sources */,
-				4CC94FE919077DF500347A34 /* NSDictionary+Splice.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONProfileHeaderButtonView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3148,9 +3152,9 @@
 					MIXPANEL_DEBUG0,
 					MIXPANEL_LOG0,
 					"SC_JSON_LOG=1",
-					"VIEW_CONTROLLER_LOG=0",
+					"VIEW_CONTROLLER_LOG=1",
 					"$(inherited)",
-					"ENDORSE_DEBUGING_COLORS=1",
+					"DEBUGING_COLORS=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";

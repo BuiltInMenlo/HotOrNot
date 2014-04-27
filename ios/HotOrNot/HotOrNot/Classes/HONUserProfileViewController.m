@@ -50,7 +50,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 //@property (nonatomic, strong) HONChallengeVO *challengeVO;
 //@property (nonatomic, strong) HONOpponentVO *opponentVO;
-@property (readonly, nonatomic, assign) HONUserProfileType userProfileType;
+@property (nonatomic, assign, readonly) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSMutableArray *activityAlerts;
 @property (nonatomic, strong) NSArray *cohortRows;

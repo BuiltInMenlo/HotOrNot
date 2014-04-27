@@ -18,7 +18,7 @@
 #import "HONEmotionsPickerView.h"
 
 @interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate>
-@property (readonly, nonatomic, assign) HONSelfieCameraSubmitType selfieSubmitType;
+@property (nonatomic, assign, readonly) HONSelfieCameraSubmitType selfieSubmitType;
 @property (nonatomic, strong) NSArray *recipients;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;

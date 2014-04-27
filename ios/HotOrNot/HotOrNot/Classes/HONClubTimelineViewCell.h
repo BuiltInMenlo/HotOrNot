@@ -7,10 +7,21 @@
 //
 
 
-#import "HONUserClubVO.h"
+#import "HONClubsTimelineViewController.h"
+#import "HONTimelineItemVO.h"
+
+@class HONClubTimelineViewCell;
+@protocol HONClubTimelineViewCellDelegate <NSObject>
+@optional
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell acceptInviteForClub:(HONUserClubVO *)userClubVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell denyInviteForClub:(HONUserClubVO *)userClubVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO;
+@end
 
 @interface HONClubTimelineViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
-@property (nonatomic, retain) HONUserClubVO *userClubVO;
+@property (nonatomic, retain) HONTimelineItemVO *timelineItemVO;
+@property (nonatomic, assign) id <HONClubTimelineViewCellDelegate> delegate;
 @end

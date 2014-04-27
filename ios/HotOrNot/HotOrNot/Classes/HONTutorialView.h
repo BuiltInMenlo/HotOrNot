@@ -8,8 +8,8 @@
 
 @class HONTutorialView;
 @protocol HONTutorialViewDelegate <NSObject>
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView;
 @optional
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView;
 - (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView;
 @end
 

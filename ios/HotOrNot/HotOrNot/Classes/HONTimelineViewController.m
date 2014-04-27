@@ -51,7 +51,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) UIView *emptyTimelineView;
-@property (readonly, nonatomic, assign) HONTimelineScrollDirection timelineScrollDirection;
+@property (nonatomic, assign, readonly) HONTimelineScrollDirection timelineScrollDirection;
 @property (nonatomic) BOOL isScrollingDown;
 @property (nonatomic) BOOL isFirstLoad;
 @property (nonatomic) int imageQueueLocation;

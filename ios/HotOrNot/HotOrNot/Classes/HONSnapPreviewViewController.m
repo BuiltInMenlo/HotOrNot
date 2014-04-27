@@ -22,7 +22,7 @@
 #import "HONUserProfileViewController.h"
 
 @interface HONSnapPreviewViewController () <HONTimelineItemFooterViewDelegate>
-@property (nonatomic) HONSnapPreviewType snapPreviewType;
+@property (nonatomic, assign, readonly) HONSnapPreviewType snapPreviewType;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIButton *closeButton;

@@ -71,11 +71,13 @@
 
 #pragma mark - Navigation
 - (void)_goRemove {
-	[self.delegate tutorialViewClose:self];
+	if ([self.delegate respondsToSelector:@selector(tutorialViewClose:)])
+		[self.delegate tutorialViewClose:self];
 }
 
 - (void)_goTakeAvatar {
-	[self.delegate tutorialViewTakeAvatar:self];
+	if ([self.delegate respondsToSelector:@selector(tutorialViewTakeAvatar:)])
+		[self.delegate tutorialViewTakeAvatar:self];
 }
 
 
