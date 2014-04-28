@@ -104,18 +104,13 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Settings - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Close"];
 	[self dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Notifications Toggle %@", (switchView.on) ? @"On" : @"Off"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [@"" stringFromInt:_notificationSwitch.on], @"switch", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - Notifications Toggle " stringByAppendingString:(switchView.on) ? @"On" : @"Off"]
+									 withProperties:@{@"enabled"	: [@"" stringFromBOOL:switchView.on]}];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
@@ -138,12 +133,11 @@
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-																			 message:@"Cannot send SMS from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
+		[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+									message:@"Cannot send SMS from this device!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	}
 }
 
@@ -187,27 +181,19 @@
 	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	if (indexPath.row == HONSettingsCellTypeHelp) {
-		[[Mixpanel sharedInstance] track:@"Settings - Show FAQ"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Show FAQ"];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	
 	} else if (indexPath.row == HONSettingsCellTypeChangeUsername) {
-		[[Mixpanel sharedInstance] track:@"Settings - Change Username"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Change Username"];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypeChangeEmail) {
-		[[Mixpanel sharedInstance] track:@"Settings - Change Email"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Change Email"];
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -228,10 +214,8 @@
 		}
 	
 	} else if (indexPath.row == HONSettingsCellTypeDeleteChallenges) {
-		[[Mixpanel sharedInstance] track:@"Settings - Delete Volleys"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Delete Volleys"];
+
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Remove all your selfies?"
 															message:@""
 														   delegate:self
@@ -241,9 +225,7 @@
 		[alertView show];
 		
 	} else if (indexPath.row == HONSettingsCellTypeDeactivate) {
-		[[Mixpanel sharedInstance] track:@"Settings - Deactivate"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Deactivete"];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Deactivate Account"
 															message:@"Are you sure?"
@@ -254,9 +236,7 @@
 		[alertView show];
 		
 	} else if (indexPath.row == HONSettingsCellTypeReportAbuse) {
-		[[Mixpanel sharedInstance] track:@"Settings - Report Abuse / Bug"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Report Abuse / Bug"];
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -277,9 +257,7 @@
 		}
 		
 	} else if (indexPath.row == HONSettingsCellTypeTermsConditions) {
-		[[Mixpanel sharedInstance] track:@"Settings - Show Support"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Show Support"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
@@ -309,10 +287,7 @@
 			break;
 	}
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Invite via SMS Message %@", mpAction]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - " stringByAppendingString:mpAction]];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -351,11 +326,7 @@
 			break;
 	}
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - %@ Message %@", mpEvent, mpAction]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[[NSString stringWithFormat:@"Settings - %@ - Message ", mpEvent] stringByAppendingString:mpAction]];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -363,10 +334,8 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSettingsAlertTypeNotifications) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Notifications Toggle %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [@"" stringFromInt:_notificationSwitch.on], @"switch", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - Notifications Toggle " stringByAppendingString:(_notificationSwitch.on) ? @"On" : @"Off"]
+										 withProperties:@{@"enabled"	: [@"" stringFromBOOL:_notificationSwitch.on]}];
 		
 		if (buttonIndex == 0)
 			_notificationSwitch.on = !_notificationSwitch.on;
@@ -379,9 +348,7 @@
 		}
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Deactivate %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - Deactivate " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
@@ -410,9 +377,7 @@
 		}
 	
 	} else if (alertView.tag == HONSettingsAlertTypeDeleteChallenges) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Delete Volleys %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] removeAllChallengesForUserWithCompletion:^(NSObject *result){

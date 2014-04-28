@@ -402,9 +402,7 @@
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Camera Roll"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Camera Roll"];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -412,10 +410,8 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Flip Camera"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Flip Camera"
+								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
 	
@@ -424,18 +420,13 @@
 }
 
 - (void)cameraOverlayViewCameraBack:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Back"];
 	[self _cancelUpload];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
 	NSLog(@"cameraOverlayViewCloseCamera");
-	[[Mixpanel sharedInstance] track:@"Create Volley - Cancel"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Cancel"];
 	
 	[self _cancelUpload];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -445,10 +436,8 @@
 }
 
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Take Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [@"" stringFromInt:tintIndex], @"tint", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Take Photo"
+									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
 	
 	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -465,10 +454,7 @@
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"cameraPreviewViewBackToCamera");
 	
-	[[Mixpanel sharedInstance] track:@"Create Volley - Retake Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Retake Photo"];
 	[self _cancelUpload];
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
@@ -493,9 +479,7 @@
 }
 
 - (void)cameraPreviewViewClose:(HONSelfieCameraPreviewView *)previewView {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Close"];
 	
 	[self _cancelUpload];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -503,9 +487,7 @@
 }
 
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubject:(NSString *)subject {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Submit"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Submit"];
 	
 	_hasSubmitted = NO;
 	_subjectName = subject;

@@ -64,8 +64,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Register - Show" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-		
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 		_imageFilename = @"";
 		_isFirstAppearance = YES;
@@ -92,7 +90,9 @@
 #pragma mark - Data Calls
 - (void)_checkUsername {
 	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSObject *result) {
-		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 0) {
+		HONRegisterCheckErrorType checkErrorType = (HONRegisterCheckErrorType)[[(NSDictionary *)result objectForKey:@"result"] intValue];
+		
+		if (checkErrorType == HONRegisterErrorTypeNone) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
@@ -108,19 +108,21 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) ? @"Username taken!" : ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) ? @"Phone # taken!" : @"Username & phone # taken!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
-			if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) {
+			if (checkErrorType == HONRegisterErrorTypeUsername) {
+				_progressHUD.labelText = @"Username taken!";
+				
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
 				_usernameTextField.text = @"";
 				[_usernameTextField becomeFirstResponder];
-			}
 			
-			else if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 2) {
+			} else if (checkErrorType == HONRegisterCheckErrorTypePhone) {
+				_progressHUD.labelText = @"Phone # taken!";
+				
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
 				_phone = @"";
@@ -129,7 +131,7 @@
 				_phone1TextField.text = @"";
 				[_phone1TextField becomeFirstResponder];
 			
-			} else {
+			} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
@@ -176,15 +178,13 @@
 			
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			
-			[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];
+			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+																					  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+																					  @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																					  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+																					  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 			
-			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
-			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-								   @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-								   @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
@@ -193,7 +193,6 @@
 				[HONAppDelegate writeFollowingList:(NSArray *)result];
 			}];
 			
-//			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 				
@@ -414,7 +413,7 @@
 
 #pragma mark - Navigation
 - (void)_goLogin {
-	[[Mixpanel sharedInstance] track:@"Register - Login" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Login"];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 		if ([MFMailComposeViewController canSendMail]) {
@@ -442,8 +441,8 @@
 }
 
 - (void)_goCamera {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Camera %@Available", ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? @"" : @"Not "] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-		
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Register - Camera %@vailable", ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? @"A" : @"Una"]];
+	
 	UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
 	imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
 	imagePickerController.view.backgroundColor = [UIColor whiteColor];
@@ -547,7 +546,7 @@
 }
 
 - (void)_goFlipCamera {
-	[[Mixpanel sharedInstance] track:@"Register - Switch Camera" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Switch Camera"];
 	
 	if (self.profileImagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		self.profileImagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -559,14 +558,14 @@
 }
 
 - (void)_goCameraRoll {
-	[[Mixpanel sharedInstance] track:@"Register - Camera Roll" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Camera Roll"];
 	
 	self.profileImagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	self.profileImagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)_goChangeTint {
-	[[Mixpanel sharedInstance] track:@"Register - Change Tint Overlay" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Change Tint Overlay"];
 	
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
@@ -577,14 +576,14 @@
 }
 
 - (void)_goSkip {
-	[[Mixpanel sharedInstance] track:@"Register - Skip Photo" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Skip Photo"];
 
 	_imageFilename = @"";
 	[self _finalizeUser];
 }
 
 - (void)_goTakePhoto {
-	[[Mixpanel sharedInstance] track:@"Register - Take Photo" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Take Photo"];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
@@ -617,7 +616,7 @@
 }
 
 - (void)_goSubmit {
-	[[Mixpanel sharedInstance] track:@"Register - Submit Username & Email" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Submit"];
 	
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
@@ -743,17 +742,6 @@
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
 	}
-	
-	
-//	if (registerErrorType == (HONRegisterErrorTypeUsername | HONRegisterErrorTypePassword | HONRegisterErrorTypePhone)) {
-//	} else if (registerErrorType == (HONRegisterErrorTypePassword | HONRegisterErrorTypePhone)) {
-//	} else if (registerErrorType == (HONRegisterErrorTypeUsername | HONRegisterErrorTypePhone)) {
-//	} else if (registerErrorType == HONRegisterErrorTypePhone) {
-//	} else if (registerErrorType == (HONRegisterErrorTypeUsername | HONRegisterErrorTypePassword)) {
-//	} else if (registerErrorType == HONRegisterErrorTypePassword) {
-//	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
-//	} else {
-//	}
 }
 
 
@@ -966,7 +954,7 @@
 	}
 	
 	else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Skip Photo %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Register - Skip Photo " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 
 		if (buttonIndex == 1) {
 			_imageFilename = @"";
@@ -1007,9 +995,7 @@
 			mpAction = @"Not Sent";
 			break;
 	}
-	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Register - Login Message %@", mpAction] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Register - Login Message " stringByAppendingString:mpAction]];
 	[_mailComposeViewController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }

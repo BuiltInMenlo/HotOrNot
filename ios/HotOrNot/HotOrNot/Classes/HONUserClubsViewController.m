@@ -220,7 +220,7 @@
 
 #pragma mark - Navigation
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Refresh" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Refresh"];
 	
 	_joinedClubs = [NSMutableArray array];
 	_invitedClubs = [NSMutableArray array];
@@ -230,17 +230,17 @@
 }
 
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Profile" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Profile"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goMessages {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Messages" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Messages"];
 	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Challenge" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Challenge"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -249,8 +249,7 @@
 
 - (void)_goClubSettings:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Settings"
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																								toUserClub:userClubVO]];
+									   withUserClub:userClubVO];
 		
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -258,7 +257,7 @@
 }
 
 - (void)_goInviteFriends {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Invite Friends" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Invite Friends"];
 	
 	if (_ownClub == nil) {
 		[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
@@ -275,7 +274,7 @@
 }
 
 - (void)_goFindSchoolClub {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Find High School" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Find High School"];
 	
 	[[[UIAlertView alloc] initWithTitle:@"No clubs found nearby!"
 								message:@"Check back later"
@@ -285,7 +284,7 @@
 }
 
 - (void)_goFindNearbyClubs {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Nearby Clubs" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Nearby Clubs"];
 	
 	[[[UIAlertView alloc] initWithTitle:@"No clubs found nearby!"
 								message:@"Check back later"
@@ -295,7 +294,7 @@
 }
 
 - (void)_goShare {
-	[[Mixpanel sharedInstance] track:@"User Profile - Share" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Share"];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -341,7 +340,7 @@
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Close Tutorial" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Close Tutorial"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -350,7 +349,7 @@
 }
 
 - (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Tutorial Take Avatar" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Tutorial Take Avatar"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -366,8 +365,7 @@
 #pragma mark - UserClubViewCell Delegates
 - (void)userClubViewCell:(HONUserClubViewCell *)cell acceptInviteForClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Accept Invite"
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																								toUserClub:userClubVO]];
+									   withUserClub:userClubVO];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Accept Invite to the %@ club?", userClubVO.clubName]
 														message:@""
@@ -380,8 +378,7 @@
 
 - (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Edit Settings"
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																								toUserClub:userClubVO]];
+									   withUserClub:userClubVO];
 		
 	_selectedClub = userClubVO;
 	
@@ -504,7 +501,7 @@
 	if (indexPath.section == 0) {
 		if (indexPath.row == 0) {
 			if (_ownClub == nil) {
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+				[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club"];
 				
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
@@ -562,9 +559,8 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Clubs - Settings %@", (buttonIndex == 0) ? @"Quit" : @"Cancel"]
-										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																									toUserClub:_selectedClub]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Clubs - Settings " stringByAppendingString:(buttonIndex == 0) ? @"Quit" : @"Cancel"]
+										   withUserClub:_selectedClub];
 		
 		if (buttonIndex == 0)
 			[self _leaveClub:_selectedClub];
@@ -574,10 +570,8 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Clubs - Accept Invite %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-										 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																									toUserClub:_selectedClub]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Clubs - Accept Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										   withUserClub:_selectedClub];		
 		if (buttonIndex == 1)
 			[self _joinClub:_selectedClub];
 	}

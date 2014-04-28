@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
 
 #import "EGORefreshTableHeaderView.h"
 
@@ -86,26 +87,23 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Message Details - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Details - Back"
+										withMessage:_messageVO];
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Message Details - Refresh"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Details - Refresh"
+										withMessage:_messageVO];
 	
 	[HONAppDelegate incTotalForCounter:@"messages"];
 	[self _retrieveMessage];
 }
 
 - (void)_goReply {
-	[[Mixpanel sharedInstance] track:@"Message Details - Reply"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Details - Reply"
+										withMessage:_messageVO];
 	
 	NSMutableArray *recipients = [NSMutableArray array];
 	for (HONOpponentVO *vo in _messageVO.participants) {

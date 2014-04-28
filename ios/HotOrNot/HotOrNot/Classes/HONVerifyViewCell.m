@@ -214,7 +214,7 @@
 }
 
 - (void)_goDisprove {
-	[self.delegate verifyViewCell:self disapproveChallenge:_challengeVO];
+	[self.delegate verifyViewCell:self unapproveChallenge:_challengeVO];
 }
 
 - (void)_goSkip {
@@ -271,15 +271,5 @@
 	[UIView commitAnimations];
 }
 
-
-#pragma mark - VerifyCellHeader Delegates
-//- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO {
-//	[[Mixpanel sharedInstance] track:@"Verify - Header Show Profile"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
-//	
-//	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
-//}
 
 @end

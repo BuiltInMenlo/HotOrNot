@@ -11,9 +11,6 @@
 @interface NSString (DataTypes)
 unsigned long long unistrlen(unichar *chars);
 
-
-- (id)initWithInt:(int)intVal;
-
 - (NSString *)stringFromBOOL:(BOOL)boolVal;
 - (NSString *)stringFromCGFloat:(CGFloat)floatVal;
 - (NSString *)stringFromDictionary:(NSDictionary *)dictionary;

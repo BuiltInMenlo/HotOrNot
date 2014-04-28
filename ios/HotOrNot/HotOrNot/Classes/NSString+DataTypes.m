@@ -22,14 +22,6 @@ unsigned long long unistrlen(unichar *chars) {
 }
 
 
-
-- (id)initWithInt:(int)intVal {
-	if ((self = [super init])) {
-	}
-	
-	return ([self stringFromInt:intVal]);
-}
-
 - (NSString *)stringFromBOOL:(BOOL)boolVal {
 	return ((boolVal) ? @"YES" : @"NO");
 }

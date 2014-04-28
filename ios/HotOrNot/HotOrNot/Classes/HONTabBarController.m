@@ -148,7 +148,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	}
 	
 	
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Tab Bar %@ - %@", (touch.tapCount == 1) ? @"Select" : @"Double Tap", mpEvent]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Tab Bar %@ - %@", (touch.tapCount == 1) ? @"Select" : @"Double Tap", mpEvent]];
 	[HONAppDelegate incTotalForCounter:totalKey];
 	
 //	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);

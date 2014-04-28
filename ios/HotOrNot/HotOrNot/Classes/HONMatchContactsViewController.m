@@ -135,9 +135,7 @@
 }
 
 - (void)_goCancel {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Matching - Cancel", (_isEmail) ? @"Email" : @"Phone"]
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[(_isEmail) ? @"Email" : @"Phone" stringByAppendingString:@" Matching - Cancel"]];
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -146,9 +144,7 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:@"Email Matching - Invalid Email"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Email Matching - Invalid Email"];
 		[_textField becomeFirstResponder];
 	
 	} else if (alertView.tag == 1) {
@@ -179,11 +175,9 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	if ([textField.text length] > 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"%@ Matching - Entered %@", (_isEmail) ? @"Email" : @"Phone", (_isEmail) ? @"Email" : @"Phone"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  textField.text, (_isEmail) ? @"email": @"phone", nil]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:[(_isEmail) ? @"Email" : @"Phone" stringByAppendingString:[@" Matching - Entered " stringByAppendingString:(_isEmail) ? @"Email" : @"Phone"]]
+										 withProperties:@{(_isEmail) ? @"email" : @"phone"	: textField.text}];
+				
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_submitButton.frame = CGRectMake(_submitButton.frame.origin.x, _submitButtonOriginY + 216.0, _submitButton.frame.size.width, _submitButton.frame.size.height);//_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
 		} completion:^(BOOL finished) {

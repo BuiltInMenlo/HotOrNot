@@ -132,12 +132,7 @@
 			HONChallengeVO *challengeVO = (HONChallengeVO *)[dict objectForKey:@"challenge"];
 			HONOpponentVO *opponentVO = (HONOpponentVO *)[dict objectForKey:@"participant"];
 			
-			NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-			properties[@"challenge"] = [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName];
-			properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username];
-			[[Mixpanel sharedInstance] track:@"User Profile - Followers"
-								  properties:properties];
-			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Followers" withChallenge:challengeVO andParticipant:opponentVO];
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initFromProfileWithOpponent:opponentVO forChallenge:challengeVO];
 			_snapPreviewViewController.delegate = self;
 			

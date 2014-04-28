@@ -86,7 +86,8 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Club Details - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Details - Back"
+									   withUserClub:_userClubVO];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

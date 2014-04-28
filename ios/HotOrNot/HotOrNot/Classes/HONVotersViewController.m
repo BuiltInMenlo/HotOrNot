@@ -149,10 +149,8 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Timeline Votes - Back"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Back"
+									  withChallenge:_challengeVO];
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
@@ -162,9 +160,8 @@
 - (void)_voterChallenge:(NSNotification *)notification {
 	_voterVO = (HONVoterVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Challenge Voters - Create Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Create Challenge"
+									  withChallenge:_challengeVO];
 	
 //	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 //												   [@"" stringFromInt:_voterVO.userID], @"id",
@@ -215,12 +212,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
 	_voterVO = (HONVoterVO *)[_voters objectAtIndex:indexPath.row];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline Votes - Select Voter"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _voterVO.userID, _voterVO.username], @"voter", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Votes - Selected Row"  withChallenge:_challengeVO];
 }
 
 

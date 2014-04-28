@@ -383,18 +383,12 @@
 			
 			// already granted access
 		} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-			[[Mixpanel sharedInstance] track:@"Address Book - Granted"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-			
-			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
 			[self _retrieveContacts];
 			
 			// denied permission
 		} else {
-			[[Mixpanel sharedInstance] track:@"Address Book - Denied"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
 			
 			_contactsBlockedImageView.hidden = NO;
 			[self _promptForAddressBookAccess];
@@ -446,39 +440,25 @@
 
 #pragma mark - Navigation
 - (void)_goRegistration {
-	[[Mixpanel sharedInstance] track:@"Register User"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[Mixpanel sharedInstance] track:@"Start First Run"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register User"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Start First Run"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:^(void) {}];
 }
 
 - (void)_goProfile {
-	[[Mixpanel sharedInstance] track:@"Contacts - Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Profile"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goMessages {
-	[[Mixpanel sharedInstance] track:@"Contacts - Messages" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Messages"];
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Contacts - Create Volley"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Create Volley"];
 	
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -560,7 +540,7 @@
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[Mixpanel sharedInstance] track:@"Contacts - Tutorial Close" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Tutorial Close"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -569,7 +549,7 @@
 }
 
 - (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[Mixpanel sharedInstance] track:@"Contacts - Tutorial Take Avatar" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Tutorial Take Avatar"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -591,19 +571,14 @@
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	[[Mixpanel sharedInstance] track:@"Contacts - Search Users Cancel"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Cancel"];
 	_isDataSourceContacts = YES;
 	[_tableView reloadData];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-	[[Mixpanel sharedInstance] track:@"Contacts - Search Users Submit"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  searchQuery, @"query", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Submit"
+									 withProperties:@{@"query"	: searchQuery}];
 	
 	[self _searchUsersWithUsername:searchQuery];
 }
@@ -611,20 +586,13 @@
 
 #pragma mark - InAppContactViewCell Delegates
 - (void)avatarViewCell:(HONBaseAvatarViewCell *)viewCell showProfileForUser:(HONTrivialUserVO *)vo {
-	[[Mixpanel sharedInstance] track:@"Contacts - Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"contact", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Show Profile" withTrivialUser:vo];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
 
 - (void)inAppContactViewCell:(HONInAppContactViewCell *)viewCell addUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Contacts - %@elect Invite In-App Contact", (isSelected) ? @"S" : @"Des"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Contacts - %@elect Invite In-App Contact", (isSelected) ? @"S" : @"Des"] withTrivialUser:userVO];
+
 	if (_userClubVO != nil)
 		[self _inviteInAppContact:userVO toClub:_userClubVO];
 	
@@ -643,10 +611,7 @@
 
 #pragma mark - InviteContactViewCell Delegates
 - (void)nonAppContactViewCell:(HONNonAppContactViewCell *)viewCell contactUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Contacts - %@elect Invite Non App Contact", (isSelected) ? @"S" : @"Des"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Contacts - %@elect Invite Non App Contact", (isSelected) ? @"S" : @"Des"] withContactUser:userVO];
 	
 	if (_userClubVO != nil)
 		[self _inviteNonAppContact:userVO toClub:_userClubVO];
@@ -768,11 +733,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
 	
-	[[Mixpanel sharedInstance] track:@"Contacts - Select In-App Contact Row"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"contact", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Select In-App Contact Row" withTrivialUser:vo];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
 

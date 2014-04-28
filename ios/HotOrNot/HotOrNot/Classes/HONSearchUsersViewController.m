@@ -169,10 +169,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Search Users - Done"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Done"];
 	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
 		[HONAppDelegate writeFollowingList:(NSArray *)result];
 	};
@@ -204,9 +201,7 @@
 }
 
 - (void)_goSelectAll {
-	[[Mixpanel sharedInstance] track:@"Search Users - Select All"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Select All"];
 	
 	_hasUpdated = YES;
 	[_selectedUsers removeAllObjects];
@@ -224,10 +219,8 @@
 
 #pragma mark - SearchUserViewCell Delegates
 - (void)searchUserViewCell:(HONSearchUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users People - %@elect", (isSelected) ? @"Des" : @"S"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - @%@", trivialUserVO.userID, trivialUserVO.username], @"celeb", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Search Users - %@elect", (isSelected) ? @"Des" : @"S"]
+									withTrivialUser:trivialUserVO];
 	
 	_hasUpdated = YES;
 	if (isSelected) {
@@ -253,9 +246,7 @@
 
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	[[Mixpanel sharedInstance] track:@"Search Users - Cancel"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Cancel"];
 	
 	_users = [NSMutableArray array];
 	for (NSDictionary *dict in [HONAppDelegate searchUsers])
@@ -265,11 +256,7 @@
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-	[[Mixpanel sharedInstance] track:@"Contacts - Select Follow In-App Contact"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  searchQuery, @"query", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Entered Username"];
 	[self _retrieveUsers:searchQuery];
 }
 
@@ -348,9 +335,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Search Users - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -363,9 +348,7 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Search Users - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
@@ -392,17 +375,6 @@
 				
 				
 			}
-		}
-	
-	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search Users - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	}
 }

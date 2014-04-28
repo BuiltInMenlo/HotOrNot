@@ -7,10 +7,11 @@
 //
 
 #import "HONMessageVO.h"
+#import "HONOpponentVO.h"
 
 @class HONMessageItemViewCell;
 @protocol HONMessageItemViewCellDelegate <NSObject>
-- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForUserID:(int)userID forMessage:(HONMessageVO *)messageVO;
+- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forMessage:(HONMessageVO *)messageVO;
 @end
 
 @interface HONMessageItemViewCell : UITableViewCell

@@ -228,11 +228,9 @@
 	HONChallengeVO *challengeVO = (HONChallengeVO *)[dict objectForKey:@"challenge"];
 	HONOpponentVO *opponentVO = (HONOpponentVO *)[dict objectForKey:@"participant"];
 	
-	[[Mixpanel sharedInstance] track:@"User Profile - Remove Selfie"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [@"" stringFromInt:opponentVO.userID], @"userID", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Remove Selfie"
+									  withChallenge:challengeVO
+									 andParticipant:opponentVO];
 	
 	_selectedChallengeVO = challengeVO;
 	_selectedOpponentVO = opponentVO;
@@ -250,10 +248,8 @@
 	HONChallengeVO *challengeVO = (HONChallengeVO *)[dict objectForKey:@"challenge"];
 //	HONOpponentVO *opponentVO = (HONOpponentVO *)[dict objectForKey:@"participant"];
 	
-	[[Mixpanel sharedInstance] track:@"User Profile - Show Details"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Show Details"
+									  withChallenge:challengeVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -305,10 +301,9 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Remove Selfie %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _selectedOpponentVO.userID, _selectedOpponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"User Profile - Remove Selfie " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+									  withChallenge:_selectedChallengeVO
+									 andParticipant:_selectedOpponentVO];
 	
 	if (buttonIndex == 1) {
 		[[HONAPICaller sharedInstance] removeChallengeForChallengeID:_selectedChallengeVO.challengeID withImagePrefix:_selectedOpponentVO.imagePrefix completion:^(NSObject *result) {

@@ -137,9 +137,7 @@
 
 #pragma mark - Navigation
 - (void)_goMail {
-	[[Mixpanel sharedInstance] track:@"Suspended Account - Request Support"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suspended Account - Request Support"];
 	
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -160,10 +158,9 @@
 }
 
 - (void)_goSubmit {
-	[[Mixpanel sharedInstance] track:@"Suspended Account - Submit"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%@", _passcode], @"passcode", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suspended Account - Submit"
+									 withProperties:@{@"passcode"	: _passcode}];
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, 320.0, _submitButton.frame.size.height);
 	} completion:^(BOOL finished) {
@@ -234,10 +231,7 @@
 			break;
 	}
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suspended Account - Message %@", mpAction]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Suspended Account - Message" stringByAppendingString:mpAction]];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -221,13 +221,8 @@
 	[self.delegate timelineItemViewCell:self showVoters:_challengeVO];
 }
 
-- (void)_goStickerProfile:(id)sender {
-	UIButton *button = (UIButton *)sender;
-	[self.delegate timelineItemViewCell:self showProfileForUserID:button.tag forChallenge:_challengeVO];
-}
-
 - (void)_goCreatorProfile {
-	[self.delegate timelineItemViewCell:self showProfileForUserID:_challengeVO.creatorVO.userID forChallenge:_challengeVO];
+	[self.delegate timelineItemViewCell:self showProfileForParticipant:_challengeVO.creatorVO forChallenge:_challengeVO];
 }
 
 - (void)_goBanner {
@@ -243,7 +238,7 @@
 		
 		CGRect creatorFrame = CGRectMake(_heroHolderView.frame.origin.x, _heroHolderView.frame.origin.y, _heroHolderView.frame.size.width, _heroHolderView.frame.size.height);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
-			[self.delegate timelineItemViewCell:self showPreview:_heroOpponentVO forChallenge:_challengeVO];
+			[self.delegate timelineItemViewCell:self showPreviewForParticipant:_heroOpponentVO forChallenge:_challengeVO];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}
@@ -252,13 +247,7 @@
 
 #pragma mark - TimelineCellHeaderCreator Delegates
 - (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Header - Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"participant", nil]];
-	
-	[self.delegate timelineItemViewCell:self showProfileForUserID:opponentVO.userID forChallenge:challengeVO];
+	[self.delegate timelineItemViewCell:self showProfileForParticipant:opponentVO forChallenge:challengeVO];
 }
 
 

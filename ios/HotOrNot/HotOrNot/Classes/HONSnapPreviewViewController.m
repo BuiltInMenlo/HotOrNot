@@ -293,8 +293,7 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	NSLog(@"[:-:] snapPreviewViewController._goClose [:-:]");
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Close"];
 	if (_snapPreviewType == HONSnapPreviewTypeVerify && _hasTakenVerifyAction)
 		[self.delegate snapPreviewViewController:self removeVerifyChallenge:_challengeVO];
 	
@@ -303,19 +302,13 @@
 }
 
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	[self _goClose];
 }
 
 - (void)_goUpvote {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Upvote"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Upvote"
+									  withChallenge:_challengeVO
+									 andParticipant:_opponentVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 	
@@ -341,12 +334,9 @@
 
 - (void)_goProfile {
 //	NSLog(@"USER:[%@]", _userVO.dictionary);
-	
-	[[Mixpanel sharedInstance] track:@"Volley Preview - User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - User Profile"
+									  withChallenge:_challengeVO
+									 andParticipant:_opponentVO];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_userProfileViewController = [[HONUserProfileViewController alloc] init];
 	_userProfileViewController.userID = _opponentVO.userID;
@@ -354,11 +344,9 @@
 }
 
 - (void)_goFlag {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Flag"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Flag"
+									  withChallenge:_challengeVO
+									 andParticipant:_opponentVO];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
@@ -372,11 +360,9 @@
 }
 
 - (void)_goApprove {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Verify Approve"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Verify Approve"
+							   withChallengeCreator:_challengeVO];
+					
 	if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
 		[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result) {
 			[HONAppDelegate writeFollowingList:(NSArray *)result];
@@ -403,11 +389,9 @@
 }
 
 - (void)_goDisprove {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Flag Sheet"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Flag Sheet"
+									  withChallenge:_challengeVO
+									 andParticipant:_opponentVO];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[HONAppDelegate verifyCopyForKey:@"nay_txt"]
 														message:@""
@@ -419,19 +403,14 @@
 }
 
 - (void)_goSkip {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Verify Skip"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Verify Skip"
+							   withChallengeCreator:_challengeVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nayOverlay"]]];
 }
 
 - (void)_goShoutout {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Verify Shoutout"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Verify Shoutout" withChallenge:_challengeVO andParticipant:_opponentVO];
 	
 	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
 		_hasTakenVerifyAction = YES;
@@ -447,10 +426,9 @@
 }
 
 - (void)_goFollowUser {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Follow"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Follow"
+									  withChallenge:_challengeVO
+									 andParticipant:_opponentVO];
 	
 	[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
 		[HONAppDelegate writeFollowingList:(NSArray *)result];
@@ -467,10 +445,9 @@
 }
 
 - (void)_goMore {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - More Sheet"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - More Sheet"
+									  withChallenge:_challengeVO
+									 andParticipant:_opponentVO];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
 															 delegate:self
@@ -505,26 +482,15 @@
 
 #pragma mark - TimelineItemFooterView Delegates
 - (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - User Profile"
+									  withChallenge:challengeVO
+									 andParticipant:opponentVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:opponentVO.userID] animated:YES];
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:opponentVO.userID];
-//	userPofileViewController.userID = opponentVO.userID;
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Volley Preview - Join Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Join Challenge" withChallenge:challengeVO];
 	[self.delegate snapPreviewViewController:self joinChallenge:challengeVO];
 }
 
@@ -538,11 +504,9 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == HONSnapPreviewActionSheetTypeFlag) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Flag Sheet %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - Flag Sheet " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										  withChallenge:_challengeVO
+										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 0) {
 			[self _goClose];
@@ -557,10 +521,9 @@
 		}
 	
 	} else if (actionSheet.tag == HONSnapPreviewActionSheetTypeMore) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - More Sheet %@", (buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - More Sheet " stringByAppendingString:(buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
+										  withChallenge:_challengeVO
+										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result) {
@@ -591,11 +554,9 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSnapPreviewAlertTypeFlag) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - Flag " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										  withChallenge:_challengeVO
+										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] flagUserByUserID:_opponentVO.userID completion:^(NSObject *result){
@@ -607,10 +568,9 @@
 		}
 		
 	} else if (alertView.tag == HONSnapPreviewAlertTypeDisprove) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Verify Disprove %@", (buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - Verify Unapprove " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @" Confirm"]
+										  withChallenge:_challengeVO
+										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:^(NSObject *result){
@@ -620,9 +580,7 @@
 		}
 
 	} else if (alertView.tag == HONSnapPreviewAlertTypeShare) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Volley Preview - Share %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],

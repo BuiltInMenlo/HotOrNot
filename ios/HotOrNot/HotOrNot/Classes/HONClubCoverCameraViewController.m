@@ -219,12 +219,9 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Cancel"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Cancel"];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
@@ -237,9 +234,8 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Switch Camera"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Switch Camera"
+								   withCameraDevice:_imagePicker.cameraDevice];
 	
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -253,19 +249,15 @@
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Camera Roll"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Camera Roll"];
 	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)cameraOverlayViewTakePicture:(HONClubCoverCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Take Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [@"" stringFromInt:tintIndex], @"tint", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Take Photo"
+									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
 	
 	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -278,15 +270,11 @@
 }
 
 - (void)cameraOverlayViewRetake:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Retake"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Retake"];
 }
 
 - (void)cameraOverlayViewSubmit:(HONClubCoverCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Submit"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Submit"];
 	
 //	UIImage *processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 //

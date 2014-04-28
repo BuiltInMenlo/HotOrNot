@@ -53,10 +53,6 @@
 
 - (id)initAsFirstRun:(BOOL)isFirstRun {
 	if ((self = [self init])) {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Open"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
 		_isFirstRun = isFirstRun;
 		_hasUpdated = NO;
 	}
@@ -344,18 +340,15 @@
 			
 			// already granted access
 		} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-			[[Mixpanel sharedInstance] track:@"Address Book - Granted"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@""];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
 			
 			
 			[self _retrieveContacts];
 			
 			// denied permission
 		} else {
-			[[Mixpanel sharedInstance] track:@"Address Book - Denied"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
 																message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
@@ -394,9 +387,7 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Close"];
 	
 	if ([_selectedInAppContacts count] > 0)
 		[self _followUsers];
@@ -412,9 +403,7 @@
 
 - (void)_goSelectAllToggle {
 	if ([_selectedNonAppContacts count] == [_nonAppContacts count] && [_selectedInAppContacts count] == [_inAppContacts count]) {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect All"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Deselect All"];
 		
 		for (int i=0; i<[_inAppContacts count]; i++) {
 			HONFollowContactViewCell *cell = (HONFollowContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
@@ -459,22 +448,14 @@
 
 #pragma mark - FollowContactViewCell Delegates
 - (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Add Contacts - %@elect Follow In-App Contact", (isSelected) ? @"S" : @"Des"]
+									withTrivialUser:userVO];
 	
 	_hasUpdated = YES;
-	if (isSelected){
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Select Follow In-App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		
+	if (isSelected)
 		[_selectedInAppContacts addObject:userVO];
 	
-	} else {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Follow In-App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
-		
+	else {
 		NSMutableArray *removeVOs = [NSMutableArray array];
 		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
 			for (HONTrivialUserVO *dropVO in _inAppContacts) {
@@ -492,19 +473,13 @@
 
 #pragma mark - InviteContactCell Delegates
 - (void)inviteContactViewCell:(HONInviteContactViewCell *)viewCell inviteUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	if (isSelected) {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Select Invite Non App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
-		
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Add Contacts - %@elect Non-App Contact", (isSelected) ? @"S" : @"Des"]
+									withContactUser:userVO];
+	
+	if (isSelected)
 		[_selectedNonAppContacts addObject:userVO];
-	} else {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Invite Non App Contact"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
-		
+	
+	else {
 		NSMutableArray *removeVOs = [NSMutableArray array];
 		for (HONContactUserVO *vo in _selectedNonAppContacts) {
 			for (HONContactUserVO *dropVO in _nonAppContacts) {
@@ -599,10 +574,8 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
 	
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Select In-App Contact Row"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Select Non-App Contact"
+									withTrivialUser:vo];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
@@ -611,11 +584,9 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Add Contacts - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]];
+		 
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-			
 			for (int i=0; i<[_inAppContacts count]; i++) {
 				HONFollowContactViewCell *cell = (HONFollowContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 				[cell toggleSelected:YES];

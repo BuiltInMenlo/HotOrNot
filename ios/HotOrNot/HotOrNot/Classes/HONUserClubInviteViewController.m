@@ -310,7 +310,7 @@
 	
 	
 	BOOL hasPermission = ([[HONDeviceIntrinsics sharedInstance] hasAdressBookPermission]);
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Address Book Access - %@", (hasPermission) ? @"Granted" : @"Unknown / Denied"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Address Book Access - %@", (hasPermission) ? @"Granted" : @"Unknown / Denied"]];
 	if (hasPermission)
 		[self _retrieveContacts];
 	
@@ -348,22 +348,26 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Back"
+									   withUserClub:_userClubVO];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Close" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Close"
+									   withUserClub:_userClubVO];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Done" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"
+									   withUserClub:_userClubVO];
 	[self _sendClubInvites];
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Refresh" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Refresh"
+									   withUserClub:_userClubVO];
 	
 	if ([_smsRecipients length] > 0)
 		[self _sendPhoneContacts];
@@ -376,18 +380,14 @@
 
 #pragma mark - InAppContactViewCell Delegates
 - (void)avatarViewCell:(HONBaseAvatarViewCell *)viewCell showProfileForUser:(HONTrivialUserVO *)vo {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Show User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"contact", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Show User Profile"
+									withTrivialUser:vo];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
 
 - (void)inAppContactViewCell:(HONInAppContactViewCell *)viewCell addUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Club Invite - Invite User %@elected", (isSelected) ? @"S" : @"Des"]
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																							  toTrivalUser:userVO]];
+									 withTrivialUser:userVO];
 	
 	if (isSelected) {
 		[_selectedInAppContacts addObject:userVO];
@@ -409,8 +409,7 @@
 #pragma mark - NonAppContactViewCell Delegates
 - (void)nonAppContactViewCell:(HONNonAppContactViewCell *)viewCell contactUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Club Invite - Invite Contact %@elected", (isSelected) ? @"S" : @"Des"]
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																							  toContactUser:userVO]];
+									 withContactUser:userVO];
 	
 	if (isSelected) {
 		[_selectedNonAppContacts addObject:userVO];
@@ -527,8 +526,7 @@
 	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Show User Profile"
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																							  toTrivalUser:vo]];
+									withTrivialUser:vo];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
@@ -554,7 +552,8 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Club Invite - No Users Selected %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Club Invite - No Users Selected " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+										   withUserClub:_userClubVO];
 		
 		if (buttonIndex == 1)
 			[self.navigationController dismissViewControllerAnimated:YES completion:nil];

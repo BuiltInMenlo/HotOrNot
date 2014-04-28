@@ -189,20 +189,19 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Create Selfie - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Create Selfie - Cancel" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Cancel"];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }
 
 - (void)_goSubmit {
-	[[Mixpanel sharedInstance] track:@"Create Selfie - Submit" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 //		NSLog(@"_selfieSubmitType:[%d]", _selfieSubmitType);
@@ -221,7 +220,7 @@
 }
 
 - (void)_goSelectAllToggle {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Create Selfie - Select %@", ([_selectedClubs count] == [_allClubs count]) ? @"None" : @"All"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Create Selfie - Select %@", ([_selectedClubs count] == [_allClubs count]) ? @"None" : @"All"]];
 	
 	
 	if ([_selectedClubs count] == [_allClubs count]) {
@@ -337,7 +336,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Create Selfie - Empty Selection %@", (buttonIndex == 0) ? @"Cancel" : @"Select All"] properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Create Selfie - Empty Selection " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Select All"]];
 		
 		if (buttonIndex == 1)
 			[self _goSelectAllToggle];

@@ -136,10 +136,7 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Message Recipients - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -152,10 +149,7 @@
 						  otherButtonTitles:nil] show];
 		
 	} else {
-		[[Mixpanel sharedInstance] track:@"Message Recipients - Create Message"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Create Message"];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsMessageToRecipients:[_selectedRecipients copy]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
@@ -163,9 +157,7 @@
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Message Recipients - Refresh"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Refresh"];
 	[self _buildRecipients];
 }
 
@@ -182,11 +174,9 @@
 
 #pragma mark - MessageRecipientViewCell Delegates
 - (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONTrivialUserVO *)userVO {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Message Recipients - %@elect Recipient", (isSelected) ? @"S" : @"D"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"recipient", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Message Recipients - %@elect Recipient", (isSelected) ? @"S" : @"De"]
+									withTrivialUser:userVO];
+
 	
 	if (isSelected) {
 		BOOL isFound = NO;

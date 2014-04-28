@@ -8,6 +8,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
+
 #import "HONClubCoverCameraOverlayView.h"
 #import "HONImageLoadingView.h"
 
@@ -211,11 +213,7 @@
 }
 
 - (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Skip Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Skip Photo"];
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"Choosing a cover photo for your club"
 													   delegate:self
@@ -250,11 +248,8 @@
 }
 
 - (void)_goChangeTint {
-	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Change Tint Overlay"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Change Tint Overlay"
+									 withProperties:@{@"tint"	: [@"" stringFromInt:(_tintIndex+1)]}];
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
 	[UIView beginAnimations:@"fade" context:nil];
@@ -281,23 +276,13 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		switch(buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:@"Club Cover Photo - Skip Photo Confirm"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-				
-				[self.delegate cameraOverlayViewCloseCamera:self];
-				break;
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Club Cover Photo - Skip Photo Cancel"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-				
-				[self _goCameraBack];
-				break;
-		}
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Club Cover Photo - Skip Photo " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]];
+		
+		if (buttonIndex == 0)
+			[self.delegate cameraOverlayViewCloseCamera:self];
+		
+		else
+			[self _goCameraBack];
 	}
 }
 

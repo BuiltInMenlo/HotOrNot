@@ -317,17 +317,15 @@
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
 		
 		_opponentVO = (CGRectContainsPoint(_heroHolderView.frame, touchPoint)) ? _heroOpponentVO : nil;
-		[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Show Photo Details"
+										  withChallenge:_challengeVO
+										 andParticipant:_opponentVO];
 		
 		if (_opponentVO != nil) {
 			UIView *tagView = [[UIView alloc] initWithFrame:CGRectZero];
 			[tagView setTag:_opponentVO.userID];
 			
-			[self _goUserProfile:_opponentVO.userID];
+			[self _goUserProfile:_opponentVO];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
@@ -346,31 +344,24 @@
 }
 
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Close"
+									  withChallenge:_challengeVO];
 	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 
 }
 
 - (void)_goScore {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Show Voters"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Show Voters"
+									  withChallenge:_challengeVO];
 	
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:_challengeVO] animated:YES];
 }
 
 - (void)_goComments {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Comments"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Show Comments"
+									  withChallenge:_challengeVO];
 	
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:_challengeVO] animated:YES];
 }
@@ -389,14 +380,12 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
-- (void)_goUserProfile:(int)userID {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", userID, @""], @"opponent", nil]];
-	
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:userID] animated:YES];
+- (void)_goUserProfile:(HONOpponentVO *)oppoentVO {
+	 [[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - "
+									   withChallenge:_challengeVO
+									  andParticipant:oppoentVO];
+	 
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:oppoentVO.userID] animated:YES];
 //	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 //	userPofileViewController.userID = userID;
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
@@ -405,10 +394,8 @@
 }
 
 - (void)_goJoinChallenge {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Join Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Join Challenge"
+									  withChallenge:_challengeVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -416,10 +403,8 @@
 }
 
 - (void)_goFirstReply {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - First Reply"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - First Reply"
+									  withChallenge:_challengeVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -427,11 +412,9 @@
 }
 
 - (void)_goLikeCreator {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Like Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Like Challenge"
+									  withChallenge:_challengeVO];
+
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
 	
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_challengeVO.challengeID forOpponent:_challengeVO.creatorVO completion:^(NSObject *result){
@@ -444,10 +427,8 @@
 }
 
 - (void)_goShareChallenge {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Share Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Share Challenge"
+									  withChallenge:_challengeVO];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], _heroOpponentVO.subjectName, _heroOpponentVO.username];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], _heroOpponentVO.subjectName, _heroOpponentVO.username, [HONAppDelegate shareURL]];
@@ -462,10 +443,8 @@
 }
 
 - (void)_goFlagChallenge {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Flag Challenge"
+									  withChallenge:_challengeVO];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 															 delegate:self
@@ -526,48 +505,30 @@
 
 #pragma mark - TimelineCellHeaderCreator Delegates
 - (void)timelineCellHeaderView:(HONTimelineCellHeaderView *)cell showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Header Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"participant", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Header Show Profile"
+									  withChallenge:challengeVO
+									 andParticipant:opponentVO];
 	
-	[self _goUserProfile:opponentVO.userID];
+	[self _goUserProfile:opponentVO];
 }
 
 
 #pragma mark - TimelineSubject Delegates
 - (void)timelineCellSubjectViewShowProfile:(HONTimelineCellSubjectView *)subjectView {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - User Profile"
+									  withChallengeCreator:_challengeVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:_challengeVO.creatorVO.userID] animated:YES];
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = _challengeVO.creatorVO.userID;
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
 #pragma mark - TimelineItemFooterView Delegates
 - (void)footerView:(HONTimelineItemFooterView *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - User Profile"
+									  withChallenge:challengeVO
+									 andParticipant:opponentVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:opponentVO.userID] animated:YES];
-	
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = opponentVO.userID;
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)footerView:(HONTimelineItemFooterView *)cell joinChallenge:(HONChallengeVO *)challengeVO {
@@ -596,19 +557,11 @@
 }
 
 - (void)participantGridView:(HONBasicParticipantGridView *)participantGridView showProfile:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - User Profile"
+									  withChallenge:challengeVO
+									 andParticipant:opponentVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:opponentVO.userID] animated:YES];
-	
-//	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
-//	userPofileViewController.userID = opponentVO.userID;
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -621,11 +574,9 @@
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Upvote"
+									  withChallenge:challengeVO
+									 andParticipant:opponentVO];
 	
 	[self _removeSnapOverlay];
 	
@@ -669,10 +620,8 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Flag %@", (buttonIndex == 0) ? @"Abusive" : @"Cancel"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Timeline Details - Flag " stringByAppendingString:(buttonIndex == 0) ? @"Abusive" : @"Cancel"]
+								   withChallengeCreator:_challengeVO];
 		
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] flagChallengeByChallengeID:_challengeVO.challengeID completion:nil];

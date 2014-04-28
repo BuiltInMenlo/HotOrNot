@@ -24,10 +24,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Change Username"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 	}
 	
@@ -105,18 +101,12 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Change Username - Close"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Username - Close"];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goSubmit {
-	[[Mixpanel sharedInstance] track:@"Change Username - Submit"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 _username, @"username", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Username - Submit"];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);

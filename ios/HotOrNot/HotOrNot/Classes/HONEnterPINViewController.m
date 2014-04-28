@@ -127,12 +127,12 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Validate PIN - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goNext {
-	[[Mixpanel sharedInstance] track:@"Validate PIN - Next" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Next"];
 	
 	_pin = _pinTextField.text;
 	if ([_pin length] < 4) {
@@ -157,7 +157,7 @@
 }
 
 - (void)_goResend {
-	[[Mixpanel sharedInstance] track:@"Validate PIN - Resend" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Resend"];
 	
 	_pinTextField.text = @"";
 	[_pinTextField resignFirstResponder];

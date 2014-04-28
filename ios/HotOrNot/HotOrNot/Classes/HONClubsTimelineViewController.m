@@ -224,7 +224,7 @@
 
 #pragma mark - Navigation
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Clubs Timeline - Refresh"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Refresh"];
 	
 	_dictItems = [NSMutableArray array];
 	_allItems = [NSMutableArray array];
@@ -236,12 +236,12 @@
 }
 
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Clubs Timeline - Profile"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Profile"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Clubs Timeline - Create Challenge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Create Challenge"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -249,7 +249,7 @@
 }
 
 - (void)_goToggleList {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Clubs Timeline - Toggle %@ List", (_clubsListType == HONClubsListTypeTimeline) ? @"My Clubs" : @"News"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Clubs Timeline - Toggle %@ List", (_clubsListType == HONClubsListTypeTimeline) ? @"My Clubs" : @"News"]];
 	_clubsListType = (_clubsListType == HONClubsListTypeTimeline) ? HONClubsListTypeSubscriptions : HONClubsListTypeTimeline;
 	
 	[_toggleListsButton setBackgroundImage:[UIImage imageNamed:(_clubsListType == HONClubsListTypeTimeline) ? @"toggleClubs_timeline" : @"toggleClubs_subscriptions"] forState:UIControlStateNormal];
@@ -285,7 +285,7 @@
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Close Tutorial" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Close Tutorial"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -294,7 +294,7 @@
 }
 
 - (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Tutorial Take Avatar" withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Tutorial Take Avatar"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -311,8 +311,8 @@
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubTimelineViewCell:selectedCTARow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Clubs Timeline - Selected CTA Row"
-												  includeProperties:[[HONAnalyticsParams sharedInstance] propertyForUserClub:userClubVO]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Selected CTA Row"
+									   withUserClub:userClubVO];
 	
 	
 }
@@ -320,8 +320,8 @@
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] selectedClubRow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Clubs Timeline - Selected Club Row"
-												  includeProperties:[[HONAnalyticsParams sharedInstance] propertyForUserClub:userClubVO]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Selected Club Row"
+									   withUserClub:userClubVO];
 }
 
 

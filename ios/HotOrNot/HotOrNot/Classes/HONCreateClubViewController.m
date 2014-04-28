@@ -205,12 +205,12 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Create Club - Close" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Close"];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goNext {
-	[[Mixpanel sharedInstance] track:@"Create Club - Next" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Next"];
 	
 	if ([_clubNameTextField isFirstResponder])
 		[_clubNameTextField resignFirstResponder];
@@ -242,15 +242,14 @@
 
 
 - (void)_goClubName {
-	[[Mixpanel sharedInstance] track:@"Create Club - Enter Name" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Enter Name"];
 	
 	[_clubNameButton setSelected:YES];
 	[_blurbButton setSelected:NO];
 }
 
 - (void)_goCamera {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Choose Image"
-									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Choose Image"];
 	
 	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
 	clubCoverCameraViewController.delegate = self;
@@ -263,7 +262,7 @@
 }
 
 - (void)_goBlurb {
-	[[Mixpanel sharedInstance] track:@"Create Club - Enter Description" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Enter Description"];
 	
 	[_blurbButton setSelected:YES];
 	[_clubNameButton setSelected:NO];

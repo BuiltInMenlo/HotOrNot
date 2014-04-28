@@ -117,12 +117,6 @@
 }
 
 - (void)_submitComment {
-	[[Mixpanel sharedInstance] track:@"Timeline Comments - Submit"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												 _commentTextField.text, @"comment", nil]];
-	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submitComment", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -295,11 +289,6 @@
 	[super viewDidUnload];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"USER_CHALLENGE" object:nil];
 	
-	[[Mixpanel sharedInstance] track:@"Timeline Comments - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
 	_isGoingBack = YES;
 	//[_commentTextField resignFirstResponder];
 	[UIView beginAnimations:nil context:nil];
@@ -319,10 +308,8 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Timeline Comments - Back"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Comments - Back"
+									  withChallenge:_challengeVO];
 	
 	_isGoingBack = YES;
 	//[_commentTextField resignFirstResponder];
@@ -338,6 +325,9 @@
 }
 
 - (void)_goSend {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Comments - Submit"
+									  withChallenge:_challengeVO];
+	
 	if ([_commentTextField.text length] > 0) {
 		[self _submitComment];
 		_commentTextField.text = @"";
@@ -377,12 +367,7 @@
 	//[(HONVoterViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
-	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline Comments - Create Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"opponent", nil]];
+//	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
 	
 //	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 //													   [@"" stringFromInt:vo.userID], @"id",
@@ -472,11 +457,6 @@
 	switch(buttonIndex) {
 		case 0: {
 			HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:_indexPath.row];			
-			
-			[[Mixpanel sharedInstance] track:@"Timeline Comments - Delete"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", vo.commentID, vo.content], @"comment", nil]];
 			
 			[_comments removeObjectAtIndex:_indexPath.row];
 			[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_indexPath] withRowAnimation:UITableViewRowAnimationFade];

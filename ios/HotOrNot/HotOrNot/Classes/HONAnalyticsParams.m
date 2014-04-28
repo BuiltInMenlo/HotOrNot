@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
 
 #import "HONAnalyticsParams.h"
 
@@ -43,6 +44,28 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (properties);
 }
 
+- (NSDictionary *)propertyForActivityItem:(HONAlertItemVO *)vo {
+	static NSDictionary *properties = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		properties = @{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.alertID, vo.triggerType]};
+	});
+	
+	return (properties);
+}
+
+- (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
+	static NSDictionary *properties = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		properties = @{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"};
+	});
+	
+	return (properties);
+}
+
 - (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo {
 	static NSDictionary *properties = nil;
 	static dispatch_once_t onceToken;
@@ -60,6 +83,17 @@ static HONAnalyticsParams *sharedInstance = nil;
 	
 	dispatch_once(&onceToken, ^{
 		properties = @{@"creator"	: [NSString stringWithFormat:@"%d - %@", vo.creatorVO.userID, vo.creatorVO.username]};
+	});
+	
+	return (properties);
+}
+
+- (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo; {
+	static NSDictionary *properties = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
 	});
 	
 	return (properties);
@@ -98,7 +132,30 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (properties);
 }
 
-- (NSDictionary *)propertyForParticipant:(HONOpponentVO *)vo {
+- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
+	static NSDictionary *properties = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		properties = @{@"message"	: [@"" stringFromInt:vo.messageID]};
+	});
+	
+	return (properties);
+}
+
+- (NSDictionary *)propertyForMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)participantVO {
+	static NSDictionary *properties = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		properties = @{@"message"		: [@"" stringFromInt:messageVO.messageID],
+					   @"participant"	: [NSString stringWithFormat:@"%d - %@", participantVO.userID, participantVO.username]};
+	});
+	
+	return (properties);
+}
+
+- (NSDictionary *)propertyForMessageParticipant:(HONOpponentVO *)vo {
 	static NSDictionary *properties = nil;
 	static dispatch_once_t onceToken;
 	
@@ -132,133 +189,116 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toChallenge:(HONChallengeVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:vo]];
-	
-	return ([properties copy]);
+- (void)trackEvent:(NSString *)event {
+	[[Mixpanel sharedInstance] track:event
+						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
 }
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toChallengeCreator:(HONChallengeVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallengeCreator:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toCohortUser:(HONUserVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCohortUser:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toContactUser:(HONContactUserVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForContactUser:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toEmotion:(HONEmotionVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForEmotion:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toParticipant:(HONOpponentVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForParticipant:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toTrivalUser:(HONTrivialUserVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toUserClub:(HONUserClubVO *)vo {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForUserClub:vo]];
-	
-	return ([properties copy]);
-}
-
-- (NSDictionary *)prependProperties:(NSDictionary *)dict withAdditionalProperties:(NSDictionary *)addlProps {
-	NSMutableDictionary *properties = [dict mutableCopy];
-	[properties addEntriesFromDictionary:addlProps];
-		
-	return ([properties copy]);
-}
-
-
-- (NSDictionary *)prependUserPropertyToAdditionalProperties:(NSDictionary *)addlProps {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-										  withAdditionalProperties:addlProps]);
-}
-
-- (NSDictionary *)prependUserPropertyToChallenge:(HONChallengeVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-													   toChallenge:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToChallengeCreator:(HONChallengeVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-													   toChallenge:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToCohortUser:(HONUserVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-													  toCohortUser:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToContactUser:(HONContactUserVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-													 toContactUser:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToEmotion:(HONEmotionVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-														 toEmotion:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToParticipant:(HONOpponentVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-													 toParticipant:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToTrivialUser:(HONTrivialUserVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-													  toTrivalUser:vo]);
-}
-
-- (NSDictionary *)prependUserPropertyToUserClub:(HONUserClubVO *)vo {
-	return ([[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-														toUserClub:vo]);
-}
-
 
 - (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties {
 	[[Mixpanel sharedInstance] track:event
 						  properties:properties];
 }
 
-- (void)trackEventWithUserProperty:(NSString *)event {
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
-									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+
+- (void)trackEvent:(NSString *)event withActivityItem:(HONAlertItemVO *)activityItemVO {
+	
 }
 
-- (void)trackEventWithUserProperty:(NSString *)event includeProperties:(NSDictionary *)dict {
+- (void)trackEvent:(NSString *)event withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	[properties addEntriesFromDictionary:dict];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCameraDevice:cameraDevice]];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:event
 									 withProperties:properties];
 }
 
+- (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallengeParticipant:opponentVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withChallengeCreator:(HONChallengeVO *)challengeVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallengeCreator:challengeVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withCohortUser:(HONUserVO *)userVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCohortUser:userVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withContactUser:(HONContactUserVO *)contactUserVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForContactUser:contactUserVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withEmotion:(HONEmotionVO *)emotionVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForEmotion:emotionVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withMessage:(HONMessageVO *)messageVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForMessage:messageVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForMessage:messageVO andParticipant:opponentVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:trivialUserVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)event withUserClub:(HONUserClubVO *)userClubVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForUserClub:userClubVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:event
+									 withProperties:properties];
+}
+
+
+- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties {
+	Mixpanel *mixpanel = [Mixpanel sharedInstance];
+	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+	[mixpanel.people set:properties];
+}
 
 @end

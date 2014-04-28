@@ -125,17 +125,17 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Back" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Close" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Close"];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Club Invite - Done" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

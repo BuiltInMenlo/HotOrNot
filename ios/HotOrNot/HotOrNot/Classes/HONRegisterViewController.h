@@ -8,15 +8,12 @@
 
 #import <MessageUI/MFMailComposeViewController.h>
 
-//typedef enum {
-//	HONRegisterErrorTypeUsernamePasswordPhone = 0,
-//	HONRegisterErrorTypePasswordPhone,
-//	HONRegisterErrorTypeUsernamePhone,
-//	HONRegisterErrorTypePhone,
-//	HONRegisterErrorTypeUsernamePassword,
-//	HONRegisterErrorTypePassword,
-//	HONRegisterErrorTypeUsername
-//} HONRegisterErrorType;
+
+typedef enum {
+	HONRegisterCheckErrorTypeNone		= 0,
+	HONRegisterCheckErrorTypeUsername	= 1 << 0,
+	HONRegisterCheckErrorTypePhone		= 1 << 1
+} HONRegisterCheckErrorType;
 
 typedef enum {
 	HONRegisterErrorTypeNone		= 0,

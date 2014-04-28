@@ -278,15 +278,13 @@
 #pragma mark - Navigation
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Back"
-									 withProperties:[[HONAnalyticsParams sharedInstance] prependProperties:[[HONAnalyticsParams sharedInstance] userProperty]
-																							  toCohortUser:_userVO]];
+									 withCohortUser:_userVO];
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goChangeAvatar {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Take New Avatar"
-									 withProperties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Take New Avatar"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -299,9 +297,8 @@
 }
 
 - (void)_goShoutout {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
-	[[Mixpanel sharedInstance] track:@"User Profile - Shoutout" properties:properties];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Shoutout"
+									 withCohortUser:_userVO];
 	
 	[[HONAPICaller sharedInstance] createShoutoutChallengeWithUserID:_userVO.userID completion:^(NSObject *result) {
 		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
@@ -313,9 +310,8 @@
 }
 
 - (void)_goFlag {
-	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
-	properties[@"participant"] = [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username];
-	[[Mixpanel sharedInstance] track:@"User Profile - Flag" properties:properties];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Flag"
+									 withCohortUser:_userVO];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
@@ -328,7 +324,7 @@
 }
 
 - (void)_goShare {
-	[[Mixpanel sharedInstance] track:@"User Profile - Share" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Share"];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -344,16 +340,14 @@
 }
 
 - (void)_goFAQ {
-	[[Mixpanel sharedInstance] track:@"User Profile - Show FAQ" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - FAQ"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSettings {
-	[[Mixpanel sharedInstance] track:@"User Profile - Settings" properties:[[HONAnalyticsParams sharedInstance] userProperty]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Settings"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -461,10 +455,8 @@
 		viewController = userPofileViewController;
 	}
 	
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Activity Alerts - Select %@ Row", mpAlertType]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [mpParams objectForKey:@"participant"], @"participant", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"User Profile - Select %@ Row", mpAlertType]
+									 withProperties:mpParams];
 	
 	if (viewController != nil) {
 		[self.navigationController pushViewController:viewController animated:YES];
@@ -548,10 +540,8 @@
 	if (_userProfileType == HONUserProfileTypeUser) {
 		HONAlertItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 		
-		[[Mixpanel sharedInstance] track:@"User Profile - Selected Action Alert Row"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%@ - %@", vo.alertID, vo.message], @"activity", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Select Activity Row"
+									   withActivityItem:vo];
 		
 		[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 	

@@ -184,11 +184,8 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Cancel"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Cancel"];
 	
-		
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
@@ -200,10 +197,8 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Switch Camera"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Switch Camera"
+								   withCameraDevice:_imagePicker.cameraDevice];
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
@@ -216,19 +211,15 @@
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Camera Roll"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Camera Roll"];
 	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Take Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [@"" stringFromInt:tintIndex], @"tint", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Take Photo"
+									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
 	
 	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -241,15 +232,11 @@
 }
 
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Retake"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Retake"];
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Submit"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Submit"];
 	
 //	UIImage *processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 //	

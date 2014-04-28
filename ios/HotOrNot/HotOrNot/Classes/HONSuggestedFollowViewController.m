@@ -126,9 +126,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Suggested People - Done"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suggested People - Done"];
 	
 	for (HONTrivialUserVO *vo in _removeUsers) {
 		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSObject *result){
@@ -174,9 +172,7 @@
 }
 
 - (void)_goSelectAll {
-	[[Mixpanel sharedInstance] track:@"Suggested People - Select All"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suggested People - Select All"];
 	
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
@@ -193,11 +189,8 @@
 
 #pragma mark - SuggestedViewCell Delegates
 - (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - %@elect", (isSelected) ? @"Des" : @"S"]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d - @%@", userVO.userID, userVO.username], @"celeb", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Suggested People - %@elect User", (isSelected) ? @"Des" : @"S"]];
+		
 	if (isSelected) {
 		[_selectedUsers addObject:userVO];
 		
@@ -285,9 +278,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - Invite Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Suggested People - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -300,9 +291,7 @@
 		}
 		
 	} else if (alertView.tag == 1) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - Select All %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Suggested People - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
@@ -333,17 +322,6 @@
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 		[self dismissViewControllerAnimated:YES completion:nil];
-		
-	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Suggested People - Select Blocked %@", (buttonIndex == 0) ? @"Cancel" : @"Take Photo"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
 	}
 }
 

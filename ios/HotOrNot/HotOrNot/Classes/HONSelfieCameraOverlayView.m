@@ -8,8 +8,10 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "MBProgressHUD.h"
+#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
+
+#import "MBProgressHUD.h"
 
 #import "HONSelfieCameraOverlayView.h"
 #import "HONUserVO.h"
@@ -118,25 +120,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goCloseTutorial:(id)sender {
-	[[Mixpanel sharedInstance] track:@"Create Volley - Close Overlay"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UIButton *button = (UIButton *)sender;
-	[button removeFromSuperview];
-	button = nil;
-	
-	[_infoImageView removeFromSuperview];
-	_infoImageView = nil;
-	
-	_headerBGView.hidden = NO;
-	_flipButton.hidden = NO;
-	_cameraRollButton.hidden = NO;
-	_cancelButton.hidden = NO;
-	_takePhotoButton.hidden = NO;
-}
-
 - (void)_goFlipCamera {
 	[self.delegate cameraOverlayViewChangeCamera:self];
 }
@@ -168,10 +151,8 @@
 
 - (void)_goChangeTint {
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
-	
-	[[Mixpanel sharedInstance] track:@"Create Volley - Change Tint Overlay"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Change Tint Overlay"
+									 withProperties:@{@"tint"	: [@"" stringFromInt:_tintIndex]}];
 	
 //	UIColor *color = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
 //	NSLog(@"TINT:[%@]", [color colorWithAlphaComponent:0.5]);

@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessagesViewController.h"
@@ -140,34 +142,24 @@
 
 #pragma mark - Navigation
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Messages - Refresh"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Refresh"];
 	
 	[HONAppDelegate incTotalForCounter:@"messages"];
 	[self _retreiveMessages];
 }
 
 - (void)_goCreateMessage {
-	[[Mixpanel sharedInstance] track:@"Messages - Create Message"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Create Message"];
 	[self.navigationController pushViewController:[[HONMessageRecipientsViewController alloc] init] animated:YES];
 }
 
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Messages - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goMatchPhone {
-	[[Mixpanel sharedInstance] track:@"Messages - Match Phone"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Match Phone"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -175,19 +167,14 @@
 }
 
 - (void)_goMatchEmail {
-	[[Mixpanel sharedInstance] track:@"Messages - Match Email"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Match Email"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:YES]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSearch {
-	[[Mixpanel sharedInstance] track:@"Messages - Search"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Search"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSearchUsersViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -195,10 +182,7 @@
 }
 
 - (void)_goSuggested {
-	[[Mixpanel sharedInstance] track:@"Messages - Suggested Follow"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Suggested Follow"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -228,10 +212,10 @@
 
 
 #pragma mark - MessageItemViewCell Delegates
-- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForUserID:(int)userID forMessage:(HONMessageVO *)messageVO {
-	[[Mixpanel sharedInstance] track:@"Messages - Show Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+- (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forMessage:(HONMessageVO *)messageVO {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Show Details"
+										withMessage:messageVO
+									 andParticipant:opponentVO];
 }
 
 
@@ -327,13 +311,12 @@
 		}
 	
 	} else {
-		[[Mixpanel sharedInstance] track:@"Messages - Show Details"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		HONMessageItemViewCell *cell = (HONMessageItemViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		HONMessageVO *messageVO = cell.messageVO;
 		
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Show Details"
+											withMessage:messageVO];
+				
 		if (!messageVO.hasViewed)
 			[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID forParticipant:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:nil];
 		

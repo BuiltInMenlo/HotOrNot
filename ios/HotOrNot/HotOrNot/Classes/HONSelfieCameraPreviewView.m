@@ -121,7 +121,7 @@
 
 #pragma mark - Navigation
 - (void)_goToggleOverlay {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Main Camera - Toggle Overlay %@", (_emotionsPickerView.hidden) ? @"Up" : @"Down"]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Main Camera - Toggle Overlay %@", (_emotionsPickerView.hidden) ? @"Up" : @"Down"]];
 	
 	if (_emotionsPickerView.hidden)
 		[self _showOverlay];
@@ -131,21 +131,21 @@
 }
 
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Main Camera - Close"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Close"];
 	
 	[self _removeOverlayAndRemove:YES];
 	[self.delegate cameraPreviewViewClose:self];
 }
 
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Main Camera - Back"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Back"];
 	
 	[self _removeOverlayAndRemove:YES];
 	[self.delegate cameraPreviewViewBackToCamera:self];
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Main Camera - Submit"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Submit"];
 	
 	[self _removeOverlayAndRemove:YES];
 	[self.delegate cameraPreviewViewSubmit:self withSubject:_subjectName];
@@ -195,8 +195,8 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", emotionsPickerView.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Main Camera - Selected Emotion"
-												  includeProperties:[[HONAnalyticsParams sharedInstance] propertyForEmotion:emotionVO]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Selected Emotion"
+										withEmotion:emotionVO];
 	
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
@@ -204,8 +204,8 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", emotionsPickerView.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:@"Main Camera - Deselected Emotion"
-												  includeProperties:[[HONAnalyticsParams sharedInstance] propertyForEmotion:emotionVO]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Deselected Emotion"
+										withEmotion:emotionVO];
 	
 	[_emotionsDisplayView removeEmotion:emotionVO];
 }

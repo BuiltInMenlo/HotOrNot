@@ -121,4 +121,10 @@
 }
 
 
+#pragma mark - Navigation
+- (void)_goProfile {
+	[self.delegate messageItemViewCell:self showProfileForParticipant:_messageVO.creatorVO forMessage:_messageVO];
+}
+
+
 @end

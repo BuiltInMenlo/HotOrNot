@@ -6,11 +6,15 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+
 #import "Mixpanel.h"
 
+#import "HONAlertItemVO.h"
 #import "HONContactUserVO.h"
 #import "HONChallengeVO.h"
 #import "HONEmotionVO.h"
+#import "HONMessageVO.h"
 #import "HONOpponentVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserVO.h"
@@ -20,37 +24,35 @@
 + (HONAnalyticsParams *)sharedInstance;
 
 - (NSDictionary *)userProperty;
+- (NSDictionary *)propertyForActivityItem:(HONAlertItemVO *)vo;
 - (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo;
 - (NSDictionary *)propertyForChallengeCreator:(HONChallengeVO *)vo;
+- (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo;
+- (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;
 - (NSDictionary *)propertyForCohortUser:(HONUserVO *)vo;
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo;
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo;
-- (NSDictionary *)propertyForParticipant:(HONOpponentVO *)vo;
+- (NSDictionary *)propertyForMessage:(HONMessageVO *)vo;
+- (NSDictionary *)propertyForMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)participantVO;
+- (NSDictionary *)propertyForMessageParticipant:(HONOpponentVO *)vo;
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo;
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo;
 
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toChallenge:(HONChallengeVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toChallengeCreator:(HONChallengeVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toCohortUser:(HONUserVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toContactUser:(HONContactUserVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toEmotion:(HONEmotionVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toParticipant:(HONOpponentVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toTrivalUser:(HONTrivialUserVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict toUserClub:(HONUserClubVO *)vo;
-- (NSDictionary *)prependProperties:(NSDictionary *)dict withAdditionalProperties:(NSDictionary *)addlProps;
-
-- (NSDictionary *)prependUserPropertyToAdditionalProperties:(NSDictionary *)addlProps;
-- (NSDictionary *)prependUserPropertyToChallenge:(HONChallengeVO *)vo;
-- (NSDictionary *)prependUserPropertyToChallengeCreator:(HONChallengeVO *)vo;
-- (NSDictionary *)prependUserPropertyToCohortUser:(HONUserVO *)vo;
-- (NSDictionary *)prependUserPropertyToContactUser:(HONContactUserVO *)vo;
-- (NSDictionary *)prependUserPropertyToEmotion:(HONEmotionVO *)vo;
-- (NSDictionary *)prependUserPropertyToParticipant:(HONOpponentVO *)vo;
-- (NSDictionary *)prependUserPropertyToTrivialUser:(HONTrivialUserVO *)vo;
-- (NSDictionary *)prependUserPropertyToUserClub:(HONUserClubVO *)vo;
-
+- (void)trackEvent:(NSString *)event;
+- (void)trackEvent:(NSString *)event withActivityItem:(HONAlertItemVO *)activityItemVO;
+- (void)trackEvent:(NSString *)event withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;
+- (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO;
+- (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO;
+- (void)trackEvent:(NSString *)event withChallengeCreator:(HONChallengeVO *)challengeVO;
+- (void)trackEvent:(NSString *)event withCohortUser:(HONUserVO *)userVO;
+- (void)trackEvent:(NSString *)event withContactUser:(HONContactUserVO *)contactUserVO;
+- (void)trackEvent:(NSString *)event withEmotion:(HONEmotionVO *)emotionVO;
+- (void)trackEvent:(NSString *)event withMessage:(HONMessageVO *)messageVO;
+- (void)trackEvent:(NSString *)event withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO;
+- (void)trackEvent:(NSString *)event withTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)trackEvent:(NSString *)event withUserClub:(HONUserClubVO *)userClubVO;
 - (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties;
-- (void)trackEventWithUserProperty:(NSString *)event;
-- (void)trackEventWithUserProperty:(NSString *)event includeProperties:(NSDictionary *)dict;
+
+- (void)identifyPersonEntityWithProperties:(NSDictionary *)properties;
 
 @end

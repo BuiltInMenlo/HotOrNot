@@ -46,17 +46,4 @@
 
 
 #pragma mark - Navigation
-- (void)_goSupport {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUPPORT" object:nil];
-}
-
-- (void)_goInviteSMS {
-	[[Mixpanel sharedInstance] track:@"Profile - Invite via SMS Button"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_SMS" object:nil];
-}
-
 @end
