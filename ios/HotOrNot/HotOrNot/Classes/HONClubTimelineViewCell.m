@@ -34,8 +34,6 @@
 }
 
 - (void)setFrame:(CGRect)frame {
-//	frame.origin.y += 4;
-//	frame.size.height -= 2 * 4;
 	frame.size.height -= 10.0;
 	[super setFrame:frame];
 }
@@ -87,7 +85,7 @@
 	titleLabel.text = titleCaption;
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 23.0, 200.0, 18.0)];
+	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 21.0, 200.0, 18.0)];
 	subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	subtitleLabel.backgroundColor = [UIColor clearColor];
@@ -99,13 +97,13 @@
 		topicLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 		topicLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		topicLabel.backgroundColor = [UIColor clearColor];
-		topicLabel.text = titleCaption;
+		topicLabel.text = @"Nearby club";
 		[self.contentView addSubview:topicLabel];
 		
 		UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		ctaButton.frame = CGRectMake(248.0, 22.0, 74.0, 64.0);
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"acceptButton_nonActive"] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"acceptButton_Active"] forState:UIControlStateHighlighted];
+		ctaButton.frame = CGRectMake(248.0, 22.0, 64.0, 64.0);
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"addClubButton_nonActive"] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"addClubButton_Active"] forState:UIControlStateHighlighted];
 		[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:ctaButton];
 	}

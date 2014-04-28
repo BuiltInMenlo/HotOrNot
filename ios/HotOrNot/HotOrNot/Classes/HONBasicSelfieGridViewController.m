@@ -232,7 +232,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d", opponentVO.userID], @"userID", nil]];
+									  [@"" stringFromInt:opponentVO.userID], @"userID", nil]];
 	
 	_selectedChallengeVO = challengeVO;
 	_selectedOpponentVO = opponentVO;

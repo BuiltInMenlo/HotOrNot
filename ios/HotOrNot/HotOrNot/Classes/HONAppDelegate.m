@@ -204,7 +204,23 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										  @"invited"		: @"2014-04-27 09:36:19"}],
 				
 				@"total_members"	: @"3",
-				@"added"			: @"2014-04-20 16:20:00"}]);
+				@"added"			: @"2014-04-20 16:20:00"},
+			  
+			  @{@"id"				: @"40",
+				@"name"				: @"MATT TEST",
+				@"description"		: @"",
+				@"img"				: @"",
+				
+				@"owner"			: @{@"id"		: @"131820",
+										@"username"	: @"yoloswag1398622768.1535d4a309d08a",
+										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/8268d1cb4608e0fce19ddc30d1a47a6d247769bc1301f9d1b99c2c5248ce3148-1379717258"},
+				
+				@"members"			: @[],
+				@"pending"			: @[],
+				@"blocked"			: @[],
+				
+				@"total_members"	: @"0",
+				@"added"			: @"2014-04-28 00:40:03"}]);
 }
 
 + (NSString *)apiServerPath {
@@ -442,7 +458,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
-		[followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
+		[followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [[dict objectForKey:@"user"] objectForKey:@"id"],
 																	@"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
 																	@"img_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
 		
@@ -491,7 +507,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"following"]) {
-		[following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]],
+		[following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [[dict objectForKey:@"user"] objectForKey:@"id"],
 																	@"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
 																	@"img_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
 	}
@@ -974,7 +990,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[Mixpanel sharedInstance] track:@"App Boot"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-										  [NSString stringWithFormat:@"%d", [HONAppDelegate totalForCounter:@"boot"]], @"boot_total", nil]];
+										  [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]], @"boot_total", nil]];
 		
 		self.launchImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		self.launchImageView.image = [UIImage imageNamed:@"mainBG"];

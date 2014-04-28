@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
 
 #import "MBProgressHUD.h"
 
@@ -114,7 +115,7 @@
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Notifications Toggle %@", (switchView.on) ? @"On" : @"Off"]
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
+									  [@"" stringFromInt:_notificationSwitch.on], @"switch", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
@@ -365,7 +366,7 @@
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Settings - Notifications Toggle %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
+										  [@"" stringFromInt:_notificationSwitch.on], @"switch", nil]];
 		
 		if (buttonIndex == 0)
 			_notificationSwitch.on = !_notificationSwitch.on;

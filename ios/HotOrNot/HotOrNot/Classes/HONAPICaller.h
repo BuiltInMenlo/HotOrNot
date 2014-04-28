@@ -168,10 +168,10 @@ extern const CGFloat kNotifiyDelay;
 - (void)inviteNonAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *result))completion;
 - (void)joinClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)leaveClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)retrieveClubByClubID:(int)clubID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //- (void)joinClubWithClubID:(int)clubID withOwnerID:(int)ownerID withRequstingUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //- (void)quitUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-//- (void)retrieveClubByClubID:(int)clubID toClubWithID:(int)clubID clubOwnerID:(int)ownerID withContacts:(NSArray *)contacts completion:(void (^)(NSObject *result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(NSObject *result))completion;
 //- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

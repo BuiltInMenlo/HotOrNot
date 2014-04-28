@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "HONChallengeAssistant.h"
 
 @implementation HONChallengeAssistant
@@ -86,8 +88,8 @@ static HONChallengeAssistant *sharedInstance = nil;
 
 - (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
 	NSMutableArray *upvoteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"upvotes"] mutableCopy];
-	NSDictionary *dict = @{@"challenge_id"		: [NSString stringWithFormat:@"%d", challengeVO.challengeID],
-						   @"participant_id"	: [NSString stringWithFormat:@"%d", opponentVO.userID]};
+	NSDictionary *dict = @{@"challenge_id"		: [@"" stringFromInt:challengeVO.challengeID],
+						   @"participant_id"	: [@"" stringFromInt:opponentVO.userID]};
 	
 //	[upvoteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
 //	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
@@ -99,7 +101,7 @@ static HONChallengeAssistant *sharedInstance = nil;
 
 
 - (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID {
-	return (@{@"id"			:[NSString stringWithFormat:@"%d", challengeID],
+	return (@{@"id"			:[@"" stringFromInt:challengeID],
 			  @"added"		: @"1970-01-01 00:00:00",
 			  @"challengers": @[],
 			  @"comments"	: @"0",

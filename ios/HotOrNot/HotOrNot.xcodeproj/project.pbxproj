@@ -10,6 +10,7 @@
 		4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0113D91898B243007461DB /* HONCreateClubViewController.m */; };
 		4C01BACF190C52D6006CD80D /* HONTimelineItemVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C01BACE190C52D6006CD80D /* HONTimelineItemVO.m */; };
 		4C01BAD1190C6481006CD80D /* TimelineElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C01BAD0190C6481006CD80D /* TimelineElements.xcassets */; };
+		4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C01BAD2190CAAD1006CD80D /* ClubsElements.xcassets */; };
 		4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */; };
 		4C0204EE18EA6FF000FAE532 /* HONClubCoverCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0204ED18EA6FF000FAE532 /* HONClubCoverCameraViewController.m */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
@@ -473,6 +474,7 @@
 		4C01BACD190C52D6006CD80D /* HONTimelineItemVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemVO.h; sourceTree = "<group>"; };
 		4C01BACE190C52D6006CD80D /* HONTimelineItemVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemVO.m; sourceTree = "<group>"; };
 		4C01BAD0190C6481006CD80D /* TimelineElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TimelineElements.xcassets; sourceTree = "<group>"; };
+		4C01BAD2190CAAD1006CD80D /* ClubsElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ClubsElements.xcassets; sourceTree = "<group>"; };
 		4C0204E918EA6F9800FAE532 /* HONClubCoverCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCoverCameraOverlayView.h; sourceTree = "<group>"; };
 		4C0204EA18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubCoverCameraOverlayView.m; sourceTree = "<group>"; };
 		4C0204EC18EA6FF000FAE532 /* HONClubCoverCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCoverCameraViewController.h; sourceTree = "<group>"; };
@@ -1468,8 +1470,9 @@
 		4C43224A18E37C960035FF06 /* Asset Calalogs */ = {
 			isa = PBXGroup;
 			children = (
-				4C43224D18E37E740035FF06 /* HONIntrinsics.xcassets */,
 				4CF2040418F3647C00EB57B0 /* FPO.xcassets */,
+				4C01BAD2190CAAD1006CD80D /* ClubsElements.xcassets */,
+				4C43224D18E37E740035FF06 /* HONIntrinsics.xcassets */,
 				4C41A09318F25A6A007C103D /* TabBarElements.xcassets */,
 				4CED977018E42FFF00482813 /* TopNavElements.xcassets */,
 				4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */,
@@ -2720,6 +2723,7 @@
 				4CA8EBCC184E7FE800F91363 /* activityBackground@2x.png in Resources */,
 				4C48DE6D18275BD8003CB309 /* followUser_Active@2x.png in Resources */,
 				4C6541B518453E8900C936CD /* CartoGothicStd-Italic.otf in Resources */,
+				4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */,
 				4C41A0A218F2718D007C103D /* xIcon@2x.png in Resources */,
 				4C80A4061853F1F600F8D7EE /* banner_activity.png in Resources */,
 				4CCE7538184463B500FF09F7 /* suggestedCellBackground.png in Resources */,
@@ -3152,7 +3156,7 @@
 					MIXPANEL_DEBUG0,
 					MIXPANEL_LOG0,
 					"SC_JSON_LOG=1",
-					"VIEW_CONTROLLER_LOG=1",
+					"VIEW_CONTROLLER_LOG=0",
 					"$(inherited)",
 					"DEBUGING_COLORS=1",
 				);

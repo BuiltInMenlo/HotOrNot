@@ -8,6 +8,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
+
 #import "HONFeedViewController.h"
 
 #import "HONChallengeVO.h"
@@ -347,7 +349,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
+									  [@"" stringFromInt:userID], @"userID", nil]];
 	
 	HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] init];
 	userPofileViewController.userID = userID;

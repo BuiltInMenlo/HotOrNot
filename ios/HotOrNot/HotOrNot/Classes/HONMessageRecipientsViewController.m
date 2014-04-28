@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONMessageRecipientsViewController.h"
@@ -51,14 +53,14 @@
 - (void)_buildRecipients {
 	_followers = [NSMutableArray array];
 	for (HONTrivialUserVO *vo in [HONAppDelegate followersListWithRefresh:YES]) {
-		[_followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", vo.userID],
+		[_followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:vo.userID],
 																	 @"username"	: vo.username,
 																	 @"img_url"		: vo.avatarPrefix}]];
 	}
 	
 	_following = [NSMutableArray array];
 	for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
-		[_following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", vo.userID],
+		[_following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:vo.userID],
 																	 @"username"	: vo.username,
 																	 @"img_url"		: vo.avatarPrefix}]];
 	}

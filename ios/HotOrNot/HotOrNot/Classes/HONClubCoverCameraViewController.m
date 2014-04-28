@@ -265,7 +265,7 @@
 	[[Mixpanel sharedInstance] track:@"Club Cover Photo - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d", tintIndex], @"tint", nil]];
+									  [@"" stringFromInt:tintIndex], @"tint", nil]];
 	
 	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

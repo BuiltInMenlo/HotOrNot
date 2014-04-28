@@ -30,12 +30,16 @@
 @interface HONClubsTimelineViewController () <EGORefreshTableHeaderDelegate, HONClubTimelineViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) UIView *toggleListView;
+@property (nonatomic, strong) UIButton *toggleListsButton;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 
 @property (nonatomic, strong) NSMutableArray *dictItems;
 @property (nonatomic, strong) NSMutableArray *allItems;
+@property (nonatomic, strong) NSMutableArray *joinedClubs;
+@property (nonatomic, strong) NSMutableArray *invitedClubs;
+@property (nonatomic, assign) HONClubsListType clubsListType;
+@property (nonatomic, strong) HONUserClubVO *ownClub;
 @end
 
 
@@ -76,16 +80,36 @@
 	}];
 }
 
+- (void)_retrieveClubs {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		
+		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
+			_ownClub = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
+		
+		// --//> *** POPULATED FPO CLUB *** <//-- //
+		[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]]];
+		[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]];
+		
+		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"]) {
+			[_dictItems addObject:dict];
+			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+		}
+		
+		[_tableView reloadData];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+	}];
+}
+
 - (void)_retrieveClubInvites {
 	
 	// --//> *** POPULATED FPO CLUB - 6x *** <//-- //
-	[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:0]];
-	[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]];
-	[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:0]];
-	[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]];
-	[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:0]];
-	[_dictItems addObject:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]];
-	
+	for (int i=0; i<3; i++) {
+		for (NSDictionary *dict in [HONAppDelegate fpoClubDictionaries]) {
+			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+			[_dictItems addObject:dict];
+		}
+	}
+		
 	[[HONAPICaller sharedInstance] retrieveClubInvitesForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		for (NSDictionary *dict in (NSArray *)result) {
 			[_dictItems addObject:dict];
@@ -112,8 +136,13 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	_clubsListType = HONClubsListTypeTimeline;
+	
 	_dictItems = [NSMutableArray array];
 	_allItems = [NSMutableArray array];
+	
+	_invitedClubs = [NSMutableArray array];
+	_joinedClubs = [NSMutableArray array];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
@@ -131,9 +160,28 @@
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
 	
-	_toggleListView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -55.0, 320.0, 55.0)];
-	_toggleListView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugFuschiaColor];
-	[_tableView addSubview:_toggleListView];
+	_toggleListsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_toggleListsButton.frame = CGRectMake(0.0, -50.0, 320.0, 44.0);
+	[_toggleListsButton setBackgroundImage:[UIImage imageNamed:@"toggleClubs_timeline"] forState:UIControlStateNormal];
+	[_toggleListsButton setBackgroundImage:[UIImage imageNamed:@"toggleClubs_timeline"] forState:UIControlStateHighlighted];
+	[_toggleListsButton addTarget:self action:@selector(_goToggleList) forControlEvents:UIControlEventTouchUpInside];
+	[_tableView addSubview:_toggleListsButton];
+	
+	UILabel *toggleNewsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 150.0, 17.0)];
+	toggleNewsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	toggleNewsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	toggleNewsLabel.backgroundColor = [UIColor clearColor];
+	toggleNewsLabel.textAlignment = NSTextAlignmentCenter;
+	toggleNewsLabel.text = @"News";
+	[_toggleListsButton addSubview:toggleNewsLabel];
+	
+	UILabel *toggleClubsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 12.0, 150.0, 17.0)];
+	toggleClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	toggleClubsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	toggleClubsLabel.backgroundColor = [UIColor clearColor];
+	toggleClubsLabel.textAlignment = NSTextAlignmentCenter;
+	toggleClubsLabel.text = [NSString stringWithFormat:@"My Clubs (%d)", ((int)(_ownClub != nil) + [_joinedClubs count] + [_invitedClubs count])];
+	[_toggleListsButton addSubview:toggleClubsLabel];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
@@ -181,6 +229,9 @@
 	_dictItems = [NSMutableArray array];
 	_allItems = [NSMutableArray array];
 	
+	_invitedClubs = [NSMutableArray array];
+	_joinedClubs = [NSMutableArray array];
+	
 	[self _retrieveTimeline];
 }
 
@@ -195,6 +246,14 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goToggleList {
+	[[HONAnalyticsParams sharedInstance] trackEventWithUserProperty:[NSString stringWithFormat:@"Clubs Timeline - Toggle %@ List", (_clubsListType == HONClubsListTypeTimeline) ? @"My Clubs" : @"News"]];
+	_clubsListType = (_clubsListType == HONClubsListTypeTimeline) ? HONClubsListTypeSubscriptions : HONClubsListTypeTimeline;
+	
+	[_toggleListsButton setBackgroundImage:[UIImage imageNamed:(_clubsListType == HONClubsListTypeTimeline) ? @"toggleClubs_timeline" : @"toggleClubs_subscriptions"] forState:UIControlStateNormal];
+	[_toggleListsButton setBackgroundImage:[UIImage imageNamed:(_clubsListType == HONClubsListTypeTimeline) ? @"toggleClubs_timeline" : @"toggleClubs_subscriptions"] forState:UIControlStateHighlighted];
 }
 
 
@@ -300,7 +359,7 @@
 		cell.backgroundView = nil;
 	}
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
 }
@@ -331,7 +390,14 @@
 	HONClubTimelineViewCell *cell = (HONClubTimelineViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
 	
 	if (cell.timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) {
-		NSLog(@"/// SHOW CLUB TIMELINE:(%@)", ((HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row]).dictionary);
+		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row];
+		vo.userClubVO.clubID = 40;
+		
+		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:40 completion:^(NSObject *result) {
+			
+		}];
+		
 		
 	} else if (cell.timelineItemVO.timelineItemType == HONTimelineItemTypeInviteRequest) {
 		NSLog(@"/// SHOW CLUB STATS:(%@)", ((HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row]).dictionary);

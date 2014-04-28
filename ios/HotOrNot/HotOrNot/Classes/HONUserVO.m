@@ -40,7 +40,7 @@
 	for (NSDictionary *dict in [dictionary objectForKey:@"friends"]) {
 		NSDictionary *friend = [dict dictionaryByReplacingNullsWithBlanks];
 		[vo.friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%d", [[[friend objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
+															 [@"" stringFromInt:[[[friend objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
 															 [@"" stringFromInt:0], @"points",
 															 [@"" stringFromInt:0], @"total_votes",
 															 [@"" stringFromInt:0], @"pics",

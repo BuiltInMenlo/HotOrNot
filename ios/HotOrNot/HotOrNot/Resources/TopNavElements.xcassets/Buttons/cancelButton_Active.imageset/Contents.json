@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "cancelWhiteButton_Active.png"
+      "filename" : "cancelButton_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "cancelWhiteButton_Active@2x.png"
+      "filename" : "cancelButton_Active@2x.png"
     }
   ],
   "info" : {

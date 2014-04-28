@@ -90,7 +90,7 @@
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
 	for (NSDictionary *club in _bakedClubs) {
-		[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"	: [NSString stringWithFormat:@"%d", arc4random() - 100],
+		[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:@{@"id"	: [@"" stringFromInt:arc4random() - 100],
 																	@"name"	: [club objectForKey:@"name"],
 																	@"img"	: [club objectForKey:@"img"]}]];
 	}
@@ -99,7 +99,8 @@
 		
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
 			_ownClub = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
-				
+		
+		
 		// --//> *** POPULATED FPO CLUB *** <//-- //
 		[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] objectAtIndex:1]]];
 		

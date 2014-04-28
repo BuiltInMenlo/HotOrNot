@@ -59,7 +59,7 @@
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:5],
-							 @"challengeID"	: [NSString stringWithFormat:@"%d", _challengeVO.challengeID]};
+							 @"challengeID"	: [@"" stringFromInt:_challengeVO.challengeID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
 	
@@ -167,10 +167,10 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user", nil]];
 	
 //	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//												   [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
-//												   [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
-//												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"total_votes",
-//												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
+//												   [@"" stringFromInt:_voterVO.userID], @"id",
+//												   [@"" stringFromInt:_voterVO.points], @"points",
+//												   [@"" stringFromInt:_voterVO.votes], @"total_votes",
+//												   [@"" stringFromInt:_voterVO.pokes], @"pokes",
 //												   [@"" stringFromInt:0], @"pics",
 //												   [@"" stringFromInt:0], @"age",
 //												   _voterVO.username, @"username",

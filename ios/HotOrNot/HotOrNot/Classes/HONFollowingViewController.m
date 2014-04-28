@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "MBProgressHUD.h"
 
 #import "HONFollowingViewController.h"
@@ -90,7 +92,7 @@
 				
 				NSArray *following = [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 				for (NSDictionary *dict in following) {
-					[_subscribees addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", [[dict objectForKey:@"id"] intValue]],
+					[_subscribees addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [@"" stringFromInt:[[dict objectForKey:@"id"] intValue]],
 																				   @"username"	: [dict objectForKey:@"username"],
 																				   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
 				}

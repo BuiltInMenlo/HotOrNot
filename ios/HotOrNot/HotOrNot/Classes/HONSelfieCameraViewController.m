@@ -84,12 +84,12 @@
 		_challengeVO = challengeVO;
 		_subjectName = challengeVO.subjectName;
 		
-		NSMutableArray *participants = [NSMutableArray arrayWithObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID],
+		NSMutableArray *participants = [NSMutableArray arrayWithObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:_challengeVO.creatorVO.userID],
 																											  @"username"	: _challengeVO.creatorVO.username,
 																											  @"img_url"	: _challengeVO.creatorVO.avatarPrefix}]];
 		
 //		for (HONOpponentVO *vo in _challengeVO.challengers) {
-//			[participants addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID],
+//			[participants addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [@"" stringFromInt:_challengeVO.creatorVO.userID],
 //																		   @"username"	: _challengeVO.creatorVO.username,
 //																		   @"img_url"	: _challengeVO.creatorVO.avatarPrefix}]];
 //		}
@@ -448,7 +448,7 @@
 	[[Mixpanel sharedInstance] track:@"Create Volley - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"username"]], @"user",
-									  [NSString stringWithFormat:@"%d", tintIndex], @"tint", nil]];
+									  [@"" stringFromInt:tintIndex], @"tint", nil]];
 	
 	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -512,7 +512,7 @@
 	
 	NSString *recipients = @"";
 	for (HONTrivialUserVO *vo in _recipients)
-		recipients = [[recipients stringByAppendingString:[NSString stringWithFormat:@"%d", vo.userID]] stringByAppendingString:@","];
+		recipients = [[recipients stringByAppendingString:[@"" stringFromInt:vo.userID]] stringByAppendingString:@","];
 	
 	
 	HONProtoChallengeVO *protoChallengeVO = [HONProtoChallengeVO protoChallengeWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
@@ -524,13 +524,13 @@
 	
 	
 	NSLog(@"protoChallengeVO:[%@]", protoChallengeVO.dictionary);
-	[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithProtoChallenge:protoChallengeVO] animated:YES];
+	//[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithProtoChallenge:protoChallengeVO] animated:YES];
 	
 	/*
 	_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
-						 @"challenge_id"	: [NSString stringWithFormat:@"%d", (_selfieSubmitType == HONCameraSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
-						 @"club_id"			: [NSString stringWithFormat:@"%d",	_userClubVO.clubID],
+						 @"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONCameraSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
+						 @"club_id"			: [@"" stringFromInt:_userClubVO.clubID],
 						 @"subject"			: _subjectName,
 						 @"recipients"		: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @"",
 						 @"api_endpt"		: (_selfieSubmitType == HONCameraSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
@@ -543,6 +543,20 @@
 	else
 		[self _submitChallenge];
 	 */
+	
+	
+	
+	_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+						 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
+						 @"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
+						 @"club_id"			: [@"" stringFromInt:_userClubVO.clubID],
+						 @"subject"			: _subjectName,
+						 @"recipients"		: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @"",
+						 @"api_endpt"		: (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
+	
+	
+	NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);
+	[self _submitChallenge];
 }
 
 

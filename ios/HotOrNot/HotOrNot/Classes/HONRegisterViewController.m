@@ -10,6 +10,7 @@
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -783,13 +784,13 @@
 	
 	
 	for (int i=0; i<3; i++)
-		phone1 = [phone1 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
+		phone1 = [phone1 stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
 	
 	for (int i=0; i<3; i++)
-		phone2 = [phone2 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
+		phone2 = [phone2 stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
 	
 	for (int i=0; i<4; i++)
-		phone3 = [phone3 stringByAppendingString:[NSString stringWithFormat:@"%d", (arc4random() % 9)]];
+		phone3 = [phone3 stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
 	
 #if __APPSTORE_BUILD__ == 0
 	if ([_passwordTextField.text isEqualToString:@"¡"]) {

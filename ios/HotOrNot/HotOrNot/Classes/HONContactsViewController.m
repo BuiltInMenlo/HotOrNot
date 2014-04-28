@@ -87,6 +87,9 @@
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
 			_userClubVO = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
+		
+		else
+			_userClubVO = [HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] lastObject]];
 	}];
 }
 

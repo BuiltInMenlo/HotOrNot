@@ -7,6 +7,7 @@
 //
 
 
+#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
@@ -289,7 +290,7 @@
 		return (@"99+");
 	
 	else
-		return ([NSString stringWithFormat:@"%d", score]);
+		return ([@"" stringFromInt:score]);
 }
 
 

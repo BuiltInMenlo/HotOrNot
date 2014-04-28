@@ -9,11 +9,12 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "EGORefreshTableHeaderView.h"
-#import "MBProgressHUD.h"
+#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIImage+ImageEffects.h"
 
+#import "EGORefreshTableHeaderView.h"
+#import "MBProgressHUD.h"
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONOpponentVO.h"
@@ -430,7 +431,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
+									  [@"" stringFromInt:userID], @"userID", nil]];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:userID] animated:YES];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:userID]];

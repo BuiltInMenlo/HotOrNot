@@ -24,7 +24,7 @@
 	vo.avatarImage = [UIImage imageWithData:[dictionary objectForKey:@"image"]];
 	
 	if ([vo.rawNumber length] > 0) {
-		NSString *formattedNumber = [[vo.rawNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().- "]] componentsJoinedByString:@""];
+		NSString *formattedNumber = [[vo.rawNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
 		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
 			formattedNumber = [[NSString new] stringByAppendingFormat:@"1%@", formattedNumber];
 		

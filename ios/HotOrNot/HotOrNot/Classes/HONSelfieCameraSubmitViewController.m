@@ -270,7 +270,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return ((section == 0) ? [[HONTableHeaderView alloc] initWithTitle:@"CLUBS"] : [[UIView alloc] initWithFrame:CGRectZero]);
-	return ([[HONTableHeaderView alloc] initWithTitle:[@"SEC.%d" stringByAppendingString:[NSString stringWithFormat:@"%d", section]]]);
+	return ([[HONTableHeaderView alloc] initWithTitle:[@"SEC.%d" stringByAppendingString:[@"" stringFromInt:section]]]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -58,7 +58,7 @@
 - (void)_retrieveComments {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[@"" stringFromInt:1], @"action",
-									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+									[@"" stringFromInt:_challengeVO.challengeID], @"challengeID",
 									nil];
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
@@ -133,7 +133,7 @@
 	/*
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[@"" stringFromInt:2], @"action",
-									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+									[@"" stringFromInt:_challengeVO.challengeID], @"challengeID",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									_commentTextField.text, @"text",
 									nil];
@@ -186,7 +186,7 @@
 - (void)_deleteComment:(int)commentID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[@"" stringFromInt:8], @"action",
-							[NSString stringWithFormat:@"%d", commentID], @"commentID",
+							[@"" stringFromInt:commentID], @"commentID",
 							nil];
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
@@ -385,7 +385,7 @@
 									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"opponent", nil]];
 	
 //	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//													   [NSString stringWithFormat:@"%d", vo.userID], @"id",
+//													   [@"" stringFromInt:vo.userID], @"id",
 //													   [@"" stringFromInt:0], @"points",
 //													   [@"" stringFromInt:0], @"total_votes",
 //													   [@"" stringFromInt:0], @"pokes",
