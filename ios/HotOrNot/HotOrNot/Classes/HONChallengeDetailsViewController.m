@@ -222,20 +222,9 @@
 }
 
 - (void)_makeParticipantGrid {
-	
-	if ([_challengeVO.challengers count] == 0) {
-		UIButton *firstReplyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		firstReplyButton.frame = CGRectMake(0.0, kDetailsHeroImageHeight, 320.0, 45.0);
-		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_nonActive"] forState:UIControlStateNormal];
-		[firstReplyButton setBackgroundImage:[UIImage imageNamed:@"firstReplyButton_Active"] forState:UIControlStateHighlighted];
-		[firstReplyButton addTarget:self action:@selector(_goFirstReply) forControlEvents:UIControlEventTouchUpInside];
-		[_contentHolderView addSubview:firstReplyButton];
-	
-	} else {
-		_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:kDetailsHeroImageHeight forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
-		_participantsGridView.delegate = self;
-		[_contentHolderView addSubview:_participantsGridView];
-	}
+	_participantsGridView = [[HONChallengeDetailsGridView alloc] initAtPos:kDetailsHeroImageHeight forChallenge:_challengeVO asPrimaryOpponent:_heroOpponentVO];
+	_participantsGridView.delegate = self;
+	[_contentHolderView addSubview:_participantsGridView];
 }
 
 - (void)_makeFooterTabBar {
@@ -402,20 +391,11 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-- (void)_goFirstReply {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - First Reply"
-									  withChallenge:_challengeVO];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:_challengeVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
 - (void)_goLikeCreator {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Details - Like Challenge"
 									  withChallenge:_challengeVO];
 
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_challengeVO.challengeID forOpponent:_challengeVO.creatorVO completion:^(NSObject *result){
 		if (result != nil)

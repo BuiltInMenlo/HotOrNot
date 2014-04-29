@@ -38,7 +38,7 @@
 	coverImageView.alpha = 0.0;
 	[self.contentView addSubview:coverImageView];
 	
-	[HONImagingDepictor maskImageView:coverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:coverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		coverImageView.image = image;
@@ -69,7 +69,7 @@
 	[self.contentView addSubview:nameLabel];
 	
 	UIButton *takeActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	takeActionButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
+	takeActionButton.frame = CGRectMake(250.0, 0.0, 64.0, 64.0);
 	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_nonActive" : @"editButton_nonActive"] forState:UIControlStateNormal];
 	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_Active" : @"editButton_Active"] forState:UIControlStateHighlighted];
 	[takeActionButton addTarget:self action:(_isInviteCell) ? @selector (_goAcceptInvite) : @selector(_goEditSettings) forControlEvents:UIControlEventTouchUpInside];

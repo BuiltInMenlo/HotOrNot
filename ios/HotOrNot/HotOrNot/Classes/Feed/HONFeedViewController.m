@@ -87,7 +87,7 @@
 - (UIView *)_makeEmptyStateView
 {
 	UIView *emptyStateView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 335.0)];
-	[emptyStateView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"home_noFollowers"]]];
+	[emptyStateView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubs_emptyFeed"]]];
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	inviteButton.frame = CGRectMake(0.0, 200.0, 320.0, 45.0);
@@ -380,7 +380,7 @@
 		}
 	}];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO
@@ -437,7 +437,7 @@
 		_challenges = [mutableChallenges copy];
 	}];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 }
 
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController joinChallenge:(HONChallengeVO *)challengeVO

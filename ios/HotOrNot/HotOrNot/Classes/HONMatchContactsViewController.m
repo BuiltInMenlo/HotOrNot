@@ -97,17 +97,17 @@
 	_textField.delegate = self;
 	[self.view addSubview:_textField];
 	
-	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
+	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 128.0);
 	[self.view addSubview:divider1ImageView];
 	
 	
-	_submitButtonOriginY = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height) ? [UIScreen mainScreen].bounds.size.height - 53.0 : [UIScreen mainScreen].bounds.size.height - 73.0;
+	_submitButtonOriginY = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height) ? [UIScreen mainScreen].bounds.size.height - 64.0 : [UIScreen mainScreen].bounds.size.height - 73.0;
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, _submitButtonOriginY, 320.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	_submitButton.frame = CGRectMake(0.0, _submitButtonOriginY, 320.0, 64.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitBlueButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitBlueButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];

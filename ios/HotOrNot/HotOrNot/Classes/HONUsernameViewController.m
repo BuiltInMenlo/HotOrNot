@@ -75,14 +75,14 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
+	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 128.0);
 	[self.view addSubview:dividerImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitBlueButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitBlueButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_submitButton];
 	
@@ -138,7 +138,7 @@
 		} else {
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = @"Username taken!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];

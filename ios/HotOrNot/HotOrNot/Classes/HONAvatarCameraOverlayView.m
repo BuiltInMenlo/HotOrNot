@@ -73,8 +73,8 @@
 		
 		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_nonActive"] forState:UIControlStateNormal];
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_Active"] forState:UIControlStateHighlighted];
+		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_nonActive"] forState:UIControlStateNormal];
+		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_Active"] forState:UIControlStateHighlighted];
 		[_changeTintButton addTarget:self action:@selector(_goChangeTint) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_changeTintButton];
 		
@@ -97,22 +97,19 @@
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeAvatarButton_nonActive"] forState:UIControlStateNormal];
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeAvatarButton_Active"] forState:UIControlStateHighlighted];
+		retakeButton.backgroundColor = [UIColor redColor];
 		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
 		[_submitHolderView addSubview:retakeButton];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		skipButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_nonActive"] forState:UIControlStateNormal];
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_Active"] forState:UIControlStateHighlighted];
+		retakeButton.backgroundColor = [UIColor greenColor];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[_submitHolderView addSubview:skipButton];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 64.0);
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"avatarSendButton_nonActive"] forState:UIControlStateNormal];
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"avatarSendButton_Active"] forState:UIControlStateHighlighted];
+		retakeButton.backgroundColor = [UIColor blueColor];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 		[_submitHolderView addSubview:submitButton];
 		

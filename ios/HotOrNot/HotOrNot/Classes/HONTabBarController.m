@@ -65,11 +65,11 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	_contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_contactsButton.frame = CGRectMake(0.0, 0.0, 107.0, kTabSize.height);
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateHighlighted];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateSelected];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateNormal];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Active"] forState:UIControlStateHighlighted];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateSelected];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateDisabled];
 	[_contactsButton setTag:HONTabBarButtonTypeContacts];
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];

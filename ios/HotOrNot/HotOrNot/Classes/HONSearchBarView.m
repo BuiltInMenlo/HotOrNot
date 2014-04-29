@@ -23,11 +23,11 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isUser = YES;
 		
-		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputDefault"]];
+		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_users"]];
 		_unfocusedBGImageView.userInteractionEnabled = YES;
 		[self addSubview:_unfocusedBGImageView];
 		
-		_focusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackground"]];
+		_focusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_blank"]];
 		_focusedBGImageView.userInteractionEnabled = YES;
 		_focusedBGImageView.alpha = 0.0;
 		[self addSubview:_focusedBGImageView];

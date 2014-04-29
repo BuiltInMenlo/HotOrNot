@@ -72,7 +72,7 @@
 			[_progressHUD setYOffset:-80.0];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = @"Error!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
@@ -116,12 +116,12 @@
 	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
 	[self.view addSubview:_clubCoverImageView];
 	
-	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;
-	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"defaultAvatarBackground"] forState:UIControlStateNormal];
-	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"defaultAvatarBackground"] forState:UIControlStateHighlighted];
+	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateNormal];
+	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateHighlighted];
 	[_addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
 	[self.view addSubview:_addImageButton];
 	

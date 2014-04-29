@@ -53,7 +53,7 @@
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
-	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	
 	void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -113,7 +113,7 @@
 		selfieImageView.alpha = 0.0;
 		[self.contentView addSubview:selfieImageView];
 		
-		[HONImagingDepictor maskImageView:selfieImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+		[HONImagingDepictor maskImageView:selfieImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 		
 		void (^selfieImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			selfieImageView.image = image;

@@ -928,7 +928,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		[[UIToolbar appearance] setTintColor:[UIColor clearColor]];
 	
 //	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
-	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"subDetailsFooterBackground"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbarBG"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleDefault];
 	
 //	[[UIApplication sharedApplication] setStatusBarHidden:([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) withAnimation:UIStatusBarAnimationNone];

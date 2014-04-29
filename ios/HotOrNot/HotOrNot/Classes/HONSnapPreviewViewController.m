@@ -253,8 +253,8 @@
 		
 		UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		followButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 45.0, 94.0, 44.0);
-		[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_nonActive"] forState:UIControlStateNormal];
-		[followButton setBackgroundImage:[UIImage imageNamed:@"verifyMoreButton_Active"] forState:UIControlStateHighlighted];
+		[followButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+		[followButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 		[followButton addTarget:self action:@selector(_goFollowUser) forControlEvents:UIControlEventTouchUpInside];
 		[self.view addSubview:followButton];
 		
@@ -310,7 +310,7 @@
 									  withChallenge:_challengeVO
 									 andParticipant:_opponentVO];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_challengeVO.challengeID forOpponent:_opponentVO completion:^(NSObject *result){
 		_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];

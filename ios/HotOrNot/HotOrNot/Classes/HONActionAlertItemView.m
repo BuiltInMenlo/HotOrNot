@@ -106,7 +106,6 @@
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectButton.frame = CGRectMake(0.0, 0.0, 320.0, 49.0);
-	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
 }

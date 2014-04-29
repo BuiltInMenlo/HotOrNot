@@ -178,7 +178,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	if (indexPath.row == HONSettingsCellTypeHelp) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Show FAQ"];

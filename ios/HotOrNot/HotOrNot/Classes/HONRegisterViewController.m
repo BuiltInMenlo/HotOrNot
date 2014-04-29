@@ -107,7 +107,7 @@
 			[_progressHUD setYOffset:-80.0];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -215,7 +215,7 @@
 			[_progressHUD setYOffset:-80.0];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
@@ -264,12 +264,12 @@
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
 	[self.view addSubview:_avatarImageView];
 	
-	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addAvatarButton.frame = _avatarImageView.frame;
-	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"defaultAvatarBackground"] forState:UIControlStateNormal];
-	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"defaultAvatarBackground"] forState:UIControlStateHighlighted];
+	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateNormal];
+	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateHighlighted];
 	[_addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_addAvatarButton];
 	
@@ -493,8 +493,8 @@
 		
 		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_nonActive"] forState:UIControlStateNormal];
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterIcon_Active"] forState:UIControlStateHighlighted];
+		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_nonActive"] forState:UIControlStateNormal];
+		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_Active"] forState:UIControlStateHighlighted];
 		[_changeTintButton addTarget:self action:@selector(_goChangeTint) forControlEvents:UIControlEventTouchUpInside];
 		[_profileCameraOverlayView addSubview:_changeTintButton];
 		

@@ -30,7 +30,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"messageReplyCellBackground"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"messageItemBG"]];
 	}
 	
 	return (self);

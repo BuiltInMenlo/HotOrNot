@@ -21,7 +21,7 @@
 		_isSelectAllCell = isSelectAll;
 		_isSelected = NO;
 
-		UIImageView *offIndicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"grayDot"]];
+		UIImageView *offIndicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"greyDot"]];
 		offIndicatorImageView.frame = CGRectOffset(offIndicatorImageView.frame, 285.0, 20.0);
 		offIndicatorImageView.alpha = 0.0;
 		[self.contentView addSubview:offIndicatorImageView];

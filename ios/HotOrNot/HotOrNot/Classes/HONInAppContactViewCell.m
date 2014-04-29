@@ -19,26 +19,19 @@
 - (id)init {
 	if ((self = [super init])) {
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(190.0, 0.0, 74.0, 64.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_Active"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(250.0, 0.0, 64.0, 64.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self.contentView addSubview:_checkButton];
 		
 		_addButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_addButton.frame = _checkButton.frame;
-		[_addButton setBackgroundImage:[UIImage imageNamed:@"addButton_nonActive"] forState:UIControlStateNormal];
-		[_addButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
+		[_addButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
+		[_addButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_addButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_addButton];
-		
-		UIButton *blockButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		blockButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
-		[blockButton setBackgroundImage:[UIImage imageNamed:@"blockButton_nonActive"] forState:UIControlStateNormal];
-		[blockButton setBackgroundImage:[UIImage imageNamed:@"blockButton_Active"] forState:UIControlStateHighlighted];
-		[blockButton addTarget:self action:@selector(_goBlock) forControlEvents:UIControlEventTouchUpInside];
-		[self.contentView addSubview:blockButton];
 	}
 	
 	return (self);
@@ -82,8 +75,5 @@
 	}];
 }
 
-- (void)_goBlock {
-	
-}
 
 @end

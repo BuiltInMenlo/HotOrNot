@@ -41,8 +41,8 @@
 		
 		_selectedButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_selectedButton.frame = CGRectMake(272.0, 3.0, 44.0, 44.0);
-		[_selectedButton setBackgroundImage:[UIImage imageNamed:@"grayDot"] forState:UIControlStateNormal];
-		[_selectedButton setBackgroundImage:[UIImage imageNamed:@"grayDot"] forState:UIControlStateHighlighted];
+		[_selectedButton setBackgroundImage:[UIImage imageNamed:@"greyDot"] forState:UIControlStateNormal];
+		[_selectedButton setBackgroundImage:[UIImage imageNamed:@"greyDot"] forState:UIControlStateHighlighted];
 		[_selectedButton addTarget:self action:@selector(_goSelected) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_selectedButton];
 	}

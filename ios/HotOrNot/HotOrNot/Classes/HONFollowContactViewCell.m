@@ -28,17 +28,17 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(212.0, 10.0, 74.0, 64.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_Active"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(212.0, 10.0, 64.0, 64.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self.contentView addSubview:_checkButton];
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_followButton.frame = _checkButton.frame;
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_nonActive"] forState:UIControlStateNormal];
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"followButton_Active"] forState:UIControlStateHighlighted];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_followButton];
 	}

@@ -24,7 +24,7 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 		
 		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
-		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 20.0);
+		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 44.0);
 		[self.contentView addSubview:_chevronImageView];
 	}
 	
@@ -35,15 +35,5 @@
 	_chevronImageView.hidden = YES;
 }
 
-- (void)didSelect {
-	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellSelectedBG"]];
-	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
-}
-
-
-#pragma mark - UI Presentation
-- (void)_resetBG {
-	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
-}
 
 @end

@@ -162,7 +162,7 @@
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = @"User not found!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
@@ -375,7 +375,7 @@
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
-	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;

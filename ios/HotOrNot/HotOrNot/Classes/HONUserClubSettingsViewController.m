@@ -76,7 +76,7 @@
 			[_progressHUD setYOffset:-80.0];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			_progressHUD.labelText = @"Error!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
@@ -103,11 +103,11 @@
 	[_clubNameButton addTarget:self action:@selector(_goClubName) forControlEvents:UIControlEventTouchUpInside];
 	[_formHolderView addSubview:_clubNameButton];
 	
-	_clubCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] highlightedImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"]];
+	_clubCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"avatarPlaceholder"]];
 	_clubCoverImageView.frame = CGRectOffset(_clubCoverImageView.frame, 8.0, 85.0);
 	[_formHolderView addSubview:_clubCoverImageView];
 	
-	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	if ([_clubImagePrefix length] > 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -127,7 +127,7 @@
 		};
 		
 		[_clubCoverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubImagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-								   placeholderImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"]
+								   placeholderImage:[UIImage imageNamed:@"avatarPlaceholder"]
 											success:imageSuccessBlock
 											failure:imageFailureBlock];
 	}
@@ -135,8 +135,6 @@
 	
 	UIButton *addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	addImageButton.frame = _clubCoverImageView.frame;
-//	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_nonActive"] forState:UIControlStateNormal];
-//	[addImageButton setBackgroundImage:[UIImage imageNamed:@"firstRunPhotoButton_Active"] forState:UIControlStateHighlighted];
 	[addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
 	[_formHolderView addSubview:addImageButton];
 	

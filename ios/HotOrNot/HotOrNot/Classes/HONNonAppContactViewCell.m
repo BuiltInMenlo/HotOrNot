@@ -24,26 +24,19 @@
 		[self hideChevron];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(190.0, 0.0, 74.0, 64.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_Active"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(250.0, 0.0, 64.0, 64.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self.contentView addSubview:_checkButton];
 		
 		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_inviteButton.frame = _checkButton.frame;
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_inviteButton];
-		
-		UIButton *blockButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		blockButton.frame = CGRectMake(248.0, 0.0, 74.0, 64.0);
-		[blockButton setBackgroundImage:[UIImage imageNamed:@"blockButton_nonActive"] forState:UIControlStateNormal];
-		[blockButton setBackgroundImage:[UIImage imageNamed:@"blockButton_Active"] forState:UIControlStateHighlighted];
-		[blockButton addTarget:self action:@selector(_goBlock) forControlEvents:UIControlEventTouchUpInside];
-		[self.contentView addSubview:blockButton];
 	}
 	
 	return (self);
@@ -53,13 +46,10 @@
 	_userVO = userVO;
 	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
-	_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarBackground"];
+	_avatarImageView.image = (userVO.avatarImage != nil) ? userVO.avatarImage : [UIImage imageNamed:@"avatarPlaceholder"];
 	[self.contentView addSubview:_avatarImageView];
 	
-	if (userVO.avatarImage != nil)
-		_avatarImageView.image = userVO.avatarImage;
-	
-	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"maskAvatarBlack.png"]];
+	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];;//[[UILabel alloc] initWithFrame:CGRectMake(13.0, 14.0, 240.0, 20.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
@@ -105,10 +95,6 @@
 		_checkButton.hidden = YES;
 		[self.delegate nonAppContactViewCell:self contactUser:_userVO toggleSelected:NO];
 	}];
-}
-
-- (void)_goBlock {
-	
 }
 
 

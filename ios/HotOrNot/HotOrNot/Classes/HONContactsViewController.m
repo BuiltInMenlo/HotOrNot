@@ -60,8 +60,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareContactsTab:) name:@"TARE_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInvite:) name:@"SHOW_INVITE" object:nil];
-		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestedFollowing:) name:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showContactsTutorial:) name:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 	}
@@ -204,7 +202,7 @@
 			if ([_searchUsers count] == 0) {
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
@@ -278,7 +276,7 @@
 																			 @"l_name"	: lName,
 																			 @"phone"	: phoneNumber,
 																			 @"email"	: email,
-																			 @"image"	: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"defaultAvatarBackground"])}];
+																			 @"image"	: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}];
 			[unsortedContacts addObject:vo.dictionary];
 			
 			if (vo.isSMSAvailable)
@@ -341,7 +339,6 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Friends"];
 	[headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
-	//	[headerView addButton:[[HONMessagesButtonView alloc] initWithTarget:self action:@selector(_goMessages)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	

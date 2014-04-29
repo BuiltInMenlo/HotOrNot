@@ -28,17 +28,17 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(212.0, 10.0, 74.0, 64.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_nonActive"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkButton_Active"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(212.0, 10.0, 64.0, 64.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self.contentView addSubview:_checkButton];
 		
 		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_inviteButton.frame = _checkButton.frame;
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_inviteButton];
 	}

@@ -86,9 +86,6 @@
 		} completion:^(BOOL finished) {
 			if (_participantGridViewType == HONParticipantGridViewTypeUsersProfile)
 				[imageHolderView addSubview:deleteButton];
-			
-//			if (![vo.subjectName isEqualToString:challengeVO.creatorVO.subjectName])
-//				[imageHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"replyVolleyOverlay"]]];
 		}];
 	};
 	

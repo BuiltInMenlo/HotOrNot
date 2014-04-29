@@ -10,5 +10,4 @@
 + (NSString *)cellReuseIdentifier;
 
 - (void)hideChevron;
-- (void)didSelect;
 @end
