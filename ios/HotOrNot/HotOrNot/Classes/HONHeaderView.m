@@ -24,7 +24,7 @@
 
 - (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:(withBG) ? @"navHeaderBackground" : @""]]];
+		[self addSubview:[[UIImageView alloc] initWithImage:(withBG) ? [UIImage imageNamed:@"navHeaderBackground"] : [[UIImage alloc] init]]];
 		
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 32.0, 170.0, 19.0)];

@@ -101,18 +101,18 @@ const CGSize kTabSize = {80.0, 50.0};
 
 #pragma mark - Navigation
 - (void)_goTabButton:(id)sender event:(UIEvent *)event {
-	HONTabBarButtonType tarBarButtonType = [sender tag];
+	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];
 	
 	NSString *mpEvent = @"";
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";
 	
-	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tarBarButtonType];
+	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabBarButtonType];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
 	
-	switch (tarBarButtonType) {
+	switch (tabBarButtonType) {
 		case HONTabBarButtonTypeContacts:
 			totalKey = @"contacts";
 			mpEvent = @"Contacts";
@@ -152,12 +152,18 @@ const CGSize kTabSize = {80.0, 50.0};
 	[HONAppDelegate incTotalForCounter:totalKey];
 	
 //	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-	self.selectedIndex = tarBarButtonType;
+	self.selectedIndex = tabBarButtonType;
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
+	
+//	UIStatusBarStyle statusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+	
+//	if (tabBarButtonType == HONTabBarButtonTypeVerify && statusBarStyle == UIStatusBarStyleDefault)
+	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tarBarButtonType] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabBarButtonType] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 

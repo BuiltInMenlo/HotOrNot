@@ -15,9 +15,11 @@
 @property (nonatomic, strong) NSArray *paidEmotions;
 @property (nonatomic, strong) NSArray *cameraEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic, strong) HONEmotionPaginationView *paginationView;
+@property (nonatomic, assign) HONEmotionsPickerType emotionsPickerType;
 @property (nonatomic) int totalPages;
 @end
 
@@ -27,17 +29,19 @@
 
 - (id)init {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 303.0)])) {
-		self.backgroundColor = [UIColor whiteColor];
-		
 		_freeEmotions = [HONAppDelegate freeEmotions];
 		_paidEmotions = [NSMutableArray array];
-		_cameraEmotions = [NSMutableArray array];;
+		_cameraEmotions = [NSMutableArray array];
 		
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
+		_emotionsPickerType = HONEmotionsPickerTypeFree;
 		_totalPages = ((int)([_freeEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		
+		
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_emotionsPickerType == HONEmotionsPickerTypeFree) ? @"emojiBG_free" : @"emojiBG_paid"]];
+		[self addSubview:_bgImageView];
 		
 		UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 40.0, 320.0, 40.0)];
 		buttonHolderView.backgroundColor = [UIColor brownColor];
@@ -91,11 +95,13 @@
 
 #pragma mark - Navigation
 - (void)_goFree {
-	
+	_emotionsPickerType = HONEmotionsPickerTypeFree;
+	_bgImageView.image = [UIImage imageNamed:@"emojiBG_free"];
 }
 
 - (void)_goPaid {
-	
+	_emotionsPickerType = HONEmotionsPickerTypePaid;
+	_bgImageView.image = [UIImage imageNamed:@"emojiBG_paid"];
 }
 
 - (void)_goCamera {

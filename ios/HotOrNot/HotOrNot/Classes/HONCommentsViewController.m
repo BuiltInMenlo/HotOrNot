@@ -56,12 +56,12 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveComments {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[@"" stringFromInt:1], @"action",
-									[@"" stringFromInt:_challengeVO.challengeID], @"challengeID",
-									nil];
-	
-	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
+//	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+//									[@"" stringFromInt:1], @"action",
+//									[@"" stringFromInt:_challengeVO.challengeID], @"challengeID",
+//									nil];
+//	
+//	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
 	/*
 	 AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -178,12 +178,12 @@
 }
 
 - (void)_deleteComment:(int)commentID {
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[@"" stringFromInt:8], @"action",
-							[@"" stringFromInt:commentID], @"commentID",
-							nil];
-	
-	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
+//	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+//							[@"" stringFromInt:8], @"action",
+//							[@"" stringFromInt:commentID], @"commentID",
+//							nil];
+//	
+//	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, params);
 	
 	/*
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];

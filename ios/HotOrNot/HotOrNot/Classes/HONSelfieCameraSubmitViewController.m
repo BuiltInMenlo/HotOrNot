@@ -285,7 +285,7 @@
 		NSLog(@"cell.userClubVO:(%@)", cell.userClubVO.dictionary);
 	
 	} else {
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
 		cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
 		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];

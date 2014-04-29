@@ -6,42 +6,42 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef enum {
-	HONUserProfileTypeUser	= 0,
+typedef NS_ENUM(NSInteger, HONUserProfileType) {
+	HONUserProfileTypeUser,
 	HONUserProfileTypeOpponent
-} HONUserProfileType;
+};
 
-typedef enum {
-	HONAlertItemTypeVerify = 1,
+typedef NS_ENUM(NSInteger, HONAlertItemType) {
+	HONAlertItemTypeVerify,
 	HONAlertItemTypeFollow,
 	HONAlertItemTypeLike,
 	HONAlertItemTypeShoutout,
 	HONAlertItemTypeReply
-} HONAlertItemType;
+};
 
-typedef enum {
-	HONUserProfileActionSheetTypeVerify = 0,
+typedef NS_ENUM(NSInteger, HONUserProfileActionSheetType) {
+	HONUserProfileActionSheetTypeVerify,
 	HONUserProfileActionSheetTypeSocial
-} HONUserProfileActionSheetType;
+};
 
 
-typedef enum {
-	HONUserProfileAlertTypeInvite = 0,
+typedef NS_ENUM(NSInteger, HONUserProfileAlertType) {
+	HONUserProfileAlertTypeInvite,
 	HONUserProfileAlertTypeDeleteChallenge,
 	HONUserProfileAlertTypeFollow,
 	HONUserProfileAlertTypeFollowClose,
 	HONUserProfileAlertTypeUnfollow,
 	HONUserProfileAlertTypeFlag,
 	HONUserProfileAlertTypeShowProfileBlocked
-} HONUserProfileAlertType;
+};
 
-typedef enum {
-	HONActivityAlertTypeVerify = 1,
+typedef NS_ENUM(NSInteger, HONActivityAlert) {
+	HONActivityAlertTypeVerify,
 	HONActivityAlertTypeFollow,
 	HONActivityAlertTypeLike,
 	HONActivityAlertTypeShoutout,
 	HONActivityAlertTypeReply
-} HONActivityAlert;
+};
 
 
 

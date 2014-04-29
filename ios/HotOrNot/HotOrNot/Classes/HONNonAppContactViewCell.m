@@ -20,7 +20,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
 		[self hideChevron];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];

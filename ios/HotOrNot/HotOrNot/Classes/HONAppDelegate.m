@@ -883,21 +883,22 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_styleUIAppearance {
-	NSShadow *shadow = [[HONMainScreenOverseer sharedInstance] orthodoxUIShadowAttribute];//[NSShadow new];
+	/*NSShadow *shadow = [[HONMainScreenOverseer sharedInstance] orthodoxUIShadowAttribute];//[NSShadow new];*/
 //	[shadow setShadowColor:[UIColor clearColor]];
 //	[shadow setShadowOffset:CGSizeZero];
 	
-	
+	/*
 	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
 		[[UINavigationBar appearance] setBarTintColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
 
 	else
 		[[UINavigationBar appearance] setTintColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
-	
+	*/
 //	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header_modal"] forBarMetrics:UIBarMetricsDefault];
 //	[[UINavigationBar appearance] setBackgroundColor:[UIColor colorWithRed:0.008 green:0.373 blue:0.914 alpha:1.0]];
 //	[[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	
+	/*
 	[[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName		: [UIColor whiteColor],
 														NSShadowAttributeName				: shadow,
 														NSFontAttributeName				: [[[HONFontAllocator sharedInstance] cartoGothicBold] fontWithSize:22]}];
@@ -910,28 +911,27 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 														   NSFontAttributeName				: [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17]} forState:UIControlStateHighlighted];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButton_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButton_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
-	
-	// tab bar translucency
+
 	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
 		[[UITabBar appearance] setBarTintColor:[UIColor clearColor]];
 	
 	else
 		[[UITabBar appearance] setTintColor:[UIColor clearColor]];
+	 */
 	
 //	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
-	[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];
+	/*[[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"tabMenuBackground"]];*/
+	/*
+	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
+		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
 	
-//	if ([[HONDeviceIntrinsics sharedInstance] isIOS7])
-//		[[UIToolbar appearance] setBarTintColor:[UIColor clearColor]];
-//	
-//	else
-//		[[UIToolbar appearance] setTintColor:[UIColor clearColor]];
+	else
+		[[UIToolbar appearance] setTintColor:[UIColor clearColor]];
 	
-//	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
+	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbarBG"] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
 	[[UIToolbar appearance] setBarStyle:UIBarStyleDefault];
-	
-//	[[UIApplication sharedApplication] setStatusBarHidden:([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) withAnimation:UIStatusBarAnimationNone];
+	*/
 }
 
 

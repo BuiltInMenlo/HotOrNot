@@ -58,10 +58,10 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
-	NSDictionary *params = @{@"action"		: [@"" stringFromInt:5],
-							 @"challengeID"	: [@"" stringFromInt:_challengeVO.challengeID]};
-	
-	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
+//	NSDictionary *params = @{@"action"		: [@"" stringFromInt:5],
+//							 @"challengeID"	: [@"" stringFromInt:_challengeVO.challengeID]};
+//	
+//	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, params);
 	
 	/*
 	 AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];

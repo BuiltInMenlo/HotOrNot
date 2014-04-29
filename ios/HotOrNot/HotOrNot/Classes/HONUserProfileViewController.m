@@ -224,7 +224,7 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	_profileHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kOrthodoxTableCellHeight)];
-	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG"]]];
+	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG_normal"]]];
 	[self.view addSubview:_profileHolderView];
 	
 	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];

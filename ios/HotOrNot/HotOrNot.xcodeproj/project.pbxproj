@@ -2171,7 +2171,7 @@
 					"DEBUG=1",
 					MIXPANEL_DEBUG0,
 					MIXPANEL_LOG0,
-					"SC_JSON_LOG=1",
+					"SC_JSON_LOG=0",
 					"VIEW_CONTROLLER_LOG=0",
 					"$(inherited)",
 					"DEBUGING_COLORS=1",

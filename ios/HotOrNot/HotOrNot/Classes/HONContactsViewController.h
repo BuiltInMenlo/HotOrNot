@@ -6,6 +6,12 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONContactsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+typedef enum {
+	HONContactsTableViewDataSourceNone = 0,
+	HONContactsTableViewDataSourceAddressBook,
+	HONContactsTableViewDataSourceSearchResults
+} HONContactsTableViewDataSource;
 
+
+@interface HONContactsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 @end
