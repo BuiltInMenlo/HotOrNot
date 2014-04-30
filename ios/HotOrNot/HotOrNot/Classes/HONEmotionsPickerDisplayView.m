@@ -143,8 +143,8 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
 			
-			[UIView animateWithDuration:[[HONPhysicsGovernor sharedInstance] springOrthodoxDuration] delay:[[HONPhysicsGovernor sharedInstance] springOrthodoxDelay]
-				 usingSpringWithDamping:[[HONPhysicsGovernor sharedInstance] springOrthodoxDampening] initialSpringVelocity:[[HONPhysicsGovernor sharedInstance] springOrthodoxInitVelocity]
+			[UIView animateWithDuration:0.33 delay:0.0
+				 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
 								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 			 
 							 animations:^(void) {
@@ -163,8 +163,8 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 - (void)_dropImageAtIndex:(int)index {
 	UIImageView *imageView = (UIImageView *)[_imageHolderView.subviews objectAtIndex:index];
 		
-	[UIView animateWithDuration:[[HONPhysicsGovernor sharedInstance] springOrthodoxDuration] * 0.5 delay:[[HONPhysicsGovernor sharedInstance] springOrthodoxDelay]
-		 usingSpringWithDamping:[[HONPhysicsGovernor sharedInstance] springOrthodoxDampening] initialSpringVelocity:0.0
+	[UIView animateWithDuration:0.125 delay:0.0
+		 usingSpringWithDamping:0.875 initialSpringVelocity:0.0
 						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 	 
 					 animations:^(void) {
@@ -185,8 +185,8 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 		row = (int)floor((i - 1) / COLS_PER_ROW);
 		
 		UIImageView *imageView = (UIImageView *)[_imageHolderView.subviews objectAtIndex:i];
-		[UIView animateWithDuration:[[HONPhysicsGovernor sharedInstance] springOrthodoxDuration] delay:[[HONPhysicsGovernor sharedInstance] springOrthodoxDelay]
-			 usingSpringWithDamping:[[HONPhysicsGovernor sharedInstance] springOrthodoxDampening] initialSpringVelocity:[[HONPhysicsGovernor sharedInstance] springOrthodoxInitVelocity]
+		[UIView animateWithDuration:0.33 delay:0.0
+			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 		 
 						 animations:^(void) {
