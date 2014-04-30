@@ -817,7 +817,7 @@
 			[dict setValue:prevSegment forKey:charKey];
 		}
 		
-		NSLog(@"NAME:[%@]\nKEY:[%@]\n%@", vo.lastName, charKey, _segmentedKeys);
+		//NSLog(@"NAME:[%@]\nKEY:[%@]\n%@", vo.lastName, charKey, _segmentedKeys);
 	}
 	
 	return (dict);
