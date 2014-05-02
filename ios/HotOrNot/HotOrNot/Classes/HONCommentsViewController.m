@@ -12,7 +12,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONCommentsViewController.h"
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
 #import "HONImagePickerViewController.h"

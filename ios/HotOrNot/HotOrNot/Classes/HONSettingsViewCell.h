@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 
-@interface HONSettingsViewCell : HONBaseRowViewCell
+@interface HONSettingsViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
 
 - (id)initWithCaption:(NSString *)caption;

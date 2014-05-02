@@ -175,6 +175,7 @@
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 0.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.userInteractionEnabled = YES;
@@ -367,68 +368,10 @@
 }
 
 
-#pragma mark - ActionAlertItemView Delegates
-- (void)activityItemViewCell:(HONActivityItemViewCell *)cell selectedActivityItem:(HONActivityItemVO *)activityItemVO {
-	NSLog(@"activityItemViewCell:[%@]", activityItemVO.dictionary);
-	
-	NSString *mpAlertType;
-	NSDictionary *mpParams;
-	
-	UIViewController *viewController;
-	
-	if (activityItemVO.activityType == HONActivityItemTypeVerify) {
-		mpAlertType = @"Verify";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
-		viewController = userPofileViewController;
-		
-	} else if (activityItemVO.activityType == HONActivityItemTypeInviteAccepted) {
-		mpAlertType = @"Accepted Invite";
-		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-	} else if (activityItemVO.activityType == HONActivityItemTypeInviteRequest) {
-		mpAlertType = @"Club Invite";
-		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
-		viewController = userPofileViewController;
-		
-	} else if (activityItemVO.activityType == HONActivityItemTypeLike) {
-		mpAlertType = @"Like";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
-		viewController = userPofileViewController;
-				
-	} else if (activityItemVO.activityType == HONActivityItemTypeShoutout) {
-		mpAlertType = @"Shoutout";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
-		viewController = userPofileViewController;
-		
-	} else if (activityItemVO.activityType == HONActivityItemTypeClubSubmission) {
-		mpAlertType = @"Reply";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
-		viewController = userPofileViewController;
-				
-	} else {
-		mpAlertType = @"Profile";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
-		viewController = userPofileViewController;
-	}
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"User Profile - Select %@ Row", mpAlertType]
-									 withProperties:mpParams];
-	
-	if (viewController != nil) {
-		[self.navigationController pushViewController:viewController animated:YES];
-	}
+#pragma mark - ActivityItemView Delegates
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"activityItemViewCell:[%@]", trivialUserVO.dictionary);
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
 }
 
 
@@ -440,15 +383,15 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((_userProfileType == HONUserProfileTypeUser) ? (section == 0) ? [_activityAlerts count] : 1 : [_cohortRows count]);
+	return ([_activityAlerts count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ((_userProfileType == HONUserProfileTypeUser) ? (section == 0) ? [[HONTableHeaderView alloc] initWithTitle:@"ACTIVITY"] : nil : nil);
+	return ([[HONTableHeaderView alloc] initWithTitle:@"ACTIVITY"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -505,37 +448,65 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (_userProfileType == HONUserProfileTypeUser) {
-		HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
-		
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Select Activity Row"
-									   withActivityItem:vo];
-		
-		[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
+	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 	
+	NSString *mpAlertType;
+	NSDictionary *mpParams;
+	
+	UIViewController *viewController;
+	
+	if (vo.activityType == HONActivityItemTypeVerify) {
+		mpAlertType = @"Verify";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		viewController = userPofileViewController;
+		
+	} else if (vo.activityType == HONActivityItemTypeInviteAccepted) {
+		mpAlertType = @"Accepted Invite";
+		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		
+	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
+		mpAlertType = @"Club Invite";
+		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		viewController = userPofileViewController;
+		
+	} else if (vo.activityType == HONActivityItemTypeLike) {
+		mpAlertType = @"Like";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		viewController = userPofileViewController;
+		
+	} else if (vo.activityType == HONActivityItemTypeShoutout) {
+		mpAlertType = @"Shoutout";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		viewController = userPofileViewController;
+		
+	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {
+		mpAlertType = @"Reply";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		viewController = userPofileViewController;
+		
 	} else {
-		if (indexPath.row == 0) {
-			if (_userClubVO == nil) {
-				[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
-											message:@"You need to create your own club before inviting anyone."
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			
-			} else {
-				[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONTrivialUserVO userFromUserVO:_userVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
-				}];
-			}
+		mpAlertType = @"Profile";
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
 		
-		} else if (indexPath.row == 1) {
-			[self _goShoutout];
-			
-		} else if (indexPath.row == 2) {
-			[self _goShare];
-		
-		} else if (indexPath.row == 3) {
-			[self _goFlag];
-		}
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		viewController = userPofileViewController;
+	}
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"User Profile - Select %@ Row", mpAlertType]
+									 withProperties:mpParams];
+	
+	if (viewController != nil) {
+		[self.navigationController pushViewController:viewController animated:YES];
 	}
 }
 

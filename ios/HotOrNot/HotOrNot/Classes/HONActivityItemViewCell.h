@@ -6,16 +6,17 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONActivityItemVO.h"
+#import "HONTrivialUserVO.h"
 
 @class HONActivityItemViewCell;
 @protocol HONActivityItemViewCellDelegate <NSObject>
-- (void)activityItemViewCell:(HONActivityItemViewCell *)cell selectedActivityItem:(HONActivityItemVO *)activityItemVO;
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO;
 @end
 
-@interface HONActivityItemViewCell : HONBaseRowViewCell
-
+@interface HONActivityItemViewCell : HONTableViewCell
+- (void)hideIndicator;
 @property (nonatomic, assign) id <HONActivityItemViewCellDelegate> delegate;
 @property (nonatomic, retain) HONActivityItemVO *activityItemVO;
 @end

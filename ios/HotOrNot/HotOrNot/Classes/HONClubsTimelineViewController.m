@@ -148,7 +148,7 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	[_tableView setContentInset:UIEdgeInsetsMake(kNavHeaderHeight + 55.0, 0.0, 0.0, 0.0)];
+	[_tableView setContentInset:UIEdgeInsetsMake(kNavHeaderHeight + 55.0, 0.0, -1.0, 0.0)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -333,11 +333,11 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_allItems count] : 1);
+	return ([_allItems count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -347,18 +347,11 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubTimelineViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if (cell == nil) {
+	if (cell == nil)
 		cell = [[HONClubTimelineViewCell alloc] init];
-	}
 	
-	if (indexPath.section == 0) {
-		cell.timelineItemVO = (HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row];
-		cell.delegate = self;
-
-	} else {
-		cell.backgroundView = nil;
-	}
-	
+	cell.timelineItemVO = (HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row];
+	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -367,13 +360,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	if (indexPath.section == 0) {
-		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row];
-		return ((vo.timelineItemType == HONTimelineItemTypeSelfie) ? 330.0 : 100.0);
-	
-	} else
-		return (([_allItems count] < 6 + ((int)([[HONDeviceIntrinsics sharedInstance] isPhoneType5s]) * 2)) ? 0.0 : 49.0);
+	HONTimelineItemVO *vo = (HONTimelineItemVO *)[_allItems objectAtIndex:indexPath.row];
+	return ((vo.timelineItemType == HONTimelineItemTypeSelfie) ? 330.0 : 100.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -381,7 +369,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 0) ? indexPath : nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

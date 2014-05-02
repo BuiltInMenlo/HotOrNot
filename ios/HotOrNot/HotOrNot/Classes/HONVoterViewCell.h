@@ -6,10 +6,10 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONVoterVO.h"
 
-@interface HONVoterViewCell : HONBaseRowViewCell
+@interface HONVoterViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, strong) HONVoterVO *voterVO;

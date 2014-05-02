@@ -12,7 +12,7 @@
 #import "MBProgressHUD.h"
 
 #import "HONVotersViewController.h"
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"

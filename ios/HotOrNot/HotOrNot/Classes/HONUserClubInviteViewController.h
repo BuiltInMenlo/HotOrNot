@@ -6,15 +6,15 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONUserClubVO.h"
+#import "HONContactsViewController.h"
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONUserClubInviteType) {
 	HONUserClubInviteTypeNone = 0,
 	HONUserClubInviteTypeInApp = 1 << 0,
 	HONUserClubInviteTypeNonApp = 1 << 1,
 	
-} HONUserClubInviteType;
+};
 
-@interface HONUserClubInviteViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONUserClubInviteViewController : HONContactsViewController
 - (id)initWithClub:(HONUserClubVO *)userClub;
 @end

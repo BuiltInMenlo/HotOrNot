@@ -48,13 +48,11 @@
 	NSString *subtitleCaption = (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? [NSString stringWithFormat:@"%@ in %@", [HONAppDelegate timeSinceDate:_timelineItemVO.timestamp], _timelineItemVO.challengeVO.subjectName] : [NSString stringWithFormat:@"%d member%@", _timelineItemVO.userClubVO.totalActiveMembers, ( _timelineItemVO.userClubVO.totalActiveMembers != 1) ? @"s" : @""];
 	NSString *avatarPrefix = (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? _timelineItemVO.challengeVO.creatorVO.avatarPrefix : _timelineItemVO.userClubVO.coverImagePrefix;
 	
-	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 8.0 : 35.0, 48.0, 48.0)];
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
 	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
-	
 	
 	void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
@@ -66,7 +64,7 @@
 	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:avatarPrefix forBucketType:(_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 		
-		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];

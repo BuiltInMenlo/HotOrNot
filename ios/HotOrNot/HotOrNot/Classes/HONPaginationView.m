@@ -1,5 +1,5 @@
 //
-//  HONBasePaginationView.m
+//  HONPaginationView.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 04/22/2014 @ 16:33 .
@@ -7,15 +7,15 @@
 //
 
 
-#import "HONBasePaginationView.h"
+#import "HONPaginationView.h"
 
-@interface HONBasePaginationView ()
+@interface HONPaginationView ()
 @property (nonatomic, retain) NSMutableArray *offImageViews;
 @property (nonatomic, retain) NSMutableArray *onImageViews;
 @property (nonatomic) BOOL isAnimating;
 @end
 
-@implementation HONBasePaginationView
+@implementation HONPaginationView
 
 
 - (id)initAtPosition:(CGPoint)pos withTotalPages:(int)totalPages {

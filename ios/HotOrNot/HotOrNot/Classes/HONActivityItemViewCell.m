@@ -14,6 +14,7 @@
 @interface HONActivityItemViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UIImageView *messageLabel;
+@property (nonatomic, strong) UIImageView *indicatorImageView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIImageView *chevronImageView;
 @end
@@ -73,25 +74,38 @@
 									 success:successBlock
 									 failure:failureBlock];
 	
+	
+	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	avatarButton.frame = _avatarImageView.frame;
+	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:avatarButton];
+	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(41.0, 12.0, 195.0, 17.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"%@ %@", _activityItemVO.username, _activityItemVO.message];
 	[self.contentView addSubview:nameLabel];
-		
-	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight);
-	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
-	[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:selectButton];
+	
+	_indicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityDot"]];
+	_indicatorImageView.frame = CGRectOffset(_indicatorImageView.frame, 298.0, 16.0);
+	[self.contentView addSubview:_indicatorImageView];
+}
+
+- (void)hideIndicator {
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_indicatorImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_indicatorImageView removeFromSuperview];
+		_indicatorImageView = nil;
+	}];
 }
 
 
 #pragma mark - Navigation {
-- (void)_goSelect {
-	if ([self.delegate respondsToSelector:@selector(activityItemViewCell:selectedActivityItem:)])
-		[self.delegate activityItemViewCell:self selectedActivityItem:_activityItemVO];
+- (void)_goProfile {
+	if ([self.delegate respondsToSelector:@selector(activityItemViewCell:showProfileForUser:)])
+		[self.delegate activityItemViewCell:self showProfileForUser:[HONTrivialUserVO userFromActivityItemVO:_activityItemVO]];
 }
 
 

@@ -1,19 +1,19 @@
 //
-//  HONBaseRowViewCell.m
+//  HONTableViewCell.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 3/17/13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 
 
-@interface HONBaseRowViewCell()
+@interface HONTableViewCell()
 @property (nonatomic, strong) UIImageView *chevronImageView;
 @end
 
-@implementation HONBaseRowViewCell
+@implementation HONTableViewCell
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));

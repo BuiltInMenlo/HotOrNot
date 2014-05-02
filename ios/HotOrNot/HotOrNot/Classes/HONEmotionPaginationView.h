@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBasePaginationView.h"
+#import "HONPaginationView.h"
 
-@interface HONEmotionPaginationView : HONBasePaginationView
+@interface HONEmotionPaginationView : HONPaginationView
 @end

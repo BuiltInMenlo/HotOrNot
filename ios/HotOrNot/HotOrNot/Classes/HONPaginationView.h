@@ -1,5 +1,5 @@
 //
-//  HONBasePaginationView.h
+//  HONPaginationView.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 04/22/2014 @ 16:33 .
@@ -14,7 +14,7 @@
 #define ON_DURATION 0.125f
 
 
-@interface HONBasePaginationView : UIView {
+@interface HONPaginationView : UIView {
 	int _currentPage;
 	int _totalPages;
 }

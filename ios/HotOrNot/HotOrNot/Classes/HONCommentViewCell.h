@@ -6,10 +6,10 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONCommentVO.h"
 
-@interface HONCommentViewCell : HONBaseRowViewCell
+@interface HONCommentViewCell : HONTableViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, strong) HONCommentVO *commentVO;

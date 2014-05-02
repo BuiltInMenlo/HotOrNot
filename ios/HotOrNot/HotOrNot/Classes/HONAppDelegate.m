@@ -44,7 +44,7 @@
 //#import "HONUserClubsViewController.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONAddContactsViewController.h"
-#import "HONContactsViewController.h"
+#import "HONContactsTabViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
@@ -206,14 +206,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				@"total_members"	: @"3",
 				@"added"			: @"2014-04-20 16:20:00"},
 			  
-			  @{@"id"				: @"40",
-				@"name"				: @"MATT TEST",
+			  @{@"id"				: @"12",
+				@"name"				: @"Dozen Club",
 				@"description"		: @"",
-				@"img"				: @"",
+				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/58027fd1473f4826a669e89ba1d12000_0adcbca42b6541f898f1557fcc4da55a-1388776881",
 				
-				@"owner"			: @{@"id"		: @"131820",
-										@"username"	: @"yoloswag1398622768.1535d4a309d08a",
-										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/8268d1cb4608e0fce19ddc30d1a47a6d247769bc1301f9d1b99c2c5248ce3148-1379717258"},
+				@"owner"			: @{@"id"		: @"64846",
+										@"username"	: @"testerjason",
+										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/01b37fcac9e842999485811756d753a1_d8ea0f6cdb21494fbd1fc84bc259c3bc-1397093806"},
 				
 				@"members"			: @[],
 				@"pending"			: @[],
@@ -1248,7 +1248,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
-	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsViewController alloc] init]],
+	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	

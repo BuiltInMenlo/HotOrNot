@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
@@ -20,7 +20,7 @@
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 @end
 
-@interface HONUserToggleViewCell : HONBaseRowViewCell {
+@interface HONUserToggleViewCell : HONTableViewCell {
 	UIButton *_toggledOnButton;
 	UIButton *_toggledOffButton;
 }

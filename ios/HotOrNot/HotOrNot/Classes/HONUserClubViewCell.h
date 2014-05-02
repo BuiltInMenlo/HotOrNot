@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONBaseRowViewCell.h"
+#import "HONTableViewCell.h"
 #import "HONUserClubVO.h"
 
 
@@ -17,7 +17,7 @@
 - (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO;
 @end
 
-@interface HONUserClubViewCell : HONBaseRowViewCell
+@interface HONUserClubViewCell : HONTableViewCell
 - (id)initAsInviteCell:(BOOL)isInvite;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, assign) id <HONUserClubViewCellDelegate> delegate;

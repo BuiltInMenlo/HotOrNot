@@ -28,15 +28,22 @@
 	return (vo);
 }
 
++ (HONTrivialUserVO *)userFromActivityItemVO:(HONActivityItemVO *)activityItemVO {
+	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: [[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"id"],
+												   @"username"	: [[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"username"],
+												   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]],
+												   @"alt_id"	: [activityItemVO.dictionary objectForKey:@"id"]}]);
+}
+
 + (HONTrivialUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO {
-	return([HONTrivialUserVO userWithDictionary:@{@"id"			: [opponentVO.dictionary objectForKey:@"id"],
+	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: [opponentVO.dictionary objectForKey:@"id"],
 												  @"username"	: [opponentVO.dictionary objectForKey:@"username"],
 												  @"img_url"	: [opponentVO.dictionary objectForKey:@"avatar"],
 												  @"alt_id"		: [[[HONAppDelegate cleanImagePrefixURL:[opponentVO.dictionary objectForKey:@"avatar"]] componentsSeparatedByString:@"/"] lastObject]}]);
 }
 
 + (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO {
-	return([HONTrivialUserVO userWithDictionary:@{@"id"				: [userVO.dictionary objectForKey:@"id"],
+	return ([HONTrivialUserVO userWithDictionary:@{@"id"			: [userVO.dictionary objectForKey:@"id"],
 												  @"username"		: [userVO.dictionary objectForKey:@"username"],
 												  @"img_url"		: [userVO.dictionary objectForKey:@"avatar_url"],
 												  @"alt_id"			: [userVO.dictionary objectForKey:@"device_token"],
