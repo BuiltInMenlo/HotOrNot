@@ -40,7 +40,7 @@
 		_activityItemVO.avatarPrefix = @"https://d3j8du2hyvd35p.cloudfront.net/c6d8484284ea433cb38230b885a88a40_b8d329e3e587426f9dacb5dffdb91e93-1397110043";
 	}
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 9.0, 25.0, 25.0)];
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 25.0, 25.0)];
 	[self.contentView addSubview:imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
@@ -80,15 +80,15 @@
 	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:avatarButton];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(41.0, 12.0, 195.0, 17.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(43.0, 13.0, 195.0, 17.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+	nameLabel.textColor = [UIColor blackColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"%@ %@", _activityItemVO.username, _activityItemVO.message];
 	[self.contentView addSubview:nameLabel];
 	
 	_indicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityDot"]];
-	_indicatorImageView.frame = CGRectOffset(_indicatorImageView.frame, 298.0, 16.0);
+	_indicatorImageView.frame = CGRectOffset(_indicatorImageView.frame, 280.0, 1.0);
 	[self.contentView addSubview:_indicatorImageView];
 }
 

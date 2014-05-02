@@ -58,12 +58,12 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	//	[[HONAPICaller sharedInstance] followUserWithUserID:2394 completion:nil]; //
-	//	[[HONAPICaller sharedInstance] followUserWithUserID:11822 completion:nil];
-	//	[[HONAPICaller sharedInstance] followUserWithUserID:9419 completion:nil];
-	
-	//	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:2394 completion:nil];
-	//	[[HONAPICaller sharedInstance] followUserWithUserID:86493 completion:nil];
+//	[[HONAPICaller sharedInstance] followUserWithUserID:2394 completion:nil]; //
+//	[[HONAPICaller sharedInstance] followUserWithUserID:11822 completion:nil];
+//	[[HONAPICaller sharedInstance] followUserWithUserID:9419 completion:nil];
+
+//	[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:2394 completion:nil];
+//	[[HONAPICaller sharedInstance] followUserWithUserID:86493 completion:nil];
 	
 	[_headerView setTitle:@"Friends"];
 	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];

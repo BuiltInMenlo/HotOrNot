@@ -97,29 +97,6 @@
 	
 			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : @"Activity"];
 			[self _makeProfile];
-			
-			if (_userProfileType == HONUserProfileTypeUser) {
-				UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				settingsButton.frame = CGRectMake(226.0, 0.0, 93.0, 44.0);
-				[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
-				[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
-				[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-				[_headerView addButton:settingsButton];
-				
-				HONCreateSnapButtonView *changeAvatarButtonView = [[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goChangeAvatar) asLightStyle:NO];
-				changeAvatarButtonView.frame = CGRectOffset(changeAvatarButtonView.frame, -4.0, 10.0);
-				[_profileHolderView addSubview:changeAvatarButtonView];
-				
-				[self _retrieveAlerts];
-			}
-			
-			else {
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-			}
-			
 			[self _retrieveAlerts];
 			
 		} else {
@@ -192,8 +169,8 @@
 	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]]];
 	[self.view addSubview:_profileHolderView];
 	
-	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];
-	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
+	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 20.0, 195.0, 22.0)];
+	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_nameLabel];
@@ -365,6 +342,38 @@
 									failure:imageFailureBlock];
 	
 	_nameLabel.text = _userVO.username;
+	
+//	if (_userVO.isVerified) {
+		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -8.0);
+		
+		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
+		verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 40.0, 34.0);
+		[_profileHolderView addSubview:verifiedImageView];
+		
+		UIImageView *arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserArrow"]];
+		arrowImageView.frame = CGRectOffset(arrowImageView.frame, 63.0, 28.0);
+		[_profileHolderView addSubview:arrowImageView];
+		
+		UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(84.0, 34.0, 33.0, 13.0)];
+		scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+		scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
+		scoreLabel.backgroundColor = [UIColor clearColor];
+		scoreLabel.text = [@"" stringFromInt:-_userVO.abuseCount];
+		[_profileHolderView addSubview:scoreLabel];
+//	}
+	
+	if (_userProfileType == HONUserProfileTypeUser) {
+		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		settingsButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
+		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
+		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
+		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addButton:settingsButton];
+		
+		HONCreateSnapButtonView *changeAvatarButtonView = [[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goChangeAvatar) asLightStyle:NO];
+		changeAvatarButtonView.frame = CGRectOffset(changeAvatarButtonView.frame, -6.0, 9.0);
+		[_profileHolderView addSubview:changeAvatarButtonView];
+	}
 }
 
 
