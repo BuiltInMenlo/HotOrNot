@@ -16,66 +16,30 @@
 
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
-//#import "HONSnapPreviewViewController.h"
-//#import "HONImagePickerViewController.h"
-//#import "HONAddContactsViewController.h"
-//#import "HONChallengeDetailsViewController.h"
-//#import "HONSearchUsersViewController.h"
-//#import "HONSuggestedFollowViewController.h"
 #import "HONFAQViewController.h"
 #import "HONSettingsViewController.h"
-//#import "HONProfileSelfieGridViewController.h"
 #import "HONImageLoadingView.h"
-//#import "HONUserProfileGridView.h"
-//#import "HONActionAlertItemView.h"
-#import "HONAlertItemViewCell.h"
-//#import "HONChallengeVO.h"
-//#import "HONOpponentVO.h"
+#import "HONActivityItemViewCell.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONCreateSnapButtonView.h"
+
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
-//#import "HONEmotionVO.h"
-#import "HONAlertItemVO.h"
+#import "HONActivityItemVO.h"
 
-//#import "HONFollowingViewController.h"
-//#import "HONFollowersViewController.h"
-
-
-//@interface HONUserProfileViewController () <HONActionAlertItemViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
-@interface HONUserProfileViewController () <EGORefreshTableHeaderDelegate, HONAlertItemViewCellDelegate>
+@interface HONUserProfileViewController () <EGORefreshTableHeaderDelegate, HONActivityItemViewCellDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UITableView *tableView;
-//@property (nonatomic, strong) HONChallengeVO *challengeVO;
-//@property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, assign, readonly) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSMutableArray *activityAlerts;
 @property (nonatomic, strong) NSArray *cohortRows;
-//@property (nonatomic, strong) UIButton *verifyButton;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-//@property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
-//@property (nonatomic, strong) HONUserProfileGridView *profileGridView;
-//@property (nonatomic, strong) UIView *actionAlertsHolderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-//@property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UILabel *nameLabel;
-//@property (nonatomic, strong) UILabel *selfiesLabel;
-//@property (nonatomic, strong) UILabel *followersLabel;
-//@property (nonatomic, strong) UILabel *followingLabel;
-//@property (nonatomic, strong) UILabel *likesLabel;
-//@property (nonatomic, strong) UIButton *followButton;
-//@property (nonatomic, strong) NSMutableArray *challenges;
-//@property (nonatomic, strong) NSMutableArray *challengeImages;
-//@property (nonatomic, strong) UIToolbar *footerToolbar;
-//@property (nonatomic, strong) UIButton *subscribeButton;
-//@property (nonatomic, strong) UIButton *flagButton;
-//@property (nonatomic) int challengeCounter;
-//@property (nonatomic) int followingCounter;
-//@property (nonatomic) BOOL isFollowing;
 @end
 
 
@@ -136,14 +100,14 @@
 			
 			if (_userProfileType == HONUserProfileTypeUser) {
 				UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				settingsButton.frame = CGRectMake(226.0, 1.0, 93.0, 44.0);
+				settingsButton.frame = CGRectMake(226.0, 0.0, 93.0, 44.0);
 				[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_nonActive"] forState:UIControlStateNormal];
 				[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsButton_Active"] forState:UIControlStateHighlighted];
 				[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 				[_headerView addButton:settingsButton];
 				
 				HONCreateSnapButtonView *changeAvatarButtonView = [[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goChangeAvatar) asLightStyle:NO];
-				changeAvatarButtonView.frame = CGRectOffset(changeAvatarButtonView.frame, -7.0, 10.0);
+				changeAvatarButtonView.frame = CGRectOffset(changeAvatarButtonView.frame, -4.0, 10.0);
 				[_profileHolderView addSubview:changeAvatarButtonView];
 				
 				[self _retrieveAlerts];
@@ -175,7 +139,7 @@
 	_activityAlerts = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveAlertsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		for (NSDictionary *dict in (NSArray *)result)
-			[_activityAlerts addObject:[HONAlertItemVO alertWithDictionary:dict]];
+			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
 		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
@@ -224,12 +188,12 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	
 	_profileHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kOrthodoxTableCellHeight)];
-	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityRowBG_normal"]]];
+	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]]];
 	[self.view addSubview:_profileHolderView];
 	
 	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 20.0, 195.0, 22.0)];
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
-	_nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_nameLabel];
 	
@@ -237,7 +201,7 @@
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
@@ -364,7 +328,7 @@
 - (void)_makeProfile {
 //	NSLog(@"AVATAR LOADING:[%@]", [_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
 	
-	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
+	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 8.0, 48.0, 48.0)];
 	[_profileHolderView addSubview:avatarHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView asLargeLoader:NO];
@@ -404,54 +368,58 @@
 
 
 #pragma mark - ActionAlertItemView Delegates
-- (void)alertItemViewCell:(HONAlertItemViewCell *)cell alertItem:(HONAlertItemVO *)alertItemVO {
-	NSLog(@"alertItemViewCell:[%@]", alertItemVO.dictionary);
+- (void)activityItemViewCell:(HONActivityItemViewCell *)cell selectedActivityItem:(HONActivityItemVO *)activityItemVO {
+	NSLog(@"activityItemViewCell:[%@]", activityItemVO.dictionary);
 	
 	NSString *mpAlertType;
 	NSDictionary *mpParams;
 	
 	UIViewController *viewController;
 	
-	if (alertItemVO.triggerType == HONAlertItemTypeVerify) {
+	if (activityItemVO.activityType == HONActivityItemTypeVerify) {
 		mpAlertType = @"Verify";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
 		viewController = userPofileViewController;
 		
-	} else if (alertItemVO.triggerType == HONAlertItemTypeFollow) {
-		mpAlertType = @"Follow";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+	} else if (activityItemVO.activityType == HONActivityItemTypeInviteAccepted) {
+		mpAlertType = @"Accepted Invite";
+		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
+	} else if (activityItemVO.activityType == HONActivityItemTypeInviteRequest) {
+		mpAlertType = @"Club Invite";
+		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
+		
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
 		viewController = userPofileViewController;
 		
-	} else if (alertItemVO.triggerType == HONAlertItemTypeLike) {
+	} else if (activityItemVO.activityType == HONActivityItemTypeLike) {
 		mpAlertType = @"Like";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
 		viewController = userPofileViewController;
 				
-	} else if (alertItemVO.triggerType == HONAlertItemTypeShoutout) {
+	} else if (activityItemVO.activityType == HONActivityItemTypeShoutout) {
 		mpAlertType = @"Shoutout";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
 		viewController = userPofileViewController;
 		
-	} else if (alertItemVO.triggerType == HONAlertItemTypeReply) {
+	} else if (activityItemVO.activityType == HONActivityItemTypeClubSubmission) {
 		mpAlertType = @"Reply";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
 		viewController = userPofileViewController;
 				
 	} else {
 		mpAlertType = @"Profile";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", alertItemVO.userID, alertItemVO.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", activityItemVO.userID, activityItemVO.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:alertItemVO.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:activityItemVO.userID];
 		viewController = userPofileViewController;
 	}
 	
@@ -485,17 +453,17 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONActivityItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (_userProfileType == HONUserProfileTypeUser) {
 			if (cell == nil) {
-				cell = [[HONAlertItemViewCell alloc] init];
-				cell.alertItemVO = (HONAlertItemVO *)[_activityAlerts objectAtIndex:indexPath.row];
+				cell = [[HONActivityItemViewCell alloc] init];
+				cell.activityItemVO = (HONActivityItemVO *)[_activityAlerts objectAtIndex:indexPath.row];
 			}
 		
 		} else {
 			if (cell == nil) {
-				cell = [[HONAlertItemViewCell alloc] init];
+				cell = [[HONActivityItemViewCell alloc] init];
 				
 				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
 				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
@@ -538,7 +506,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if (_userProfileType == HONUserProfileTypeUser) {
-		HONAlertItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
+		HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 		
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Select Activity Row"
 									   withActivityItem:vo];

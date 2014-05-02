@@ -8,6 +8,5 @@
 
 @interface HONBaseRowViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
-
 - (void)hideChevron;
 @end

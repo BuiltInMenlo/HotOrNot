@@ -463,11 +463,11 @@
 		
 		if (cell == nil) {
 			cell = [[HONInAppContactViewCell alloc] init];
-			cell.userVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
+			cell.trivialUserVO = (HONTrivialUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
 		for (HONTrivialUserVO *vo in _selectedInAppContacts) {
-			if (cell.userVO.userID == vo.userID) {
+			if (cell.trivialUserVO.userID == vo.userID) {
 				[cell toggleSelected:YES];
 				break;
 			}

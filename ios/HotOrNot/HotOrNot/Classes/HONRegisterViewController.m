@@ -35,20 +35,16 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *imageFilename;
 @property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSString *password;
+@property (nonatomic, strong) NSString *callingCode;
 @property (nonatomic, strong) NSString *phone;
 @property (nonatomic, strong) UIButton *addAvatarButton;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UITextField *usernameTextField;
-@property (nonatomic, strong) UITextField *passwordTextField;
-@property (nonatomic, strong) UITextField *phone1TextField;
-@property (nonatomic, strong) UITextField *phone2TextField;
-@property (nonatomic, strong) UITextField *phone3TextField;
+@property (nonatomic, strong) UITextField *phoneTextField;
 @property (nonatomic, strong) UIButton *usernameButton;
-@property (nonatomic, strong) UIButton *passwordButton;
+@property (nonatomic, strong) UIButton *callCodeButton;
 @property (nonatomic, strong) UIButton *phoneButton;
 @property (nonatomic, strong) UIImageView *usernameCheckImageView;
-@property (nonatomic, strong) UIImageView *passwordCheckImageView;
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
@@ -126,10 +122,10 @@
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
 				_phone = @"";
-				_phone1TextField.text = @"";
-				_phone1TextField.text = @"";
-				_phone1TextField.text = @"";
-				[_phone1TextField becomeFirstResponder];
+				_phoneTextField.text = @"";
+				_phoneTextField.text = @"";
+				_phoneTextField.text = @"";
+				[_phoneTextField becomeFirstResponder];
 			
 			} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -139,9 +135,9 @@
 				[_usernameTextField becomeFirstResponder];
 				
 				_phone = @"";
-				_phone1TextField.text = @"";
-				_phone1TextField.text = @"";
-				_phone1TextField.text = @"";
+				_phoneTextField.text = @"";
+				_phoneTextField.text = @"";
+				_phoneTextField.text = @"";
 			}
 			
 			_usernameCheckImageView.alpha = 1.0;
@@ -165,8 +161,7 @@
 - (void)_finalizeUser {
 	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																@"username"	: _username,
-																@"email"	: _password,
-																@"birthday"	: @"0000-00-00 00:00:00",
+																@"phone"	: _phone,
 																@"filename"	: _imageFilename} completion:^(NSObject *result) {
 		if (result != nil) {
 			if (_progressHUD != nil) {
@@ -202,9 +197,6 @@
 				else
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 			}];
-			
-			
-//			[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			
 		} else {
 			int errorCode = [[(NSDictionary *)result objectForKey:@"result"] intValue];
@@ -243,6 +235,8 @@
 - (void)loadView {
 	[super loadView];
 	
+	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
@@ -255,9 +249,9 @@
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_normal"] forState:UIControlStateNormal];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_selected"] forState:UIControlStateHighlighted];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_selected"] forState:UIControlStateSelected];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateSelected];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
@@ -274,15 +268,14 @@
 	[self.view addSubview:_addAvatarButton];
 	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(64.0, 86.0, 220.0, 22.0)];
-	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[[HONColorAuthority sharedInstance] honBlueTextColor]];
+	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
+	_usernameTextField.font = textFont;
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = @"Enter username";
 	_usernameTextField.text = @"";
@@ -295,99 +288,45 @@
 	_usernameCheckImageView.alpha = 0.0;
 	[self.view addSubview:_usernameCheckImageView];
 	
-	_passwordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_passwordButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
-	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_normal"] forState:UIControlStateNormal];
-	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_selected"] forState:UIControlStateHighlighted];
-	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_selected"] forState:UIControlStateSelected];
-	[_passwordButton addTarget:self action:@selector(_goEmail) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_passwordButton];
-	
-	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 147.0, 230.0, 22.0)];
-//	_passwordTextField.backgroundColor = [UIColor greenColor];
-	[_passwordTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_passwordTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	_passwordTextField.secureTextEntry = YES;
-	[_passwordTextField setReturnKeyType:UIReturnKeyDone];
-	[_passwordTextField setTextColor:[UIColor blackColor]];
-	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_passwordTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-	_passwordTextField.keyboardType = UIKeyboardTypeEmailAddress;
-	_passwordTextField.placeholder = @"Enter password";
-	_passwordTextField.text = @"";
-	[_passwordTextField setTag:1];
-	_passwordTextField.delegate = self;
-	[self.view addSubview:_passwordTextField];
-	
-	_passwordCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_passwordCheckImageView.frame = CGRectOffset(_passwordCheckImageView.frame, 258.0, 129.0);
-	_passwordCheckImageView.alpha = 0.0;
-	[self.view addSubview:_passwordCheckImageView];
-	
 	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_phoneButton.frame = CGRectMake(0.0, 192.0, 320.0, 64.0);
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneNumberBG"] forState:UIControlStateNormal];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneNumberBG"] forState:UIControlStateHighlighted];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneNumberBG"] forState:UIControlStateSelected];
+	_phoneButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateHighlighted];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateSelected];
 	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_phoneButton];
 	
-	_phone1TextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 214.0, 40.0, 22.0)];
-//	_phone1TextField.backgroundColor = [UIColor redColor];
-	[_phone1TextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_phone1TextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_phone1TextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_phone1TextField setReturnKeyType:UIReturnKeyNext];
-	[_phone1TextField setTextColor:[UIColor blackColor]];
-	[_phone1TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_phone1TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_phone1TextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-	_phone1TextField.keyboardType = UIKeyboardTypeDecimalPad;
-	_phone1TextField.text = @"";
-	[_phone1TextField setTag:2];
-	_phone1TextField.delegate = self;
-	[self.view addSubview:_phone1TextField];
+	_callCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_callCodeButton.frame = CGRectMake(8.0, 126.0, 64.0, 64.0);
+	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_nonActive"] forState:UIControlStateNormal];
+	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
+	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -15.0, 0.0, 0.0)];
+	_callCodeButton.titleLabel.font = textFont;
+	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_callCodeButton];
 	
-	_phone2TextField = [[UITextField alloc] initWithFrame:CGRectMake(85.0, _phone1TextField.frame.origin.y, 40.0, 22.0)];
-	_phone2TextField.backgroundColor = _phone1TextField.backgroundColor;
-	[_phone2TextField setAutocapitalizationType:_phone1TextField.autocapitalizationType];
-	[_phone2TextField setAutocorrectionType:_phone1TextField.autocorrectionType];
-	_phone2TextField.keyboardAppearance = _phone1TextField.keyboardAppearance;
-	[_phone2TextField setReturnKeyType:_phone1TextField.returnKeyType];
-	[_phone2TextField setTextColor:_phone1TextField.textColor];
-	[_phone2TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_phone2TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_phone2TextField.font = _phone1TextField.font;
-	_phone2TextField.keyboardType = _phone1TextField.keyboardType;
-	_phone2TextField.text = @"";
-	[_phone2TextField setTag:3];
-	_phone2TextField.delegate = self;
-	[self.view addSubview:_phone2TextField];
-	
-	_phone3TextField = [[UITextField alloc] initWithFrame:CGRectMake(147.0, _phone1TextField.frame.origin.y, 50.0, 22.0)];
-	_phone3TextField.backgroundColor = _phone1TextField.backgroundColor;
-	[_phone3TextField setAutocapitalizationType:_phone1TextField.autocapitalizationType];
-	[_phone3TextField setAutocorrectionType:_phone1TextField.autocorrectionType];
-	_phone3TextField.keyboardAppearance = _phone1TextField.keyboardAppearance;
-	[_phone3TextField setReturnKeyType:_phone1TextField.returnKeyType];
-	[_phone3TextField setTextColor:_phone1TextField.textColor];
-	[_phone3TextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	[_phone3TextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_phone3TextField.font = _phone1TextField.font;;
-	_phone3TextField.keyboardType = _phone1TextField.keyboardType;
-	_phone3TextField.text = @"";
-	[_phone3TextField setTag:4];
-	_phone3TextField.delegate = self;
-	[self.view addSubview:_phone3TextField];
+	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 147.0, 200.0, 22.0)];
+	[_phoneTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_phoneTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_phoneTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_phoneTextField setReturnKeyType:UIReturnKeyDone];
+	[_phoneTextField setTextColor:[UIColor blackColor]];
+	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_phoneTextField.font = textFont;
+	_phoneTextField.keyboardType = UIKeyboardTypePhonePad;
+	_phoneTextField.placeholder = @"Enter phone";
+	_phoneTextField.text = @"";
+	[_phoneTextField setTag:1];
+	_phoneTextField.delegate = self;
+	[self.view addSubview:_phoneTextField];
 	
 	_phoneCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 258.0, 192.0);
+	_phoneCheckImageView.frame = CGRectOffset(_phoneCheckImageView.frame, 258.0, 129.0);
 	_phoneCheckImageView.alpha = 0.0;
 	[self.view addSubview:_phoneCheckImageView];
-	
-//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] == nil) {
 		[[HONAPICaller sharedInstance] recreateUserWithCompletion:^(NSObject *result){
@@ -397,6 +336,15 @@
 			}
 		}];
 	}
+	
+	UILabel *phoneInfoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 212.0, 320.0, 35.0)];
+	phoneInfoLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	phoneInfoLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	phoneInfoLabel.backgroundColor = [UIColor clearColor];
+	phoneInfoLabel.textAlignment = NSTextAlignmentCenter;
+	phoneInfoLabel.numberOfLines = 2;
+	phoneInfoLabel.text = @"Please enter your phone number\nit will be used to login";
+	[self.view addSubview:phoneInfoLabel];
 	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
@@ -607,12 +555,15 @@
 	[_usernameTextField becomeFirstResponder];
 }
 
-- (void)_goEmail {
-	[_passwordTextField becomeFirstResponder];
+- (void)_goCallingCodes {
+	NSLog(@"GO CALLING CODES");
+	
+	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
+	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
 }
 
 - (void)_goPhone {
-	[_phone1TextField becomeFirstResponder];
+	[_phoneTextField becomeFirstResponder];
 }
 
 - (void)_goSubmit {
@@ -621,47 +572,30 @@
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
 	
-	if ([_passwordTextField isFirstResponder])
-		[_passwordTextField resignFirstResponder];
-	
-	if ([_usernameTextField isFirstResponder])
-		[_usernameTextField resignFirstResponder];
-	
-	if ([_phone1TextField isFirstResponder])
-		[_phone1TextField resignFirstResponder];
-	
-	if ([_phone2TextField isFirstResponder])
-		[_phone2TextField resignFirstResponder];
-	
-	if ([_phone3TextField isFirstResponder])
-		[_phone3TextField resignFirstResponder];
+	if ([_phoneTextField isFirstResponder])
+		[_phoneTextField resignFirstResponder];
 	
 	[_usernameButton setSelected:NO];
-	[_passwordButton setSelected:NO];
 	[_phoneButton setSelected:NO];
 	
 	_usernameCheckImageView.alpha = 1.0;
-	_passwordCheckImageView.alpha = 1.0;
 	_phoneCheckImageView.alpha = 1.0;
 	
-	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_passwordTextField.text length] < 4) * HONRegisterErrorTypePassword) + ((int)([_phone length] != 10) * HONRegisterErrorTypePassword);
+	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_phone length] == 0) * HONRegisterErrorTypePhone);
 	if (registerErrorType == HONRegisterErrorTypeNone) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
 		_usernameCheckImageView.alpha = 1.0;
-		_passwordCheckImageView.alpha = 1.0;
 		_phoneCheckImageView.alpha = 1.0;
 		
 		_username = _usernameTextField.text;
-		_password = _passwordTextField.text;
+		_phone = _phoneTextField.text;
 		
 		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
@@ -669,75 +603,31 @@
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
-	
-	} else if (registerErrorType == HONRegisterErrorTypePassword) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Password!"
-									message:@"You need to enter a password to use Selfieclub"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	
-	} else if (registerErrorType == (HONRegisterErrorTypePassword | HONRegisterErrorTypeUsername)) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		
-		[[[UIAlertView alloc] initWithTitle:@"No Username & Password!"
-									message:@"You need to enter a username and password use Selfieclub"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+		_username = @"";
+		_usernameTextField.text = @"";
+		[_usernameTextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypePhone) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
-									message:@"You need to a phone # to use Selfieclub."
+									message:@"You need a phone # to use Selfieclub."
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
 		
 		_phone = @"";
-		_phone1TextField.text = @"";
-		_phone2TextField.text = @"";
-		_phone3TextField.text = @"";
-		[_phone1TextField becomeFirstResponder];
+		_phoneTextField.text = @"";
+		[_phoneTextField becomeFirstResponder];
 	
-	} else if (registerErrorType == (HONRegisterErrorTypePhone | HONRegisterErrorTypeUsername)) {
+	} else if (registerErrorType == (HONRegisterErrorTypeUsername | HONRegisterErrorTypePhone)) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone #!"
+		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone!"
 									message:@"You need to enter a username and phone # to use Selfieclub"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	
-	} else if (registerErrorType == (HONRegisterErrorTypePhone | HONRegisterErrorTypePassword)) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		
-		[[[UIAlertView alloc] initWithTitle:@"No Password & Phone!"
-									message:@"You need to enter an password & phone # to use Selfieclub"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	
-	} else if (registerErrorType == (HONRegisterErrorTypePhone | HONRegisterErrorTypePassword | HONRegisterErrorTypeUsername)) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		
-		[[[UIAlertView alloc] initWithTitle:@"No Username, Password or Phone!"
-									message:@"You need to enter a username, password & phone # to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -749,27 +639,9 @@
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
-	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
-	
-//	NSArray *tdls = @[@"cc", @"net", @"mil", @"jp", @"fk", @"sm", @"biz"];
-//	NSString *emailFiller = @"";
-	NSString *passwordFiller = @"";
 	NSString *phone1 = @"";
 	NSString *phone2 = @"";
 	NSString *phone3 = @"";
-	
-//	BOOL _isHeads = ((BOOL)roundf(((float)rand() / RAND_MAX)));
-//	for (int i=0; i<((arc4random() % 8) + 3); i++)
-//		emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
-//	emailFiller = [emailFiller stringByAppendingString:@"@"];
-//	
-//	for (int i=0; i<((arc4random() % 8) + 3); i++)
-//		emailFiller = [emailFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
-//	emailFiller = [[emailFiller stringByAppendingString:@"."] stringByAppendingString:[tdls objectAtIndex:(arc4random() % [tdls count])]];
-	
-	for (int i=0; i<((arc4random() % 12) + 4); i++)
-		passwordFiller = [passwordFiller stringByAppendingString:[NSString stringWithFormat:@"%c", (arc4random() % 26 + 65 + (((BOOL)roundf(((float)rand() / RAND_MAX))) * 32))]];
-	
 	
 	for (int i=0; i<3; i++)
 		phone1 = [phone1 stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
@@ -781,40 +653,21 @@
 		phone3 = [phone3 stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
 	
 #if __APPSTORE_BUILD__ == 0
-	if ([_passwordTextField.text isEqualToString:@"¡"]) {
-		_passwordTextField.text = passwordFiller;
-		_phone1TextField.text = phone1;
-		_phone2TextField.text = phone2;
-		_phone3TextField.text = phone3;
-		_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
+	if ([_phoneTextField.text isEqualToString:@"¡"]) {
+		_phoneTextField.text = [[phone1 stringByAppendingString:phone2] stringByAppendingString:phone3];
+		_phone = _phoneTextField.text;
 	}
 #endif
 	
 	
 	if ([_usernameTextField isFirstResponder]) {
 		_usernameCheckImageView.alpha = 1.0;
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_usernameCheckImageView.image = [UIImage imageNamed:([_usernameTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
 	}
 	
-	if ([_passwordTextField.text length] < 4 && [_passwordTextField isFirstResponder]) {
-		_passwordCheckImageView.alpha = 1.0;
-		_passwordCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-	}
-	
-	if ([_passwordTextField.text length] >= 4) {
-		_passwordCheckImageView.alpha = 1.0;
-		_passwordCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-	}
-	
-	if ([_phone1TextField isFirstResponder] && [_phone1TextField.text length] == 3)
-		[_phone2TextField becomeFirstResponder];
-	
-	if ([_phone2TextField isFirstResponder] && [_phone2TextField.text length] == 3)
-		[_phone3TextField becomeFirstResponder];
-	
-	if ([_phone1TextField isFirstResponder] || [_phone2TextField isFirstResponder] || [_phone3TextField isFirstResponder]) {
+	if ([_phoneTextField isFirstResponder]) {
 		_phoneCheckImageView.alpha = 1.0;
-		_phoneCheckImageView.image = [UIImage imageNamed:([_phone length] != 10) ? @"xIcon" : @"checkmarkIcon"];
+		_phoneCheckImageView.image = [UIImage imageNamed:([_phoneTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
 	}
 }
 
@@ -885,18 +738,11 @@
 	if (textField.tag == 0) {
 		_usernameCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:YES];
-		[_passwordButton setSelected:NO];
 		[_phoneButton setSelected:NO];
 	
 	} else if (textField.tag == 1) {
-		_passwordCheckImageView.alpha = 0.0;
+		_phoneCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
-		[_passwordButton setSelected:YES];
-		[_phoneButton setSelected:NO];
-	
-	} else {
-		[_usernameButton setSelected:NO];
-		[_passwordButton setSelected:NO];
 		[_phoneButton setSelected:YES];
 	}
 	
@@ -912,23 +758,23 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	
-	if (textField.tag == 2 || textField.tag == 3)
-		return (!([textField.text length] > 2 && [string length] > range.length));
-	
-	else if (textField.tag == 4)
-		return (!([textField.text length] > 3 && [string length] > range.length));
-	
-	else
-		return (YES);
+	return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 		
 	_username = _usernameTextField.text;
-	_password = _passwordTextField.text;
-	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
+	_phone = _phoneTextField.text;
+	
+	if (textField.tag == 0) {
+		_usernameCheckImageView.alpha = 1.0;
+		_usernameCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
+	
+	} else if (textField.tag == 1) {
+		_phoneCheckImageView.alpha = 1.0;
+		_phoneCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
+	}
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
@@ -937,11 +783,12 @@
 
 - (void)_onTextEditingDidEnd:(id)sender {
 	_username = _usernameTextField.text;
-	_password = _passwordTextField.text;
-	_phone = [[_phone1TextField.text stringByAppendingString:_phone2TextField.text] stringByAppendingString:_phone3TextField.text];
+	_phone = _phoneTextField.text;
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
+	_username = _usernameTextField.text;
+	_phone = _phoneTextField.text;
 }
 
 

@@ -130,10 +130,10 @@
 		return;
 	
 	if (_state == EGOOPullRefreshNormal) {
-		[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+		[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, scrollView.contentInset.bottom, 0.0)];
 	
 	} else if (_state == EGOOPullRefreshLoading) {
-		[scrollView setContentInset:UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, 1.0), _loadingThreshold), 0.0, 0.0, 0.0)];
+		[scrollView setContentInset:UIEdgeInsetsMake(MIN(MAX(-scrollView.contentOffset.y, 1.0), _loadingThreshold), 0.0, scrollView.contentInset.bottom, 0.0)];
 	
 	} else if (_state == EGOOPullRefreshReseting) {
 		if (scrollView.contentOffset.y > _tareOffset)
@@ -150,7 +150,7 @@
 		}
 		
 		if (scrollView.contentInset.top != _tareOffset)
-			[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+			[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, scrollView.contentInset.bottom, 0.0)];
 	
 	} else {
 		if ((scrollView.contentOffset.y > _tareOffset && scrollView.contentOffset.y < _loadingThreshold) && !scrollView.pagingEnabled)
@@ -191,7 +191,7 @@
 //	[UIView commitAnimations];
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {
-		[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, 0.0, 0.0)];
+		[scrollView setContentInset:UIEdgeInsetsMake(_tareOffset, 0.0, scrollView.contentInset.bottom, 0.0)];
 	} completion:^(BOOL finished) {
 		_isLoading = NO;
 		[self setState:EGOOPullRefreshNormal];

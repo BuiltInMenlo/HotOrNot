@@ -27,7 +27,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:(withBG) ? [UIImage imageNamed:@"navHeaderBackground"] : [[UIImage alloc] init]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 32.0, 170.0, 19.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 33.0, 170.0, 19.0)];
 		_titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
 		_titleLabel.textColor = [UIColor blackColor];
 		_titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);

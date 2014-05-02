@@ -9,18 +9,17 @@
 #import <MessageUI/MFMailComposeViewController.h>
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONRegisterCheckErrorType) {
 	HONRegisterCheckErrorTypeNone		= 0,
 	HONRegisterCheckErrorTypeUsername	= 1 << 0,
 	HONRegisterCheckErrorTypePhone		= 1 << 1
-} HONRegisterCheckErrorType;
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONRegisterErrorType) {
 	HONRegisterErrorTypeNone		= 0,
 	HONRegisterErrorTypeUsername	= 1 << 0,
-	HONRegisterErrorTypePassword	= 1 << 1,
-	HONRegisterErrorTypePhone		= 1 << 2
-} HONRegisterErrorType;
+	HONRegisterErrorTypePhone		= 1 << 1
+};
 
 @interface HONRegisterViewController : UIViewController <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>
 @end

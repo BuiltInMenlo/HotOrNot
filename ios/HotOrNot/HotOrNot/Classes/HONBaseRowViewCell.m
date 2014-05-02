@@ -24,7 +24,7 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
 		
 		_chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chevron"]];
-		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 285.0, 44.0);
+		_chevronImageView.frame = CGRectOffset(_chevronImageView.frame, 294.0, 9.0);
 		[self.contentView addSubview:_chevronImageView];
 	}
 	

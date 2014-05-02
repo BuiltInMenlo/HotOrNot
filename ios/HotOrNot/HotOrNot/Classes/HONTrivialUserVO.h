@@ -20,4 +20,6 @@
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic, retain) NSString *altID;
+@property (nonatomic) BOOL isVerified;
+@property (nonatomic) int abuseCount;
 @end

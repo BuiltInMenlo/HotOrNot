@@ -6,12 +6,10 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef enum {
-	HONContactsTableViewDataSourceNone = 0,
+typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceAddressBook,
 	HONContactsTableViewDataSourceSearchResults
-} HONContactsTableViewDataSource;
-
+};
 
 @interface HONContactsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 @end

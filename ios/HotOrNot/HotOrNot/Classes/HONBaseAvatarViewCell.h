@@ -19,6 +19,6 @@
 	UILabel *_nameLabel;
 }
 
-@property (nonatomic, retain) HONTrivialUserVO *userVO;
+@property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;
 @property (nonatomic, assign) id<HONBaseAvatarViewCellDelegate> delegate;
 @end

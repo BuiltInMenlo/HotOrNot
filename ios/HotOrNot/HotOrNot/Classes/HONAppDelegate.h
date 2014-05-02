@@ -39,14 +39,6 @@ typedef enum {
 } HONPushType;
 
 
-// Push types
-typedef enum {
-	HONPushTriggerChallengeDetailsType = 1,
-	HONPushTriggerVerifyAlertDetailsType,
-	HONPushTriggerUserProfileType,
-	HONPushTriggerAddContactsType
-} HONPushTriggerType;
-
 
 // share sheet actions
 typedef enum {

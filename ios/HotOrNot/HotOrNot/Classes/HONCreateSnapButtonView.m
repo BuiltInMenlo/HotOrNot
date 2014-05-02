@@ -14,7 +14,7 @@
 @implementation HONCreateSnapButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action asLightStyle:(BOOL)isLightStyle {
-	if ((self = [super initWithFrame:CGRectMake(226.0, 0.0, 93.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(227.0, 2.0, 93.0, 44.0)])) {
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 		button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
 		[button setBackgroundImage:[UIImage imageNamed:(isLightStyle) ? @"headerCameraWhiteButton_nonActive" : @"headerCameraButton_nonActive"] forState:UIControlStateNormal];

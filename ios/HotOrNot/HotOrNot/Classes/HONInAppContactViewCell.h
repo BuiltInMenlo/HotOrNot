@@ -7,6 +7,7 @@
 //
 
 #import "HONBaseAvatarViewCell.h"
+#import "HONTrivialUserVO.h"
 
 @class HONInAppContactViewCell;
 @protocol HONInAppContactViewCellDelegate <HONBaseAvatarViewCellDelegate>

@@ -44,12 +44,12 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (properties);
 }
 
-- (NSDictionary *)propertyForActivityItem:(HONAlertItemVO *)vo {
+- (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
 	static NSDictionary *properties = nil;
 	static dispatch_once_t onceToken;
 	
 	dispatch_once(&onceToken, ^{
-		properties = @{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.alertID, vo.triggerType]};
+		properties = @{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]};
 	});
 	
 	return (properties);
@@ -200,7 +200,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 
-- (void)trackEvent:(NSString *)event withActivityItem:(HONAlertItemVO *)activityItemVO {
+- (void)trackEvent:(NSString *)event withActivityItem:(HONActivityItemVO *)activityItemVO {
 	
 }
 

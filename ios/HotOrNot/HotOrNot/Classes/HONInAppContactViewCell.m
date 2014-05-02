@@ -39,8 +39,8 @@
 
 
 #pragma mark - Public APIs
-- (void)setUserVO:(HONTrivialUserVO *)userVO {
-	[super setUserVO:userVO];
+- (void)setTrivialUserVO:(HONTrivialUserVO *)userVO {
+	[super setTrivialUserVO:userVO];
 	
 	_nameLabel.frame = CGRectMake(_nameLabel.frame.origin.x, _nameLabel.frame.origin.y, _nameLabel.frame.size.width - 55.0, _nameLabel.frame.size.height);
 }
@@ -61,7 +61,7 @@
 		_addButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_addButton.hidden = YES;
-		[self.delegate inAppContactViewCell:self addUser:self.userVO toggleSelected:YES];
+		[self.delegate inAppContactViewCell:self addUser:self.trivialUserVO toggleSelected:YES];
 	}];
 }
 
@@ -71,7 +71,7 @@
 		_addButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_checkButton.hidden = YES;
-		[self.delegate inAppContactViewCell:self addUser:self.userVO toggleSelected:NO];
+		[self.delegate inAppContactViewCell:self addUser:self.trivialUserVO toggleSelected:NO];
 	}];
 }
 

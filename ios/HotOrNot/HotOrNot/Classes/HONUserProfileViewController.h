@@ -11,14 +11,6 @@ typedef NS_ENUM(NSInteger, HONUserProfileType) {
 	HONUserProfileTypeOpponent
 };
 
-typedef NS_ENUM(NSInteger, HONAlertItemType) {
-	HONAlertItemTypeVerify,
-	HONAlertItemTypeFollow,
-	HONAlertItemTypeLike,
-	HONAlertItemTypeShoutout,
-	HONAlertItemTypeReply
-};
-
 typedef NS_ENUM(NSInteger, HONUserProfileActionSheetType) {
 	HONUserProfileActionSheetTypeVerify,
 	HONUserProfileActionSheetTypeSocial
@@ -34,15 +26,6 @@ typedef NS_ENUM(NSInteger, HONUserProfileAlertType) {
 	HONUserProfileAlertTypeFlag,
 	HONUserProfileAlertTypeShowProfileBlocked
 };
-
-typedef NS_ENUM(NSInteger, HONActivityAlert) {
-	HONActivityAlertTypeVerify,
-	HONActivityAlertTypeFollow,
-	HONActivityAlertTypeLike,
-	HONActivityAlertTypeShoutout,
-	HONActivityAlertTypeReply
-};
-
 
 
 @interface HONUserProfileViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>

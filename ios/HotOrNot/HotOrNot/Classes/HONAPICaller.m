@@ -326,8 +326,8 @@ static HONAPICaller *sharedInstance = nil;
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:9],
 							 @"userID"		: [dict objectForKey:@"user_id"],
 							 @"username"	: [dict objectForKey:@"username"],
-							 @"password"	: [dict objectForKey:@"email"],
-							 @"age"			: [dict objectForKey:@"birthday"],
+							 @"password"	: [dict objectForKey:@"phone"],
+							 @"age"			: @"0000-00-00 00:00:00",
 							 @"token"		: [HONAppDelegate deviceToken],
 							 @"imgURL"		: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:([[dict objectForKey:@"filename"] length] == 0) ? @"/defaultAvatar" : [@"/" stringByAppendingString:[dict objectForKey:@"filename"]]]};
 	

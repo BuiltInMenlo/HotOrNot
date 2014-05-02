@@ -10,7 +10,7 @@
 
 @interface HONNonAppContactViewCell ()
 @property (nonatomic, strong) UIButton *checkButton;
-@property (nonatomic, strong) UIButton *inviteButton;
+@property (nonatomic, strong) UIButton *addButton;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @end
 
@@ -31,12 +31,12 @@
 		_checkButton.hidden = YES;
 		[self.contentView addSubview:_checkButton];
 		
-		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteButton.frame = _checkButton.frame;
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
-		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-		[self.contentView addSubview:_inviteButton];
+		_addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_addButton.frame = _checkButton.frame;
+		[_addButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
+		[_addButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
+		[_addButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:_addButton];
 	}
 	
 	return (self);
@@ -68,8 +68,8 @@
 
 
 - (void)toggleSelected:(BOOL)isSelected {
-	_inviteButton.alpha = (int)!isSelected;
-	_inviteButton.hidden = isSelected;
+	_addButton.alpha = (int)!isSelected;
+	_addButton.hidden = isSelected;
 	
 	_checkButton.alpha = (int)isSelected;
 	_checkButton.hidden = !isSelected;
@@ -80,17 +80,17 @@
 - (void)_goInvite {
 	_checkButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_inviteButton.alpha = 0.0;
+		_addButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_inviteButton.hidden = YES;
+		_addButton.hidden = YES;
 		[self.delegate nonAppContactViewCell:self contactUser:_userVO toggleSelected:YES];
 	}];
 }
 
 - (void)_goUninvite {
-	_inviteButton.hidden = NO;
+	_addButton.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
-		_inviteButton.alpha = 1.0;
+		_addButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_checkButton.hidden = YES;
 		[self.delegate nonAppContactViewCell:self contactUser:_userVO toggleSelected:NO];

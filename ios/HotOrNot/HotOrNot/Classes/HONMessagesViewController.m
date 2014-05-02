@@ -15,7 +15,7 @@
 #import "HONMessageVO.h"
 #import "HONMessageRecipientsViewController.h"
 #import "HONMessageItemViewCell.h"
-#import "HONAlertItemViewCell.h"
+#import "HONActivityItemViewCell.h"
 #import "HONMessageDetailsViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONImagePickerViewController.h"
@@ -251,10 +251,10 @@
 		return (cell);
 		
 	} else {
-		HONAlertItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONActivityItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONAlertItemViewCell alloc] init];
+			cell = [[HONActivityItemViewCell alloc] init];
 		
 		[cell hideChevron];
 		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];

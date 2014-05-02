@@ -10,7 +10,7 @@
 
 #import "Mixpanel.h"
 
-#import "HONAlertItemVO.h"
+#import "HONActivityItemVO.h"
 #import "HONContactUserVO.h"
 #import "HONChallengeVO.h"
 #import "HONEmotionVO.h"
@@ -24,7 +24,7 @@
 + (HONAnalyticsParams *)sharedInstance;
 
 - (NSDictionary *)userProperty;
-- (NSDictionary *)propertyForActivityItem:(HONAlertItemVO *)vo;
+- (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo;
 - (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo;
 - (NSDictionary *)propertyForChallengeCreator:(HONChallengeVO *)vo;
 - (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo;
@@ -39,7 +39,7 @@
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo;
 
 - (void)trackEvent:(NSString *)event;
-- (void)trackEvent:(NSString *)event withActivityItem:(HONAlertItemVO *)activityItemVO;
+- (void)trackEvent:(NSString *)event withActivityItem:(HONActivityItemVO *)activityItemVO;
 - (void)trackEvent:(NSString *)event withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice;
 - (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO;
 - (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO;
