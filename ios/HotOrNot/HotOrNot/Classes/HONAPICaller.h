@@ -179,16 +179,11 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Invite / Social
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-//- (void)followUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-//- (void)followUserWithUserID:(int)userID isReciprocal:(BOOL)isMutualFollow completion:(void (^)(NSObject *result))completion;
-//- (void)followUsersByUserIDWithDelimitedList:(NSString *)userIDs completion:(void (^)(NSObject *result))completion;
-//- (void)followUsersByUserIDWithDelimitedList:(NSString *)userIDs isReciprocal:(BOOL)isMutualFollow completion:(void (^)(NSObject *result))completion;
 - (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
 - (void)sendDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
 - (void)sendDelimitedPhoneContacts:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
 - (void)sendEmailInvitesFromDelimitedList:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
 - (void)sendSMSInvitesFromDelimitedList:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
-//- (void)stopFollowingUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)submitEmailAddressForContactsMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion;
 - (void)submitPhoneNumberForContactsMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

@@ -446,105 +446,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([date timeIntervalSinceNow] / -31536000);
 }
 
-+ (NSArray *)followersListWithRefresh:(BOOL)isRefresh {
-	NSMutableArray *followers = [NSMutableArray array];
-	
-	if (isRefresh) {
-		[[HONAPICaller sharedInstance] retrieveUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
-			NSDictionary *userObj = (NSDictionary *)result;
-			[HONAppDelegate writeFollowers:[userObj objectForKey:@"friends"]];
-		}];
-	
-	}
-	
-	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
-		[followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [[dict objectForKey:@"user"] objectForKey:@"id"],
-																	@"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
-																	@"img_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
-		
-	}
-	
-	return ([followers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]);
-}
-
-+ (void)addFollower:(NSDictionary *)follower {
-	NSMutableDictionary *dict = [[HONAppDelegate infoForUser] mutableCopy];
-	NSMutableArray *friends = [[dict objectForKey:@"friends"] mutableCopy];
-	
-	[friends addObject:follower];
-	[dict setObject:friends forKey:@"friends"];
-	
-	[HONAppDelegate writeUserInfo:[dict copy]];
-}
-
-+ (void)writeFollowers:(NSArray *)followers {
-	NSMutableDictionary *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
-	[userInfo setObject:followers forKey:@"friends"];
-	[HONAppDelegate writeUserInfo:[userInfo copy]];
-}
-
-+ (BOOL)isFollowedByUser:(int)userID {
-	BOOL isFollowed = NO;
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONTrivialUserVO *vo in [HONAppDelegate followersListWithRefresh:NO]) {
-			if (vo.userID == userID) {
-				isFollowed = YES;
-				break;
-			}
-		}
-	}
-	
-	return (isFollowed);
-}
-
-+ (NSArray *)followingListWithRefresh:(BOOL)isRefresh {
-	NSMutableArray *following = [NSMutableArray array];
-	
-	if (isRefresh) {
-		[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
-			[HONAppDelegate writeFollowingList:(NSArray *)result];
-		}];
-	}
-	
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"following"]) {
-		[following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [[dict objectForKey:@"user"] objectForKey:@"id"],
-																	@"username"	: [[dict objectForKey:@"user"] objectForKey:@"username"],
-																	@"img_url"	: [[dict objectForKey:@"user"] objectForKey:@"avatar_url"]}]];
-	}
-	
-	return ([NSArray arrayWithArray:[following sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
-}
-
-+ (void)addFollowingToList:(NSDictionary *)followingUser {
-	NSMutableArray *friends = [[[NSUserDefaults standardUserDefaults] objectForKey:@"following"] mutableCopy];
-	[friends addObject:followingUser];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[friends copy] forKey:@"following"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (void)writeFollowingList:(NSArray *)followingUsers {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"following"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"following"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:followingUsers forKey:@"following"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (BOOL)isFollowingUser:(int)userID {
-	BOOL isFollowing = NO;
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != userID) {
-		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
-			if (vo.userID == userID) {
-				isFollowing = YES;
-				break;
-			}
-		}
-	}
-	
-	return (isFollowing);
-}
-
 
 + (CGFloat)compressJPEGPercentage {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
@@ -787,12 +688,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 				
 			} else {
-				[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
-					[HONAppDelegate writeFollowingList:(NSArray *)result];
-					
-					if (self.tabBarController == nil)
-						[self _initTabs];
-				}];
+				if (self.tabBarController == nil)
+					[self _initTabs];
 			}
 #endif
 		}
