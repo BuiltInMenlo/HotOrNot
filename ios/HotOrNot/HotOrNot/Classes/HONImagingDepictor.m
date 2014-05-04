@@ -161,8 +161,14 @@ const CGSize kInstagramSize = {612.0, 612.0};
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		
 		NSLog(@"WRITING IMAGE:(%@) FOR KEY:(%@)", response.allHeaderFields, key);
-		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
+		if (image != nil)
+			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
+			
+		else
+			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
+		
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
@@ -177,10 +183,16 @@ const CGSize kInstagramSize = {612.0, 612.0};
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
-		imageView.image = image;
 		
-		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(imageView.image) forKey:key];
+		if (image != nil) {
+			UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
+			imageView.image = image;
+			
+			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(imageView.image) forKey:key];
+			
+		} else
+			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
+		
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {

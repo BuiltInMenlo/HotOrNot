@@ -134,22 +134,22 @@
 	for (HONTrivialUserVO *vo in _selectedInAppContacts)
 		userIDs = [userIDs stringByAppendingFormat:@"%d|", vo.userID];
 	
-	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSObject *result){
-		[HONAppDelegate writeFollowingList:(NSArray *)result];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		if ([_selectedNonAppContacts count] == 0) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-			
-			[self dismissViewControllerAnimated:YES completion:^(void){
-			}];
-		}
-	}];
+//	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSObject *result){
+//		[HONAppDelegate writeFollowingList:(NSArray *)result];
+//		
+//		if (_progressHUD != nil) {
+//			[_progressHUD hide:YES];
+//			_progressHUD = nil;
+//		}
+//		
+//		if ([_selectedNonAppContacts count] == 0) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+//			
+//			[self dismissViewControllerAnimated:YES completion:^(void){
+//			}];
+//		}
+//	}];
 }
 
 - (void)_sendInvites {
@@ -524,12 +524,12 @@
 			}
 		}
 		
-		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
-			if (cell.userVO.userID == vo.userID) {
-				[cell toggleSelected:YES];
-				break;
-			}
-		}
+//		for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
+//			if (cell.userVO.userID == vo.userID) {
+//				[cell toggleSelected:YES];
+//				break;
+//			}
+//		}
 		
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];

@@ -22,8 +22,7 @@ typedef enum {
 
 typedef enum {
 	HONSnapPreviewAlertTypeFlag = 0,
-	HONSnapPreviewAlertTypeDisprove,
-	HONSnapPreviewAlertTypeShare
+	HONSnapPreviewAlertTypeDisprove
 } HONSnapPreviewAlertType;
 
 

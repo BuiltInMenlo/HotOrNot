@@ -214,18 +214,7 @@
 
 - (void)_goRefresh {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Refresh"];
-	
 	[self _retrieveVerifyList];
-	
-	if ([HONAppDelegate incTotalForCounter:@"verifyRefresh"] == 3 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub with your friends?"
-															message:@"Get more subscribers now, tap OK."
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:HONVerifyAlertTypeShare];
-		[alertView show];
-	}
 }
 
 
@@ -338,12 +327,6 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Approve"
 							   withChallengeCreator:challengeVO];
 	
-	if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
-		[[HONAPICaller sharedInstance] followUserWithUserID:challengeVO.creatorVO.userID completion:^void(NSObject *result) {
-			[HONAppDelegate writeFollowingList:(NSArray *)result];
-		}];
-	}
-	
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:challengeVO.creatorVO.userID asLegit:YES completion:nil];
 	[self _removeCellForChallenge:challengeVO];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"yayOverlay"]]];
@@ -403,8 +386,8 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Follow user", @"Inappropriate content", nil];
-	[actionSheet setTag:1];
+													otherButtonTitles:@"Invite user", @"Inappropriate content", nil];
+	[actionSheet setTag:0];
 	[actionSheet showInView:self.view];
 }
 
@@ -418,7 +401,8 @@
 	_isScrollingIgnored = YES;
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
 	_snapPreviewViewController.delegate = self;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+	
+	[[HONMainScreenOverseer sharedInstance] appWindowAdoptsView:_snapPreviewViewController.view];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell bannerTappedForChallenge:(HONChallengeVO *)challengeVO {
@@ -559,31 +543,24 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - " stringByAppendingString:(buttonIndex == 0) ? @"Approve & Follow" : (buttonIndex == 1) ? @"Approve" : @" Cancel"]
-								   withChallengeCreator:_challengeVO];
-				
-		if (buttonIndex == 0) {
-			if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
-				[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^void(NSObject *result) {
-					[HONAppDelegate writeFollowingList:(NSArray *)result];
-				}];
-			}
-			
-			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:YES completion:nil];
-		
-		} else if (buttonIndex == 1) {
-			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:YES completion:nil];
-		}
-	
-	} else if (actionSheet.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - More Sheet %@" stringByAppendingString:(buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - More Sheet %@" stringByAppendingString:(buttonIndex == 0) ? @"Invite" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
 								   withChallengeCreator:_challengeVO];
 		
 		[self _removeCellForChallenge:_challengeVO];
 		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^void(NSObject *result) {
-				[HONAppDelegate writeFollowingList:(NSArray *)result];
-			}];
+			if (_userClubVO == nil) {
+				[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+											message:@"You need to create your own club before inviting anyone."
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+				
+			} else {
+				[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:[HONTrivialUserVO userFromOpponentVO:_challengeVO.creatorVO]] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
+					[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_challengeVO.creatorVO.userID completion:nil];
+					[self _removeCellForChallenge:_challengeVO];
+				}];
+			}
 			
 		} else if (buttonIndex == 1) {
 			[[[UIAlertView alloc] initWithTitle:@""
@@ -603,19 +580,7 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == HONVerifyAlertTypeShare) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-								   withChallengeCreator:_challengeVO];
-		
-		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
-																									@"image"			: [HONAppDelegate avatarImage],
-																									@"url"				: @"",
-																									@"mp_event"			: @"Verify - Share",
-																									@"view_controller"	: self}];
-		}
-	
-	} else if (alertView.tag == HONVerifyAlertTypeDisproveConfirm) {
+	if (alertView.tag == HONVerifyAlertTypeDisproveConfirm) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - Dissaprove " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @" Confirm"]
 								   withChallengeCreator:_challengeVO];
 		

@@ -159,7 +159,7 @@
 	
 	cell.userVO = vo;
 	cell.delegate = self;
-	[cell toggleSelected:([HONAppDelegate isFollowingUser:vo.userID])];
+//	[cell toggleSelected:([HONAppDelegate isFollowingUser:vo.userID])];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -199,15 +199,15 @@
 	
 	_hasUpdated = YES;
 	
-	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
-		[HONAppDelegate writeFollowingList:(NSArray *)result];
-	};
-	
-	if (isSelected)
-		[[HONAPICaller sharedInstance] followUserWithUserID:userVO.userID completion:completionBlock];
-	
-	else
-		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:userVO.userID completion:completionBlock];
+//	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
+//		[HONAppDelegate writeFollowingList:(NSArray *)result];
+//	};
+//	
+//	if (isSelected)
+//		[[HONAPICaller sharedInstance] followUserWithUserID:userVO.userID completion:completionBlock];
+//	
+//	else
+//		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:userVO.userID completion:completionBlock];
 }
 
 @end

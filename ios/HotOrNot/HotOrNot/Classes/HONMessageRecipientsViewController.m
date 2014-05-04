@@ -52,18 +52,18 @@
 #pragma mark - Data Calls
 - (void)_buildRecipients {
 	_followers = [NSMutableArray array];
-	for (HONTrivialUserVO *vo in [HONAppDelegate followersListWithRefresh:YES]) {
-		[_followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:vo.userID],
-																	 @"username"	: vo.username,
-																	 @"img_url"		: vo.avatarPrefix}]];
-	}
+//	for (HONTrivialUserVO *vo in [HONAppDelegate followersListWithRefresh:YES]) {
+//		[_followers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:vo.userID],
+//																	 @"username"	: vo.username,
+//																	 @"img_url"		: vo.avatarPrefix}]];
+//	}
 	
 	_following = [NSMutableArray array];
-	for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
-		[_following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:vo.userID],
-																	 @"username"	: vo.username,
-																	 @"img_url"		: vo.avatarPrefix}]];
-	}
+//	for (HONTrivialUserVO *vo in [HONAppDelegate followingListWithRefresh:NO]) {
+//		[_following addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:vo.userID],
+//																	 @"username"	: vo.username,
+//																	 @"img_url"		: vo.avatarPrefix}]];
+//	}
 	
 	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	[_tableView reloadData];

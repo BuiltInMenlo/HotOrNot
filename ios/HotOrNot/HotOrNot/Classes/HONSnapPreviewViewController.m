@@ -251,12 +251,12 @@
 		[shoutoutButton addTarget:self action:@selector(_goShoutout) forControlEvents:UIControlEventTouchUpInside];
 		[_buttonHolderView addSubview:shoutoutButton];
 		
-		UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		followButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 45.0, 94.0, 44.0);
-		[followButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
-		[followButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
-		[followButton addTarget:self action:@selector(_goFollowUser) forControlEvents:UIControlEventTouchUpInside];
-		[self.view addSubview:followButton];
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 64.0, 64.0);
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_nonActive"] forState:UIControlStateNormal];
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_Active"] forState:UIControlStateHighlighted];
+		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+		[self.view addSubview:inviteButton];
 		
 //]~=~=~=~=~=~=~=~=~=~=~=~=~=~[¡]~=~=~=~=~=~=~=~=~=~=~=~=~=~[//
 	} else {
@@ -320,16 +320,6 @@
 	 
 		[self _goClose];
 	}];
-	
-	if ([HONAppDelegate incTotalForCounter:@"like"] == 0 && [HONAppDelegate switchEnabledForKey:@"like_share"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub with your friends?"
-															message:@"Get more subscribers now, tap OK."
-														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:HONSnapPreviewAlertTypeShare];
-		[alertView show];
-	}
 }
 
 - (void)_goProfile {
@@ -363,26 +353,9 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Verify Approve"
 							   withChallengeCreator:_challengeVO];
 					
-	if ([HONAppDelegate switchEnabledForKey:@"autosubscribe"]) {
-		[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result) {
-			[HONAppDelegate writeFollowingList:(NSArray *)result];
-		}];
-	}
-	
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:YES completion:^(NSObject *result){
 		_hasTakenVerifyAction = YES;
-		
-		if ([HONAppDelegate incTotalForCounter:@"verifyAction"] == 0 && [HONAppDelegate switchEnabledForKey:@"verify_share"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub with your friends?"
-																message:@"Get more subscribers now, tap OK."
-															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"OK", nil];
-			[alertView setTag:HONSnapPreviewAlertTypeShare];
-			[alertView show];
-			
-		} else
-			[self _goClose];
+		[self _goClose];
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"yayOverlay"]]];
@@ -425,23 +398,10 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shoutoutOverlay"]]];
 }
 
-- (void)_goFollowUser {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Follow"
+- (void)_goInvite {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Invite"
 									  withChallenge:_challengeVO
 									 andParticipant:_opponentVO];
-	
-	[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
-		[HONAppDelegate writeFollowingList:(NSArray *)result];
-		
-		
-		[[[UIAlertView alloc] initWithTitle:@""
-									message:[NSString stringWithFormat:@"You are now following %@", _challengeVO.creatorVO.username]
-								   delegate:nil cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-		
-		_hasTakenVerifyAction = YES;
-		[self _goClose];
-	}];
 }
 
 - (void)_goMore {
@@ -521,15 +481,11 @@
 		}
 	
 	} else if (actionSheet.tag == HONSnapPreviewActionSheetTypeMore) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - More Sheet " stringByAppendingString:(buttonIndex == 0) ? @"Subscribe" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - More Sheet " stringByAppendingString:(buttonIndex == 0) ? @"Invite" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
 										  withChallenge:_challengeVO
 										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] followUserWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result) {
-				[HONAppDelegate writeFollowingList:(NSArray *)result];
-			}];
-			
 			[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
 				_hasTakenVerifyAction = YES;
 				[self _goClose];
@@ -577,17 +533,6 @@
 				_hasTakenVerifyAction = YES;
 				[self _goClose];
 			}];
-		}
-
-	} else if (alertView.tag == HONSnapPreviewAlertTypeShare) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Volley Preview - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
-		
-		if (buttonIndex == 1) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[[NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]], [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]],
-																									@"image"			: [HONAppDelegate avatarImage],
-																									@"url"				: @"",
-																									@"mp_event"			: @"Volley Preview - Share",
-																									@"view_controller"	: self}];
 		}
 	}
 }

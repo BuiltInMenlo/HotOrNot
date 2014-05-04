@@ -155,15 +155,15 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 + (int)ageForDate:(NSDate *)date;
 
-+ (NSArray *)followersListWithRefresh:(BOOL)isRefresh;
-+ (void)addFollower:(NSDictionary *)follower;
-+ (void)writeFollowers:(NSArray *)followers;
-+ (BOOL)isFollowedByUser:(int)userID;
-
-+ (NSArray *)followingListWithRefresh:(BOOL)isRefresh;
-+ (void)addFollowingToList:(NSDictionary *)followingUser;
-+ (void)writeFollowingList:(NSArray *)followingUsers;
-+ (BOOL)isFollowingUser:(int)userID;
+//+ (NSArray *)followersListWithRefresh:(BOOL)isRefresh;
+//+ (void)addFollower:(NSDictionary *)follower;
+//+ (void)writeFollowers:(NSArray *)followers;
+//+ (BOOL)isFollowedByUser:(int)userID;
+//
+//+ (NSArray *)followingListWithRefresh:(BOOL)isRefresh;
+//+ (void)addFollowingToList:(NSDictionary *)followingUser;
+//+ (void)writeFollowingList:(NSArray *)followingUsers;
+//+ (BOOL)isFollowingUser:(int)userID;
 
 + (void)resetTotals;
 

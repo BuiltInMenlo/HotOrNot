@@ -204,6 +204,7 @@
 		4C86C43517FF990A007DC458 /* HONFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43417FF990A007DC458 /* HONFollowingViewController.m */; };
 		4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86C43817FFA909007DC458 /* HONFollowUserViewCell.m */; };
 		4C8FB3C91824406800B33FD8 /* HONVerifyCellHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8FB3C81824406800B33FD8 /* HONVerifyCellHeaderView.m */; };
+		4C93EAE319140896001F43DE /* HONCallingCodesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */; };
 		4C980586188C9B2800E4FEA4 /* HONMessageDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */; };
 		4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C980588188CA02900E4FEA4 /* HONMessageReplyViewCell.m */; };
 		4CA246C21908178B00512295 /* HONSelfieCameraClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C11908178B00512295 /* HONSelfieCameraClubViewCell.m */; };
@@ -605,6 +606,8 @@
 		4C86C43817FFA909007DC458 /* HONFollowUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowUserViewCell.m; sourceTree = "<group>"; };
 		4C8FB3C71824406800B33FD8 /* HONVerifyCellHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVerifyCellHeaderView.h; sourceTree = "<group>"; };
 		4C8FB3C81824406800B33FD8 /* HONVerifyCellHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVerifyCellHeaderView.m; sourceTree = "<group>"; };
+		4C93EAE119140896001F43DE /* HONCallingCodesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCallingCodesViewController.h; sourceTree = "<group>"; };
+		4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCallingCodesViewController.m; sourceTree = "<group>"; };
 		4C980584188C9B2800E4FEA4 /* HONMessageDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageDetailsViewController.h; sourceTree = "<group>"; };
 		4C980585188C9B2800E4FEA4 /* HONMessageDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageDetailsViewController.m; sourceTree = "<group>"; };
 		4C980587188CA02900E4FEA4 /* HONMessageReplyViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageReplyViewCell.h; sourceTree = "<group>"; };
@@ -803,6 +806,7 @@
 		4C148F7917815B9F00EBD245 /* _obsolete */ = {
 			isa = PBXGroup;
 			children = (
+				4C86C43617FFA8D2007DC458 /* Followers / Following */,
 				4CBDDBA41913349A002F9723 /* View Controllers */,
 				4CEC4B0418B9427500F39C92 /* Tabs */,
 				4C45FF4A16DED015002F1080 /* Comments */,
@@ -1552,7 +1556,6 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				4C86C43617FFA8D2007DC458 /* Followers / Following */,
 				4C0CA3F5175151FA00DD0652 /* Search / Invite */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C45FF4516DECE40002F1080 /* Views */,
@@ -1703,6 +1706,8 @@
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
 				4C41071D18C16300009E9F9E /* HONEnterPINViewController.h */,
 				4C41071E18C16300009E9F9E /* HONEnterPINViewController.m */,
+				4C93EAE119140896001F43DE /* HONCallingCodesViewController.h */,
+				4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */,
 			);
 			name = Splash;
 			sourceTree = "<group>";
@@ -1989,6 +1994,7 @@
 				4C2400F018C2937E00C9AE53 /* HONUserClubDetailsViewController.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
 				4C43280818E3A9FA0035FF06 /* AFImageRequestOperation.m in Sources */,
+				4C93EAE319140896001F43DE /* HONCallingCodesViewController.m in Sources */,
 				4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */,
 				4C7341921616C078001F9F11 /* HONFAQViewController.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,

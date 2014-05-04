@@ -7,8 +7,7 @@
 //
 
 typedef enum {
-	HONVerifyAlertTypeShare = 0,
-	HONVerifyAlertTypeDisproveConfirm,
+	HONVerifyAlertTypeDisproveConfirm = 0,
 	HONVerifyAlertTypeFlag
 } HONVerifyAlertType;
 

@@ -128,41 +128,29 @@
 - (void)_goDone {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suggested People - Done"];
 	
-	for (HONTrivialUserVO *vo in _removeUsers) {
-		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSObject *result){
-			[HONAppDelegate writeFollowingList:(NSArray *)result];
-		}];
-	}
-
-	for (HONTrivialUserVO *vo in _selectedUsers) {
-		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result){
-			[HONAppDelegate writeFollowingList:(NSArray *)result];
-		}];
-	}
+//	for (HONTrivialUserVO *vo in _removeUsers) {
+//		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSObject *result){
+//			[HONAppDelegate writeFollowingList:(NSArray *)result];
+//		}];
+//	}
+//
+//	for (HONTrivialUserVO *vo in _selectedUsers) {
+//		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result){
+//			[HONAppDelegate writeFollowingList:(NSArray *)result];
+//		}];
+//	}
 	
 	
-	if ([HONAppDelegate incTotalForCounter:@"suggested"] == 1 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
-															message:@"Get more subscribers now, tap OK."
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
-		[alertView show];
-			
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
+//														message:@""
+//													   delegate:self
+//											  cancelButtonTitle:@"No"
+//											  otherButtonTitles:@"Yes", nil];
+//	[alertView setTag:1];
+//	[alertView show];
 		
-	} else {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Do you want to follow everyone in the list?"
-//															message:@""
-//														   delegate:self
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:1];
-//		[alertView show];
-		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-//		[self dismissViewControllerAnimated:YES completion:nil];
-	}
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+//	[self dismissViewControllerAnimated:YES completion:nil];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
@@ -237,13 +225,13 @@
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	BOOL isFound = NO;
-	for (HONTrivialUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
-		if (vo.userID == userVO.userID) {
-			isFound = YES;
-			[_selectedUsers addObject:vo];
-			break;
-		}
-	}
+//	for (HONTrivialUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
+//		if (vo.userID == userVO.userID) {
+//			isFound = YES;
+//			[_selectedUsers addObject:vo];
+//			break;
+//		}
+//	}
 	
 	[cell toggleSelected:isFound];
 	[_cells addObject:cell];
@@ -301,23 +289,11 @@
 			for (HONSuggestedFollowViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
-			for (HONTrivialUserVO *vo in _selectedUsers) {
-				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result) {
-					[HONAppDelegate writeFollowingList:(NSArray *)result];
-				}];
-			}
-			
-			if ([HONAppDelegate totalForCounter:@"suggested"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
-																	message:@"Get more subscribers now, tap OK."
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"OK", nil];
-				[alertView setTag:0];
-				[alertView show];
-				
-				
-			}
+//			for (HONTrivialUserVO *vo in _selectedUsers) {
+//				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result) {
+//					[HONAppDelegate writeFollowingList:(NSArray *)result];
+//				}];
+//			}
 		}
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];

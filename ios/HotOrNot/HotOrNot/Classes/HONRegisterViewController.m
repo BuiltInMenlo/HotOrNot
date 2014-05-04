@@ -174,9 +174,9 @@
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];
-			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 																					  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-																					  @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																					  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																					  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
 																					  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 			
@@ -184,18 +184,9 @@
 			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
-				[HONAppDelegate writeFollowingList:(NSArray *)result];
-			}];
-			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-				
-				if ([HONAppDelegate switchEnabledForKey:@"firstrun_subscribe"])
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-				
-				else
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 			}];
 			
 		} else {

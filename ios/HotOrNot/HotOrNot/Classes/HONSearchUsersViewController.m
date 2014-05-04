@@ -170,27 +170,16 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Done"];
-	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
-		[HONAppDelegate writeFollowingList:(NSArray *)result];
-	};
+//	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
+//		[HONAppDelegate writeFollowingList:(NSArray *)result];
+//	};
+//	
+//	for (HONTrivialUserVO *vo in _removeUsers)
+//		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:completionBlock];
+//
+//	for (HONTrivialUserVO *vo in _selectedUsers)
+//		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:completionBlock];
 	
-	for (HONTrivialUserVO *vo in _removeUsers)
-		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:completionBlock];
-
-	for (HONTrivialUserVO *vo in _selectedUsers)
-		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:completionBlock];
-	
-	
-	if ([HONAppDelegate totalForCounter:@"search"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
-															message:@"Get more subscribers now, tap OK."
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
-		[alertView show];
-	}
-
 	
 	if (_hasUpdated) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
@@ -285,18 +274,18 @@
 	
 	HONTrivialUserVO *vo = (HONTrivialUserVO *)[_users objectAtIndex:indexPath.row];
 	cell.trivialUserVO = vo;
-	[cell toggleSelected:[HONAppDelegate isFollowingUser:vo.userID]];
+//	[cell toggleSelected:[HONAppDelegate isFollowingUser:vo.userID]];
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	BOOL isFound = NO;
-	for (HONTrivialUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
-		if (vo.userID == userVO.userID) {
-			isFound = YES;
-			[_selectedUsers addObject:vo];
-			break;
-		}
-	}
+//	for (HONTrivialUserVO *userVO in [HONAppDelegate followingListWithRefresh:NO]) {
+//		if (vo.userID == userVO.userID) {
+//			isFound = YES;
+//			[_selectedUsers addObject:vo];
+//			break;
+//		}
+//	}
 	
 	[cell toggleSelected:isFound];
 	[_cells addObject:cell];
@@ -334,20 +323,7 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Search Users - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
-		
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			
-		} else {
-			[self dismissViewControllerAnimated:YES completion:^(void) {
-			}];
-		}
-	
-	} else if (alertView.tag == 1) {
+	if (alertView.tag == 1) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Search Users - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
@@ -358,23 +334,11 @@
 			for (HONSearchUserViewCell *cell in _cells)
 				[cell toggleSelected:YES];
 			
-			for (HONTrivialUserVO *vo in _selectedUsers) {
-				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^void(NSObject *result) {
-					[HONAppDelegate writeFollowingList:(NSArray *)result];
-				}];
-			}
-			
-			if ([HONAppDelegate totalForCounter:@"search"] == 0 && [HONAppDelegate switchEnabledForKey:@"popular_invite"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite your friends to Selfieclub?"
-																	message:@"Get more subscribers now, tap OK."
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"OK", nil];
-				[alertView setTag:0];
-				[alertView show];
-				
-				
-			}
+//			for (HONTrivialUserVO *vo in _selectedUsers) {
+//				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^void(NSObject *result) {
+//					[HONAppDelegate writeFollowingList:(NSArray *)result];
+//				}];
+//			}
 		}
 	}
 }
