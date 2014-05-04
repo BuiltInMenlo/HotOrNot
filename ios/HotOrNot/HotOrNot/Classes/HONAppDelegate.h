@@ -142,8 +142,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)searchUsers;
 + (NSArray *)subjectFormats;
 
-+ (NSArray *)fpoClubDictionaries;
-
 + (NSRange)rangeForImageQueue;
 
 + (void)writeDeviceToken:(NSString *)token;

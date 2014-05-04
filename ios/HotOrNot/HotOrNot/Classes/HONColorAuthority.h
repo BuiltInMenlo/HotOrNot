@@ -32,6 +32,8 @@ typedef enum {
 - (UIColor *)honLightGreyTextColor;
 - (UIColor *)honPlaceholderTextColor;
 
+- (NSShadow *)orthodoxUIShadowAttribute;
+
 - (UIColor *)honDebugDefaultColor;
 - (UIColor *)honDebugColor:(HONDebugColor)debugColor;
 

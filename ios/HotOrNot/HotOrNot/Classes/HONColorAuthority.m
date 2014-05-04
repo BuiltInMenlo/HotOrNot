@@ -29,6 +29,15 @@ static HONColorAuthority *sharedInstance = nil;
 	return (self);
 }
 
+- (NSShadow *)orthodoxUIShadowAttribute {
+	NSShadow *shadow = [[NSShadow alloc] init];
+	[shadow setShadowColor:[UIColor colorWithWhite:0.0 alpha:0.875]];
+	[shadow setShadowOffset:CGSizeMake(0.0, 1.0)];
+	[shadow setShadowBlurRadius:0.5];
+	
+	return (shadow);
+}
+
 
 - (UIColor *)honPercentGreyscaleColor:(CGFloat)percent {
 	return ([UIColor colorWithWhite:percent alpha:1.0]);

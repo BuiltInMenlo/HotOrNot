@@ -95,7 +95,7 @@
 		topicLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 		topicLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		topicLabel.backgroundColor = [UIColor clearColor];
-		topicLabel.text = @"Nearby club";
+		topicLabel.text = (_timelineItemVO.timelineItemType != HONTimelineItemTypeNearby) ? @"Nearby club" : @"Club Invite";
 		[self.contentView addSubview:topicLabel];
 		
 		UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];

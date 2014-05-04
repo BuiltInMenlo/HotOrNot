@@ -1,5 +1,5 @@
 //
-//  HONChallengeDetailsViewController.h
+//  HONClubPhotoViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 8/7/13.
@@ -8,7 +8,7 @@
 
 #import "HONChallengeVO.h"
 
-@interface HONChallengeDetailsViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate>
+@interface HONClubPhotoViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate>
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 - (id)initWithChallengeID:(int)challengeID;
 @end

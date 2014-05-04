@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, clubID, statusID, challengeType, status, subjectName, recentLikes, challengers, likedByTotal, totalLikes, hasViewed, addedDate, startedDate, updatedDate;
+@synthesize challengeID, clubID, statusID, photoSubmitType, status, subjectName, recentLikes, challengers, likedByTotal, totalLikes, hasViewed, addedDate, startedDate, updatedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -23,9 +23,9 @@
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
-	vo.challengeType = ([[dictionary objectForKey:@"isVerify"] intValue] == 0) ? HONChallengeTypeClub : HONChallengeTypeVerify;
+	vo.photoSubmitType = ([[dictionary objectForKey:@"isVerify"] intValue] == 0) ? HONPhotoSubmitTypeCreateClub : HONPhotoSubmitTypeCreateVerify;
 	vo.subjectName = [([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
-	vo.challengeType = ([vo.subjectName rangeOfString:@"#shoutout"].location == 0) ? HONChallengeTypeShoutout : vo.challengeType;
+	vo.photoSubmitType = ([vo.subjectName rangeOfString:@"#shoutout"].location == 0) ? HONPhotoSubmitTypeCreateShoutout : vo.photoSubmitType;
 	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	

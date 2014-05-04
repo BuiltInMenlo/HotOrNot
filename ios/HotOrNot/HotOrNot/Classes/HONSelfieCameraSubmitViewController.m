@@ -89,8 +89,8 @@
 		[_allClubs arrayByAddingObjectsFromArray:_joinedClubs];
 		
 		// --//> 2 fpo filler clubs for testing <//-- //
-		for (NSDictionary *dict in [HONAppDelegate fpoClubDictionaries])
-			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//		for (NSDictionary *dict in [HONAppDelegate fpoClubDictionaries])
+//			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		// --//> 2 fpo filler clubs for testing <//-- //
 		
 		[_tableView reloadData];

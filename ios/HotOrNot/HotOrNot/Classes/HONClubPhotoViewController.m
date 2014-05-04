@@ -1,5 +1,5 @@
 //
-//  HONChallengeDetailsViewController.m
+//  HONClubPhotoViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 8/7/13.
@@ -10,7 +10,7 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONChallengeDetailsViewController.h"
+#import "HONClubPhotoViewController.h"
 #import "HONHeaderView.h"
 
 #import "HONImagePickerViewController.h"
@@ -27,7 +27,7 @@
 #import "HONEmotionVO.h"
 
 
-@interface HONChallengeDetailsViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineCellSubjectViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONClubPhotoViewController () <HONTimelineCellHeaderViewDelegate, HONTimelineCellSubjectViewDelegate, HONTimelineItemFooterViewDelegate, HONSnapPreviewViewControllerDelegate, HONParticipantGridViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -52,7 +52,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
-@implementation HONChallengeDetailsViewController
+@implementation HONClubPhotoViewController
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {

@@ -89,7 +89,7 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
-//	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithOpponent:_challengeVO.creatorVO];
+//	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithCreator:_challengeVO.creatorVO];
 //	headerView.frame = CGRectOffset(headerView.frame, 0.0, 35.0);
 //	headerView.delegate = self;
 //	[self.contentView addSubview:headerView];
@@ -235,7 +235,7 @@
 }
 
 - (void)_goUserProfile {
-	[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
+	[self.delegate verifyViewCell:self showCreatorProfile:_challengeVO];
 }
 
 - (void)_goPreview {
@@ -250,7 +250,7 @@
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
-		[self.delegate verifyViewCell:self creatorProfile:_challengeVO];
+		[self.delegate verifyViewCell:self showCreatorProfile:_challengeVO];
 		
 	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 	}

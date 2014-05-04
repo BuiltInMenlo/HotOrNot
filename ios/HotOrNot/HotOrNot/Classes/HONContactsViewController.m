@@ -56,7 +56,7 @@
 #pragma mark - Data Calls
 - (void)_retreiveUserClub {
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		_userClubVO = ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]] : [HONUserClubVO clubWithDictionary:[[HONAppDelegate fpoClubDictionaries] lastObject]];
+		_userClubVO = [HONUserClubVO clubWithDictionary:([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [((NSDictionary *)result) objectForKey:@"owned"] : [[HONClubAssistant sharedInstance] fpoOwnedClubDictionary]];
 	}];
 }
 
@@ -338,12 +338,12 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
@@ -376,12 +376,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidDisappear:animated];
 }
 

@@ -11,12 +11,13 @@
 #import "HONEmotionVO.h"
 #import "HONUserClubVO.h"
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONTimelineItemType) {
 	HONTimelineItemTypeSelfie = 0,
 	HONTimelineItemTypeInviteRequest,
+	HONTimelineItemTypeNearby,
 	HONTimelineItemTypeCTA,
 	HONTimelineItemType__TOTAL
-} HONTimelineItemType;
+};
 
 
 @interface HONTimelineItemVO : NSObject

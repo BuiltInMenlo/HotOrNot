@@ -315,7 +315,7 @@
 
 
 #pragma mark - VerifyViewCell Delegates
-- (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
+- (void)verifyViewCell:(HONVerifyViewCell *)cell showCreatorProfile:(HONChallengeVO *)challengeVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Show Profile"
 							   withChallengeCreator:challengeVO];
 	
@@ -402,7 +402,7 @@
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithVerifyChallenge:_challengeVO];
 	_snapPreviewViewController.delegate = self;
 	
-	[[HONMainScreenOverseer sharedInstance] appWindowAdoptsView:_snapPreviewViewController.view];
+	[[HONScreenManager sharedInstance] appWindowAdoptsView:_snapPreviewViewController.view];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell bannerTappedForChallenge:(HONChallengeVO *)challengeVO {

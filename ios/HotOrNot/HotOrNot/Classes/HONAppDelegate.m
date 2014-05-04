@@ -39,16 +39,13 @@
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
-#import "HONAlertsViewController.h"
-#import "HONClubsTimelineViewController.h"
-//#import "HONUserClubsViewController.h"
-#import "HONChallengeDetailsViewController.h"
+#import "HONClubsViewController.h"
+#import "HONClubPhotoViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONContactsTabViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
-#import "HONAlertsViewController.h"
 #import "HONImagePickerViewController.h"
 
 
@@ -136,92 +133,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @synthesize managedObjectModel = _managedObjectModel;
 
 
-
-+ (NSArray *)fpoClubDictionaries {
-	return (@[@{@"id"				: @"1110001",
-				@"name"				: @"School",
-				@"description"		: @"FPO High School",
-				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg",
-				
-				@"owner"			: @{@"id"			: @"62899",
-										@"username"		: @"smileyy_syd",
-										@"avatar"		: @"https://d3j8du2hyvd35p.cloudfront.net/efdb098b221b41778409e4d6d3d05f83_b12db29b3dce414899da69ad55effb91-1388538981"},
-				
-				@"members"			: @[@{@"id"				: @"116900",
-										   @"username"		: @"dev_jesse",
-										   @"avatar"		: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
-										   @"age"			: @"1970-07-08 00:00:00",
-										   @"extern_name"	: @"Jesse Boley",
-										   @"mobile_number"	: @"",
-										   @"email"			: @"jlboley@gmail.com",
-										   @"invited"		: @"2014-03-05 10:41:41"}],
-				
-				@"pending"			: @[@{@"extern_name"	: @"Ken Shabby",
-										  @"mobile_number"	: @"+14153456723",
-										  @"email"			: @"ken.shabby@gmail.com",
-										  @"invited"		: @"2014-03-25 18:31:15"}],
-				
-				@"blocked"			: @[],
-				
-				@"total_members"	: @"2",
-				@"added"			: @"2014-03-21 12:43:55"},
-			  
-			  
-			  @{@"id"				: @"1110002",
-				@"name"				: @"Katy Perry",
-				@"description"		: @"",
-				@"img"				: @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg",
-				
-				@"owner"			: @{@"id"		: @"10563",
-										@"username"	: @"cheylaureenxo",
-										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/8268d1cb4608e0fce19ddc30d1a47a6d247769bc1301f9d1b99c2c5248ce3148-1379717258"},
-				
-				@"members"			: @[@{@"id"				: @"99629",
-										  @"username"		: @"shane5s",
-										  @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
-										  @"age"			: @"1997-02-05 16:00:00",
-										  @"extern_name"	: @"Shane Hill",
-										  @"mobile_number"	: @"+14152549391",
-										  @"email"			: @"",
-										  @"invited"		: @"2014-03-15 10:21:41"},
-										@{@"id"				: @"131796",
-										  @"username"		: @"jess4life",
-										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/e03d3827b9b547db9c2d64fe02389896_fcc05b136a6d4a9dac3767006f555701-1397110912",
-										  @"age"			: @"1990-04-10 06:20:36",
-										  @"extern_name"	: @"Jessica Rabbit",
-										  @"mobile_number"	: @"+13058531028",
-										  @"email"			: @"",
-										  @"invited"		: @"2014-04-27 03:11:33"}],
-				@"pending"			: @[],
-				
-				@"blocked"			: @[@{@"id"				: @"52802",
-										  @"username"		: @"king Afg",
-										  @"avatar"			: @"https://d3j8du2hyvd35p.cloudfront.net/2e1716ac9b1046c788a7bb67b0f38705_24f84f0bc545480aab2fe358025c03a2-1388792086",
-										  @"age"			: @"1979-12-27 14:54:37",
-										  @"extern_name"	: @"Afghan King",
-										  @"mobile_number"	: @"",
-										  @"email"			: @"",
-										  @"invited"		: @"2014-04-27 09:36:19"}],
-				
-				@"total_members"	: @"3",
-				@"added"			: @"2014-04-20 16:20:00"},
-			  
-			  @{@"id"				: @"12",
-				@"name"				: @"Dozen Club",
-				@"description"		: @"",
-				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/58027fd1473f4826a669e89ba1d12000_0adcbca42b6541f898f1557fcc4da55a-1388776881",
-				
-				@"owner"			: @{@"id"		: @"64846",
-										@"username"	: @"testerjason",
-										@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/01b37fcac9e842999485811756d753a1_d8ea0f6cdb21494fbd1fc84bc259c3bc-1397093806"},
-				
-				@"members"			: @[],
-				@"pending"			: @[],
-				@"blocked"			: @[],
-				
-				@"total_members"	: @"0",
-				@"added"			: @"2014-04-28 00:40:03"}]);
-}
 
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
@@ -705,7 +616,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)_challengeObjectFromPush:(int)challengeID cancelNextPushes:(BOOL)isCancel {
 	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:challengeID igoringNextPushes:isCancel completion:^(NSObject *result){
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}];
@@ -780,7 +691,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_styleUIAppearance {
-	/*NSShadow *shadow = [[HONMainScreenOverseer sharedInstance] orthodoxUIShadowAttribute];//[NSShadow new];*/
+	/*NSShadow *shadow = [[HONColorAuthority sharedInstance] orthodoxUIShadowAttribute];//[NSShadow new];*/
 //	[shadow setShadowColor:[UIColor clearColor]];
 //	[shadow setShadowOffset:CGSizeZero];
 	
@@ -841,11 +752,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (launchOptions) {
 		NSLog(@"\t—//]> [%@ didFinishLaunchingWithOptions] (%@)", self.class, launchOptions);
-		[[HONMainScreenOverseer sharedInstance] promptWithAlertView:[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
-																							   message:[[NSString string] stringFromDictionary:launchOptions]
-																							  delegate:nil
-																					 cancelButtonTitle:@"OK"
-																					 otherButtonTitles:nil]];
+		[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
+									message:[[NSString string] stringFromDictionary:launchOptions]
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	}
 	
 	
@@ -1075,11 +986,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	application.applicationIconBadgeNumber = 0;
 	
 	
-	[[HONMainScreenOverseer sharedInstance] promptWithAlertView:[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
-																						   message:[@"" stringFromDictionary:userInfo]
-																						  delegate:nil
-																				 cancelButtonTitle:@"OK"
-																						otherButtonTitles:nil]];
+	[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
+								message:[@"" stringFromDictionary:userInfo]
+							   delegate:nil
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
 }
 
 
@@ -1146,7 +1057,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsTimelineViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	

@@ -32,7 +32,7 @@
 #import "HONSuggestedFollowViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONMessagesViewController.h"
-#import "HONChallengeDetailsViewController.h"
+#import "HONClubPhotoViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"

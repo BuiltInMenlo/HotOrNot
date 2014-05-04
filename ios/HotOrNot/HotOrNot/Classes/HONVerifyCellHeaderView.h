@@ -13,11 +13,11 @@ const CGSize kVerifyAvatarSize;
 
 @class HONVerifyCellHeaderView;
 @protocol HONVerifyCellHeaderViewDelegate <NSObject>
-- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForUser:(HONOpponentVO *)opponentVO;
+- (void)cellHeaderView:(HONVerifyCellHeaderView *)cell showProfileForCreator:(HONOpponentVO *)creatorVO;
 @end
 
 @interface HONVerifyCellHeaderView : UIView
-- (id)initWithOpponent:(HONOpponentVO *)opponentVO;
+- (id)initWithCreator:(HONOpponentVO *)creatorVO;
 
 @property (nonatomic, assign) id <HONVerifyCellHeaderViewDelegate> delegate;
 @end

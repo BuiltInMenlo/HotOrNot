@@ -7,11 +7,9 @@
 //
 
 
-typedef enum {
-	HONClubsListTypeTimeline = 0,
-	HONClubsListTypeSubscriptions
-} HONClubsListType;
-
-
 @interface HONClubsTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+- (id)initWithWrapperViewController:(UIViewController *)wrapperViewController;
+
+- (void)refresh;
+- (void)tare;
 @end

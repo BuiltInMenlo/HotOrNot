@@ -48,6 +48,8 @@ NSString * const kAPIRemoveFriend = @"social/removefriend";
 
 NSString * const kAPICheckNameAndEmail = @"users/checkNameAndEmail";
 NSString * const kAPIGetActivity = @"users/getactivity";
+NSString * const kAPIUsersGetClubs = @"users/getclubs";
+NSString * const kAPIUsersGetClubInvites = @"users/getclubinvites";
 NSString * const kAPIGetSubscribees = @"users/getsubscribees";
 NSString * const kAPIEmailContacts = @"users/ffemail";
 NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
@@ -70,8 +72,6 @@ NSString * const kAPIClubsQuit = @"clubs/quit";
 NSString * const kAPIClubsBlock = @"clubs/block";
 NSString * const kAPIClubsUnblock = @"clubs/unblock";
 NSString * const kAPIClubsFeatured = @"clubs/featured";
-NSString * const kAPIUsersGetClubs = @"users/getclubs";
-NSString * const kAPIUsersGetClubInvites = @"users/getclubinvites";
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
 
@@ -577,7 +577,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveTimelineForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveClubTimelineForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
 	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:userID completion:completion];
 }
 

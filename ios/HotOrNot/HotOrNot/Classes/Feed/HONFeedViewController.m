@@ -18,7 +18,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSuggestedFollowViewController.h"
-#import "HONChallengeDetailsViewController.h"
+#import "HONClubPhotoViewController.h"
 
 #import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
@@ -411,7 +411,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Challange"
 									  withChallenge:challengeVO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }

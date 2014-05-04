@@ -7,7 +7,6 @@
 //
 
 
-#import "HONClubsTimelineViewController.h"
 #import "HONTimelineItemVO.h"
 
 @class HONClubTimelineViewCell;

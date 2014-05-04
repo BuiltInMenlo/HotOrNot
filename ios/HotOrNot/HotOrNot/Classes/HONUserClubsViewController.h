@@ -1,5 +1,5 @@
 //
-//  HONUserClubViewController.h
+//  HONUserClubsViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 02/27/2014 @ 10:31 .
@@ -7,5 +7,8 @@
 //
 
 @interface HONUserClubsViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+- (id)initWithWrapperViewController:(UIViewController *)wrapperViewController;
 
+- (void)refresh;
+- (void)tare;
 @end

@@ -10,23 +10,23 @@
 #import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
 #import "HONChallengeAssistant.h"
+#import "HONClubAssistant.h"
 #import "HONColorAuthority.h"
 #import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
-#import "HONPhysicsGovernor.h"
-#import "HONMainScreenOverseer.h"
+#import "HONScreenManager.h"
 
 
 //@class HONAnalyticsParams;
 //@class HONAPICaller;
 //@class HONChallengeAssistant;
+//@class HONClubAssistant;
 //@class HONColorAuthority;
 //@class HONDeviceIntrinsics;
 //@class HONFontAllocator;
 //@class HONImagingDepictor;
-//@class HONPhysicsGovernor;
-//@class HONMainScreenOverseer;
+//@class HONMainScreenManager;
 
 
 @interface HONUtilsSuite : NSObject

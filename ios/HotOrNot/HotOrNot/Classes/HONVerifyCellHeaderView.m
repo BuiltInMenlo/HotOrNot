@@ -14,7 +14,7 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 
 
 @interface HONVerifyCellHeaderView ()
-@property (nonatomic, retain) HONOpponentVO *opponentVO;
+@property (nonatomic, retain) HONOpponentVO *creatorVO;
 @property (nonatomic, strong) NSDictionary *verifyTabInfo;
 @end
 
@@ -22,9 +22,9 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 
 @synthesize delegate = _delegate;
 
-- (id)initWithOpponent:(HONOpponentVO *)opponentVO {
+- (id)initWithCreator:(HONOpponentVO *)creatorVO {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 100.0)])) {
-		_opponentVO = opponentVO;
+		_creatorVO = creatorVO;
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake((320.0 - kVerifyAvatarSize.width) * 0.5, 0.0, kVerifyAvatarSize.width, kVerifyAvatarSize.height)];
 		[self addSubview:avatarImageView];
@@ -40,10 +40,10 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_opponentVO.imagePrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_creatorVO.imagePrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
 		};
 		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_creatorVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];
@@ -67,7 +67,7 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 		ctaLabel.shadowColor = [UIColor blackColor];
 		ctaLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 		ctaLabel.numberOfLines = 2;
-		ctaLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"cta_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_opponentVO.username] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+		ctaLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"cta_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_creatorVO.username] attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 		[self addSubview:ctaLabel];
 		
 		[ctaLabel sizeToFit];
@@ -81,7 +81,7 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[self.delegate cellHeaderView:self showProfileForUser:_opponentVO];
+	[self.delegate cellHeaderView:self showProfileForCreator:_creatorVO];
 }
 
 

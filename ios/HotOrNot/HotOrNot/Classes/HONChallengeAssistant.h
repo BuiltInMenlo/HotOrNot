@@ -10,21 +10,9 @@
 #import "HONEmotionVO.h"
 #import "HONOpponentVO.h"
 
-typedef enum {
-	HONSelfieCameraSubmitTypeCreateChallenge = 0,
-	HONSelfieCameraSubmitTypeReplyChallenge,
-	
-	HONSelfieCameraSubmitTypeCreateClub,
-	HONSelfieCameraSubmitTypeReplyClub,
-	
-	HONSelfieCameraSubmitTypeCreateMessage,
-	HONSelfieCameraSubmitTypeReplyMessage
-} HONSelfieCameraSubmitType;
-
 
 @interface HONChallengeAssistant : NSObject
 + (HONChallengeAssistant *)sharedInstance;
-
 
 - (BOOL)isChallengeParticipant:(HONChallengeVO *)challengeVO;
 - (HONOpponentVO *)mostRecentOpponentInChallenge:(HONChallengeVO *)challengeVO byUserID:(int)userID;

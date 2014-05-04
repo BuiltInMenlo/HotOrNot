@@ -12,7 +12,7 @@
 
 @class HONVerifyViewCell;
 @protocol HONVerifyViewCellDelegate <NSObject>
-- (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
+- (void)verifyViewCell:(HONVerifyViewCell *)cell showCreatorProfile:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCell:(HONVerifyViewCell *)cell approveChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCell:(HONVerifyViewCell *)cell unapproveChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyViewCell:(HONVerifyViewCell *)cell skipChallenge:(HONChallengeVO *)challengeVO;

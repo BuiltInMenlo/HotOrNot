@@ -19,7 +19,7 @@
 	HONTimelineItemVO *vo = [[HONTimelineItemVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	vo.timelineItemType = ([dictionary objectForKey:@"creator"]) ? HONTimelineItemTypeSelfie : HONTimelineItemTypeInviteRequest;
+	vo.timelineItemType = ([dictionary objectForKey:@"creator"]) ? HONTimelineItemTypeSelfie : ((arc4random() % 100) > 75) ? HONTimelineItemTypeInviteRequest : HONTimelineItemTypeNearby;
 	vo.timestamp = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	
 	switch (vo.timelineItemType) {
@@ -29,6 +29,10 @@
 			break;
 			
 		case HONTimelineItemTypeInviteRequest:
+			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
+			break;
+			
+		case HONTimelineItemTypeNearby:
 			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
 			break;
 			
