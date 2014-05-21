@@ -163,12 +163,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		
 		NSLog(@"WRITING IMAGE:(%@) FOR KEY:(%@)", response.allHeaderFields, key);
-		if (image != nil)
-			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
-			
-		else
-			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
-		
+		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation((image != nil) ? image : [UIImage imageNamed:key]) forKey:key];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
@@ -208,7 +203,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 + (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor {
 	CATextLayer *layer = [[CATextLayer alloc] init];
 	
-	CGSize size = [caption sizeWithAttributes:@{NSFontAttributeName:font}];//([[HONDeviceTraits sharedInstance] isIOS7]) ? [caption sizeWithAttributes:@{NSFontAttributeName:font}] : [caption sizeWithFont:font constrainedToSize:CGSizeMake(frame.size.width, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	CGSize size = [caption sizeWithAttributes:@{NSFontAttributeName:font}];
 	[layer setString:caption];
 	[layer setFont:CFBridgingRetain(font.fontName)];
 	[layer setFontSize:font.pointSize];
@@ -218,7 +213,9 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	[layer setPosition:CGPointMake(frame.origin.x, frame.origin.y)];
 	[layer setBounds:CGRectMake(0.0, 0.0, size.width, size.height)];
 	layer.needsDisplayOnBoundsChange = YES;
-		
+	
+	
+	
 	return (layer);
 }
 

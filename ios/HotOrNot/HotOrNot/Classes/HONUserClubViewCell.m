@@ -24,9 +24,15 @@
 		[self hideChevron];
 		
 		_isInviteCell = isInvite;
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nonSelfieRowBG"]];
 	}
 	
 	return (self);
+}
+
+- (void)setFrame:(CGRect)frame {
+	frame.size.height -= 10.0;
+	[super setFrame:frame];
 }
 
 
@@ -34,7 +40,7 @@
 - (void)setUserClubVO:(HONUserClubVO *)userClubVO {
 	_userClubVO = userClubVO;
 	
-	UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 8.0, 48.0, 48.0)];
+	UIImageView *coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(19.0, 13.0, 48.0, 48.0)];
 	coverImageView.alpha = 0.0;
 	[self.contentView addSubview:coverImageView];
 	
@@ -61,17 +67,29 @@
 								   success:imageSuccessBlock
 								   failure:imageFailureBlock];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 23.0, 200.0, 18.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
-	nameLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 20.0, 200.0, 16.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
+	nameLabel.textColor = [UIColor blackColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _userClubVO.clubName;
 	[self.contentView addSubview:nameLabel];
 	
+	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+	[formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	UILabel *membersLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 36.0, 200.0, 16.0)];
+	membersLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+	membersLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	membersLabel.backgroundColor = [UIColor clearColor];
+	membersLabel.text = [NSString stringWithFormat:@"%@ member%@", [formatter stringFromNumber:[NSNumber numberWithInt:_userClubVO.totalActiveMembers]], (_userClubVO.totalActiveMembers == 1) ? @"" : @"s"];
+	[self.contentView addSubview:membersLabel];
+	
 	UIButton *takeActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	takeActionButton.frame = CGRectMake(250.0, 0.0, 64.0, 64.0);
-	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_nonActive" : @"editButton_nonActive"] forState:UIControlStateNormal];
-	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_Active" : @"editButton_Active"] forState:UIControlStateHighlighted];
+	takeActionButton.frame = CGRectMake(232.0, 15.0, 64.0, 64.0);
+	[takeActionButton setBackgroundImage:[UIImage imageNamed:@"acceptButton_nonActive"] forState:UIControlStateNormal];
+	[takeActionButton setBackgroundImage:[UIImage imageNamed:@"acceptButton_Active"] forState:UIControlStateHighlighted];
+	//[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_nonActive" : @"editButton_nonActive"] forState:UIControlStateNormal];
+	//[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_Active" : @"editButton_Active"] forState:UIControlStateHighlighted];
 	[takeActionButton addTarget:self action:(_isInviteCell) ? @selector (_goAcceptInvite) : @selector(_goEditSettings) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:takeActionButton];
 }

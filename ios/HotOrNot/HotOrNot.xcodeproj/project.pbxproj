@@ -29,7 +29,6 @@
 		4C2400E718C2858700C9AE53 /* HONUserClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400E618C2858700C9AE53 /* HONUserClubViewCell.m */; };
 		4C2400EA18C2910F00C9AE53 /* HONUserClubInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400E918C2910F00C9AE53 /* HONUserClubInviteViewController.m */; };
 		4C2400ED18C2916C00C9AE53 /* HONUserClubSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400EC18C2916C00C9AE53 /* HONUserClubSettingsViewController.m */; };
-		4C2400F018C2937E00C9AE53 /* HONUserClubDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400EF18C2937E00C9AE53 /* HONUserClubDetailsViewController.m */; };
 		4C2400F318C29B8400C9AE53 /* HONUserClubsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400F218C29B8400C9AE53 /* HONUserClubsSearchViewController.m */; };
 		4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */; };
 		4C2DD84018E3EEF100BC8759 /* FullScreenAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */; };
@@ -137,6 +136,8 @@
 		4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51643C1681894600EB3C09 /* HONUsernameViewController.m */; };
 		4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C56864E177CCF7B004E570F /* HONAddContactsViewController.m */; };
 		4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5F25101888C496000411A7 /* HONColorAuthority.m */; };
+		4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4C5FD4641917994C00B1BAFC /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5FD4631917994C00B1BAFC /* Base64.m */; };
 		4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */; };
 		4C5FECB8190F4FCE0067F8A9 /* IndicatorElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB7190F4FCE0067F8A9 /* IndicatorElements.xcassets */; };
 		4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */; };
@@ -312,8 +313,6 @@
 		4C2400E918C2910F00C9AE53 /* HONUserClubInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubInviteViewController.m; sourceTree = "<group>"; };
 		4C2400EB18C2916C00C9AE53 /* HONUserClubSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserClubSettingsViewController.h; sourceTree = "<group>"; };
 		4C2400EC18C2916C00C9AE53 /* HONUserClubSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubSettingsViewController.m; sourceTree = "<group>"; };
-		4C2400EE18C2937E00C9AE53 /* HONUserClubDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserClubDetailsViewController.h; sourceTree = "<group>"; };
-		4C2400EF18C2937E00C9AE53 /* HONUserClubDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubDetailsViewController.m; sourceTree = "<group>"; };
 		4C2400F118C29B8400C9AE53 /* HONUserClubsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserClubsSearchViewController.h; sourceTree = "<group>"; };
 		4C2400F218C29B8400C9AE53 /* HONUserClubsSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubsSearchViewController.m; sourceTree = "<group>"; };
 		4C2DD83618E3B4B100BC8759 /* HONContactsTabViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsTabViewController.h; sourceTree = "<group>"; };
@@ -515,6 +514,10 @@
 		4C56864E177CCF7B004E570F /* HONAddContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAddContactsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C5F250F1888C496000411A7 /* HONColorAuthority.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONColorAuthority.h; sourceTree = "<group>"; };
 		4C5F25101888C496000411A7 /* HONColorAuthority.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONColorAuthority.m; sourceTree = "<group>"; };
+		4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		4C5FD4621917994C00B1BAFC /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
+		4C5FD4631917994C00B1BAFC /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = LoadingElements.xcassets; sourceTree = "<group>"; };
 		4C5FECB7190F4FCE0067F8A9 /* IndicatorElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = IndicatorElements.xcassets; sourceTree = "<group>"; };
 		4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SharingElements.xcassets; sourceTree = "<group>"; };
@@ -692,7 +695,7 @@
 		4CDFB3161889349900E9F33B /* HONFontAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFontAllocator.h; sourceTree = "<group>"; };
 		4CDFB3171889349900E9F33B /* HONFontAllocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFontAllocator.m; sourceTree = "<group>"; };
 		4CE0399C185727150005256F /* HONAPICaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAPICaller.h; sourceTree = "<group>"; };
-		4CE0399D185727150005256F /* HONAPICaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAPICaller.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4CE0399D185727150005256F /* HONAPICaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAPICaller.m; sourceTree = "<group>"; };
 		4CE52261160D254B005F2ADC /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRegisterViewController.h; sourceTree = "<group>"; };
 		4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONRegisterViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -962,6 +965,7 @@
 		4C43224A18E37C960035FF06 /* Asset Calalogs */ = {
 			isa = PBXGroup;
 			children = (
+				4C43224D18E37E740035FF06 /* HONElementals.xcassets */,
 				4CF2040418F3647C00EB57B0 /* FPOElements.xcassets */,
 				4C83FD8B190F610B00CAEABB /* DeprecatedElements.xcassets */,
 				4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */,
@@ -969,7 +973,6 @@
 				4C47745D18F50A7F00D78654 /* ClubItemElements.xcassets */,
 				4C01BAD2190CAAD1006CD80D /* ClubsElements.xcassets */,
 				4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */,
-				4C43224D18E37E740035FF06 /* HONElementals.xcassets */,
 				4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */,
 				4C5FECB7190F4FCE0067F8A9 /* IndicatorElements.xcassets */,
 				4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */,
@@ -997,6 +1000,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4C5FD4611917994C00B1BAFC /* Base64 */,
 				4C4325A618E3A9F80035FF06 /* AFNetworking */,
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
 				4C43274F18E3A9F90035FF06 /* Chartboost */,
@@ -1451,6 +1455,15 @@
 			path = "Obj-C Notes";
 			sourceTree = "<group>";
 		};
+		4C5FD4611917994C00B1BAFC /* Base64 */ = {
+			isa = PBXGroup;
+			children = (
+				4C5FD4621917994C00B1BAFC /* Base64.h */,
+				4C5FD4631917994C00B1BAFC /* Base64.m */,
+			);
+			path = Base64;
+			sourceTree = "<group>";
+		};
 		4C62651A15F96C7100AA7FCE = {
 			isa = PBXGroup;
 			children = (
@@ -1775,8 +1788,6 @@
 				4C2400F218C29B8400C9AE53 /* HONUserClubsSearchViewController.m */,
 				4C2400EB18C2916C00C9AE53 /* HONUserClubSettingsViewController.h */,
 				4C2400EC18C2916C00C9AE53 /* HONUserClubSettingsViewController.m */,
-				4C2400EE18C2937E00C9AE53 /* HONUserClubDetailsViewController.h */,
-				4C2400EF18C2937E00C9AE53 /* HONUserClubDetailsViewController.m */,
 				4C03962E17B3350700AECD97 /* HONClubPhotoViewController.h */,
 				4C03962F17B3350700AECD97 /* HONClubPhotoViewController.m */,
 			);
@@ -1786,6 +1797,8 @@
 		4CF84495166503AC00C0CC5B /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */,
+				4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */,
 				4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */,
 				4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */,
 				4C81A013163337C100AB188B /* UIImage+fixOrientation.h */,
@@ -1996,7 +2009,6 @@
 				4CCA4168181C1BDE00FC9863 /* HONChallengeDetailsGridView.m in Sources */,
 				4C980586188C9B2800E4FEA4 /* HONMessageDetailsViewController.m in Sources */,
 				4C4328EC18E3A9FA0035FF06 /* TSTapstream.m in Sources */,
-				4C2400F018C2937E00C9AE53 /* HONUserClubDetailsViewController.m in Sources */,
 				4C4328B118E3A9FA0035FF06 /* CubicBezierCurve.m in Sources */,
 				4C43280818E3A9FA0035FF06 /* AFImageRequestOperation.m in Sources */,
 				4C93EAE319140896001F43DE /* HONCallingCodesViewController.m in Sources */,
@@ -2052,6 +2064,7 @@
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
 				4C4328BB18E3A9FA0035FF06 /* JLBPopSlideTransition.m in Sources */,
 				4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */,
+				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				4C4328EB18E3A9FA0035FF06 /* TSResponse.m in Sources */,
 				4CC94FD7190733B200347A34 /* HONEmotionPaginationView.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
@@ -2101,6 +2114,7 @@
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				4C4328EA18E3A9FA0035FF06 /* TSPlatformImpl.m in Sources */,
 				4C43280C18E3A9FA0035FF06 /* AFURLConnectionOperation.m in Sources */,
+				4C5FD4641917994C00B1BAFC /* Base64.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONScreenManager.m in Sources */,
 				4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,

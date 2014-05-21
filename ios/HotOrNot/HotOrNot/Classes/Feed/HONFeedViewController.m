@@ -75,7 +75,7 @@
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+	backButton.frame = CGRectMake(0.0, 2.0, 93.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backWhiteButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
@@ -157,14 +157,14 @@
 
 - (void)_updateEmptyState
 {
-	if ([_challenges count] == 0) {
-		if (_emptyStateView == nil)
-			_emptyStateView = [self _makeEmptyStateView];
-		[self.view addSubview:_emptyStateView];
-	}
-	else {
+//	if ([_challenges count] == 0) {
+//		if (_emptyStateView == nil)
+//			_emptyStateView = [self _makeEmptyStateView];
+//		[self.view addSubview:_emptyStateView];
+//	}
+//	else {
 		[_emptyStateView removeFromSuperview];
-	}
+//	}
 }
 
 - (void)_prefetchChallenges
@@ -204,6 +204,8 @@
 	feedItemViewController.challenge = item;
 	return feedItemViewController;
 }
+
+
 
 #pragma mark - State
 
@@ -653,11 +655,12 @@
 //	_creatorHeaderView.delegate = self;
 //	[self.view addSubview:_creatorHeaderView];
 	
-	UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 114.0, 320.0, 69.0)];
+	UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 129.0, 320.0, 69.0)];
+	//UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 69.0)];
 	[self.view addSubview:infoView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
-	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 288.0, 18.0)];
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.shadowColor = [UIColor blackColor];
@@ -665,38 +668,70 @@
 	usernameLabel.text = _challenge.creatorVO.username;
 	[infoView addSubview:usernameLabel];
 	
-	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 26.0, 70.0, 20.0)];
-	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
+	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 25.0, 120.0, 18.0)];
+	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:14];
 	emotionLabel.textColor = [UIColor whiteColor];
 	emotionLabel.backgroundColor = [UIColor clearColor];
 	emotionLabel.shadowColor = [UIColor blackColor];
 	emotionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	emotionLabel.text = @"- is feeling";
+	emotionLabel.text = [@"- is feeling " stringByAppendingString:_challenge.subjectName];
 	[infoView addSubview:emotionLabel];
 	
-	UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-SM"]];
-	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + emotionLabel.frame.size.width), 16.0, 44.0, 44.0);
-	[infoView addSubview:emoticonImageView];
+	int xOffset = 0;
+	for (int i=0; i<4; i++) {
+		UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-SM"]];
+		emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + emotionLabel.frame.size.width) + xOffset, 16.0, 44.0, 44.0);
+		[infoView addSubview:emoticonImageView];
+		
+		xOffset += 44;
+	}
 	
-	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 57.0, 320.0, 44.0)];
+	xOffset = 4;
+	for (int i=0; i<5; i++) {
+		UIImageView *emoticonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fpo_emotionIcon-SM"]];
+		emoticonImageView.frame = CGRectMake(xOffset, 58.0, 44.0, 44.0);
+		[infoView addSubview:emoticonImageView];
+		
+		xOffset += 44;
+	}
+	
+	_footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(bounds) - 47.0, 320.0, 44.0)];
 	[self.view addSubview:_footerView];
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(1.0, 3.0, 94.0, 44.0);
+	likeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:likeButton];
 	
+	UILabel *likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 9.0, 160.0, 28.0)];
+	likesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
+	likesLabel.textColor = [UIColor whiteColor];
+	likesLabel.backgroundColor = [UIColor clearColor];
+	likesLabel.shadowColor = [UIColor blackColor];
+	likesLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	likesLabel.text = [NSString stringWithFormat:@"Likes (%d)", MIN(_challenge.totalLikes, 999)];
+	[_footerView addSubview:likesLabel];
+	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(97.0, 0.0, 94.0, 44.0);
+	replyButton.frame = CGRectMake(86.0, 0.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:replyButton];
 	
+	UILabel *repliesLabel = [[UILabel alloc] initWithFrame:CGRectMake(128.0, 9.0, 160.0, 28.0)];
+	repliesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
+	repliesLabel.textColor = [UIColor whiteColor];
+	repliesLabel.backgroundColor = [UIColor clearColor];
+	repliesLabel.shadowColor = [UIColor blackColor];
+	repliesLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+	repliesLabel.text = [NSString stringWithFormat:@"Replies (%d)", MIN([_challenge.challengers count], 999)];
+	[_footerView addSubview:repliesLabel];
+	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(238.0, 8.0, 94.0, 44.0);
+	moreButton.frame = CGRectMake(265.0, 2.0, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];

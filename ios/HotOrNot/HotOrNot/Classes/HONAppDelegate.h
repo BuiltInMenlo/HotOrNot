@@ -72,6 +72,9 @@ extern NSString * const kConfigURL;
 extern NSString * const kConfigJSON;
 extern NSString * const kAPIHost;
 
+extern NSString * const kBlowfishKey;
+extern NSString * const kBlowfishBase64IV;
+
 
 // view heights
 extern const CGFloat kNavHeaderHeight;

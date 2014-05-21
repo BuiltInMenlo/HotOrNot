@@ -94,6 +94,8 @@
 		
 		
 		[self _retrieveClubInvites];
+		
+		
 	}];
 }
 
@@ -139,14 +141,14 @@
 	[self.view addSubview:headerView];
 	
 	_toggleListTypeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_toggleListTypeButton.frame = CGRectMake(0.0, kNavHeaderHeight + 5.0, 320.0, 44.0);
+	_toggleListTypeButton.frame = CGRectMake(0.0, kNavHeaderHeight + 6.0, 320.0, 44.0);
 	[_toggleListTypeButton setBackgroundImage:[UIImage imageNamed:@"toggleClubs_timeline"] forState:UIControlStateNormal];
 	[_toggleListTypeButton setBackgroundImage:[UIImage imageNamed:@"toggleClubs_timeline"] forState:UIControlStateHighlighted];
 	[_toggleListTypeButton addTarget:self action:@selector(_goToggleListType) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_toggleListTypeButton];
 	
 	UILabel *toggleNewsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 150.0, 17.0)];
-	toggleNewsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	toggleNewsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	toggleNewsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	toggleNewsLabel.backgroundColor = [UIColor clearColor];
 	toggleNewsLabel.textAlignment = NSTextAlignmentCenter;
@@ -154,7 +156,7 @@
 	[_toggleListTypeButton addSubview:toggleNewsLabel];
 	
 	_toggleClubsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 12.0, 150.0, 17.0)];
-	_toggleClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	_toggleClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
 	_toggleClubsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_toggleClubsLabel.backgroundColor = [UIColor clearColor];
 	_toggleClubsLabel.textAlignment = NSTextAlignmentCenter;

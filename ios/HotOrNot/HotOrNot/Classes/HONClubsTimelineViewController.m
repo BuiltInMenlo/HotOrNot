@@ -265,7 +265,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
-	return ((vo.timelineItemType == HONTimelineItemTypeSelfie) ? 330.0 : 100.0);
+	return ((vo.timelineItemType == HONTimelineItemTypeSelfie) ? 330.0 : 111.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -289,7 +289,6 @@
 		[[HONAPICaller sharedInstance] retrieveClubByClubID:40 completion:^(NSObject *result) {
 			
 		}];
-		
 		
 	} else if (cell.timelineItemVO.timelineItemType == HONTimelineItemTypeInviteRequest) {
 		NSLog(@"/// SHOW CLUB STATS:(%@)", ((HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row]).dictionary);

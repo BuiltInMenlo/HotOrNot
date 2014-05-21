@@ -17,7 +17,6 @@
 #import "HONTableHeaderView.h"
 #import "HONUserClubViewCell.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONUserClubDetailsViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubSettingsViewController.h"
 #import "HONUserClubInviteViewController.h"
@@ -338,15 +337,15 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 + [_joinedClubs count] : (section == 1) ? [_invitedClubs count] : [_defaultCaptions count]);
+	return ((section == 0) ? 1 + [_joinedClubs count] : [_invitedClubs count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (3);
+	return (2);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"CLUBS" : @"ACCEPT"]);
+	return (nil);//[[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"CLUBS" : @"ACCEPT"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -359,15 +358,15 @@
 	if (indexPath.section == 0) {
 		if (indexPath.row == 0) {
 			if (_ownClub == nil) {
-				cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
+				//cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
 				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
-				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-				cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
+				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
+				cell.textLabel.textColor = [UIColor blackColor];
 				cell.textLabel.textAlignment = NSTextAlignmentLeft;
 				cell.textLabel.text = @"Create club";
 				
 				UIImageView *plusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClubButton_nonActive"]];
-				plusImageView.frame = CGRectOffset(plusImageView.frame, 258.0, 0.0);
+				plusImageView.frame = CGRectOffset(plusImageView.frame, 240.0, 5.0);
 				[cell.contentView addSubview:plusImageView];
 				
 			} else {
@@ -376,7 +375,7 @@
 			}
 		
 		} else {
-			cell.userClubVO = (HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row - 1];
+			cell.userClubVO = (HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row - 1]; //>-1
 			cell.delegate = self;
 		}
 		
@@ -384,13 +383,6 @@
 		cell.userClubVO = [_invitedClubs objectAtIndex:indexPath.row];
 		cell.delegate = self;
 	
-	} else {
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
-		cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
-		cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
-		cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-		cell.textLabel.textAlignment = NSTextAlignmentCenter;
-		cell.textLabel.text = [_defaultCaptions objectAtIndex:indexPath.row];
 	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -401,6 +393,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (83.0);
+	
 	if (indexPath.section == 0 || indexPath.section == 1)
 		return (kOrthodoxTableCellHeight);
 	
@@ -409,7 +403,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 0 || section == 1) ? kOrthodoxTableHeaderHeight : 0.0);
+	return (0.0);//(section == 0 || section == 1) ? kOrthodoxTableHeaderHeight : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -429,6 +423,7 @@
 				[_wrapperViewController presentViewController:navigationController animated:YES completion:nil];
 				
 			} else {
+				
 				[self _retrieveChallenges];
 			}
 		

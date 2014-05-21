@@ -48,7 +48,7 @@
 	NSString *subtitleCaption = (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? [NSString stringWithFormat:@"%@ in %@", [HONAppDelegate timeSinceDate:_timelineItemVO.timestamp], _timelineItemVO.challengeVO.subjectName] : [NSString stringWithFormat:@"%d member%@", _timelineItemVO.userClubVO.totalActiveMembers, ( _timelineItemVO.userClubVO.totalActiveMembers != 1) ? @"s" : @""];
 	NSString *avatarPrefix = (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? _timelineItemVO.challengeVO.creatorVO.avatarPrefix : _timelineItemVO.userClubVO.coverImagePrefix;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 8.0 : 35.0, 48.0, 48.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(19.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 10.0 : (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 35.0 : 41.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 35.0 : 48.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 35.0 : 48.0)];
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
@@ -76,23 +76,23 @@
 									failure:avatarImageFailureBlock];
 	
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 7.0 : 40.0, 200.0, 18.0)];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 63.0 : 74.0, (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? 10.0 : 47.0, 200.0, 18.0)];
+	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	titleLabel.textColor = [UIColor blackColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.text = titleCaption;
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 21.0, 200.0, 18.0)];
-	subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, titleLabel.frame.origin.y + 17.0, 200.0, 16.0)];
+	subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 	subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	subtitleLabel.backgroundColor = [UIColor clearColor];
 	subtitleLabel.text = subtitleCaption;
 	[self.contentView addSubview:subtitleLabel];
 	
 	if (_timelineItemVO.timelineItemType != HONTimelineItemTypeSelfie) {
-		UILabel *topicLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 2.0, 200.0, 18.0)];
-		topicLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+		UILabel *topicLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 6.0, 200.0, 16.0)];
+		topicLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 		topicLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		topicLabel.backgroundColor = [UIColor clearColor];
 		topicLabel.text = (_timelineItemVO.timelineItemType != HONTimelineItemTypeNearby) ? @"Nearby club" : @"Club Invite";
@@ -107,11 +107,11 @@
 	}
 	
 	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) {
-		UIImageView *selfieImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 54.0, 280.0, 261.0)];
+		UIImageView *selfieImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 54.0, 280.0, 252.0)];
 		selfieImageView.alpha = 0.0;
 		[self.contentView addSubview:selfieImageView];
 		
-		[HONImagingDepictor maskImageView:selfieImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+//		[HONImagingDepictor maskImageView:selfieImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 		
 		void (^selfieImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			selfieImageView.image = image;
@@ -133,6 +133,49 @@
 							   placeholderImage:nil
 										success:selfieImageSuccessBlock
 										failure:selfieImageFailureBlock];
+		
+		UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 267.0, 320.0, 44.0)];
+		[self.contentView addSubview:footerView];
+		
+		UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		likeButton.frame = CGRectMake(16.0, 2.0, 44.0, 44.0);
+		[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+		[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+//		[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+		[footerView addSubview:likeButton];
+		
+		UILabel *likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 9.0, 160.0, 28.0)];
+		likesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
+		likesLabel.textColor = [UIColor whiteColor];
+		likesLabel.backgroundColor = [UIColor clearColor];
+		likesLabel.shadowColor = [UIColor blackColor];
+		likesLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+		likesLabel.text = [NSString stringWithFormat:@"Likes (%d)", MIN(_timelineItemVO.userClubVO.totalEntries, 999)];
+		[footerView addSubview:likesLabel];
+		
+		UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		replyButton.frame = CGRectMake(103.0, 0.0, 44.0, 44.0);
+		[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
+		[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
+//		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+		[footerView addSubview:replyButton];
+		
+		UILabel *repliesLabel = [[UILabel alloc] initWithFrame:CGRectMake(145.0, 9.0, 160.0, 28.0)];
+		repliesLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
+		repliesLabel.textColor = [UIColor whiteColor];
+		repliesLabel.backgroundColor = [UIColor clearColor];
+		repliesLabel.shadowColor = [UIColor blackColor];
+		repliesLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+		repliesLabel.text = [NSString stringWithFormat:@"Replies (%d)", MIN(_timelineItemVO.userClubVO.totalActiveMembers, 999)];
+		[footerView addSubview:repliesLabel];
+		
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		moreButton.frame = CGRectMake(254.0, 2.0, 44.0, 44.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
+//		[moreButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		[footerView addSubview:moreButton];
+
 	}
 }
 

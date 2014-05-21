@@ -17,9 +17,12 @@
 #import <HockeySDK/HockeySDK.h>
 //#import <Tapjoy/Tapjoy.h>
 
+//#import "NSData+Base64.h"
+#import "Base64.h"
 #import "NSString+DataTypes.h"
 
 #import "AFNetworking.h"
+#import "BlowfishAlgorithm.h"
 #import "Chartboost.h"
 #import "MBProgressHUD.h"
 #import "KikAPI.h"
@@ -58,6 +61,9 @@ NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
 NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-dev";
 #endif
+
+NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
+NSString * const kBlowfishBase64IV = @"hDfslH7tj3M=";
 
 #if __APPSTORE_BUILD__ == 1
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
@@ -747,6 +753,30 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
+	
+	
+	char bytes[] = "„7ì”~ís";
+	NSString * string = [NSString string];
+	string = [[NSString alloc] initWithBytes:bytes length:8 encoding:NSUTF8StringEncoding];
+	//NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+	
+	//@"YXJ0aHVyLnBld3R5QGdteC5jb20="
+//	NSData *data = [NSData dataFromBase64String:string];
+//	NSString *decodedString;// = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
+	
+//	decodedString = @"6787449c";//@"Ñ7Ïî~Ìès";//[NSString stringWithUTF8String:[data bytes]];
+	NSLog(@"BASE64 DECODE(%i):%@\n", [string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], string);
+	
+	BlowfishAlgorithm *blowfishAlgorithm = [BlowfishAlgorithm new];
+	[blowfishAlgorithm setMode:[BlowfishAlgorithm buildModeEnum:@"CBC"]];
+	[blowfishAlgorithm setKey:kBlowfishKey];
+	[blowfishAlgorithm setInitVector:@"„7ì”~ís"];
+	[blowfishAlgorithm setupKey];
+	
+	NSLog(@"ORG:[%@]", [blowfishAlgorithm encrypt:@"+12133009127"]);
+	NSLog(@"ENC:[%@]", [[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString]);
+	NSLog(@"DEC:[%@]", [[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]);
+	NSLog(@"ORG:[%@]", [blowfishAlgorithm decrypt:[[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]]);
 	
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	

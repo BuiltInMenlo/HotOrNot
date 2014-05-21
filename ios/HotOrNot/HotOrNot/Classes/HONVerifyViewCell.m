@@ -94,10 +94,10 @@
 //	headerView.delegate = self;
 //	[self.contentView addSubview:headerView];
 	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 118.0, 320.0, 69.0)];
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 113.0, 320.0, 69.0)];
 	[self.contentView addSubview:footerView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 0.0, 210.0, 24.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 210.0, 24.0)];
 	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
@@ -106,7 +106,7 @@
 	usernameLabel.attributedText = [[NSAttributedString alloc] initWithString:[[HONAppDelegate verifyCopyForKey:@"name_txt"] stringByReplacingOccurrencesOfString:@"_{{USERNAME}}_" withString:_challengeVO.creatorVO.username] attributes:nil];
 	[footerView addSubview:usernameLabel];
 	
-	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 26.0, 200.0, 20.0)];
+	UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 26.0, 200.0, 20.0)];
 	emotionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:16];
 	emotionLabel.textColor = [UIColor whiteColor];
 	emotionLabel.backgroundColor = [UIColor clearColor];

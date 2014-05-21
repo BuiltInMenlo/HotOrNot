@@ -15,7 +15,7 @@
 @implementation HONProfileHeaderButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(1.0, 0.0, 93.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 93.0, 44.0)])) {
 		//BOOL isVerified = (BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_verified"] intValue];
 		
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
