@@ -413,6 +413,8 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Challange"
 									  withChallenge:challengeVO];
 	
+	
+//	[self.navigationController pushViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO] animated:YES];	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -655,6 +657,12 @@
 //	_creatorHeaderView.delegate = self;
 //	[self.view addSubview:_creatorHeaderView];
 	
+	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	detailsButton.frame = _heroHolderView.frame;
+	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:detailsButton];
+	
+	
 	UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 129.0, 320.0, 69.0)];
 	//UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 80.0, 320.0, 69.0)];
 	[self.view addSubview:infoView];
@@ -779,7 +787,7 @@
 	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];
 	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:(kIsImageCacheEnabled ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData) timeoutInterval:[HONAppDelegate timeoutInterval]];
 	
-	NSLog(@"IMAGE:[%@]", imageUrl);
+	
 	
 	__weak HONFeedItemViewController *weakSelf = self;
 	[_heroImageView setImageWithURLRequest:imageRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -844,6 +852,10 @@
 
 - (void)_goShare {
 	[_feedViewController feedItem:self shareChallenge:_challenge fromParticipant:_challenge.creatorVO withImage:_heroImageView.image];
+}
+
+- (void)_goDetails {
+	[_feedViewController feedItem:self showChallenge:_challenge];
 }
 
 @end
