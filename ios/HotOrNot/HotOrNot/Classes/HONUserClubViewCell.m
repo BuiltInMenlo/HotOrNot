@@ -24,7 +24,7 @@
 		[self hideChevron];
 		
 		_isInviteCell = isInvite;
-		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nonSelfieRowBG"]];
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"myClubsRowBG"]];
 	}
 	
 	return (self);
@@ -85,11 +85,11 @@
 	[self.contentView addSubview:membersLabel];
 	
 	UIButton *takeActionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	takeActionButton.frame = CGRectMake(232.0, 15.0, 64.0, 64.0);
-	[takeActionButton setBackgroundImage:[UIImage imageNamed:@"acceptButton_nonActive"] forState:UIControlStateNormal];
-	[takeActionButton setBackgroundImage:[UIImage imageNamed:@"acceptButton_Active"] forState:UIControlStateHighlighted];
-	//[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_nonActive" : @"editButton_nonActive"] forState:UIControlStateNormal];
-	//[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptButton_Active" : @"editButton_Active"] forState:UIControlStateHighlighted];
+	takeActionButton.frame = CGRectMake(212.0, 14.0, 84.0, 44.0);
+//	[takeActionButton setBackgroundImage:[UIImage imageNamed:@"acceptClubButton_nonActive"] forState:UIControlStateNormal];
+//	[takeActionButton setBackgroundImage:[UIImage imageNamed:@"acceptClubButton_Active"] forState:UIControlStateHighlighted];
+	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptClubButton_nonActive" : @"shareClubButton_nonActive"] forState:UIControlStateNormal];
+	[takeActionButton setBackgroundImage:[UIImage imageNamed:(_isInviteCell) ? @"acceptClubButton_Active" : @"shareClubButton_Active"] forState:UIControlStateHighlighted];
 	[takeActionButton addTarget:self action:(_isInviteCell) ? @selector (_goAcceptInvite) : @selector(_goEditSettings) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:takeActionButton];
 }

@@ -33,7 +33,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSArray *)fpoInviteClubs {
 	return (@[@{@"id"				: @"1110001",
-				@"name"				: @"Jefferson High School",
+				@"name"				: @"Jefferson High",
 				@"description"		: @"FPO High School",
 				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg",
 				
@@ -43,7 +43,7 @@ static HONClubAssistant *sharedInstance = nil;
 				
 				@"members"			: @[@{@"id"				: @"116900",
 										  @"username"		: @"dev_jesse",
-										  @"avatar"		: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
+										  @"avatar"			: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
 										  @"age"			: @"1970-07-08 00:00:00",
 										  @"extern_name"	: @"Jesse Boley",
 										  @"mobile_number"	: @"",

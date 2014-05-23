@@ -99,9 +99,9 @@
 		[self.contentView addSubview:topicLabel];
 		
 		UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		ctaButton.frame = CGRectMake(248.0, 22.0, 64.0, 64.0);
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"addClubButton_nonActive"] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"addClubButton_Active"] forState:UIControlStateHighlighted];
+		ctaButton.frame = CGRectMake(212.0, 42.0, 84.0, 44.0);
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"joinClubButton_nonActive"] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"joinClubButton_Active"] forState:UIControlStateHighlighted];
 		[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:ctaButton];
 	}

@@ -88,7 +88,6 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-		
 	_joinedClubs = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
@@ -393,7 +392,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (83.0);
+	return (84.0);
 	
 	if (indexPath.section == 0 || indexPath.section == 1)
 		return (kOrthodoxTableCellHeight);
@@ -482,6 +481,7 @@
 			[self _leaveClub:_selectedClub];
 	}
 }
+
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
