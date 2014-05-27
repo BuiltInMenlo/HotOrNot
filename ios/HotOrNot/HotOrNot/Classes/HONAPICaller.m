@@ -1098,6 +1098,7 @@ static HONAPICaller *sharedInstance = nil;
 							 @"challengeID"	: [dict objectForKey:@"challenge_id"],
 							 @"clubID"		: [dict objectForKey:@"club_id"],
 							 @"subject"		: [dict objectForKey:@"subject"],
+							 @"subjects"	: [dict objectForKey:@"subjects"],
 							 @"targets"		: [dict objectForKey:@"recipients"]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], [dict objectForKey:@"api_endpt"], params);

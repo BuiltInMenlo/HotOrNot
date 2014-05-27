@@ -272,7 +272,23 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
++ (void)writePhoneNumber:(NSString *)phoneNumber {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (NSString *)phoneNumber {
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] : @"");
+}
+
+
 + (void)writeDeviceToken:(NSString *)token {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
+	
 	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -753,6 +769,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
+	
+	//[HONAppDelegate writePhoneNumber:@"+12393709811"];
 	
 	
 	char bytes[] = "„7ì”~ís";

@@ -147,6 +147,9 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSRange)rangeForImageQueue;
 
++ (void)writePhoneNumber:(NSString *)phoneNumber;
++ (NSString *)phoneNumber;
+
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;
 

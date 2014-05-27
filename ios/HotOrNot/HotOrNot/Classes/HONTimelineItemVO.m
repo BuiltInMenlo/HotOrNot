@@ -16,6 +16,9 @@
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	
+	//NSLog(@"DICTIONARY:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
+	//dictionary = [((NSArray *)dictionary) objectAtIndex:0];
+	
 	HONTimelineItemVO *vo = [[HONTimelineItemVO alloc] init];
 	vo.dictionary = dictionary;
 	

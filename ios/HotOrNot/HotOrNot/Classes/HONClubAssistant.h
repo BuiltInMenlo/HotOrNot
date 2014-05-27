@@ -15,4 +15,5 @@
 - (NSArray *)fpoInviteClubs;
 - (NSArray *)fpoJoinedClubs;
 - (NSDictionary *)fpoOwnedClubDictionary;
+- (NSDictionary *)emptyClubDictionary;
 @end

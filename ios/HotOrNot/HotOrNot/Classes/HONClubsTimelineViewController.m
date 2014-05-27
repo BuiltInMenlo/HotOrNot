@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AddressBook/AddressBook.h>
+
 #import "NSString+DataTypes.h"
 
 
@@ -78,17 +80,17 @@
 	
 	_dictItems = [NSMutableArray array];
 	_timelineItems = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveClubTimelineForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		for (NSDictionary *dict in (NSArray *)result)
-			[_dictItems addObject:dict];
-		
+//	[[HONAPICaller sharedInstance] retrieveClubTimelineForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+//		for (NSDictionary *dict in (NSArray *)result)
+//			[_dictItems addObject:dict];
+//		
 		
 		_joinedClubs = [NSMutableArray array];
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 			
 			if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) {
-				[_dictItems addObject:[((NSDictionary *)result) objectForKey:@"owned"]];
-				_ownClub = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
+				[_dictItems addObject:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
+				_ownClub = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
 			}
 			
 			
@@ -106,6 +108,8 @@
 			
 			
 			_invitedClubs = [NSMutableArray array];
+			[self _suggestClubs];
+			
 			[[HONAPICaller sharedInstance] retrieveClubInvitesForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 				for (NSDictionary *dict in (NSArray *)result) {
 					[_dictItems addObject:dict];
@@ -125,10 +129,163 @@
 					_progressHUD = nil;
 				}
 				
-				[self _sortItems];
+				//[self _sortItems];
+				
+				for (NSDictionary *dict in _dictItems) {
+					[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
+				}
+				
+				self.view.hidden = NO;
+				[_tableView reloadData];
+				[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 			}];
 		}];
-	}];
+//	}];
+}
+
+
+#pragma mark - Data Manip
+- (void)_suggestClubs {
+	NSMutableArray *unsortedContacts = [NSMutableArray array];
+	
+	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
+	
+	for (int i=0; i<nPeople; i++) {
+		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
+		
+		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
+		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
+		
+		if ([fName length] == 0)
+			continue;
+		
+		if ([lName length] == 0)
+			lName = @"";
+		
+		
+		NSData *imageData = nil;
+		if (ABPersonHasImageData(ref))
+			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
+		
+		
+		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
+		
+		NSString *phoneNumber = @"";
+		if (phoneCount > 0)
+			phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
+		
+		CFRelease(phoneProperties);
+		
+		
+		NSString *email = @"";
+		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
+		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
+		
+		if (emailCount > 0)
+			email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0);
+		
+		CFRelease(emailProperties);
+		
+		if ([email length] == 0)
+			email = @"";
+		
+		if ([phoneNumber length] > 0 || [email length] > 0) {
+			[unsortedContacts addObject:[HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
+																				  @"l_name"	: lName,
+																				  @"phone"	: phoneNumber,
+																				  @"email"	: email,
+																				  @"image"	: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}]];
+		}
+	}
+	
+	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
+	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
+	
+	for (HONContactUserVO *vo in unsortedContacts) {
+		if (![segmentedKeys containsObject:vo.lastName]) {
+			[segmentedKeys addObject:vo.lastName];
+			
+			NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+			[segmentedDict setValue:newSegment forKey:vo.lastName];
+			
+		} else {
+			NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:vo.lastName];
+			[prevSegment addObject:vo];
+			[segmentedDict setValue:prevSegment forKey:vo.lastName];
+		}
+	}
+	
+	NSString *clubName = @"";
+	for (NSString *key in segmentedDict) {
+		if ([[segmentedDict objectForKey:key] count] >= 2) {
+			clubName = [key stringByAppendingString:@" family"];
+			break;
+		}
+	}
+	
+	if ([clubName length] > 0) {
+		NSMutableDictionary *familyClubDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		[familyClubDict setValue:clubName forKey:@"name"];
+		
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[familyClubDict copy]];
+		[_invitedClubs addObject:vo];
+		[_dictItems addObject:vo.dictionary];
+	}
+	
+	
+	if ([[HONAppDelegate phoneNumber] length] > 0) {
+		NSLog(@"PHONE:[%@]", [HONAppDelegate phoneNumber]);
+		
+		NSMutableDictionary *areaCodeDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		[areaCodeDict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
+		
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[areaCodeDict copy]];
+		[_invitedClubs addObject:vo];
+		[_dictItems addObject:vo.dictionary];
+	}
+	
+	
+	
+	[segmentedDict removeAllObjects];
+	[segmentedKeys removeAllObjects];
+	
+	for (HONContactUserVO *vo in unsortedContacts) {
+		if ([vo.email length] > 0) {
+			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
+			
+			if (![segmentedKeys containsObject:emailDomain]) {
+				[segmentedKeys addObject:emailDomain];
+				
+				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+				[segmentedDict setValue:newSegment forKey:emailDomain];
+				
+			} else {
+				NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:emailDomain];
+				[prevSegment addObject:vo];
+				[segmentedDict setValue:prevSegment forKey:emailDomain];
+			}
+		}
+	}
+	
+	clubName = @"";
+	for (NSString *key in segmentedDict) {
+		if ([[segmentedDict objectForKey:key] count] >= 2) {
+			clubName = [key stringByAppendingString:@" club"];
+			break;
+		}
+	}
+	
+	if ([clubName length] > 0) {
+		NSMutableDictionary *familyClubDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		[familyClubDict setValue:clubName forKey:@"name"];
+		
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[familyClubDict copy]];
+		[_invitedClubs addObject:vo];
+		[_dictItems addObject:vo.dictionary];
+	}
 }
 
 

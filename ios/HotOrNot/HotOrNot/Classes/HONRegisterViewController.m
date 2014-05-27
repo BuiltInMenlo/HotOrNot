@@ -169,6 +169,8 @@
 				_progressHUD = nil;
 			}
 			
+			
+			[HONAppDelegate writePhoneNumber:_phone];
 			[[HONAPICaller sharedInstance] submitPhoneNumberForContactsMatching:_phone completion:^(NSObject *result) {}];
 			
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];

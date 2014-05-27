@@ -8,6 +8,7 @@
 
 
 #import "HONTimelineItemVO.h"
+#import "HONChallengeVO.h"
 
 @class HONClubTimelineViewCell;
 @protocol HONClubTimelineViewCellDelegate <NSObject>
@@ -16,6 +17,9 @@
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell denyInviteForClub:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell replyClubChallenge:(HONChallengeVO *)challengeVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell moreClubChallenge:(HONChallengeVO *)challengeVO;
 @end
 
 @interface HONClubTimelineViewCell : UITableViewCell

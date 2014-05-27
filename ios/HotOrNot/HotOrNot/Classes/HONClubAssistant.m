@@ -115,5 +115,21 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 
+- (NSDictionary *)emptyClubDictionary {
+	return (@{@"id"				: @"",
+			  @"name"			: @"",
+			  
+			  @"description"	: @"",
+			  @"img"			: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+			   
+			  @"owner"			: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+									@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+									@"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
+			   
+			  @"members"		: @[],
+			  @"pending"		: @[],
+			  @"blocked"		: @[],
+			  @"added"			: @"2014-04-28 00:40:03"});
+}
 
 @end

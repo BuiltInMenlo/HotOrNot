@@ -19,8 +19,13 @@
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
 	vo.dictionary = dictionary;
 	
+//	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	
-	//NSLog(@"DICTIONARY[%@]\nOWNER:[%@]\nMEMBERS:[%@]:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary, [dictionary objectForKey:@"owner"], [dictionary objectForKey:@"members"], [dictionary objectForKey:@"added"]);
+//	for (NSString *param in dictionary)
+//		NSLog(@"NAME:[%@]", param);
+	
+//	NSLog(@"NAME:[%@]", [dictionary objectForKey:@"name"]);
+//	NSLog(@"DICTIONARY[%@]\nOWNER:[%@]\nMEMBERS:[%@]:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary, [dictionary objectForKey:@"owner"], [dictionary objectForKey:@"members"], [dictionary objectForKey:@"added"]);
 	
 	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubName = [dictionary objectForKey:@"name"];

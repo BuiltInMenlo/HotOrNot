@@ -141,7 +141,7 @@
 		likeButton.frame = CGRectMake(16.0, 2.0, 44.0, 44.0);
 		[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 		[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-//		[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+		[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 		[footerView addSubview:likeButton];
 		
 		UILabel *likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 9.0, 160.0, 28.0)];
@@ -185,6 +185,21 @@
 - (void)_goCTA {
 	if ([self.delegate respondsToSelector:@selector(clubTimelineViewCell:acceptInviteForClub:)])
 		[self.delegate clubTimelineViewCell:self acceptInviteForClub:_timelineItemVO.userClubVO];
+}
+
+- (void)_goLike {
+	if ([self.delegate respondsToSelector:@selector(clubTimelineViewCell:likeClubChallenge:)])
+		[self.delegate clubTimelineViewCell:self likeClubChallenge:_timelineItemVO.challengeVO];
+}
+
+- (void)_goReply {
+	if ([self.delegate respondsToSelector:@selector(clubTimelineViewCell:replyClubChallenge:)])
+		[self.delegate clubTimelineViewCell:self likeClubChallenge:_timelineItemVO.challengeVO];
+}
+
+- (void)_goMore {
+	if ([self.delegate respondsToSelector:@selector(clubTimelineViewCell:moreClubChallenge:)])
+		[self.delegate clubTimelineViewCell:self likeClubChallenge:_timelineItemVO.challengeVO];
 }
 
 

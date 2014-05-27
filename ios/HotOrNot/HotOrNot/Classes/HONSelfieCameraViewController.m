@@ -527,12 +527,19 @@
 	 */
 	
 	
+	NSError *error;
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[@"#happy", @"#joyful", @"#excited"] options:0 error:&error];
+	NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	
+	NSLog(@"SUBJECTS:[%@]", jsonString);
+	
 	
 	_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
 						 @"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
 						 @"club_id"			: [@"" stringFromInt:_userClubVO.clubID],
-						 @"subject"			: _subjectName,
+						 @"subject"			: @"#happy",
+						 @"subjects"		: jsonString,
 						 @"recipients"		: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @"",
 						 @"api_endpt"		: (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
 	
