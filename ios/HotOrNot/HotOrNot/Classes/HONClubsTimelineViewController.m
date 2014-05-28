@@ -237,8 +237,6 @@
 	
 	
 	if ([[HONAppDelegate phoneNumber] length] > 0) {
-		NSLog(@"PHONE:[%@]", [HONAppDelegate phoneNumber]);
-		
 		NSMutableDictionary *areaCodeDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
 		[areaCodeDict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
 		
@@ -379,10 +377,59 @@
 }
 
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO {
-	NSLog(@"[*:*] selectedClubRow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
+	NSLog(@"[*:*] clubTimelineViewCell:selectedClubRow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Selected Club Row"
 									   withUserClub:userClubVO];
+}
+
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"[*:*] clubTimelineViewCell:likeClubChallenge:(%d - %@)", challengeVO.challengeID, challengeVO.subjectName);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Liked"
+									   withChallenge:challengeVO];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+	
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSObject *result){
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]];
+	}];
+}
+
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell moreClubChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"[*:*] clubTimelineViewCell:moreClubChallenge:(%d - %@)", challengeVO.clubID, challengeVO.subjectName);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - More"
+									   withChallenge:challengeVO];
+	
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], challengeVO.subjectName, challengeVO.creatorVO.username];
+	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], challengeVO.subjectName, challengeVO.creatorVO.username, [HONAppDelegate shareURL]];
+	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], challengeVO.subjectName, challengeVO.creatorVO.username, [HONAppDelegate shareURL]];
+	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:0], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+																							@"image"			: [[UIImage alloc] init],
+																							@"url"				: [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix],
+																							@"mp_event"			: @"Timeline Details",
+																							@"view_controller"	: self}];
+
+}
+
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell replyClubChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"[*:*] clubTimelineViewCell:replyClubChallenge:(%d - %@)", challengeVO.clubID, challengeVO.subjectName);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Reply"
+									   withChallenge:challengeVO];
+}
+
+
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell shareClub:(HONUserClubVO *)userClubVO {
+	NSLog(@"[*:*] clubTimelineViewCell:shareClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Share"
+									  withUserClub:userClubVO];
+	
+	
 }
 
 

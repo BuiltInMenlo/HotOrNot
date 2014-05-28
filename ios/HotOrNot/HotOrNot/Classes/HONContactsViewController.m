@@ -56,7 +56,7 @@
 #pragma mark - Data Calls
 - (void)_retreiveUserClub {
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		_userClubVO = [HONUserClubVO clubWithDictionary:([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0] : [[HONClubAssistant sharedInstance] fpoOwnedClubDictionary]];
+		_userClubVO = nil;//[HONUserClubVO clubWithDictionary:([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0] : nil];
 		
 	}];
 }

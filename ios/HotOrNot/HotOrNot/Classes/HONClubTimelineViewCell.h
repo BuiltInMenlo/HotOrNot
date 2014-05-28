@@ -20,6 +20,7 @@
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell replyClubChallenge:(HONChallengeVO *)challengeVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell moreClubChallenge:(HONChallengeVO *)challengeVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell shareClub:(HONUserClubVO *)userClubVO;
 @end
 
 @interface HONClubTimelineViewCell : UITableViewCell

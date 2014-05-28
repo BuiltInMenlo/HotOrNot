@@ -39,13 +39,15 @@
 
 - (NSInteger)currentPageIndex
 {
-	return [self _indexForVisiblePageAtOffset:self.contentOffset.x];
+	//return [self _indexForVisiblePageAtOffset:self.contentOffset.x];
+	return [self _indexForVisiblePageAtOffset:self.contentOffset.y];
 }
 
 - (CGRect)rectForIndex:(NSUInteger)index
 {
 	CGRect bounds = self.bounds;
-	return CGRectMake(CGRectGetWidth(bounds) * index, 0.0, CGRectGetWidth(bounds), CGRectGetHeight(bounds));
+	//return CGRectMake(CGRectGetWidth(bounds) * index, 0.0, CGRectGetWidth(bounds), CGRectGetHeight(bounds));
+	return CGRectMake(0.0, CGRectGetHeight(bounds) * index, CGRectGetWidth(bounds), CGRectGetHeight(bounds));
 }
 
 - (CGRect)rectForItem:(id)item
@@ -59,7 +61,8 @@
 
 - (NSInteger)_indexForVisiblePageAtOffset:(CGFloat)offset
 {
-	return MAX(0.0, offset) / self.bounds.size.width;
+	//return MAX(0.0, offset) / self.bounds.size.width;
+	return MAX(0.0, offset) / self.bounds.size.height;
 }
 
 #pragma mark - Data Source
@@ -74,7 +77,8 @@
 	[self _invalidateAllItems];
 	_numberOfItems = [_dataSource numberOfItemsForPagedView:self];
 	_visibleIndexes = [NSMutableIndexSet indexSet];
-	self.contentSize = CGSizeMake(self.bounds.size.width * _numberOfItems, self.bounds.size.height);
+	//self.contentSize = CGSizeMake(self.bounds.size.width * _numberOfItems, self.bounds.size.height);
+	self.contentSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height * _numberOfItems);
 	
 	if (!_layoutSubviewsReentrancyGuard) {
 		// @revisit maintain index
@@ -108,7 +112,8 @@
 	NSMutableIndexSet *currentlyVisibleIndexes = [_visibleIndexes mutableCopy];
 	[_visibleIndexes removeAllIndexes];
 	
-	NSInteger visibleIndex = [self _indexForVisiblePageAtOffset:self.contentOffset.x];
+	//NSInteger visibleIndex = [self _indexForVisiblePageAtOffset:self.contentOffset.x];
+	NSInteger visibleIndex = [self _indexForVisiblePageAtOffset:self.contentOffset.y];
 	NSRange visibleRange = NSMakeRange(0, 0);
 	
 	if (_numberOfItems > 0) {

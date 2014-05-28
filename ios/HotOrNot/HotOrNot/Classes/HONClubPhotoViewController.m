@@ -186,7 +186,7 @@
 	likeButton.frame = CGRectMake(-1.0, 2.0, 44.0, 44.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-//	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+	[likeButton addTarget:self action:@selector(_goLikeCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:likeButton];
 	
 	UILabel *likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 9.0, 160.0, 28.0)];
@@ -202,7 +202,7 @@
 	replyButton.frame = CGRectMake(86.0, 0.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
-//	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+	[replyButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:replyButton];
 	
 	UILabel *repliesLabel = [[UILabel alloc] initWithFrame:CGRectMake(128.0, 9.0, 160.0, 28.0)];
@@ -218,7 +218,7 @@
 	moreButton.frame = CGRectMake(265.0, 2.0, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
-//	[moreButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[moreButton addTarget:self action:@selector(_goShareChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_footerView addSubview:moreButton];
 }
 

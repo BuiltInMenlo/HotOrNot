@@ -46,7 +46,6 @@
 - (id)init
 {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshHomeTab:) name:@"REFRESH_HOME_TAB" object:nil];
 	}
 	return self;
 }
@@ -101,32 +100,7 @@
 	inviteButton.titleLabel.textAlignment = NSTextAlignmentCenter;
 	[inviteButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
 	[emptyStateView addSubview:inviteButton];
-//
-//	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	createClubButton.frame = CGRectMake(0.0, 245.0, 320.0, 45.0);
-//	[createClubButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
-//	[createClubButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
-//	[createClubButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
-//	[createClubButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
-//	[createClubButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
-//	[createClubButton setTitle:@"Invite friends to join my club" forState:UIControlStateNormal];
-//	[createClubButton setTitle:@"Invite friends to join my club" forState:UIControlStateHighlighted];
-//	createClubButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-//	[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
-//	[emptyStateView addSubview:createClubButton];
-//	
-//	UIButton *matchPhoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	matchPhoneButton.frame = CGRectMake(0.0, 245.0//290.0, 320.0, 45.0);
-//	[matchPhoneButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateNormal];
-//	[matchPhoneButton setBackgroundImage:[UIImage imageNamed:@"activityBackground"] forState:UIControlStateHighlighted];
-//	[matchPhoneButton.titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15]];
-//	[matchPhoneButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
-//	[matchPhoneButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateHighlighted];
-//	[matchPhoneButton setTitle:@"Verify your phone number" forState:UIControlStateNormal];
-//	[matchPhoneButton setTitle:@"Verify your phone number" forState:UIControlStateHighlighted];
-//	matchPhoneButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-//	[matchPhoneButton addTarget:self action:@selector(_goMatchPhone) forControlEvents:UIControlEventTouchUpInside];
-//	[emptyStateView addSubview:matchPhoneButton];
+	
 	return emptyStateView;
 }
 
@@ -274,14 +248,6 @@
 //	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goMatchPhone
-{
-//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Match Phone"];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 
 #pragma mark - Notifications
 
@@ -315,29 +281,6 @@
 //	[self _goRegistration];
 //}
 
-//- (void)_selectedHomeTab:(NSNotification *)notification
-//{
-//	if (_tutorialImageView != nil) {
-//		[_tutorialImageView removeFromSuperview];
-//		_tutorialImageView = nil;
-//	}
-//}
-
-- (void)_refreshHomeTab:(NSNotification *)notification
-{
-	[self _refreshChallengesFromServer];
-}
-
-//- (void)_refreshLikeCount:(NSNotification *)notification
-//{
-//	_challengeVO = [HONChallengeVO challengeWithDictionary:[notification object]];
-//	
-//	for (HONTimelineItemViewCell *cell in _cells) {
-//		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-//			[cell updateChallenge:_challengeVO];
-//		}
-//	}
-//}
 
 #pragma mark - TimelineItemCell Delegates
 
@@ -839,6 +782,7 @@
 	gradientImageView.frame = _heroImageView.frame;
 	[_heroImageView addSubview:gradientImageView];
 }
+
 
 #pragma mark - Actions
 

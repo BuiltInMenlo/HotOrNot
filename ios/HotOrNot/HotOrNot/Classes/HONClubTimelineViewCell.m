@@ -129,6 +129,7 @@
 			} completion:nil];
 		};
 		
+		
 		[selfieImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_timelineItemVO.challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:selfieImageSuccessBlock
