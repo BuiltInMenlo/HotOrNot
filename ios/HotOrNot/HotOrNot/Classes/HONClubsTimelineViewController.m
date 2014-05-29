@@ -143,6 +143,12 @@
 //	}];
 }
 
+- (void)_joinClub:(HONUserClubVO *)userClubVO {
+	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		
+	}];
+}
+
 
 #pragma mark - Data Manip
 - (void)_suggestClubs {
@@ -381,6 +387,16 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Selected Club Row"
 									   withUserClub:userClubVO];
+}
+
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
+	NSLog(@"[*:*] clubTimelineViewCell:joinClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Join Club"
+									   withUserClub:userClubVO];
+	
+	
+	[self _joinClub:userClubVO];
 }
 
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO {

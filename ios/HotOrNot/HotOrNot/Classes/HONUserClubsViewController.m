@@ -382,7 +382,6 @@
 	} else if (indexPath.section == 1) {
 		cell.userClubVO = [_invitedClubs objectAtIndex:indexPath.row];
 		cell.delegate = self;
-	
 	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -467,7 +466,7 @@
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	//	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
+//	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
 	[_tableView setContentOffset:CGPointZero animated:NO];
 }
 

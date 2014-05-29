@@ -15,6 +15,7 @@
 @optional
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell acceptInviteForClub:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell denyInviteForClub:(HONUserClubVO *)userClubVO;
+- (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO;

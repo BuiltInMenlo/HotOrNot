@@ -5,34 +5,34 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>006544D4-A96E-43BF-9901-35A517519A3F</string>
+	<string>70571F6D-B225-42B3-AE3B-5A74D4A8056F</string>
 	<key>IDESourceControlProjectName</key>
 	<string>HotOrNot</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>3F1253DA-E3DD-471E-ACBD-418591EAC104</key>
-		<string>https://github.com/gullinbursti/HotOrNot.git</string>
+		<key>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</key>
+		<string>https://github.com/BuiltInMenlo/HotOrNot.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>3F1253DA-E3DD-471E-ACBD-418591EAC104</key>
+		<key>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</key>
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/gullinbursti/HotOrNot.git</string>
+	<string>https://github.com/BuiltInMenlo/HotOrNot.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>3F1253DA-E3DD-471E-ACBD-418591EAC104</string>
+	<string>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>3F1253DA-E3DD-471E-ACBD-418591EAC104</string>
+			<string>3B1AAB85-B97E-4A90-BFCB-8ABC3DED08BA</string>
 			<key>IDESourceControlWCCName</key>
 			<string>HotOrNot</string>
 		</dict>
