@@ -99,11 +99,11 @@
 				[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 			}
 			
-			// --//> *** POPULATED FPO CLUBS *** <//-- //
-			for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoJoinedClubs]) {
-				[_dictItems addObject:dict];
-				[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-			} // --//> *** POPULATED FPO CLUBS *** <//-- //
+//			// --//> *** POPULATED FPO CLUBS *** <//-- //
+//			for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoJoinedClubs]) {
+//				[_dictItems addObject:dict];
+//				[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//			} // --//> *** POPULATED FPO CLUBS *** <//-- //
 			
 			
 			
@@ -117,11 +117,11 @@
 				}
 				
 				
-				// --//> *** POPULATED FPO CLUBS *** <//-- //
-				for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoInviteClubs]) {
-					[_dictItems addObject:dict];
-					[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-				} // --//> *** POPULATED FPO CLUBS *** <//-- //
+//				// --//> *** POPULATED FPO CLUBS *** <//-- //
+//				for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoInviteClubs]) {
+//					[_dictItems addObject:dict];
+//					[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//				} // --//> *** POPULATED FPO CLUBS *** <//-- //
 				
 				
 				if (_progressHUD != nil) {
@@ -225,10 +225,16 @@
 	}
 	
 	NSString *clubName = @"";
-	for (NSString *key in segmentedDict) {
-		if ([[segmentedDict objectForKey:key] count] >= 2) {
-			clubName = [key stringByAppendingString:@" family"];
-			break;
+	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
+	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"])
+		clubName = [NSString stringWithFormat:@"The %@ Family", [[[[deviceName objectAtIndex:1] substringToIndex:1] uppercaseString] stringByAppendingString:[[deviceName objectAtIndex:2] substringWithRange:NSMakeRange(1, [[deviceName objectAtIndex:1] length] - 2)]]];
+	
+	else {
+		for (NSString *key in segmentedDict) {
+			if ([[segmentedDict objectForKey:key] count] >= 2) {
+				clubName = [NSString stringWithFormat:@"The %@ family", key];
+				break;
+			}
 		}
 	}
 	
@@ -260,16 +266,18 @@
 		if ([vo.email length] > 0) {
 			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
 			
-			if (![segmentedKeys containsObject:emailDomain]) {
-				[segmentedKeys addObject:emailDomain];
-				
-				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-				[segmentedDict setValue:newSegment forKey:emailDomain];
-				
-			} else {
-				NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:emailDomain];
-				[prevSegment addObject:vo];
-				[segmentedDict setValue:prevSegment forKey:emailDomain];
+			if (![emailDomain isEqualToString:@"gmail.com"] && ![emailDomain isEqualToString:@"live.com"] && ![emailDomain isEqualToString:@"yahoo.com"] && ![emailDomain isEqualToString:@"hotmail.com"]) {
+				if (![segmentedKeys containsObject:emailDomain]) {
+					[segmentedKeys addObject:emailDomain];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[segmentedDict setValue:newSegment forKey:emailDomain];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:emailDomain];
+					[prevSegment addObject:vo];
+					[segmentedDict setValue:prevSegment forKey:emailDomain];
+				}
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../../VolleyBackend/classes/BIM/API.php</string>
+	<string>../../VolleyBackend/classes/BIM/App/Users.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -69,55 +69,209 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>../../VolleyBackend/classes/BIM/Controller/Users.php</key>
+		<key>../../VolleyBackend/classes/BIM/App/Challenges.php</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>36</integer>
+				<integer>62</integer>
 				<key>line</key>
-				<integer>198</integer>
+				<integer>376</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>176</integer>
+			<integer>364</integer>
 		</dict>
-		<key>../../VolleyBackend/classes/BIM/DAO/Mysql/Volleys.php</key>
+		<key>../../VolleyBackend/classes/BIM/App/Users.php</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>44</integer>
+				<integer>55</integer>
 				<key>line</key>
-				<integer>746</integer>
+				<integer>295</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>284</integer>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/Config.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>31</integer>
+				<key>line</key>
+				<integer>249</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>744</integer>
+			<integer>234</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>19</integer>
+				<key>line</key>
+				<integer>249</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>31</integer>
+				<key>line</key>
+				<integer>249</integer>
+			</dict>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/Controller/Users.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>43</integer>
+				<key>line</key>
+				<integer>201</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>184</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>31</integer>
+				<key>line</key>
+				<integer>201</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>43</integer>
+				<key>line</key>
+				<integer>201</integer>
+			</dict>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/DAO/Mysql/User.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>34</integer>
+				<key>line</key>
+				<integer>297</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>280</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
 				<integer>20</integer>
 				<key>line</key>
-				<integer>746</integer>
+				<integer>297</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>44</integer>
+				<integer>34</integer>
+				<key>line</key>
+				<integer>297</integer>
+			</dict>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/DAO/Mysql/Volleys.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
 				<key>line</key>
 				<integer>746</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>744</integer>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/Model/User.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>48</integer>
+				<key>line</key>
+				<integer>49</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>34</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>41</integer>
+				<key>line</key>
+				<integer>49</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>56</integer>
+				<key>line</key>
+				<integer>49</integer>
+			</dict>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/Utils.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>30</integer>
+				<key>line</key>
+				<integer>77</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>68</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>77</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>42</integer>
+				<key>line</key>
+				<integer>77</integer>
 			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>../../VolleyBackend/classes/BIM/Controller/Users.php</string>
+		<string>../../VolleyBackend/classes/BIM/Config.php</string>
 		<string>../../VolleyBackend/classes/BIM/API.php</string>
+		<string>../../VolleyBackend/classes/BIM/App/Users.php</string>
+		<string>../../VolleyBackend/classes/BIM/App/Challenges.php</string>
+		<string>../../VolleyBackend/classes/BIM/DAO/Mysql/User.php</string>
+		<string>../../VolleyBackend/classes/BIM/Model/User.php</string>
+		<string>../../VolleyBackend/classes/BIM/Utils.php</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

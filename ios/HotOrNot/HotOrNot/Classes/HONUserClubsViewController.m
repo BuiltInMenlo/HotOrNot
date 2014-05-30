@@ -99,10 +99,10 @@
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		
-		// --//> *** POPULATED FPO CLUBS *** <//-- //
-		for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoJoinedClubs]) {
-			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-		} // --//> *** POPULATED FPO CLUBS *** <//-- //
+//		// --//> *** POPULATED FPO CLUBS *** <//-- //
+//		for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoJoinedClubs]) {
+//			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//		} // --//> *** POPULATED FPO CLUBS *** <//-- //
 		
 		
 		[self _retreiveClubInvites];
@@ -117,10 +117,10 @@
 			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		
-		// --//> *** POPULATED FPO CLUBS *** <//-- //
-		for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoInviteClubs]) {
-			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-		} // --//> *** POPULATED FPO CLUBS *** <//-- //
+//		// --//> *** POPULATED FPO CLUBS *** <//-- //
+//		for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoInviteClubs]) {
+//			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//		} // --//> *** POPULATED FPO CLUBS *** <//-- //
 		
 		
 		if (_progressHUD != nil) {

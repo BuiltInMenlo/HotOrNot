@@ -59,6 +59,10 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return ([[NSLocale preferredLanguages] objectAtIndex:0]);
 }
 
+- (NSString *)deviceName {
+	return ([[UIDevice currentDevice] name]);
+}
+
 - (NSString *)modelName {
 	struct utsname systemInfo;
 	uname(&systemInfo);

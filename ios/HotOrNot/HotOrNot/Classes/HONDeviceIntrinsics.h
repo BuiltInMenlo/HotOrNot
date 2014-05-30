@@ -19,6 +19,7 @@
 
 - (NSString *)locale;
 - (NSString *)modelName;
+- (NSString *)deviceName;
 
 - (BOOL)hasAdressBookPermission;
 - (void)promptForAddressBookAccess;

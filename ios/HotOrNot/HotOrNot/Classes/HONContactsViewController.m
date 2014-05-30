@@ -587,17 +587,19 @@
 	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
 	for (HONContactUserVO *vo in _allContacts) {
 		
-		NSString *charKey = [vo.lastName substringToIndex:1];
-		if (![_segmentedKeys containsObject:charKey]) {
-			[_segmentedKeys addObject:charKey];
-			
-			NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-			[dict setValue:newSegment forKey:charKey];
-			
-		} else {
-			NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
-			[prevSegment addObject:vo];
-			[dict setValue:prevSegment forKey:charKey];
+		if ([vo.lastName length] > 0) {
+			NSString *charKey = [vo.lastName substringToIndex:1];
+			if (![_segmentedKeys containsObject:charKey]) {
+				[_segmentedKeys addObject:charKey];
+				
+				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+				[dict setValue:newSegment forKey:charKey];
+				
+			} else {
+				NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+				[prevSegment addObject:vo];
+				[dict setValue:prevSegment forKey:charKey];
+			}
 		}
 	}
 	
