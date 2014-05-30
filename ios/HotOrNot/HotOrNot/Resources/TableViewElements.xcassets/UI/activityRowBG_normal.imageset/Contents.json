@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "activityRowBackground.png"
+      "filename" : "activityRowBackround_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "activityRowBackground@2x.png"
+      "filename" : "activityRowBackround_nonActive@2x.png"
     }
   ],
   "info" : {

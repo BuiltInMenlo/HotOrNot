@@ -30,6 +30,7 @@
 		4C2400EA18C2910F00C9AE53 /* HONUserClubInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400E918C2910F00C9AE53 /* HONUserClubInviteViewController.m */; };
 		4C2400ED18C2916C00C9AE53 /* HONUserClubSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400EC18C2916C00C9AE53 /* HONUserClubSettingsViewController.m */; };
 		4C2400F318C29B8400C9AE53 /* HONUserClubsSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2400F218C29B8400C9AE53 /* HONUserClubsSearchViewController.m */; };
+		4C250E941938031B007CA4E2 /* EmojiElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C250E931938031B007CA4E2 /* EmojiElements.xcassets */; };
 		4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */; };
 		4C2DD84018E3EEF100BC8759 /* FullScreenAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */; };
 		4C2DD84318E3F29600BC8759 /* HONTutorialView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DD84218E3F29600BC8759 /* HONTutorialView.m */; };
@@ -315,6 +316,7 @@
 		4C2400EC18C2916C00C9AE53 /* HONUserClubSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubSettingsViewController.m; sourceTree = "<group>"; };
 		4C2400F118C29B8400C9AE53 /* HONUserClubsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserClubsSearchViewController.h; sourceTree = "<group>"; };
 		4C2400F218C29B8400C9AE53 /* HONUserClubsSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubsSearchViewController.m; sourceTree = "<group>"; };
+		4C250E931938031B007CA4E2 /* EmojiElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = EmojiElements.xcassets; sourceTree = "<group>"; };
 		4C2DD83618E3B4B100BC8759 /* HONContactsTabViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactsTabViewController.h; sourceTree = "<group>"; };
 		4C2DD83718E3B4B100BC8759 /* HONContactsTabViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactsTabViewController.m; sourceTree = "<group>"; };
 		4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FullScreenAssets.xcassets; sourceTree = "<group>"; };
@@ -972,6 +974,7 @@
 				4C41A09118F25686007C103D /* CameraElements.xcassets */,
 				4C47745D18F50A7F00D78654 /* ClubItemElements.xcassets */,
 				4C01BAD2190CAAD1006CD80D /* ClubsElements.xcassets */,
+				4C250E931938031B007CA4E2 /* EmojiElements.xcassets */,
 				4C2DD83F18E3EEF100BC8759 /* FullScreenAssets.xcassets */,
 				4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */,
 				4C5FECB7190F4FCE0067F8A9 /* IndicatorElements.xcassets */,
@@ -1913,6 +1916,7 @@
 				4C4328F518E3A9FA0035FF06 /* TapjoyResources.bundle in Resources */,
 				4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */,
 				4C4328CA18E3A9FA0035FF06 /* MPArrowLeft.png in Resources */,
+				4C250E941938031B007CA4E2 /* EmojiElements.xcassets in Resources */,
 				4CA246C91908539D00512295 /* FPO_Clubs in Resources */,
 				4C4328EE18E3A9FA0035FF06 /* README.md in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,

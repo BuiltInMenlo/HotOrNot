@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "friendsRowBackround_nonActive.png"
+      "filename" : "excitedKeyButton_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "friendsRowBackround_nonActive@2x.png"
+      "filename" : "excitedKeyButton_Active@2x.png"
     }
   ],
   "info" : {
