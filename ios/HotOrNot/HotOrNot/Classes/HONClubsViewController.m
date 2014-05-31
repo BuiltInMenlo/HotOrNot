@@ -30,8 +30,11 @@
 @property (nonatomic, strong) HONUserClubsViewController *userClubsViewController;
 @property (nonatomic, assign) HONClubListType clubListType;
 @property (nonatomic, strong) HONTutorialView *tutorialView;
-@property (nonatomic, strong) UIButton *toggleListTypeButton;
-@property (nonatomic, strong) UILabel *toggleClubsLabel;
+@property (nonatomic, strong) UIImageView *toggleClubTypeImageView;
+@property (nonatomic, strong) UIButton *toggleTimelineButton;
+@property (nonatomic, strong) UIButton *toggleUserClubsButton;
+@property (nonatomic, strong) UILabel *toggleTimelineLabel;
+@property (nonatomic, strong) UILabel *toggleUserClubsLabel;
 
 @property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *joinedClubs;
@@ -117,7 +120,7 @@
 			[_allClubs addObject:vo];
 		}
 		
-		_toggleClubsLabel.text = [NSString stringWithFormat:@"My Club%@ (%d)", ([_allClubs count] == 1) ? @"" : @"s", [_allClubs count]];
+		_toggleUserClubsLabel.text = [NSString stringWithFormat:@"My Club%@ (%d)", ([_allClubs count] == 1) ? @"" : @"s", [_allClubs count]];
 	}];
 }
 
@@ -141,28 +144,37 @@
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_toggleListTypeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_toggleListTypeButton.frame = CGRectMake(0.0, kNavHeaderHeight + 6.0, 320.0, 44.0);
-	[_toggleListTypeButton setBackgroundImage:[UIImage imageNamed:@"toggleClubs_timeline"] forState:UIControlStateNormal];
-	[_toggleListTypeButton setBackgroundImage:[UIImage imageNamed:@"toggleClubs_timeline"] forState:UIControlStateHighlighted];
-	[_toggleListTypeButton addTarget:self action:@selector(_goToggleListType) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_toggleListTypeButton];
+	_toggleClubTypeImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"toggleClubs_timeline"]];
+	_toggleClubTypeImageView.frame = CGRectOffset(_toggleClubTypeImageView.frame, 0.0, kNavHeaderHeight + 6.0);
+	_toggleClubTypeImageView.userInteractionEnabled = YES;
+	[self.view addSubview:_toggleClubTypeImageView];
 	
-	UILabel *toggleNewsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 150.0, 17.0)];
-	toggleNewsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	toggleNewsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	toggleNewsLabel.backgroundColor = [UIColor clearColor];
-	toggleNewsLabel.textAlignment = NSTextAlignmentCenter;
-	toggleNewsLabel.text = @"News";
-	[_toggleListTypeButton addSubview:toggleNewsLabel];
+	_toggleTimelineLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 150.0, 17.0)];
+	_toggleTimelineLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
+	_toggleTimelineLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_toggleTimelineLabel.backgroundColor = [UIColor clearColor];
+	_toggleTimelineLabel.textAlignment = NSTextAlignmentCenter;
+	_toggleTimelineLabel.text = @"News";
+	[_toggleClubTypeImageView addSubview:_toggleTimelineLabel];
 	
-	_toggleClubsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 12.0, 150.0, 17.0)];
-	_toggleClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	_toggleClubsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_toggleClubsLabel.backgroundColor = [UIColor clearColor];
-	_toggleClubsLabel.textAlignment = NSTextAlignmentCenter;
-	_toggleClubsLabel.text = @"My Clubs (0)";
-	[_toggleListTypeButton addSubview:_toggleClubsLabel];
+	_toggleUserClubsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 12.0, 150.0, 17.0)];
+	_toggleUserClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	_toggleUserClubsLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_toggleUserClubsLabel.backgroundColor = [UIColor clearColor];
+	_toggleUserClubsLabel.textAlignment = NSTextAlignmentCenter;
+	_toggleUserClubsLabel.text = @"My Clubs (0)";
+	[_toggleClubTypeImageView addSubview:_toggleUserClubsLabel];
+	
+	_toggleTimelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_toggleTimelineButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
+	[_toggleTimelineButton addTarget:self action:@selector(_goToggleTimeline) forControlEvents:UIControlEventTouchUpInside];
+	_toggleTimelineButton.userInteractionEnabled = NO;
+	[_toggleClubTypeImageView addSubview:_toggleTimelineButton];
+	
+	_toggleUserClubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_toggleUserClubsButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
+	[_toggleUserClubsButton addTarget:self action:@selector(_goToggleUserClubs) forControlEvents:UIControlEventTouchUpInside];
+	[_toggleClubTypeImageView addSubview:_toggleUserClubsButton];
 	
 	[self _retrieveClubs];
 	
@@ -218,14 +230,36 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-- (void)_goToggleListType {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Clubs Timeline - Toggle %@ List", (_clubListType == HONClubListTypeTimeline) ? @"My Clubs" : @"News"]];
-	_clubListType = (_clubListType == HONClubListTypeTimeline) ? HONClubListTypeEnrollments : HONClubListTypeTimeline;
+
+- (void)_goToggleTimeline {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Toggle Timeline"];
+	_clubListType = HONClubListTypeTimeline;
+	_toggleClubTypeImageView.image = [UIImage imageNamed:@"toggleClubs_timeline"];
 	
-	[_toggleListTypeButton setBackgroundImage:[UIImage imageNamed:(_clubListType == HONClubListTypeTimeline) ? @"toggleClubs_timeline" : @"toggleClubs_subscriptions"] forState:UIControlStateNormal];
-	[_toggleListTypeButton setBackgroundImage:[UIImage imageNamed:(_clubListType == HONClubListTypeTimeline) ? @"toggleClubs_timeline" : @"toggleClubs_subscriptions"] forState:UIControlStateHighlighted];
+	_toggleTimelineLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
+	_toggleTimelineButton.userInteractionEnabled = NO;
 	
+	_toggleUserClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	_toggleUserClubsButton.userInteractionEnabled = YES;
 	
+	[self _toggleTableViews];
+}
+
+- (void)_goToggleUserClubs {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Toggle My Clubs"];
+	_clubListType = HONClubListTypeEnrollments;
+	_toggleClubTypeImageView.image = [UIImage imageNamed:@"toggleClubs_subscriptions"];
+	
+	_toggleTimelineButton.userInteractionEnabled = YES;
+	_toggleTimelineLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	
+	_toggleUserClubsLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
+	_toggleUserClubsButton.userInteractionEnabled = NO;
+	
+	[self _toggleTableViews];
+}
+
+- (void)_toggleTableViews {
 	UIViewController *introViewController = (_clubListType == HONClubListTypeTimeline) ? _clubsTimelineViewController : _userClubsViewController;
 	UIViewController *outroViewController = (_clubListType == HONClubListTypeTimeline) ? _userClubsViewController : _clubsTimelineViewController;
 	
