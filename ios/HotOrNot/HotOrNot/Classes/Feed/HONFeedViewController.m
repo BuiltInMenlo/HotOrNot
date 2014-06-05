@@ -665,6 +665,11 @@
 	likesLabel.text = [NSString stringWithFormat:@"Likes (%d)", MIN(_challenge.totalLikes, 999)];
 	[_footerView addSubview:likesLabel];
 	
+	UIButton *like2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+	like2Button.frame = likesLabel.frame;
+	[like2Button addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:like2Button];
+	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	replyButton.frame = CGRectMake(86.0, 0.0, 44.0, 44.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
@@ -680,6 +685,11 @@
 	repliesLabel.shadowOffset = CGSizeMake(0.0, 1.0);
 	repliesLabel.text = [NSString stringWithFormat:@"Replies (%d)", MIN([_challenge.challengers count], 999)];
 	[_footerView addSubview:repliesLabel];
+	
+	UIButton *reply2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+	replyButton.frame = repliesLabel.frame;
+	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+	[_footerView addSubview:reply2Button];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(265.0, 2.0, 44.0, 44.0);

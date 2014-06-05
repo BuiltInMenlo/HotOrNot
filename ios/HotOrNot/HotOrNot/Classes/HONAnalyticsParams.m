@@ -10,6 +10,8 @@
 
 #import "HONAnalyticsParams.h"
 
+NSString * const kKeenIOEventCollection = @"iOS";
+
 @implementation HONAnalyticsParams
 
 static HONAnalyticsParams *sharedInstance = nil;
@@ -189,108 +191,129 @@ static HONAnalyticsParams *sharedInstance = nil;
 }
 
 
-- (void)trackEvent:(NSString *)event {
-	[[Mixpanel sharedInstance] track:event
-						  properties:[[HONAnalyticsParams sharedInstance] userProperty]];
+- (void)trackEvent:(NSString *)eventName {
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:nil];
 }
 
-- (void)trackEvent:(NSString *)event withProperties:(NSDictionary *)properties {
-	[[Mixpanel sharedInstance] track:event
-						  properties:properties];
-}
-
-
-- (void)trackEvent:(NSString *)event withActivityItem:(HONActivityItemVO *)activityItemVO {
+- (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties {
+	NSMutableDictionary *event = (properties == nil) ? [[NSMutableDictionary alloc] init] : [properties mutableCopy];
+//	if (properties == nil) {
+//		[[Mixpanel sharedInstance] track:eventName];
+//		
+//		event = [[NSMutableDictionary alloc] init];
+//		
+//	} else {
+//		[[Mixpanel sharedInstance] track:eventName
+//							  properties:properties];
+//		
+//		event = [properties mutableCopy];
+//	}
 	
+	[event addEntriesFromDictionary:@{@"action"	: eventName}];
+	
+	NSError *error = nil;
+	[[KeenClient sharedClient] addEvent:[event copy]
+					  toEventCollection:kKeenIOEventCollection
+								  error:&error];
 }
 
-- (void)trackEvent:(NSString *)event withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
+
+- (void)trackEvent:(NSString *)eventName withActivityItem:(HONActivityItemVO *)activityItemVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForActivityItem:activityItemVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)eventName withCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCameraDevice:cameraDevice]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO {
+- (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO {
+- (void)trackEvent:(NSString *)eventName withChallenge:(HONChallengeVO *)challengeVO andParticipant:(HONOpponentVO *)opponentVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallengeParticipant:opponentVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withChallengeCreator:(HONChallengeVO *)challengeVO {
+- (void)trackEvent:(NSString *)eventName withChallengeCreator:(HONChallengeVO *)challengeVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallengeCreator:challengeVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withCohortUser:(HONUserVO *)userVO {
+- (void)trackEvent:(NSString *)eventName withCohortUser:(HONUserVO *)userVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForCohortUser:userVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withContactUser:(HONContactUserVO *)contactUserVO {
+- (void)trackEvent:(NSString *)eventName withContactUser:(HONContactUserVO *)contactUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForContactUser:contactUserVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withEmotion:(HONEmotionVO *)emotionVO {
+- (void)trackEvent:(NSString *)eventName withEmotion:(HONEmotionVO *)emotionVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForEmotion:emotionVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withMessage:(HONMessageVO *)messageVO {
+- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForMessage:messageVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO {
+- (void)trackEvent:(NSString *)eventName withMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)opponentVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForMessage:messageVO andParticipant:opponentVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+- (void)trackEvent:(NSString *)eventName withTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForTrivialUser:trivialUserVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
-- (void)trackEvent:(NSString *)event withUserClub:(HONUserClubVO *)userClubVO {
+- (void)trackEvent:(NSString *)eventName withUserClub:(HONUserClubVO *)userClubVO {
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForUserClub:userClubVO]];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:event
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];
 }
 
@@ -300,5 +323,14 @@ static HONAnalyticsParams *sharedInstance = nil;
 	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
 	[mixpanel.people set:properties];
 }
+
+- (void)forceAnalyticsUpload {
+	[[KeenClient sharedClient] uploadWithFinishedBlock:nil];
+}
+
+- (void)refreshLocation {
+	[[KeenClient sharedClient] refreshCurrentLocation];
+}
+
 
 @end

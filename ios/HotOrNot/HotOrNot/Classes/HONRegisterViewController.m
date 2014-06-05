@@ -751,7 +751,7 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	return (YES);
+	return ([textField.text length] < 10);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {

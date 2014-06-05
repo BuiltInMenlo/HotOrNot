@@ -10,9 +10,15 @@
 #import "HONTimelineItemVO.h"
 #import "HONChallengeVO.h"
 
+typedef NS_ENUM(NSInteger, HONClubTimelineCellType) {
+	HONClubTimelineCellTypeClub = 0,
+	HONClubTimelineCellTypeCreateClub
+};
+
 @class HONClubTimelineViewCell;
 @protocol HONClubTimelineViewCellDelegate <NSObject>
 @optional
+- (void)clubTimelineViewCellCreateClub:(HONClubTimelineViewCell *)viewCell;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell acceptInviteForClub:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell denyInviteForClub:(HONUserClubVO *)userClubVO;
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO;
@@ -28,5 +34,6 @@
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, retain) HONTimelineItemVO *timelineItemVO;
+@property (nonatomic, assign) HONClubTimelineCellType cellType;
 @property (nonatomic, assign) id <HONClubTimelineViewCellDelegate> delegate;
 @end

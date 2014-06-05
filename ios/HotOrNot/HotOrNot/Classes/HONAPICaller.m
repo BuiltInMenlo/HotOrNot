@@ -20,58 +20,58 @@
 
 //] api endpts [>
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[>
-NSString * const kAPIChallenges = @"Challenges.php";
-NSString * const kAPIComments = @"Comments.php";
-NSString * const kAPISearch = @"Search.php";
-NSString * const kAPIUsers = @"Users.php";
-NSString * const kAPIVotes = @"Votes.php";
+NSString * const kAPIChallenges	= @"Challenges.php";
+NSString * const kAPIComments	= @"Comments.php";
+NSString * const kAPISearch		= @"Search.php";
+NSString * const kAPIUsers		= @"Users.php";
+NSString * const kAPIVotes		= @"Votes.php";
 
-NSString * const kAPICreateChallenge = @"challenges/create";
-NSString * const kAPICreateMessage = @"challenges/createprivate";
-NSString * const kAPIDeleteImage = @"challenges/deleteimage";
-NSString * const kAPIChallengeObject = @"challenges/get";
-NSString * const kAPIGetMessages = @"challenges/getprivate";
-NSString * const kAPIGetPublicChallenges = @"challenges/getpublic";
-NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
-NSString * const kAPIJoinChallenge = @"challenges/join";
-NSString * const kAPIChallengesMessageSeen = @"challenges/messageseen";
-NSString * const kAPIProcessChallengeImage = @"challenges/processimage";
-NSString * const kAPIProfileShoutout = @"challenges/selfieshoutout";
-NSString * const kAPIVerifyShoutout = @"challenges/shoutout";
+NSString * const kAPICreateChallenge		= @"challenges/create";
+NSString * const kAPICreateMessage			= @"challenges/createprivate";
+NSString * const kAPIDeleteImage			= @"challenges/deleteimage";
+NSString * const kAPIChallengeObject		= @"challenges/get";
+NSString * const kAPIGetMessages			= @"challenges/getprivate";
+NSString * const kAPIGetPublicChallenges	= @"challenges/getpublic";
+NSString * const kAPIGetVerifyList			= @"challenges/getVerifyList";
+NSString * const kAPIJoinChallenge			= @"challenges/join";
+NSString * const kAPIChallengesMessageSeen	= @"challenges/messageseen";
+NSString * const kAPIProcessChallengeImage	= @"challenges/processimage";
+NSString * const kAPIProfileShoutout		= @"challenges/selfieshoutout";
+NSString * const kAPIVerifyShoutout			= @"challenges/shoutout";
 
-NSString * const kAPIEmailInvites = @"g/emailinvites";
-NSString * const kAPISMSInvites = @"g/smsinvites";
+NSString * const kAPIClubsBlock			= @"clubs/block";
+NSString * const kAPIClubsCreate		= @"clubs/create";
+NSString * const kAPIClubsEdit			= @"clubs/edit";
+NSString * const kAPIClubsGet			= @"clubs/get";
+NSString * const kAPIClubsFeatured		= @"clubs/featured";
+NSString * const kAPIClubsInvite		= @"clubs/invite";
+NSString * const kAPIClubsJoin			= @"clubs/join";
+NSString * const kAPIClubsProcessImage	= @"clubs/processimage";
+NSString * const kAPIClubsQuit			= @"clubs/quit";
+NSString * const kAPIClubsUnblock		= @"clubs/unblock";
 
-NSString * const kAPIGetFriends = @"social/getfriends";
-NSString * const kAPIAddFriend = @"social/addfriend";
-NSString * const kAPIRemoveFriend = @"social/removefriend";
+NSString * const kAPIEmailInvites	= @"g/emailinvites";
+NSString * const kAPISMSInvites		= @"g/smsinvites";
 
-NSString * const kAPICheckNameAndEmail = @"users/checkNameAndEmail";
-NSString * const kAPIGetActivity = @"users/getactivity";
-NSString * const kAPIUsersGetClubs = @"users/getclubs";
-NSString * const kAPIUsersGetClubInvites = @"users/getclubinvites";
-NSString * const kAPIGetSubscribees = @"users/getsubscribees";
-NSString * const kAPIEmailContacts = @"users/ffemail";
-NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
-NSString * const kAPITumblrInvite = @"users/invitetumblr";
-NSString * const kAPIProcessUserImage = @"users/processimage";
-NSString * const kAPIPurgeUser = @"users/purge";
-NSString * const kAPIPurgeContent = @"users/purgecontent";
-NSString * const kAPISetUserAgeGroup = @"users/setage";
-NSString * const kAPISuspendedAccount = @"users/suspendedaccount";
-NSString * const kAPIEmailVerify = @"users/verifyemail";
-NSString * const kAPIPhoneVerify = @"users/verifyphone";
+NSString * const kAPIGetFriends		= @"social/getfriends";
+NSString * const kAPIAddFriend		= @"social/addfriend";
+NSString * const kAPIRemoveFriend	= @"social/removefriend";
 
-NSString * const kAPIClubsCreate = @"clubs/create";
-NSString * const kAPIClubsEdit = @"clubs/edit";
-NSString * const kAPIClubsInvite = @"clubs/invite";
-NSString * const kAPIClubsProcessImage = @"clubs/processimage";
-NSString * const kAPIClubsGet = @"clubs/get";
-NSString * const kAPIClubsJoin = @"clubs/join";
-NSString * const kAPIClubsQuit = @"clubs/quit";
-NSString * const kAPIClubsBlock = @"clubs/block";
-NSString * const kAPIClubsUnblock = @"clubs/unblock";
-NSString * const kAPIClubsFeatured = @"clubs/featured";
+NSString * const kAPICheckNameAndEmail		= @"users/checkNameAndEmail";
+NSString * const kAPIGetActivity			= @"users/getactivity";
+NSString * const kAPIUsersGetClubs			= @"users/getclubs";
+NSString * const kAPIUsersGetClubInvites	= @"users/getclubinvites";
+NSString * const kAPIGetSubscribees			= @"users/getsubscribees";
+NSString * const kAPIEmailContacts			= @"users/ffemail";
+NSString * const kAPIUsersFirstRunComplete	= @"users/firstruncomplete";
+NSString * const kAPITumblrInvite			= @"users/invitetumblr";
+NSString * const kAPIProcessUserImage		= @"users/processimage";
+NSString * const kAPIPurgeUser				= @"users/purge";
+NSString * const kAPIPurgeContent			= @"users/purgecontent";
+NSString * const kAPISetUserAgeGroup		= @"users/setage";
+NSString * const kAPISuspendedAccount		= @"users/suspendedaccount";
+NSString * const kAPIEmailVerify			= @"users/verifyemail";
+NSString * const kAPIPhoneVerify			= @"users/verifyphone";
 //]=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=[
 
 

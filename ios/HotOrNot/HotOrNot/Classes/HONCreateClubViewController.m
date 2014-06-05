@@ -148,10 +148,10 @@
 	[self.view addSubview:_clubNameCheckImageView];
 	
 	_blurbButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_blurbButton.frame = CGRectMake(0.0, 128.0, 320.0, 128.0);
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_normal"] forState:UIControlStateNormal];
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_selected"] forState:UIControlStateHighlighted];
-	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"viewCellBG_selected"] forState:UIControlStateSelected];
+	_blurbButton.frame = CGRectMake(0.0, 128.0, 320.0, 135.0);
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"clubDescription_normal"] forState:UIControlStateNormal];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"clubDescription_selected"] forState:UIControlStateHighlighted];
+	[_blurbButton setBackgroundImage:[UIImage imageNamed:@"clubDescription_selected"] forState:UIControlStateSelected];
 	[_blurbButton addTarget:self action:@selector(_goBlurb) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_blurbButton];
 	

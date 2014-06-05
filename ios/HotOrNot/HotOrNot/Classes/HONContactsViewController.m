@@ -21,7 +21,6 @@
 #import "HONTrivialUserVO.h"
 
 @interface HONContactsViewController () <EGORefreshTableHeaderDelegate, HONSearchBarViewDelegate, HONUserToggleViewCellDelegate>
-@property (nonatomic, strong) UIImageView *contactsBlockedImageView;
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
@@ -322,10 +321,13 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_contactsBlockedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
-	_contactsBlockedImageView.frame = _tableView.frame;
-	_contactsBlockedImageView.hidden = YES;
-	[_tableView addSubview:_contactsBlockedImageView];
+	UIButton *contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	contactsButton.frame = CGRectMake(103.0, 0.0, 44.0, 44.0);
+	[contactsButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
+	[contactsButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
+	[contactsButton addTarget:self action:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @selector(_promptForAddressBookPermission) : @selector(_promptForAddressBookAccess) forControlEvents:UIControlEventTouchUpInside];
+	contactsButton.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
+	[_tableView addSubview:contactsButton];
 	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
@@ -357,20 +359,17 @@
 			// first time asking for access
 			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
 				ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-					[self _retrieveDeviceContacts];
+					//[self _promptForAddressBookPermission];
 				});
 				
-				// already granted access
+			// already granted access
 			} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 				[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
 				[self _retrieveDeviceContacts];
 				
-				// denied permission
+			// denied permission
 			} else {
 				[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
-				
-				_contactsBlockedImageView.hidden = NO;
-				[self _promptForAddressBookAccess];
 			}
 		}
 	}
@@ -401,6 +400,16 @@
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
+}
+
+- (void)_promptForAddressBookPermission {
+	[[[UIAlertView alloc] initWithTitle:@"Allow Access to your contacts?"
+								message:nil
+							   delegate:nil
+					  cancelButtonTitle:@"No"
+					  otherButtonTitles:@"Yes", nil] show];
+	
+	[self _retrieveDeviceContacts];
 }
 
 
@@ -576,6 +585,35 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
 	[_tableView setContentOffset:CGPointZero animated:NO];
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 0) {
+			if (ABAddressBookRequestAccessWithCompletion) {
+				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
+				
+				// first time asking for access
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+						[self _retrieveDeviceContacts];
+					});
+					
+					// already granted access
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+					[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
+					[self _retrieveDeviceContacts];
+					
+					// denied permission
+				} else {
+					[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
+				}
+			}
+		}
+	}
 }
 
 

@@ -15,6 +15,9 @@
 #import "MBProgressHUD.h"
 
 #import "HONClubsTimelineViewController.h"
+#import "HONSelfieCameraViewController.h"
+#import "HONCreateClubViewController.h"
+#import "HONUserClubsViewController.h"
 #import "HONClubTimelineViewCell.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
@@ -81,9 +84,6 @@
 	_dictItems = [NSMutableArray array];
 	_timelineItems = [NSMutableArray array];
 //	[[HONAPICaller sharedInstance] retrieveClubTimelineForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-//		for (NSDictionary *dict in (NSArray *)result)
-//			[_dictItems addObject:dict];
-//		
 		
 		_joinedClubs = [NSMutableArray array];
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
@@ -99,14 +99,6 @@
 				[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 			}
 			
-//			// --//> *** POPULATED FPO CLUBS *** <//-- //
-//			for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoJoinedClubs]) {
-//				[_dictItems addObject:dict];
-//				[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-//			} // --//> *** POPULATED FPO CLUBS *** <//-- //
-			
-			
-			
 			_invitedClubs = [NSMutableArray array];
 			[self _suggestClubs];
 			
@@ -115,14 +107,6 @@
 					[_dictItems addObject:dict];
 					[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 				}
-				
-				
-//				// --//> *** POPULATED FPO CLUBS *** <//-- //
-//				for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoInviteClubs]) {
-//					[_dictItems addObject:dict];
-//					[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-//				} // --//> *** POPULATED FPO CLUBS *** <//-- //
-				
 				
 				if (_progressHUD != nil) {
 					[_progressHUD hide:YES];
@@ -306,7 +290,6 @@
 	for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictItems sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]])
 		[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
 	
-	self.view.hidden = NO;
 	[_tableView reloadData];
 	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 }
@@ -318,10 +301,20 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.frame = CGRectMake(0.0, kNavHeaderHeight + 55.0, 320.0, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 55.0));
+	self.view.backgroundColor = [UIColor whiteColor];
 	
+	UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	editButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
+	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_nonActive"] forState:UIControlStateNormal];
+	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_Active"] forState:UIControlStateHighlighted];
+	[editButton addTarget:self action:@selector(_goEditClubs) forControlEvents:UIControlEventTouchUpInside];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height) style:UITableViewStylePlain];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
+	[headerView addButton:editButton];
+	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
+	[self.view addSubview:headerView];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -334,6 +327,8 @@
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
+	
+	[self _retrieveTimeline];
 }
 
 - (void)viewDidLoad {
@@ -344,16 +339,11 @@
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
-	
-	[self tare];
-	self.view.hidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
-	
-	[self _retrieveTimeline];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -373,6 +363,20 @@
 
 
 #pragma mark - Navigation
+- (void)_goEditClubs {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Edit Clubs"];
+	
+	[self.navigationController pushViewController:[[HONUserClubsViewController alloc] init] animated:YES];
+}
+
+- (void)_goCreateChallenge {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Create Challenge"];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
 - (void)_goRefresh {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Refresh"];
 	
@@ -381,6 +385,16 @@
 
 
 #pragma mark - ClubsTimelineViewCell Delegates
+- (void)clubTimelineViewCellCreateClub:(HONClubTimelineViewCell *)viewCell {
+	NSLog(@"[*:*] clubTimelineViewCellCreateClub");
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)clubTimelineViewCell:(HONClubTimelineViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubTimelineViewCell:selectedCTARow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
@@ -465,7 +479,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_timelineItems count]);
+	return ([_timelineItems count] + 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -482,7 +496,11 @@
 	if (cell == nil)
 		cell = [[HONClubTimelineViewCell alloc] init];
 	
-	cell.timelineItemVO = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
+	cell.cellType = (indexPath.row < [_timelineItems count]) ? HONClubTimelineCellTypeClub : HONClubTimelineCellTypeCreateClub;
+	
+	if (cell.cellType == HONClubTimelineCellTypeClub)
+		cell.timelineItemVO = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
+	
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
@@ -492,6 +510,9 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.row == [_timelineItems count])
+		return (kOrthodoxTableCellHeight);
+	
 	HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
 	return ((vo.timelineItemType == HONTimelineItemTypeSelfie) ? 330.0 : 111.0);
 }
@@ -501,7 +522,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	return ((indexPath.row < [_timelineItems count]) ? indexPath : nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

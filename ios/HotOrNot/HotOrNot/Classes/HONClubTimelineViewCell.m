@@ -15,10 +15,12 @@
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *subtitleLabel;
+@property (nonatomic) BOOL *isCreateClubCell;
 @end
 
 @implementation HONClubTimelineViewCell
 @synthesize timelineItemVO = _timelineItemVO;
+@synthesize cellType = _cellType;
 @synthesize delegate = _delegate;
 
 
@@ -28,6 +30,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		
 	}
 	
 	return (self);
@@ -40,6 +43,21 @@
 
 
 #pragma mark - Public APIs
+- (void)setCellType:(HONClubTimelineCellType)cellType {
+	_cellType = cellType;
+	
+	if (_cellType == HONClubTimelineCellTypeCreateClub) {
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
+		
+		UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		createClubButton.frame = CGRectMake(0.0, 0.0, 320.0, 46.0);
+		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_nonActive"] forState:UIControlStateNormal];
+		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_Active"] forState:UIControlStateHighlighted];
+		[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:createClubButton];
+	}
+}
+
 - (void)setTimelineItemVO:(HONTimelineItemVO *)timelineItemVO {
 	_timelineItemVO = timelineItemVO;
 	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) ? @"selfieRowBG" : @"nonSelfieRowBG"]];
@@ -98,12 +116,12 @@
 		topicLabel.text = (_timelineItemVO.timelineItemType != HONTimelineItemTypeNearby) ? @"Nearby club" : @"Club Invite";
 		[self.contentView addSubview:topicLabel];
 		
-		UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		ctaButton.frame = CGRectMake(212.0, 42.0, 84.0, 44.0);
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"joinClubButton_nonActive"] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"joinClubButton_Active"] forState:UIControlStateHighlighted];
-		[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
-		[self.contentView addSubview:ctaButton];
+		UIButton *joinClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		joinClubButton.frame = CGRectMake(212.0, 42.0, 84.0, 44.0);
+		[joinClubButton setBackgroundImage:[UIImage imageNamed:@"joinClubButton_nonActive"] forState:UIControlStateNormal];
+		[joinClubButton setBackgroundImage:[UIImage imageNamed:@"joinClubButton_Active"] forState:UIControlStateHighlighted];
+		[joinClubButton addTarget:self action:@selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:joinClubButton];
 	}
 	
 	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeSelfie) {
@@ -154,11 +172,16 @@
 		likesLabel.text = [NSString stringWithFormat:@"Likes (%d)", MIN(_timelineItemVO.userClubVO.totalEntries, 999)];
 		[footerView addSubview:likesLabel];
 		
+		UIButton *like2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+		like2Button.frame = likesLabel.frame;
+		[like2Button addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+		[footerView addSubview:like2Button];
+		
 		UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		replyButton.frame = CGRectMake(103.0, 0.0, 44.0, 44.0);
 		[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
 		[replyButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
-//		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 		[footerView addSubview:replyButton];
 		
 		UILabel *repliesLabel = [[UILabel alloc] initWithFrame:CGRectMake(145.0, 9.0, 160.0, 28.0)];
@@ -170,22 +193,31 @@
 		repliesLabel.text = [NSString stringWithFormat:@"Replies (%d)", MIN(_timelineItemVO.userClubVO.totalActiveMembers, 999)];
 		[footerView addSubview:repliesLabel];
 		
+		UIButton *reply2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+		replyButton.frame = repliesLabel.frame;
+		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+		[footerView addSubview:reply2Button];
+		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		moreButton.frame = CGRectMake(254.0, 2.0, 44.0, 44.0);
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
-//		[moreButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 		[footerView addSubview:moreButton];
-
 	}
 }
 
 
 
 #pragma mark - Navigation
-- (void)_goCTA {
+- (void)_goCreateClub {
+	if ([self.delegate respondsToSelector:@selector(clubTimelineViewCellCreateClub:)])
+		[self.delegate clubTimelineViewCellCreateClub:self];
+}
+
+- (void)_goJoinClub {
 	if ([self.delegate respondsToSelector:@selector(clubTimelineViewCell:acceptInviteForClub:)])
-		[self.delegate clubTimelineViewCell:self acceptInviteForClub:_timelineItemVO.userClubVO];
+		[self.delegate clubTimelineViewCell:self joinClub:_timelineItemVO.userClubVO];
 }
 
 - (void)_goLike {

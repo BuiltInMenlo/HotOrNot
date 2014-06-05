@@ -25,6 +25,7 @@
 #import "BlowfishAlgorithm.h"
 #import "Chartboost.h"
 #import "MBProgressHUD.h"
+#import "KeenClient.h"
 #import "KikAPI.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
@@ -42,7 +43,7 @@
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
-#import "HONClubsViewController.h"
+#import "HONClubsTimelineViewController.h"
 #import "HONClubPhotoViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONContactsTabViewController.h"
@@ -79,6 +80,13 @@ NSString * const kChartboostAppID = @"";
 NSString * const kChartboostAppSignature = @"";
 NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
+
+
+NSString * const kKeenIOProductID = @"5390d1f705cd660561000003";
+NSString * const kKeenIOMasterKey = @"D498C4D601DD4BEE1D65376E9D3D5248";
+NSString * const kKeenIOReadKey = @"19c453075e8eaf3d30b11292819aaa5e268c6c0855eaacb86637f25afbcde7774a605636fc6a61f2b09ac3e01833c3ad8cf6b1e469a5f5ba2f4bc9beedfc2376910748d47acadd89e3e18a8bf5ee95b6ed3698aee6f48ede001bf73c8ba31dbace6170ff86bb735eefc67dae6df0b52e";
+NSString * const kKeenIOWriteKey = @"7f1b91140d0fcf8aeb5ccde1a22567ea9073838582ee4725fae19a822f22d19ee243e95469f6b3d952007641901eaa8d5b4793af6ff7fe78f3d326e901d9fc14ed758e49f60c15b49cd85de79d7d04eace16ed79f79a7c9c012612c078f2d806b12f5ae060ec2a6f5c482720a4bdb3a8";
+
 
 
 // view heights
@@ -767,6 +775,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
+	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
@@ -783,18 +793,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	NSString *decodedString;// = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
 	
 //	decodedString = @"6787449c";//@"Ñ7Ïî~Ìès";//[NSString stringWithUTF8String:[data bytes]];
-	NSLog(@"BASE64 DECODE(%i):%@\n", [string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], string);
-	
-	BlowfishAlgorithm *blowfishAlgorithm = [BlowfishAlgorithm new];
-	[blowfishAlgorithm setMode:[BlowfishAlgorithm buildModeEnum:@"CBC"]];
-	[blowfishAlgorithm setKey:kBlowfishKey];
-	[blowfishAlgorithm setInitVector:@"„7ì”~ís"];
-	[blowfishAlgorithm setupKey];
-	
-	NSLog(@"ORG:[%@]", [blowfishAlgorithm encrypt:@"+12133009127"]);
-	NSLog(@"ENC:[%@]", [[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString]);
-	NSLog(@"DEC:[%@]", [[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]);
-	NSLog(@"ORG:[%@]", [blowfishAlgorithm decrypt:[[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]]);
+//	NSLog(@"BASE64 DECODE(%i):%@\n", [string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], string);
+//	
+//	BlowfishAlgorithm *blowfishAlgorithm = [BlowfishAlgorithm new];
+//	[blowfishAlgorithm setMode:[BlowfishAlgorithm buildModeEnum:@"CBC"]];
+//	[blowfishAlgorithm setKey:kBlowfishKey];
+//	[blowfishAlgorithm setInitVector:@"„7ì”~ís"];
+//	[blowfishAlgorithm setupKey];
+//	
+//	NSLog(@"ORG:[%@]", [blowfishAlgorithm encrypt:@"+12133009127"]);
+//	NSLog(@"ENC:[%@]", [[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString]);
+//	NSLog(@"DEC:[%@]", [[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]);
+//	NSLog(@"ORG:[%@]", [blowfishAlgorithm decrypt:[[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]]);
 	
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
@@ -842,8 +852,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //			[alertView show];
 //		}
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
-										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
+//										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 		
 		self.launchImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		self.launchImageView.image = [UIImage imageNamed:@"mainBG"];
@@ -869,6 +879,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+	NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
+	
 	[HONAppDelegate incTotalForCounter:@"background"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 	
@@ -885,19 +901,38 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Entering Background"
-									 withProperties:@{@"duration"	: duration}];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
+									 withProperties:@{@"total"		: [@"" stringFromInt:[HONAppDelegate incTotalForCounter:@"background"]],
+													  @"duration"	: duration}];
 	
+	
+	UIBackgroundTaskIdentifier taskId = [application beginBackgroundTaskWithExpirationHandler:^(void) {
+		NSLog(@"Background task is being expired.");
+	}];
+	
+	[[KeenClient sharedClient] uploadWithFinishedBlock:^(void) {
+		[application endBackgroundTask:taskId];
+	}];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+	NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	
 	_isFromBackground = YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+	NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
+	
 	[FBAppEvents activateApp];
+	
+	[KeenClient sharedClientWithProjectId:kKeenIOProductID
+                              andWriteKey:kKeenIOWriteKey
+							   andReadKey:kKeenIOReadKey];
+	
+#if KEENIO_LOG == 1
+	[KeenClient enableLogging];
+#endif
+	
 	//[[UAPush shared] resetBadge];
 	
 //	Chartboost *chartboost = [Chartboost sharedChartboost];
@@ -920,7 +955,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"App Leaving Background"];
+			
+			NSString *duration = @"00:00:00";
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) {
+				int secs = [[[NSDate new] dateByAddingTimeInterval:0] timeIntervalSinceDate:[dateFormatter dateFromString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]];
+				int mins = secs / 60;
+				int hours = mins / 60;
+				
+				duration = [NSString stringWithFormat:@"%2f:%2f:%2f", (float)hours, (float)mins, (float)secs];
+			}
+			
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"App Leaving Background"
+											 withProperties:@{@"duration"	: duration,
+															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 				if ([HONAppDelegate totalForCounter:@"background"] == 2 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
@@ -952,16 +999,24 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			} else
 				[self _retrieveConfigJSON];
 		}
+	
+	} else {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
+										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 	}
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	NSLog(@"[:|:] [applicationWillTerminate] [:|:]");
+	
 	[FBSession.activeSession close];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
 	NSString *duration = @"00:00:00";
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) {
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
+		
 		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 		[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 		
@@ -1105,7 +1160,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsTimelineViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	

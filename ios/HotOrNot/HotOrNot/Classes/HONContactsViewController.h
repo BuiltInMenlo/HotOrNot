@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceSearchResults
 };
 
-@interface HONContactsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate> {
+@interface HONContactsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
 	
 	NSMutableArray *_allContacts;

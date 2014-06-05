@@ -22,7 +22,6 @@
 		4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C106065184D916100B361A6 /* HONActivityItemViewCell.m */; };
 		4C1435CD17D3C19A00ACBF41 /* HONProfileHeaderButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1435CC17D3C19A00ACBF41 /* HONProfileHeaderButtonView.m */; };
 		4C1F19AC1915CBA200E9A9D4 /* HONScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19AB1915CBA200E9A9D4 /* HONScreenManager.m */; };
-		4C1F19AF1915D18100E9A9D4 /* HONClubsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19AE1915D18100E9A9D4 /* HONClubsViewController.m */; };
 		4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */; };
 		4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
 		4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */; };
@@ -167,6 +166,7 @@
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
 		4C663EDD18BFBC1800EDB1A2 /* HONUserClubsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C663EDC18BFBC1800EDB1A2 /* HONUserClubsViewController.m */; };
 		4C6893691719EF88005F8D0A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C68936B1719EF88005F8D0A /* Localizable.strings */; };
+		4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C69A20019410CA300971D3F /* libKeenClient-Aggregate.a */; };
 		4C6A3E1817669D7400B6CD4D /* HONFollowContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1717669D7400B6CD4D /* HONFollowContactViewCell.m */; };
 		4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1A1766AD3500B6CD4D /* HONInviteContactViewCell.m */; };
 		4C6BBC861615455000145996 /* HONSelfieCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBC851615455000145996 /* HONSelfieCameraOverlayView.m */; };
@@ -300,8 +300,6 @@
 		4C1435CC17D3C19A00ACBF41 /* HONProfileHeaderButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONProfileHeaderButtonView.m; sourceTree = "<group>"; };
 		4C1F19AA1915CBA200E9A9D4 /* HONScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONScreenManager.h; sourceTree = "<group>"; };
 		4C1F19AB1915CBA200E9A9D4 /* HONScreenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONScreenManager.m; sourceTree = "<group>"; };
-		4C1F19AD1915D18100E9A9D4 /* HONClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewController.h; sourceTree = "<group>"; };
-		4C1F19AE1915D18100E9A9D4 /* HONClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewController.m; sourceTree = "<group>"; };
 		4C1F19B0191623D500E9A9D4 /* HONClubAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubAssistant.h; sourceTree = "<group>"; };
 		4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubAssistant.m; sourceTree = "<group>"; };
 		4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewController.h; sourceTree = "<group>"; };
@@ -557,6 +555,9 @@
 		4C663EDB18BFBC1800EDB1A2 /* HONUserClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserClubsViewController.h; sourceTree = "<group>"; };
 		4C663EDC18BFBC1800EDB1A2 /* HONUserClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserClubsViewController.m; sourceTree = "<group>"; };
 		4C68936A1719EF88005F8D0A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4C69A1FE19410CA300971D3F /* KeenClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenClient.h; sourceTree = "<group>"; };
+		4C69A1FF19410CA300971D3F /* KeenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeenProperties.h; sourceTree = "<group>"; };
+		4C69A20019410CA300971D3F /* libKeenClient-Aggregate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libKeenClient-Aggregate.a"; sourceTree = "<group>"; };
 		4C6A3E1617669D7400B6CD4D /* HONFollowContactViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowContactViewCell.h; sourceTree = "<group>"; };
 		4C6A3E1717669D7400B6CD4D /* HONFollowContactViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowContactViewCell.m; sourceTree = "<group>"; };
 		4C6A3E191766AD3500B6CD4D /* HONInviteContactViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteContactViewCell.h; sourceTree = "<group>"; };
@@ -736,6 +737,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
+				4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
 				4C72F6AA1894E2D400CF67BC /* CoreMotion.framework in Frameworks */,
 				4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */,
@@ -1014,6 +1016,7 @@
 				4C43276A18E3A9F90035FF06 /* ios-image-filters */,
 				4C43277D18E3A9F90035FF06 /* JLBAnimator */,
 				4C43278218E3A9F90035FF06 /* JLBPaging */,
+				4C69A1FD19410CA300971D3F /* KeenClient */,
 				4C43278B18E3A9F90035FF06 /* KikAPI */,
 				4C4327A418E3A9F90035FF06 /* MBProgressHUD */,
 				4C4327A718E3A9F90035FF06 /* Mixpanel */,
@@ -1588,6 +1591,16 @@
 			name = Root;
 			sourceTree = "<group>";
 		};
+		4C69A1FD19410CA300971D3F /* KeenClient */ = {
+			isa = PBXGroup;
+			children = (
+				4C69A1FE19410CA300971D3F /* KeenClient.h */,
+				4C69A1FF19410CA300971D3F /* KeenProperties.h */,
+				4C69A20019410CA300971D3F /* libKeenClient-Aggregate.a */,
+			);
+			path = KeenClient;
+			sourceTree = "<group>";
+		};
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
@@ -1773,8 +1786,6 @@
 			children = (
 				4CD0D0E418F4F9F800B4ADE9 /* Feed */,
 				4C0204E818EA6F5300FAE532 /* Club Camera */,
-				4C1F19AD1915D18100E9A9D4 /* HONClubsViewController.h */,
-				4C1F19AE1915D18100E9A9D4 /* HONClubsViewController.m */,
 				4C3DCCD9190ADA490036F440 /* HONClubTimelineViewCell.h */,
 				4C3DCCDA190ADA490036F440 /* HONClubTimelineViewCell.m */,
 				4C3DCCD6190AD9D60036F440 /* HONClubsTimelineViewController.h */,
@@ -2000,7 +2011,6 @@
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				4CB77BB018BC03200074C625 /* HONUserClubVO.m in Sources */,
-				4C1F19AF1915D18100E9A9D4 /* HONClubsViewController.m in Sources */,
 				4C4328AF18E3A9FA0035FF06 /* BezierCurve.m in Sources */,
 				4C2DD83818E3B4B100BC8759 /* HONContactsTabViewController.m in Sources */,
 				4C4328D718E3A9FA0035FF06 /* MPSurveyQuestion.m in Sources */,
@@ -2177,6 +2187,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"KEENIO_LOG=1",
 					MIXPANEL_DEBUG0,
 					MIXPANEL_LOG0,
 					"SC_JSON_LOG=1",
@@ -2269,6 +2280,7 @@
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/TestFlightSDK",
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/Mixpanel",
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/Chartboost",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;
@@ -2304,6 +2316,7 @@
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/TestFlightSDK",
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/Mixpanel",
 					"$(SRCROOT)/HotOrNot/Vendor/Classes/Chartboost",
+					"$(PROJECT_DIR)/HotOrNot/Vendor/Classes/KeenClient",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Selfieclub;

@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "tabVerifyButton_Active.png"
+      "filename" : "tabverifybutton_active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "tabVerifyButton_Active@2x.png"
+      "filename" : "tabverifybutton_active@2x.png"
     }
   ],
   "info" : {
