@@ -162,8 +162,10 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		
-		NSLog(@"WRITING IMAGE:(%@) FOR KEY:(%@)", response.allHeaderFields, key);
-		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation((image != nil) ? image : [UIImage imageNamed:key]) forKey:key];
+		//NSLog(@"WRITING IMAGE:(%@) FOR KEY:(%@)", response.allHeaderFields, key);
+		
+		image = (image != nil) ? image : [UIImage imageNamed:key];
+		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {

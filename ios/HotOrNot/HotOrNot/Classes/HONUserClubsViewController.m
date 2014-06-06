@@ -16,8 +16,10 @@
 
 #import "HONTableHeaderView.h"
 #import "HONUserClubViewCell.h"
+#import "HONHeaderView.h"
+#import "HONCreateSnapButtonView.h"
+#import "HONActivityHeaderButtonView.h"
 #import "HONSelfieCameraViewController.h"
-
 #import "HONCreateClubViewController.h"
 #import "HONUserClubSettingsViewController.h"
 #import "HONUserClubInviteViewController.h"
@@ -34,7 +36,7 @@
 @property (nonatomic, strong) HONUserClubVO *selectedClub;
 @property (nonatomic, strong) NSMutableArray *joinedClubs;
 @property (nonatomic, strong) NSMutableArray *invitedClubs;
-@property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
+@property (nonatomic, strong) HONActivityHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSArray *defaultCaptions;

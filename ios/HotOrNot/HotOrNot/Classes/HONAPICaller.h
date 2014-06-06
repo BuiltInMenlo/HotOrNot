@@ -92,7 +92,7 @@ extern const CGFloat kNotifiyDelay;
 /**
  * Config
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
-- (void)retreiveBootConfigWithEpoch:(int)timestamp completion:(void (^)(NSObject *result))completion;
+- (void)retreiveBootConfigWithCompletion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
@@ -114,13 +114,10 @@ extern const CGFloat kNotifiyDelay;
 - (void)flagUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)recreateUserWithCompletion:(void (^)(NSObject *result))completion;
 - (void)registerNewUserWithCompletion:(void (^)(NSObject *result))completion;
-- (void)retrieveAlertsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
+- (void)retrieveNewActivityForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveChallengesForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
 - (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-- (void)retrieveClubsForInvitedUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-- (void)retrieveClubTimelineForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
-- (void)retrieveFollowingUsersForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)removeAllChallengesForUserWithCompletion:(void (^)(NSObject *result))completion;
 - (void)removeUserFromVerifyListWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;
@@ -129,6 +126,9 @@ extern const CGFloat kNotifiyDelay;
 - (void)updateAvatarWithImagePrefix:(NSString *)avatarPrefix completion:(void (^)(NSObject *result))completion;
 - (void)updateTabBarBadgeTotalsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)updateUsernameForUser:(NSString *)username completion:(void (^)(NSObject *result))completion;
+- (void)updatePhoneNumberForUserWithCompletion:(void (^)(NSObject *result))completion;
+- (void)validatePhoneNumberForUser:(int)userID usingPINCode:(NSString *)pinCode completion:(void (^)(NSObject *result))completion;
+
 - (void)verifyUserWithUserID:(int)userID asLegit:(BOOL)isLegit completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
@@ -178,12 +178,12 @@ extern const CGFloat kNotifiyDelay;
  * Invite / Social
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion;
-- (void)sendDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
-- (void)sendDelimitedPhoneContacts:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
-- (void)sendEmailInvitesFromDelimitedList:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
-- (void)sendSMSInvitesFromDelimitedList:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
-- (void)submitEmailAddressForContactsMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion;
-- (void)submitPhoneNumberForContactsMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion;
+- (void)sendEmailInvitesWithDelimitedList:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
+- (void)sendSMSInvitesWithDelimitedList:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
+- (void)submitDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion;
+- (void)submitDelimitedPhoneContacts:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion;
+- (void)submitEmailAddressForUserMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion;
+- (void)submitPhoneNumberForUserMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 

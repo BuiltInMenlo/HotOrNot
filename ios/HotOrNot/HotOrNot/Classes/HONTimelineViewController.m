@@ -36,7 +36,7 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONProfileHeaderButtonView.h"
+#import "HONActivityHeaderButtonView.h"
 
 #import "JLBPopSlideTransition.h"
 
@@ -268,7 +268,7 @@
 
 - (void)_goRefresh {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Refresh"];
-	[HONAppDelegate incTotalForCounter:@"timeline"];
+	[HONAppDelegate incTotalForCounter:@"timelineRefresh"];
 	[self _retrieveChallenges];
 }
 

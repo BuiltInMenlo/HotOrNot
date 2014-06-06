@@ -75,12 +75,5 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
 }
 
-- (void)promptForAddressBookAccess {
-	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-								message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
-							   delegate:nil
-					  cancelButtonTitle:@"OK"
-					  otherButtonTitles:nil] show];
-}
 
 @end

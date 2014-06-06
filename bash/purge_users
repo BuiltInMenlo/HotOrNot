@@ -12,7 +12,7 @@ if [[ `pwd` != `dirname $0` ]]; then cd `dirname $0`; fi
 #--#--#--#--#--#--#--#--#:#--#--#--#--#--#--#--#--#
 
 #-- set tier to live
-subdomain_api="admin"
+subdomain_api="admin-dev"
 
 #-- api attribs
 block_url="http://${subdomain_api}.letsvolley.com/admin/block_user.php"

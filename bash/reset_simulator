@@ -15,31 +15,52 @@ isKillSimulator_flg=true
 isPurgeUser_flg=true
 
 #-- check for parameter flags
-while getopts "klp" optname # --//> there's a '-k' '-l' or '-p'
+while getopts "dklpst:u:" optname # --//> there's a '-d' / '-k' / '-l' / '-p' / '-s' / '-t' / '-u'
 	do
 		case "$optname" in
-			"k") # )-/> passed in '-k'
+			d) # )-/> passed in '-d'
+				#-- set tier to dev
+				subdomain_api="admin-dev"
+				;;
+				
+			k) # )-/> passed in '-k'
 				#-- set to not kill simulator
 				isKillSimulator_flg=false
 				;;
 				
-			"l") # )-/> passed in '-l'
+			l) # )-/> passed in '-l'
 				#-- set tier to live
 				subdomain_api="admin"
 				;;
 
-			"p") # )-/> passed in '-p'
+			p) # )-/> passed in '-p'
 				#-- set to don't purge user
 				isPurgeUser_flg=false
 				;;
-
-			"?") # )-/> anything else
-				echo "Unknown option $OPTARG"
+			
+			s) # )-/> staging tier 
+				#-- set to don't purge user
+				subdomain_api="admin-stage"
+				;;
+					
+			t) # )-/> api tier 
+				#-- set to don't purge user
+				subdomain_api="admin-$OPTARG"
+				;;
+				
+			u) # )-/> passed in '-u'
+				#-- explictly set the user
+				username="$OPTARG"
+				;;
+				
+			:) # )-/> missing required arguement for '-t' / '-u'
+				#-- explictly set the user
+				echo "Missing paramter for -$OPTARG"
 				exit 1;
 				;;
 
-			":") # )-/> no arg
-				echo "No argument value for option $OPTARG"
+			\?) # )-/> anything else
+				echo "Unknown option $OPTARG"
 				exit 1;
 				;;
 

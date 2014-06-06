@@ -75,7 +75,7 @@
 
 #pragma mark - Data Calls
 - (void)_sendEmailContacts {
-	[[HONAPICaller sharedInstance] sendDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
@@ -102,7 +102,7 @@
 }
 
 - (void)_sendPhoneContacts {
-	[[HONAPICaller sharedInstance] sendDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
@@ -185,7 +185,7 @@
 			for (HONContactUserVO *vo in emails)
 				addresses = [addresses stringByAppendingFormat:@"%@|", vo.email];
 			
-			[[HONAPICaller sharedInstance] sendEmailInvitesFromDelimitedList:[addresses substringToIndex:[addresses length] - 1] completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] sendEmailInvitesWithDelimitedList:[addresses substringToIndex:[addresses length] - 1] completion:^(NSObject *result){
 				_inviteTypeCounter++;
 				[self _checkInviteComplete];
 			}];
@@ -198,7 +198,7 @@
 					phoneNumbers = [phoneNumbers stringByAppendingFormat:@"%@|", vo.mobileNumber];
 			}
 			
-			[[HONAPICaller sharedInstance] sendSMSInvitesFromDelimitedList:[phoneNumbers substringToIndex:[phoneNumbers length] - 1] completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] sendSMSInvitesWithDelimitedList:[phoneNumbers substringToIndex:[phoneNumbers length] - 1] completion:^(NSObject *result){
 				_inviteTypeCounter++;
 				[self _checkInviteComplete];
 			}];
@@ -341,17 +341,17 @@
 			// already granted access
 		} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 			[[HONAnalyticsParams sharedInstance] trackEvent:@""];
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Address Book Granted"];
 			
 			
 			[self _retrieveContacts];
 			
 			// denied permission
 		} else {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
+			[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Address Book Denied"];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-																message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
+																message:nil
 															   delegate:nil
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:nil];

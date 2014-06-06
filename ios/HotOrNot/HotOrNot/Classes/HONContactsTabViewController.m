@@ -12,6 +12,8 @@
 #import "HONContactsTabViewController.h"
 
 #import "HONTutorialView.h"
+#import "HONActivityHeaderButtonView.h"
+#import "HONCreateSnapButtonView.h"
 #import "HONRegisterViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -66,7 +68,7 @@
 //	[[HONAPICaller sharedInstance] followUserWithUserID:86493 completion:nil];
 	
 	[_headerView setTitle:@"Friends"];
-	[_headerView addButton:[[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
@@ -86,6 +88,16 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
+	
+	if ([HONAppDelegate totalForCounter:@"friendsTab"] == 0 && ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusAuthorized) {
+		[[[UIAlertView alloc] initWithTitle:@"Friends Tip"
+									message:@"Allow access to your Contact List for even more friends!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
+	
+	NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -137,7 +149,7 @@
 - (void)_showContactsTutorial:(NSNotification *)notification {
 	NSLog(@"::|> _showContactsTutorial <|::");
 	
-//	if ([HONAppDelegate incTotalForCounter:@"contacts"] == 0) {
+//	if ([HONAppDelegate incTotalForCounter:@"friendsTab"] == 0) {
 //		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_contacts"]];
 //		_tutorialView.delegate = self;
 //
@@ -157,12 +169,6 @@
 			_tutorialView = nil;
 		}];
 	}
-	
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined || ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-		[super _promptForAddressBookAccess];
-	
-	else
-		[super _retrieveDeviceContacts];
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
@@ -171,10 +177,7 @@
 	if (_tableView.contentOffset.y < 150.0)
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined || ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-		[super _promptForAddressBookAccess];
-	
-	else
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[super _retrieveDeviceContacts];
 }
 

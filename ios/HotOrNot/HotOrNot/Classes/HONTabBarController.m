@@ -40,6 +40,60 @@ const CGSize kTabSize = {80.0, 50.0};
 }
 
 
+- (void)setSelectedIndex:(NSUInteger)selectedIndex {
+	[super setSelectedIndex:selectedIndex];
+	
+	NSLog(@"--- setSelectedIndex ---");
+	
+	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:selectedIndex];
+	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
+	
+	NSString *notificationName = @"";
+	NSString *totalKey = @"";
+	
+	switch ((HONTabBarButtonType)selectedIndex) {
+		case HONTabBarButtonTypeContacts:
+			notificationName = @"CONTACTS_TAB";
+			totalKey = @"friendsTab";
+			
+			[_contactsButton setSelected:YES];
+			[_clubsButton setSelected:NO];
+			[_verifyButton setSelected:NO];
+			break;
+			
+		case HONTabBarButtonTypeClubs:
+			notificationName = @"CLUBS_TAB";
+			totalKey = @"clubsTab";
+			
+			[_contactsButton setSelected:NO];
+			[_clubsButton setSelected:YES];
+			[_verifyButton setSelected:NO];
+			break;
+			
+		case HONTabBarButtonTypeVerify:
+			notificationName = @"VERIFY_TAB";
+			totalKey = @"verifyTab";
+			
+			[_contactsButton setSelected:NO];
+			[_clubsButton setSelected:NO];
+			[_verifyButton setSelected:YES];
+			break;
+			
+		default:
+			break;
+	}
+	
+	[HONAppDelegate incTotalForCounter:totalKey];
+	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
+	
+	[[UIApplication sharedApplication] setStatusBarStyle:(selectedIndex == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
+	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:selectedIndex] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
@@ -104,7 +158,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	HONTabBarButtonType tabBarButtonType = [sender tag];
 	UITouch *touch = [[event allTouches] anyObject];
 	
-	NSString *mpEvent = @"";
+	NSString *analyticsEventName = @"";
 	NSString *notificationName = @"";
 	NSString *totalKey = @"";
 	
@@ -114,9 +168,9 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	switch (tabBarButtonType) {
 		case HONTabBarButtonTypeContacts:
-			totalKey = @"contacts";
-			mpEvent = @"Contacts";
+			analyticsEventName = @"Contacts";
 			notificationName = @"CONTACTS_TAB";
+			totalKey = @"friendsTab";
 			
 			[_contactsButton setSelected:YES];
 			[_clubsButton setSelected:NO];
@@ -124,9 +178,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			break;
 			
 		case HONTabBarButtonTypeClubs:
-			totalKey = @"clubs";
-			mpEvent = @"Clubs";
+			analyticsEventName = @"Clubs";
 			notificationName = @"CLUBS_TAB";
+			totalKey = @"clubsTab";
 			
 			[_contactsButton setSelected:NO];
 			[_clubsButton setSelected:YES];
@@ -134,9 +188,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			break;
 			
 		case HONTabBarButtonTypeVerify:
-			totalKey = @"verify";
-			mpEvent = @"Verify";
+			analyticsEventName = @"Verify";
 			notificationName = @"VERIFY_TAB";
+			totalKey = @"verifyTab";
 			
 			[_contactsButton setSelected:NO];
 			[_clubsButton setSelected:NO];
@@ -148,23 +202,20 @@ const CGSize kTabSize = {80.0, 50.0};
 	}
 	
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Tab Bar %@ - %@", (touch.tapCount == 1) ? @"Select" : @"Double Tap", mpEvent]];
+	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Tab Bar %@ - %@", (touch.tapCount == 1) ? @"Select" : @"Double Tap", analyticsEventName]];
 	[HONAppDelegate incTotalForCounter:totalKey];
 	
-//	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-	self.selectedIndex = tabBarButtonType;
+	[super setSelectedIndex:tabBarButtonType];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
+		
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabBarButtonType] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
+	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	
 //	UIStatusBarStyle statusBarStyle = [UIApplication sharedApplication].statusBarStyle;
 //	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-	
-//	if (tabBarButtonType == HONTabBarButtonTypeVerify && statusBarStyle == UIStatusBarStyleDefault)
-	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabBarButtonType] forKey:@"current_tab"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
@@ -274,5 +325,6 @@ const CGSize kTabSize = {80.0, 50.0};
 			[self _toggleBadges:YES];
 	}];
 }
+
 
 @end

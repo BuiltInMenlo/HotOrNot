@@ -60,12 +60,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareVerifyTab:) name:@"TARE_VERIFY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_VERIFY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVerifyTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-			if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
-				//_userClubVO = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
-				_userClubVO = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
-		}];
 	}
 	
 	return (self);
@@ -166,7 +160,13 @@
 	[headerView toggleLightStyle:YES];
 	[self.view addSubview:headerView];
 	
-	[self _retrieveVerifyList];
+	
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
+			_userClubVO = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
+		
+		[self _retrieveVerifyList];
+	}];
 }
 
 - (void)viewDidLoad {
@@ -223,7 +223,7 @@
 - (void)_selectedVerifyTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedVerifyTab <|::");
 	
-//	if ([HONAppDelegate incTotalForCounter:@"verify"] == 0) {
+//	if ([HONAppDelegate incTotalForCounter:@"verifyTab"] == 0) {
 //		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_verify"]];
 //		_tutorialView.delegate = self;
 //		

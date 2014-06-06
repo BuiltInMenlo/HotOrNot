@@ -84,21 +84,21 @@
 	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSObject *result) {
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
-			
-			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userID completion:^(NSObject *result){
-				NSMutableArray *users = [NSMutableArray arrayWithCapacity:[(NSArray *)result count]];
-				for (NSDictionary *dict in (NSArray *)result)
-					[users addObject:[dict objectForKey:@"user"]];
-				
-				NSArray *following = [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-				for (NSDictionary *dict in following) {
-					[_subscribees addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [@"" stringFromInt:[[dict objectForKey:@"id"] intValue]],
-																				   @"username"	: [dict objectForKey:@"username"],
-																				   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
-				}
-				
-				[_tableView reloadData];
-			}];
+			[_tableView reloadData];
+//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userID completion:^(NSObject *result){
+//				NSMutableArray *users = [NSMutableArray arrayWithCapacity:[(NSArray *)result count]];
+//				for (NSDictionary *dict in (NSArray *)result)
+//					[users addObject:[dict objectForKey:@"user"]];
+//				
+//				NSArray *following = [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+//				for (NSDictionary *dict in following) {
+//					[_subscribees addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [@"" stringFromInt:[[dict objectForKey:@"id"] intValue]],
+//																				   @"username"	: [dict objectForKey:@"username"],
+//																				   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
+//				}
+//				
+//				[_tableView reloadData];
+//			}];
 		}
 	}];
 }

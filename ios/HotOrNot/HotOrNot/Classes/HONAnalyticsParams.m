@@ -10,7 +10,13 @@
 
 #import "HONAnalyticsParams.h"
 
-NSString * const kKeenIOEventCollection = @"iOS";
+
+#if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
+NSString * const kKeenIOEventCollection = @"iOS - Live";
+#else
+NSString * const kKeenIOEventCollection = @"iOS - DEV";
+#endif
+
 
 @implementation HONAnalyticsParams
 

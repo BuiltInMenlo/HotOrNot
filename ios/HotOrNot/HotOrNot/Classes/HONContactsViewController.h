@@ -16,6 +16,7 @@
 #import "HONUserClubVO.h"
 
 typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
+	HONContactsTableViewDataSourceMatchedUsers = 0,
 	HONContactsTableViewDataSourceAddressBook,
 	HONContactsTableViewDataSourceSearchResults
 };
@@ -25,6 +26,7 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	
 	NSMutableArray *_allContacts;
 	NSMutableArray *_inAppContacts;
+	NSMutableArray *_inAppUsers;
 	NSDictionary *_segmentedContacts;
 	NSMutableArray *_segmentedKeys;
 	NSMutableArray *_searchUsers;
@@ -37,7 +39,7 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 
 - (void)_promptForAddressBookAccess;
 
-- (void)_retreiveUserClub;
+- (void)_retreiveUserClubs;
 - (void)_sendEmailContacts;
 - (void)_sendPhoneContacts;
 - (void)_inviteInAppContact:(HONTrivialUserVO *)trivialUserVO toClub:(HONUserClubVO *)userClubVO;

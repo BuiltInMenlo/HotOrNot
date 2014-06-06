@@ -13,6 +13,7 @@
 
 #import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONCreateSnapButtonView.h"
 #import "HONUserToggleViewCell.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
@@ -53,15 +54,14 @@
 
 
 #pragma mark - Data Calls
-- (void)_retreiveUserClub {
+- (void)_retreiveUserClubs {
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		_userClubVO = nil;//[HONUserClubVO clubWithDictionary:([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0] : nil];
-		
+		_userClubVO = [HONUserClubVO clubWithDictionary:([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0] : nil];
 	}];
 }
 
 - (void)_sendEmailContacts {
-	[[HONAPICaller sharedInstance] sendDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
@@ -91,7 +91,7 @@
 }
 
 - (void)_sendPhoneContacts {
-	[[HONAPICaller sharedInstance] sendDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
@@ -118,6 +118,36 @@
 			
 			[self _updateMatchedContacts];
 		}
+	}];
+}
+
+- (void)_submitPhoneNumberForMatching {
+	_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	_inAppUsers = [NSMutableArray array];
+	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[HONAppDelegate phoneNumber] completion:^(NSObject *result) {
+		for (NSDictionary *dict in [NSArray arrayWithArray:[(NSArray *)result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
+			[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+																		  @"username"	: [dict objectForKey:@"username"],
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}]];
+		}
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		_segmentedContacts = [self _populateSegmentedDictionary];
+		
+		[_tableView reloadData];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -155,14 +185,15 @@
 
 - (void)_searchUsersWithUsername:(NSString *)username {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	_searchUsers = [NSMutableArray array];
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSObject *result) {
 		for (NSDictionary *dict in (NSArray *)result) {
 			[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
@@ -258,7 +289,8 @@
 	}
 	
 	if ([_smsRecipients length] > 0 || [_emailRecipients length] > 0) {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
 		_progressHUD.minShowTime = kHUDTime;
@@ -316,18 +348,9 @@
 	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.userInteractionEnabled = YES;
-	_tableView.scrollsToTop = NO;
+	_tableView.scrollsToTop = YES;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	UIButton *contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	contactsButton.frame = CGRectMake(103.0, 0.0, 44.0, 44.0);
-	[contactsButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_nonActive"] forState:UIControlStateNormal];
-	[contactsButton setBackgroundImage:[UIImage imageNamed:@"replySelfieButton_Active"] forState:UIControlStateHighlighted];
-	[contactsButton addTarget:self action:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @selector(_promptForAddressBookPermission) : @selector(_promptForAddressBookAccess) forControlEvents:UIControlEventTouchUpInside];
-	contactsButton.hidden = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
-	[_tableView addSubview:contactsButton];
 	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
@@ -350,28 +373,13 @@
 	[super viewDidAppear:animated];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
-		[self _retreiveUserClub];
+		[self _retreiveUserClubs];
 		
-		if (ABAddressBookRequestAccessWithCompletion) {
-			ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-			NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
-			
-			// first time asking for access
-			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-				ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-					//[self _promptForAddressBookPermission];
-				});
-				
-			// already granted access
-			} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
-				[self _retrieveDeviceContacts];
-				
-			// denied permission
-			} else {
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
-			}
-		}
+		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+			[self _retrieveDeviceContacts];
+		
+		else
+			[self _submitPhoneNumberForMatching];
 	}
 }
 
@@ -393,23 +401,24 @@
 
 #pragma mark - Navigation
 
+
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
 	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-								message:@"Flip the switch in Settings->Privacy->Contacts to grant access."
+								message:@"Flip the switch in Settings->Privacy->Contacts->Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
 }
 
 - (void)_promptForAddressBookPermission {
-	[[[UIAlertView alloc] initWithTitle:@"Allow Access to your contacts?"
-								message:nil
-							   delegate:nil
-					  cancelButtonTitle:@"No"
-					  otherButtonTitles:@"Yes", nil] show];
-	
-	[self _retrieveDeviceContacts];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Allow Access to your contacts?"
+														message:nil
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 
@@ -477,61 +486,65 @@
 
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined || ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied)
-		[self _promptForAddressBookAccess];
-	
-	else
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
 }
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) ? [_segmentedKeys count] : 1);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? 1 : [_segmentedKeys count]);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) ? [[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:section]] count] : [_searchUsers count]);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? [_searchUsers count] : [[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:section]] count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) ? [_segmentedKeys objectAtIndex:section] : @"SEARCH RESULTS"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:(_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? @"SEARCH RESULTS" : [_segmentedKeys objectAtIndex:section]]);
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) ? [[UILocalizedIndexedCollation currentCollation] sectionIndexTitles] : nil);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? nil : [[UILocalizedIndexedCollation currentCollation] sectionIndexTitles]);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) ? [[UILocalizedIndexedCollation currentCollation] sectionForSectionIndexTitleAtIndex:index] : 0);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? 0 : [[UILocalizedIndexedCollation currentCollation] sectionForSectionIndexTitleAtIndex:index]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONUserToggleViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-		HONUserToggleViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-		if (cell == nil)
-			cell = [[HONUserToggleViewCell alloc] init];
-		
-		HONContactUserVO *contactUserVO = (HONContactUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:[indexPath section]]] objectAtIndex:indexPath.row];
+	if (cell == nil)
+		cell = [[HONUserToggleViewCell alloc] init];
+	
+	
+	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook && ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		HONContactUserVO *contactUserVO = (HONContactUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 		cell.contactUserVO = contactUserVO;
-		cell.delegate = self;
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-		
-		return (cell);
 		
 	} else {
-		HONUserToggleViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-		
-		if (cell == nil) {
-			cell = [[HONUserToggleViewCell alloc] init];
+		if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults)
 			cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
+			
+		else {
+			if ([[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row] isKindOfClass:[HONTrivialUserVO class]])
+				cell.trivialUserVO = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+				
+			else {
+				UIButton *contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+				contactsButton.frame = CGRectMake(0.0, 9.0, 320.0, 46.0);
+				[contactsButton setBackgroundImage:[UIImage imageNamed:@"accessContactsButton_nonActive"] forState:UIControlStateNormal];
+				[contactsButton setBackgroundImage:[UIImage imageNamed:@"accessContactsButton_Active"] forState:UIControlStateHighlighted];
+				[contactsButton addTarget:self action:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @selector(_promptForAddressBookPermission) : @selector(_promptForAddressBookAccess) forControlEvents:UIControlEventTouchUpInside];
+				[cell.contentView addSubview:contactsButton];
+			}
 		}
-		
-		cell.delegate = self;
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-		
-		return (cell);
 	}
+	
+	cell.delegate = self;
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	return (cell);
 }
 
 
@@ -541,11 +554,11 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) ? 0.0 : kOrthodoxTableHeaderHeight);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ?  kOrthodoxTableHeaderHeight : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook || HONContactsTableViewDataSourceMatchedUsers) {
 		HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		return ((cell.trivialUserVO != nil) ? indexPath : nil);
 		
@@ -591,25 +604,21 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		if (buttonIndex == 0) {
+		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
 				
-				// first time asking for access
-				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+						[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Address Book Granted"];
+						
+						[_inAppUsers removeAllObjects];
 						[self _retrieveDeviceContacts];
 					});
 					
-					// already granted access
-				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-					[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Granted"];
-					[self _retrieveDeviceContacts];
-					
-					// denied permission
 				} else {
-					[[HONAnalyticsParams sharedInstance] trackEvent:@"Address Book - Denied"];
+					[[HONAnalyticsParams sharedInstance] trackEvent:@"Conatcts - Address Book Unknown / Denied "];
 				}
 			}
 		}
@@ -623,23 +632,59 @@
 	[_segmentedKeys removeAllObjects];
 	
 	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-	for (HONContactUserVO *vo in _allContacts) {
+	
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+		for (HONTrivialUserVO *vo in _inAppUsers) {
+			if ([vo.username length] > 0) {
+				NSString *charKey = [[vo.username substringToIndex:1] lowercaseString];
+				if (![_segmentedKeys containsObject:charKey]) {
+					[_segmentedKeys addObject:charKey];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[dict setValue:newSegment forKey:charKey];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+					[prevSegment addObject:vo];
+					[dict setValue:prevSegment forKey:charKey];
+				}
+			}
+		}
 		
-		if ([vo.lastName length] > 0) {
-			NSString *charKey = [vo.lastName substringToIndex:1];
-			if (![_segmentedKeys containsObject:charKey]) {
-				[_segmentedKeys addObject:charKey];
-				
-				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-				[dict setValue:newSegment forKey:charKey];
-				
-			} else {
-				NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
-				[prevSegment addObject:vo];
-				[dict setValue:prevSegment forKey:charKey];
+		NSString *charKey = @"¡";
+		if (![_segmentedKeys containsObject:charKey]) {
+			[_segmentedKeys addObject:charKey];
+			
+			NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:@"¡", nil];
+			[dict setValue:newSegment forKey:charKey];
+			
+		} else {
+			NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+			[prevSegment addObject:@"¡"];
+			[dict setValue:prevSegment forKey:charKey];
+		}
+		
+	} else {
+		for (HONContactUserVO *vo in _allContacts) {
+			if ([vo.lastName length] > 0) {
+				NSString *charKey = [vo.lastName substringToIndex:1];
+				if (![_segmentedKeys containsObject:charKey]) {
+					[_segmentedKeys addObject:charKey];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[dict setValue:newSegment forKey:charKey];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+					[prevSegment addObject:vo];
+					[dict setValue:prevSegment forKey:charKey];
+				}
 			}
 		}
 	}
+	
+	for (NSString *key in dict)
+		NSLog(@"_segmentedKeys[%@] = [%@]", key, [dict objectForKey:key]);
 	
 	return (dict);
 }
@@ -648,9 +693,8 @@
 	_inAppContacts = [NSMutableArray array];
 	for (HONTrivialUserVO *trivialUserVO in _inAppContacts) {
 		for (HONContactUserVO *contactUserVO in _allContacts) {
-			if ([trivialUserVO.username isEqualToString:contactUserVO.fullName]) {
+			if ([trivialUserVO.username isEqualToString:contactUserVO.fullName])
 				break;
-			}
 		}
 	}
 	

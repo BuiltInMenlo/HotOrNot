@@ -13,7 +13,7 @@
 #define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
-#define __FORCE_REGISTER__ 0
+#define __FORCE_REGISTER__ 1
 
 #define __FORCE_SUGGEST__ 0
 #define __IGNORE_SUSPENDED__ 0
@@ -144,6 +144,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)paidEmotions;
 + (NSArray *)searchUsers;
 + (NSArray *)subjectFormats;
+
++ (NSArray *)excludedClubDomains;
 
 + (NSRange)rangeForImageQueue;
 

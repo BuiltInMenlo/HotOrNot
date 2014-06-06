@@ -12,6 +12,7 @@
 #import "HONChallengeAssistant.h"
 #import "HONClubAssistant.h"
 #import "HONColorAuthority.h"
+#import "HONDateTimeStipulator.h"
 #import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"

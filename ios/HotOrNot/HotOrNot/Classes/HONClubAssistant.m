@@ -35,7 +35,10 @@ static HONClubAssistant *sharedInstance = nil;
 	return (@[@{@"id"				: @"1110001",
 				@"name"				: @"Jefferson High",
 				@"description"		: @"FPO High School",
+				
 				@"img"				: @"https://d3j8du2hyvd35p.cloudfront.net/3f3158660d1144a2ba2bb96d8fa79c96_5c7e2f9900fb4d9a930ac11a09b9facb-1389678527Large_640x1136.jpg",
+				@"club_type"		: @"SUGGESTED",
+				@"added"			: @"2014-03-21 12:43:55",
 				
 				@"owner"			: @{@"id"			: @"62899",
 										@"username"		: @"smileyy_syd",
@@ -56,14 +59,19 @@ static HONClubAssistant *sharedInstance = nil;
 										  @"invited"		: @"2014-03-25 18:31:15"}],
 				
 				@"blocked"			: @[],
-				@"added"			: @"2014-03-21 12:43:55"}]);
+				
+				@"submissions"		: @[]
+			}]);
 }
 
 - (NSArray *)fpoJoinedClubs {
 	return (@[@{@"id"				: @"1110002",
 				@"name"				: @"Katy Perry",
+				
 				@"description"		: @"",
 				@"img"				: @"https://s3.amazonaws.com/hotornot-challenges/katyPerryLarge_640x1136.jpg",
+				@"club_type"		: @"NEARBY",
+				@"added"			: @"2014-03-21 12:43:55",
 				
 				@"owner"			: @{@"id"		: @"10563",
 										@"username"	: @"cheylaureenxo",
@@ -95,14 +103,19 @@ static HONClubAssistant *sharedInstance = nil;
 										  @"mobile_number"	: @"",
 										  @"email"			: @"",
 										  @"invited"		: @"2014-04-27 09:36:19"}],
-				@"added"			: @"2014-04-20 16:20:00"}]);
+				
+				@"submissions"		: @[]
+			}]);
 }
 
 - (NSDictionary *)fpoOwnedClubDictionary {
 	return (@{@"id"				: @"12",
 			  @"name"			: @"Dozen Club",
+			  
 			  @"description"	: @"",
 			  @"img"			: @"https://d3j8du2hyvd35p.cloudfront.net/58027fd1473f4826a669e89ba1d12000_0adcbca42b6541f898f1557fcc4da55a-1388776881",
+			  @"club_type"		: @"USER_GENERATED",
+			  @"added"			: @"2014-04-28 00:40:03",
 			  
 			  @"owner"			: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 									@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
@@ -111,7 +124,9 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"members"		: @[],
 			  @"pending"		: @[],
 			  @"blocked"		: @[],
-			  @"added"			: @"2014-04-28 00:40:03"});
+			  
+			  @"submissions"		: @[]
+			});
 }
 
 
@@ -121,7 +136,9 @@ static HONClubAssistant *sharedInstance = nil;
 			  
 			  @"description"	: @"",
 			  @"img"			: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-			   
+			  @"club_type"		: @"",
+			  @"added"			: @"0000-00-00 00:00:00",
+			  
 			  @"owner"			: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 									@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
 									@"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
@@ -129,7 +146,9 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"members"		: @[],
 			  @"pending"		: @[],
 			  @"blocked"		: @[],
-			  @"added"			: @"2014-04-28 00:40:03"});
+			  
+			  @"submissions"	: @[]
+			});
 }
 
 @end

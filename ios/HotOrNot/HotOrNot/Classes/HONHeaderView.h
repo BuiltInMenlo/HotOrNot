@@ -6,9 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONProfileHeaderButtonView.h"
-#import "HONCreateSnapButtonView.h"
-
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
 - (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG;

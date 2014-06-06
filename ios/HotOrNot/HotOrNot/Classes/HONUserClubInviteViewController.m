@@ -13,7 +13,6 @@
 #import "EGORefreshTableHeaderView.h"
 
 #import "HONUserClubInviteViewController.h"
-#import "HONHeaderView.h"
 #import "HONUserProfileViewController.h"
 
 @interface HONUserClubInviteViewController ()

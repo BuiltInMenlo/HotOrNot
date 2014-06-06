@@ -9,7 +9,6 @@
 @interface HONDeviceIntrinsics : NSObject
 + (HONDeviceIntrinsics *)sharedInstance;
 
-
 - (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
 - (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
 
@@ -22,5 +21,4 @@
 - (NSString *)deviceName;
 
 - (BOOL)hasAdressBookPermission;
-- (void)promptForAddressBookAccess;
 @end

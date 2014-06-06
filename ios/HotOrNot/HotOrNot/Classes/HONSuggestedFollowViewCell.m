@@ -133,49 +133,52 @@
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
 			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
 			
-			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_trivialUserVO.userID completion:^(NSObject *result){
-				_totalFollowing = [(NSArray *)result count];
-				
-				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
-					_challenges = [NSMutableArray array];
-					
-					int cnt = 0;
-					for (NSDictionary *dict in (NSArray *)result) {
+			_totalFollowing = 0;
+			_challenges = [NSMutableArray array];
+			[self _makeStats];
+//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_trivialUserVO.userID completion:^(NSObject *result){
+//				_totalFollowing = [(NSArray *)result count];
+//				
+//				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
+//					_challenges = [NSMutableArray array];
+//					
+//					int cnt = 0;
+//					for (NSDictionary *dict in (NSArray *)result) {
 //						NSLog(@"CHALLENGE #%d:[%@]", (cnt + 1), [dict objectForKey:@"creator"]);
-						HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
-						[_challenges addObject:vo];
-						
-						if (cnt++ == 1)
-							break;
-					}
-					
-					cnt = 0;
-					for (HONChallengeVO *vo in _challenges) {
-						NSString *imgPrefix = @"";
-						if (vo.creatorVO.userID == _trivialUserVO.userID)
-							imgPrefix = vo.creatorVO.imagePrefix;
-						
-						else {
-							for (HONOpponentVO *opponentVO in vo.challengers) {
-								if (opponentVO.userID == _trivialUserVO.userID)
-									imgPrefix = opponentVO.imagePrefix;
-							}
-						}
-						
-						UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0 + (cnt * (kSnapThumbSize.width + 15.0)), 58.0, kSnapThumbSize.width, kSnapThumbSize.height)];
-						[challengeImageView setImageWithURL:[NSURL URLWithString:[imgPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
-						[self.contentView addSubview:challengeImageView];
-						
-						UIImageView *borderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedFollowChallengeBorder"]];
-						borderImageView.frame = challengeImageView.frame;
-						[self.contentView addSubview:borderImageView];
-						
-						cnt++;
-					}
-					
-					[self _makeStats];
-				}];
-			}];
+//						HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
+//						[_challenges addObject:vo];
+//						
+//						if (cnt++ == 1)
+//							break;
+//					}
+//					
+//					cnt = 0;
+//					for (HONChallengeVO *vo in _challenges) {
+//						NSString *imgPrefix = @"";
+//						if (vo.creatorVO.userID == _trivialUserVO.userID)
+//							imgPrefix = vo.creatorVO.imagePrefix;
+//						
+//						else {
+//							for (HONOpponentVO *opponentVO in vo.challengers) {
+//								if (opponentVO.userID == _trivialUserVO.userID)
+//									imgPrefix = opponentVO.imagePrefix;
+//							}
+//						}
+//						
+//						UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0 + (cnt * (kSnapThumbSize.width + 15.0)), 58.0, kSnapThumbSize.width, kSnapThumbSize.height)];
+//						[challengeImageView setImageWithURL:[NSURL URLWithString:[imgPrefix stringByAppendingString:kSnapThumbSuffix]] placeholderImage:nil];
+//						[self.contentView addSubview:challengeImageView];
+//						
+//						UIImageView *borderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"suggestedFollowChallengeBorder"]];
+//						borderImageView.frame = challengeImageView.frame;
+//						[self.contentView addSubview:borderImageView];
+//						
+//						cnt++;
+//					}
+//					
+//					[self _makeStats];
+//				}];
+//			}];
 		}
 	}];
 }

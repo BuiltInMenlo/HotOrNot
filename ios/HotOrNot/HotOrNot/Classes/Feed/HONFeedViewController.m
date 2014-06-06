@@ -21,7 +21,7 @@
 #import "HONClubPhotoViewController.h"
 
 #import "HONHeaderView.h"
-#import "HONProfileHeaderButtonView.h"
+#import "HONActivityHeaderButtonView.h"
 #import "HONMessagesButtonView.h"
 #import "HONCreateSnapButtonView.h"
 

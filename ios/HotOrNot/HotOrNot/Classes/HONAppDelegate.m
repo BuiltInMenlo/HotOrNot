@@ -43,7 +43,7 @@
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
-#import "HONClubsTimelineViewController.h"
+#import "HONClubsNewsFeedViewController.h"
 #import "HONClubPhotoViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONContactsTabViewController.h"
@@ -153,7 +153,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)customerServiceURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"service_url"]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"support_url"]);
 }
 + (NSDictionary *)s3Credentials {
 	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAJVS6Y36AQCMRWLQQ", @"key", @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
@@ -213,7 +213,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		key = @"banners";
 	
 	else if (s3BucketType == HONAmazonS3BucketTypeClubsSource || s3BucketType == HONAmazonS3BucketTypeClubsCloudFront)
-		key = @"challenges";
+		key = @"clubs";
 	
 	else if (s3BucketType == HONAmazonS3BucketTypeEmotionsSource || s3BucketType == HONAmazonS3BucketTypeEmoticonsCloudFront)
 		key = @"emoticons";
@@ -227,7 +227,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (int)incTotalForCounter:(NSString *)key {
-	key = [[key lowercaseString] stringByAppendingString:@"_total"];
+	key = [key stringByAppendingString:@"_total"];
 	int tot = ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) ? 0 : [[[NSUserDefaults standardUserDefaults] objectForKey:key] intValue] + 1;
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tot] forKey:key];
@@ -237,7 +237,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (int)totalForCounter:(NSString *)key {
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:[[key lowercaseString] stringByAppendingString:@"_total"]] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:[[key lowercaseString] stringByAppendingString:@"_total"]] intValue] : -1);
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:[key stringByAppendingString:@"_total"]] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:[key stringByAppendingString:@"_total"]] intValue] : -1);
 }
 
 + (NSString *)kikCardURL {
@@ -269,6 +269,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"subject_formats"]);
 }
 
++ (NSArray *)excludedClubDomains {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"excluded_domains"]);
+}
+
 + (NSArray *)searchUsers {
 	return ([NSMutableArray arrayWithArray:[[[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username"
 																																																  ascending:YES
@@ -284,7 +288,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
+	NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
+	if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
+		formattedNumber = [@"1" stringByAppendingString:formattedNumber];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[@"+" stringByAppendingString:formattedNumber] forKey:@"phone_number"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -335,34 +343,47 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (void)resetTotals {
 	NSArray *totalKeys = @[@"boot_total",
 						   @"background_total",
-						   @"contacts_total",
-						   @"contactsRefresh_total",
+						   @"friendsTab_total",
+						   @"friendsTabRefresh_total",
+						   @"clubsTab_total",
+						   @"clubsTabRefresh_total",
+						   @"verifyTab_total",
+						   @"verifyTabRefresh_total",
+						   @"verifyAction_total",
 						   @"timeline_total",
 						   @"timelineRefresh_total",
 						   @"feedItem_total",
 						   @"feedItemRefresh_total",
-						   @"clubs_total",
-						   @"clubsRefresh_total",
-						   @"messages_total",
-						   @"messagesRefresh_total",
-						   @"alerts_total",
-						   @"alertsRefresh_total",
-						   @"verify_total",
-						   @"verifyRefresh_total",
-						   @"search_total",
-						   @"suggested_total",
-						   @"verifyAction_total",
+						   @"activityView_total",
+						   @"activityViewRefresh_total",
 						   @"preview_total",
-						   @"details_total",
 						   @"camera_total",
 						   @"join_total",
-						   @"profile_total",
-						   @"like_total"];
+						   @"like_total",
+						   @"messages_total",
+						   @"messagesRefresh_total",
+						   @"search_total",
+						   @"suggested_total",
+						   @"details_total",
+						   @"profile_total"];
 	
 	for (NSString *key in totalKeys) {
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:key])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:-1] forKey:key];
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@-1 forKey:key];
 	}
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"activity_total"];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"activity_updated"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@0 forKey:@"activity_total"];
+	[[NSUserDefaults standardUserDefaults] setObject:@"0000-00-00 00:00:00" forKey:@"activity_updated"];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag {
@@ -446,6 +467,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 + (NSString *)timeSinceDate:(NSDate *)date {
+	return ([[HONDateTimeStipulator sharedInstance] intervalSinceDate:date minSeconds:0 includeSuffix:@" ago"]);
+	
 	NSString *timeSince = @"";
 	
 	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
@@ -518,19 +541,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
-	[[HONAPICaller sharedInstance] retreiveBootConfigWithEpoch:(int)[[NSDate date] timeIntervalSince1970] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSObject *result) {
 		NSDictionary *dict = (NSDictionary *)result;
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[dict objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"service_url"] forKey:@"service_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"support_url"] forKey:@"support_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"splash_image"] forKey:@"splash_image"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"share_templates"] forKey:@"share_templates"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"kik_card"] forKey:@"kik_card"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[[dict objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"verify_copy"] forKey:@"verify_copy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"share_url"] forKey:@"share_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[dict objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[dict objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"min_age"] forKey:@"min_age"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
@@ -546,7 +570,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
 														   @"banners"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"banners"],
-														   @"challenges"	: [[dict objectForKey:@"s3_buckets"] objectForKey:@"challenges"],
+														   @"clubs"			: [[dict objectForKey:@"s3_buckets"] objectForKey:@"clubs"],
 														   @"emoticons"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[[dict objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
@@ -614,24 +638,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
 			[self _enableNotifications:(![[HONAppDelegate deviceToken] isEqualToString:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]])];
-			
+							
 #if __IGNORE_SUSPENDED__ == 1
-			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
-				[HONAppDelegate writeFollowingList:(NSArray *)result];
-				
 				if (self.tabBarController == nil)
 					[self _initTabs];
-			}];
 #else
-			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-				
-			} else {
-				if (self.tabBarController == nil)
-					[self _initTabs];
-			}
+				if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+					[navigationController setNavigationBarHidden:YES];
+					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+					
+				} else {
+					if (self.tabBarController == nil)
+						[self _initTabs];
+				}
 #endif
 		}
 	}];
@@ -775,7 +795,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
+	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
@@ -819,7 +839,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	
 #if __FORCE_REGISTER__ == 1
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"passed_registration"];
+	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 #endif
 	
@@ -879,11 +901,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-	NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
+	//NSLog(@"[:|:] [applicationWillResignActive] [:|:]");
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-	NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
+	//NSLog(@"[:|:] [applicationDidEnterBackground] [:|:]");
 	
 	[HONAppDelegate incTotalForCounter:@"background"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
@@ -915,13 +937,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-	NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
+	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
 	_isFromBackground = YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
+	//NSLog(@"[:|:] [applicationDidBecomeActive] [:|:]");
 	
 	[FBAppEvents activateApp];
 	
@@ -1007,7 +1029,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-	NSLog(@"[:|:] [applicationWillTerminate] [:|:]");
+	//NSLog(@"[:|:] [applicationWillTerminate] [:|:]");
 	
 	[FBSession.activeSession close];
 	
@@ -1159,8 +1181,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
+	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsTimelineViewController alloc] init]],
+									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
 	
 	
@@ -1182,31 +1205,28 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_establishUserDefaults {
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+	NSDictionary *userDefaults = @{@"install_date"		: [NSDate new],
+								   @"is_deactivated"	: [@"" stringFromBOOL:NO],
+								   @"votes"				: @[],
+								   @"local_challenges"	: @[],
+								   @"upvotes"			: @[],
+								   @"activity_total"	: @0,
+								   @"activity_updated"	: @"0000-00-00 00:00:00"};
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"is_deactivated"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
-		[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"upvotes"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"upvotes"];
-	
-	[HONAppDelegate resetTotals];
-	
-	for (int i=-2; i<=0; i++)
-		[[NSUserDefaults standardUserDefaults] setObject:[[HONChallengeAssistant sharedInstance] emptyChallengeDictionaryWithID:i] forKey:[NSString stringWithFormat:@"empty_challenge_%d", i]];
+	for (NSString *key in userDefaults) {
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
+			[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+	}
 		
 #if __FORCE_REGISTER__ == 1
-	[HONAppDelegate resetTotals];
+	for (NSString *key in userDefaults) {
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+	}
 	
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"upvotes"];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+	[HONAppDelegate resetTotals];
 #endif
 	
 #if __RESET_TOTALS__ == 1

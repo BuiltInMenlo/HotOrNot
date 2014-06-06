@@ -26,10 +26,10 @@
 	if ([vo.rawNumber length] > 0) {
 		NSString *formattedNumber = [[vo.rawNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
 		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-			formattedNumber = [[NSString new] stringByAppendingFormat:@"1%@", formattedNumber];
+			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
 		
 		vo.email = @"";
-		vo.mobileNumber = [[NSString new] stringByAppendingFormat:@"+%@", formattedNumber];
+		vo.mobileNumber = [@"+" stringByAppendingString:formattedNumber];
 	} else
 		vo.mobileNumber = @"";
 	

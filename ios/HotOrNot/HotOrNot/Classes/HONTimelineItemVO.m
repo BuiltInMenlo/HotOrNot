@@ -10,7 +10,7 @@
 
 @implementation HONTimelineItemVO
 @synthesize dictionary;
-@synthesize timelineItemType, challengeVO, emotionVO, userClubVO, timestamp;
+@synthesize timelineItemType, emotionVO, opponentVO, userClubVO, timestamp;
 
 + (HONTimelineItemVO *)timelineItemWithDictionary:(NSDictionary *)dictionary {
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -22,24 +22,53 @@
 	HONTimelineItemVO *vo = [[HONTimelineItemVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	vo.timelineItemType = ([dictionary objectForKey:@"creator"]) ? HONTimelineItemTypeSelfie : ((arc4random() % 100) > 75) ? HONTimelineItemTypeInviteRequest : HONTimelineItemTypeNearby;
+	if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"FEATURED"])
+		vo.timelineItemType = HONTimelineItemTypeFeatured;
+	
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"NEARBY"])
+		vo.timelineItemType = HONTimelineItemTypeNearby;
+	
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SCHOOL"])
+		vo.timelineItemType = HONTimelineItemTypeSchool;
+	
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"STAFF"])
+		vo.timelineItemType = HONTimelineItemTypeSelfieclubTeam;
+	
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SPONSORED"])
+		vo.timelineItemType = HONTimelineItemTypeSponsored;
+	
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SUGGESTED"])
+		vo.timelineItemType = HONTimelineItemTypeSuggested;
+	
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"USER_GENERATED"])
+		vo.timelineItemType = HONTimelineItemTypeUserCreated;
+	
+	else
+		vo.timelineItemType = HONTimelineItemTypeUnknown;
+	
 	vo.timestamp = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	
 	switch (vo.timelineItemType) {
-		case HONTimelineItemTypeSelfie:
-			vo.challengeVO = [HONChallengeVO challengeWithDictionary:dictionary];
-			vo.emotionVO = [[HONChallengeAssistant sharedInstance] emotionForOpponent:vo.challengeVO.creatorVO];
-			break;
+		case HONTimelineItemTypeUserCreated:
+			vo.opponentVO = ([[dictionary objectForKey:@"submissions"] count] > 0) ? [HONOpponentVO opponentWithDictionary:[[dictionary objectForKey:@"submissions"] lastObject]] : nil;
 			
-		case HONTimelineItemTypeInviteRequest:
-			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
+			if (vo.opponentVO == nil) {
+				vo.opponentVO = [HONOpponentVO opponentWithDictionary:@{@"user_id"	: @"592",
+																		@"username"	: @"markus18",
+																		@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/defaultAvatar",
+																		@"img"		: @"https://d1fqnfrnudpaz6.cloudfront.net/a616f063d7b1477f95bca5098e15ef36_1396173765",
+																		@"subjects"	: @[@"happy",
+																						@"excited",
+																						@"stoked"],
+																		@"score"	: @"76",
+																		@"added"	: @"2014-05-01 14:23:10"}];
+			}
+			
+			vo.emotionVO = [[HONChallengeAssistant sharedInstance] emotionForOpponent:vo.opponentVO];
 			break;
 			
 		case HONTimelineItemTypeNearby:
 			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
-			break;
-			
-		case HONTimelineItemTypeCTA:
 			break;
 			
 		default:
@@ -51,7 +80,7 @@
 
 - (void)dealloc {
 	self.dictionary = nil;
-	self.challengeVO = nil;
+	self.opponentVO = nil;
 	self.userClubVO = nil;
 	self.timestamp = nil;
 }

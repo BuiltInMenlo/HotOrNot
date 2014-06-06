@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "inviteNonUserButton_Active.png"
+      "filename" : "grayDot.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "inviteNonUserButton_Active@2x.png"
+      "filename" : "grayDot@2x.png"
     }
   ],
   "info" : {

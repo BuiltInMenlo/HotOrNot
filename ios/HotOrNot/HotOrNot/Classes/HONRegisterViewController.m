@@ -128,6 +128,8 @@
 				[_phoneTextField becomeFirstResponder];
 			
 			} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
+				_progressHUD.labelText = @"Username & phone # taken!";
+				
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
@@ -170,27 +172,27 @@
 			}
 			
 			
-			[HONAppDelegate writePhoneNumber:_phone];
-			[[HONAPICaller sharedInstance] submitPhoneNumberForContactsMatching:_phone completion:^(NSObject *result) {}];
-			
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			[HONAppDelegate writePhoneNumber:_phone];
 			
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];
-			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-																					  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-																					  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																					  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-																					  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
-			
-			
-			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSObject *result) {
+				[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];
+				[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+																						  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																						  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+																						  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
+				
+				
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+				}];
 			}];
-			
+						
 		} else {
 			int errorCode = [[(NSDictionary *)result objectForKey:@"result"] intValue];
 			

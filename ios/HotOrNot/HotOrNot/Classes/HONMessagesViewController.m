@@ -104,8 +104,8 @@
 	
 	UIButton *createMessageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createMessageButton.frame = CGRectMake(272.0, 0.0, 44.0, 44.0);
-	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"plusButton_nonActive"] forState:UIControlStateNormal];
-	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"plusButton_Active"] forState:UIControlStateHighlighted];
+	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessageButton_nonActive"] forState:UIControlStateNormal];
+	[createMessageButton setBackgroundImage:[UIImage imageNamed:@"addMessageButton_Active"] forState:UIControlStateHighlighted];
 	[createMessageButton addTarget:self action:@selector(_goCreateMessage) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:createMessageButton];
 	

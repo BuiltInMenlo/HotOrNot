@@ -59,10 +59,10 @@
 	};
 	
 	if (_isEmail)
-		[[HONAPICaller sharedInstance] submitEmailAddressForContactsMatching:_textField.text completion:completionBlock];
+		[[HONAPICaller sharedInstance] submitEmailAddressForUserMatching:_textField.text completion:completionBlock];
 	
 	else
-		[[HONAPICaller sharedInstance] submitPhoneNumberForContactsMatching:_textField.text completion:completionBlock];
+		[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:_textField.text completion:completionBlock];
 }
 
 

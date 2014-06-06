@@ -97,7 +97,7 @@
 	
 			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : @"Activity"];
 			[self _makeProfile];
-			[self _retrieveAlerts];
+			[self _retrieveActivityItems];
 			
 		} else {
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -112,9 +112,18 @@
 	}];
 }
 
-- (void)_retrieveAlerts {
+- (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveAlertsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [(NSArray *)result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
+		int badgeTotal = MAX(0, [(NSArray *)result count] - prevTotal);
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
+		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : @"0000-00-00 00:00:00" forKey:@"activity_updated"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [(NSArray *)result count], badgeTotal);
+		
 		for (NSDictionary *dict in (NSArray *)result)
 			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
 		
