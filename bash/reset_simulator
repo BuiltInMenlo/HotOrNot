@@ -10,7 +10,7 @@
 #-- wipe_url="http://130.letsvolley.com/admin/wipe_user.php"
 
 
-wipe_url="http://admin-stage.letsvolley.com/admin/wipe_user.php"
+wipe_url="http://admin.letsvolley.com/admin/wipe_user.php"
 tier_name=$(echo "${wipe_url}" | cut -d \/ -f 3 | cut -d \. -f1)
 
 username="snap"
@@ -19,12 +19,16 @@ if [ $1 ]; then
 
 
 isKill_flg=true
-while getopts "s" optname # --//> there's a '-s'
+while getopts "su:" optname # --//> there's a '-s'
 	do # --/ loop thru the params
 		case "$optname" in #  -/> set flag based on char
 
 		"s") # )-/> passed in '-s'
 			isKill_flg=false
+			;;
+			
+		"u") #
+			username=$OPTARG
 			;;
 
 		"?") # )-/> anything else
