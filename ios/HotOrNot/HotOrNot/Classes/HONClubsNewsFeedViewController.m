@@ -588,7 +588,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);//return ((indexPath.section == 0) ? indexPath : nil);
+	return (indexPath);//return ((indexPath.section == 0) ? indexPath : nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
