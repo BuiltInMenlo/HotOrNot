@@ -10,7 +10,7 @@
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, userClubStatusType, userClubExpoType, userClubConentType, actionsPerMinute, totalPendingMembers, totalActiveMembers, totalBannedMembers, totalHistoricMembers, totalAllMembers, totalEntries, coverImagePrefix, ownerID, ownerName, ownerImagePrefix, ownerBirthdate, addedDate, updatedDate;
+@synthesize clubID, userClubStatusType, userClubExpoType, userClubConentType, totalPendingMembers, totalActiveMembers, totalBannedMembers, totalHistoricMembers, totalAllMembers, totalSubmissions, coverImagePrefix, ownerID, ownerName, ownerImagePrefix, addedDate, updatedDate;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -42,7 +42,6 @@
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
 	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != [NSNull null]) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]];
-	vo.ownerBirthdate = [dateFormat dateFromString:[[dictionary objectForKey:@"owner"] objectForKey:@"age"]];
 	
 	return (vo);
 }
@@ -55,7 +54,6 @@
 	self.coverImagePrefix = nil;
 	self.ownerName = nil;
 	self.ownerImagePrefix = nil;
-	self.ownerBirthdate = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;
 }

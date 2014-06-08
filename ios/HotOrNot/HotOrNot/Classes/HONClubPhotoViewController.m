@@ -158,7 +158,7 @@
 	emotionLabel.backgroundColor = [UIColor clearColor];
 	emotionLabel.shadowColor = [UIColor blackColor];
 	emotionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-	emotionLabel.text = [@"- is feeling " stringByAppendingString:_challengeVO.subjectName];
+	emotionLabel.text = [@"- is feeling " stringByAppendingString:[_challengeVO.subjectNames firstObject]];
 	[infoView addSubview:emotionLabel];
 	
 	int xOffset = 0;
@@ -289,7 +289,7 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:20.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:20.0 + ((kDetailsHeroImageHeight - 44.0) * 0.5) withSubjectNames:_challengeVO.subjectNames withUsername:_challengeVO.creatorVO.username];
 	timelineCellSubjectView.delegate = self;
 	[_heroHolderView addSubview:timelineCellSubjectView];
 	

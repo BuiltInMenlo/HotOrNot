@@ -28,10 +28,10 @@
 
 @implementation HONTimelineCellSubjectView
 
-- (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username {
+- (id)initAtOffsetY:(CGFloat)offsetY withSubjectNames:(NSArray *)subjectNames withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:CGRectMake(10.0, offsetY, 300.0, 70.0)])) {
 		_username = username;
-		_caption = subjectName;
+		_caption = [subjectNames firstObject];
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMAX_WIDTH, self.frame.size.height)];
 		_captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:40];
@@ -75,7 +75,7 @@
 	_challengeVO = challengeVO;
 	
 	_username = _challengeVO.creatorVO.username;
-	[self _captionForSubject:challengeVO.subjectName];
+	[self _captionForSubject:[_challengeVO.subjectNames firstObject]];
 	[self _updateEmotion];
 }
 

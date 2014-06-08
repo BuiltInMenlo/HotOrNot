@@ -85,7 +85,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self _updateMatchedContacts];
+			[self _updateDeviceContactsWithMatchedUsers];
 		}
 	}];
 }
@@ -116,7 +116,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self _updateMatchedContacts];
+			[self _updateDeviceContactsWithMatchedUsers];
 		}
 	}];
 }
@@ -305,14 +305,14 @@
 		[self _sendPhoneContacts];
 	}
 	
-	if ([_emailRecipients length] > 0) {
-		NSLog(@"EMAIL CONTACTS:[%@]", [_emailRecipients substringToIndex:[_emailRecipients length] - 1]);
-		[self _sendEmailContacts];
-	}
+//	if ([_emailRecipients length] > 0) {
+//		NSLog(@"EMAIL CONTACTS:[%@]", [_emailRecipients substringToIndex:[_emailRecipients length] - 1]);
+//		[self _sendEmailContacts];
+//	}
 	
-	_allContacts = [NSMutableArray array];
+	_deviceContacts = [NSMutableArray array];
 	for (NSDictionary *dict in [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
-		[_allContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
+		[_deviceContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
 	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
@@ -665,7 +665,7 @@
 		}
 		
 	} else {
-		for (HONContactUserVO *vo in _allContacts) {
+		for (HONContactUserVO *vo in _deviceContacts) {
 			if ([vo.lastName length] > 0) {
 				NSString *charKey = [vo.lastName substringToIndex:1];
 				if (![_segmentedKeys containsObject:charKey]) {
@@ -689,11 +689,18 @@
 	return (dict);
 }
 
-- (void)_updateMatchedContacts {
+- (void)_updateDeviceContactsWithMatchedUsers {
 	_inAppContacts = [NSMutableArray array];
-	for (HONTrivialUserVO *trivialUserVO in _inAppContacts) {
-		for (HONContactUserVO *contactUserVO in _allContacts) {
-			if ([trivialUserVO.username isEqualToString:contactUserVO.fullName])
+	for (HONTrivialUserVO *trivialUserVO in _inAppUsers) {
+		for (HONContactUserVO *deviceContactVO in _deviceContacts) {
+			if ([trivialUserVO.altID length] > 0) {
+				if (deviceContactVO.isSMSAvailable) {
+//					if ([trivialUserVO.altID isEqualToString:deviceContactVO.mobileNumber]) {
+//						[_inAppContacts addObject:[[HONTrivialUserVO user]]
+//					}
+				}
+			}
+				
 				break;
 		}
 	}

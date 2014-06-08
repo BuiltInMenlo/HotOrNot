@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 @interface HONContactsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
 	
-	NSMutableArray *_allContacts;
+	NSMutableArray *_deviceContacts;
 	NSMutableArray *_inAppContacts;
 	NSMutableArray *_inAppUsers;
 	NSDictionary *_segmentedContacts;
@@ -47,6 +47,6 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 - (void)_searchUsersWithUsername:(NSString *)username;
 - (void)_retrieveDeviceContacts;
 
-- (void)_updateMatchedContacts;
+- (void)_updateDeviceContactsWithMatchedUsers;
 -(NSDictionary *)_populateSegmentedDictionary;
 @end

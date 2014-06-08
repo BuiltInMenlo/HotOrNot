@@ -12,7 +12,7 @@
 
 @implementation HONTrivialUserVO
 @synthesize dictionary;
-@synthesize userID, username, avatarPrefix, altID, isVerified, abuseCount;
+@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, abuseCount;
 
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];

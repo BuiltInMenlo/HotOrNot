@@ -79,7 +79,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 	static dispatch_once_t onceToken;
 	
 	dispatch_once(&onceToken, ^{
-		properties = @{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName]};
+		properties = @{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectNames]};
 	});
 	
 	return (properties);

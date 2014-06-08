@@ -48,23 +48,23 @@
 	
 	vo.timestamp = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	
+	
 	switch (vo.timelineItemType) {
 		case HONTimelineItemTypeUserCreated:
-			vo.opponentVO = ([[dictionary objectForKey:@"submissions"] count] > 0) ? [HONOpponentVO opponentWithDictionary:[[dictionary objectForKey:@"submissions"] lastObject]] : nil;
+			vo.opponentVO = ([[dictionary objectForKey:@"submissions"] count] > 0) ? [HONOpponentVO opponentWithDictionary:[[dictionary objectForKey:@"submissions"] firstObject]] : nil;
 			
-			if (vo.opponentVO == nil) {
-				vo.opponentVO = [HONOpponentVO opponentWithDictionary:@{@"user_id"	: @"592",
-																		@"username"	: @"markus18",
-																		@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/defaultAvatar",
-																		@"img"		: @"https://d1fqnfrnudpaz6.cloudfront.net/a616f063d7b1477f95bca5098e15ef36_1396173765",
-																		@"subjects"	: @[@"happy",
-																						@"excited",
-																						@"stoked"],
-																		@"score"	: @"76",
-																		@"added"	: @"2014-05-01 14:23:10"}];
-			}
-			
-			vo.emotionVO = [[HONChallengeAssistant sharedInstance] emotionForOpponent:vo.opponentVO];
+//			if (vo.opponentVO == nil) {
+//				vo.opponentVO = [HONOpponentVO opponentWithDictionary:@{@"user_id"	: @"592",
+//																		@"username"	: @"markus18",
+//																		@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/defaultAvatar",
+//																		@"img"		: @"https://d1fqnfrnudpaz6.cloudfront.net/a616f063d7b1477f95bca5098e15ef36_1396173765",
+//																		@"subjects"	: @[@"happy",
+//																						@"excited",
+//																						@"stoked"],
+//																		@"score"	: @"76",
+//																		@"added"	: @"2014-05-01 14:23:10"}];
+			vo.emotionVO = (vo.opponentVO != nil) ? [[HONChallengeAssistant sharedInstance] emotionForOpponent:vo.opponentVO] : nil;
+//			}
 			break;
 			
 		case HONTimelineItemTypeNearby:

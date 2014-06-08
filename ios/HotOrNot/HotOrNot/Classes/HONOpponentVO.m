@@ -18,7 +18,9 @@
 	vo.dictionary = dictionary;
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
-	vo.subjectName = [[[dictionary objectForKey:@"subject"] objectAtIndex:0] stringByReplacingOccurrencesOfString:@"#" withString:@""];
+//	vo.subjectName = [[[dictionary objectForKey:@"subject"] objectAtIndex:0] stringByReplacingOccurrencesOfString:@"#" withString:@""];
+	vo.subjectNames = @[[[dictionary objectForKey:@"subjects"] stringByReplacingOccurrencesOfString:@"#" withString:@""]];
+	vo.subjectName = [vo.subjectNames firstObject];
 	vo.username = [dictionary objectForKey:@"username"];
 	
 	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
@@ -37,6 +39,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.subjectName = nil;
+	self.subjectNames = nil;
 	self.username = nil;
 	self.avatarPrefix = nil;
 	self.imagePrefix = nil;

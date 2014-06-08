@@ -195,10 +195,10 @@
 
 
 #pragma mark - UI Presentation
-- (void)_updateMatchedContacts {
+- (void)_updateDeviceContactsWithMatchedUsers {
 	_inAppContacts = [NSMutableArray array];
 	for (HONTrivialUserVO *trivialUserVO in _inAppContacts) {
-		for (HONContactUserVO *contactUserVO in _allContacts) {
+		for (HONContactUserVO *contactUserVO in _deviceContacts) {
 			if ([trivialUserVO.username isEqualToString:contactUserVO.fullName]) {
 				break;
 			}

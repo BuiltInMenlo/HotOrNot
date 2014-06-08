@@ -95,19 +95,12 @@
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
 			_ownClub = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
-			//_ownClub = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
 		
 		
 		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"])
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		
-//		// --//> *** POPULATED FPO CLUBS *** <//-- //
-//		for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoJoinedClubs]) {
-//			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-//		} // --//> *** POPULATED FPO CLUBS *** <//-- //
-		
-		
+				
 		[self _retreiveClubInvites];
 	}];
 }
@@ -118,12 +111,6 @@
 	[[HONAPICaller sharedInstance] retrieveClubInvitesForUserWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		for (NSDictionary *dict in (NSArray *)result)
 			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-		
-		
-//		// --//> *** POPULATED FPO CLUBS *** <//-- //
-//		for (NSDictionary *dict in [[HONClubAssistant sharedInstance] fpoInviteClubs]) {
-//			[_invitedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-//		} // --//> *** POPULATED FPO CLUBS *** <//-- //
 		
 		
 		if (_progressHUD != nil) {

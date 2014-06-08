@@ -34,13 +34,12 @@ typedef enum {
 @property (nonatomic, assign, readonly) HONUserClubStatusType userClubStatusType;
 @property (nonatomic, assign, readonly) HONUserClubExpoType userClubExpoType;
 @property (nonatomic, assign, readonly) HONUserClubContentType userClubConentType;
+@property (nonatomic) int totalAllMembers;
 @property (nonatomic) int totalPendingMembers;
 @property (nonatomic) int totalActiveMembers;
 @property (nonatomic) int totalBannedMembers;
 @property (nonatomic) int totalHistoricMembers;
-@property (nonatomic) int totalAllMembers;
-@property (nonatomic) int totalEntries;
-@property (nonatomic) CGFloat actionsPerMinute;
+@property (nonatomic) int totalSubmissions;
 @property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, retain) NSString *coverImagePrefix;
 @property (nonatomic, retain) NSString *blurb;
@@ -48,7 +47,6 @@ typedef enum {
 @property (nonatomic) int ownerID;
 @property (nonatomic, retain) NSString *ownerName;
 @property (nonatomic, retain) NSString *ownerImagePrefix;
-@property (nonatomic, retain) NSDate *ownerBirthdate;
 
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *updatedDate;

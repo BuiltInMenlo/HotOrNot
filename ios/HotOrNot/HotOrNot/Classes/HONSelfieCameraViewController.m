@@ -77,12 +77,12 @@
 }
 
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"%@ - initAsJoinChallenge:[%d] \"%@\"", [self description], challengeVO.challengeID, challengeVO.subjectName);
+	NSLog(@"%@ - initAsJoinChallenge:[%d] \"%@\"", [self description], challengeVO.challengeID, [challengeVO.subjectNames firstObject]);
 	if ((self = [self init])) {
 		_selfieSubmitType = HONSelfieCameraSubmitTypeReplyChallenge;
 		
 		_challengeVO = challengeVO;
-		_subjectName = challengeVO.subjectName;
+		_subjectName = [challengeVO.subjectNames firstObject];
 		
 		NSMutableArray *participants = [NSMutableArray arrayWithObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [@"" stringFromInt:_challengeVO.creatorVO.userID],
 																											  @"username"	: _challengeVO.creatorVO.username,

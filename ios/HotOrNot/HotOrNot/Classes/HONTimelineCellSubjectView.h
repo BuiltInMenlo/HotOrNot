@@ -14,7 +14,7 @@
 @end
 
 @interface HONTimelineCellSubjectView : UIView
-- (id)initAtOffsetY:(CGFloat)offsetY withSubjectName:(NSString *)subjectName withUsername:(NSString *)username;
+- (id)initAtOffsetY:(CGFloat)offsetY withSubjectNames:(NSArray *)subjectNames withUsername:(NSString *)username;
 - (void)updateChallenge:(HONChallengeVO *)challengeVO;
 
 @property (nonatomic, weak) id <HONTimelineCellSubjectViewDelegate> delegate;

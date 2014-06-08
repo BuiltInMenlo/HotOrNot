@@ -101,7 +101,7 @@
 								   success:successBlock
 								   failure:failureBlock];
 	
-	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:([UIScreen mainScreen].bounds.size.height - 169.0) withSubjectName:_challengeVO.subjectName withUsername:_challengeVO.creatorVO.username];
+	HONTimelineCellSubjectView *timelineCellSubjectView = [[HONTimelineCellSubjectView alloc] initAtOffsetY:([UIScreen mainScreen].bounds.size.height - 169.0) withSubjectNames:[_challengeVO.subjectNames firstObject] withUsername:_challengeVO.creatorVO.username];
 	timelineCellSubjectView.delegate = self;
 	[self.contentView addSubview:timelineCellSubjectView];
 	

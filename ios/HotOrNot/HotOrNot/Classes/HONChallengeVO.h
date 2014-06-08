@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, HONSelfieCameraSubmitType) {
 @property (nonatomic) int statusID;
 @property (nonatomic, assign) HONPhotoSubmitType photoSubmitType;
 @property (nonatomic, retain) NSString *status;
-@property (nonatomic, retain) NSString *subjectName;
+@property (nonatomic, retain) NSArray *subjectNames;
 @property (nonatomic) int likedByTotal;
 @property (nonatomic) int totalLikes;
 @property (nonatomic) BOOL hasViewed;
