@@ -17,7 +17,7 @@
 
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 4.0, 93.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 3.0, 93.0, 44.0)])) {
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 		button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
 		[button setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];

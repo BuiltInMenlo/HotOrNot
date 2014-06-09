@@ -24,8 +24,7 @@
 	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.photoSubmitType = ([[dictionary objectForKey:@"isVerify"] intValue] == 0) ? HONPhotoSubmitTypeCreateClub : HONPhotoSubmitTypeCreateVerify;
-	vo.subjectNames = [dictionary objectForKey:@"subject"];
-	//[([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"N/A" stringByReplacingOccurrencesOfString:@"#" withString:@""];
+	vo.subjectNames = [dictionary objectForKey:@"subjects"];
 	vo.photoSubmitType = ([[vo.subjectNames firstObject] rangeOfString:@"#shoutout"].location == 0) ? HONPhotoSubmitTypeCreateShoutout : vo.photoSubmitType;
 	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 //	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];

@@ -181,6 +181,15 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
+	
+	NSLog(@"verfiyTab_total:[%d]", [HONAppDelegate totalForCounter:@"verfiyTab"]);
+	if ([HONAppDelegate incTotalForCounter:@"verifyTab"] == 1) {
+		[[[UIAlertView alloc] initWithTitle:@"Discover Tip"
+									message:@"The more you change your profile photo the more you can get discovered!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)viewDidUnload {
@@ -294,7 +303,7 @@
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Close Tutorial"];
-		
+	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
 		_tutorialView = nil;

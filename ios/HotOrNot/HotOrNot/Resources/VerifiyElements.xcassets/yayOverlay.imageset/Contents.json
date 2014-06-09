@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "approveAnimation.png"
+      "filename" : "discoverOverlayAnimation_UP.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "approveAnimation@2x.png"
+      "filename" : "discoverOverlayAnimation_UP@2x.png"
     }
   ],
   "info" : {

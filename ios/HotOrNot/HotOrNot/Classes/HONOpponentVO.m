@@ -18,9 +18,8 @@
 	vo.dictionary = dictionary;
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
-//	vo.subjectName = [[[dictionary objectForKey:@"subject"] objectAtIndex:0] stringByReplacingOccurrencesOfString:@"#" withString:@""];
-	vo.subjectNames = @[[[dictionary objectForKey:@"subjects"] stringByReplacingOccurrencesOfString:@"#" withString:@""]];
-	vo.subjectName = [vo.subjectNames firstObject];
+	vo.subjectNames = [dictionary objectForKey:@"subjects"];
+	vo.subjectName = [[vo.subjectNames firstObject] stringByReplacingOccurrencesOfString:@"#" withString:@""];
 	vo.username = [dictionary objectForKey:@"username"];
 	
 	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];

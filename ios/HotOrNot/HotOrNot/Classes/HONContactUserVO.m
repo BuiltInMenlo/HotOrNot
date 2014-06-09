@@ -10,7 +10,7 @@
 
 @implementation HONContactUserVO
 @synthesize dictionary;
-@synthesize firstName, lastName, fullName, rawNumber, mobileNumber, email, avatarImage, isSMSAvailable;
+@synthesize contactType, firstName, lastName, fullName, rawNumber, mobileNumber, email, avatarImage, isSMSAvailable, userID, username, avatarPrefix;
 
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary {
 	HONContactUserVO *vo = [[HONContactUserVO alloc] init];
@@ -24,16 +24,18 @@
 	vo.avatarImage = [UIImage imageWithData:[dictionary objectForKey:@"image"]];
 	
 	if ([vo.rawNumber length] > 0) {
-		NSString *formattedNumber = [[vo.rawNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
-		
 		vo.email = @"";
-		vo.mobileNumber = [@"+" stringByAppendingString:formattedNumber];
+		vo.mobileNumber = [HONAppDelegate normalizedPhoneNumber:vo.rawNumber];
+		
 	} else
 		vo.mobileNumber = @"";
 	
 	vo.isSMSAvailable = ([vo.mobileNumber length] > 0);
+	
+	vo.userID = 0;
+	vo.username = @"";
+	vo.avatarPrefix = @"";
+	vo.contactType = HONContactTypeUnmatched;
 	
 	return (vo);
 }
@@ -47,6 +49,9 @@
 	self.mobileNumber = nil;
 	self.email = nil;
 	self.avatarImage = nil;
+	
+	self.username = nil;
+	self.avatarPrefix = nil;
 }
 
 @end

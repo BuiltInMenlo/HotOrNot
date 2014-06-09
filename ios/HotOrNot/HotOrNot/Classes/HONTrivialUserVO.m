@@ -35,6 +35,13 @@
 												   @"alt_id"	: [activityItemVO.dictionary objectForKey:@"id"]}]);
 }
 
++ (HONTrivialUserVO *)userFromContactVO:(HONContactUserVO *)contactVO {
+	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: [@"" stringFromInt:contactVO.userID],
+												   @"username"	: contactVO.username,
+												   @"img_url"	: contactVO.avatarPrefix,
+												   @"alt_id"	: (contactVO.isSMSAvailable) ? contactVO.mobileNumber : contactVO.email}]);
+}
+
 + (HONTrivialUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO {
 	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: [opponentVO.dictionary objectForKey:@"id"],
 												  @"username"	: [opponentVO.dictionary objectForKey:@"username"],

@@ -40,6 +40,7 @@
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONTabBarController.h"
+#import "HONUserClubsViewController.h"
 #import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
@@ -525,6 +526,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[imagePrefix replaceOccurrencesOfString:@".png" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
 	
 	return ([imagePrefix copy]);
+}
+
++ (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
+	if ([phoneNumber length] > 0) {
+		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
+		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
+			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
+		
+		return ([@"+" stringByAppendingString:formattedNumber]);
+		
+	} else
+		return (@"");
 }
 
 + (NSDictionary *)parseQueryString:(NSString *)queryString {
@@ -1184,7 +1197,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
-									   [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] init]]];
+									   [[UINavigationController alloc] initWithRootViewController:[[HONUserClubsViewController alloc] init]]];
 	
 	
 	for (UINavigationController *navigationController in navigationControllers) {

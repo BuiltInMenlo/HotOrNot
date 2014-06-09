@@ -7,12 +7,14 @@
 //
 
 #import "HONActivityItemVO.h"
+#import "HONContactUserVO.h"
 #import "HONOpponentVO.h"
 #import "HONUserVO.h"
 
 @interface HONTrivialUserVO : NSObject
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary;
 + (HONTrivialUserVO *)userFromActivityItemVO:(HONActivityItemVO *)activityItemVO;
++ (HONTrivialUserVO *)userFromContactVO:(HONContactUserVO *)contactVO;
 + (HONTrivialUserVO *)userFromOpponentVO:(HONOpponentVO *)opponentVO;
 + (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO;
 
@@ -23,6 +25,6 @@
 @property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic, retain) NSString *altID;
 @property (nonatomic, retain) NSString *phoneNumber;
-@property (nonatomic) BOOL isVerified;
 @property (nonatomic) int abuseCount;
+@property (nonatomic) BOOL isVerified;
 @end

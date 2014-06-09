@@ -196,17 +196,7 @@
 
 #pragma mark - UI Presentation
 - (void)_updateDeviceContactsWithMatchedUsers {
-	_inAppContacts = [NSMutableArray array];
-	for (HONTrivialUserVO *trivialUserVO in _inAppContacts) {
-		for (HONContactUserVO *contactUserVO in _deviceContacts) {
-			if ([trivialUserVO.username isEqualToString:contactUserVO.fullName]) {
-				break;
-			}
-		}
-	}
-	
-	[_tableView reloadData];
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+	[super _updateDeviceContactsWithMatchedUsers];
 }
 
 

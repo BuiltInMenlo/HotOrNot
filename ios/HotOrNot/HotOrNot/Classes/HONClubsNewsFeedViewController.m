@@ -376,7 +376,7 @@
 	[super viewDidAppear:animated];
 	
 	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
-	if ([HONAppDelegate totalForCounter:@"clubsTab"] == 0) {
+	if ([HONAppDelegate incTotalForCounter:@"clubsTab"] == 1) {
 		[[[UIAlertView alloc] initWithTitle:@"News Tip"
 									message:@"The more clubs you join the more your feed fills up!"
 								   delegate:nil
@@ -459,6 +459,7 @@
 	
 	
 }
+
 
 - (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:selectedClubRow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);

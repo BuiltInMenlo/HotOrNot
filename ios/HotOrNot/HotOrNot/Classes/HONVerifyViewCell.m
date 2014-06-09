@@ -80,14 +80,14 @@
 								  failure:failureBlock];
 	
 	
-	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	previewButton.frame = heroImageView.frame;
-	[previewButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:previewButton];
+//	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	previewButton.frame = heroImageView.frame;
+//	[previewButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
+//	[self.contentView addSubview:previewButton];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	lpGestureRecognizer.minimumPressDuration = 0.25;
-	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	lpGestureRecognizer.minimumPressDuration = 0.25;
+//	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
 //	HONVerifyCellHeaderView *headerView = [[HONVerifyCellHeaderView alloc] initWithCreator:_challengeVO.creatorVO];
 //	headerView.frame = CGRectOffset(headerView.frame, 0.0, 35.0);
@@ -131,11 +131,11 @@
 //	emoticonImageView.frame = CGRectMake((emotionLabel.frame.origin.x + size.width) + 9.0, 24.0, 45.0, 45.0);
 //	[footerView addSubview:emoticonImageView];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(244.0, [UIScreen mainScreen].bounds.size.height - 316.0, 64.0, 245.0)];
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(224.0, [UIScreen mainScreen].bounds.size.height - 262.0, 84.0, 245.0)];
 	[self.contentView addSubview:buttonHolderView];
 	
 	UIButton *approveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	approveButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+	approveButton.frame = CGRectMake(0.0, 0.0, 84.0, 84.0);
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_nonActive"] forState:UIControlStateNormal];
 	[approveButton setBackgroundImage:[UIImage imageNamed:@"yayButton_Active"] forState:UIControlStateHighlighted];
 	[approveButton addTarget:self action:@selector(_goApprove) forControlEvents:UIControlEventTouchUpInside];
@@ -144,8 +144,8 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 72.0, 64.0, 14.0)];
-	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 89.0, 84.0, 14.0)];
+	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
 	scoreLabel.textColor = [UIColor whiteColor];
 	scoreLabel.backgroundColor = [UIColor clearColor];
 	scoreLabel.shadowColor = [UIColor blackColor];
@@ -155,18 +155,11 @@
 	[buttonHolderView addSubview:scoreLabel];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	skipButton.frame = CGRectMake(0.0, 97.0, 64.0, 64.0);
+	skipButton.frame = CGRectMake(0.0, 109.0, 84.0, 84.0);
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_nonActive"] forState:UIControlStateNormal];
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"nayButton_Active"] forState:UIControlStateHighlighted];
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:skipButton];
-	
-	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(0.0, 181.0, 64.0, 64.0);
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_nonActive"] forState:UIControlStateNormal];
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"verifyInviteButton_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:inviteButton];
 	
 	if (_isBannerCell) {
 		buttonHolderView.frame = CGRectOffset(buttonHolderView.frame, 0.0, -80.0);
@@ -226,7 +219,6 @@
 }
 
 - (void)_goInvite {
-	NSLog(@"=-=-=-=-=-=-=-= ¡¡WTF MOFO!! =-=-=-=-=-=-=-=-=-=");
 	[self.delegate verifyViewCell:self inviteChallenge:_challengeVO];
 }
 

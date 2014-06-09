@@ -27,9 +27,9 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	NSMutableArray *_deviceContacts;
 	NSMutableArray *_inAppContacts;
 	NSMutableArray *_inAppUsers;
+	NSMutableArray *_searchUsers;
 	NSDictionary *_segmentedContacts;
 	NSMutableArray *_segmentedKeys;
-	NSMutableArray *_searchUsers;
 	HONUserClubVO *_userClubVO;
 	
 	EGORefreshTableHeaderView *_refreshTableHeaderView;

@@ -95,7 +95,8 @@
 		for (NSDictionary *dict in (NSArray *)result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix],
+																		  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]]}];
 			
 			BOOL isFound = NO;
 			for (HONTrivialUserVO *searchVO in _inAppContacts) {
@@ -117,6 +118,10 @@
 			}
 			
 			[self _updateDeviceContactsWithMatchedUsers];
+			_segmentedContacts = [self _populateSegmentedDictionary];
+			
+			[_tableView reloadData];
+			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		}
 	}];
 }
@@ -272,7 +277,8 @@
 		if ([email length] == 0)
 			email = @"";
 		
-		if ([phoneNumber length] > 0 || [email length] > 0) {
+//		if ([phoneNumber length] > 0 || [email length] > 0) {
+		if ([phoneNumber length] > 0) {
 			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
 																			 @"l_name"	: lName,
 																			 @"phone"	: phoneNumber,
@@ -298,7 +304,7 @@
 	}
 	
 	_currentMatchStateCounter = 0;
-	_totalMatchStateCounter = (int)([_smsRecipients length] > 0) + (int)([_emailRecipients length] > 0);
+	_totalMatchStateCounter = (int)([_smsRecipients length] > 0);// + (int)([_emailRecipients length] > 0);
 	
 	if ([_smsRecipients length] > 0) {
 		NSLog(@"SMS CONTACTS:[%@]", [_smsRecipients substringToIndex:[_smsRecipients length] - 1]);
@@ -456,10 +462,14 @@
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
-	if (_userClubVO != nil)
-		[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
+	if (_userClubVO != nil) {
+		if (contactUserVO.contactType == HONContactTypeUnmatched)
+			[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
+		
+		else
+			[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
 	
-	else {
+	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
 															message:@"You need to create your own club before inviting anyone."
 														   delegate:nil
@@ -518,10 +528,9 @@
 		cell = [[HONUserToggleViewCell alloc] init];
 	
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook && ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		HONContactUserVO *contactUserVO = (HONContactUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-		cell.contactUserVO = contactUserVO;
-		
+	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+		cell.contactUserVO = (HONContactUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+				
 	} else {
 		if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults)
 			cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
@@ -632,7 +641,6 @@
 	[_segmentedKeys removeAllObjects];
 	
 	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		for (HONTrivialUserVO *vo in _inAppUsers) {
 			if ([vo.username length] > 0) {
@@ -664,10 +672,31 @@
 			[dict setValue:prevSegment forKey:charKey];
 		}
 		
+		for (NSString *key in dict) {
+			for (HONTrivialUserVO *vo in [dict objectForKey:key])
+				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.username);
+		}
+		
 	} else {
 		for (HONContactUserVO *vo in _deviceContacts) {
-			if ([vo.lastName length] > 0) {
-				NSString *charKey = [vo.lastName substringToIndex:1];
+			if (vo.contactType == HONContactTypeUnmatched) {
+				if ([vo.lastName length] > 0) {
+					NSString *charKey = [vo.lastName substringToIndex:1];
+					if (![_segmentedKeys containsObject:charKey]) {
+						[_segmentedKeys addObject:charKey];
+						
+						NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+						[dict setValue:newSegment forKey:charKey];
+						
+					} else {
+						NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+						[prevSegment addObject:vo];
+						[dict setValue:prevSegment forKey:charKey];
+					}
+				}
+			
+			} else {
+				NSString *charKey = [vo.username substringToIndex:1];
 				if (![_segmentedKeys containsObject:charKey]) {
 					[_segmentedKeys addObject:charKey];
 					
@@ -681,32 +710,28 @@
 				}
 			}
 		}
+		
+		for (NSString *key in dict) {
+			for (HONContactUserVO *vo in [dict objectForKey:key])
+				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.mobileNumber);
+		}
 	}
-	
-	for (NSString *key in dict)
-		NSLog(@"_segmentedKeys[%@] = [%@]", key, [dict objectForKey:key]);
 	
 	return (dict);
 }
 
 - (void)_updateDeviceContactsWithMatchedUsers {
-	_inAppContacts = [NSMutableArray array];
-	for (HONTrivialUserVO *trivialUserVO in _inAppUsers) {
+	for (HONTrivialUserVO *inAppContactVO in _inAppContacts) {
 		for (HONContactUserVO *deviceContactVO in _deviceContacts) {
-			if ([trivialUserVO.altID length] > 0) {
-				if (deviceContactVO.isSMSAvailable) {
-//					if ([trivialUserVO.altID isEqualToString:deviceContactVO.mobileNumber]) {
-//						[_inAppContacts addObject:[[HONTrivialUserVO user]]
-//					}
-				}
+			if ([deviceContactVO.mobileNumber isEqualToString:inAppContactVO.altID]) {
+				NSLog(@"FOUND!:[%@]", inAppContactVO.altID);
+				deviceContactVO.contactType = HONContactTypeMatched;
+				deviceContactVO.userID = inAppContactVO.userID;
+				deviceContactVO.username = inAppContactVO.username;
+				deviceContactVO.avatarPrefix = deviceContactVO.avatarPrefix;
 			}
-				
-				break;
 		}
 	}
-	
-	[_tableView reloadData];
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 }
 
 @end

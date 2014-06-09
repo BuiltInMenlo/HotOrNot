@@ -157,7 +157,7 @@
 	
 	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
-	_nameLabel.text = _contactUserVO.fullName;
+	_nameLabel.text = (_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 }
 
 

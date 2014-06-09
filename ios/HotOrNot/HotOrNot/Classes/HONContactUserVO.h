@@ -6,6 +6,12 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+
+typedef NS_ENUM(NSInteger, HONContactType) {
+	HONContactTypeUnmatched = 0,
+	HONContactTypeMatched
+};
+
 @interface HONContactUserVO : NSObject
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary;
 
@@ -18,6 +24,11 @@
 @property (nonatomic, retain) NSString *mobileNumber;
 @property (nonatomic, retain) NSString *email;
 @property (nonatomic, retain) UIImage *avatarImage;
-
 @property (nonatomic) BOOL isSMSAvailable;
+@property (nonatomic, assign) HONContactType contactType;
+
+@property (nonatomic) int userID;
+@property (nonatomic, retain) NSString *username;
+@property (nonatomic, retain) NSString *avatarPrefix;
+
 @end

@@ -3,16 +3,16 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "selfieFadeOverlay.png"
+      "filename" : "tintedOverlay-568h@2x-2.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "selfieFadeOverlay@2x.png"
+      "filename" : "tintedOverlay-568h@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "selfieFadeOverlay-568h@2x.png",
+      "filename" : "tintedOverlay-568h@2x-1.png",
       "subtype" : "retina4",
       "scale" : "2x"
     }
