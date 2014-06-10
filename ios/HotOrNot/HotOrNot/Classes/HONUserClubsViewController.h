@@ -6,5 +6,5 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONUserClubsViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONUserClubsViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 @end

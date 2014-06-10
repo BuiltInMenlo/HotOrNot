@@ -19,6 +19,6 @@
 
 @interface HONUserClubViewCell : HONTableViewCell
 - (id)initAsInviteCell:(BOOL)isInvite;
-@property (nonatomic, strong) HONUserClubVO *userClubVO;
+@property (nonatomic, retain) HONUserClubVO *userClubVO;
 @property (nonatomic, assign) id <HONUserClubViewCellDelegate> delegate;
 @end

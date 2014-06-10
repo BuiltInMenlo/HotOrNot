@@ -27,7 +27,6 @@
 
 
 @interface HONClubsNewsFeedViewController () <EGORefreshTableHeaderDelegate, HONClubNewsFeedViewCellDelegate>
-@property (nonatomic, strong) UIViewController *wrapperViewController;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -344,7 +343,7 @@
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) usingTareOffset:0.0];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _tableView;
 	[_tableView addSubview:_refreshTableHeaderView];
