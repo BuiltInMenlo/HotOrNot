@@ -28,14 +28,12 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_captions = @[@"Help",
-					  @"Notifications",
-					  @"Change Username",
-					  @"Change Email",
-					  @"Delete all my Selfies",
-					  @"Deactivate Account",
-					  @"Report Abuse or Bugs",
-					  @"Terms & Conditions"];
+		_captions = @[@"Notifications",
+					  @"Terms of service",
+					  @"Privacy policy",
+					  @"Support",
+					  @"Rate this app",
+					  @"Network status"];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -168,6 +166,24 @@
 
 
 #pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+	return (40.0);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 40.0)];
+	
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, 20.0)];
+	label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:12];
+	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	label.backgroundColor = [UIColor clearColor];
+	label.textAlignment = NSTextAlignmentCenter;
+	label.text = @"Version1.1";
+	[footerView addSubview:label];
+	
+	return (footerView);
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (kOrthodoxTableCellHeight);
 }
@@ -179,63 +195,22 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (indexPath.row == HONSettingsCellTypeHelp) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Show FAQ"];
+	if (indexPath.row == HONSettingsCellTypeTermsOfService) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Terms of Service"];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+		
+	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Privacy Policy"];
+		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
-	
-	} else if (indexPath.row == HONSettingsCellTypeChangeUsername) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Change Username"];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
 		
-	} else if (indexPath.row == HONSettingsCellTypeChangeEmail) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Change Email"];
-		
-		if ([MFMailComposeViewController canSendMail]) {
-			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
-			[mailComposeViewController setSubject:@"Change My Email Address"];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ - %@\nType your desired email address here.", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeChangeEmail];
-			
-			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Email Error"
-										message:@"Cannot send email from this device!"
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
-	
-	} else if (indexPath.row == HONSettingsCellTypeDeleteChallenges) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Delete Volleys"];
-
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Remove all your selfies?"
-															message:@""
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:HONSettingsAlertTypeDeleteChallenges];
-		[alertView show];
-		
-	} else if (indexPath.row == HONSettingsCellTypeDeactivate) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Deactivete"];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Deactivate Account"
-															message:@"Are you sure?"
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:HONSettingsAlertTypeDeactivate];
-		[alertView show];
-		
-	} else if (indexPath.row == HONSettingsCellTypeReportAbuse) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Report Abuse / Bug"];
+	} else if (indexPath.row == HONSettingsCellTypeSupport) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Support"];
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -255,12 +230,11 @@
 							  otherButtonTitles:nil] show];
 		}
 		
-	} else if (indexPath.row == HONSettingsCellTypeTermsConditions) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Show Support"];
+	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Rate App"];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Netwrok Status"];
 	}
 }
 

@@ -10,27 +10,26 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
-typedef enum {
-	HONSettingsCellTypeHelp = 0,
-	HONSettingsCellTypeNotifications,
-	HONSettingsCellTypeChangeUsername,
-	HONSettingsCellTypeChangeEmail,
-	HONSettingsCellTypeDeleteChallenges,
-	HONSettingsCellTypeDeactivate,
-	HONSettingsCellTypeReportAbuse,
-	HONSettingsCellTypeTermsConditions
-} HONSettingsCellType;
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONSettingsCellType) {
+	HONSettingsCellTypeNotifications = 0,
+	HONSettingsCellTypeTermsOfService,
+	HONSettingsCellTypePrivacyPolicy,
+	HONSettingsCellTypeSupport,
+	HONSettingsCellTypeRateThisApp,
+	HONSettingsCellTypeNetworkStatus
+};
+
+typedef NS_ENUM(NSInteger, HONSettingsMailComposerType) {
 	HONSettingsMailComposerTypeChangeEmail = 0,
 	HONSettingsMailComposerTypeReportAbuse
-} HONSettingsMailComposerType;
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONSettingsAlertType) {
 	HONSettingsAlertTypeNotifications = 0,
 	HONSettingsAlertTypeDeleteChallenges,
 	HONSettingsAlertTypeDeactivate
-} HONSettingsAlertType;
+};
 
 
 @interface HONSettingsViewController : UIViewController <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>

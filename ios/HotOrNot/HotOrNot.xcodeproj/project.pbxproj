@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4C00491B1946A994007FA9F5 /* HONClubsViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491A1946A994007FA9F5 /* HONClubsViewLayout.m */; };
 		4C00491E1946AEAC007FA9F5 /* HONClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491D1946AEAC007FA9F5 /* HONClubViewCell.m */; };
+		4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */; };
 		4C0113DA1898B243007461DB /* HONCreateClubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0113D91898B243007461DB /* HONCreateClubViewController.m */; };
 		4C01BACF190C52D6006CD80D /* HONTimelineItemVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C01BACE190C52D6006CD80D /* HONTimelineItemVO.m */; };
 		4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C01BAD2190CAAD1006CD80D /* ClubsElements.xcassets */; };
@@ -195,7 +196,7 @@
 		4C83FD82190F594D00CAEABB /* MessagingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD81190F594D00CAEABB /* MessagingElements.xcassets */; };
 		4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */; };
 		4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */; };
-		4C83FD88190F5FA200CAEABB /* TutorialAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD87190F5FA200CAEABB /* TutorialAssets.xcassets */; };
+		4C83FD88190F5FA200CAEABB /* TutorialElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD87190F5FA200CAEABB /* TutorialElements.xcassets */; };
 		4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD89190F600700CAEABB /* SearchElements.xcassets */; };
 		4C83FD8C190F610B00CAEABB /* DeprecatedElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD8B190F610B00CAEABB /* DeprecatedElements.xcassets */; };
 		4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD8E190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav */; };
@@ -281,6 +282,7 @@
 		4C00491A1946A994007FA9F5 /* HONClubsViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubViewCell.h; sourceTree = "<group>"; };
 		4C00491D1946AEAC007FA9F5 /* HONClubViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubViewCell.m; sourceTree = "<group>"; };
+		4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ActivityAssets.xcassets; sourceTree = "<group>"; };
 		4C0113D81898B243007461DB /* HONCreateClubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateClubViewController.h; sourceTree = "<group>"; };
 		4C0113D91898B243007461DB /* HONCreateClubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateClubViewController.m; sourceTree = "<group>"; };
 		4C01BACD190C52D6006CD80D /* HONTimelineItemVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemVO.h; sourceTree = "<group>"; };
@@ -607,7 +609,7 @@
 		4C83FD81190F594D00CAEABB /* MessagingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MessagingElements.xcassets; sourceTree = "<group>"; };
 		4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = BackupS3Elements.xcassets; sourceTree = "<group>"; };
 		4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = RegistrationElements.xcassets; sourceTree = "<group>"; };
-		4C83FD87190F5FA200CAEABB /* TutorialAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TutorialAssets.xcassets; sourceTree = "<group>"; };
+		4C83FD87190F5FA200CAEABB /* TutorialElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TutorialElements.xcassets; sourceTree = "<group>"; };
 		4C83FD89190F600700CAEABB /* SearchElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SearchElements.xcassets; sourceTree = "<group>"; };
 		4C83FD8B190F610B00CAEABB /* DeprecatedElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = DeprecatedElements.xcassets; sourceTree = "<group>"; };
 		4C83FD8E190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = 3048__starpause__k9dhhpulseeffect.wav; sourceTree = "<group>"; };
@@ -997,6 +999,7 @@
 			children = (
 				4C43224D18E37E740035FF06 /* HONElementals.xcassets */,
 				4CF2040418F3647C00EB57B0 /* FPOElements.xcassets */,
+				4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */,
 				4C83FD8B190F610B00CAEABB /* DeprecatedElements.xcassets */,
 				4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */,
 				4C41A09118F25686007C103D /* CameraElements.xcassets */,
@@ -1012,7 +1015,7 @@
 				4CED977018E42FFF00482813 /* NavElements.xcassets */,
 				4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */,
 				4C41A09518F25C78007C103D /* TableViewElements.xcassets */,
-				4C83FD87190F5FA200CAEABB /* TutorialAssets.xcassets */,
+				4C83FD87190F5FA200CAEABB /* TutorialElements.xcassets */,
 				4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */,
 				4CF203FA18F3198600EB57B0 /* VerifiyElements.xcassets */,
 				4C83FD89190F600700CAEABB /* SearchElements.xcassets */,
@@ -1924,6 +1927,7 @@
 				4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */,
 				4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */,
 				4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */,
+				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
 				4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */,
@@ -1961,7 +1965,7 @@
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				4C4328CF18E3A9FA0035FF06 /* MPCheckmark@2x.png in Resources */,
-				4C83FD88190F5FA200CAEABB /* TutorialAssets.xcassets in Resources */,
+				4C83FD88190F5FA200CAEABB /* TutorialElements.xcassets in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				4C4328D218E3A9FA0035FF06 /* MPLogo.png in Resources */,
 				4C741DFA190A54C100A7E0B5 /* AppDelegate Referencing in Resources */,

@@ -22,7 +22,6 @@
 #import "HONActivityItemViewCell.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
-#import "HONCreateSnapButtonView.h"
 
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
@@ -353,7 +352,7 @@
 	
 	_nameLabel.text = _userVO.username;
 	
-//	if (_userVO.isVerified) {
+	if (_userVO.isVerified) {
 		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -8.0);
 		
 		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
@@ -370,7 +369,7 @@
 		scoreLabel.backgroundColor = [UIColor clearColor];
 		scoreLabel.text = [@"" stringFromInt:-_userVO.abuseCount];
 		[_profileHolderView addSubview:scoreLabel];
-//	}
+	}
 	
 	if (_userProfileType == HONUserProfileTypeUser) {
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -380,9 +379,13 @@
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addButton:settingsButton];
 		
-		HONCreateSnapButtonView *changeAvatarButtonView = [[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goChangeAvatar) asLightStyle:NO];
-		changeAvatarButtonView.frame = CGRectOffset(changeAvatarButtonView.frame, -6.0, 9.0);
-		[_profileHolderView addSubview:changeAvatarButtonView];
+		
+		UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		changeAvatarButton.frame = CGRectMake(257.0, 0.0, 64.0, 64.0);
+		[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"changeAvatarButton_nonActive"] forState:UIControlStateNormal];
+		[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"changeAvatarButton_Active"] forState:UIControlStateHighlighted];
+		[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
+		[_profileHolderView addSubview:changeAvatarButton];
 	}
 }
 
@@ -457,7 +460,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((_userProfileType == HONUserProfileTypeUser) ? (section == 0) ? kOrthodoxTableHeaderHeight : 0.0 : 0.0);
+	return (0.0);//(_userProfileType == HONUserProfileTypeUser) ? (section == 0) ? kOrthodoxTableHeaderHeight : 0.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
