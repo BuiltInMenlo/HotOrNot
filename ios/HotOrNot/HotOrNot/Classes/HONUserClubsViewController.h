@@ -7,8 +7,4 @@
 //
 
 @interface HONUserClubsViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
-- (id)initWithWrapperViewController:(UIViewController *)wrapperViewController;
-
-- (void)refresh;
-- (void)tare;
 @end

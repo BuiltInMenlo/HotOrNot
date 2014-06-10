@@ -1,5 +1,5 @@
 //
-//  HONUserClubsSearchViewController.m
+//  HONClubsSearchViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 03/01/2014 @ 14:49 .
@@ -8,18 +8,18 @@
 
 #import "EGORefreshTableHeaderView.h"
 
-#import "HONUserClubsSearchViewController.h"
+#import "HONClubsSearchViewController.h"
 #import "HONHeaderView.h"
 
 
-@interface HONUserClubsSearchViewController () //<EGORefreshTableHeaderDelegate>
+@interface HONClubsSearchViewController () //<EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) NSMutableArray *userClubs;
 @end
 
 
-@implementation HONUserClubsSearchViewController
+@implementation HONClubsSearchViewController
 
 - (id)init {
 	if ((self = [super init])) {

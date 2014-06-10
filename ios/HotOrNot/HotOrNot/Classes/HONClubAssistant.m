@@ -125,7 +125,7 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"pending"		: @[],
 			  @"blocked"		: @[],
 			  
-			  @"submissions"		: @[]
+			  @"submissions"	: @[]
 			});
 }
 
@@ -135,7 +135,7 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"name"			: @"",
 			  
 			  @"description"	: @"",
-			  @"img"			: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+			  @"img"			: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"],
 			  @"club_type"		: @"",
 			  @"added"			: @"0000-00-00 00:00:00",
 			  

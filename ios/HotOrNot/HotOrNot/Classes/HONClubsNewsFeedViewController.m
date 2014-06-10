@@ -45,9 +45,12 @@
 @implementation HONClubsNewsFeedViewController
 
 
-- (id)initWithWrapperViewController:(UIViewController *)wrapperViewController {
+- (id)init {
 	if ((self = [super init])) {
-		_wrapperViewController = wrapperViewController;
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedNewsTab:) name:@"SELECTED_NEWS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareNewsTab:) name:@"TARE_NEWS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_NEWS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -64,15 +67,6 @@
 - (BOOL)shouldAutorotate {
 	return (NO);
 }
-
-- (void)refresh {
-	[self _goRefresh];
-}
-
-- (void)tare {
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
-}
-
 
 
 #pragma mark - Data Calls
@@ -150,7 +144,10 @@
 
 #pragma mark - Data Manip
 - (void)_suggestClubs {
+	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
+	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
 	NSMutableArray *unsortedContacts = [NSMutableArray array];
+	NSString *clubName = @"";
 	
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
 	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
@@ -167,11 +164,6 @@
 		
 		if ([lName length] == 0)
 			lName = @"";
-		
-		
-		NSData *imageData = nil;
-		if (ABPersonHasImageData(ref))
-			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
 		
 		
 		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
@@ -201,35 +193,32 @@
 																				  @"l_name"	: lName,
 																				  @"phone"	: phoneNumber,
 																				  @"email"	: email,
-																				  @"image"	: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}]];
+																				  @"image"	: UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}]];
 		}
 	}
 	
-	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
-	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
-	
-	for (HONContactUserVO *vo in unsortedContacts) {
-		if (![segmentedKeys containsObject:vo.lastName]) {
-			[segmentedKeys addObject:vo.lastName];
-			
-			NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-			[segmentedDict setValue:newSegment forKey:vo.lastName];
-			
-		} else {
-			NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:vo.lastName];
-			[prevSegment addObject:vo];
-			[segmentedDict setValue:prevSegment forKey:vo.lastName];
-		}
-	}
 	
 	
 	// family
-	NSString *clubName = @"";
 	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
 	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"])
 		clubName = [NSString stringWithFormat:@"%@ Family", [[[[deviceName objectAtIndex:1] substringToIndex:1] uppercaseString] stringByAppendingString:[[deviceName objectAtIndex:2] substringWithRange:NSMakeRange(1, [[deviceName objectAtIndex:1] length] - 2)]]];
 	
 	else {
+		for (HONContactUserVO *vo in unsortedContacts) {
+			if (![segmentedKeys containsObject:vo.lastName]) {
+				[segmentedKeys addObject:vo.lastName];
+				
+				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+				[segmentedDict setValue:newSegment forKey:vo.lastName];
+				
+			} else {
+				NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:vo.lastName];
+				[prevSegment addObject:vo];
+				[segmentedDict setValue:prevSegment forKey:vo.lastName];
+			}
+		}
+	
 		for (NSString *key in segmentedDict) {
 			if ([[segmentedDict objectForKey:key] count] >= 2) {
 				clubName = [NSString stringWithFormat:@"%@ Family", key];
@@ -242,6 +231,8 @@
 		NSMutableDictionary *familyClubDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
 		[familyClubDict setValue:clubName forKey:@"name"];
 		[familyClubDict setValue:@"SUGGESTED" forKey:@"club_type"];
+		
+		NSLog(@"FAMILY CLUB:[%@]", familyClubDict);
 		
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[familyClubDict copy]];
 		[_suggestedClubs addObject:vo];
@@ -339,7 +330,7 @@
 	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_Active"] forState:UIControlStateHighlighted];
 	[editButton addTarget:self action:@selector(_goEditClubs) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"News"];
 	[headerView addButton:editButton];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
@@ -375,8 +366,8 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
-	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
-	if ([HONAppDelegate incTotalForCounter:@"clubsTab"] == 1) {
+	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
+	if ([HONAppDelegate incTotalForCounter:@"newsTab"] == 1) {
 		[[[UIAlertView alloc] initWithTitle:@"News Tip"
 									message:@"The more clubs you join the more your feed fills up!"
 								   delegate:nil
@@ -436,6 +427,26 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - Notifications
+- (void)_selectedNewsTab:(NSNotification *)notification {
+	NSLog(@"::|> _selectedNewsTab <|::");
+}
+
+- (void)_refreshNewsTab:(NSNotification *)notification {
+	NSLog(@"::|> _refreshNewsTab <|::");
+	[self _goRefresh];
+}
+
+- (void)_tareNewsTab:(NSNotification *)notification {
+	NSLog(@"::|> _tareNewsTab <|::");
+	
+	if (_tableView.contentOffset.y > 0) {
+		_tableView.pagingEnabled = NO;
+		[_tableView setContentOffset:CGPointZero animated:YES];
+	}
 }
 
 

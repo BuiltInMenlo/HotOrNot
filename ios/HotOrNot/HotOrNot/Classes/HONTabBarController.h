@@ -6,11 +6,12 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef enum {
-	HONTabBarButtonTypeContacts = 0,
-	HONTabBarButtonTypeClubs,
+
+typedef NS_ENUM(NSInteger, HONTabBarButtonType) {
+	HONTabBarButtonTypeFriends = 0,
+	HONTabBarButtonTypeNewsFeed,
 	HONTabBarButtonTypeVerify
-} HONTabBarButtonType;
+};
 
 
 const CGSize kTabSize;

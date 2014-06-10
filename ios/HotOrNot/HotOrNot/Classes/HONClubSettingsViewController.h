@@ -1,5 +1,5 @@
 //
-//  HONUserClubSettingsViewController.h
+//  HONClubSettingsViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 03/01/2014 @ 14:06 .
@@ -8,6 +8,6 @@
 
 #import "HONUserClubVO.h"
 
-@interface HONUserClubSettingsViewController : UIViewController <UITextFieldDelegate>
+@interface HONClubSettingsViewController : UIViewController <UITextFieldDelegate>
 - (id)initWithClub:(HONUserClubVO *)userClubVO;
 @end

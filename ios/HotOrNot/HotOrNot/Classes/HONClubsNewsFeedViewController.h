@@ -8,8 +8,4 @@
 
 
 @interface HONClubsNewsFeedViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-- (id)initWithWrapperViewController:(UIViewController *)wrapperViewController;
-
-- (void)refresh;
-- (void)tare;
 @end

@@ -124,4 +124,16 @@ static HONChallengeAssistant *sharedInstance = nil;
 }
 
 
+- (HONOpponentVO *)fpoOpponent {
+	return ([HONOpponentVO opponentWithDictionary:@{@"user_id"	: @"592",
+													@"username"	: @"markus18",
+													@"avatar"	: @"https://d3j8du2hyvd35p.cloudfront.net/defaultAvatar",
+													@"img"		: @"https://d1fqnfrnudpaz6.cloudfront.net/a616f063d7b1477f95bca5098e15ef36_1396173765",
+													@"subjects"	: @[@"happy",
+																	@"excited",
+																	@"stoked"],
+													@"score"	: [@"" stringFromInt:arc4random() % 100],
+													@"added"	: @"2014-05-01 14:23:10"}]);
+}
+
 @end

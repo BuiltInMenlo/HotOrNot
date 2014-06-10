@@ -1,5 +1,5 @@
 //
-//  HONUserClubSettingsViewController.m
+//  HONClubSettingsViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 03/01/2014 @ 14:06 .
@@ -9,13 +9,13 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONUserClubSettingsViewController.h"
+#import "HONClubSettingsViewController.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
-#import "HONUserClubInviteViewController.h"
+#import "HONClubInviteViewController.h"
 
 
-@interface HONUserClubSettingsViewController () <HONClubCoverCameraViewControllerDelegate>
+@interface HONClubSettingsViewController () <HONClubCoverCameraViewControllerDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UIView *formHolderView;
@@ -32,7 +32,7 @@
 @end
 
 
-@implementation HONUserClubSettingsViewController
+@implementation HONClubSettingsViewController
 
 - (id)initWithClub:(HONUserClubVO *)userClubVO {
 	if ((self = [super init])) {
@@ -67,7 +67,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
+			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)
@@ -269,7 +269,7 @@
 						  otherButtonTitles:nil] show];
 		
 	} else
-		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
+		[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
 //	[self _updateClub];
 }
 

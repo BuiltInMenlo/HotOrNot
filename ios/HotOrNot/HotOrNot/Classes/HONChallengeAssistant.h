@@ -22,4 +22,5 @@
 - (void)setVoteForChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO;
 
 - (NSDictionary *)emptyChallengeDictionaryWithID:(int)challengeID;
+- (HONOpponentVO *)fpoOpponent;
 @end

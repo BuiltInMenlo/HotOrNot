@@ -1,5 +1,5 @@
 //
-//  HONUserClubInviteViewController.h
+//  HONClubInviteViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 03/01/2014 @ 14:05 .
@@ -15,6 +15,6 @@ typedef NS_ENUM(NSInteger, HONUserClubInviteType) {
 	
 };
 
-@interface HONUserClubInviteViewController : HONContactsViewController
+@interface HONClubInviteViewController : HONContactsViewController
 - (id)initWithClub:(HONUserClubVO *)userClub;
 @end

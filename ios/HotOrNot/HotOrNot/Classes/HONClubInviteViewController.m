@@ -1,5 +1,5 @@
 //
-//  HONUserClubInviteViewController.m
+//  HONClubInviteViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 03/01/2014 @ 14:05 .
@@ -12,16 +12,16 @@
 #import "MBProgressHUD.h"
 #import "EGORefreshTableHeaderView.h"
 
-#import "HONUserClubInviteViewController.h"
+#import "HONClubInviteViewController.h"
 #import "HONUserProfileViewController.h"
 
-@interface HONUserClubInviteViewController ()
+@interface HONClubInviteViewController ()
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
 @end
 
 
-@implementation HONUserClubInviteViewController
+@implementation HONClubInviteViewController
 
 - (id)initWithClub:(HONUserClubVO *)userClub {
 	if ((self = [super init])) {

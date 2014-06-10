@@ -21,8 +21,8 @@
 #import "HONActivityHeaderButtonView.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
-#import "HONUserClubSettingsViewController.h"
-#import "HONUserClubInviteViewController.h"
+#import "HONClubSettingsViewController.h"
+#import "HONClubInviteViewController.h"
 #import "HONFeedViewController.h"
 #import "HONUserClubVO.h"
 
@@ -39,24 +39,17 @@
 @property (nonatomic, strong) HONActivityHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) NSArray *defaultCaptions;
-@property (nonatomic, strong) NSArray *bakedClubs;
-@property (nonatomic, strong) NSArray *bakedClubs2;
 @end
 
 
 @implementation HONUserClubsViewController
 
-- (id)initWithWrapperViewController:(UIViewController *)wrapperViewController {
+- (id)init {
 	if ((self = [super init])) {
-		_wrapperViewController = wrapperViewController;
-		
-		_defaultCaptions = @[];
-		_defaultCaptions = @[@"Add friends to my club",
-							 @"Find my high school's club"];
-				
-		_joinedClubs = [NSMutableArray array];
-		_invitedClubs = [NSMutableArray array];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedClubsTab:) name:@"SELECTED_CLUBS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUBS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -72,14 +65,6 @@
 
 - (BOOL)shouldAutorotate {
 	return (NO);
-}
-
-- (void)refresh {
-	[self _goRefresh];
-}
-
-- (void)tare {
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 }
 
 
@@ -161,16 +146,16 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Edit Clubs"];
+	UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	editButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
+	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_nonActive"] forState:UIControlStateNormal];
+	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_Active"] forState:UIControlStateHighlighted];
+	[editButton addTarget:self action:@selector(_goEditClubs) forControlEvents:UIControlEventTouchUpInside];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
+	[headerView addButton:editButton];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
-	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -202,6 +187,15 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
+	
+	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
+	if ([HONAppDelegate incTotalForCounter:@"clubsTab"] == 1) {
+		[[[UIAlertView alloc] initWithTitle:@"Clubs Tip"
+									message:@"The more clubs you join the more your feed fills up!"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -221,13 +215,14 @@
 
 
 #pragma mark - Navigation
-- (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Back"];
-	[self.navigationController popViewControllerAnimated:YES];
+- (void)_goEditClubs {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Edit Clubs"];
+	
+	[self.navigationController pushViewController:[[HONUserClubsViewController alloc] init] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Create Challenge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Challenge"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -235,13 +230,13 @@
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Refresh"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Refresh"];
 	
 	[self _retrieveClubs];
 }
 
 - (void)_goClubSettings:(HONUserClubVO *)userClubVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Settings"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Settings"
 									   withUserClub:userClubVO];
 		
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
@@ -250,7 +245,7 @@
 }
 
 - (void)_goInviteFriends {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Invite Friends"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Invite Friends"];
 	
 	if (_ownClub == nil) {
 		[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
@@ -260,14 +255,14 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubInviteViewController alloc] initWithClub:_ownClub]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubInviteViewController alloc] initWithClub:_ownClub]];
 		[navigationController setNavigationBarHidden:YES];
 		[_wrapperViewController presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
 - (void)_goFindSchoolClub {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Find High School"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Find High School"];
 	
 	[[[UIAlertView alloc] initWithTitle:@"No clubs found nearby!"
 								message:@"Check back later"
@@ -277,7 +272,7 @@
 }
 
 - (void)_goFindNearbyClubs {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Nearby Clubs"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Nearby Clubs"];
 	
 	[[[UIAlertView alloc] initWithTitle:@"No clubs found nearby!"
 								message:@"Check back later"
@@ -287,7 +282,7 @@
 }
 
 - (void)_goShare {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Share"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Share"];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -303,9 +298,29 @@
 }
 
 
+#pragma mark - Notifications
+- (void)_selectedClubsTab:(NSNotification *)notification {
+	NSLog(@"::|> _selectedClubsTab <|::");
+}
+
+- (void)_refreshClubsTab:(NSNotification *)notification {
+	NSLog(@"::|> _refreshClubsTab <|::");
+	[self _goRefresh];
+}
+
+- (void)_tareClubsTab:(NSNotification *)notification {
+	NSLog(@"::|> _tareClubsTab <|::");
+	
+	if (_tableView.contentOffset.y > 0) {
+		_tableView.pagingEnabled = NO;
+		[_tableView setContentOffset:CGPointZero animated:YES];
+	}
+}
+
+
 #pragma mark - UserClubViewCell Delegates
 - (void)userClubViewCell:(HONUserClubViewCell *)cell acceptInviteForClub:(HONUserClubVO *)userClubVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Accept Invite"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Accept Invite"
 									   withUserClub:userClubVO];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Accept Invite to the %@ club?", userClubVO.clubName]
@@ -318,13 +333,13 @@
 }
 
 - (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Edit Settings"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Edit Settings"
 									   withUserClub:userClubVO];
 		
 	_selectedClub = userClubVO;
 	
 	if (userClubVO.clubID == _ownClub.clubID) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserClubSettingsViewController alloc] initWithClub:_ownClub]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubSettingsViewController alloc] initWithClub:_ownClub]];
 		[navigationController setNavigationBarHidden:YES];
 		[_wrapperViewController presentViewController:navigationController animated:YES completion:nil];
 
@@ -360,7 +375,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return (nil);//[[HONTableHeaderView alloc] initWithTitle:(section == 0) ? @"CLUBS" : @"ACCEPT"]);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -373,14 +388,13 @@
 	if (indexPath.section == 0) {
 		if (indexPath.row == 0) {
 			if (_ownClub == nil) {
-				//cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]];
 				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
 				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 				cell.textLabel.textColor = [UIColor blackColor];
 				cell.textLabel.textAlignment = NSTextAlignmentLeft;
 				cell.textLabel.text = @"Create club";
 				
-				UIImageView *plusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClubButton_nonActive"]];
+				UIImageView *plusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"plusButton_nonActive"]];
 				plusImageView.frame = CGRectOffset(plusImageView.frame, 240.0, 5.0);
 				[cell.contentView addSubview:plusImageView];
 				
@@ -430,7 +444,7 @@
 	if (indexPath.section == 0) {
 		if (indexPath.row == 0) {
 			if (_ownClub == nil) {
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Clubs - Create Club"];
+				[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club"];
 				
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
@@ -489,7 +503,7 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Edit Clubs - Settings " stringByAppendingString:(buttonIndex == 0) ? @"Quit" : @"Cancel"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Clubs - Settings " stringByAppendingString:(buttonIndex == 0) ? @"Quit" : @"Cancel"]
 										   withUserClub:_selectedClub];
 		
 		if (buttonIndex == 0)
@@ -501,7 +515,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Edit Clubs - Accept Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Clubs - Accept Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 										   withUserClub:_selectedClub];		
 		if (buttonIndex == 1)
 			[self _joinClub:_selectedClub];

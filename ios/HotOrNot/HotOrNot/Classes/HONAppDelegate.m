@@ -156,8 +156,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (NSString *)customerServiceURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"support_url"]);
 }
+
 + (NSDictionary *)s3Credentials {
-	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAJVS6Y36AQCMRWLQQ", @"key", @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
+	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAIHUQ42RE7R7CIMEA", @"key", @"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ", @"secret", nil]);
 }
 
 + (NSTimeInterval)timeoutInterval {
@@ -346,10 +347,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"background_total",
 						   @"friendsTab_total",
 						   @"friendsTabRefresh_total",
+						   @"newsTab_total",
+						   @"newsTabRefresh_total",
 						   @"clubsTab_total",
 						   @"clubsTabRefresh_total",
-						   @"verifyTab_total",
-						   @"verifyTabRefresh_total",
 						   @"verifyAction_total",
 						   @"timeline_total",
 						   @"timelineRefresh_total",

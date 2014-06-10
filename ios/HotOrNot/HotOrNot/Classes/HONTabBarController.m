@@ -52,7 +52,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	NSString *totalKey = @"";
 	
 	switch ((HONTabBarButtonType)selectedIndex) {
-		case HONTabBarButtonTypeContacts:
+		case HONTabBarButtonTypeFriends:
 			notificationName = @"CONTACTS_TAB";
 			totalKey = @"friendsTab";
 			
@@ -61,7 +61,7 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_verifyButton setSelected:NO];
 			break;
 			
-		case HONTabBarButtonTypeClubs:
+		case HONTabBarButtonTypeNewsFeed:
 			notificationName = @"CLUBS_TAB";
 			totalKey = @"clubsTab";
 			
@@ -86,7 +86,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[HONAppDelegate incTotalForCounter:totalKey];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:(selectedIndex == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
+//	[[UIApplication sharedApplication] setStatusBarStyle:(selectedIndex == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:selectedIndex] forKey:@"current_tab"];
@@ -124,7 +124,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateSelected];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
 	[_contactsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_friendsButton_nonActive"] forState:UIControlStateDisabled];
-	[_contactsButton setTag:HONTabBarButtonTypeContacts];
+	[_contactsButton setTag:HONTabBarButtonTypeFriends];
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];
 	
@@ -135,7 +135,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateSelected];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateDisabled];
-	[_clubsButton setTag:HONTabBarButtonTypeClubs];
+	[_clubsButton setTag:HONTabBarButtonTypeNewsFeed];
 	[_tabHolderView addSubview:_clubsButton];
 	
 	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -167,8 +167,8 @@ const CGSize kTabSize = {80.0, 50.0};
 	
 	
 	switch (tabBarButtonType) {
-		case HONTabBarButtonTypeContacts:
-			analyticsEventName = @"Contacts";
+		case HONTabBarButtonTypeFriends:
+			analyticsEventName = @"Friends";
 			notificationName = @"CONTACTS_TAB";
 			totalKey = @"friendsTab";
 			
@@ -177,10 +177,10 @@ const CGSize kTabSize = {80.0, 50.0};
 			[_verifyButton setSelected:NO];
 			break;
 			
-		case HONTabBarButtonTypeClubs:
-			analyticsEventName = @"Clubs";
-			notificationName = @"CLUBS_TAB";
-			totalKey = @"clubsTab";
+		case HONTabBarButtonTypeNewsFeed:
+			analyticsEventName = @"News";
+			notificationName = @"NEWS_TAB";
+			totalKey = @"newsTab";
 			
 			[_contactsButton setSelected:NO];
 			[_clubsButton setSelected:YES];
@@ -188,9 +188,9 @@ const CGSize kTabSize = {80.0, 50.0};
 			break;
 			
 		case HONTabBarButtonTypeVerify:
-			analyticsEventName = @"Verify";
-			notificationName = @"VERIFY_TAB";
-			totalKey = @"verifyTab";
+			analyticsEventName = @"Clubs";
+			notificationName = @"CLUBS_TAB";
+			totalKey = @"clubsTab";
 			
 			[_contactsButton setSelected:NO];
 			[_clubsButton setSelected:NO];
@@ -212,7 +212,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
-	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
+//	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	
 //	UIStatusBarStyle statusBarStyle = [UIApplication sharedApplication].statusBarStyle;
 //	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
