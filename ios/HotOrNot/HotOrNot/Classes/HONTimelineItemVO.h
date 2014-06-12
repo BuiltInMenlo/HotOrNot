@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, HONTimelineItemType) {
 	HONTimelineItemTypeFeatured = 0,
 	HONTimelineItemTypeNearby,
 	HONTimelineItemTypeSchool,
-	HONTimelineItemTypeSelfieclubTeam,
+	HONTimelineItemTypeSelfieclub,
 	HONTimelineItemTypeSponsored,
 	HONTimelineItemTypeSuggested,
 	HONTimelineItemTypeUserCreated,

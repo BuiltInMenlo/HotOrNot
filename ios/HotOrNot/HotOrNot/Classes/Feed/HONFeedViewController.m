@@ -35,12 +35,14 @@
 @interface HONFeedItemViewController : UIViewController
 @property(nonatomic, weak) HONFeedViewController *feedViewController;
 @property(nonatomic, strong) HONChallengeVO *challenge;
+@property(nonatomic, strong) HONClubPhotoVO *clubPhotoVO;
 @end
 
 @implementation HONFeedViewController
 {
 	UIView *_emptyStateView;
 	NSUInteger _prefetchIndex;
+	NSArray *_clubPhotos;
 }
 
 - (id)init
@@ -120,9 +122,24 @@
 	}];
 }
 
+- (void)_refreshClubFromSwerver
+{
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID completion:^(NSArray *result) {
+		NSMutableArray *clubPhotos = [NSMutableArray array];
+		for (NSDictionary *clubData in (NSDictionary *)result) {
+			HONClubPhotoVO *vo = [HONClubPhotoVO clubPhotoWithDictionary:clubData];
+			if (vo != nil)
+				[clubPhotos addObject:vo];
+		}
+		
+		[self _didFinishRefreshingWithResults:[clubPhotos copy]];
+	}];
+}
+
 - (void)_didFinishRefreshingWithResults:(NSArray *)results
 {
-	_challenges = [results mutableCopy];
+//	_challenges = [results mutableCopy];<<
+	_clubPhotos = [results mutableCopy];
 	[self _updateEmptyState];
 	[self _prefetchChallenges];
 	
@@ -131,26 +148,23 @@
 
 - (void)_updateEmptyState
 {
-//	if ([_challenges count] == 0) {
-//		if (_emptyStateView == nil)
-//			_emptyStateView = [self _makeEmptyStateView];
-//		[self.view addSubview:_emptyStateView];
-//	}
-//	else {
-		[_emptyStateView removeFromSuperview];
-//	}
+	[_emptyStateView removeFromSuperview];
 }
 
 - (void)_prefetchChallenges
 {
-	if (([_challenges count] > 0) && (_prefetchIndex < [_challenges count])) {
-		NSRange prefetchRange = NSMakeRange(_prefetchIndex, MIN([_challenges count] - _prefetchIndex, [HONAppDelegate rangeForImageQueue].length));
+//	if (([_challenges count] > 0) && (_prefetchIndex < [_challenges count])) {<<
+	if (([_clubPhotos count] > 0) && (_prefetchIndex < [_clubPhotos count])) {
+//		NSRange prefetchRange = NSMakeRange(_prefetchIndex, MIN([_challenges count] - _prefetchIndex, [HONAppDelegate rangeForImageQueue].length));<<
+		NSRange prefetchRange = NSMakeRange(_prefetchIndex, MIN([_clubPhotos count] - _prefetchIndex, [HONAppDelegate rangeForImageQueue].length));
 		if (prefetchRange.length > 0) {
 			NSMutableArray *imagesToFetch = [NSMutableArray array];
 			for (NSUInteger i = prefetchRange.location; i < NSMaxRange(prefetchRange); i++) {
-				HONChallengeVO *vo = [_challenges objectAtIndex:i];
+//				HONChallengeVO *vo = [_challenges objectAtIndex:i];<<
+				HONClubPhotoVO *vo = [_clubPhotos objectAtIndex:i];
 				NSString *type = [[HONDeviceIntrinsics sharedInstance] isRetina4Inch] ? kSnapLargeSuffix : kSnapTabSuffix;
-				NSString *url = [vo.creatorVO.imagePrefix stringByAppendingString:type];
+//				NSString *url = [vo.creatorVO.imagePrefix stringByAppendingString:type];<<
+				NSString *url = [vo.imagePrefix stringByAppendingString:type];
 				[imagesToFetch addObject:[NSURL URLWithString:url]];
 			}
 			if ([imagesToFetch count] > 0)
@@ -163,12 +177,14 @@
 
 - (NSUInteger)numberOfItemsForPagedView:(JLBPagedView *)pagedView
 {
-	return [_challenges count];
+//	return [_challenges count];<<
+	return ([_clubPhotos count]);
 }
 
 - (id)pagedView:(JLBPagedView *)pagedView itemAtIndex:(NSUInteger)index
 {
-	return (index < [_challenges count]) ? _challenges[index] : nil;
+//	return (index < [_challenges count]) ? _challenges[index] : nil;<<
+	return (index < [_clubPhotos count]) ? _clubPhotos[index] : nil;
 }
 
 - (id)pagedView:(JLBPagedView *)pagedView viewControllerForItem:(id)item atIndex:(NSUInteger)index
@@ -191,7 +207,8 @@
 
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];
-	else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"passed_registration"] && ([_challenges count] == 0))
+//	else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"passed_registration"] && ([_challenges count] == 0))<<
+	else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"passed_registration"] && ([_clubPhotos count] == 0))
 		[self _refreshChallengesFromServer];
 	
 #if __FORCE_SUGGEST__ == 1
@@ -212,8 +229,10 @@
 - (void)_goBack
 {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Back"];
-	[[self _popSlideTransition] setInteractiveDismissEnabled:NO];
-	[self dismissViewControllerAnimated:YES completion:nil];
+//	[[self _popSlideTransition] setInteractiveDismissEnabled:NO];
+//	[self dismissViewControllerAnimated:YES completion:nil];
+	
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goSuggested {
@@ -371,7 +390,8 @@
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSObject *result) {
 		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
 		
-		NSMutableArray *mutableChallenges = [_challenges mutableCopy];
+//		NSMutableArray *mutableChallenges = [_challenges mutableCopy];<<
+		NSMutableArray *mutableChallenges = [_clubPhotos mutableCopy];
 		__block NSUInteger foundIndex = NSNotFound;
 		[mutableChallenges enumerateObjectsUsingBlock:^(HONChallengeVO *vo, NSUInteger idx, BOOL *stop) {
 			if (vo.challengeID == challengeVO.challengeID) {
@@ -381,7 +401,8 @@
 		}];
 		if (foundIndex != NSNotFound)
 			[mutableChallenges replaceObjectAtIndex:foundIndex withObject:challengeVO];
-		_challenges = [mutableChallenges copy];
+//		_challenges = [mutableChallenges copy];
+		_clubPhotos = [mutableChallenges copy];
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
@@ -463,7 +484,8 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-	return [_challenges count];
+//	return [_challenges count];<<
+	return [_clubPhotos count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

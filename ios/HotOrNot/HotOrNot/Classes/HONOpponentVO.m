@@ -26,12 +26,9 @@
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.joinedDate = [dateFormat dateFromString:[dictionary objectForKey:@"joined"]];
-	vo.birthday = ([dictionary objectForKey:@"age"] != [NSNull null]) ? [dateFormat dateFromString:[dictionary objectForKey:@"age"]] : [dateFormat dateFromString:@"1970-01-01 00:00:00"];
-	
-	
+	vo.joinedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]];
+	vo.birthday = ([dictionary objectForKey:@"age"] != [NSNull null]) ? [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"age"]] : [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:@"1970-01-01 00:00:00"];
+		
 	return (vo);
 }
 

@@ -6,24 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef enum {
-	HONUserClubStatusTypePending = 0,
-	HONUserClubStatusTypeActive,
-	HONUserClubStatusTypeBanned,
-	HONUserClubStatusTypeRemoved
-} HONUserClubStatusType;
-
-
-typedef enum {
-	HONUserClubExpoTypePublic = 0,
-	HONUserClubExpoTypePrivate
-} HONUserClubExpoType;
-
-typedef enum {
-	HONUserClubContentTypeSelfieclub = 0,
-	HONUserClubContentTypeCommunity,
-	HONUserClubContentTypeCampaign
-} HONUserClubContentType;
+typedef NS_ENUM(NSInteger, HONClubType) {
+	HONClubTypeOwner = 0,
+	HONClubTypeMember,
+	HONClubTypePending,
+	HONClubTypeOther,
+	HONClubTypeUnknown
+};
 
 
 @interface HONUserClubVO : NSObject
@@ -31,24 +20,20 @@ typedef enum {
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int clubID;
-@property (nonatomic, assign, readonly) HONUserClubStatusType userClubStatusType;
-@property (nonatomic, assign, readonly) HONUserClubExpoType userClubExpoType;
-@property (nonatomic, assign, readonly) HONUserClubContentType userClubConentType;
-@property (nonatomic) int totalAllMembers;
+@property (nonatomic, assign, readonly) HONClubType clubType;
 @property (nonatomic) int totalPendingMembers;
 @property (nonatomic) int totalActiveMembers;
 @property (nonatomic) int totalBannedMembers;
-@property (nonatomic) int totalHistoricMembers;
-@property (nonatomic) int totalSubmissions;
 @property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, retain) NSString *coverImagePrefix;
 @property (nonatomic, retain) NSString *blurb;
+@property (nonatomic, retain) NSDate *addedDate;
+@property (nonatomic, retain) NSDate *updatedDate;
 
 @property (nonatomic) int ownerID;
 @property (nonatomic, retain) NSString *ownerName;
 @property (nonatomic, retain) NSString *ownerImagePrefix;
 
-@property (nonatomic, retain) NSDate *addedDate;
-@property (nonatomic, retain) NSDate *updatedDate;
-
+@property (nonatomic, retain) NSArray *submissions;
+@property (nonatomic) int totalSubmissions;
 @end

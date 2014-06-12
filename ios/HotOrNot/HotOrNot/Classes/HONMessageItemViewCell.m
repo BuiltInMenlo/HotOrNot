@@ -100,7 +100,7 @@
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.text = [HONAppDelegate timeSinceDate:_messageVO.updatedDate];
+	timeLabel.text = [[HONDateTimeStipulator sharedInstance] intervalSinceDate:_messageVO.updatedDate];
 	[self.contentView addSubview:timeLabel];
 }
 

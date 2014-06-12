@@ -32,9 +32,7 @@
 	vo.score = vo.points + vo.votes;
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"avatar_url"]];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.birthday = [dateFormat dateFromString:[dictionary objectForKey:@"age"]];
+	vo.birthday = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"age"]];
 	
 	vo.friends = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"friends"]) {

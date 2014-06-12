@@ -275,9 +275,6 @@
 - (void)_goProfile {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Profile"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMessages {
@@ -460,7 +457,7 @@
 									  withChallenge:challengeVO];
 	
 	HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
-	feedViewController.challenges = _challenges;
+//	feedViewController.challenges = _challenges;<<
 	JLBPopSlideTransition *transition = [JLBPopSlideTransition new];
 	feedViewController.transitioningDelegate = transition;
 	[self presentViewController:feedViewController animated:YES completion:nil];

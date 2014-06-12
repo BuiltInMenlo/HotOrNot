@@ -10,7 +10,10 @@
 @interface HONDateTimeStipulator : NSObject
 + (HONDateTimeStipulator *)sharedInstance;
 
+- (NSDate *)dateFromUnixTimestamp:(CGFloat)timestamp;
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate;
+- (NSString *)elapsedTimeSinceDate:(NSDate *)date;
+- (NSString *)intervalSinceDate:(NSDate *)date;
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds includeSuffix:(NSString *)suffix;
 - (NSDateFormatter *)orthodoxBaseFormatter;
 - (NSString *)orthodoxFormattedStringFromDate:(NSDate *)date;

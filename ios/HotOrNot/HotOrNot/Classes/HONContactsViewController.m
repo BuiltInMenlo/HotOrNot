@@ -711,10 +711,10 @@
 			}
 		}
 		
-		for (NSString *key in dict) {
-			for (HONContactUserVO *vo in [dict objectForKey:key])
-				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.mobileNumber);
-		}
+//		for (NSString *key in dict) {
+//			for (HONContactUserVO *vo in [dict objectForKey:key])
+//				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.mobileNumber);
+//		}
 	}
 	
 	return (dict);
@@ -724,7 +724,6 @@
 	for (HONTrivialUserVO *inAppContactVO in _inAppContacts) {
 		for (HONContactUserVO *deviceContactVO in _deviceContacts) {
 			if ([deviceContactVO.mobileNumber isEqualToString:inAppContactVO.altID]) {
-				NSLog(@"FOUND!:[%@]", inAppContactVO.altID);
 				deviceContactVO.contactType = HONContactTypeMatched;
 				deviceContactVO.userID = inAppContactVO.userID;
 				deviceContactVO.username = inAppContactVO.username;

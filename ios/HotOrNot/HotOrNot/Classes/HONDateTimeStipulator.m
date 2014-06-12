@@ -10,7 +10,7 @@
 
 #import "HONDateTimeStipulator.h"
 
-NSString * const kOrthodoxFormatSymbols = @"yyyy-MM-ddHH:mm:ss";
+NSString * const kOrthodoxFormatSymbols = @"yyyy-MM-dd HH:mm:ss";
 
 @implementation HONDateTimeStipulator
 
@@ -35,8 +35,27 @@ static HONDateTimeStipulator *sharedInstance = nil;
 }
 
 
+- (NSDate *)dateFromUnixTimestamp:(CGFloat)timestamp {
+	return ([NSDate dateWithTimeIntervalSince1970:timestamp]);
+}
+
 - (NSDate *)dateFromOrthodoxFormattedString:(NSString *)stringDate {
 	return ([[[HONDateTimeStipulator sharedInstance] orthodoxBaseFormatter] dateFromString:stringDate]);
+}
+
+- (NSString *)elapsedTimeSinceDate:(NSDate *)date {
+	int secs = [[[NSDate new] dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
+	int mins = secs / 60;
+	int hours = mins / 60;
+	
+	secs -= (mins * 60);
+	mins -= (hours * 60);
+	
+	return ([NSString stringWithFormat:@"%02d:%02d:%02d", MAX(0, hours), MAX(0, mins), MAX(0, secs)]);
+}
+
+- (NSString *)intervalSinceDate:(NSDate *)date {
+	return ([[HONDateTimeStipulator sharedInstance] intervalSinceDate:date minSeconds:0 includeSuffix:@" ago"]);
 }
 
 - (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds includeSuffix:(NSString *)suffix {
@@ -46,7 +65,7 @@ static HONDateTimeStipulator *sharedInstance = nil;
 	NSDateFormatter *dateFormatter = [[HONDateTimeStipulator sharedInstance] orthodoxBaseFormatter];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
+	int secs = MAX(0, [[utcDate dateByAddingTimeInterval:0] timeIntervalSinceDate:date]);
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
@@ -71,7 +90,7 @@ static HONDateTimeStipulator *sharedInstance = nil;
 	}
 	
 	interval = (suffix != nil && [suffix length] > 0) ? [interval stringByAppendingString:suffix] : interval;	
-	return (([[[interval componentsSeparatedByString:@" "] firstObject] intValue] <= minSeconds) ? @"just now" : interval);
+	return ((secs <= minSeconds) ? @"just now" : interval);
 }
 
 - (NSDateFormatter *)orthodoxBaseFormatter {

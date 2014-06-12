@@ -8,12 +8,12 @@
 
 #import "HONUserClubVO.h"
 
-
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
 
-- (NSArray *)fpoInviteClubs;
-- (NSArray *)fpoJoinedClubs;
+- (NSArray *)clubTypeKeys;
+- (NSDictionary *)fpoInviteClubDictionary;
+- (NSDictionary *)fpoJoinedClubDictionary;
 - (NSDictionary *)fpoOwnedClubDictionary;
 - (NSDictionary *)emptyClubDictionary;
 @end

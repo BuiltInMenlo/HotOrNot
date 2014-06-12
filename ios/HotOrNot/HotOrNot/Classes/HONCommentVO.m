@@ -27,9 +27,7 @@
 	vo.userScore = [[dictionary objectForKey:@"score"] intValue];
 	vo.content = [dictionary objectForKey:@"text"];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }

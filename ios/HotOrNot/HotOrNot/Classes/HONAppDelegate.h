@@ -175,7 +175,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSArray *)colorsForOverlayTints;
 
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;

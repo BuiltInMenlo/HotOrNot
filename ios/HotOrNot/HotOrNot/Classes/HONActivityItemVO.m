@@ -25,10 +25,7 @@
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[[dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]];
 	
 	vo.challengeID = ([dictionary objectForKey:@"challengeID"] != [NSNull null]) ? [[dictionary objectForKey:@"challengeID"] intValue] : -1;
-	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.sentDate = [dateFormat dateFromString:[dictionary objectForKey:@"time"]];
+	vo.sentDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
 	
 	return (vo);
 }

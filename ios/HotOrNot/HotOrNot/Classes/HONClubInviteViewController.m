@@ -60,21 +60,12 @@
 }
 
 
-/*
+
 #pragma mark - Data Calls
 - (void)_sendClubInvites {
 	HONUserClubInviteType userClubInviteType = (HONUserClubInviteTypeInApp * (int)([_selectedInAppContacts count] > 0)) + (HONUserClubInviteTypeNonApp * (int)([_selectedNonAppContacts count] > 0));
 	
-	if (userClubInviteType == HONUserClubInviteTypeNone) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Friends Selected!"
-															 message:@"Create your club w/o inviting anyone?"
-															delegate:self
-												   cancelButtonTitle:@"No"
-												   otherButtonTitles:@"Yes", nil];
-		[alertView setTag:0];
-		[alertView show];
-	
-	} else if (userClubInviteType == HONUserClubInviteTypeInApp)
+	if (userClubInviteType == HONUserClubInviteTypeInApp)
 		[self _sendInAppUserInvites];
 	
 	else if (userClubInviteType == HONUserClubInviteTypeNonApp)
@@ -102,7 +93,6 @@
 		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }
-*/
 
 
 #pragma mark - View lifecycle
@@ -167,7 +157,7 @@
 - (void)_goDone {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"
 									   withUserClub:_userClubVO];
-//	[self _sendClubInvites];
+	[self _sendClubInvites];
 }
 
 

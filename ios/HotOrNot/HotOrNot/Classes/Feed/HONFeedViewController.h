@@ -8,6 +8,10 @@
 
 #import "JLBPagedViewController.h"
 
+#import "HONUserClubVO.h"
+#import "HONClubPhotoVO.h"
+
 @interface HONFeedViewController : JLBPagedViewController
-@property(nonatomic, strong) NSArray *challenges;
+//@property(nonatomic, strong) NSArray *challenges;<<
+@property(nonatomic, strong) HONUserClubVO *clubVO;
 @end

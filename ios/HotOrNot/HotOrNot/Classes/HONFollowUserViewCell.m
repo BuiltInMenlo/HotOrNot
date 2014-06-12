@@ -13,6 +13,10 @@
 @interface HONFollowUserViewCell ()
 @property (nonatomic, strong) UIButton *checkButton;
 @property (nonatomic, strong) UIButton *followButton;
+
+@property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UIImageView *gradientImageView;
+
 @end
 
 @implementation HONFollowUserViewCell
@@ -55,26 +59,33 @@
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		avatarImageView.image = image;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[@"selfieGradient" stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? @"-568h@2x" : @"@2x"]]];
+	gradientImageView.hidden = YES;
 	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userVO.avatarPrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
-		
-		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
-	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	__weak HONFollowUserViewCell *weakSelf = self;
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+															 cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData
+														 timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil
-									success:imageSuccessBlock
-									failure:imageFailureBlock];
+									success:^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+										weakSelf.avatarImageView.image = image;
+										[UIView animateWithDuration:0.25 animations:^(void) {
+											weakSelf.avatarImageView.alpha = 1.0;
+										} completion:^(BOOL finished) {
+											weakSelf.gradientImageView.hidden = NO;
+										}];
+									}
+	 
+									failure:^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+										[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userVO.avatarPrefix
+																						   forBucketType:HONS3BucketTypeAvatars
+																							  completion:nil];
+										
+										weakSelf.avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+										[UIView animateWithDuration:0.25 animations:^(void) {
+											weakSelf.avatarImageView.alpha = 1.0;
+										} completion:nil];
+									}];
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(63.0, 22.0, 130.0, 22.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:17];

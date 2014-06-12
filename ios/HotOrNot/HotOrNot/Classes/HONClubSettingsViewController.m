@@ -194,12 +194,12 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Edit Club"];
 	[self.view addSubview:headerView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:closeButton];
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:backButton];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(222.0, 0.0, 93.0, 44.0);
@@ -235,10 +235,11 @@
 
 
 #pragma mark - Navigation
-- (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Close"
+- (void)_goBack {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Back"
 									   withUserClub:_userClubVO];
-	[self dismissViewControllerAnimated:YES completion:nil];
+	
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goNext {

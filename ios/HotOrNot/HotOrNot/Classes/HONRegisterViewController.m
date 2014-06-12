@@ -299,7 +299,9 @@
 	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
 	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -15.0, 0.0, 0.0)];
 	_callCodeButton.titleLabel.font = textFont;
-	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
+	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
+	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
+//	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_callCodeButton];
 	
 	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 147.0, 200.0, 22.0)];

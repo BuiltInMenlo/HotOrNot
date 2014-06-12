@@ -29,9 +29,7 @@
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.challengerName = [dictionary objectForKey:@"challenger_name"];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }

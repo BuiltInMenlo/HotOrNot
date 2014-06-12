@@ -160,18 +160,14 @@ const CGSize kInstagramSize = {612.0, 612.0};
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
+	
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		
-		//NSLog(@"WRITING IMAGE:(%@) FOR KEY:(%@)", response.allHeaderFields, key);
-		
 		image = (image != nil) ? image : [UIImage imageNamed:key];
-		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		[HONImagingDepictor writeImage:image toUserDefaulsWithKey:key];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: Failed Request - %@", [[self class] description], [error localizedDescription]);
-		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		[HONImagingDepictor writeImage:[UIImage imageNamed:key] toUserDefaulsWithKey:key];
 	}];
 	
 	[operation start];
@@ -179,27 +175,29 @@ const CGSize kInstagramSize = {612.0, 612.0};
 
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
+	
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		
-		if (image != nil) {
-			UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
-			imageView.image = image;
-			
-			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(imageView.image) forKey:key];
-			
-		} else
-			[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
-		
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		imageView.image = (image != nil) ? image : [UIImage imageNamed:key];
+		[HONImagingDepictor writeImage:imageView.image toUserDefaulsWithKey:key];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], url, [error localizedDescription]);
-		
-		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([UIImage imageNamed:key]) forKey:key];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		[HONImagingDepictor writeImage:[UIImage imageNamed:key] toUserDefaulsWithKey:key];
 	}];
 	
 	[operation start];
+}
+
++ (void)writeImage:(UIImage *)image toUserDefaulsWithKey:(NSString *)key {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+	
+	NSData *data = UIImagePNGRepresentation(image);
+//	NSLog(@"WRITING IMAGE:(%@)\nFOR KEY:(%@)", [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength], key);
+	
+	[[NSUserDefaults standardUserDefaults] setObject:data forKey:key];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor {
@@ -215,7 +213,6 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	[layer setPosition:CGPointMake(frame.origin.x, frame.origin.y)];
 	[layer setBounds:CGRectMake(0.0, 0.0, size.width, size.height)];
 	layer.needsDisplayOnBoundsChange = YES;
-	
 	
 	
 	return (layer);

@@ -16,6 +16,11 @@ typedef enum {
 	HONImagingDepictorShareTemplateTypeEmail
 } HONImagingDepictorShareTemplateType;
 
+typedef NS_ENUM(NSInteger, HONImagingDepictorImageFormat) {
+	HONImagingDepictorImageFormatJPEG = 0,
+	HONImagingDepictorImageFormatPNG
+};
+
 
 extern const CGFloat kSnapRatio;
 
@@ -27,6 +32,7 @@ extern const CGFloat kSnapRatio;
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key;
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key;
++ (void)writeImage:(UIImage *)image toUserDefaulsWithKey:(NSString *)key;
 
 + (UIImage *)shareTemplateImageForType:(HONImagingDepictorShareTemplateType)shareTemplateType;
 + (UIImage *)defaultAvatarImageAtSize:(CGSize)size;

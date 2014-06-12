@@ -41,6 +41,7 @@ NSString * const kAPIVerifyShoutout			= @"challenges/shoutout";
 
 NSString * const kAPIClubsBlock			= @"clubs/block";
 NSString * const kAPIClubsCreate		= @"clubs/create";
+NSString * const kAPIClubsDelete		= @"clubs/delete";
 NSString * const kAPIClubsEdit			= @"clubs/edit";
 NSString * const kAPIClubsGet			= @"clubs/get";
 NSString * const kAPIClubsFeatured		= @"clubs/featured";
@@ -1252,7 +1253,7 @@ static HONAPICaller *sharedInstance = nil;
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"name"		: title,
 							 @"description"	: blurb,
-							 @"imageURL"	: imagePrefix};
+							 @"imgURL"		: imagePrefix};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsCreate, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -1277,12 +1278,39 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
+- (void)deleteClubWithClubID:(int)clubID completion:(void (^)(NSObject *result))completion {
+	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:clubID],
+							 @"ownerID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsDelete, params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+	[httpClient postPath:kAPIClubsEdit parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsEdit, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
 - (void)editClubWithClubID:(int)clubID withTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion {
 	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:clubID],
 							 @"ownerID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"name"		: title,
 							 @"description"	: blurb,
-							 @"imageURL"	: imagePrefix};
+							 @"imgURL"		: imagePrefix};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsEdit, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -1409,7 +1437,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveClubByClubID:(int)clubID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveClubByClubID:(int)clubID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:clubID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsGet, params);
@@ -1615,7 +1643,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			//SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			result = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 													 sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			

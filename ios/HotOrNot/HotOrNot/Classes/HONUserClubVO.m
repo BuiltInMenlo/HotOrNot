@@ -7,15 +7,13 @@
 //
 
 #import "HONUserClubVO.h"
+#import "HONClubPhotoVO.h"
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, userClubStatusType, userClubExpoType, userClubConentType, totalPendingMembers, totalActiveMembers, totalBannedMembers, totalHistoricMembers, totalAllMembers, totalSubmissions, coverImagePrefix, ownerID, ownerName, ownerImagePrefix, addedDate, updatedDate;
+@synthesize clubID, clubType, totalPendingMembers, totalActiveMembers, totalBannedMembers, clubName, coverImagePrefix, blurb, addedDate, updatedDate, ownerID, ownerName, ownerImagePrefix, submissions, totalSubmissions;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
 	vo.dictionary = dictionary;
 	
@@ -30,18 +28,22 @@
 	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubName = [dictionary objectForKey:@"name"];
 	vo.blurb = [dictionary objectForKey:@"description"];
-	vo.coverImagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
-	
+	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img"]] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"];
+	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.updatedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
+		
 	vo.totalPendingMembers = [[dictionary objectForKey:@"pending"] count];
 	vo.totalBannedMembers = [[dictionary objectForKey:@"blocked"] count];
 	vo.totalActiveMembers = [[dictionary objectForKey:@"members"] count];
 	
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
-	vo.updatedDate = (vo.totalActiveMembers == 0) ? vo.addedDate : [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
-	
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
-	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != [NSNull null]) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
+	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
+	
+	NSMutableArray *submissions = [NSMutableArray array];
+	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
+		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
+	vo.submissions = [submissions copy];
 	
 	return (vo);
 }
@@ -52,12 +54,11 @@
 	self.clubName = nil;
 	self.blurb = nil;
 	self.coverImagePrefix = nil;
-	self.ownerName = nil;
-	self.ownerImagePrefix = nil;
 	self.addedDate = nil;
 	self.updatedDate = nil;
+	self.ownerName = nil;
+	self.ownerImagePrefix = nil;
+	self.submissions = nil;
 }
-
-
 
 @end

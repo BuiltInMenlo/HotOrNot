@@ -8,7 +8,7 @@
 
 #import "HONClubsViewLayout.h"
 
-const CGSize kClubCollectionViewSize = {160.0, 198.0};
+const CGSize kClubCollectionViewSize = {150.0, 198.0};
 
 @implementation HONClubsViewLayout
 

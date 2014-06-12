@@ -27,13 +27,8 @@
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
 	vo.photoSubmitType = ([[vo.subjectNames firstObject] rangeOfString:@"#shoutout"].location == 0) ? HONPhotoSubmitTypeCreateShoutout : vo.photoSubmitType;
 	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
-//	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
-//	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
-//	vo.updatedDate = [dateFormat dateFromString:[dictionary objectForKey:@"updated"]];
+	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	switch (vo.statusID) {
 		case 1:

@@ -15,11 +15,14 @@
 #import "MBProgressHUD.h"
 
 #import "HONClubsNewsFeedViewController.h"
+#import "HONFeedViewController.h"
+#import "HONUserProfileViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONHeaderView.h"
+#import "HONActivityHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONTableHeaderView.h"
 
@@ -323,14 +326,8 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	editButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
-	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_nonActive"] forState:UIControlStateNormal];
-	[editButton setBackgroundImage:[UIImage imageNamed:@"editClubsButton_Active"] forState:UIControlStateHighlighted];
-	[editButton addTarget:self action:@selector(_goEditClubs) forControlEvents:UIControlEventTouchUpInside];
-	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"News"];
-	[headerView addButton:editButton];
+	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
@@ -392,10 +389,9 @@
 
 
 #pragma mark - Navigation
-- (void)_goEditClubs {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Edit Clubs"];
-	
-	[self.navigationController pushViewController:[[HONUserClubsViewController alloc] init] animated:YES];
+- (void)_goProfile {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Profile"];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
@@ -618,12 +614,17 @@
 	
 	if (cell.timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
 		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
-		vo.userClubVO.clubID = 40;
 		
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
-		[[HONAPICaller sharedInstance] retrieveClubByClubID:40 completion:^(NSObject *result) {
-			
-		}];
+		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
+		feedViewController.clubVO = vo.userClubVO;
+		[self.navigationController pushViewController:feedViewController animated:YES];
+		
+//		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];<<
+//		feedViewController.challenges = [vo.userClubVO.submissions];<<
+//		JLBPopSlideTransition *transition = [JLBPopSlideTransition new];<<
+//		feedViewController.transitioningDelegate = transition;<<
+//		[self presentViewController:feedViewController animated:YES completion:nil];<<
 		
 	} else
 		NSLog(@"/// SOMETHING ELSE:(%@)", ((HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row]).dictionary);

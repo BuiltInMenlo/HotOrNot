@@ -13,9 +13,6 @@
 @synthesize timelineItemType, emotionVO, opponentVO, userClubVO, timestamp;
 
 + (HONTimelineItemVO *)timelineItemWithDictionary:(NSDictionary *)dictionary {
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	
 	//NSLog(@"DICTIONARY:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	//dictionary = [((NSArray *)dictionary) objectAtIndex:0];
 	
@@ -32,7 +29,7 @@
 		vo.timelineItemType = HONTimelineItemTypeSchool;
 	
 	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"STAFF"])
-		vo.timelineItemType = HONTimelineItemTypeSelfieclubTeam;
+		vo.timelineItemType = HONTimelineItemTypeSelfieclub;
 	
 	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SPONSORED"])
 		vo.timelineItemType = HONTimelineItemTypeSponsored;
@@ -46,7 +43,7 @@
 	else
 		vo.timelineItemType = HONTimelineItemTypeUnknown;
 	
-	vo.timestamp = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
+	vo.timestamp = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	
 	switch (vo.timelineItemType) {

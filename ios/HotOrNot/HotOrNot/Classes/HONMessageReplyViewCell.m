@@ -119,7 +119,7 @@
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.text = [HONAppDelegate timeSinceDate:_messageReplyVO.joinedDate];
+	timeLabel.text = [[HONDateTimeStipulator sharedInstance] intervalSinceDate:_messageReplyVO.joinedDate];
 	[self.contentView addSubview:timeLabel];
 	
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _messageReplyVO.userID) {

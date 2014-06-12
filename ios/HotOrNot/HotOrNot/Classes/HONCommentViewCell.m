@@ -29,7 +29,7 @@
 	timeLabel.textColor = [UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [HONAppDelegate timeSinceDate:_commentVO.addedDate];
+	timeLabel.text = [[HONDateTimeStipulator sharedInstance] intervalSinceDate:_commentVO.addedDate];
 	[self addSubview:timeLabel];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 13.0, 180.0, 18.0)];
