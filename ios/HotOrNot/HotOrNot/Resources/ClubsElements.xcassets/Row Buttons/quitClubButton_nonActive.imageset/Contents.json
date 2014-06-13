@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "acceptButton_nonActive.png"
+      "filename" : "deleteIcon.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "acceptButton_nonActive@2x.png"
+      "filename" : "deleteIcon@2x.png"
     }
   ],
   "info" : {

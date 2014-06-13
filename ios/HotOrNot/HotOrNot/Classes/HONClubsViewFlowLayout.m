@@ -8,7 +8,7 @@
 
 #import "HONClubsViewFlowLayout.h"
 
-const CGSize kClubCollectionViewSize = {150.0, 198.0};
+const CGSize kClubCollectionViewSize = {100.0, 198.0};
 
 @implementation HONClubsViewFlowLayout
 
@@ -18,6 +18,7 @@ const CGSize kClubCollectionViewSize = {150.0, 198.0};
 		self.scrollDirection = UICollectionViewScrollDirectionVertical;
 		self.minimumInteritemSpacing = 0.0;
 		self.minimumLineSpacing = 0.0;
+		self.sectionInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
 	}
 	
 	return (self);
@@ -37,17 +38,17 @@ const CGSize kClubCollectionViewSize = {150.0, 198.0};
 	return (array);
 }
 
-- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity {
-	CGFloat offsetAdjustment = MAXFLOAT;
-	CGFloat hCenter = proposedContentOffset.x + (CGRectGetWidth(self.collectionView.bounds) * 0.5);
-	
-	for (UICollectionViewLayoutAttributes *layoutAtrtributes in [super layoutAttributesForElementsInRect:CGRectMake(proposedContentOffset.x, 0.0, self.collectionView.bounds.size.width, self.collectionView.bounds.size.height)]) {
-		CGFloat hItemCenter = layoutAtrtributes.center.x;
-		if (ABS(hItemCenter - hCenter) < ABS(offsetAdjustment))
-			offsetAdjustment = hItemCenter - hCenter;
-	}
-	
-	return (CGPointMake(proposedContentOffset.x + offsetAdjustment, proposedContentOffset.y));
-}
+//- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity {
+//	CGFloat offsetAdjustment = MAXFLOAT;
+//	CGFloat hCenter = proposedContentOffset.x + (CGRectGetWidth(self.collectionView.bounds) * 0.5);
+//	
+//	for (UICollectionViewLayoutAttributes *layoutAtrtributes in [super layoutAttributesForElementsInRect:CGRectMake(proposedContentOffset.x, 0.0, self.collectionView.bounds.size.width, self.collectionView.bounds.size.height)]) {
+//		CGFloat hItemCenter = layoutAtrtributes.center.x;
+//		if (ABS(hItemCenter - hCenter) < ABS(offsetAdjustment))
+//			offsetAdjustment = hItemCenter - hCenter;
+//	}
+//	
+//	return (CGPointMake(proposedContentOffset.x + offsetAdjustment, proposedContentOffset.y));
+//}
 
 @end

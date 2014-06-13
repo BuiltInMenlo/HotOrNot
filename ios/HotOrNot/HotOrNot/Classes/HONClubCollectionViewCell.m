@@ -29,15 +29,16 @@
 }
 
 - (void)setClubType:(HONClubType)clubType {
+	
 	_clubType = clubType;
 	
 	NSString *buttonAsset;
 	SEL selector;
 	
 	if (_clubType == HONClubTypeOwner) {
-		buttonAsset = @"editClubButton";
+		buttonAsset = @"";
 		selector = @selector(_goEditClub);
-	
+		
 	} else if (_clubType == HONClubTypeMember) {
 		buttonAsset = @"quitClubButton";
 		selector = @selector(_goQuitClub);
@@ -51,13 +52,14 @@
 		selector = @selector(_goJoinClub);
 		
 	} else {
-		buttonAsset = @"createClubButton";
+		buttonAsset = @"";
 		selector = @selector(_goCreateClub);
+		_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 	}
 	
 	
 	_ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_ctaButton.frame = CGRectMake(108.0, 20.0, 24.0, 24.0);
+	_ctaButton.frame = CGRectMake(99.0, 11.0, 44.0, 44.0);
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_Active"]] forState:UIControlStateHighlighted];
 	[_ctaButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
@@ -67,11 +69,11 @@
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
 	
-	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(30.0, 20.0, 100.0, 100.0)];
+	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(22.0, 18.0, 100.0, 100.0)];
 	_coverImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreyColor];
 	[self.contentView addSubview:_coverImageView];
 	
-	[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_coverImageView.image = image;
@@ -98,7 +100,6 @@
 	
 	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 126.0, 120.0, 20.0)];
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
-	_nameLabel.backgroundColor = [UIColor clearColor];
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.textAlignment = NSTextAlignmentCenter;
 	_nameLabel.text = _clubVO.clubName;

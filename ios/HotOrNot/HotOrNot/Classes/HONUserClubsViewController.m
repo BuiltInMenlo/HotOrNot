@@ -353,19 +353,20 @@
 
 #pragma mark - CollectionView Delegates
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (NO);
+	return (YES);
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONUserClubVO *vo =  ((HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
 	
 	
-	
-	
-	NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
-	HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
-	feedViewController.clubVO = vo;
-	[self.navigationController pushViewController:feedViewController animated:YES];
+	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+	if (cell.clubType != HONClubTypeOther) {
+		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
+		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
+		feedViewController.clubVO = vo;
+		[self.navigationController pushViewController:feedViewController animated:YES];
+	}
 }
 
 

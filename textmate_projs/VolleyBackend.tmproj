@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../../VolleyBackend/classes/BIM/App/Clubs.php</string>
+	<string>../../VolleyBackend/classes/BIM/DAO/Mysql/Comments.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -104,9 +104,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>5</integer>
+				<integer>22</integer>
 				<key>line</key>
-				<integer>23</integer>
+				<integer>6</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -231,6 +231,20 @@
 				<integer>201</integer>
 			</dict>
 		</dict>
+		<key>../../VolleyBackend/classes/BIM/DAO/Mysql/Comments.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>16</integer>
+				<key>line</key>
+				<integer>28</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>22</integer>
+		</dict>
 		<key>../../VolleyBackend/classes/BIM/DAO/Mysql/User.php</key>
 		<dict>
 			<key>caret</key>
@@ -346,6 +360,7 @@
 		<string>../../VolleyBackend/classes/BIM/Controller/UserPhone.php</string>
 		<string>../../VolleyBackend/classes/BIM/App/UserPhone.php</string>
 		<string>../../VolleyBackend/classes/BIM/App/Clubs.php</string>
+		<string>../../VolleyBackend/classes/BIM/DAO/Mysql/Comments.php</string>
 		<string>../../VolleyBackend/classes/BIM/App/Challenges.php</string>
 		<string>../../VolleyBackend/classes/BIM/DAO/Mysql/User.php</string>
 		<string>../../VolleyBackend/classes/BIM/Model/User.php</string>
@@ -354,6 +369,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{-1468, 95}, {1116, 743}}</string>
+	<string>{{-1390, 5}, {1116, 743}}</string>
 </dict>
 </plist>
