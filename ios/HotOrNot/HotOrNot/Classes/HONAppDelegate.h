@@ -67,9 +67,6 @@ typedef enum {
 } HONAmazonS3BucketType;
 
 
-extern const CGFloat kDevClubID;
-
-
 // api endpts
 extern NSString * const kConfigURL;
 extern NSString * const kConfigJSON;

@@ -53,8 +53,6 @@
 #import "HONSuspendedViewController.h"
 #import "HONImagePickerViewController.h"
 
-const CGFloat kDevClubID = 99.0f;
-
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";

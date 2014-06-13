@@ -203,13 +203,8 @@
 	
 	// family
 	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
-	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"]) {
-		NSString *familyName = [deviceName objectAtIndex:1];
-		familyName = [familyName substringToIndex:[familyName length] - 2];
-		
-		clubName = [NSString stringWithFormat:@"%@ Family", [[[familyName substringToIndex:1] uppercaseString] stringByAppendingString:[familyName substringFromIndex:1]]];
-		NSLog(@"FAMILY CLUB:[%@]", clubName);
-	}
+	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"])
+		clubName = [NSString stringWithFormat:@"%@ Family", [[[[deviceName objectAtIndex:1] substringToIndex:1] uppercaseString] stringByAppendingString:[[deviceName objectAtIndex:2] substringWithRange:NSMakeRange(1, [[deviceName objectAtIndex:1] length] - 2)]]];
 	
 	else {
 		for (HONContactUserVO *vo in unsortedContacts) {

@@ -13,10 +13,10 @@
 #import "MBProgressHUD.h"
 
 #import "HONUserClubsViewController.h"
-#import "HONClubsViewFlowLayout.h"
+#import "HONClubsViewLayout.h"
 
 #import "HONTableHeaderView.h"
-#import "HONClubCollectionViewCell.h"
+#import "HONClubViewCell.h"
 #import "HONHeaderView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONActivityHeaderButtonView.h"
@@ -46,7 +46,7 @@
 @implementation HONUserClubsViewController
 
 
-//static NSString * const kCellIdentifier = @"cellIdentifier";
+static NSString * const kCellIdentifier = @"cellIdentifier";
 
 - (id)init {
 	if ((self = [super init])) {
@@ -89,7 +89,10 @@
 															[NSMutableArray array],
 															[NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
-//	[self _fpoPopulate];
+	
+	[self _fpoPopulate];
+	
+	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
@@ -110,8 +113,7 @@
 		
 		
 		_allClubs = [NSMutableArray array];
-		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated"
-																																							   ascending:NO]]]])
+		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		[_collectionView reloadData];
@@ -130,13 +132,6 @@
 	}];
 }
 
-- (void)_editClub:(HONUserClubVO *)vo {
-	[[HONAPICaller sharedInstance] editClubWithClubID:vo.clubID withTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSObject *result) {
-		[self _retrieveClubs];
-	}];
-}
-
-
 - (void)_joinClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		[self _retrieveClubs];
@@ -149,6 +144,31 @@
 	}];
 }
 
+- (void)_fpoPopulate {
+	NSDictionary *fpoDict = @{@"owned"		: @[[[HONClubAssistant sharedInstance] fpoOwnedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary]],
+							  @"member"		: @[[[HONClubAssistant sharedInstance] fpoInviteClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary]],
+							  @"pending"	: @[[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
+												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary]]};
+	
+	for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
+		NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
+		
+		for (NSDictionary *dict in [fpoDict objectForKey:key])
+			[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+		
+		[_clubIDs setValue:clubIDs forKey:key];
+		[_dictClubs addObjectsFromArray:[fpoDict objectForKey:key]];
+	}
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -158,21 +178,30 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
-	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
 	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONClubsViewFlowLayout alloc] init]];
-	[_collectionView registerClass:[HONClubCollectionViewCell class] forCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]];
+	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height - 0.0) collectionViewLayout:[[HONClubsViewLayout alloc] init]];
+	[_collectionView registerClass:[HONClubViewCell class] forCellWithReuseIdentifier:[HONClubViewCell cellReuseIdentifier]];
 	_collectionView.backgroundColor = [UIColor whiteColor];
-	[_collectionView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
+	[_collectionView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)];
 	_collectionView.showsVerticalScrollIndicator = NO;
 	_collectionView.dataSource = self;
 	_collectionView.delegate = self;
 	[self.view addSubview:_collectionView];
 	
+	
+//	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+//	[_tableView setBackgroundColor:[UIColor clearColor]];
+//	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
+//	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//	_tableView.delegate = self;
+//	_tableView.dataSource = self;
+//	_tableView.showsHorizontalScrollIndicator = NO;
+//	[self.view addSubview:_tableView];
+//	
 	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_collectionView.frame.size.height, _collectionView.frame.size.width, _collectionView.frame.size.height) headerOverlaps:YES];
 	_refreshTableHeaderView.delegate = self;
 	_refreshTableHeaderView.scrollView = _collectionView;
@@ -280,40 +309,71 @@
 - (void)_tareClubsTab:(NSNotification *)notification {
 	NSLog(@"::|> _tareClubsTab <|::");
 	
-	if (_collectionView.contentOffset.y > 0) {
-		_collectionView.pagingEnabled = NO;
-		[_collectionView setContentOffset:CGPointZero animated:YES];
-	}
+//	if (_tableView.contentOffset.y > 0) {
+//		_tableView.pagingEnabled = NO;
+//		[_tableView setContentOffset:CGPointZero animated:YES];
+//	}
 }
 
 
+//#pragma mark - UserClubViewCell Delegates
+//- (void)userClubViewCell:(HONUserClubViewCell *)cell acceptInviteForClub:(HONUserClubVO *)userClubVO {
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Accept Invite"
+//									   withUserClub:userClubVO];
+//	
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Accept Invite to the %@ club?", userClubVO.clubName]
+//														message:@""
+//													   delegate:self
+//											  cancelButtonTitle:@"No"
+//											  otherButtonTitles:@"Yes", nil];
+//	[alertView setTag:0];
+//	[alertView show];
+//}
+//
+//- (void)userClubViewCell:(HONUserClubViewCell *)cell settingsForClub:(HONUserClubVO *)userClubVO {
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Edit Settings"
+//									   withUserClub:userClubVO];
+//		
+//	_selectedClub = userClubVO;
+//	
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+//															 delegate:self
+//													cancelButtonTitle:@"Cancel"
+//											   destructiveButtonTitle:nil
+//													otherButtonTitles:@"Quit this club", nil];
+//	[actionSheet setTag:0];
+//	[actionSheet showInView:self.view];
+//
+//}
+
+
 #pragma mark - ClubViewCell Delegates
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell deleteClub:(HONUserClubVO *)userClubVO {
+- (void)clubViewCell:(HONClubViewCell *)cell deleteClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Delete Club"
 									   withUserClub:userClubVO];
 	[self _leaveClub:userClubVO];
 }
 
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell editClub:(HONUserClubVO *)userClubVO {
+- (void)clubViewCell:(HONClubViewCell *)cell editClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Edit Club"
 									   withUserClub:userClubVO];
 	
 	[self.navigationController pushViewController:[[HONClubSettingsViewController alloc] initWithClub:userClubVO] animated:YES];
 }
 
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell joinClub:(HONUserClubVO *)userClubVO {
+- (void)clubViewCell:(HONClubViewCell *)cell joinClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Join Club"
 									   withUserClub:userClubVO];
 	[self _joinClub:userClubVO];
 }
 
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell quitClub:(HONUserClubVO *)userClubVO {
+- (void)clubViewCell:(HONClubViewCell *)cell quitClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Quit Club"
 									   withUserClub:userClubVO];
 	[self _leaveClub:userClubVO];
 }
 
-- (void)clubViewCellCreateClub:(HONClubCollectionViewCell *)cell {
+- (void)clubViewCellCreateClub:(HONClubViewCell *)cell {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
@@ -338,7 +398,7 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONClubCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]
+	HONClubViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONClubViewCell cellReuseIdentifier]
 																	  forIndexPath:indexPath];
 	[cell resetSubviews];
 	
@@ -353,11 +413,11 @@
 
 #pragma mark - CollectionView Delegates
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	return (NO);
+	return (YES);
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-	HONUserClubVO *vo =  ((HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
+	HONUserClubVO *vo =  ((HONClubViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
 	
 	
 	
@@ -367,6 +427,123 @@
 	feedViewController.clubVO = vo;
 	[self.navigationController pushViewController:feedViewController animated:YES];
 }
+
+
+//#pragma mark - TableView DataSource Delegates
+//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+//	return ((section == 0) ? 1 + [_joinedClubs count] : [_invitedClubs count]);
+//}
+//
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+//	return (2);
+//}
+//
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+//	return (nil);
+//}
+//
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+//	HONUserClubViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+//	
+//	if (cell == nil)
+//		cell = [[HONUserClubViewCell alloc] initAsInviteCell:(indexPath.section == 1)];
+//	
+//	
+//	if (indexPath.section == 0) {
+//		if (indexPath.row == 0) {
+//			if (_ownClub == nil) {
+//				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
+//				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
+//				cell.textLabel.textColor = [UIColor blackColor];
+//				cell.textLabel.textAlignment = NSTextAlignmentLeft;
+//				cell.textLabel.text = @"Create club";
+//				
+//				UIImageView *plusImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"plusButton_nonActive"]];
+//				plusImageView.frame = CGRectOffset(plusImageView.frame, 240.0, 5.0);
+//				[cell.contentView addSubview:plusImageView];
+//				
+//			} else {
+//				cell.userClubVO = _ownClub;
+//				cell.delegate = self;
+//			}
+//		
+//		} else {
+//			cell.userClubVO = (HONUserClubVO *)[_joinedClubs objectAtIndex:indexPath.row - 1]; //>-1
+//			cell.delegate = self;
+//		}
+//		
+//	} else if (indexPath.section == 1) {
+//		cell.userClubVO = [_invitedClubs objectAtIndex:indexPath.row];
+//		cell.delegate = self;
+//	}
+//	
+//	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+//	
+//	return (cell);
+//}
+//
+//
+//#pragma mark - TableView Delegates
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+//	return (84.0);
+//	
+//	if (indexPath.section == 0 || indexPath.section == 1)
+//		return (kOrthodoxTableCellHeight);
+//	
+//	else
+//		return (45.0);
+//}
+//
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+//	return (0.0);//(section == 0 || section == 1) ? kOrthodoxTableHeaderHeight : 0.0);
+//}
+//
+//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//	return (indexPath);
+//}
+//
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+//	
+//	if (indexPath.section == 0) {
+//		if (indexPath.row == 0) {
+//			if (_ownClub == nil) {
+//				[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club"];
+//				
+//				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:YES completion:nil];
+//				
+//			} else {
+////				[self _retrieveChallenges];
+//			}
+//		
+//		} else {
+////			[self _retrieveChallenges];
+//		}
+//		
+//	} else if (indexPath.section == 1) {
+//		HONUserClubVO *vo = (HONUserClubVO *)[_invitedClubs objectAtIndex:indexPath.row];
+//		
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Accept Invite to the %@ club?", vo.clubName]
+//															message:@""
+//														   delegate:self
+//												  cancelButtonTitle:@"No"
+//												  otherButtonTitles:@"Yes", nil];
+//		[alertView setTag:0];
+//		[alertView show];
+//		
+//	} else if (indexPath.section == 2) {
+//		if (indexPath.row == 0)
+//			[self _goInviteFriends];
+//			
+//		else if (indexPath.row == 1)
+//			[self _goFindSchoolClub];
+//		
+////		else if (indexPath.row == 2)
+////			[self _goShare];//[self _goFindNearbyClubs];
+//	}
+//}
 
 
 #pragma mark - ScrollView Delegates
@@ -424,34 +601,6 @@
 	}
 	
 	return (HONClubTypeUnknown);
-}
-
-
-
-#pragma mark - FPO Methods
-- (void)_fpoPopulate {
-	NSDictionary *fpoDict = @{@"owned"		: @[[[HONClubAssistant sharedInstance] fpoOwnedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary]],
-							  @"member"		: @[[[HONClubAssistant sharedInstance] fpoInviteClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary]],
-							  @"pending"	: @[[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary]]};
-	
-	for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-		NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
-		
-		for (NSDictionary *dict in [fpoDict objectForKey:key])
-			[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-		
-		[_clubIDs setValue:clubIDs forKey:key];
-		[_dictClubs addObjectsFromArray:[fpoDict objectForKey:key]];
-	}
 }
 
 @end

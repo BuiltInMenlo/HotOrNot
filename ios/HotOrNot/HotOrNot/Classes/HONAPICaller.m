@@ -41,8 +41,8 @@ NSString * const kAPIVerifyShoutout			= @"challenges/shoutout";
 
 NSString * const kAPIClubsBlock			= @"clubs/block";
 NSString * const kAPIClubsCreate		= @"clubs/create";
-NSString * const kAPIClubsDelete		= @"clubs/delete"; // <--PENDING //
-NSString * const kAPIClubsEdit			= @"clubs/edit";   // <--PENDING //
+NSString * const kAPIClubsDelete		= @"clubs/delete";
+NSString * const kAPIClubsEdit			= @"clubs/edit";
 NSString * const kAPIClubsGet			= @"clubs/get";
 NSString * const kAPIClubsFeatured		= @"clubs/featured";
 NSString * const kAPIClubsInvite		= @"clubs/invite";

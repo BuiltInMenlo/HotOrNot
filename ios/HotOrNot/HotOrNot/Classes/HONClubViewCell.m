@@ -1,5 +1,5 @@
 //
-//  HONClubCollectionViewCell.m
+//  HONClubViewCell.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 06/09/2014 @ 20:10 .
@@ -10,16 +10,16 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONClubCollectionViewCell.h"
+#import "HONClubViewCell.h"
 
 
-@interface HONClubCollectionViewCell ()
+@interface HONClubViewCell ()
 @property (nonatomic, strong) UIImageView *coverImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIButton *ctaButton;
 @end
 
-@implementation HONClubCollectionViewCell
+@implementation HONClubViewCell
 @synthesize clubType = _clubType;
 @synthesize clubVO = _clubVO;
 @synthesize delegate = _delegate;

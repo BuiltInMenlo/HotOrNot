@@ -498,31 +498,54 @@
 	
 	
 	HONProtoChallengeVO *protoChallengeVO = [HONProtoChallengeVO protoChallengeWithDictionary:@{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																								@"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
-																								@"challenge_id"	: [@"" stringFromInt:0],
-																								@"club_id"		: [@"" stringFromCGFloat:kDevClubID],
-																								@"subject"		: subject,
-																								@"subjects"		: @[subject],
-																								@"recipients"	: @""}];
+																								@"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeEmoticonsCloudFront], _filename],
+																								@"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
+																								@"club_id"		: [@"" stringFromInt:_userClubVO.clubID],
+																								@"subject"		: _subjectName,
+																								@"recipients"	: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @""}];
+	
+	
 	NSLog(@"protoChallengeVO:[%@]", protoChallengeVO.dictionary);
+	//[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithProtoChallenge:protoChallengeVO] animated:YES];
+	
+	/*
+	_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+						 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename],
+						 @"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONCameraSubmitTypeReplyMessage && _messageVO != nil) ? _messageVO.messageID : (_selfieSubmitType == HONCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
+						 @"club_id"			: [@"" stringFromInt:_userClubVO.clubID],
+						 @"subject"			: _subjectName,
+						 @"recipients"		: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @"",
+						 @"api_endpt"		: (_selfieSubmitType == HONCameraSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
+	
+	
+	NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);
+	if (_selfieSubmitType == HONCameraSubmitTypeCreateMessage)
+		[self _submitMessage];
+	
+	else
+		[self _submitChallenge];
+	 */
+	
 	
 	NSError *error;
-	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:@[subject] options:0 error:&error]
-												 encoding:NSUTF8StringEncoding];
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[@"#happy", @"#joyful", @"#excited"] options:0 error:&error];
+	NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	
+	NSLog(@"SUBJECTS:[%@]", jsonString);
+	
 	
 	_challengeParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 						 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
-						 @"club_id"			: [@"" stringFromCGFloat:kDevClubID],
-						 @"subject"			: subject,
+						 @"challenge_id"	: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyChallenge && _challengeVO != nil) ? _challengeVO.challengeID : 0],
+						 @"club_id"			: [@"" stringFromInt:_userClubVO.clubID],
+						 @"subject"			: @"#happy",
 						 @"subjects"		: jsonString,
-						 @"challenge_id"	: [@"" stringFromInt:0],
-						 @"recipients"		: @"",
-						 @"api_endpt"		: kAPICreateChallenge};
+						 @"recipients"		: ([recipients length] > 0) ? [recipients substringToIndex:[recipients length] - 1] : @"",
+						 @"api_endpt"		: (_selfieSubmitType == HONSelfieCameraSubmitTypeCreateChallenge) ? kAPICreateChallenge : kAPIJoinChallenge};
+	
 	
 	NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);
 	[self _submitChallenge];
-	
-	//[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithProtoChallenge:protoChallengeVO] animated:YES];
 }
 
 

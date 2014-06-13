@@ -198,7 +198,6 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Selected Emotion"
 										withEmotion:emotionVO];
 	
-	_subjectName = emotionVO.emotionName;
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
 
