@@ -270,8 +270,7 @@
 						  otherButtonTitles:nil] show];
 		
 	} else
-		[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:_userClubVO] animated:YES];
-//	[self _updateClub];
+		[self _updateClub];
 }
 
 

@@ -1,16 +1,16 @@
 //
-//  HONClubsViewLayout.m
+//  HONClubsViewFlowLayout.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 06/09/2014 @ 19:48 .
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONClubsViewLayout.h"
+#import "HONClubsViewFlowLayout.h"
 
 const CGSize kClubCollectionViewSize = {150.0, 198.0};
 
-@implementation HONClubsViewLayout
+@implementation HONClubsViewFlowLayout
 
 - (id)init {
 	if ((self = [super init])) {
