@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../../VolleyBackend/bin/gearman/admin/config.php.dist</string>
+	<string>../../VolleyBackend/classes/BIM/App/Clubs.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -62,9 +62,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>60</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>16</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -98,6 +98,50 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>364</integer>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/App/Clubs.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>5</integer>
+				<key>line</key>
+				<integer>23</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>../../VolleyBackend/classes/BIM/App/UserPhone.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>23</integer>
+				<key>line</key>
+				<integer>4</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>51</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>6</integer>
+				<key>line</key>
+				<integer>4</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>23</integer>
+				<key>line</key>
+				<integer>4</integer>
+			</dict>
 		</dict>
 		<key>../../VolleyBackend/classes/BIM/App/Users.php</key>
 		<dict>
@@ -143,12 +187,26 @@
 				<integer>249</integer>
 			</dict>
 		</dict>
+		<key>../../VolleyBackend/classes/BIM/Controller/UserPhone.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>24</integer>
+				<key>line</key>
+				<integer>68</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>44</integer>
+		</dict>
 		<key>../../VolleyBackend/classes/BIM/Controller/Users.php</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>43</integer>
+				<integer>39</integer>
 				<key>line</key>
 				<integer>201</integer>
 			</dict>
@@ -168,7 +226,7 @@
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>43</integer>
+				<integer>39</integer>
 				<key>line</key>
 				<integer>201</integer>
 			</dict>
@@ -285,6 +343,9 @@
 		<string>../../VolleyBackend/classes/BIM/API.php</string>
 		<string>../../VolleyBackend/classes/BIM/App/Users.php</string>
 		<string>../../VolleyBackend/bin/gearman/admin/config.php.dist</string>
+		<string>../../VolleyBackend/classes/BIM/Controller/UserPhone.php</string>
+		<string>../../VolleyBackend/classes/BIM/App/UserPhone.php</string>
+		<string>../../VolleyBackend/classes/BIM/App/Clubs.php</string>
 		<string>../../VolleyBackend/classes/BIM/App/Challenges.php</string>
 		<string>../../VolleyBackend/classes/BIM/DAO/Mysql/User.php</string>
 		<string>../../VolleyBackend/classes/BIM/Model/User.php</string>
@@ -293,6 +354,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{10, 99}, {1116, 743}}</string>
+	<string>{{-1468, 95}, {1116, 743}}</string>
 </dict>
 </plist>
