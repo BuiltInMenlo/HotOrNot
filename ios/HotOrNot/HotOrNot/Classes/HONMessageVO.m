@@ -27,9 +27,9 @@
 	vo.hashtagName = [@"#" stringByAppendingString:vo.subjectName];
 	vo.hasViewed = ([[[dictionary objectForKey:@"viewed"] objectForKey:[[HONAppDelegate infoForUser] objectForKey:@"id"]] intValue]);
 	
-	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
-	vo.startedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"started"]];
-	vo.updatedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
+	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.startedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"started"]];
+	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	
 	
 	switch (vo.statusID) {

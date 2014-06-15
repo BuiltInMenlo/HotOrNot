@@ -41,7 +41,7 @@
 	timeLabel.textColor = [UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [[HONDateTimeStipulator sharedInstance] intervalSinceDate:_voterVO.addedDate];
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_voterVO.addedDate];
 	[self addSubview:timeLabel];
 	
 	UILabel *voterLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 23.0, 220.0, 16.0)];

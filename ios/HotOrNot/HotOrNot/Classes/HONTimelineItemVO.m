@@ -10,7 +10,7 @@
 
 @implementation HONTimelineItemVO
 @synthesize dictionary;
-@synthesize timelineItemType, emotionVO, opponentVO, userClubVO, timestamp;
+@synthesize timelineItemType, clubPhotoVO, userClubVO, timestamp;
 
 + (HONTimelineItemVO *)timelineItemWithDictionary:(NSDictionary *)dictionary {
 	//NSLog(@"DICTIONARY:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
@@ -37,23 +37,25 @@
 	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SUGGESTED"])
 		vo.timelineItemType = HONTimelineItemTypeSuggested;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"USER_GENERATED"])
-		vo.timelineItemType = HONTimelineItemTypeUserCreated;
+	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"USER_GENERATED"]) {
+		vo.timelineItemType = ([[dictionary objectForKey:@"submissions"] count] > 0) ? HONTimelineItemTypeUserCreated : HONTimelineItemTypeUserCreatedEmpty;
+	}
 	
 	else
 		vo.timelineItemType = HONTimelineItemTypeUnknown;
 	
-	vo.timestamp = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.timestamp = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	
 	switch (vo.timelineItemType) {
 		case HONTimelineItemTypeUserCreated:
-			vo.opponentVO = ([[dictionary objectForKey:@"submissions"] count] > 0) ? [HONOpponentVO opponentWithDictionary:[[dictionary objectForKey:@"submissions"] firstObject]] : nil;
+			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
+			vo.clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:[[dictionary objectForKey:@"submissions"] lastObject]];
+//			vo.opponentVO = [HONOpponentVO opponentWithDictionary:[[dictionary objectForKey:@"submissions"] lastObject]];
+			break;
 			
-//			if (vo.opponentVO == nil)
-//				vo.opponentVO = [[HONChallengeAssistant sharedInstance] fpoOpponent];
-			
-			vo.emotionVO = (vo.opponentVO != nil) ? [[HONChallengeAssistant sharedInstance] emotionForOpponent:vo.opponentVO] : nil;
+		case HONTimelineItemTypeUserCreatedEmpty:
+			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
 			break;
 			
 		case HONTimelineItemTypeNearby:
@@ -73,7 +75,7 @@
 
 - (void)dealloc {
 	self.dictionary = nil;
-	self.opponentVO = nil;
+	self.clubPhotoVO = nil;
 	self.userClubVO = nil;
 	self.timestamp = nil;
 }

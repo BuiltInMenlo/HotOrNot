@@ -34,13 +34,10 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 
-@property (nonatomic, strong) NSMutableArray *dictItems;
+@property (nonatomic, strong) NSMutableDictionary *clubIDs;
+@property (nonatomic, strong) NSMutableArray *dictClubs;
+@property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *timelineItems;
-
-@property (nonatomic, strong) NSMutableArray *ownedClubs;
-@property (nonatomic, strong) NSMutableArray *joinedClubs;
-@property (nonatomic, strong) NSMutableArray *invitedClubs;
-@property (nonatomic, strong) NSMutableArray *suggestedClubs;
 @end
 
 
@@ -80,44 +77,25 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-	_dictItems = [NSMutableArray array];
+	_dictClubs = [NSMutableArray array];
+	_allClubs = [NSMutableArray array];
 	_timelineItems = [NSMutableArray array];
 	
-	_ownedClubs = [NSMutableArray array];
-	_joinedClubs = [NSMutableArray array];
-	_invitedClubs = [NSMutableArray array];
-	_suggestedClubs = [NSMutableArray array];
+	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
+															[NSMutableArray array],
+															[NSMutableArray array],
+															[NSMutableArray array]]
+												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		
-		if ([((NSDictionary *)result) objectForKey:@"owned"] != nil) {
-			for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"owned"]) {
-				HONUserClubVO *ownedClubVO = [HONUserClubVO clubWithDictionary:dict];
-				[_ownedClubs addObject:ownedClubVO];
-				
-				if (ownedClubVO.totalSubmissions > 0)
-					[_dictItems addObject:dict];
-			}
-		}
-		
-		if ([((NSDictionary *)result) objectForKey:@"member"] != nil) {
-			for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"member"]) {
-				HONUserClubVO *joinedClubVO = [HONUserClubVO clubWithDictionary:dict];
-				[_joinedClubs addObject:joinedClubVO];
-				
-				if (joinedClubVO.totalSubmissions > 0)
-					[_dictItems addObject:dict];
-			}
-		}
-		
-		if ([((NSDictionary *)result) objectForKey:@"pending"] != nil) {
-			for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"pending"]) {
-				HONUserClubVO *invitedClubVO = [HONUserClubVO clubWithDictionary:dict];
-				[_invitedClubs addObject:invitedClubVO];
-				
-				if (invitedClubVO.totalSubmissions > 0)
-					[_dictItems addObject:dict];
-			}
+		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
+			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
+			
+			for (NSDictionary *dict in [(NSDictionary *)result objectForKey:key])
+				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+			
+			[_clubIDs setValue:clubIDs forKey:key];
+			[_dictClubs addObjectsFromArray:[(NSDictionary *)result objectForKey:key]];
 		}
 		
 		if (_progressHUD != nil) {
@@ -125,7 +103,6 @@
 			_progressHUD = nil;
 		}
 		
-		_suggestedClubs = [NSMutableArray array];
 		[self _suggestClubs];
 		[self _sortItems];
 	}];
@@ -201,14 +178,15 @@
 	
 	
 	
+	NSMutableArray *clubIDs = [_clubIDs objectForKey:@"other"];
+	
+	
 	// family
 	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
 	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"]) {
 		NSString *familyName = [deviceName objectAtIndex:1];
 		familyName = [familyName substringToIndex:[familyName length] - 2];
-		
 		clubName = [NSString stringWithFormat:@"%@ Family", [[[familyName substringToIndex:1] uppercaseString] stringByAppendingString:[familyName substringFromIndex:1]]];
-		NSLog(@"FAMILY CLUB:[%@]", clubName);
 	}
 	
 	else {
@@ -235,28 +213,34 @@
 	}
 	
 	if ([clubName length] > 0) {
-		NSMutableDictionary *familyClubDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
-		[familyClubDict setValue:clubName forKey:@"name"];
-		[familyClubDict setValue:@"SUGGESTED" forKey:@"club_type"];
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		[dict setValue:@"-1" forKey:@"id"];
+		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
-		NSLog(@"FAMILY CLUB:[%@]", familyClubDict);
+		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+		[_clubIDs setValue:clubIDs forKey:@"other"];
 		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[familyClubDict copy]];
-		[_suggestedClubs addObject:vo];
-		[_dictItems addObject:vo.dictionary];
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+		[_allClubs addObject:vo];
+		[_dictClubs addObject:vo.dictionary];
 	}
 	
 	
 	// area code
 	if ([[HONAppDelegate phoneNumber] length] > 0) {
-		NSMutableDictionary *areaCodeDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
-		[areaCodeDict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
-		[areaCodeDict setValue:@"NEARBY" forKey:@"club_type"];
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		[dict setValue:@"-2" forKey:@"id"];
+		[dict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
+		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
+		clubIDs = [_clubIDs objectForKey:@"other"];
+		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+		[_clubIDs setValue:clubIDs forKey:@"other"];
 		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[areaCodeDict copy]];
-		[_suggestedClubs addObject:vo];
-		[_dictItems addObject:vo.dictionary];
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+		[_allClubs addObject:vo];
+		[_dictClubs addObject:vo.dictionary];
 	}
 	
 	
@@ -302,20 +286,25 @@
 	}
 	
 	if ([clubName length] > 0) {
-		NSMutableDictionary *familyClubDict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
-		[familyClubDict setValue:clubName forKey:@"name"];
-		[familyClubDict setValue:@"SUGGESTED" forKey:@"club_type"];
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		[dict setValue:@"-3" forKey:@"id"];
+		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[familyClubDict copy]];
-		[_suggestedClubs addObject:vo];
-		[_dictItems addObject:vo.dictionary];
+		clubIDs = [_clubIDs objectForKey:@"other"];
+		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+		[_clubIDs setValue:clubIDs forKey:@"other"];
+		
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+		[_allClubs addObject:vo];
+		[_dictClubs addObject:vo.dictionary];
 	}
 }
 
 
 #pragma mark - Data Tally
 - (void)_sortItems {
-	for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictItems sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
+	for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 		[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
 	
 	[_tableView reloadData];
@@ -456,86 +445,38 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
 	[self _createClubWithProtoVO:userClubVO];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:selectedCTARow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Selected CTA Row"
-									   withUserClub:userClubVO];
-	
-	
-}
-
-
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:selectedClubRow:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Selected Club Row"
-									   withUserClub:userClubVO];
-}
-
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:joinClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Join Club"
 									   withUserClub:userClubVO];
 	
-	
 	[self _joinClub:userClubVO];
 }
 
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:likeClubChallenge:(%d - %@)", challengeVO.challengeID, challengeVO.subjectNames);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Liked"
-									   withChallenge:challengeVO];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSObject *result){
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]];
-	}];
-}
-
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell moreClubChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:moreClubChallenge:(%d - %@)", challengeVO.clubID, challengeVO.subjectNames);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - More"
-									   withChallenge:challengeVO];
-	
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], challengeVO.subjectNames, challengeVO.creatorVO.username];
-	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], challengeVO.subjectNames, challengeVO.creatorVO.username, [HONAppDelegate shareURL]];
-	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], challengeVO.subjectNames, challengeVO.creatorVO.username, [HONAppDelegate shareURL]];
-	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:0], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
-	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:0] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
-																							@"image"			: [[UIImage alloc] init],
-																							@"url"				: [challengeVO.creatorVO.imagePrefix stringByAppendingString:kSnapLargeSuffix],
-																							@"mp_event"			: @"Timeline Details",
-																							@"view_controller"	: self}];
-
-}
-
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell replyClubChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:replyClubChallenge:(%d - %@)", challengeVO.clubID, challengeVO.subjectNames);
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyToClubPhoto:(HONUserClubVO *)userClubVO {
+	NSLog(@"[*:*] clubNewsFeedViewCell:replyToClubPhoto:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Reply"
-									   withChallenge:challengeVO];
+									   withUserClub:userClubVO];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-
-- (void)clubNewsFeedItemViewCell:(HONClubNewsFeedViewCell *)viewCell shareClub:(HONUserClubVO *)userClubVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:shareClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONUserClubVO *)userClubVO {
+	NSLog(@"[*:*] clubNewsFeedViewCell:likeClubChallenge:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Share"
-									  withUserClub:userClubVO];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Liked"
+									   withUserClub:userClubVO];
 	
-	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+	[[HONAPICaller sharedInstance] verifyUserWithUserID:((HONClubPhotoVO *)[userClubVO.submissions lastObject]).userID asLegit:YES completion:^(NSObject *result){
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]];
+	}];
 }
 
 
@@ -547,7 +488,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_timelineItems count] : 1);
+	return ((section == 0) ? 1 : [_timelineItems count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -564,28 +505,25 @@
 	if (cell == nil)
 		cell = [[HONClubNewsFeedViewCell alloc] init];
 	
-	cell.cellType = (indexPath.section == 0) ? HONClubNewsFeedCellTypeClub : HONClubNewsFeedCellTypeCreateClub;
+	cell.cellType = (indexPath.section == 0) ? HONClubNewsFeedCellTypeCreateClub : HONClubNewsFeedCellTypeClub;
 	
-	if (indexPath.section == 0) {
+	if (indexPath.section == 1) {
 		cell.timelineItemVO = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
 	
 	} else {
-		if (indexPath.row == 0) {
-			UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			createClubButton.frame = CGRectMake(0.0, 9.0, 320.0, 46.0);
-			[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_nonActive"] forState:UIControlStateNormal];
-			[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_Active"] forState:UIControlStateHighlighted];
-			[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
-			[cell.contentView addSubview:createClubButton];
+		UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		createClubButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_nonActive"] forState:UIControlStateNormal];
+		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_Active"] forState:UIControlStateHighlighted];
+		[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
+		[cell.contentView addSubview:createClubButton];
 		
-		} else {
-			UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			createClubButton.frame = CGRectMake(0.0, 9.0, 320.0, 46.0);
-			[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_nonActive"] forState:UIControlStateNormal];
-			[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_Active"] forState:UIControlStateHighlighted];
-			[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
-			[cell.contentView addSubview:createClubButton];
-		}
+		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 22.0, 180.0, 18.0)];
+		titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+		titleLabel.textColor = [UIColor blackColor];
+		titleLabel.backgroundColor = [UIColor clearColor];
+		titleLabel.text = @"Create club";
+		[cell.contentView addSubview:titleLabel];
 	}
 	
 	cell.delegate = self;
@@ -597,11 +535,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 1)
+	if (indexPath.section == 0)
 		return (kOrthodoxTableCellHeight);
 	
 	HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
-	return ((vo.timelineItemType == HONTimelineItemTypeUserCreated) ? 330.0 : kOrthodoxTableCellHeight);
+	return ((vo.timelineItemType == HONTimelineItemTypeUserCreated) ? 293.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

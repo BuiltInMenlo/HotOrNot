@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "tabClubsButton_Active.png"
+      "filename" : "tabClubsButton_Tapped.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "tabClubsButton_Active@2x.png"
+      "filename" : "tabClubsButton_Tapped@2x.png"
     }
   ],
   "info" : {

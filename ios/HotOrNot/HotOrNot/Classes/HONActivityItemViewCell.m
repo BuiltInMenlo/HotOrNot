@@ -35,11 +35,6 @@
 - (void)setActivityItemVO:(HONActivityItemVO *)activityItemVO {
 	_activityItemVO = activityItemVO;
 	
-	if (_activityItemVO.userID == 131795) {
-		_activityItemVO.username = @"selfielover";
-		_activityItemVO.avatarPrefix = @"https://d3j8du2hyvd35p.cloudfront.net/c6d8484284ea433cb38230b885a88a40_b8d329e3e587426f9dacb5dffdb91e93-1397110043";
-	}
-	
 	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 25.0, 25.0)];
 	[self.contentView addSubview:imageHolderView];
 	
@@ -84,7 +79,7 @@
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	nameLabel.textColor = [UIColor blackColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"%@ %@", _activityItemVO.username, _activityItemVO.message];
+	nameLabel.text = _activityItemVO.username;
 	[self.contentView addSubview:nameLabel];
 	
 	_indicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityDot"]];

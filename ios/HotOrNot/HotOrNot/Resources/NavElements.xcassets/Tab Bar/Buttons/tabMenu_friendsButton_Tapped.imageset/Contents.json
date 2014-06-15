@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "tabFriendsButton_Tapped.png"
+      "filename" : "tabFriendsButton_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "tabFriendsButton_Tapped@2x.png"
+      "filename" : "tabFriendsButton_Active@2x.png"
     }
   ],
   "info" : {

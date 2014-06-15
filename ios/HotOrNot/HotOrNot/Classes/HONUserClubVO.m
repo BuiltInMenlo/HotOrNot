@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "HONUserClubVO.h"
 #import "HONClubPhotoVO.h"
 
@@ -29,12 +31,12 @@
 	vo.clubName = [dictionary objectForKey:@"name"];
 	vo.blurb = [dictionary objectForKey:@"description"];
 	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img"]] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"];
-	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
-	vo.updatedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
+	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 		
 	vo.totalPendingMembers = [[dictionary objectForKey:@"pending"] count];
-	vo.totalBannedMembers = [[dictionary objectForKey:@"blocked"] count];
 	vo.totalActiveMembers = [[dictionary objectForKey:@"members"] count];
+	vo.totalBannedMembers = [[dictionary objectForKey:@"blocked"] count];
 	
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
@@ -43,6 +45,7 @@
 	NSMutableArray *submissions = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
 		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
+	
 	vo.submissions = [submissions copy];
 	
 	return (vo);

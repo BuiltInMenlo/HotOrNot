@@ -541,9 +541,9 @@
 				
 			else {
 				UIButton *contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-				contactsButton.frame = CGRectMake(0.0, 9.0, 320.0, 46.0);
-				[contactsButton setBackgroundImage:[UIImage imageNamed:@"accessContactsButton_nonActive"] forState:UIControlStateNormal];
-				[contactsButton setBackgroundImage:[UIImage imageNamed:@"accessContactsButton_Active"] forState:UIControlStateHighlighted];
+				contactsButton.frame = CGRectMake(8.0, 0.0, 64.0, 64.0);
+				[contactsButton setBackgroundImage:[UIImage imageNamed:@"rowPlusButton_nonActive"] forState:UIControlStateNormal];
+				[contactsButton setBackgroundImage:[UIImage imageNamed:@"rowPlusButton_Active"] forState:UIControlStateHighlighted];
 				[contactsButton addTarget:self action:(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @selector(_promptForAddressBookPermission) : @selector(_promptForAddressBookAccess) forControlEvents:UIControlEventTouchUpInside];
 				[cell.contentView addSubview:contactsButton];
 			}

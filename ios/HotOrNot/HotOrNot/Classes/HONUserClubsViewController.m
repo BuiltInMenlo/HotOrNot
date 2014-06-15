@@ -84,10 +84,7 @@
 	[_collectionView reloadData];
 	
 	_dictClubs = [NSMutableArray array];
-	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
-															[NSMutableArray array],
-															[NSMutableArray array],
-															[NSMutableArray array]]
+	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 //	[self _fpoPopulate];
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
@@ -110,8 +107,7 @@
 		
 		
 		_allClubs = [NSMutableArray array];
-		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated"
-																																							   ascending:NO]]]])
+		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		[_collectionView reloadData];
@@ -358,14 +354,23 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONUserClubVO *vo =  ((HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
-	
-	
 	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-	if (cell.clubType != HONClubTypeOther) {
+	if (cell.clubType != HONClubTypeUnknown) {
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
+		
+		NSLog(@"clubType:[%d]", cell.clubType);
+		
+		
 		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
 		feedViewController.clubVO = vo;
 		[self.navigationController pushViewController:feedViewController animated:YES];
+	
+	
+	} else {
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 

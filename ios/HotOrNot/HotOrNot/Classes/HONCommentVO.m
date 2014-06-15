@@ -27,7 +27,7 @@
 	vo.userScore = [[dictionary objectForKey:@"score"] intValue];
 	vo.content = [dictionary objectForKey:@"text"];
 	
-	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }

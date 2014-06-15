@@ -21,7 +21,7 @@ const CGSize kTabSize = {80.0, 50.0};
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, retain) UIButton *contactsButton;
 @property (nonatomic, retain) UIButton *clubsButton;
-@property (nonatomic, retain) UIButton *verifyButton;
+@property (nonatomic, retain) UIButton *newsButton;
 @property (nonatomic, retain) NSDictionary *badgeTotals;
 @end
 
@@ -57,26 +57,26 @@ const CGSize kTabSize = {80.0, 50.0};
 			totalKey = @"friendsTab";
 			
 			[_contactsButton setSelected:YES];
+			[_newsButton setSelected:NO];
 			[_clubsButton setSelected:NO];
-			[_verifyButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeNewsFeed:
+			notificationName = @"NEWS_TAB";
+			totalKey = @"newsTab";
+			
+			[_contactsButton setSelected:NO];
+			[_newsButton setSelected:YES];
+			[_clubsButton setSelected:NO];
+			break;
+			
+		case HONTabBarButtonTypeClubs:
 			notificationName = @"CLUBS_TAB";
 			totalKey = @"clubsTab";
 			
 			[_contactsButton setSelected:NO];
+			[_newsButton setSelected:NO];
 			[_clubsButton setSelected:YES];
-			[_verifyButton setSelected:NO];
-			break;
-			
-		case HONTabBarButtonTypeVerify:
-			notificationName = @"VERIFY_TAB";
-			totalKey = @"verifyTab";
-			
-			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:NO];
-			[_verifyButton setSelected:YES];
 			break;
 			
 		default:
@@ -128,25 +128,25 @@ const CGSize kTabSize = {80.0, 50.0};
 	[_contactsButton setSelected:YES];
 	[_tabHolderView addSubview:_contactsButton];
 	
+	_newsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_newsButton.frame = CGRectMake(107.0, 0.0, 107.0, kTabSize.height);
+	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateNormal];
+	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Active"] forState:UIControlStateHighlighted];
+	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateSelected];
+	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
+	[_newsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_newsButton_nonActive"] forState:UIControlStateDisabled];
+	[_newsButton setTag:HONTabBarButtonTypeNewsFeed];
+	[_tabHolderView addSubview:_newsButton];
+	
 	_clubsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_clubsButton.frame = CGRectMake(107.0, 0.0, 106.0, kTabSize.height);
+	_clubsButton.frame = CGRectMake(213.0, 0.0, 106.0, kTabSize.height);
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateNormal];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Active"] forState:UIControlStateHighlighted];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateSelected];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
 	[_clubsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_clubsButton_nonActive"] forState:UIControlStateDisabled];
-	[_clubsButton setTag:HONTabBarButtonTypeNewsFeed];
+	[_clubsButton setTag:HONTabBarButtonTypeClubs];
 	[_tabHolderView addSubview:_clubsButton];
-	
-	_verifyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_verifyButton.frame = CGRectMake(213.0, 0.0, 107.0, kTabSize.height);
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateNormal];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Active"] forState:UIControlStateHighlighted];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Tapped"] forState:UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_Tapped"] forState:UIControlStateHighlighted|UIControlStateSelected];
-	[_verifyButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_verifyButton_nonActive"] forState:UIControlStateDisabled];
-	[_verifyButton setTag:HONTabBarButtonTypeVerify];
-	[_tabHolderView addSubview:_verifyButton];
 	
 	
 	[self _toggleTabButtonsEnabled:YES];
@@ -173,8 +173,8 @@ const CGSize kTabSize = {80.0, 50.0};
 			totalKey = @"friendsTab";
 			
 			[_contactsButton setSelected:YES];
+			[_newsButton setSelected:NO];
 			[_clubsButton setSelected:NO];
-			[_verifyButton setSelected:NO];
 			break;
 			
 		case HONTabBarButtonTypeNewsFeed:
@@ -183,18 +183,18 @@ const CGSize kTabSize = {80.0, 50.0};
 			totalKey = @"newsTab";
 			
 			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:YES];
-			[_verifyButton setSelected:NO];
+			[_newsButton setSelected:YES];
+			[_clubsButton setSelected:NO];
 			break;
 			
-		case HONTabBarButtonTypeVerify:
+		case HONTabBarButtonTypeClubs:
 			analyticsEventName = @"Clubs";
 			notificationName = @"CLUBS_TAB";
 			totalKey = @"clubsTab";
 			
 			[_contactsButton setSelected:NO];
-			[_clubsButton setSelected:NO];
-			[_verifyButton setSelected:YES];
+			[_newsButton setSelected:NO];
+			[_clubsButton setSelected:YES];
 			break;
 			
 		default:

@@ -11,7 +11,7 @@
 @implementation HONOpponentVO
 
 @synthesize dictionary;
-@synthesize userID, subjectName, username, avatarPrefix, imagePrefix, joinedDate, score, birthday;
+@synthesize userID, subjectName, username, avatarPrefix, imagePrefix, joinedDate, score;
 
 + (HONOpponentVO *)opponentWithDictionary:(NSDictionary *)dictionary {
 	HONOpponentVO *vo = [[HONOpponentVO alloc] init];
@@ -26,8 +26,7 @@
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	
-	vo.joinedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]];
-	vo.birthday = ([dictionary objectForKey:@"age"] != [NSNull null]) ? [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"age"]] : [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:@"1970-01-01 00:00:00"];
+	vo.joinedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"joined"]];
 		
 	return (vo);
 }

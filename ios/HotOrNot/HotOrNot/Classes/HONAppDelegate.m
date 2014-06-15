@@ -53,7 +53,7 @@
 #import "HONSuspendedViewController.h"
 #import "HONImagePickerViewController.h"
 
-const CGFloat kDevClubID = 99.0f;
+const CGFloat kDevClubID = 12.0f;
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
@@ -406,10 +406,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  success:successBlock
 								  failure:failureBlock];
 	}
-}
-
-+ (int)ageForDate:(NSDate *)date {
-	return ([date timeIntervalSinceNow] / -31536000);
 }
 
 
@@ -876,12 +872,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Entering Background"
 									 withProperties:@{@"total"		: [@"" stringFromInt:[HONAppDelegate incTotalForCounter:@"background"]],
-													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeStipulator sharedInstance] elapsedTimeSinceDate:[[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
+													  @"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeStipulator sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
+	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	
@@ -927,14 +923,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeStipulator sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
+	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	if (_isFromBackground) {
 		if ([HONAppDelegate hasNetwork]) {
 			
 			[[HONAnalyticsParams sharedInstance] trackEvent:@"App Leaving Background"
-											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeStipulator sharedInstance] elapsedTimeSinceDate:[[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
+											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
@@ -982,12 +978,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_TERMINATING" object:nil];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Terminating"
-									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeStipulator sharedInstance] elapsedTimeSinceDate:[[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
+									 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00"}];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_date"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeStipulator sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
+	[[NSUserDefaults standardUserDefaults] setObject:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[NSDate new]] forKey:@"active_date"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 }

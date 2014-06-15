@@ -52,7 +52,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 - (void)updateActivityBadge {
 	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [(NSArray *)result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
-		int badgeTotal = MAX(0, [(NSArray *)result count] - prevTotal);
+		int badgeTotal = ABS(MAX(0, [(NSArray *)result count] - prevTotal));
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
 		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : @"0000-00-00 00:00:00" forKey:@"activity_updated"];

@@ -8,8 +8,8 @@
 
 
 #import "HONChallengeVO.h"
-#import "HONEmotionVO.h"
 #import "HONOpponentVO.h"
+#import "HONClubPhotoVO.h"
 #import "HONUserClubVO.h"
 
 typedef NS_ENUM(NSInteger, HONTimelineItemType) {
@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, HONTimelineItemType) {
 	HONTimelineItemTypeSponsored,
 	HONTimelineItemTypeSuggested,
 	HONTimelineItemTypeUserCreated,
+	HONTimelineItemTypeUserCreatedEmpty,
 	HONTimelineItemTypeUnknown,
 	HONTimelineItemType__TOTAL
 };
@@ -30,9 +31,8 @@ typedef NS_ENUM(NSInteger, HONTimelineItemType) {
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic, assign) HONTimelineItemType timelineItemType;
-//@property (nonatomic, retain) HONChallengeVO *challengeVO;
-@property (nonatomic, retain) HONEmotionVO *emotionVO;
-@property (nonatomic, retain) HONOpponentVO *opponentVO;
+//@property (nonatomic, retain) HONOpponentVO *opponentVO;
+@property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;
 @property (nonatomic, retain) HONUserClubVO *userClubVO;
 @property (nonatomic, retain) NSDate *timestamp;
 

@@ -36,7 +36,7 @@
 	SEL selector;
 	
 	if (_clubType == HONClubTypeOwner) {
-		buttonAsset = @"";
+		buttonAsset = @"memberClubButton";
 		selector = @selector(_goEditClub);
 		
 	} else if (_clubType == HONClubTypeMember) {

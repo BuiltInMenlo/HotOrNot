@@ -101,6 +101,8 @@
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
+	NSLog(@"WTF!!!");
+	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.image = image;
 		
@@ -123,30 +125,27 @@
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];
 
-	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 	
 	
-//	UIImageView *arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"]];
-//	arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 4.0, 20.0);
-//	[self.contentView addSubview:arrowImageView];
-//
-//	if (trivialUserVO.isVerified) {
-//		arrowImageView.frame = CGRectOffset(_arrowImageView.frame, -6.0, 0.0);
-//		
-//		UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(18.0, 26.0, 25.0, 15.0)];
-//		scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
-//		scoreLabel.textColor = (trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-//		scoreLabel.backgroundColor = [UIColor clearColor];
-//		scoreLabel.text = [@"" stringFromInt:-trivialUserVO.abuseCount];
-//		[self.contentView addSubview:scoreLabel];
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"]];
+	arrowImageView.frame = CGRectOffset(arrowImageView.frame, 4.0, 20.0);
+	[self.contentView addSubview:arrowImageView];
 	
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(18.0, 26.0, 25.0, 15.0)];
+	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+	scoreLabel.textColor = (trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+	scoreLabel.backgroundColor = [UIColor clearColor];
+	scoreLabel.text = [@"" stringFromInt:-trivialUserVO.abuseCount];
+	[self.contentView addSubview:scoreLabel];
+	
+	if (trivialUserVO.isVerified) {
 		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
 		verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
 		verifiedImageView.hidden = !trivialUserVO.isVerified;
 		[self.contentView addSubview:verifiedImageView];
 		
-		_nameLabel.text = _trivialUserVO.username;
-//	}
+	}
 }
 
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
@@ -155,7 +154,7 @@
 	_avatarImageView.image = (_contactUserVO.avatarImage != nil) ? _contactUserVO.avatarImage : [UIImage imageNamed:@"avatarPlaceholder"];
 	[self.contentView addSubview:_avatarImageView];
 	
-	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 	
 	_nameLabel.text = (_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 }

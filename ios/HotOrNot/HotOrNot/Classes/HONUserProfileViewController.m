@@ -113,7 +113,7 @@
 
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:131820 completion:^(NSObject *result) {
 		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [(NSArray *)result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
 		int badgeTotal = MAX(0, [(NSArray *)result count] - prevTotal);
 		
@@ -178,8 +178,8 @@
 	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]]];
 	[self.view addSubview:_profileHolderView];
 	
-	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 20.0, 195.0, 22.0)];
-	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 12.0, 195.0, 22.0)];
+	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.backgroundColor = [UIColor clearColor];
 	[_profileHolderView addSubview:_nameLabel];
@@ -315,18 +315,18 @@
 - (void)_makeProfile {
 //	NSLog(@"AVATAR LOADING:[%@]", [_userVO.avatarURL stringByAppendingString:kSnapThumbSuffix]);
 	
-	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 8.0, 48.0, 48.0)];
+	UIView *avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 0.0, 64.0, 64.0)];
 	[_profileHolderView addSubview:avatarHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:avatarHolderView asLargeLoader:NO];
 	[imageLoadingView startAnimating];
 	[avatarHolderView addSubview:imageLoadingView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 48.0, 48.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 64.0, 64.0)];
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
-	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
@@ -350,26 +350,24 @@
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-	_nameLabel.text = _userVO.username;
+	_nameLabel.text = @"Anna";//_userVO.username;
 	
 	if (_userVO.isVerified) {
-		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -8.0);
-		
 		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
 		verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 40.0, 34.0);
 		[_profileHolderView addSubview:verifiedImageView];
-		
-		UIImageView *arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserArrow"]];
-		arrowImageView.frame = CGRectOffset(arrowImageView.frame, 63.0, 28.0);
-		[_profileHolderView addSubview:arrowImageView];
-		
-		UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(84.0, 34.0, 33.0, 13.0)];
-		scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
-		scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreenTextColor];
-		scoreLabel.backgroundColor = [UIColor clearColor];
-		scoreLabel.text = [@"" stringFromInt:-_userVO.abuseCount];
-		[_profileHolderView addSubview:scoreLabel];
 	}
+	
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_userVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"]];
+	arrowImageView.frame = CGRectOffset(arrowImageView.frame, 63.0, 28.0);
+	[_profileHolderView addSubview:arrowImageView];
+	
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(84.0, 34.0, 33.0, 13.0)];
+	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+	scoreLabel.textColor = (_userVO.isVerified) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+	scoreLabel.backgroundColor = [UIColor clearColor];
+	scoreLabel.text = [@"" stringFromInt:-_userVO.abuseCount];
+	[_profileHolderView addSubview:scoreLabel];
 	
 	if (_userProfileType == HONUserProfileTypeUser) {
 		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];

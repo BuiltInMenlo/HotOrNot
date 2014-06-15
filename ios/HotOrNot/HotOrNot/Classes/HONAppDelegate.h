@@ -162,7 +162,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSDictionary *)infoForUser;
 + (UIImage *)avatarImage;
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
-+ (int)ageForDate:(NSDate *)date;
 
 + (void)resetTotals;
 

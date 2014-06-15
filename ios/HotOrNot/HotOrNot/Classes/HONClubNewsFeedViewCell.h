@@ -18,17 +18,11 @@ typedef NS_ENUM(NSInteger, HONClubNewsFeedCellType) {
 
 @class HONClubNewsFeedViewCell;
 @protocol HONClubNewsFeedViewCellDelegate <NSObject>
-@optional
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell createClubWithProtoVO:(HONUserClubVO *)userClubVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell acceptInviteForClub:(HONUserClubVO *)userClubVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell denyInviteForClub:(HONUserClubVO *)userClubVO;
+@optional
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell selectedClubRow:(HONUserClubVO *)userClubVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell selectedCTARow:(HONUserClubVO *)userClubVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell likeClubChallenge:(HONChallengeVO *)challengeVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyClubChallenge:(HONChallengeVO *)challengeVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell moreClubChallenge:(HONChallengeVO *)challengeVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell shareClub:(HONUserClubVO *)userClubVO;
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONUserClubVO *)userClubVO;
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyToClubPhoto:(HONUserClubVO *)userClubVO;
 @end
 
 @interface HONClubNewsFeedViewCell : UITableViewCell

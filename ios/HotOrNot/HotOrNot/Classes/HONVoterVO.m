@@ -29,7 +29,7 @@
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.challengerName = [dictionary objectForKey:@"challenger_name"];
 	
-	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	return (vo);
 }

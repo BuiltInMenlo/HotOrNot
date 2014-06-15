@@ -118,24 +118,27 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (NSDictionary *)fpoOwnedClubDictionary {
-	return (@{@"id"				: [@"" stringFromInt:(6660000 + (arc4random() % 100))],
-			  @"name"			: @"MY Club",
+	return (@{@"id"					: [@"" stringFromInt:(6660000 + (arc4random() % 100))],
+			  @"name"				: @"MY Club",
 			  
-			  @"description"	: @"",
-			  @"img"			: @"https://d1fqnfrnudpaz6.cloudfront.net/Shoutout_Volley_Image-152b6415bef348",
-			  @"club_type"		: @"USER_GENERATED",
-			  @"added"			: @"2014-04-28 00:40:03",
-			  @"updated"		: @"2014-04-28 00:40:03",
+			  @"description"		: @"",
+			  @"img"				: @"https://d1fqnfrnudpaz6.cloudfront.net/Shoutout_Volley_Image-152b6415bef348",
+			  @"club_type"			: @"USER_GENERATED",
+			  @"added"				: @"2014-04-28 00:40:03",
+			  @"updated"			: @"2014-04-28 00:40:03",
+			  @"total_members"		: @"1",
+			  @"total_score"		: @"0",
+			  @"total_submissions"	: @"0",
 			  
-			  @"owner"			: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-									@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-									@"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
+			  @"owner"				: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+										@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+										@"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
 			  
-			  @"members"		: @[],
-			  @"pending"		: @[],
-			  @"blocked"		: @[],
+			  @"members"			: @[],
+			  @"pending"			: @[],
+			  @"blocked"			: @[],
 			  
-			  @"submissions"	: @[]
+			  @"submissions"		: @[]
 			});
 }
 
@@ -149,6 +152,10 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"club_type"		: @"",
 			  @"added"			: @"0000-00-00 00:00:00",
 			  @"updated"		: @"0000-00-00 00:00:00",
+			  
+			  @"total_members"		: @"1",
+			  @"total_score"		: @"0",
+			  @"total_submissions"	: @"0",
 			  
 			  @"owner"			: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 									@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],

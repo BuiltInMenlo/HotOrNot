@@ -28,7 +28,7 @@
 	vo.photoSubmitType = ([[vo.subjectNames firstObject] rangeOfString:@"#shoutout"].location == 0) ? HONPhotoSubmitTypeCreateShoutout : vo.photoSubmitType;
 	vo.likedByTotal = [[dictionary objectForKey:@"total_likers"] intValue];
 	
-	vo.addedDate = [[HONDateTimeStipulator sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
+	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
 	switch (vo.statusID) {
 		case 1:
