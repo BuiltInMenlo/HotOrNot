@@ -25,7 +25,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONClubSettingsViewController.h"
 #import "HONClubInviteViewController.h"
-#import "HONFeedViewController.h"
+#import "HONClubTimelineViewController.h"
 #import "HONUserClubVO.h"
 
 
@@ -101,8 +101,8 @@
 		
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
 		[dict setValue:@"0" forKey:@"id"];
-		[dict setValue:@"Create club" forKey:@"name"];
-		[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/createClubCover"] forKey:@"img"];
+		[dict setValue:@"Create a club" forKey:@"name"];
+		//[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/createClubCover"] forKey:@"img"];
 		[_dictClubs addObject:[dict copy]];
 		
 		
@@ -359,11 +359,8 @@
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
 		
 		NSLog(@"clubType:[%d]", cell.clubType);
-		
-		
-		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
-		feedViewController.clubVO = vo;
-		[self.navigationController pushViewController:feedViewController animated:YES];
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
 	
 	
 	} else {

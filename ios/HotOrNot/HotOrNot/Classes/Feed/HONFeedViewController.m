@@ -124,7 +124,7 @@
 
 - (void)_refreshClubFromSwerver
 {
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSArray *result) {
 		NSMutableArray *clubPhotos = [NSMutableArray array];
 		for (NSDictionary *clubData in (NSDictionary *)result) {
 			HONClubPhotoVO *vo = [HONClubPhotoVO clubPhotoWithDictionary:clubData];

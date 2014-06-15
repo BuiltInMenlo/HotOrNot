@@ -16,6 +16,7 @@
 
 #import "HONClubsNewsFeedViewController.h"
 #import "HONFeedViewController.h"
+#import "HONClubTimelineViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
@@ -558,10 +559,14 @@
 	if (cell.timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
 		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
 		
-		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
-		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
-		feedViewController.clubVO = vo.userClubVO;
-		[self.navigationController pushViewController:feedViewController animated:YES];
+		NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", vo.userClubVO.clubID, vo.userClubVO.clubName);
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo.userClubVO] animated:YES];
+		
+		
+//		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
+//		feedViewController.clubVO = vo.userClubVO;
+//		[self.navigationController pushViewController:feedViewController animated:YES];
 		
 //		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];<<
 //		feedViewController.challenges = [vo.userClubVO.submissions];<<

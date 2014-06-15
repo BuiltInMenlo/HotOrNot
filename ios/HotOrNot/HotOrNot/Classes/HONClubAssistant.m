@@ -169,4 +169,17 @@ static HONClubAssistant *sharedInstance = nil;
 			});
 }
 
+- (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSMutableArray *emotions = [NSMutableArray array];
+	for (NSString *subject in clubPhotoVO.subjectNames) {
+		for (HONEmotionVO *vo in [HONAppDelegate freeEmotions]) {
+			if ([vo.emotionName isEqualToString:subject]) {
+				[emotions addObject:[HONEmotionVO emotionWithDictionary:vo.dictionary]];
+			}
+		}
+	}
+	
+	return ([emotions copy]);
+}
+
 @end

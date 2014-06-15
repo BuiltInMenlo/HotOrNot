@@ -107,6 +107,17 @@ static HONAnalyticsParams *sharedInstance = nil;
 	return (properties);
 }
 
+- (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
+	static NSDictionary *properties = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		properties = @{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+	});
+	
+	return (properties);
+}
+
 - (NSDictionary *)propertyForCohortUser:(HONUserVO *)vo {
 	static NSDictionary *properties = nil;
 	static dispatch_once_t onceToken;
@@ -262,6 +273,14 @@ static HONAnalyticsParams *sharedInstance = nil;
 	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallenge:challengeVO]];
 	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForChallengeCreator:challengeVO]];
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
+									 withProperties:properties];
+}
+
+- (void)trackEvent:(NSString *)eventName withClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSMutableDictionary *properties = [[[HONAnalyticsParams sharedInstance] userProperty] mutableCopy];
+	[properties addEntriesFromDictionary:[[HONAnalyticsParams sharedInstance] propertyForClubPhoto:clubPhotoVO]];
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:eventName
 									 withProperties:properties];

@@ -170,7 +170,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)inviteNonAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *result))completion;
 - (void)joinClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)leaveClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion;
-- (void)retrieveClubByClubID:(int)clubID completion:(void (^)(id result))completion;
+- (void)retrieveClubByClubID:(int)clubID withOwnerID:(int)ownerID completion:(void (^)(id result))completion;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(NSObject *result))completion;
 //- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(NSObject *result))completion;

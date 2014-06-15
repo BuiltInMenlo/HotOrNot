@@ -52,14 +52,14 @@ const CGFloat kMaxActivityWidth = 44.0;
 - (void)updateActivityBadge {
 	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [(NSArray *)result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
-		int badgeTotal = ABS(MAX(0, [(NSArray *)result count] - prevTotal));
+		int badgeTotal = ABS([(NSArray *)result count] - prevTotal);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
-		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : @"0000-00-00 00:00:00" forKey:@"activity_updated"];
+		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] forKey:@"activity_updated"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		_activityTotalLabel.text = (badgeTotal < 100) ? [@"" stringFromInt:badgeTotal] : @"99+";
-		_activityBGImageView.hidden = (badgeTotal == 0);
+		_activityBGImageView.hidden = (badgeTotal <= 0);
 		
 		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [(NSArray *)result count], badgeTotal);
 	}];

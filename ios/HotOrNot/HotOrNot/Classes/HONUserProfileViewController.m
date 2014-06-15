@@ -113,12 +113,12 @@
 
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:131820 completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [(NSArray *)result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
-		int badgeTotal = MAX(0, [(NSArray *)result count] - prevTotal);
+		int badgeTotal = ABS([(NSArray *)result count] - prevTotal);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
-		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : @"0000-00-00 00:00:00" forKey:@"activity_updated"];
+		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] forKey:@"activity_updated"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [(NSArray *)result count], badgeTotal);
@@ -350,7 +350,7 @@
 									success:imageSuccessBlock
 									failure:imageFailureBlock];
 	
-	_nameLabel.text = @"Anna";//_userVO.username;
+	_nameLabel.text = _userVO.username;
 	
 	if (_userVO.isVerified) {
 		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];

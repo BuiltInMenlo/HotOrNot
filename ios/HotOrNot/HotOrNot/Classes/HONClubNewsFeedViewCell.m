@@ -58,8 +58,8 @@
 			emotions = [emotions stringByAppendingFormat:@"%@, ", subject];
 		}
 	
-	if ([emotions length] > 0)
-		emotions = [emotions substringToIndex:[emotions length] - 2];
+		if ([emotions length] > 0)
+			emotions = [emotions substringToIndex:[emotions length] - 2];
 	}
 	
 	NSString *titleCaption = (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? [NSString stringWithFormat:@"%@ is feeling %@", _timelineItemVO.clubPhotoVO.username, emotions] : _timelineItemVO.userClubVO.clubName;
@@ -92,18 +92,29 @@
 									success:avatarImageSuccessBlock
 									failure:avatarImageFailureBlock];
 	
-	CGSize size = [titleCaption boundingRectWithSize:CGSizeMake(238.0, 37.0)
+	CGSize maxSize = CGSizeMake(238.0, 38.0);
+	CGSize size = [titleCaption boundingRectWithSize:maxSize
 											 options:NSStringDrawingTruncatesLastVisibleLine
 										  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}
 											 context:nil].size;
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? CGRectMake(59.0, 16.0, 238.0, 38.0) : CGRectMake(75.0, 22.0, 238.0, 20.0)];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? CGRectMake(59.0, 14.0, maxSize.width, 22.0 + ((int)(size.width > maxSize.width) * 25.0)) : CGRectMake(75.0, 22.0, 238.0, 20.0)];
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? 16 : 14];
 	titleLabel.textColor = [UIColor blackColor];
-	titleLabel.numberOfLines = 2;
+	titleLabel.numberOfLines = 1 + ((int)(size.width > maxSize.width));
 	titleLabel.text = titleCaption;
 	[self.contentView addSubview:titleLabel];
+	
+	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
+		NSMutableParagraphStyle *paragraphStyle  = [[NSMutableParagraphStyle alloc] init];
+		paragraphStyle.minimumLineHeight = 22.0;
+		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+		
+		titleLabel.text = @"";
+		titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption
+																	attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	}
 	
 	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createClubButton.frame = CGRectMake(247.0, 0.0, 64.0, 64.0);
@@ -118,7 +129,7 @@
 		[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16] range:NSMakeRange(0, [_timelineItemVO.clubPhotoVO.username length] + 1)];
 		
 		NSString *timeCaption = [NSString stringWithFormat:@"%@ in %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_timelineItemVO.userClubVO.updatedDate], _timelineItemVO.userClubVO.clubName];
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 65.0 - ((int)(size.width < 238.0) * 18.0), 238.0, 16.0)];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 68.0 - ((int)(size.width < maxSize.width) * 25.0), 238.0, 16.0)];
 		timeLabel.backgroundColor = [UIColor clearColor];
 		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 		timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -127,7 +138,7 @@
 		[self.contentView addSubview:timeLabel];
 		
 		UIView *photoStackView = [self _photoStackView];
-		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < 238.0) * 9.0));
+		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < maxSize.width) * 9.0));
 		[self.contentView addSubview:photoStackView];
 
 		UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -188,7 +199,7 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 	}
 	
 	CGFloat width = kPhotoSize.width + (([submissionPrefixes count] - 1) * 65.0);
-	holderView.frame = CGRectMake(51.0 + ((269.0 - width) * 0.5), 0.0, width, kPhotoSize.height);
+	holderView.frame = CGRectMake(51.0 + ((260.0 - width) * 0.5), 0.0, width, kPhotoSize.height);
 	
 	for (int i=[submissionPrefixes count]-1; i>=0; i--) {
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0 + (i * 65.0), 0.0, kPhotoSize.width, kPhotoSize.height)];

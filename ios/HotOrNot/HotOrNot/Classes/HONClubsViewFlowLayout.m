@@ -8,7 +8,7 @@
 
 #import "HONClubsViewFlowLayout.h"
 
-const CGSize kClubCollectionViewSize = {100.0, 198.0};
+const CGSize kClubCollectionViewSize = {120.0, 150.0};
 
 @implementation HONClubsViewFlowLayout
 
@@ -16,9 +16,9 @@ const CGSize kClubCollectionViewSize = {100.0, 198.0};
 	if ((self = [super init])) {
 		self.itemSize = kClubCollectionViewSize;
 		self.scrollDirection = UICollectionViewScrollDirectionVertical;
-		self.minimumInteritemSpacing = 0.0;
-		self.minimumLineSpacing = 0.0;
-		self.sectionInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
+		self.minimumInteritemSpacing = 40.0;
+		self.minimumLineSpacing = 11.0;
+		self.sectionInset = UIEdgeInsetsMake(0.0, 20.0, 0.0, 20.0);
 	}
 	
 	return (self);

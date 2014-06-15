@@ -7,6 +7,8 @@
 //
 
 #import "HONUserClubVO.h"
+#import "HONClubPhotoVO.h"
+#import "HONEmotionVO.h"
 
 @interface HONClubAssistant : NSObject
 + (HONClubAssistant *)sharedInstance;
@@ -16,4 +18,5 @@
 - (NSDictionary *)fpoJoinedClubDictionary;
 - (NSDictionary *)fpoOwnedClubDictionary;
 - (NSDictionary *)emptyClubDictionary;
+- (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end

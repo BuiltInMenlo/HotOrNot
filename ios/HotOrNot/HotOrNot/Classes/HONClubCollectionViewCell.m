@@ -29,7 +29,6 @@
 }
 
 - (void)setClubType:(HONClubType)clubType {
-	
 	_clubType = clubType;
 	
 	NSString *buttonAsset;
@@ -59,7 +58,7 @@
 	
 	
 	_ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_ctaButton.frame = CGRectMake(99.0, 11.0, 44.0, 44.0);
+	_ctaButton.frame = CGRectMake(77.0, 11.0, 44.0, 44.0);
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_Active"]] forState:UIControlStateHighlighted];
 	[_ctaButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
@@ -69,36 +68,40 @@
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
 	
-	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(22.0, 18.0, 100.0, 100.0)];
-	_coverImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreyColor];
+	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
+	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 	[self.contentView addSubview:_coverImageView];
 	
-	[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_coverImageView.image = image;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_coverImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_clubVO.coverImagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
+	if (_clubVO.clubID != 0) {
+		[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 		
-		_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_coverImageView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
-	};
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			_coverImageView.image = image;
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_coverImageView.alpha = 1.0;
+			} completion:^(BOOL finished) {
+			}];
+		};
+		
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_clubVO.coverImagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
+			
+			_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_coverImageView.alpha = 1.0;
+			} completion:^(BOOL finished) {
+			}];
+		};
+		
+		[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+							  placeholderImage:nil
+									   success:imageSuccessBlock
+									   failure:imageFailureBlock];
+	}
 	
-	[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-						  placeholderImage:nil
-								   success:imageSuccessBlock
-								   failure:imageFailureBlock];
 	
-	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 126.0, 120.0, 20.0)];
+	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 128.0, 120.0, 20.0)];
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.textAlignment = NSTextAlignmentCenter;
