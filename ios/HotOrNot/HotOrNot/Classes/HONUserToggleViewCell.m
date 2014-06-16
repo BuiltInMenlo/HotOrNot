@@ -10,11 +10,22 @@
 
 #import "HONUserToggleViewCell.h"
 
+
+#define TOP_TINT_COLOR		[UIColor colorWithRed:0.009f green:0.910 blue:0.178f alpha:0.500f]
+#define BOT_TINT_COLOR		[UIColor colorWithRed:0.009f green:0.910 blue:0.178f alpha:0.333f]
+
+#define TINT_FADE_DURATION		0.250f
+#define TINT_TIMER_DURATION		0.333f
+
+
 @interface HONUserToggleViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIImageView *arrowImageView;
 @property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) UIView *overlayTintView;
+@property (nonatomic, strong) NSTimer *tintTimer;
+@property (nonatomic) BOOL isTintCycleFull;
 @property (nonatomic) BOOL isSelected;
 @end
 
@@ -28,6 +39,7 @@
 		[self hideChevron];
 		
 		_isSelected = NO;
+		_isTintCycleFull = NO;
 		
 		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 8.0, 48.0, 48.0)];
 		[self.contentView addSubview:_avatarImageView];
@@ -54,6 +66,12 @@
 		_scoreLabel.text = @"0";
 		[self.contentView addSubview:_scoreLabel];
 		
+		
+		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
+		_overlayTintView.backgroundColor = BOT_TINT_COLOR;
+		[self.contentView addSubview:_overlayTintView];
+		
+		
 		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_toggledOnButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
 		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
@@ -68,30 +86,15 @@
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_toggledOffButton];
+		
+		[self _toggleTintCycle:_isSelected];
 	}
 	
 	return (self);
 }
 
 - (void)invertSelected {
-	_isSelected = !_isSelected;
-	
-	if (_isSelected) {
-		_toggledOffButton.hidden = NO;
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			_toggledOffButton.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			_toggledOnButton.hidden = YES;
-		}];
-		
-	} else {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_toggledOffButton.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			_toggledOffButton.hidden = YES;
-			[self.delegate userToggleViewCell:self didDeselectTrivialUser:_trivialUserVO];
-		}];
-	}
+	[self toggleSelected:!_isSelected];
 }
 
 - (void)toggleSelected:(BOOL)isSelected {
@@ -113,6 +116,8 @@
 				_toggledOffButton.hidden = YES;
 			}];
 		}
+		
+		[self _toggleTintCycle:_isSelected];
 	}
 }
 
@@ -167,6 +172,9 @@
 
 #pragma mark - Navigation
 - (void)_goDeselect {
+	_isSelected = NO;
+	[self _toggleTintCycle:_isSelected];
+	
 	_toggledOffButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_toggledOffButton.alpha = 1.0;
@@ -182,11 +190,16 @@
 }
 
 - (void)_goSelect {
+	_isSelected = YES;
+	[self _toggleTintCycle:_isSelected];
+	
 	_toggledOnButton.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_toggledOffButton.hidden = YES;
+		
+		[self _toggleTintCycle:_isSelected];
 		
 		if (self.trivialUserVO != nil)
 			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
@@ -221,6 +234,39 @@
 							placeholderImage:nil
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];
+}
+
+- (void)_nextTintCycle {
+	_isTintCycleFull = !_isTintCycleFull;
+	
+	[UIView beginAnimations:@"fade" context:nil];
+	[UIView setAnimationDuration:TINT_FADE_DURATION];
+	[_overlayTintView setBackgroundColor:(_isTintCycleFull) ? TOP_TINT_COLOR : BOT_TINT_COLOR];
+	[UIView commitAnimations];
+}
+
+
+- (void)_toggleTintCycle:(BOOL)isCycling {
+	_isTintCycleFull = NO;
+	
+	if (_tintTimer != nil) {
+		[_tintTimer invalidate];
+		_tintTimer = nil;
+	}
+	
+	[_overlayTintView.layer removeAllAnimations];
+	_overlayTintView.backgroundColor = BOT_TINT_COLOR;
+	_overlayTintView.hidden = !isCycling;
+	
+	if (isCycling) {
+		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:TINT_TIMER_DURATION
+													  target:self
+													selector:@selector(_nextTintCycle)
+													userInfo:nil
+													 repeats:YES];
+	} else {
+		
+	}
 }
 
 @end
