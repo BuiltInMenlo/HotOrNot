@@ -216,7 +216,7 @@
 	}
 	
 	if ([clubName length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
@@ -232,7 +232,7 @@
 	
 	// area code
 	if ([[HONAppDelegate phoneNumber] length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-2" forKey:@"id"];
 		[dict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
@@ -289,7 +289,7 @@
 	}
 	
 	if ([clubName length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-3" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];

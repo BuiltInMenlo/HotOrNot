@@ -13,13 +13,13 @@
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, clubType, totalPendingMembers, totalActiveMembers, totalBannedMembers, clubName, coverImagePrefix, blurb, addedDate, updatedDate, ownerID, ownerName, ownerImagePrefix, submissions, totalSubmissions;
+@synthesize clubID, clubType, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
 	vo.dictionary = dictionary;
 	
-//	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
+	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	
 //	for (NSString *param in dictionary)
 //		NSLog(@"NAME:[%@]", param);
@@ -30,23 +30,69 @@
 	vo.clubID = [[dictionary objectForKey:@"id"] intValue];
 	vo.clubName = [dictionary objectForKey:@"name"];
 	vo.blurb = [dictionary objectForKey:@"description"];
+	
 	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img"]] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"];
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
-		
-	vo.totalPendingMembers = [[dictionary objectForKey:@"pending"] count];
-	vo.totalActiveMembers = [[dictionary objectForKey:@"members"] count];
-	vo.totalBannedMembers = [[dictionary objectForKey:@"blocked"] count];
 	
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
 	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
+	
+	vo.pendingMembers = [dictionary objectForKey:@"pending"];
+	vo.activeMembers = [dictionary objectForKey:@"members"];
+	vo.bannedMembers = [dictionary objectForKey:@"blocked"];
 	
 	NSMutableArray *submissions = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
 		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
 	
 	vo.submissions = [submissions copy];
+	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
+	
+	
+	
+	if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"USER_GENERATED"])
+		vo.clubType = ([vo.submissions count]) ? HONClubTypeUserCreatedEmpty : HONClubTypeUserCreated;
+	
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"])
+		vo.clubType = HONClubTypeSuggested;
+	
+	
+	
+	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;
+	
+	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
+			for (NSDictionary *dict in vo.pendingMembers) {
+				NSLog(@"PENDING:[%d - %@]", [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
+				if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+					vo.clubEnrollmentType = HONClubEnrollmentTypePending;
+					break;
+				}
+			}
+		}
+		
+	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
+		for (NSDictionary *dict in vo.activeMembers) {
+			NSLog(@"ACTIVE:[%d - %@]", [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
+			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+				vo.clubEnrollmentType = HONClubEnrollmentTypeMember;
+				break;
+			}
+		}
+	}
+	
+	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
+		for (NSDictionary *dict in vo.bannedMembers) {
+			NSLog(@"BANNED:[%d - %@]", [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
+			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+				vo.clubEnrollmentType = HONClubEnrollmentTypeBanned;
+				break;
+			}
+		}
+	}
+	
+	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
 	
 	return (vo);
 }

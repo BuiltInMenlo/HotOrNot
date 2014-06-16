@@ -17,6 +17,6 @@
 - (NSDictionary *)fpoInviteClubDictionary;
 - (NSDictionary *)fpoJoinedClubDictionary;
 - (NSDictionary *)fpoOwnedClubDictionary;
-- (NSDictionary *)emptyClubDictionary;
+- (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end

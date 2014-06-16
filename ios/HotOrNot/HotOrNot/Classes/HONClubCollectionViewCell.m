@@ -20,49 +20,11 @@
 @end
 
 @implementation HONClubCollectionViewCell
-@synthesize clubType = _clubType;
 @synthesize clubVO = _clubVO;
 @synthesize delegate = _delegate;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
-}
-
-- (void)setClubType:(HONClubType)clubType {
-	_clubType = clubType;
-	
-	NSString *buttonAsset;
-	SEL selector;
-	
-	if (_clubType == HONClubTypeOwner) {
-		buttonAsset = @"memberClubButton";
-		selector = @selector(_goEditClub);
-		
-	} else if (_clubType == HONClubTypeMember) {
-		buttonAsset = @"quitClubButton";
-		selector = @selector(_goQuitClub);
-	
-	} else if (_clubType == HONClubTypePending) {
-		buttonAsset = @"joinClubButton";
-		selector = @selector(_goJoinClub);
-	
-	} else if (_clubType == HONClubTypeOther) {
-		buttonAsset = @"joinClubButton";
-		selector = @selector(_goJoinClub);
-		
-	} else {
-		buttonAsset = @"";
-		selector = @selector(_goCreateClub);
-		_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
-	}
-	
-	
-	_ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_ctaButton.frame = CGRectMake(77.0, 11.0, 44.0, 44.0);
-	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
-	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_Active"]] forState:UIControlStateHighlighted];
-	[_ctaButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:_ctaButton];
 }
 
 - (void)setClubVO:(HONUserClubVO *)clubVO {
@@ -107,6 +69,38 @@
 	_nameLabel.textAlignment = NSTextAlignmentCenter;
 	_nameLabel.text = _clubVO.clubName;
 	[self.contentView addSubview:_nameLabel];
+	
+	NSString *buttonAsset;
+	SEL selector;
+	
+	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner) {
+		buttonAsset = @"memberClubButton";
+		selector = @selector(_goEditClub);
+		
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
+		buttonAsset = @"quitClubButton";
+		selector = @selector(_goQuitClub);
+		
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
+		buttonAsset = @"joinedClubButton";
+		selector = @selector(_goJoinClub);
+		
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeUnknown) {
+		buttonAsset = @"joinClubButton";
+		selector = @selector(_goJoinClub);
+		
+	} else {
+		buttonAsset = @"";
+		selector = @selector(_goCreateClub);
+		_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
+	}
+	
+	_ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_ctaButton.frame = CGRectMake(77.0, 11.0, 44.0, 44.0);
+	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
+	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_Active"]] forState:UIControlStateHighlighted];
+	[_ctaButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:_ctaButton];
 }
 
 

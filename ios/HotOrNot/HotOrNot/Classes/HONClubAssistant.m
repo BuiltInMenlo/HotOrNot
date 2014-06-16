@@ -143,12 +143,12 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 
-- (NSDictionary *)emptyClubDictionary {
+- (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner {
 	return (@{@"id"				: @"",
 			  @"name"			: @"",
 			  
 			  @"description"	: @"",
-			  @"img"			: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"],
+			  @"img"			: @"",
 			  @"club_type"		: @"",
 			  @"added"			: @"0000-00-00 00:00:00",
 			  @"updated"		: @"0000-00-00 00:00:00",
@@ -157,9 +157,9 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"total_score"		: @"0",
 			  @"total_submissions"	: @"0",
 			  
-			  @"owner"			: @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-									@"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-									@"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
+			  @"owner"			: ([owner count] == 0) ? @{@"id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+														   @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+														   @"avatar"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]} : owner,
 			   
 			  @"members"		: @[],
 			  @"pending"		: @[],

@@ -22,7 +22,6 @@
 + (NSString *)cellReuseIdentifier;
 - (void)resetSubviews;
 
-@property (nonatomic, assign) HONClubType clubType;
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, assign) id <HONClubViewCellDelegate> delegate;
 @end

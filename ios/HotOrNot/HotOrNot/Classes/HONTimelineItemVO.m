@@ -19,25 +19,25 @@
 	HONTimelineItemVO *vo = [[HONTimelineItemVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"FEATURED"])
+	if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"FEATURED"])
 		vo.timelineItemType = HONTimelineItemTypeFeatured;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"NEARBY"])
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"NEARBY"])
 		vo.timelineItemType = HONTimelineItemTypeNearby;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SCHOOL"])
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SCHOOL"])
 		vo.timelineItemType = HONTimelineItemTypeSchool;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"STAFF"])
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"STAFF"])
 		vo.timelineItemType = HONTimelineItemTypeSelfieclub;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SPONSORED"])
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SPONSORED"])
 		vo.timelineItemType = HONTimelineItemTypeSponsored;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"SUGGESTED"])
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"])
 		vo.timelineItemType = HONTimelineItemTypeSuggested;
 	
-	else if ([[dictionary objectForKey:@"club_type"] isEqualToString:@"USER_GENERATED"]) {
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"USER_GENERATED"]) {
 		vo.timelineItemType = ([[dictionary objectForKey:@"submissions"] count] > 0) ? HONTimelineItemTypeUserCreated : HONTimelineItemTypeUserCreatedEmpty;
 	}
 	

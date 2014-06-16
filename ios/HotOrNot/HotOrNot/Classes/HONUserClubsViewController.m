@@ -86,7 +86,17 @@
 	_dictClubs = [NSMutableArray array];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
-//	[self _fpoPopulate];
+	
+	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+	[dict setValue:@"0" forKey:@"id"];
+	[dict setValue:@"Create a club" forKey:@"name"];
+	[dict setValue:@"OTHER" forKey:@"club_type"];
+	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
+	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
+	[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"] forKey:@"img"];
+	[_dictClubs addObject:[dict copy]];
+	
+	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
@@ -97,13 +107,6 @@
 			[_clubIDs setValue:clubIDs forKey:key];
 			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
-		
-		
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionary] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
-		[dict setValue:@"Create a club" forKey:@"name"];
-		//[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/createClubCover"] forKey:@"img"];
-		[_dictClubs addObject:[dict copy]];
 		
 		
 		_allClubs = [NSMutableArray array];
@@ -163,7 +166,7 @@
 	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONClubsViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONClubCollectionViewCell class] forCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]];
 	_collectionView.backgroundColor = [UIColor whiteColor];
-	[_collectionView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
+	[_collectionView setContentInset:UIEdgeInsetsZero];
 	_collectionView.showsVerticalScrollIndicator = NO;
 	_collectionView.dataSource = self;
 	_collectionView.delegate = self;
@@ -340,7 +343,6 @@
 	
 	HONUserClubVO *vo = [_allClubs objectAtIndex:indexPath.row];
 	cell.clubVO = vo;
-	cell.clubType = [self _clubTypeForClubVO:vo];
 	cell.delegate = self;
 	
     return (cell);
@@ -354,17 +356,16 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONUserClubVO *vo =  ((HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
-	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-	if (cell.clubType != HONClubTypeUnknown) {
+	
+	if (vo.clubEnrollmentType != HONClubEnrollmentTypeUnknown) {
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
 		
-		NSLog(@"clubType:[%d]", cell.clubType);
+		NSLog(@"vo.clubEnrollmentType:[%d]", vo.clubEnrollmentType);
 		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
 	
 	
 	} else {
-		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
