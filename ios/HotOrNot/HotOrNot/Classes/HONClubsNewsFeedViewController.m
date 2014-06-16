@@ -92,11 +92,14 @@
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSDictionary *dict in [result objectForKey:key])
-				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+			for (NSDictionary *dict in [result objectForKey:key]) {
+				if ([[dict objectForKey:@"submissions"] count] > 0) {
+					[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+					[_dictClubs addObject:dict];
+				}
+			}
 			
 			[_clubIDs setValue:clubIDs forKey:key];
-			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
 		
 		if (_progressHUD != nil) {
