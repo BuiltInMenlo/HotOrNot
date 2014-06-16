@@ -7,6 +7,7 @@
 //
 
 #import "UIImageView+AFNetworking.h"
+#import "UILabel+BoundingRect.m"
 #import "UILabel+FormattedText.h"
 
 #import "HONClubNewsFeedViewCell.h"
@@ -15,7 +16,7 @@
 @interface HONClubNewsFeedViewCell ()
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) UILabel *subtitleLabel;
+@property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic) BOOL *isCreateClubCell;
 @end
 
@@ -112,8 +113,7 @@
 		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
 		
 		titleLabel.text = @"";
-		titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption
-																	attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+		titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 	}
 	
 	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -126,16 +126,25 @@
 	
 	
 	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
-		[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16] range:NSMakeRange(0, [_timelineItemVO.clubPhotoVO.username length] + 1)];
+		[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16] range:[titleCaption rangeOfString:_timelineItemVO.clubPhotoVO.username]];
+		
+		
+//		NSLog(@"LABEL:[%@] BOUNDS:[%@]", NSStringFromCGRect(titleLabel.frame), NSStringFromCGRect([titleLabel boundingRectForCharacterRange:[titleCaption rangeOfString:_timelineItemVO.clubPhotoVO.username]]));
+		
+		UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		usernameButton.frame = [titleLabel boundingRectForCharacterRange:[titleCaption rangeOfString:_timelineItemVO.clubPhotoVO.username]];
+		usernameButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+		[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:usernameButton];
 		
 		NSString *timeCaption = [NSString stringWithFormat:@"%@ in %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_timelineItemVO.userClubVO.updatedDate], _timelineItemVO.userClubVO.clubName];
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 68.0 - ((int)(size.width < maxSize.width) * 25.0), 238.0, 16.0)];
-		timeLabel.backgroundColor = [UIColor clearColor];
-		timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
-		timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		timeLabel.text = timeCaption;
-		[timeLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12] range:[timeCaption rangeOfString:_timelineItemVO.userClubVO.clubName]];
-		[self.contentView addSubview:timeLabel];
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 68.0 - ((int)(size.width < maxSize.width) * 25.0), 238.0, 16.0)];
+		_timeLabel.backgroundColor = [UIColor clearColor];
+		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_timeLabel.text = timeCaption;
+		[_timeLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12] range:[timeCaption rangeOfString:_timelineItemVO.userClubVO.clubName]];
+		[self.contentView addSubview:_timeLabel];
 		
 		UIView *photoStackView = [self _photoStackView];
 		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < maxSize.width) * 9.0));
@@ -162,6 +171,11 @@
 - (void)_goCreateClub {
 	if ([self.delegate respondsToSelector:@selector(clubNewsFeedViewCell:createClubWithProtoVO:)])
 		[self.delegate clubNewsFeedViewCell:self createClubWithProtoVO:_timelineItemVO.userClubVO];
+}
+
+- (void)_goUserProfile {
+	if ([self.delegate respondsToSelector:@selector(clubNewsFeedViewCell:showUserProfileForClubPhoto:)])
+		[self.delegate clubNewsFeedViewCell:self showUserProfileForClubPhoto:_timelineItemVO.clubPhotoVO];
 }
 
 - (void)_goJoinClub {
@@ -223,5 +237,25 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 	
 	return (holderView);
 }
+
+
+
+
+//- (CGRect)_boundingRectForCharacterRange:(NSRange)range inLabel:(UILabel *)label {
+//	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:(label.attributedText == nil) ? [[NSAttributedString alloc] initWithString:label.text] : label.attributedText];
+//	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+//	[textStorage addLayoutManager:layoutManager];
+//	
+//	NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:label.frame.size];
+//	[layoutManager addTextContainer:textContainer];
+//	
+//	NSRange glyphRange;
+//	[layoutManager characterRangeForGlyphRange:range actualGlyphRange:&glyphRange];
+//	
+//	CGRect charBounds = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+//	NSLog(@"--ORG:[%@]--", NSStringFromCGRect(charBounds));
+//	
+//	return (CGRectOffset(charBounds, label.frame.origin.x, label.frame.origin.y));
+//}
 
 @end

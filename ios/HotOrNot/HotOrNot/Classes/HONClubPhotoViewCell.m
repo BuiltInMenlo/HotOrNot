@@ -7,6 +7,7 @@
 //
 
 #import "UIImageView+AFNetworking.h"
+#import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
 #import "HONClubPhotoViewCell.h"
@@ -76,7 +77,7 @@
 							  failure:avatarImageFailureBlock];
 	
 	
-	NSMutableParagraphStyle *paragraphStyle  = [[NSMutableParagraphStyle alloc] init];
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.minimumLineHeight = 31.0;
 	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
 	
@@ -86,7 +87,6 @@
 										  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17], NSParagraphStyleAttributeName:paragraphStyle}
 											 context:nil].size;
 	
-	NSLog(@"SIZE:[%@]", NSStringFromCGSize(size));
 	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (220.0 + ((int)(size.width > maxSize.width) * 34.0)), 320.0, 220.0 + ((int)(size.width > maxSize.width) * 34.0))];
 	[self.contentView addSubview:footerView];
 	
@@ -98,11 +98,18 @@
 	[footerView addSubview:titleLabel];
 	
 	titleLabel.text = @"";
-	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption
-																attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 	
 	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:_clubPhotoVO.username]];
 	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:emotions]];
+	
+	
+	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	usernameButton.frame = [titleLabel boundingRectForCharacterRange:[titleCaption rangeOfString:_clubPhotoVO.username]];
+	usernameButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
+	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+	[footerView addSubview:usernameButton];
+	
 	
 	NSString *timeCaption = [NSString stringWithFormat:@"%@ in %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate], _clubName];
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 11.0 + titleLabel.frame.origin.y + titleLabel.frame.size.height, 300.0, 16.0)];
@@ -141,6 +148,11 @@
 
 
 #pragma mark - Navigation
+- (void)_goUserProfile {
+	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:showUserProfileForClubPhoto:)])
+		[self.delegate clubPhotoViewCell:self showUserProfileForClubPhoto:_clubPhotoVO];
+}
+
 - (void)_goLike {
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:upvotePhoto:)])
 		[self.delegate clubPhotoViewCell:self upvotePhoto:_clubPhotoVO];

@@ -13,6 +13,7 @@
 
 #import "HONClubTimelineViewController.h"
 #import "HONSelfieCameraViewController.h"
+#import "HONUserProfileViewController.h"
 #import "HONClubPhotoViewCell.h"
 #import "HONHeaderView.h"
 #import "HONClubPhotoVO.h"
@@ -224,6 +225,15 @@
 
 
 #pragma mark - ClubPhotoViewCell Delegates
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Show Profile"
+									  withClubPhoto:clubPhotoVO];
+	
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
+}
+
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
