@@ -8,20 +8,9 @@
 
 #import "HONChallengeVO.h"
 #import "HONProtoChallengeVO.h"
+#import "HONUserClubVO.h"
 
-typedef enum {
-	HONCSelfieSubmitTypeCreateChallenge = 0,
-	HONSelfieSubmitTypeReplyChallenge,
-	
-	HONSelfieSubmitTypeCreateClub,
-	HONSelfieSubmitTypeReplyClub,
-	
-	HONSelfieSubmitTypeCreateMessage,
-	HONSelfieSubmitTypeReplyMessage
-} HONSelfieSubmitType;
-
-
+@class HONSelfieCameraViewController;
 @interface HONSelfieCameraSubmitViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
-- (id)initWithChallenge:(HONChallengeVO *)challengeVO;
-- (id)initWithProtoChallenge:(HONProtoChallengeVO *)protoChallengeVO;
+- (id)initWithClub:(HONUserClubVO *)clubVO;
 @end

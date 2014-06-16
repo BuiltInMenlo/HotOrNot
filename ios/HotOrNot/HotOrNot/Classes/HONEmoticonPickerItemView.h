@@ -17,5 +17,7 @@
 
 @interface HONEmoticonPickerItemView : UIView
 - (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO;
+- (void)toggleSelected:(BOOL)isSelected;
+
 @property (nonatomic, assign) id<HONEmotionItemViewDelegate> delegate;
 @end

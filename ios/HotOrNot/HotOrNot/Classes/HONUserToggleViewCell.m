@@ -59,7 +59,7 @@
 		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
 		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
 		[_toggledOnButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
-		_toggledOnButton.hidden = YES;
+		_toggledOnButton.hidden = !_isSelected;
 		[self.contentView addSubview:_toggledOnButton];
 		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -24,7 +24,14 @@
 		_emotionVO = emotionVO;
 		_isSelected = NO;
 		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 16.0, 44.0, 44.0)];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiButtonBG"]]];
+		
+		_selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiButton_Selected"]];
+		_selectedImageView.alpha = (int)_isSelected;
+		[self addSubview:_selectedImageView];
+		
+		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, 44.0, 44.0)];
 		[self addSubview:imageView];
 		
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -41,17 +48,13 @@
 								  failure:nil];
 		
 		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 60.0, self.frame.size.width, 13.0)];
-		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
-		label.textColor = [UIColor blackColor];
-		label.backgroundColor = [UIColor clearColor];
-		label.textAlignment = NSTextAlignmentCenter;
-		label.text = _emotionVO.emotionName;
-		[self addSubview:label];
-		
-		_selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emotionSelectedOverlay"]];
-		_selectedImageView.alpha = (int)_isSelected;
-		[self addSubview:_selectedImageView];
+//		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 60.0, self.frame.size.width, 13.0)];
+//		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
+//		label.textColor = [UIColor blackColor];
+//		label.backgroundColor = [UIColor clearColor];
+//		label.textAlignment = NSTextAlignmentCenter;
+//		label.text = _emotionVO.emotionName;
+//		[self addSubview:label];
 		
 		UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		toggleButton.frame = imageView.frame;
@@ -60,6 +63,16 @@
 	}
 	
 	return (self);
+}
+
+- (void)toggleSelected:(BOOL)isSelected {
+	_isSelected = isSelected;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_selectedImageView.alpha = (int)_isSelected;
+		
+	} completion:^(BOOL finished) {
+	}];
 }
 
 

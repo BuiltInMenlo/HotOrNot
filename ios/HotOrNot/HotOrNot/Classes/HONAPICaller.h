@@ -14,11 +14,11 @@
 #import "HONUserClubVO.h"
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONS3BucketType) {
 	HONS3BucketTypeAvatars = 0,
 	HONS3BucketTypeSelfies,
 	HONS3BucketTypeClubs
-} HONS3BucketType;
+};
 
 
 // api endpts
@@ -173,6 +173,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubByClubID:(int)clubID withOwnerID:(int)ownerID completion:(void (^)(id result))completion;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
+- (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 

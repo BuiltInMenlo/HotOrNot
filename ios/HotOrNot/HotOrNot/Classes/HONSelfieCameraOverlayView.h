@@ -28,7 +28,6 @@
 
 @class HONSelfieCameraOverlayView;
 @protocol HONSelfieCameraOverlayViewDelegate <NSObject>
-- (void)cameraOverlayViewCameraBack:(HONSelfieCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;
 @optional
@@ -39,7 +38,6 @@
 
 @interface HONSelfieCameraOverlayView : UIView
 - (id)initWithFrame:(CGRect)frame;
-- (void)introWithTutorial:(BOOL)isTutorial;
 - (void)submitStep:(HONSelfieCameraPreviewView *)previewView;
 @property(nonatomic, assign) id <HONSelfieCameraOverlayViewDelegate> delegate;
 @end

@@ -36,7 +36,6 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		
 		_tintIndex = 0;
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
@@ -95,19 +94,6 @@
 
 
 #pragma mark - Public API
-- (void)introWithTutorial:(BOOL)isTutorial {
-	_blackMatteView.hidden = NO;
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_blackMatteView.alpha = 0.0;
-	} completion:^(BOOL fininshed) {
-		_blackMatteView.hidden = YES;
-		_blackMatteView.alpha = 1.0;
-	}];
-	
-	if (isTutorial) {
-	}
-}
-
 - (void)submitStep:(HONSelfieCameraPreviewView *)previewView {
 	[self addSubview:previewView];
 	

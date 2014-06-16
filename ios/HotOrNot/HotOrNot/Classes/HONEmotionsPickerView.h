@@ -10,12 +10,6 @@
 
 #define COLS_PER_ROW	4
 #define ROWS_PER_PAGE	3
-#define ITEM_SPACING	74.0f
-
-typedef enum {
-	HONEmotionsPickerTypeFree = 0,
-	HONEmotionsPickerTypePaid = 1
-} HONEmotionsPickerType;
 
 @class HONEmotionsPickerView;
 @protocol HONEmotionsPickerViewDelegate <NSObject>

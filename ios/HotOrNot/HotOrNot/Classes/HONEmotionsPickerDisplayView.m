@@ -7,13 +7,16 @@
 //
 
 #import "UIImageView+AFNetworking.h"
+#import "UILabel+FormattedText.h"
 
 #import "HONEmotionsPickerDisplayView.h"
 
-#define MAX_DISPLAYED_NAMES 5
-#define COLS_PER_ROW 5
+#define COLS_PER_ROW 6
+#define SPACING
 
-const CGSize kMaxLabelSize = {240.0, 66.0};
+NSString * const kBaseCaption = @"is feeling";
+const CGSize kImageSize = {37.0f, 37.0f};
+const CGSize kImagePaddingSize = {17.0f, 17.0f};
 
 @interface HONEmotionsPickerDisplayView ()
 @property (nonatomic, strong) NSMutableArray *emotions;
@@ -26,17 +29,20 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 
 - (id)initWithFrame:(CGRect)frame withExistingEmotions:(NSArray *)emotions {
 	if ((self = [super initWithFrame:frame])) {
+		self.backgroundColor = [UIColor whiteColor];
+		
 		_emotions = [emotions mutableCopy];
 		
-		_label = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 10.0, 260.0, 22.0)];
+		_label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, 300.0, 22.0)];
 		_label.backgroundColor = [UIColor clearColor];
 		_label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
-		_label.textColor = [UIColor whiteColor];
-		_label.numberOfLines = 0;
+		_label.textColor = [UIColor blackColor];
+		_label.textAlignment = NSTextAlignmentCenter;
+		_label.text = [kBaseCaption stringByAppendingString:@"…"];
 		[self addSubview:_label];
 		
-		_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 10.0, 0.0, 44.0, 44.0)];
-		//_imageHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
+		_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 40.0, 300.0, self.frame.size.height - 40.0)];
+//		_imageHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[self addSubview:_imageHolderView];
 		
 		[self _updateLabel];
@@ -96,8 +102,8 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 	}
 	
 	if (dropEmotionVO != nil) {
-		[self _updateLabel];
 		[_emotions removeObject:dropEmotionVO];
+		[self _updateLabel];
 	}
 	
 	
@@ -133,9 +139,8 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 	int col = cnt % COLS_PER_ROW;
 	int row = (int)floor(cnt / COLS_PER_ROW);
 	
-	if (cnt <= MIN([_emotions count], ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 10 : 5)) {
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(col * 60, row * 60.0, 44.0, 44.0)];
-		//imageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor];
+	if (cnt <= MIN([_emotions count], ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 18 : 12)) {
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(col * (kImageSize.width + kImagePaddingSize.width), row * (kImageSize.width + kImagePaddingSize.width), kImageSize.width, kImageSize.height)];
 		[imageView setTag:emotionVO.emotionID];
 		imageView.alpha = 0.0;
 		[_imageHolderView addSubview:imageView];
@@ -171,8 +176,13 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 						 imageView.alpha = 0.0;
 						 
 					 } completion:^(BOOL finished) {
-						 if (index <= [_imageHolderView.subviews count] - 1)
-							 [self _consolidateImageViewsInRange:NSMakeRange(index+1, [_imageHolderView.subviews count] - (index + 1))];
+						 if (index == [_imageHolderView.subviews count] - 1)
+							 [[_imageHolderView.subviews lastObject] removeFromSuperview];
+						 
+						 else {
+							 if ([_imageHolderView.subviews count] > 0)
+								 [self _consolidateImageViewsInRange:NSMakeRange(index+1, [_imageHolderView.subviews count] - (index + 1))];
+						 }
 					 }];
 }
 
@@ -190,11 +200,10 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 		 
 						 animations:^(void) {
-							 imageView.frame = CGRectMake(col * 60.0, row * 60.0, imageView.frame.size.width, imageView.frame.size.height);
+							 imageView.frame = CGRectMake(col * (kImageSize.width + kImagePaddingSize.width), row * (kImageSize.width + kImagePaddingSize.width), imageView.frame.size.width, imageView.frame.size.height);
 							 
 						 } completion:^(BOOL finished) {
-							 if (i == [_imageHolderView.subviews count] - 1)
-								 [dropImageView removeFromSuperview];
+							 [dropImageView removeFromSuperview];
 						 }];
 	}
 	
@@ -202,53 +211,66 @@ const CGSize kMaxLabelSize = {240.0, 66.0};
 }
 
 - (void)_updateLabel {
-	//_label.text = [[NSAttributedString alloc] initWithString:[self _captionForEmotions] attributes:@{}];
 	
-	NSDictionary *attribParams = @{NSFontAttributeName				: _label.font,
-								   NSShadowAttributeName			: [[HONFontAllocator sharedInstance] orthodoxShadowAttribute],
-								   NSParagraphStyleAttributeName	: [[HONFontAllocator sharedInstance] doubleLineSpacingParagraphStyleForFont:_label.font]};
-	
-	_captionSize = [[self _captionForEmotions] boundingRectWithSize:kMaxLabelSize
-															options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-														 attributes:attribParams
-															context:nil].size;
-	
-	_captionSize = CGSizeMake(MIN(ceil(_captionSize.width), kMaxLabelSize.width), MIN(ceil(_captionSize.height), kMaxLabelSize.height));
-	
-	_label.frame = CGRectMake(_label.frame.origin.x, _label.frame.origin.y, _captionSize.width, _captionSize.height);
-	_label.attributedText = [[NSAttributedString alloc] initWithString:[self _captionForEmotions] attributes:attribParams];
-	
-	_imageHolderView.frame = CGRectMake(([_emotions count] == 1) ? _label.frame.origin.x + _label.frame.size.width : 10.0, ([_emotions count] == 1) ? 0.0 : _label.frame.origin.y + _label.frame.size.height, ([_emotions count] == 1) ? 60.0 : 300.0, 60.0 + ((int)ceil([_emotions count] / COLS_PER_ROW) * 60.0));
-
-	
-	NSLog(@"\n\t\t|--|--|--|--|--|--|:|--|--|--|--|--|--|");
-	NSLog(@"FONT ATTRIBS:[%@]", _label.font.fontDescriptor.fontAttributes);
-	NSLog(@"--// %@ @ (%d) //--", [_label.font.fontDescriptor.fontAttributes objectForKey:@"NSFontNameAttribute"], (int)_label.font.pointSize);
-	NSLog(@"DRAW SIZE:[%@] ATTR SIZE:[%@]", NSStringFromCGSize(_captionSize), NSStringFromCGSize(_label.attributedText.size));
-	NSLog(@"X-HEIGHT:[%f]", _label.font.xHeight);
-	NSLog(@"CAP:[%f]", _label.font.capHeight);
-	NSLog(@"ASCENDER:[%f] DESCENDER:[%f]", _label.font.ascender, _label.font.descender);
-	NSLog(@"LINE HEIGHT:[%f]", _label.font.lineHeight);
-	NSLog(@"[=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=|:|=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=]");
-}
-
-
-#pragma mark - Data Tally
-- (NSString *)_captionForEmotions {
-	NSString *emotionNames = @"";
-	int cnt = 0;
-	
-	for (HONEmotionVO *vo in _emotions) {
-		emotionNames = [emotionNames stringByAppendingFormat:@"%@, ", vo.emotionName];
-		cnt++;
+	if ([_emotions count] > 0) {
+		HONEmotionVO *vo = (HONEmotionVO *)[_emotions lastObject];
 		
-		if (cnt == MAX_DISPLAYED_NAMES)
-			break;
+		_label.text = [kBaseCaption stringByAppendingFormat:@" %@…", vo.emotionName];
+		[_label setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18] range:[_label.text rangeOfString:vo.emotionName]];
+	
+	} else {
+		_label.text = [kBaseCaption stringByAppendingString:@"…"];
+		[_label setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18] range:[_label.text rangeOfString:_label.text]];
 	}
 	
-	emotionNames = ([emotionNames length] >= 2) ? [emotionNames substringToIndex:[emotionNames length] - 2] : @"";
-	return (([_emotions count] > 0) ? [NSString stringWithFormat:@"- is feeling %@%@", emotionNames, ([_emotions count] > MAX_DISPLAYED_NAMES) ? [NSString stringWithFormat:@", +%d more…", ([_emotions count] - MAX_DISPLAYED_NAMES)] : @""] : @"- is feeling…");
+	
+	//_label.text = [[NSAttributedString alloc] initWithString:[self _captionForEmotions] attributes:@{}];
+	
+//	NSDictionary *attribParams = @{NSFontAttributeName				: _label.font,
+//								   NSShadowAttributeName			: [[HONFontAllocator sharedInstance] orthodoxShadowAttribute],
+//								   NSParagraphStyleAttributeName	: [[HONFontAllocator sharedInstance] doubleLineSpacingParagraphStyleForFont:_label.font]};
+//	
+//	_captionSize = [[self _captionForEmotions] boundingRectWithSize:kMaxLabelSize
+//															options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+//														 attributes:attribParams
+//															context:nil].size;
+//	
+//	_captionSize = CGSizeMake(MIN(ceil(_captionSize.width), kMaxLabelSize.width), MIN(ceil(_captionSize.height), kMaxLabelSize.height));
+//	
+//	_label.frame = CGRectMake(_label.frame.origin.x, _label.frame.origin.y, _captionSize.width, _captionSize.height);
+//	_label.attributedText = [[NSAttributedString alloc] initWithString:[self _captionForEmotions] attributes:attribParams];
+//	
+//	_imageHolderView.frame = CGRectMake(([_emotions count] == 1) ? _label.frame.origin.x + _label.frame.size.width : 10.0, ([_emotions count] == 1) ? 0.0 : _label.frame.origin.y + _label.frame.size.height, ([_emotions count] == 1) ? 60.0 : 300.0, 60.0 + ((int)ceil([_emotions count] / COLS_PER_ROW) * 60.0));
+
+	
+//	NSLog(@"\n\t\t|--|--|--|--|--|--|:|--|--|--|--|--|--|");
+//	NSLog(@"FONT ATTRIBS:[%@]", _label.font.fontDescriptor.fontAttributes);
+//	NSLog(@"--// %@ @ (%d) //--", [_label.font.fontDescriptor.fontAttributes objectForKey:@"NSFontNameAttribute"], (int)_label.font.pointSize);
+//	NSLog(@"DRAW SIZE:[%@] ATTR SIZE:[%@]", NSStringFromCGSize(_captionSize), NSStringFromCGSize(_label.attributedText.size));
+//	NSLog(@"X-HEIGHT:[%f]", _label.font.xHeight);
+//	NSLog(@"CAP:[%f]", _label.font.capHeight);
+//	NSLog(@"ASCENDER:[%f] DESCENDER:[%f]", _label.font.ascender, _label.font.descender);
+//	NSLog(@"LINE HEIGHT:[%f]", _label.font.lineHeight);
+//	NSLog(@"[=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=|:|=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=]");
 }
+
+
+//#pragma mark - Data Tally
+//- (NSString *)_captionForEmotions {
+//	NSString *emotionNames = @"";
+//	int cnt = 0;
+//	
+//	for (HONEmotionVO *vo in _emotions) {
+//		emotionNames = [emotionNames stringByAppendingFormat:@"%@, ", vo.emotionName];
+//		cnt++;
+//		
+//		if (cnt == MAX_DISPLAYED_NAMES)
+//			break;
+//	}
+//	
+//	emotionNames = ([emotionNames length] >= 2) ? [emotionNames substringToIndex:[emotionNames length] - 2] : @"";
+//	return (([_emotions count] > 0) ? [NSString stringWithFormat:@"- is feeling %@%@", emotionNames, ([_emotions count] > MAX_DISPLAYED_NAMES) ? [NSString stringWithFormat:@", +%d more…", ([_emotions count] - MAX_DISPLAYED_NAMES)] : @""] : @"- is feeling…");
+//}
 
 
 @end

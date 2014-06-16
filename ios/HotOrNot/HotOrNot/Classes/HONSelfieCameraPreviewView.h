@@ -11,12 +11,11 @@
 @class HONSelfieCameraPreviewView;
 @protocol HONSelfieCameraPreviewViewDelegate <NSObject>
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView;
-- (void)cameraPreviewViewClose:(HONSelfieCameraPreviewView *)previewView;
-- (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubject:(NSString *)subject;
+- (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects;
 @end
 
-@interface HONSelfieCameraPreviewView : UIView <UIAlertViewDelegate>
-- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image asSubmittingType:(HONSelfieCameraSubmitType)selfieSubmitType withSubject:(NSString *)subject withRecipients:(NSArray *)recipients;
+@interface HONSelfieCameraPreviewView : UIView
+- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image;
 - (void)uploadComplete;
 
 @property (nonatomic, assign) id <HONSelfieCameraPreviewViewDelegate> delegate;

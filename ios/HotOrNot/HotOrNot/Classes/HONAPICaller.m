@@ -519,7 +519,7 @@ static HONAPICaller *sharedInstance = nil;
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
-			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			//SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
 
 			if (completion)
 				completion(result);
@@ -1510,6 +1510,38 @@ static HONAPICaller *sharedInstance = nil;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsFeatured, [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+}
+
+- (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
+	NSDictionary *params = @{@"userID"		: [dict objectForKey:@"user_id"],
+							 @"imgURL"		: [dict objectForKey:@"img_url"],
+							 @"challengeID"	: [dict objectForKey:@"challenge_id"],
+							 @"clubID"		: [dict objectForKey:@"club_id"],
+							 @"subject"		: [dict objectForKey:@"subject"],
+							 @"subjects"	: [dict objectForKey:@"subjects"],
+							 @"targets"		: [dict objectForKey:@"recipients"]};
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], [dict objectForKey:@"api_endpt"], params);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+	[httpClient postPath:[dict objectForKey:@"api_endpt"] parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
 }

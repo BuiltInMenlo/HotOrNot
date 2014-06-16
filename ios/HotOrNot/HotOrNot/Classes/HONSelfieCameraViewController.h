@@ -10,8 +10,18 @@
 #import "HONUserClubVO.h"
 #import "HONMessageVO.h"
 
+typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
+	HONSelfieSubmitTypeCreateChallenge = 0,
+	HONSelfieSubmitTypeReplyChallenge,
+	
+	HONSelfieSubmitTypeCreateClub,
+	HONSelfieSubmitTypeReplyClub,
+	
+	HONSelfieSubmitTypeCreateMessage,
+	HONSelfieSubmitTypeReplyMessage
+};
+
 @interface HONSelfieCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
-- (id)initWithoutClub;
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 
 
