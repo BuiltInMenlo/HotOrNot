@@ -567,32 +567,17 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook || HONContactsTableViewDataSourceMatchedUsers) {
-		HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-		return ((cell.trivialUserVO != nil) ? indexPath : nil);
-		
-	} else
-		return (indexPath);
+	
+	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	return ((cell.contactUserVO.userID != 0 || cell.trivialUserVO.userID != 0) ? indexPath : nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-		HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-		HONTrivialUserVO *vo = cell.trivialUserVO;
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Select Contact Row"
-										withTrivialUser:vo];
-		
-		[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
-		
-	} else {
-		HONTrivialUserVO *vo = [_searchUsers objectAtIndex:indexPath.row];
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Select Search Row"
-										withTrivialUser:vo];
-		
-		[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
-	}
+	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	int userID = (cell.contactUserVO.userID != 0) ? cell.contactUserVO.userID : cell.trivialUserVO.userID;
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:userID] animated:YES];
 }
 
 
