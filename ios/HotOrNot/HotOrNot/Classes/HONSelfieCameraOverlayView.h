@@ -8,6 +8,24 @@
 
 #import "HONSelfieCameraPreviewView.h"
 
+//typedef NS_ENUM(NSInteger, HONCameraSubmitType) {
+//	HONCameraSubmitTypeCreateChallenge = 0,
+//	HONCameraSubmitTypeReplyChallenge,
+//	
+//	HONSelfieCameraSubmitTypeCreateClub,
+//	HONSelfieCameraSubmitTypeReplyClub,
+//	
+//	HONSelfieCameraSubmitTypeCreateVerify,
+//	HONSelfieCameraSubmitTypeReplyVerify,
+//	
+//	HONSelfieCameraSubmitTypeCreateShoutout,
+//	HONSelfieCameraSubmitTypeReplyShoutout,
+//	
+//	HONSelfieCameraSubmitTypeCreateMessage,
+//	HONSelfieCameraSubmitTypeReplyMessage
+//};
+
+
 @class HONSelfieCameraOverlayView;
 @protocol HONSelfieCameraOverlayViewDelegate <NSObject>
 - (void)cameraOverlayViewCameraBack:(HONSelfieCameraOverlayView *)cameraOverlayView;

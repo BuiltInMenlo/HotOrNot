@@ -15,10 +15,9 @@
 #import "HONChallengeVO.h"
 
 #import "HONRegisterViewController.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSuggestedFollowViewController.h"
-#import "HONClubPhotoViewController.h"
 
 #import "HONHeaderView.h"
 #import "HONActivityHeaderButtonView.h"
@@ -124,9 +123,9 @@
 
 - (void)_refreshClubFromSwerver
 {
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		NSMutableArray *clubPhotos = [NSMutableArray array];
-		for (NSDictionary *clubData in (NSDictionary *)result) {
+		for (NSDictionary *clubData in result) {
 			HONClubPhotoVO *vo = [HONClubPhotoVO clubPhotoWithDictionary:clubData];
 			if (vo != nil)
 				[clubPhotos addObject:vo];
@@ -247,7 +246,7 @@
 {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Create Volley"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -326,8 +325,8 @@
  [[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Upvote Challenge"
  withChallengeCreator:challengeVO];
  
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSObject *result){
-		_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSDictionary *result) {
+		_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 		for (HONTimelineItemViewCell *cell in _cells) {
 			if (cell.challengeVO.challengeID == _challengeVO.challengeID)
 				[cell updateChallenge:_challengeVO];
@@ -376,10 +375,9 @@
 									  withChallenge:challengeVO];
 	
 	
-//	[self.navigationController pushViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO] animated:YES];	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController upvoteChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
@@ -387,8 +385,8 @@
 									  withChallenge:challengeVO
 									 andParticipant:opponentVO];
 	
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSObject *result) {
-		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSDictionary *result) {
+		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:result];
 		
 //		NSMutableArray *mutableChallenges = [_challenges mutableCopy];<<
 		NSMutableArray *mutableChallenges = [_clubPhotos mutableCopy];
@@ -413,7 +411,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Join Challenge"
 									  withChallenge:challengeVO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

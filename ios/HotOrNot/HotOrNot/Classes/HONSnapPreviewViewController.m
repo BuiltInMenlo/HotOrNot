@@ -312,8 +312,8 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_challengeVO.challengeID forOpponent:_opponentVO completion:^(NSObject *result){
-		_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:_challengeVO.challengeID forOpponent:_opponentVO completion:^(NSDictionary *result) {
+		_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:result];
 		[self.delegate snapPreviewViewController:self upvoteOpponent:_opponentVO forChallenge:_challengeVO];
@@ -353,7 +353,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Verify Approve"
 							   withChallengeCreator:_challengeVO];
 					
-	[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:YES completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:YES completion:^(NSObject *result) {
 		_hasTakenVerifyAction = YES;
 		[self _goClose];
 	}];
@@ -385,12 +385,12 @@
 - (void)_goShoutout {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - Verify Shoutout" withChallenge:_challengeVO andParticipant:_opponentVO];
 	
-	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] createShoutoutChallengeWithChallengeID:_challengeVO.creatorVO.userID completion:^(NSObject *result) {
 		_hasTakenVerifyAction = YES;
 		[self _goClose];
 	}];
 	
-	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_opponentVO.userID completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_opponentVO.userID completion:^(NSObject *result) {
 		_hasTakenVerifyAction = YES;
 		[self _goClose];
 	}];
@@ -472,7 +472,7 @@
 			[self _goClose];
 			
 		} else if (buttonIndex == 1) {
-			[[HONAPICaller sharedInstance] flagUserByUserID:_opponentVO.userID completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] flagUserByUserID:_opponentVO.userID completion:^(NSObject *result) {
 				_hasTakenVerifyAction = YES;
 				
 				[self _goClose];
@@ -486,7 +486,7 @@
 										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 0) {
-			[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:_challengeVO.creatorVO.userID completion:^(NSObject *result) {
 				_hasTakenVerifyAction = YES;
 				[self _goClose];
 			}];
@@ -498,7 +498,7 @@
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
 			
-			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:^(NSObject *result) {
 				_hasTakenVerifyAction = YES;
 				[self _goClose];
 			}];
@@ -515,7 +515,7 @@
 										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 1) {
-			[[HONAPICaller sharedInstance] flagUserByUserID:_opponentVO.userID completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] flagUserByUserID:_opponentVO.userID completion:^(NSObject *result) {
 				_hasTakenVerifyAction = YES;
 				
 				[self _goClose];
@@ -529,7 +529,7 @@
 										 andParticipant:_opponentVO];
 		
 		if (buttonIndex == 1) {
-			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:^(NSObject *result) {
 				_hasTakenVerifyAction = YES;
 				[self _goClose];
 			}];

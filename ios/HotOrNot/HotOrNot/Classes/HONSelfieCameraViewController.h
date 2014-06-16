@@ -11,6 +11,10 @@
 #import "HONMessageVO.h"
 
 @interface HONSelfieCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+- (id)initWithoutClub;
+- (id)initWithClub:(HONUserClubVO *)clubVO;
+
+
 - (id)initAsNewChallenge;
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
 - (id)initAsNewMessageWithRecipients:(NSArray *)recipients;

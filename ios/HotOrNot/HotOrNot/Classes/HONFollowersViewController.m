@@ -54,11 +54,11 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUserByID:(int)userID {
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSObject *result) {
-		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
-			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSDictionary *result) {
+		if ([result objectForKey:@"id"] != nil) {
+			_userVO = [HONUserVO userWithDictionary:result];
 			
-			NSMutableArray *users = [NSMutableArray arrayWithCapacity:[[(NSDictionary *)result objectForKey:@"friends"] count]];
+			NSMutableArray *users = [NSMutableArray arrayWithCapacity:[[result objectForKey:@"friends"] count]];
 			for (NSDictionary *dict in [(NSDictionary *)result objectForKey:@"friends"])
 				[users addObject:[dict objectForKey:@"user"]];
 			

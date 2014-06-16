@@ -18,7 +18,7 @@
 #import "HONActivityItemViewCell.h"
 #import "HONMessageDetailsViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONSearchUsersViewController.h"
 #import "HONSuggestedFollowViewController.h"
@@ -57,9 +57,9 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveMessages {
-	[[HONAPICaller sharedInstance] retrieveMessagesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] retrieveMessagesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result){
 		_messages = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
+		for (NSDictionary *dict in result) {
 			HONMessageVO *vo = [HONMessageVO messageWithDictionary:dict];
 			[_messages addObject:vo];
 			

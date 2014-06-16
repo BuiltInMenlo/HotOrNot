@@ -65,9 +65,9 @@
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeAvatars withFilename:_imagePrefix completion:^(NSObject *result) {		
 		[_cameraOverlayView uploadComplete];
 		
-		[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:_imagePrefix completion:^(NSObject *result){
-			if (![[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+		[[HONAPICaller sharedInstance] updateAvatarWithImagePrefix:_imagePrefix completion:^(NSDictionary *result) {
+			if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+				[HONAppDelegate writeUserInfo:result];
 				
 				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 			}

@@ -15,7 +15,6 @@
 
 #import "HONAddContactsViewController.h"
 #import "HONMessagesViewController.h"
-#import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONMessagesButtonView.h"
@@ -75,8 +74,8 @@
 
 #pragma mark - Data Calls
 - (void)_sendEmailContacts {
-	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
-		for (NSDictionary *dict in (NSArray *)result) {
+	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
+		for (NSDictionary *dict in result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
@@ -102,8 +101,8 @@
 }
 
 - (void)_sendPhoneContacts {
-	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
-		for (NSDictionary *dict in (NSArray *)result) {
+	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
+		for (NSDictionary *dict in result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
@@ -134,8 +133,8 @@
 	for (HONTrivialUserVO *vo in _selectedInAppContacts)
 		userIDs = [userIDs stringByAppendingFormat:@"%d|", vo.userID];
 	
-//	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSObject *result){
-//		[HONAppDelegate writeFollowingList:(NSArray *)result];
+//	[[HONAPICaller sharedInstance] followUsersByUserIDWithDelimitedList:[userIDs substringToIndex:[userIDs length] - 1] completion:^(NSArray *result) {
+//		[HONAppDelegate writeFollowingList:result];
 //		
 //		if (_progressHUD != nil) {
 //			[_progressHUD hide:YES];
@@ -185,7 +184,7 @@
 			for (HONContactUserVO *vo in emails)
 				addresses = [addresses stringByAppendingFormat:@"%@|", vo.email];
 			
-			[[HONAPICaller sharedInstance] sendEmailInvitesWithDelimitedList:[addresses substringToIndex:[addresses length] - 1] completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] sendEmailInvitesWithDelimitedList:[addresses substringToIndex:[addresses length] - 1] completion:^(NSObject *result) {
 				_inviteTypeCounter++;
 				[self _checkInviteComplete];
 			}];
@@ -198,7 +197,7 @@
 					phoneNumbers = [phoneNumbers stringByAppendingFormat:@"%@|", vo.mobileNumber];
 			}
 			
-			[[HONAPICaller sharedInstance] sendSMSInvitesWithDelimitedList:[phoneNumbers substringToIndex:[phoneNumbers length] - 1] completion:^(NSObject *result){
+			[[HONAPICaller sharedInstance] sendSMSInvitesWithDelimitedList:[phoneNumbers substringToIndex:[phoneNumbers length] - 1] completion:^(NSObject *result) {
 				_inviteTypeCounter++;
 				[self _checkInviteComplete];
 			}];

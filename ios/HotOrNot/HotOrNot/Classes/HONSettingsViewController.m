@@ -314,9 +314,9 @@
 			_notificationSwitch.on = !_notificationSwitch.on;
 		
 		else {
-			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:_notificationSwitch.on completion:^(NSObject *result){
-				if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null])
-					[HONAppDelegate writeUserInfo:(NSDictionary *)result];			 
+			[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:_notificationSwitch.on completion:^(NSDictionary *result) {
+				if ([result objectForKey:@"id"] != [NSNull null])
+					[HONAppDelegate writeUserInfo:result];
 			}];
 		}
 		

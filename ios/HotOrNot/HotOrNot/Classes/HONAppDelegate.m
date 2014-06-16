@@ -45,13 +45,12 @@
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
 #import "HONClubsNewsFeedViewController.h"
-#import "HONClubPhotoViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONContactsTabViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 
 const CGFloat kDevClubID = 12.0f;
 
@@ -504,48 +503,46 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Data Calls
 - (void)_retrieveConfigJSON {
-	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSObject *result) {
-		NSDictionary *dict = (NSDictionary *)result;
+	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_url"] forKey:@"support_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_copy"] forKey:@"verify_copy"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
+		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_age"] forKey:@"min_age"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
+		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
+		[[NSUserDefaults standardUserDefaults] setObject:@[[result objectForKey:@"free_emotions"],
+														   [result objectForKey:@"paid_emotions"]] forKey:@"emotions"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[dict objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"support_url"] forKey:@"support_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"splash_image"] forKey:@"splash_image"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"share_templates"] forKey:@"share_templates"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[[dict objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"verify_copy"] forKey:@"verify_copy"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"share_url"] forKey:@"share_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
-		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[dict objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[dict objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"min_age"] forKey:@"min_age"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
-		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[dict objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"filter_vals"] forKey:@"filter_vals"];
-		[[NSUserDefaults standardUserDefaults] setObject:@[[dict objectForKey:@"free_emotions"],
-														   [dict objectForKey:@"paid_emotions"]] forKey:@"emotions"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"stickers"] forKey:@"stickers"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
+														   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
+														   @"clubs"			: [[result objectForKey:@"s3_buckets"] objectForKey:@"clubs"],
+														   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"stickers"] forKey:@"stickers"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"subject_formats"] forKey:@"subject_formats"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"search_users"] forKey:@"search_users"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dict objectForKey:@"switches"] forKey:@"switches"];
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
-														   @"banners"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"banners"],
-														   @"clubs"			: [[dict objectForKey:@"s3_buckets"] objectForKey:@"clubs"],
-														   @"emoticons"		: [[dict objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:[[dict objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
+														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[dict objectForKey:@"invite_formats"] objectForKey:@"sms"],
-														   @"email"		: [[dict objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[dict objectForKey:@"share_formats"] objectForKey:@"instagram"],
-														   @"twitter"	: [[dict objectForKey:@"share_formats"] objectForKey:@"twitter"],
-														   @"facebook"	: [[dict objectForKey:@"share_formats"] objectForKey:@"facebook"],
-														   @"sms"		: [[dict objectForKey:@"share_formats"] objectForKey:@"sms"],
-														   @"email"		: [[dict objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
+		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
+														   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
+														   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
+														   @"sms"		: [[result objectForKey:@"share_formats"] objectForKey:@"sms"],
+														   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
 		
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -555,8 +552,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 		
 		
-		if ([[[dict objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
-			[self _showOKAlert:[[dict objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[dict objectForKey:@"boot_alert"] objectForKey:@"message"]];
+		if ([[[result objectForKey:@"boot_alert"] objectForKey:@"enabled"] isEqualToString:@"Y"])
+			[self _showOKAlert:[[result objectForKey:@"boot_alert"] objectForKey:@"title"] withMessage:[[result objectForKey:@"boot_alert"] objectForKey:@"message"]];
 		
 		
 		[self _writeShareTemplates];
@@ -621,17 +618,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_enableNotifications:(BOOL)isEnabled {
-	[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:isEnabled completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] togglePushNotificationsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] areEnabled:isEnabled completion:^(NSDictionary *result) {
 		if (![result isEqual:[NSNull null]])
-			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			[HONAppDelegate writeUserInfo:result];
 	}];
 }
 
 - (void)_challengeObjectFromPush:(int)challengeID cancelNextPushes:(BOOL)isCancel {
-	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:challengeID igoringNextPushes:isCancel completion:^(NSObject *result){
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:challengeID igoringNextPushes:isCancel completion:^(NSDictionary *result) {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:result]]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}];
 }
 
@@ -1011,7 +1008,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		} else if ([[path objectAtIndex:0] isEqualToString:@"create"]) {
 			if ([[path objectAtIndex:1] isEqualToString:@"selfie"])
-				[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]] animated:YES completion:nil];
+				[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]] animated:YES completion:nil];
 		}
 		
 		return (YES);

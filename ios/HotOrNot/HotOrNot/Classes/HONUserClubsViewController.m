@@ -87,15 +87,15 @@
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 //	[self _fpoPopulate];
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSDictionary *dict in [(NSDictionary *)result objectForKey:key])
+			for (NSDictionary *dict in [result objectForKey:key])
 				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 			
 			[_clubIDs setValue:clubIDs forKey:key];
-			[_dictClubs addObjectsFromArray:[(NSDictionary *)result objectForKey:key]];
+			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
 		
 		

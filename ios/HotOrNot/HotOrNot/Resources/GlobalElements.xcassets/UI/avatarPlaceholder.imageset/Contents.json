@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "defaultAvatarBackground.png"
+      "filename" : "defaultAvatar.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "defaultAvatarBackground@2x.png"
+      "filename" : "defaultAvatar@2x.png"
     }
   ],
   "info" : {

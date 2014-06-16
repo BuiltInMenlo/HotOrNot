@@ -15,7 +15,6 @@
 #import "HONTableViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
-#import "HONImagePickerViewController.h"
 
 @interface HONCommentsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -380,7 +379,7 @@
 //													   vo.fbID, @"fb_id",
 //													   vo.avatarURL, @"avatar_url", nil]];
 //	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 }

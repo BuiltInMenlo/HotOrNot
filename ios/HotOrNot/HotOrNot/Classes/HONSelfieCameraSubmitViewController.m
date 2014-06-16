@@ -75,15 +75,14 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
-			_ownClub = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
-			//_ownClub = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"owned"] count] > 0)
+			_ownClub = [HONUserClubVO clubWithDictionary:[[result objectForKey:@"owned"] objectAtIndex:0]];
 		
 		if (_ownClub != nil)
 			[_allClubs addObject:_ownClub];
 		
-		for (NSDictionary *dict in [((NSDictionary *)result) objectForKey:@"joined"])
+		for (NSDictionary *dict in [result objectForKey:@"joined"])
 			[_joinedClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		
@@ -110,7 +109,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor brownColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_allClubs = [NSMutableArray array];
 	_joinedClubs = [NSMutableArray array];
@@ -119,7 +118,7 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 90.0)) style:UITableViewStylePlain];
 	_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -20.0);
-	[_tableView setBackgroundColor:[[HONColorAuthority sharedInstance] honDebugColor:HONDebugGreenColor]];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.showsHorizontalScrollIndicator = NO;
@@ -129,13 +128,6 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select Club"];
 	[self.view addSubview:headerView];
-	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:cancelButton];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
@@ -261,16 +253,15 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_allClubs count] : 1);
+	return (0);//[_allClubs count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ((section == 0) ? [[HONTableHeaderView alloc] initWithTitle:@"CLUBS"] : [[UIView alloc] initWithFrame:CGRectZero]);
-	return ([[HONTableHeaderView alloc] initWithTitle:[@"SEC.%d" stringByAppendingString:[@"" stringFromInt:section]]]);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -314,8 +305,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 0) ? kOrthodoxTableHeaderHeight : 0.0);
-	return (kOrthodoxTableHeaderHeight);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

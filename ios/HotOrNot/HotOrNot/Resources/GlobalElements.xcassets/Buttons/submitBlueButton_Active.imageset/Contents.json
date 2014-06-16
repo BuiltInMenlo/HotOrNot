@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "submitButtonLargeNonActive_Active.png"
+      "filename" : "submitStep3_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "submitButtonLargeNonActive_Active@2x.png"
+      "filename" : "submitStep3_Active@2x.png"
     }
   ],
   "info" : {

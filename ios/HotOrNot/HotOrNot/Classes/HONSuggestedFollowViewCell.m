@@ -129,21 +129,21 @@
 		[borderImageView addSubview:imageLoadingView];
 	}
 	
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_trivialUserVO.userID completion:^(NSDictionary *result) {
 		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
-			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
+			_userVO = [HONUserVO userWithDictionary:result];
 			
 			_totalFollowing = 0;
 			_challenges = [NSMutableArray array];
 			[self _makeStats];
-//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_trivialUserVO.userID completion:^(NSObject *result){
-//				_totalFollowing = [(NSArray *)result count];
+//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_trivialUserVO.userID completion:^(NSArray *result) {
+//				_totalFollowing = [result count];
 //				
-//				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSObject *result){
+//				[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:_userVO.userID completion:^(NSArray *result) {
 //					_challenges = [NSMutableArray array];
 //					
 //					int cnt = 0;
-//					for (NSDictionary *dict in (NSArray *)result) {
+//					for (NSDictionary *dict in result) {
 //						NSLog(@"CHALLENGE #%d:[%@]", (cnt + 1), [dict objectForKey:@"creator"]);
 //						HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 //						[_challenges addObject:vo];

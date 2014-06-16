@@ -21,7 +21,7 @@
 #import "HONUserVO.h"
 #import "HONFeedViewController.h"
 #import "HONRegisterViewController.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
@@ -32,7 +32,6 @@
 #import "HONSuggestedFollowViewController.h"
 #import "HONMatchContactsViewController.h"
 #import "HONMessagesViewController.h"
-#import "HONClubPhotoViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -89,9 +88,9 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] retrieveChallengesForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
 		_challenges = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
+		for (NSDictionary *dict in result) {
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 			[_challenges addObject:vo];
 		}
@@ -284,7 +283,7 @@
 
 - (void)_goCreateChallenge {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Create Volley"];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -414,8 +413,8 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Upvote Challenge"
 									  withChallenge:challengeVO];
 	
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSObject *result){
-		_challengeVO = [HONChallengeVO challengeWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSDictionary *result) {
+		_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 		for (HONTimelineItemViewCell *cell in _cells) {
 			if (cell.challengeVO.challengeID == _challengeVO.challengeID)
 				[cell updateChallenge:_challengeVO];
@@ -442,7 +441,7 @@
 									  withChallenge:challengeVO];
 	
 	[cell showTapOverlay];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

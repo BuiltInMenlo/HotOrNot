@@ -60,8 +60,8 @@
 
 #pragma mark - Data Calls
 - (void)_updateClub {
-	[[HONAPICaller sharedInstance] editClubWithClubID:_userClubVO.clubID withTitle:_clubName withDescription:_clubBlurb withImagePrefix:_clubImagePrefix completion:^(NSObject *result) {
-		if ([[(NSDictionary *)result objectForKey:@"result"] intValue] == 1) {
+	[[HONAPICaller sharedInstance] editClubWithClubID:_userClubVO.clubID withTitle:_clubName withDescription:_clubBlurb withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"result"] intValue] == 1) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;

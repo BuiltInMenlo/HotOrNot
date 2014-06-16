@@ -56,14 +56,14 @@
 
 #pragma mark - Data Calls
 - (void)_submitClub {
-	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:_clubBlurb withImagePrefix:_clubImagePrefix completion:^(NSObject *result) {
-		if ((NSDictionary *)result != nil) {
+	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:_clubBlurb withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
+		if (result != nil) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:(NSDictionary *)result]] animated:YES];
+			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result]] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)

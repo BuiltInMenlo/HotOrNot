@@ -35,7 +35,7 @@
 - (void)setActivityItemVO:(HONActivityItemVO *)activityItemVO {
 	_activityItemVO = activityItemVO;
 	
-	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 25.0, 25.0)];
+	UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(17.0, 9.0, 28.0, 28.0)];
 	[self.contentView addSubview:imageHolderView];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageHolderView asLargeLoader:NO];
@@ -75,15 +75,36 @@
 	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:avatarButton];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(43.0, 13.0, 195.0, 17.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+	
+	NSString *caption = [NSString stringWithFormat:@"%@", _activityItemVO.username];
+	
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 180.0, 17.0)];
+	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13];
 	nameLabel.textColor = [UIColor blackColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _activityItemVO.username;
 	[self.contentView addSubview:nameLabel];
 	
-	_indicatorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityDot"]];
-	_indicatorImageView.frame = CGRectOffset(_indicatorImageView.frame, 280.0, 1.0);
+	
+	CGSize maxSize = CGSizeMake(nameLabel.frame.size.width, nameLabel.frame.size.height);
+	CGSize size = [caption boundingRectWithSize:maxSize
+											 options:NSStringDrawingTruncatesLastVisibleLine
+										  attributes:@{NSFontAttributeName:nameLabel.font}
+											 context:nil].size;
+	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxSize.width, size.width), nameLabel.frame.size.height);
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + nameLabel.frame.size.width + 4.0, nameLabel.frame.origin.y, 50.0, nameLabel.frame.size.height)];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_activityItemVO.sentDate minSeconds:0 usingIndicators:@{@"seconds"	: @[@"sec", @"s"],
+																																	@"minutes"	: @[@"min", @"s"],
+																																	@"hours"	: @[@"hr", @"s"],
+																																	@"days"		: @[@"dy", @"s"]} includeSuffix:@""];
+	[self.contentView addSubview:timeLabel];
+	
+	_indicatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(295.0, 16.0, 13.0, 13.0)];
+	_indicatorImageView.image = [UIImage imageNamed:@"redDot"];
 	[self.contentView addSubview:_indicatorImageView];
 }
 

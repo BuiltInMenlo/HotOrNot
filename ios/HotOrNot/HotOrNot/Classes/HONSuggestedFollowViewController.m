@@ -129,14 +129,14 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suggested People - Done"];
 	
 //	for (HONTrivialUserVO *vo in _removeUsers) {
-//		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSObject *result){
-//			[HONAppDelegate writeFollowingList:(NSArray *)result];
+//		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSArray *result) {
+//			[HONAppDelegate writeFollowingList:result];
 //		}];
 //	}
 //
 //	for (HONTrivialUserVO *vo in _selectedUsers) {
-//		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result){
-//			[HONAppDelegate writeFollowingList:(NSArray *)result];
+//		[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSArray *result) {
+//			[HONAppDelegate writeFollowingList:result];
 //		}];
 //	}
 	
@@ -290,8 +290,8 @@
 				[cell toggleSelected:YES];
 			
 //			for (HONTrivialUserVO *vo in _selectedUsers) {
-//				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSObject *result) {
-//					[HONAppDelegate writeFollowingList:(NSArray *)result];
+//				[[HONAPICaller sharedInstance] followUserWithUserID:vo.userID completion:^(NSArray *result) {
+//					[HONAppDelegate writeFollowingList:result];
 //				}];
 //			}
 		}

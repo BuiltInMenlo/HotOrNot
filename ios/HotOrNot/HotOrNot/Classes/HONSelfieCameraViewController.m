@@ -65,6 +65,25 @@
 	return (self);
 }
 
+
+- (id)initWithClub:(HONUserClubVO *)clubVO {
+	if ((self = [self init])) {
+		
+	}
+	
+	return (self);
+}
+
+- (id)initWithoutClub {
+	if ((self = [self init])) {
+		
+	}
+	
+	return (self);
+}
+
+
+
 - (id)initAsNewChallenge {
 	NSLog(@"%@ - initAsNewChallenge", [self description]);
 	if ((self = [self init])) {
@@ -148,7 +167,7 @@
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-//	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-challenges" withFilename:_filename completion:^(NSObject *result){
+//	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-challenges" withFilename:_filename completion:^(NSObject *result) {
 //		_isUploadComplete = YES;
 //		[_previewView uploadComplete];
 //		
@@ -213,7 +232,7 @@
 		_submitImageView.alpha = 1.0;
 	} completion:nil];
 	
-	[[HONAPICaller sharedInstance] submitChallengeWithDictionary:_challengeParams completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] submitChallengeWithDictionary:_challengeParams completion:^(NSDictionary *result) {
 //		[UIView animateWithDuration:0.5 animations:^(void) {
 //			_submitImageView.alpha = 0.0;
 //		} completion:^(BOOL finished) {
@@ -221,7 +240,7 @@
 //			_submitImageView = nil;
 //		}];
 		
-		[self _submitCompleted:(NSDictionary *)result];
+		[self _submitCompleted:result];
 	}];
 }
 
@@ -240,8 +259,8 @@
 		_submitImageView.alpha = 1.0;
 	} completion:nil];
 	
-	[[HONAPICaller sharedInstance] submitNewMessageWithDictionary:_challengeParams completion:^(NSObject *result){
-		[self _submitCompleted:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] submitNewMessageWithDictionary:_challengeParams completion:^(NSDictionary *result) {
+		[self _submitCompleted:result];
 	}];
 }
 
@@ -520,9 +539,9 @@
 						 @"api_endpt"		: kAPICreateChallenge};
 	
 	NSLog(@"SUBMIT PARAMS:[%@]", _challengeParams);
-	[self _submitChallenge];
+	//[self _submitChallenge];
 	
-	//[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithProtoChallenge:protoChallengeVO] animated:YES];
+	[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithProtoChallenge:protoChallengeVO] animated:YES];
 }
 
 

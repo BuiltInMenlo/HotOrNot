@@ -22,7 +22,7 @@
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
 #import "HONAddContactsViewController.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
@@ -80,9 +80,9 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveVerifyList {
-	[[HONAPICaller sharedInstance] retrieveVerifyListForUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveVerifyListForUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
 		_challenges = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
+		for (NSDictionary *dict in result) {
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 			[_challenges addObject:vo];
 		}
@@ -161,9 +161,9 @@
 	[self.view addSubview:headerView];
 	
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
-			_userClubVO = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		if ([[result objectForKey:@"owned"] count] > 0)
+			_userClubVO = [HONUserClubVO clubWithDictionary:[[result objectForKey:@"owned"] objectAtIndex:0]];
 		
 		[self _retrieveVerifyList];
 	}];
@@ -217,7 +217,7 @@
 - (void)_goCreateChallenge {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Create Snap"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

@@ -16,7 +16,7 @@
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 
 
 @interface HONVotersViewController()
@@ -174,7 +174,7 @@
 //												   _voterVO.fbID, @"fb_id",
 //												   _voterVO.imageURL, @"avatar_url", nil]];
 //	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
 }

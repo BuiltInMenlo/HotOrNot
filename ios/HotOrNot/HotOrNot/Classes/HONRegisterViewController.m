@@ -85,8 +85,8 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSObject *result) {
-		HONRegisterCheckErrorType checkErrorType = (HONRegisterCheckErrorType)[[(NSDictionary *)result objectForKey:@"result"] intValue];
+	[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSDictionary *result) {
+		HONRegisterCheckErrorType checkErrorType = (HONRegisterCheckErrorType)[[result objectForKey:@"result"] intValue];
 		
 		if (checkErrorType == HONRegisterErrorTypeNone) {
 			if (_progressHUD != nil) {
@@ -164,7 +164,7 @@
 	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																@"username"	: _username,
 																@"phone"	: _phone,
-																@"filename"	: _imageFilename} completion:^(NSObject *result) {
+																@"filename"	: _imageFilename} completion:^(NSDictionary *result) {
 		if (result != nil) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -172,7 +172,7 @@
 			}
 			
 			
-			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			[HONAppDelegate writeUserInfo:result];
 			[HONAppDelegate writePhoneNumber:_phone];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSObject *result) {
@@ -194,7 +194,7 @@
 			}];
 						
 		} else {
-			int errorCode = [[(NSDictionary *)result objectForKey:@"result"] intValue];
+			int errorCode = [[result objectForKey:@"result"] intValue];
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

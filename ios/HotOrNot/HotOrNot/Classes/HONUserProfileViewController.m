@@ -29,7 +29,6 @@
 
 @interface HONUserProfileViewController () <EGORefreshTableHeaderDelegate, HONActivityItemViewCellDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
-@property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, assign, readonly) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -89,9 +88,9 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSObject *result) {
-		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
-			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSDictionary *result) {
+		if ([result objectForKey:@"id"] != nil) {
+			_userVO = [HONUserVO userWithDictionary:result];
 			_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) ? HONUserProfileTypeUser : HONUserProfileTypeOpponent;
 	
 			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : @"Activity"];
@@ -113,29 +112,23 @@
 
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [(NSArray *)result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
-		int badgeTotal = ABS([(NSArray *)result count] - prevTotal);
+	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
+		int badgeTotal = ABS([result count] - prevTotal);
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
-		[[NSUserDefaults standardUserDefaults] setObject:([(NSArray *)result count] > 0) ? [[(NSArray *)result lastObject] objectForKey:@"time"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] forKey:@"activity_updated"];
+		[[NSUserDefaults standardUserDefaults] setObject:([result count] > 0) ? [[result lastObject] objectForKey:@"time"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] forKey:@"activity_updated"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [(NSArray *)result count], badgeTotal);
+		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [result count], badgeTotal);
 		
-		for (NSDictionary *dict in (NSArray *)result)
+		for (NSDictionary *dict in result)
 			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
 		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
-		
-		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:_userVO.userID completion:^(NSObject *result) {
-			if ([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0)
-				_userClubVO = [HONUserClubVO clubWithDictionary:[[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0]];
-				//_userClubVO = [HONUserClubVO clubWithDictionary:[((NSDictionary *)result) objectForKey:@"owned"]];
-		}];
 		
 		[_tableView reloadData];
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
@@ -322,7 +315,7 @@
 	[imageLoadingView startAnimating];
 	[avatarHolderView addSubview:imageLoadingView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 64.0, 64.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	

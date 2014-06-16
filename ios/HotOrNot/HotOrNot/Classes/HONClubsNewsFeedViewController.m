@@ -88,15 +88,15 @@
 															[NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSDictionary *dict in [(NSDictionary *)result objectForKey:key])
+			for (NSDictionary *dict in [result objectForKey:key])
 				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 			
 			[_clubIDs setValue:clubIDs forKey:key];
-			[_dictClubs addObjectsFromArray:[(NSDictionary *)result objectForKey:key]];
+			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
 		
 		if (_progressHUD != nil) {
@@ -111,7 +111,6 @@
 
 - (void)_joinClub:(HONUserClubVO *)userClubVO {
 	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		
 	}];
 }
 
@@ -475,8 +474,8 @@
 									   withUserClub:userClubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[[HONAPICaller sharedInstance] verifyUserWithUserID:((HONClubPhotoVO *)[userClubVO.submissions lastObject]).userID asLegit:YES completion:^(NSObject *result){
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]];
+	[[HONAPICaller sharedInstance] verifyUserWithUserID:((HONClubPhotoVO *)[userClubVO.submissions lastObject]).userID asLegit:YES completion:^(NSDictionary *result) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
 	}];
 }
 

@@ -161,7 +161,7 @@ static HONAPICaller *sharedInstance = nil;
     return ([token copy]);
 }
 
-- (void)retreiveBootConfigWithCompletion:(void (^)(NSObject *result))completion {
+- (void)retreiveBootConfigWithCompletion:(void (^)(id result))completion {
 	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
 	SelfieclubJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)", [[self class] description], kConfigURL, configURLWithTimestamp);
@@ -195,11 +195,11 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Images
-- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType completion:(void (^)(NSObject *result))completion {
+- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:prefixURL forBucketType:bucketType preDelay:kNotifiyDelay completion:completion];
 }
 
-- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(NSObject *result))completion {
+- (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:prefixURL]};
 	
 	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
@@ -229,7 +229,7 @@ static HONAPICaller *sharedInstance = nil;
 	
 }
 
-- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(NSObject *result))completion {
+- (void)uploadPhotosToS3:(NSArray *)imageData intoBucketType:(HONS3BucketType)bucketType withFilename:(NSString *)filename completion:(void (^)(id result))completion {
 	NSString *bucketName = (bucketType == HONS3BucketTypeAvatars) ? @"hotornot-avatars" : (bucketType == HONS3BucketTypeSelfies) ? @"hotornot-challenges" : (bucketType == HONS3BucketTypeClubs) ? @"hotornot-challenges" : @"hotornot-challenges";
 	
 	S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[filename stringByAppendingString:kSnapLargeSuffix] inBucket:bucketName];
@@ -274,7 +274,7 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Users
-- (void)checkForAvailableUsername:(NSString *)username andPhone:(NSString *)phone completion:(void (^)(NSObject *result))completion {
+- (void)checkForAvailableUsername:(NSString *)username andPhone:(NSString *)phone completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: username,
 							 @"password"	: phone};
@@ -302,7 +302,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)deactivateUserWithCompletion:(void (^)(NSObject *result))completion {
+- (void)deactivateUserWithCompletion:(void (^)(id result))completion {
 	SelfieclubJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIPurgeUser);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
 	[httpClient postPath:kAPIPurgeUser parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -326,7 +326,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)finalizeUserWithDictionary:(NSDictionary *)dict completion:(void (^)(NSObject *result))completion {
+- (void)finalizeUserWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:9],
 							 @"userID"		: [dict objectForKey:@"user_id"],
 							 @"username"	: [dict objectForKey:@"username"],
@@ -358,11 +358,11 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)flagUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)flagUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:userID asLegit:NO completion:completion];
 }
 
-- (void)recreateUserWithCompletion:(void (^)(NSObject *result))completion {
+- (void)recreateUserWithCompletion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"	: [@"" stringFromInt:1]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
@@ -388,7 +388,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)registerNewUserWithCompletion:(void (^)(NSObject *result))completion {
+- (void)registerNewUserWithCompletion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"	: [@"" stringFromInt:1]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, params);
@@ -415,7 +415,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveNewActivityForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveNewActivityForUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [@"" stringFromInt:userID], //131820
 							 @"lastUpdated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"]};
 	
@@ -473,7 +473,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion {
+- (void)retrieveChallengesForUserByUsername:(NSString *)username completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"action"		: [@"" stringFromInt:9],
 							 @"isPrivate"	: @"N",
@@ -505,7 +505,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [@"" stringFromInt:userID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetClubs, params);
@@ -531,7 +531,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"	: [@"" stringFromInt:5],
 							 @"userID"	: [@"" stringFromInt:userID]};
 	
@@ -568,7 +568,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)removeAllChallengesForUserWithCompletion:(void (^)(NSObject *result))completion {
+- (void)removeAllChallengesForUserWithCompletion:(void (^)(id result))completion {
 	SelfieclubJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIPurgeContent);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
 	[httpClient postPath:kAPIPurgeContent parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -592,7 +592,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)removeUserFromVerifyListWithUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)removeUserFromVerifyListWithUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:10],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"targetID"	: [@"" stringFromInt:userID],
@@ -621,7 +621,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitPasscodeToLiftAccountSuspension:(NSString *)passcode completion:(void (^)(NSObject *result))completion {
+- (void)submitPasscodeToLiftAccountSuspension:(NSString *)passcode completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"passcode"	: passcode};
 	
@@ -648,7 +648,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)togglePushNotificationsForUserByUserID:(int)userID areEnabled:(BOOL)isEnabled completion:(void (^)(NSObject *result))completion {
+- (void)togglePushNotificationsForUserByUserID:(int)userID areEnabled:(BOOL)isEnabled completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"			: [@"" stringFromInt:4],
 							 @"userID"			: [@"" stringFromInt:userID],
 							 @"isNotifications"	: (isEnabled) ? @"Y" : @"N"};
@@ -681,7 +681,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)updateAvatarWithImagePrefix:(NSString *)avatarPrefix completion:(void (^)(NSObject *result))completion {
+- (void)updateAvatarWithImagePrefix:(NSString *)avatarPrefix completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:9],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: [[HONAppDelegate infoForUser] objectForKey:@"username"],
@@ -710,7 +710,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)updateTabBarBadgeTotalsForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)updateTabBarBadgeTotalsForUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"	: [@"" stringFromInt:3],
 							 @"userID"	: [@"" stringFromInt:userID]};
 	
@@ -737,7 +737,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)updateUsernameForUser:(NSString *)username completion:(void (^)(NSObject *result))completion {
+- (void)updateUsernameForUser:(NSString *)username completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:7],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"username"	: username};
@@ -765,7 +765,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)updatePhoneNumberForUserWithCompletion:(void (^)(NSObject *result))completion {
+- (void)updatePhoneNumberForUserWithCompletion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"phone"	: [HONAppDelegate phoneNumber]};
 	
@@ -792,7 +792,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)validatePhoneNumberForUser:(int)userID usingPINCode:(NSString *)pinCode completion:(void (^)(NSObject *result))completion {
+- (void)validatePhoneNumberForUser:(int)userID usingPINCode:(NSString *)pinCode completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"phone"	: [HONAppDelegate phoneNumber],
 							 @"pin"		: pinCode};
@@ -820,7 +820,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)verifyUserWithUserID:(int)userID asLegit:(BOOL)isLegit completion:(void (^)(NSObject *result))completion {
+- (void)verifyUserWithUserID:(int)userID asLegit:(BOOL)isLegit completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:10],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"targetID"	: [@"" stringFromInt:userID],
@@ -851,7 +851,7 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Challenges
-- (void)createShoutoutChallengeWithChallengeID:(int)challengeID completion:(void (^)(NSObject *result))completion {
+- (void)createShoutoutChallengeWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"challengeID"	: [@"" stringFromInt:challengeID],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
@@ -878,7 +878,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)createShoutoutChallengeWithUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)createShoutoutChallengeWithUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"targetID"	: [@"" stringFromInt:userID]};
 	
@@ -905,7 +905,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)flagChallengeByChallengeID:(int)challengeID completion:(void (^)(NSObject *result))completion {
+- (void)flagChallengeByChallengeID:(int)challengeID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:11],
 							 @"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"challengeID"	: [@"" stringFromInt:challengeID]};
@@ -933,7 +933,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)markChallengeAsSeenWithChallengeID:(int)challengeID completion:(void (^)(NSObject *result))completion {
+- (void)markChallengeAsSeenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:6],
 							 @"challengeID"	: [@"" stringFromInt:challengeID],
 							 @"hasSeen"		: @"Y"};
@@ -959,7 +959,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)markChallengeAsUnseenWithChallengeID:(int)challengeID completion:(void (^)(NSObject *result))completion {
+- (void)markChallengeAsUnseenWithChallengeID:(int)challengeID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:6],
 							 @"challengeID"	: [@"" stringFromInt:challengeID],
 							 @"hasSeen"		: @"N"};
@@ -985,7 +985,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)removeChallengeForChallengeID:(int)challengeID withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion {
+- (void)removeChallengeForChallengeID:(int)challengeID withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"challengeID"	: [@"" stringFromInt:challengeID],
 							 @"imgURL"		: imagePrefix};
 	
@@ -1012,7 +1012,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveChallengeForChallengeID:(int)challengeID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveChallengeForChallengeID:(int)challengeID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"challengeID"	: [@"" stringFromInt:challengeID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject, params);
@@ -1038,7 +1038,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveChallengeForChallengeID:(int)challengeID igoringNextPushes:(BOOL)isIgnore completion:(void (^)(NSObject *result))completion {
+- (void)retrieveChallengeForChallengeID:(int)challengeID igoringNextPushes:(BOOL)isIgnore completion:(void (^)(id result))completion {
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[@"" stringFromInt:challengeID], @"challengeID", nil];
 	
 	if (isIgnore)
@@ -1067,7 +1067,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [@"" stringFromInt:userID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetVerifyList, params);
@@ -1095,7 +1095,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(NSObject *result))completion {
+- (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [dict objectForKey:@"user_id"],
 							 @"imgURL"		: [dict objectForKey:@"img_url"],
 							 @"challengeID"	: [dict objectForKey:@"challenge_id"],
@@ -1127,7 +1127,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONOpponentVO *)opponentVO completion:(void (^)(NSObject *result))completion {
+- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONOpponentVO *)opponentVO completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"			: [@"" stringFromInt:6],
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"challengeID"		: [@"" stringFromInt:challengeID],
@@ -1159,7 +1159,7 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Messages
-- (void)markMessageAsSeenForMessageID:(int)messageID forParticipant:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)markMessageAsSeenForMessageID:(int)messageID forParticipant:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"challengeID"	: [@"" stringFromInt:messageID],
 							 @"userID"		: [@"" stringFromInt:userID]};
 	
@@ -1185,11 +1185,11 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveMessageForMessageID:(int)messageID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveMessageForMessageID:(int)messageID completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] retrieveChallengeForChallengeID:messageID completion:completion];
 }
 
-- (void)retrieveMessagesForUserByUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveMessagesForUserByUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [@"" stringFromInt:userID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengesMessageSeen, params);
@@ -1217,7 +1217,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitNewMessageWithDictionary:(NSDictionary *)dict completion:(void (^)(NSObject *result))completion {
+- (void)submitNewMessageWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [dict objectForKey:@"user_id"],
 							 @"imgURL"		: [dict objectForKey:@"img_url"],
 							 @"subject"		: [dict objectForKey:@"subject"],
@@ -1249,7 +1249,7 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Clubs
-- (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion {
+- (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"name"		: title,
 							 @"description"	: blurb,
@@ -1278,7 +1278,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)deleteClubWithClubID:(int)clubID completion:(void (^)(NSObject *result))completion {
+- (void)deleteClubWithClubID:(int)clubID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:clubID],
 							 @"ownerID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
@@ -1305,7 +1305,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)editClubWithClubID:(int)clubID withTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(NSObject *result))completion {
+- (void)editClubWithClubID:(int)clubID withTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:clubID],
 							 @"ownerID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"name"		: title,
@@ -1335,11 +1335,11 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *))completion {
+- (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] inviteInAppUsers:inAppUsers toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:[NSArray array] completion:completion];
 }
 
-- (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(NSObject *result))completion {
+- (void)inviteInAppUsers:(NSArray *)inAppUsers toClubWithID:(int)clubID withClubOwnerID:(int)ownerID inviteNonAppContacts:(NSArray*)nonAppContacts completion:(void (^)(id result))completion {
 	
 	NSString *userIDs = @"";
 	for (HONTrivialUserVO *vo in inAppUsers)
@@ -1377,11 +1377,11 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)inviteNonAppUsers:(NSArray *)contacts toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(NSObject *))completion {
+- (void)inviteNonAppUsers:(NSArray *)contacts toClubWithID:(int)clubID withClubOwnerID:(int)ownerID completion:(void (^)(id result))completion {
 	[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray array] toClubWithID:clubID withClubOwnerID:ownerID inviteNonAppContacts:contacts completion:completion];
 }
 
-- (void)joinClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)joinClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:userClubVO.clubID],
 							 @"ownerID"		: [@"" stringFromInt:userClubVO.ownerID],
 							 @"userID"		: [@"" stringFromInt:userID]};
@@ -1409,7 +1409,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)leaveClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)leaveClub:(HONUserClubVO *)userClubVO withMemberID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"clubID"		: [@"" stringFromInt:userClubVO.clubID],
 							 @"ownerID"		: [@"" stringFromInt:userClubVO.ownerID],
 							 @"memberID"	: [@"" stringFromInt:userID]};
@@ -1464,7 +1464,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(NSObject *result))completion {
+- (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [@"" stringFromInt:userID]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetClubInvites, params);
@@ -1490,7 +1490,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveFeaturedClubsWithCompletion:(void (^)(NSObject *result))completion {
+- (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion {
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsFeatured);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
 	[httpClient postPath:kAPIClubsFeatured parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -1516,7 +1516,7 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Invite / Social
-- (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(NSObject *result))completion {
+- (void)searchForUsersByUsername:(NSString *)username completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"		: [@"" stringFromInt:1],
 							 @"username"	: username};
 	
@@ -1546,7 +1546,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)sendEmailInvitesWithDelimitedList:(NSString *)emailAddresses completion:(void (^)(NSObject *))completion {
+- (void)sendEmailInvitesWithDelimitedList:(NSString *)emailAddresses completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"addresses"	: emailAddresses};
 	
@@ -1573,7 +1573,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)sendSMSInvitesWithDelimitedList:(NSString *)phoneNumbers completion:(void (^)(NSObject *))completion {
+- (void)sendSMSInvitesWithDelimitedList:(NSString *)phoneNumbers completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"numbers"		: phoneNumbers};
 	
@@ -1600,7 +1600,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(NSObject *result))completion {
+- (void)submitDelimitedEmailContacts:(NSString *)emailAddresses completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"emailList"	: emailAddresses};
 	
@@ -1629,7 +1629,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitDelimitedPhoneContacts:(NSString *)phoneNumbers completion:(void (^)(NSObject *result))completion {
+- (void)submitDelimitedPhoneContacts:(NSString *)phoneNumbers completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"	: [@"" stringFromInt:11],
 							 @"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"phone"	: phoneNumbers};
@@ -1658,7 +1658,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitEmailAddressForUserMatching:(NSString *)email completion:(void (^)(NSObject *result))completion {
+- (void)submitEmailAddressForUserMatching:(NSString *)email completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"code"	: [[HONAppDelegate infoForUser] objectForKey:@"sms_code"],
 							 @"email"	: email};
@@ -1686,7 +1686,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)submitPhoneNumberForUserMatching:(NSString *)phoneNumber completion:(void (^)(NSObject *result))completion {
+- (void)submitPhoneNumberForUserMatching:(NSString *)phoneNumber completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"code"	: [[HONAppDelegate infoForUser] objectForKey:@"sms_code"],
 							 @"phone"	: phoneNumber};

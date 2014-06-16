@@ -14,7 +14,7 @@
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONMessageRecipientViewCell.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONTrivialUserVO.h"
 
 
@@ -150,7 +150,7 @@
 		
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Create Message"];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsMessageToRecipients:[_selectedRecipients copy]]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewMessageWithRecipients:[_selectedRecipients copy]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	}

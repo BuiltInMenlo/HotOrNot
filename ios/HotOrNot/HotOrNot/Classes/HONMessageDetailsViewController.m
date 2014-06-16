@@ -12,7 +12,7 @@
 
 #import "HONMessageDetailsViewController.h"
 #import "HONHeaderView.h"
-#import "HONImagePickerViewController.h"
+#import "HONSelfieCameraViewController.h"
 #import "HONMessageReplyViewCell.h"
 #import "HONTrivialUserVO.h"
 
@@ -40,8 +40,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveMessage {
-	[[HONAPICaller sharedInstance] retrieveMessageForMessageID:_messageVO.messageID completion:^(NSObject *result) {
-		_messageVO = [HONMessageVO messageWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] retrieveMessageForMessageID:_messageVO.messageID completion:^(NSDictionary *result) {
+		_messageVO = [HONMessageVO messageWithDictionary:result];
 		
 		[_tableView reloadData];
 		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
@@ -119,7 +119,7 @@
 			[recipients addObject:vo];
 	}
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsMessageReply:_messageVO withRecipients:[recipients copy]]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsMessageReply:_messageVO withRecipients:[recipients copy]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

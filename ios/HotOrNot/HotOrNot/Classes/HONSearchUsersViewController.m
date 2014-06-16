@@ -64,9 +64,9 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
 		_users = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
+		for (NSDictionary *dict in result) {
 			[_users addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																	 @"username"	: [dict objectForKey:@"username"],
 																	 @"img_url"		: [dict objectForKey:@"avatar_url"]}]];

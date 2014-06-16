@@ -63,8 +63,8 @@
 	
 	
 	_clubPhotos = [NSArray array];
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSObject *result) {
-		_clubVO = [HONUserClubVO clubWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = [[_clubVO.submissions reverseObjectEnumerator] allObjects];
 		
 		
@@ -242,8 +242,8 @@
 									   withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[[HONAPICaller sharedInstance] verifyUserWithUserID:clubPhotoVO.userID asLegit:YES completion:^(NSObject *result){
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:(NSDictionary *)result]];
+	[[HONAPICaller sharedInstance] verifyUserWithUserID:clubPhotoVO.userID asLegit:YES completion:^(NSDictionary *result) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
 	}];
 }
 

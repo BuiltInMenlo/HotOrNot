@@ -42,6 +42,10 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	return ([[[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter] dateFromString:stringDate]);
 }
 
+- (BOOL)didDate:(NSDate *)firstDate occurBerforeDate:(NSDate *)lastDate {
+	return ([lastDate timeIntervalSinceDate:firstDate] > 0);
+}
+
 - (NSString *)elapsedTimeSinceDate:(NSDate *)date {
 	int secs = [[[NSDate new] dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
 	int mins = secs / 60;
@@ -54,17 +58,19 @@ static HONDateTimeAlloter *sharedInstance = nil;
 }
 
 - (NSString *)intervalSinceDate:(NSDate *)date {
-	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 includeSuffix:@" ago"]);
+	return ([[HONDateTimeAlloter sharedInstance] intervalSinceDate:date minSeconds:0 usingIndicators:@{@"seconds"	: @[@"s", @""],
+																									   @"minutes"	: @[@"m", @""],
+																									   @"hours"		: @[@"h", @""],
+																									   @"days"		: @[@"d", @""]} includeSuffix:@" ago"]);
 }
 
-- (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds includeSuffix:(NSString *)suffix {
-	NSString *interval = @"0 secs";
+- (NSString *)intervalSinceDate:(NSDate *)date minSeconds:(int)minSeconds usingIndicators:(NSDictionary *)indicators includeSuffix:(NSString *)suffix {
+	NSString *interval = [[@"0 " stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:1]];
 	
 	NSDateFormatter *utcFormatter = [[HONDateTimeAlloter sharedInstance] orthodoxUTCDateFormatter];
 	NSDateFormatter *dateFormatter = [[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter];
-	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = MAX(0, [[utcDate dateByAddingTimeInterval:0] timeIntervalSinceDate:date]);
+	int secs = MAX(0, [[[dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]] dateByAddingTimeInterval:0] timeIntervalSinceDate:date]);
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
@@ -73,23 +79,27 @@ static HONDateTimeAlloter *sharedInstance = nil;
 	//NSLog(@"[%d][%d][%d][%d]", days, hours, mins, secs);
 	
 	if (days > 0)
-		interval = [[[@"" stringFromInt:days] stringByAppendingString:@"d"] stringByAppendingString:(days != 1) ? @"" : @""];
+		interval = [[[@"" stringFromInt:days] stringByAppendingString:[[indicators objectForKey:@"days"] objectAtIndex:0]] stringByAppendingString:(days != 1) ? [[indicators objectForKey:@"days"] objectAtIndex:1] : @""];
 	
 	else {
 		if (hours > 0)
-			interval = [[[@"" stringFromInt:hours] stringByAppendingString:@"h"] stringByAppendingString:(hours != 1) ? @"" : @""];
+			interval = [[[@"" stringFromInt:hours] stringByAppendingString:[[indicators objectForKey:@"hours"] objectAtIndex:0]] stringByAppendingString:(hours != 1) ? [[indicators objectForKey:@"hours"] objectAtIndex:1] : @""];
 		
 		else {
 			if (mins > 0)
-				interval = [[[@"" stringFromInt:mins] stringByAppendingString:@"m"] stringByAppendingString:(mins != 1) ? @"" : @""];
+				interval = [[[@"" stringFromInt:mins] stringByAppendingString:[[indicators objectForKey:@"minutes"] objectAtIndex:0]] stringByAppendingString:(mins != 1) ? [[indicators objectForKey:@"minutes"] objectAtIndex:1] : @""];
 			
 			else
-				interval = [[[@"" stringFromInt:secs] stringByAppendingString:@"s"] stringByAppendingString:(secs != 1) ? @"" : @""];
+				interval = [[[@"" stringFromInt:secs] stringByAppendingString:[[indicators objectForKey:@"seconds"] objectAtIndex:0]] stringByAppendingString:(secs != 1) ? [[indicators objectForKey:@"seconds"] objectAtIndex:1] : @""];
 		}
 	}
 	
 	interval = (suffix != nil && [suffix length] > 0) ? [interval stringByAppendingString:suffix] : interval;
 	return ((secs <= minSeconds) ? @"just now" : interval);
+}
+
+- (BOOL)isPastDate:(NSDate *)date {
+	return ([[HONDateTimeAlloter sharedInstance] didDate:[NSDate new] occurBerforeDate:date]);
 }
 
 - (NSDateFormatter *)orthodoxBaseFormatter {
@@ -136,6 +146,14 @@ static HONDateTimeAlloter *sharedInstance = nil;
 
 - (NSString *)timezoneFromDeviceLocale {
 	return ([[NSTimeZone systemTimeZone] abbreviation]);
+}
+
+- (NSDate *)utcDateFromDate:(NSDate *)date {
+	return ([[[HONDateTimeAlloter sharedInstance] orthodoxBaseFormatter] dateFromString:[[[HONDateTimeAlloter sharedInstance] orthodoxUTCDateFormatter] stringFromDate:date]]);
+}
+
+- (NSDate *)utcNowDate {
+	return ([[HONDateTimeAlloter sharedInstance] utcDateFromDate:[NSDate new]]);
 }
 
 - (int)yearsOldFromDate:(NSDate *)date {

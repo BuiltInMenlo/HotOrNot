@@ -81,13 +81,13 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSObject *result) {
-		if ([(NSDictionary *)result objectForKey:@"id"] != nil) {
-			_userVO = [HONUserVO userWithDictionary:(NSDictionary *)result];
+	[[HONAPICaller sharedInstance] retrieveUserByUserID:_userID completion:^(NSDictionary *result) {
+		if ([result objectForKey:@"id"] != nil) {
+			_userVO = [HONUserVO userWithDictionary:result];
 			[_tableView reloadData];
-//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userID completion:^(NSObject *result){
-//				NSMutableArray *users = [NSMutableArray arrayWithCapacity:[(NSArray *)result count]];
-//				for (NSDictionary *dict in (NSArray *)result)
+//			[[HONAPICaller sharedInstance] retrieveFollowingUsersForUserByUserID:_userID completion:^(NSArray *result) {
+//				NSMutableArray *users = [NSMutableArray arrayWithCapacity:[result count]];
+//				for (NSDictionary *dict in result)
 //					[users addObject:[dict objectForKey:@"user"]];
 //				
 //				NSArray *following = [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];

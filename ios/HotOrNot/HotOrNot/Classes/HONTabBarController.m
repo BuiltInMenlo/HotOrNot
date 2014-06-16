@@ -272,13 +272,13 @@ const CGSize kTabSize = {80.0, 50.0};
 					 @"score"		: [NSNumber numberWithInt:0],
 					 @"comments"	: [NSNumber numberWithInt:0]};
 	
-	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] updateTabBarBadgeTotalsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
 		int statusChanges = 0;
 		int voteChanges = 0;
 		int commentChanges = 0;
 		
 		NSMutableArray *challenges = [NSMutableArray array];
-		for (NSDictionary *dict in (NSArray *)result) {
+		for (NSDictionary *dict in result) {
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:dict];
 			
 			if (vo != nil)

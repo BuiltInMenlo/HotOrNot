@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "libraryButtonWhite_nonActive.png"
+      "filename" : "cameraRoll_imageMask.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "libraryButtonWhite_nonActive@2x.png"
+      "filename" : "cameraRoll_imageMask@2x.png"
     }
   ],
   "info" : {

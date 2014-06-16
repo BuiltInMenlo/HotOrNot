@@ -55,14 +55,14 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveUserClubs {
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		_userClubVO = [HONUserClubVO clubWithDictionary:([[((NSDictionary *)result) objectForKey:@"owned"] count] > 0) ? [[((NSDictionary *)result) objectForKey:@"owned"] objectAtIndex:0] : nil];
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		_userClubVO = [HONUserClubVO clubWithDictionary:([[result objectForKey:@"owned"] count] > 0) ? [[result objectForKey:@"owned"] objectAtIndex:0] : nil];
 	}];
 }
 
 - (void)_sendEmailContacts {
-	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSObject *result){
-		for (NSDictionary *dict in (NSArray *)result) {
+	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
+		for (NSDictionary *dict in result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
@@ -91,8 +91,8 @@
 }
 
 - (void)_sendPhoneContacts {
-	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSObject *result){
-		for (NSDictionary *dict in (NSArray *)result) {
+	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
+		for (NSDictionary *dict in result) {
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix],
@@ -137,8 +137,8 @@
 	_progressHUD.taskInProgress = YES;
 	
 	_inAppUsers = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[HONAppDelegate phoneNumber] completion:^(NSObject *result) {
-		for (NSDictionary *dict in [NSArray arrayWithArray:[(NSArray *)result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
+	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[HONAppDelegate phoneNumber] completion:^(NSArray *result) {
+		for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
 			[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}]];
@@ -199,8 +199,8 @@
 	_progressHUD.taskInProgress = YES;
 	
 	_searchUsers = [NSMutableArray array];
-	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSObject *result) {
-		for (NSDictionary *dict in (NSArray *)result) {
+	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
+		for (NSDictionary *dict in result) {
 			[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
 																		   @"username"	: [dict objectForKey:@"username"],
 																		   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
@@ -727,7 +727,7 @@
 				deviceContactVO.contactType = HONContactTypeMatched;
 				deviceContactVO.userID = inAppContactVO.userID;
 				deviceContactVO.username = inAppContactVO.username;
-				deviceContactVO.avatarPrefix = deviceContactVO.avatarPrefix;
+				deviceContactVO.avatarPrefix = inAppContactVO.avatarPrefix;
 			}
 		}
 	}

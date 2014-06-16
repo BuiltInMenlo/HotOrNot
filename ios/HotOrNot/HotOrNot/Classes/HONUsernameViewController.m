@@ -125,8 +125,8 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[[HONAPICaller sharedInstance] updateUsernameForUser:_username completion:^(NSObject *result){
-		if (![[(NSDictionary *)result objectForKey:@"result"] isEqualToString:@"fail"]) {
+	[[HONAPICaller sharedInstance] updateUsernameForUser:_username completion:^(NSDictionary *result) {
+		if (![[result objectForKey:@"result"] isEqualToString:@"fail"]) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			

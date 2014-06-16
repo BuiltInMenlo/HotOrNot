@@ -167,8 +167,8 @@
 		_submitButton.hidden = YES;
 	}];
 	
-	[[HONAPICaller sharedInstance] submitPasscodeToLiftAccountSuspension:_passcode completion:^(NSObject *result){
-		if ((BOOL)[[(NSDictionary *)result objectForKey:@"result"] intValue]) {
+	[[HONAPICaller sharedInstance] submitPasscodeToLiftAccountSuspension:_passcode completion:^(NSDictionary *result) {
+		if ((BOOL)[[result objectForKey:@"result"] intValue]) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			
