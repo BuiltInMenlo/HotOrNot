@@ -53,12 +53,12 @@
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[self addSubview:headerBGView];
 		
-		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flipButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[headerBGView addSubview:flipButton];
+//		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		flipButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+//		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+//		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+//		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+//		[headerBGView addSubview:flipButton];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cancelButton.frame = CGRectMake(250.0, 3.0, 64.0, 44.0);
@@ -71,12 +71,12 @@
 		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 		[self addSubview:gutterView];
 		
-		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_nonActive"] forState:UIControlStateNormal];
-		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_Active"] forState:UIControlStateHighlighted];
-		[_changeTintButton addTarget:self action:@selector(_goChangeTint) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_changeTintButton];
+//		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
+//		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_nonActive"] forState:UIControlStateNormal];
+//		[_changeTintButton setBackgroundImage:[UIImage imageNamed:@"filterButton_Active"] forState:UIControlStateHighlighted];
+//		[_changeTintButton addTarget:self action:@selector(_goChangeTint) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:_changeTintButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_captureButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 118.0, 94.0, 94.0);
