@@ -34,7 +34,14 @@ typedef enum {
 	EGOOPullRefreshReseting
 } EGOPullRefreshState;
 
-@protocol EGORefreshTableHeaderDelegate;
+@class EGORefreshTableHeaderView;
+@protocol EGORefreshTableHeaderDelegate <NSObject>
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view;
+@optional
+- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view;
+@end
+
+
 @interface EGORefreshTableHeaderView : UIView <UIScrollViewDelegate>
 - (id)initWithFrame:(CGRect)frame headerOverlaps:(BOOL)isOverlapping;
 - (id)initWithFrame:(CGRect)frame usingTareOffset:(CGFloat)tareOffset;
@@ -48,9 +55,3 @@ typedef enum {
 @end
 
 
-@protocol EGORefreshTableHeaderDelegate <NSObject>
-@required
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view;
-@optional
-- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view;
-@end

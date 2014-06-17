@@ -51,6 +51,12 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareNewsTab:) name:@"TARE_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		
+		
+		_dictClubs = [NSMutableArray array];
+		_allClubs = [NSMutableArray array];
+		_timelineItems = [NSMutableArray array];
+		_clubIDs = [NSMutableDictionary dictionary];
 	}
 	
 	return (self);
@@ -78,9 +84,10 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-	_dictClubs = [NSMutableArray array];
-	_allClubs = [NSMutableArray array];
-	_timelineItems = [NSMutableArray array];
+	[_clubIDs removeAllObjects];
+	[_allClubs removeAllObjects];
+	[_timelineItems removeAllObjects];
+	[_dictClubs removeAllObjects];
 	
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 															[NSMutableArray array],
@@ -108,7 +115,12 @@
 		}
 		
 		[self _suggestClubs];
-		[self _sortItems];
+		
+		
+		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
+			[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
+		
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -307,11 +319,7 @@
 
 #pragma mark - Data Tally
 - (void)_sortItems {
-	for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
-		[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
 	
-	[_tableView reloadData];
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 }
 
 
@@ -401,6 +409,12 @@
 
 - (void)_goRefresh {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Refresh"];
+	
+	
+	[_clubIDs removeAllObjects];
+	[_allClubs removeAllObjects];
+	[_timelineItems removeAllObjects];
+	[_dictClubs removeAllObjects];
 	
 	[self _retrieveTimeline];
 }
@@ -505,6 +519,12 @@
 #pragma mark - RefreshTableHeader Delegates
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
 	[self _goRefresh];
+}
+
+- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
+	NSLog(@"[*:*] egoRefreshTableHeaderDidFinishTareAnimation: [*:*]");
+	
+	//[_tableView reloadData];
 }
 
 

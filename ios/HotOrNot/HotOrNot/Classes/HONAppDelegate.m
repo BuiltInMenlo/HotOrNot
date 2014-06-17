@@ -592,7 +592,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_registerUser {
-	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSObject *result){
+	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSObject *result) {
 		if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
