@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIImageView *coverImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIButton *ctaButton;
+@property (nonatomic) SEL currSelector;
 @end
 
 @implementation HONClubCollectionViewCell
@@ -27,17 +28,33 @@
 	return (NSStringFromClass(self));
 }
 
+- (id)initWithFrame:(CGRect)frame {
+	if ((self = [super initWithFrame:frame])) {
+		_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
+		_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
+		[self.contentView addSubview:_coverImageView];
+		
+		[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+		
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 128.0, 120.0, 20.0)];
+		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
+		_nameLabel.textColor = [UIColor blackColor];
+		_nameLabel.textAlignment = NSTextAlignmentCenter;
+		[self.contentView addSubview:_nameLabel];
+		
+		_ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_ctaButton.frame = CGRectMake(77.0, 11.0, 44.0, 44.0);
+		_ctaButton.alpha = 0.0;
+		[self.contentView addSubview:_ctaButton];
+	}
+	
+	return (self);
+}
+
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
 	
-	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
-	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
-	[self.contentView addSubview:_coverImageView];
-	
-	
 	if (_clubVO.clubID != 0) {
-		[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
-		
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			_coverImageView.image = image;
 			[UIView animateWithDuration:0.25 animations:^(void) {
@@ -63,44 +80,46 @@
 	}
 	
 	
-	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 128.0, 120.0, 20.0)];
-	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
-	_nameLabel.textColor = [UIColor blackColor];
-	_nameLabel.textAlignment = NSTextAlignmentCenter;
 	_nameLabel.text = _clubVO.clubName;
-	[self.contentView addSubview:_nameLabel];
 	
 	NSString *buttonAsset;
-	SEL selector;
+	SEL newSelector;
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner) {
-		buttonAsset = @"memberClubButton";
-		selector = @selector(_goEditClub);
+		buttonAsset = @"ownerClubButton";
+		newSelector = @selector(_goEditClub);
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		buttonAsset = @"quitClubButton";
-		selector = @selector(_goQuitClub);
+		newSelector = @selector(_goQuitClub);
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
-		buttonAsset = @"joinedClubButton";
-		selector = @selector(_goJoinClub);
-		
-	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeUnknown) {
 		buttonAsset = @"joinClubButton";
-		selector = @selector(_goJoinClub);
+		newSelector = @selector(_goJoinClub);
+		
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoPrepped) {
+		buttonAsset = @"blankClubButton";
+		newSelector = @selector(_goCreateClub);
 		
 	} else {
-		buttonAsset = @"";
-		selector = @selector(_goCreateClub);
+		buttonAsset = @"blankClubButton";
+		newSelector = nil;
 		_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 	}
 	
-	_ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_ctaButton.frame = CGRectMake(77.0, 11.0, 44.0, 44.0);
+	
+	if (_currSelector != nil)
+		[_ctaButton removeTarget:self action:_currSelector forControlEvents:UIControlEventTouchUpInside];
+	
+	
+	_currSelector = newSelector;
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_nonActive"]] forState:UIControlStateNormal];
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_Active"]] forState:UIControlStateHighlighted];
-	[_ctaButton addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:_ctaButton];
+	[_ctaButton addTarget:self action:_currSelector forControlEvents:UIControlEventTouchUpInside];
+	
+	[UIView animateWithDuration:0.0625 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
+		_ctaButton.alpha = 1.0;
+	} completion:nil];
 }
 
 
@@ -116,6 +135,9 @@
 	
 	if (_ctaButton != nil)
 		_ctaButton = nil;
+	
+	
+	_currSelector = nil;
 }
 
 

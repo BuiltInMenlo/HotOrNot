@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "acceptIcon.png"
+      "filename" : "countryCodeBg_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "acceptIcon-1.png"
+      "filename" : "countryCodeBg_nonActive@2x.png"
     }
   ],
   "info" : {

@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, HONClubType) {
 	HONClubTypeSuggested,
 	HONClubTypeUserCreated,
 	HONClubTypeUserCreatedEmpty,
+	HONClubTypeAutoPrepped,
 	HONClubTypeUnknown,
 	HONClubType__TOTAL
 };

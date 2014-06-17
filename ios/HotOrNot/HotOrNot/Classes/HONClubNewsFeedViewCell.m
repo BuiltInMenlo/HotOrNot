@@ -133,7 +133,6 @@
 		
 		UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		usernameButton.frame = [titleLabel boundingRectForCharacterRange:[titleCaption rangeOfString:_timelineItemVO.clubPhotoVO.username]];
-		usernameButton.backgroundColor = [[HONColorAuthority sharedInstance] honDebugDefaultColor];
 		[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:usernameButton];
 		

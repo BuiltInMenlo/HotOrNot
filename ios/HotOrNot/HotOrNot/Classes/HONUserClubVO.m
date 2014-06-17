@@ -19,8 +19,6 @@
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
-	
 //	for (NSString *param in dictionary)
 //		NSLog(@"NAME:[%@]", param);
 	
@@ -58,9 +56,12 @@
 	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"])
 		vo.clubType = HONClubTypeSuggested;
 	
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"PRE_BUILT"])
+		vo.clubType = HONClubTypeAutoPrepped;
 	
 	
 	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;
+	vo.clubEnrollmentType = (vo.clubType == HONClubTypeAutoPrepped) ? HONClubEnrollmentTypeAutoPrepped : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 			for (NSDictionary *dict in vo.pendingMembers) {
@@ -94,6 +95,8 @@
 	
 	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
 	
+	NSLog(@"/-/-/--/--(%@) [%d - %@] {%d}--/-/-/-/", (vo.clubEnrollmentType == HONClubEnrollmentTypeUnknown) ? @"Unknown" : (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoPrepped) ? @"AutoPrepped" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : @"Unknown", vo.clubID, vo.clubName, vo.clubType);
+	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	return (vo);
 }
 

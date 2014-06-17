@@ -90,7 +90,7 @@
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
 	[dict setValue:@"Create a club" forKey:@"name"];
-	[dict setValue:@"OTHER" forKey:@"club_type"];
+	[dict setValue:@"PRE_BUILT" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
 	[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"] forKey:@"img"];
@@ -338,8 +338,8 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]
-																	  forIndexPath:indexPath];
-	[cell resetSubviews];
+																				forIndexPath:indexPath];
+	//[cell resetSubviews];
 	
 	HONUserClubVO *vo = [_allClubs objectAtIndex:indexPath.row];
 	cell.clubVO = vo;
@@ -351,6 +351,7 @@
 
 #pragma mark - CollectionView Delegates
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+//	HONUserClubVO *vo =  ((HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
 	return (YES);
 }
 
@@ -361,8 +362,19 @@
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
 		
 		NSLog(@"vo.clubEnrollmentType:[%d]", vo.clubEnrollmentType);
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
+		
+		if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType ==HONClubEnrollmentTypeMember) {
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
+		
+		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoPrepped) {
+			[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSObject *result) {
+				[self _retrieveClubs];
+			}];
+			
+		}else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
+			[self _joinClub:vo];
+		}
 	
 	
 	} else {

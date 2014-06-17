@@ -18,7 +18,7 @@ const CGSize kClubCollectionViewSize = {120.0, 150.0};
 		self.scrollDirection = UICollectionViewScrollDirectionVertical;
 		self.minimumInteritemSpacing = 40.0;
 		self.minimumLineSpacing = 11.0;
-		self.sectionInset = UIEdgeInsetsMake(0.0, 20.0, 55.0, 20.0);
+		self.sectionInset = UIEdgeInsetsMake(0.0, 20.0, 64.0, 20.0);
 	}
 	
 	return (self);
