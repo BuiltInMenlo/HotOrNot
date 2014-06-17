@@ -11,7 +11,7 @@
 #import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "EGORefreshTableHeaderView.h"
+#import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONUserProfileViewController.h"
@@ -20,6 +20,7 @@
 #import "HONSettingsViewController.h"
 #import "HONImageLoadingView.h"
 #import "HONActivityItemViewCell.h"
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 
@@ -27,14 +28,14 @@
 #import "HONUserClubVO.h"
 #import "HONActivityItemVO.h"
 
-@interface HONUserProfileViewController () <EGORefreshTableHeaderDelegate, HONActivityItemViewCellDelegate>
+@interface HONUserProfileViewController () <HONActivityItemViewCellDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, assign, readonly) HONUserProfileType userProfileType;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSMutableArray *activityAlerts;
 @property (nonatomic, strong) NSArray *cohortRows;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UILabel *nameLabel;
@@ -125,13 +126,7 @@
 		for (NSDictionary *dict in result)
 			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
 		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[_tableView reloadData];
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -143,6 +138,23 @@
 }
 
 
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self _retrieveActivityItems];
+}
+
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+}
+
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -151,21 +163,19 @@
 	
 	_activityAlerts = [NSMutableArray array];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 0.0)) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 0.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
+	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.userInteractionEnabled = YES;
-	_tableView.scrollsToTop = NO;
+	_tableView.alwaysBounceVertical = YES;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:NO];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
 	
 	_profileHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kOrthodoxTableCellHeight)];
 	[_profileHolderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"viewCellBG_normal"]]];
@@ -388,12 +398,6 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _retrieveUser];
-}
-
-
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([_activityAlerts count]);
@@ -521,23 +525,6 @@
 	if (viewController != nil) {
 		[self.navigationController pushViewController:viewController animated:YES];
 	}
-}
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	//	NSLog(@"**_[scrollViewDidScroll]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	//	NSLog(@"**_[scrollViewDidEndDragging]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	//	NSLog(@"**_[scrollViewDidEndScrollingAnimation]_** offset:[%.02f] size:[%.02f]", scrollView.contentOffset.y, scrollView.contentSize.height);
-	[_tableView setContentOffset:CGPointZero animated:NO];
 }
 
 

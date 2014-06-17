@@ -77,6 +77,12 @@
 							  failure:avatarImageFailureBlock];
 	
 	
+	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	avatarButton.frame = imageView.frame;
+	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:avatarButton];
+	
+	
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.minimumLineHeight = 31.0;
 	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;

@@ -70,6 +70,11 @@
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
+	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	avatarButton.frame = avatarImageView.frame;
+	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:avatarButton];
+	
 	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? @"avatarMask" : @"thumbMask"]];
 	
 	void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

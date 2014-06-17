@@ -98,6 +98,8 @@ const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
 const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
+const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 49.0, 0.0};
+
 // animation params
 const CGFloat kHUDTime = 0.5f;
 const CGFloat kHUDErrorTime = 1.5f;
@@ -1246,6 +1248,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_writeShareTemplates {
+	return;
+	
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
 		for (NSString *key in [dict keyEnumerator])
 			[HONImagingDepictor writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];

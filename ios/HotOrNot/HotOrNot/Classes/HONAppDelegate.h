@@ -86,6 +86,8 @@ extern const CGFloat kOrthodoxTableHeaderHeight;
 extern const CGFloat kOrthodoxTableCellHeight;
 extern const CGFloat kDetailsHeroImageHeight;
 
+extern const UIEdgeInsets kOrthodoxTableViewEdgeInsets;
+
 // animation params
 extern const CGFloat kHUDTime;
 extern const CGFloat kHUDErrorTime;

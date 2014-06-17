@@ -10,18 +10,17 @@
 
 #import "NSString+DataTypes.h"
 
-
-#import "EGORefreshTableHeaderView.h"
+#import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONClubsNewsFeedViewController.h"
-#import "HONFeedViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONClubNewsFeedViewCell.h"
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
@@ -30,15 +29,15 @@
 #import "HONTimelineItemVO.h"
 
 
-@interface HONClubsNewsFeedViewController () <EGORefreshTableHeaderDelegate, HONClubNewsFeedViewCellDelegate>
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) UITableView *tableView;
+@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate>
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
-@property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *timelineItems;
+@property (nonatomic, assign) HONFeedContentType feedContentType;
 @end
 
 
@@ -53,10 +52,13 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		
-		_dictClubs = [NSMutableArray array];
-		_allClubs = [NSMutableArray array];
-		_timelineItems = [NSMutableArray array];
-		_clubIDs = [NSMutableDictionary dictionary];
+		_dictClubs = [[NSMutableArray alloc] init];
+		_timelineItems = [[NSMutableArray alloc] init];
+		_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
+																[NSMutableArray array],
+																[NSMutableArray array],
+																[NSMutableArray array]]
+													  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	}
 	
 	return (self);
@@ -84,17 +86,14 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-	[_clubIDs removeAllObjects];
-	[_allClubs removeAllObjects];
-	[_timelineItems removeAllObjects];
-	[_dictClubs removeAllObjects];
-	
+	_dictClubs = [NSMutableArray array];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 															[NSMutableArray array],
 															[NSMutableArray array],
 															[NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
+	[self _suggestClubs];
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
@@ -109,18 +108,27 @@
 			[_clubIDs setValue:clubIDs forKey:key];
 		}
 		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+		_feedContentType = HONFeedContentTypeEmpty;
+		_feedContentType += (((int)[[_clubIDs objectForKey:@"other"] count] > 0) * HONFeedContentTypeAutoGenClubs);
+		_feedContentType += (((int)[[_clubIDs objectForKey:@"owned"] count] > 0) * HONFeedContentTypeOwnedClubs);
+		_feedContentType += (((int)[[_clubIDs objectForKey:@"member"] count] > 0) * HONFeedContentTypeJoinedClubs);
+		_feedContentType += (((int)[[_clubIDs objectForKey:@"pending"] count] > 0) * HONFeedContentTypeClubInvites);
 		
-		[self _suggestClubs];
 		
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 0, HONFeedContentTypeEmpty, @"Empty");
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 1, HONFeedContentTypeAutoGenClubs, @"AutoGen");
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 2, HONFeedContentTypeOwnedClubs, @"Owned");
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 3, HONFeedContentTypeJoinedClubs, @"Joined");
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 4, HONFeedContentTypeClubInvites, @"Invites");
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 5, HONFeedContentTypeSuggestedClubs, @"Suggested");
+		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 6, HONFeedContentTypeMatchedClubs, @"Matched");
 		
+		_timelineItems = nil;
+		_timelineItems = [NSMutableArray array];
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
 		
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -231,30 +239,27 @@
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 		
 		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 		[_clubIDs setValue:clubIDs forKey:@"other"];
 		
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_allClubs addObject:vo];
 		[_dictClubs addObject:vo.dictionary];
 	}
-	
 	
 	// area code
 	if ([[HONAppDelegate phoneNumber] length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-2" forKey:@"id"];
 		[dict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
-		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 		
 		clubIDs = [_clubIDs objectForKey:@"other"];
 		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 		[_clubIDs setValue:clubIDs forKey:@"other"];
 		
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_allClubs addObject:vo];
 		[_dictClubs addObject:vo.dictionary];
 	}
 	
@@ -304,24 +309,32 @@
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-3" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 		
 		clubIDs = [_clubIDs objectForKey:@"other"];
 		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 		[_clubIDs setValue:clubIDs forKey:@"other"];
 		
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_allClubs addObject:vo];
 		[_dictClubs addObject:vo.dictionary];
 	}
 }
 
 
-#pragma mark - Data Tally
-- (void)_sortItems {
-	
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self _retrieveTimeline];
 }
 
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+}
 
 
 #pragma mark - View lifecycle
@@ -336,19 +349,19 @@
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
+	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.showsHorizontalScrollIndicator = NO;
+	_tableView.showsHorizontalScrollIndicator = YES;
+	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
 	
 	[self _retrieveTimeline];
 }
@@ -409,13 +422,6 @@
 
 - (void)_goRefresh {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Refresh"];
-	
-	
-	[_clubIDs removeAllObjects];
-	[_allClubs removeAllObjects];
-	[_timelineItems removeAllObjects];
-	[_dictClubs removeAllObjects];
-	
 	[self _retrieveTimeline];
 }
 
@@ -516,21 +522,11 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _goRefresh];
-}
-
-- (void)egoRefreshTableHeaderDidFinishTareAnimation:(EGORefreshTableHeaderView *)view {
-	NSLog(@"[*:*] egoRefreshTableHeaderDidFinishTareAnimation: [*:*]");
-	
-	//[_tableView reloadData];
-}
-
-
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : [_timelineItems count]);
+	// there's a row for section[0] if content is auto-gen only
+	return ((section == 0) ? (_feedContentType == HONFeedContentTypeAutoGenClubs) ? 1 : 0 : [_timelineItems count]);
+//	return ((section == 1) ? [_timelineItems count] : (_feedContentType == HONFeedContentTypeAutoGenClubs) ? 1 : 0);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -577,6 +573,17 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	if (_feedContentType == HONFeedContentTypeAutoGenClubs)
+		return (kOrthodoxTableCellHeight);
+	
+	else {
+		if (indexPath.section == 1) {
+			
+		}
+	}
+	
+	
 	if (indexPath.section == 0)
 		return (kOrthodoxTableCellHeight);
 	
@@ -618,21 +625,6 @@
 	} else
 		NSLog(@"/// SOMETHING ELSE:(%@)", ((HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row]).dictionary);
 }
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	[_tableView setContentOffset:CGPointZero animated:NO];
-}
-
 
 
 @end

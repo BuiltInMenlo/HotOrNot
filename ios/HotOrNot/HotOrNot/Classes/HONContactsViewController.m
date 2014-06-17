@@ -21,13 +21,16 @@
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONContactsViewController () <EGORefreshTableHeaderDelegate, HONSearchBarViewDelegate, HONUserToggleViewCellDelegate>
+@interface HONContactsViewController () <HONSearchBarViewDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
+@property (nonatomic, strong) NSMutableArray *matchedUserIDs;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
+
+@property (nonatomic, strong) UITableViewController *refreshControlTableViewController;
 @end
 
 
@@ -63,66 +66,63 @@
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"	: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
-			BOOL isFound = NO;
-			for (HONTrivialUserVO *searchVO in _inAppContacts) {
-				if (searchVO.userID == vo.userID) {
-					isFound = YES;
-					break;
-				}
+			
+			
+			if (![_matchedUserIDs containsObject:vo.phoneNumber]) {
+				[_matchedUserIDs addObject:vo.phoneNumber];
+				[_inAppContacts addObject:vo];
 			}
 			
-			if (!isFound)
-				[_inAppContacts addObject:vo];
+			
+//			BOOL isFound = NO;
+//			for (HONTrivialUserVO *searchVO in _inAppContacts) {
+//				if (searchVO.userID == vo.userID) {
+//					isFound = YES;
+//					break;
+//				}
+//			}
+//			
+//			if (!isFound)
+//				[_inAppContacts addObject:vo];
 		}
 		
 		_currentMatchStateCounter++;
-		if (_currentMatchStateCounter == _totalMatchStateCounter) {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-			[self _updateDeviceContactsWithMatchedUsers];
-		}
+		if (_currentMatchStateCounter == _totalMatchStateCounter)
+			[self _didFinishDataRefresh];
 	}];
 }
 
 - (void)_sendPhoneContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
-																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix],
+			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"	: [dict objectForKey:@"id"],
+																		  @"username"		: [dict objectForKey:@"username"],
+																		  @"img_url"		: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]],
 																		  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]]}];
 			
-			BOOL isFound = NO;
-			for (HONTrivialUserVO *searchVO in _inAppContacts) {
-				if (searchVO.userID == vo.userID) {
-					isFound = YES;
-					break;
-				}
+			if (![_matchedUserIDs containsObject:vo.altID]) {
+				[_matchedUserIDs addObject:vo.altID];
+				[_inAppContacts addObject:vo];
 			}
 			
-			if (!isFound)
-				[_inAppContacts addObject:vo];
+//			BOOL isFound = NO;
+//			for (HONTrivialUserVO *searchVO in _inAppContacts) {
+//				if (searchVO.userID == vo.userID) {
+//					isFound = YES;
+//					break;
+//				}
+//			}
+//			
+//			if (!isFound)
+//				[_inAppContacts addObject:vo];
 		}
 		
 		_currentMatchStateCounter++;
-		if (_currentMatchStateCounter == _totalMatchStateCounter) {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-			[self _updateDeviceContactsWithMatchedUsers];
-			_segmentedContacts = [self _populateSegmentedDictionary];
-			
-			[_tableView reloadData];
-			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-		}
+		if (_currentMatchStateCounter == _totalMatchStateCounter)
+			[self _didFinishDataRefresh];
 	}];
 }
 
@@ -139,51 +139,21 @@
 	_inAppUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[HONAppDelegate phoneNumber] completion:^(NSArray *result) {
 		for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
-			[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+			[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"	: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}]];
 		}
 		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		_segmentedContacts = [self _populateSegmentedDictionary];
-		
-		[_tableView reloadData];
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[self _didFinishDataRefresh];
 	}];
 }
 
 - (void)_inviteInAppContact:(HONTrivialUserVO *)trivialUserVO toClub:(HONUserClubVO *)userClubVO {
-	TSTapstream *tracker = [TSTapstream instance];
-	
-	TSEvent *e = [TSEvent eventWithName:@"Invite Friends" oneTimeOnly:YES];
-	[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"user_id"];
-	[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
-	[e addValue:[@"" stringFromInt:userClubVO.clubID] forKey:@"club_id"];
-	[e addValue:userClubVO.clubName forKey:@"club_name"];
-	[e addValue:[@"" stringFromInt:trivialUserVO.userID] forKey:@"invite_id"];
-	[e addValue:trivialUserVO.username forKey:@"invite_name"];
-	[tracker fireEvent:e];
-	
 	[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:trivialUserVO] toClubWithID:userClubVO.clubID withClubOwnerID:userClubVO.ownerID completion:^(NSObject *result) {
 	}];
 }
 
 - (void)_inviteNonAppContact:(HONContactUserVO *)contactUserVO toClub:(HONUserClubVO *)userClubVO {
-	TSTapstream *tracker = [TSTapstream instance];
-	
-	TSEvent *e = [TSEvent eventWithName:@"Invite Friends" oneTimeOnly:YES];
-	[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"user_id"];
-	[e addValue:[[HONAppDelegate infoForUser] objectForKey:@"username"] forKey:@"username"];
-	[e addValue:[@"" stringFromInt:userClubVO.clubID] forKey:@"club_id"];
-	[e addValue:userClubVO.clubName forKey:@"club_name"];
-	[e addValue:contactUserVO.fullName forKey:@"invite_name"];
-	[e addValue:(contactUserVO.isSMSAvailable) ? contactUserVO.mobileNumber : contactUserVO.email forKey:@"invite_contact"];
-	[tracker fireEvent:e];
-	
 	[[HONAPICaller sharedInstance] inviteNonAppUsers:[NSArray arrayWithObject:contactUserVO] toClubWithID:userClubVO.clubID withClubOwnerID:userClubVO.ownerID completion:^(NSObject *result) {
 	}];
 }
@@ -206,7 +176,6 @@
 																		   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
 		}
 		
-		if (_progressHUD != nil) {
 			if ([_searchUsers count] == 0) {
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -220,10 +189,8 @@
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
-		}
 		
-		[_tableView reloadData];
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+			[self _didFinishDataRefresh];
 	}];
 }
 
@@ -277,22 +244,32 @@
 		if ([email length] == 0)
 			email = @"";
 		
-//		if ([phoneNumber length] > 0 || [email length] > 0) {
-		if ([phoneNumber length] > 0) {
+		if ([phoneNumber length] > 0 || [email length] > 0) {
 			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
-																			 @"l_name"	: lName,
-																			 @"phone"	: phoneNumber,
-																			 @"email"	: email,
-																			 @"image"	: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}];
+																			 @"l_name"		: lName,
+																			 @"phone"		: phoneNumber,
+																			 @"email"		: email,
+																			 @"image"		: (imageData != nil) ? imageData : UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}];
 			[unsortedContacts addObject:vo.dictionary];
+			
 			
 			if (vo.isSMSAvailable)
 				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
 			
 			else
 				_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
+			
+			_emailRecipients = @"";
 		}
 	}
+	
+	_deviceContacts = [NSMutableArray array];
+	for (NSDictionary *dict in [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
+		[_deviceContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
+	
+	[self _didFinishDataRefresh];
+	
+	
 	
 	if ([_smsRecipients length] > 0 || [_emailRecipients length] > 0) {
 		if (_progressHUD == nil)
@@ -304,29 +281,54 @@
 	}
 	
 	_currentMatchStateCounter = 0;
-	_totalMatchStateCounter = (int)([_smsRecipients length] > 0);// + (int)([_emailRecipients length] > 0);
+	_totalMatchStateCounter = (int)([_smsRecipients length] > 0) + (int)([_emailRecipients length] > 0);
 	
 	if ([_smsRecipients length] > 0) {
 		NSLog(@"SMS CONTACTS:[%@]", [_smsRecipients substringToIndex:[_smsRecipients length] - 1]);
 		[self _sendPhoneContacts];
 	}
 	
-//	if ([_emailRecipients length] > 0) {
-//		NSLog(@"EMAIL CONTACTS:[%@]", [_emailRecipients substringToIndex:[_emailRecipients length] - 1]);
-//		[self _sendEmailContacts];
-//	}
+	if ([_emailRecipients length] > 0) {
+		NSLog(@"EMAIL CONTACTS:[%@]", [_emailRecipients substringToIndex:[_emailRecipients length] - 1]);
+		[self _sendEmailContacts];
+	}
+}
+
+
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self _retreiveUserClubs];
+//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top + 20.0, 0.0, _tableView.contentInset.bottom + 20.0, 0.0)];
 	
-	_deviceContacts = [NSMutableArray array];
-	for (NSDictionary *dict in [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
-		[_deviceContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
+	[_matchedUserIDs removeAllObjects];
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+		[self _retrieveDeviceContacts];
 	
+	else
+		[self _submitPhoneNumberForMatching];
+}
+
+- (void)_didFinishDataRefresh {
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
 	
+	[self _updateDeviceContactsWithMatchedUsers];
 	_segmentedContacts = [self _populateSegmentedDictionary];
+	
+//	dispatch_async(dispatch_get_main_queue(), ^{
+		[_tableView reloadData];
+		[_refreshControl endRefreshing];
+//	});
+	
+//	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
+//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+//		[_tableView reloadData];
+//		[_refreshControl endRefreshing];
+//    });
 }
+
 
 
 #pragma mark - View lifecycle
@@ -340,6 +342,22 @@
 	_emailRecipients = @"";
 	_inAppContacts = [NSMutableArray array];
 	_clubInviteContacts = [NSMutableArray array];
+	_matchedUserIDs = [NSMutableArray array];
+	
+	self.edgesForExtendedLayout = UIRectEdgeNone;
+	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor whiteColor]];
+	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.sectionIndexTrackingBackgroundColor = [UIColor blackColor];
+	_tableView.sectionIndexMinimumDisplayRowCount = 1;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.scrollsToTop = YES;
+	_tableView.showsVerticalScrollIndicator = YES;
+	_tableView.alwaysBounceVertical = YES;
+	[self.view addSubview:_tableView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
 	[self.view addSubview:_headerView];
@@ -348,20 +366,20 @@
 	searchBarView.delegate = self;
 	[self.view addSubview:searchBarView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor whiteColor]];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	[_tableView setContentInset:UIEdgeInsetsMake(0.0, 0.0, 49.0, 0.0)];
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.scrollsToTop = YES;
-	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];
+//	_refreshControlTableViewController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
+//	[self addChildViewController:_refreshControlTableViewController];
+//	
+//	_refreshControlTableViewController.tableView.frame = self.view.frame;
+//	_refreshControlTableViewController.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+//	_refreshControlTableViewController.tableView.backgroundColor = [UIColor clearColor];
+//	_refreshControlTableViewController.tableView.userInteractionEnabled = NO;
+//	_refreshControlTableViewController.refreshControl = [[UIRefreshControl alloc] init];
+//	[_refreshControlTableViewController.refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+//	[self.view addSubview:_refreshControlTableViewController.tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
 }
 
 - (void)viewDidLoad {
@@ -494,12 +512,6 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[self _retrieveDeviceContacts];
-}
-
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ? 1 : [_segmentedKeys count]);
@@ -578,20 +590,6 @@
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	int userID = (cell.contactUserVO.userID != 0) ? cell.contactUserVO.userID : cell.trivialUserVO.userID;
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:userID] animated:YES];
-}
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	[_tableView setContentOffset:CGPointZero animated:NO];
 }
 
 

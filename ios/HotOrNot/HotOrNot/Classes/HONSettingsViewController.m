@@ -8,17 +8,20 @@
 
 #import "NSString+DataTypes.h"
 
+#import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
 #import "HONFAQViewController.h"
 #import "HONTermsConditionsViewController.h"
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONUsernameViewController.h"
 
 @interface HONSettingsViewController ()
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) NSArray *captions;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -65,6 +68,23 @@
 #pragma mark - Data Calls
 
 
+
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.33];
+}
+
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -80,15 +100,19 @@
 	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.userInteractionEnabled = YES;
+	_tableView.alwaysBounceVertical = YES;
 	_tableView.showsVerticalScrollIndicator = YES;
 	_tableView.scrollsToTop = NO;
 	[self.view addSubview:_tableView];
+	
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
 }
 
 - (void)viewDidLoad {

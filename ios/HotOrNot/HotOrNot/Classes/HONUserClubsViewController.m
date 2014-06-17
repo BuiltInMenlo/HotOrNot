@@ -8,14 +8,14 @@
 
 #import "NSString+DataTypes.h"
 
-#import "EGORefreshTableHeaderView.h"
+#import "CKRefreshControl.h"
 #import "JLBPopSlideTransition.h"
 #import "MBProgressHUD.h"
 
 #import "HONUserClubsViewController.h"
 #import "HONClubsViewFlowLayout.h"
 
-#import "HONTableHeaderView.h"
+#import "HONCollectionView.h"
 #import "HONClubCollectionViewCell.h"
 #import "HONHeaderView.h"
 #import "HONCreateSnapButtonView.h"
@@ -31,15 +31,16 @@
 
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <EGORefreshTableHeaderDelegate, HONClubViewCellDelegate>
-@property (nonatomic, strong) UICollectionView *collectionView;
+@interface HONUserClubsViewController () <HONClubViewCellDelegate>
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONCollectionView *collectionView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONActivityHeaderButtonView *profileHeaderButtonView;
+
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) HONUserClubVO *selectedClub;
-@property (nonatomic, strong) HONActivityHeaderButtonView *profileHeaderButtonView;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 
@@ -80,9 +81,6 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	_allClubs = nil;
-	[_collectionView reloadData];
-	
 	_dictClubs = [NSMutableArray array];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
@@ -108,18 +106,12 @@
 			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
 		
-		
+		_allClubs = nil;
 		_allClubs = [NSMutableArray array];
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		[_collectionView reloadData];
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -149,6 +141,22 @@
 }
 
 
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self _retrieveClubs];
+}
+
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_collectionView reloadData];
+	[_refreshControl endRefreshing];
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -157,28 +165,30 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
-	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
 	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONClubsViewFlowLayout alloc] init]];
+	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONClubsViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONClubCollectionViewCell class] forCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]];
 	_collectionView.backgroundColor = [UIColor whiteColor];
 	[_collectionView setContentInset:UIEdgeInsetsZero];
 	_collectionView.showsVerticalScrollIndicator = NO;
+	_collectionView.alwaysBounceVertical = YES;
 	_collectionView.dataSource = self;
 	_collectionView.delegate = self;
 	[self.view addSubview:_collectionView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_collectionView.frame.size.height, _collectionView.frame.size.width, _collectionView.frame.size.height) headerOverlaps:YES];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _collectionView;
-	[_collectionView addSubview:_refreshTableHeaderView];
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_collectionView addSubview: _refreshControl];
 	
 	[self _retrieveClubs];
 }
+
+
+
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
@@ -321,12 +331,6 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _goRefresh];
-}
-
-
 #pragma mark - CollectionViewDataSource Delegates
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
 	return (1);
@@ -367,7 +371,7 @@
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
 		
-		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoPrepped) {
+		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 			[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSObject *result) {
 				[self _retrieveClubs];
 			}];
@@ -382,20 +386,6 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}
-}
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	[_collectionView setContentOffset:CGPointZero animated:NO];
 }
 
 
@@ -442,32 +432,5 @@
 	return (HONClubTypeUnknown);
 }
 
-
-
-#pragma mark - FPO Methods
-- (void)_fpoPopulate {
-	NSDictionary *fpoDict = @{@"owned"		: @[[[HONClubAssistant sharedInstance] fpoOwnedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary]],
-							  @"member"		: @[[[HONClubAssistant sharedInstance] fpoInviteClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary]],
-							  @"pending"	: @[[[HONClubAssistant sharedInstance] fpoJoinedClubDictionary],
-												[[HONClubAssistant sharedInstance] fpoInviteClubDictionary]]};
-	
-	for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-		NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
-		
-		for (NSDictionary *dict in [fpoDict objectForKey:key])
-			[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-		
-		[_clubIDs setValue:clubIDs forKey:key];
-		[_dictClubs addObjectsFromArray:[fpoDict objectForKey:key]];
-	}
-}
 
 @end

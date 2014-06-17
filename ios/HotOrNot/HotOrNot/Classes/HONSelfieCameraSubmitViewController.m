@@ -9,22 +9,23 @@
 
 #import "NSString+DataTypes.h"
 
+#import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
-#import "EGORefreshTableHeaderView.h"
 
 #import "HONSelfieCameraSubmitViewController.h"
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONSelfieCameraClubViewCell.h"
 #import "HONUserClubVO.h"
 
-@interface HONSelfieCameraSubmitViewController () <EGORefreshTableHeaderDelegate, HONSelfieCameraClubViewCellDelegate>
+@interface HONSelfieCameraSubmitViewController () <HONSelfieCameraClubViewCellDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
 
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
@@ -88,29 +89,37 @@
 			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
 		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+				for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
+			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		[self _sortItems];
 		_segmentedClubs = [self _populateSegmentedDictionary];
 		
 		_selectedClubs = [NSMutableArray array];
 		_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
 		
-		[_tableView reloadData];
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[self _didFinishDataRefresh];
 	}];
 }
 
 
-#pragma mark - Data Tally
-- (void)_sortItems {
-	for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
-		[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[_dictClubs removeAllObjects];
+	[_allClubs removeAllObjects];
+	[_clubIDs removeAllObjects];
+	
+	[self _retrieveClubs];
 }
 
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+}
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -119,7 +128,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 87.0)) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 87.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView setContentInset:UIEdgeInsetsZero];
@@ -128,10 +137,9 @@
 	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
-	_refreshTableHeaderView.delegate = self;
-	_refreshTableHeaderView.scrollView = _tableView;
-	[_tableView addSubview:_refreshTableHeaderView];
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select Club"];
 	[self.view addSubview:headerView];
@@ -249,12 +257,6 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _goRefresh];
-}
-
-
 #pragma mark - SelfieCameraClubViewCell Delegates
 - (void)selfieCameraClubViewCell:(HONSelfieCameraClubViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] selfieSubmitClubViewCell:selectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
@@ -281,20 +283,6 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Create Selfie - Select All " stringByAppendingString:(isSelected) ? @"On" : @"Off"]];
 	[self _goSelectAllToggle];
-}
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	[_tableView setContentOffset:CGPointZero animated:NO];
 }
 
 

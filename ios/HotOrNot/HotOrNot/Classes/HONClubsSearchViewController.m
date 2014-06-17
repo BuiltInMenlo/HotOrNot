@@ -6,15 +6,16 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "EGORefreshTableHeaderView.h"
+#import "CKRefreshControl.h"
 
 #import "HONClubsSearchViewController.h"
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 
 
-@interface HONClubsSearchViewController () //<EGORefreshTableHeaderDelegate>
-@property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@interface HONClubsSearchViewController ()
+@property (nonatomic, strong) HONTableView *tableView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSMutableArray *userClubs;
 @end
 

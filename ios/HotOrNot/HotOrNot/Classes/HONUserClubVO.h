@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, HONClubType) {
 	HONClubTypeSuggested,
 	HONClubTypeUserCreated,
 	HONClubTypeUserCreatedEmpty,
-	HONClubTypeAutoPrepped,
+	HONClubTypeAutoGen,
 	HONClubTypeUnknown,
 	HONClubType__TOTAL
 };
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, HONClubEnrollmentType) {
 	HONClubEnrollmentTypeMember,
 	HONClubEnrollmentTypePending,
 	HONClubEnrollmentTypeBanned,
-	HONClubEnrollmentTypeAutoPrepped,
+	HONClubEnrollmentTypeAutoGen,
 	HONClubEnrollmentTypeUnknown,
 	HONClubembershipType__TOTAL
 };

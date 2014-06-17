@@ -8,24 +8,26 @@
 
 #import "NSString+DataTypes.h"
 
-#import "EGORefreshTableHeaderView.h"
+#import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
 #import "HONClubTimelineViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONClubPhotoViewCell.h"
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONClubPhotoVO.h"
 
 
-@interface HONClubTimelineViewController () <EGORefreshTableHeaderDelegate, HONClubPhotoViewCellDelegate>
-@property (nonatomic, strong) HONUserClubVO *clubVO;
-@property (nonatomic, strong) NSArray *clubPhotos;
-@property (nonatomic, strong) UITableView *tableView;
+@interface HONClubTimelineViewController () <HONClubPhotoViewCellDelegate>
+@property (nonatomic, strong) HONTableView *tableView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+
+@property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int imageQueueLocation;
 @end
 
@@ -70,15 +72,7 @@
 		
 		
 		_emptySetImageView.hidden = [_clubPhotos count] > 0;
-		[_tableView reloadData];
-		
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-		
-		
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+		[self _didFinishDataRefresh];
 		
 		
 		_imageQueueLocation = 0;
@@ -105,6 +99,8 @@
 	}];
 }
 
+
+#pragma mark - Data Handling
 - (void)_cacheNextImagesWithRange:(NSRange)range {
 	NSLog(@"RANGE:[%@]", NSStringFromRange(range));
 	
@@ -122,7 +118,19 @@
 										 withTag:@"club"];
 }
 
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self _retrieveClub];
+}
 
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+}
 
 
 #pragma mark - View lifecycle
@@ -132,19 +140,19 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.pagingEnabled = YES;
 	_tableView.showsHorizontalScrollIndicator = NO;
+	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:YES];
-	_refreshTableHeaderView.scrollView = _tableView;
-	_refreshTableHeaderView.delegate = self;
-	[_tableView addSubview:_refreshTableHeaderView];
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
 	
 	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyEmpty"]];
 	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
@@ -162,10 +170,7 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:backButton];
 	
-	if (_clubVO != nil)
-		[_tableView reloadData];
-	
-	else
+	if (_clubVO == nil)
 		[self _retrieveClub];
 }
 
@@ -214,13 +219,6 @@
 									   withUserClub:_clubVO];
 	
 	[self _retrieveClub];
-}
-
-
-
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _goRefresh];
 }
 
 
@@ -327,22 +325,6 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath {
 	return (proposedDestinationIndexPath);
 }
-
-
-#pragma mark - ScrollView Delegates
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	[_tableView setContentOffset:CGPointZero animated:NO];
-}
-
-
 
 
 @end

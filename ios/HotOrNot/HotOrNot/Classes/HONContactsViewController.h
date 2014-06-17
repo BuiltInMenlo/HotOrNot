@@ -8,8 +8,9 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "EGORefreshTableHeaderView.h"
+#import "CKRefreshControl.h"
 
+#import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
@@ -32,8 +33,8 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	NSMutableArray *_segmentedKeys;
 	HONUserClubVO *_userClubVO;
 	
-	EGORefreshTableHeaderView *_refreshTableHeaderView;
-	UITableView *_tableView;
+	HONTableView *_tableView;
+	UIRefreshControl *_refreshControl;
 	HONHeaderView *_headerView;
 }
 

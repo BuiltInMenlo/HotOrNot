@@ -30,6 +30,8 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
+		self.backgroundColor = [UIColor whiteColor];
+		
 		_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
 		_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 		[self.contentView addSubview:_coverImageView];
@@ -97,7 +99,7 @@
 		buttonAsset = @"joinClubButton";
 		newSelector = @selector(_goJoinClub);
 		
-	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoPrepped) {
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 		buttonAsset = @"blankClubButton";
 		newSelector = @selector(_goCreateClub);
 		

@@ -23,6 +23,8 @@
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIImageView *arrowImageView;
 @property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) UIButton *avatarButton;
+
 @property (nonatomic, strong) UIView *overlayTintView;
 @property (nonatomic, strong) NSTimer *tintTimer;
 @property (nonatomic) BOOL isTintCycleFull;
@@ -46,7 +48,10 @@
 		
 		[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
-		
+		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_avatarButton.frame = _avatarImageView.frame;
+		[self.contentView addSubview:_avatarButton];
+			
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 22.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 		_nameLabel.textColor = [UIColor blackColor];
@@ -125,6 +130,7 @@
 	_trivialUserVO = trivialUserVO;
 	
 	[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
+	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
 	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 	_arrowImageView.hidden = NO;
@@ -150,11 +156,14 @@
 	
 	if (_contactUserVO.contactType == HONContactTypeMatched) {
 		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
+		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 		
 		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
 		
 		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 		_arrowImageView.hidden = NO;
+		
+		
 		
 		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
@@ -207,6 +216,11 @@
 		else
 			[self.delegate userToggleViewCell:self didSelectContactUser:_contactUserVO];
 	}];
+}
+
+- (void)_goUserProfile {
+	if ([self.delegate respondsToSelector:@selector(userToggleViewCell:showProfileForTrivialUser:)])
+		[self.delegate userToggleViewCell:self showProfileForTrivialUser:_trivialUserVO];
 }
 
 

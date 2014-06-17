@@ -13,13 +13,13 @@ subdomain_api="admin"
 isDryRun_flg=false
 
 
-while getopts "st" optname # --//> there's a '-s' or '-t'
+while getopts "dt" optname # --//> there's a '-d' or '-t'
 	do # --/ loop thru the params
 		case "$optname" in
 
-		"s") # )-/> passed in '-s'
+		"d") # )-/> passed in '-s'
 			#-- set tier to stage
-			subdomain_api="admin-stage"
+			subdomain_api="api-dev"
 			;;
 			
 		"t") # )-/> passed in '-t'
