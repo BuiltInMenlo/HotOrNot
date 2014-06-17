@@ -900,6 +900,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[FBAppEvents activateApp];
 	
+	[KeenClient disableGeoLocation];
 	[KeenClient sharedClientWithProjectId:kKeenIOProductID
                               andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];

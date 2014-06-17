@@ -350,7 +350,9 @@
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.sectionIndexTrackingBackgroundColor = [UIColor blackColor];
+	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
+	_tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.40 alpha:0.33];
 	_tableView.sectionIndexMinimumDisplayRowCount = 1;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;

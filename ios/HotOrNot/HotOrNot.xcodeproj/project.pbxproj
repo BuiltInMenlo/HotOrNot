@@ -172,7 +172,6 @@
 		4C6BBC881615466200145996 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6BBC871615466200145996 /* AssetsLibrary.framework */; };
 		4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */; };
 		4C6ECF4019061D1E00AC2402 /* HONEmoticonPickerItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */; };
-		4C6F71A819506A28009C4D53 /* libCKRefreshControl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6F71A719506A28009C4D53 /* libCKRefreshControl.a */; };
 		4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */; };
 		4C70F9DC189082B900ED5C4E /* HONMessageRecipientsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C70F9DB189082B900ED5C4E /* HONMessageRecipientsViewController.m */; };
 		4C71BF40181B25C8005044F8 /* HONSuspendedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C71BF3F181B25C8005044F8 /* HONSuspendedViewController.m */; };
@@ -258,6 +257,7 @@
 		4CE0399E185727150005256F /* HONAPICaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0399D185727150005256F /* HONAPICaller.m */; };
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
 		4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */; };
+		4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */; };
 		4CEC303D17DA5E270016AAE1 /* HONSelfieCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */; };
 		4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEC304217DAD3140016AAE1 /* Accelerate.framework */; };
 		4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC4B0618B9517F00F39C92 /* HONAnalyticsParams.m */; };
@@ -587,8 +587,6 @@
 		4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewCell.m; sourceTree = "<group>"; };
 		4C6ECF3E19061D1E00AC2402 /* HONEmoticonPickerItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONEmoticonPickerItemView.h; sourceTree = "<group>"; };
 		4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONEmoticonPickerItemView.m; sourceTree = "<group>"; };
-		4C6F71A619506A28009C4D53 /* CKRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKRefreshControl.h; sourceTree = "<group>"; };
-		4C6F71A719506A28009C4D53 /* libCKRefreshControl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCKRefreshControl.a; sourceTree = "<group>"; };
 		4C6F71A919508AD1009C4D53 /* ENUM */ = {isa = PBXFileReference; lastKnownFileType = text; path = ENUM; sourceTree = "<group>"; };
 		4C70F9D71890825D00ED5C4E /* HONMessageRecipientViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientViewCell.h; sourceTree = "<group>"; };
 		4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageRecipientViewCell.m; sourceTree = "<group>"; };
@@ -736,6 +734,8 @@
 		4CE52261160D254B005F2ADC /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRegisterViewController.h; sourceTree = "<group>"; };
 		4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONRegisterViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4CEA70B41950AC5D00A33811 /* CKRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKRefreshControl.h; sourceTree = "<group>"; };
+		4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCKRefreshControl.a; sourceTree = "<group>"; };
 		4CEC303B17DA5E270016AAE1 /* HONSelfieCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraViewController.h; sourceTree = "<group>"; };
 		4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraViewController.m; sourceTree = "<group>"; };
 		4CEC304217DAD3140016AAE1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -777,7 +777,7 @@
 				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
 				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
 				4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */,
-				4C6F71A819506A28009C4D53 /* libCKRefreshControl.a in Frameworks */,
+				4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */,
 				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
@@ -1622,8 +1622,8 @@
 		4C6F71A519506A28009C4D53 /* CKRefreshControl */ = {
 			isa = PBXGroup;
 			children = (
-				4C6F71A619506A28009C4D53 /* CKRefreshControl.h */,
-				4C6F71A719506A28009C4D53 /* libCKRefreshControl.a */,
+				4CEA70B41950AC5D00A33811 /* CKRefreshControl.h */,
+				4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */,
 			);
 			path = CKRefreshControl;
 			sourceTree = "<group>";
