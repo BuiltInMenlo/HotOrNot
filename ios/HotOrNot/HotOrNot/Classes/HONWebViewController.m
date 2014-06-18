@@ -121,7 +121,6 @@
 	NSLog(@"didFailLoadWithError:[%@]", error);
 	
 	[self _removeHUD];
-	
 	if ([error code] == NSURLErrorCancelled)
 		return;
 }
