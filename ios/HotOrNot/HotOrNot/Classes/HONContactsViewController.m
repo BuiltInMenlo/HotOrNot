@@ -298,7 +298,6 @@
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
 	[self _retreiveUserClubs];
-//	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top + 20.0, 0.0, _tableView.contentInset.bottom + 20.0, 0.0)];
 	
 	[_matchedUserIDs removeAllObjects];
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
@@ -314,19 +313,13 @@
 		_progressHUD = nil;
 	}
 	
-	[self _updateDeviceContactsWithMatchedUsers];
-	_segmentedContacts = [self _populateSegmentedDictionary];
+	if (_tableViewDataSource != HONContactsTableViewDataSourceSearchResults) {
+		[self _updateDeviceContactsWithMatchedUsers];
+		_segmentedContacts = [self _populateSegmentedDictionary];
+	}
 	
-//	dispatch_async(dispatch_get_main_queue(), ^{
-		[_tableView reloadData];
-		[_refreshControl endRefreshing];
-//	});
-	
-//	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
-//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-//		[_tableView reloadData];
-//		[_refreshControl endRefreshing];
-//    });
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
 }
 
 

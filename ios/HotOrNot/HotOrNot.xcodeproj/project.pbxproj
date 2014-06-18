@@ -258,6 +258,7 @@
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
 		4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */; };
 		4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */; };
+		4CEA70B81950EDB100A33811 /* GCD in Resources */ = {isa = PBXBuildFile; fileRef = 4CEA70B71950EDB100A33811 /* GCD */; };
 		4CEC303D17DA5E270016AAE1 /* HONSelfieCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */; };
 		4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEC304217DAD3140016AAE1 /* Accelerate.framework */; };
 		4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC4B0618B9517F00F39C92 /* HONAnalyticsParams.m */; };
@@ -736,6 +737,7 @@
 		4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONRegisterViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CEA70B41950AC5D00A33811 /* CKRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKRefreshControl.h; sourceTree = "<group>"; };
 		4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCKRefreshControl.a; sourceTree = "<group>"; };
+		4CEA70B71950EDB100A33811 /* GCD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GCD; sourceTree = "<group>"; };
 		4CEC303B17DA5E270016AAE1 /* HONSelfieCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraViewController.h; sourceTree = "<group>"; };
 		4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraViewController.m; sourceTree = "<group>"; };
 		4CEC304217DAD3140016AAE1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -1605,6 +1607,7 @@
 				4C65C633194F836D0067FEA6 /* sorting */,
 				4C65C634194F836D0067FEA6 /* UITableView */,
 				4C6F71A919508AD1009C4D53 /* ENUM */,
+				4CEA70B71950EDB100A33811 /* GCD */,
 			);
 			path = "Obj-C Notes";
 			sourceTree = "<group>";
@@ -1961,6 +1964,7 @@
 				4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
+				4CEA70B81950EDB100A33811 /* GCD in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
 				4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */,
 				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,

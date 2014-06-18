@@ -89,7 +89,7 @@
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner) {
 		buttonAsset = @"ownerClubButton";
-		newSelector = @selector(_goEditClub);
+		newSelector = (_clubVO.clubType == HONClubTypeAutoGen) ? @selector(_goCreateClub) : @selector(_goEditClub);
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		buttonAsset = @"quitClubButton";
