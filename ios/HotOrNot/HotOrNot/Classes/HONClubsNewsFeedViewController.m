@@ -19,6 +19,7 @@
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
+#import "HONClubInviteViewController.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
@@ -33,11 +34,14 @@
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
+@property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
+@property (nonatomic, strong) NSMutableArray *autoGenItems;
 @property (nonatomic, strong) NSMutableArray *timelineItems;
-@property (nonatomic, assign) HONFeedContentType feedContentType;
+//@property (nonatomic, assign) HONFeedContentType feedContentType;
 @end
 
 
@@ -52,7 +56,9 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		
+		_allClubs = [[NSMutableArray alloc] init];
 		_dictClubs = [[NSMutableArray alloc] init];
+		_autoGenItems = [[NSMutableArray alloc] init];
 		_timelineItems = [[NSMutableArray alloc] init];
 		_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 																[NSMutableArray array],
@@ -86,19 +92,22 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
-	_dictClubs = [NSMutableArray array];
+	_allClubs = [[NSMutableArray alloc] init];
+	_dictClubs = [[NSMutableArray alloc] init];
+	_timelineItems = [[NSMutableArray alloc] init];
+	_autoGenItems = [[NSMutableArray alloc] init];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 															[NSMutableArray array],
 															[NSMutableArray array],
 															[NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
-	[self _suggestClubs];
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
 			for (NSDictionary *dict in [result objectForKey:key]) {
+				[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 				if ([[dict objectForKey:@"submissions"] count] > 0) {
 					[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 					[_dictClubs addObject:dict];
@@ -108,25 +117,27 @@
 			[_clubIDs setValue:clubIDs forKey:key];
 		}
 		
-		_feedContentType = HONFeedContentTypeEmpty;
-		_feedContentType += (((int)[[_clubIDs objectForKey:@"other"] count] > 0) * HONFeedContentTypeAutoGenClubs);
-		_feedContentType += (((int)[[_clubIDs objectForKey:@"owned"] count] > 0) * HONFeedContentTypeOwnedClubs);
-		_feedContentType += (((int)[[_clubIDs objectForKey:@"member"] count] > 0) * HONFeedContentTypeJoinedClubs);
-		_feedContentType += (((int)[[_clubIDs objectForKey:@"pending"] count] > 0) * HONFeedContentTypeClubInvites);
 		
-		
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 0, HONFeedContentTypeEmpty, @"Empty");
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 1, HONFeedContentTypeAutoGenClubs, @"AutoGen");
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 2, HONFeedContentTypeOwnedClubs, @"Owned");
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 3, HONFeedContentTypeJoinedClubs, @"Joined");
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 4, HONFeedContentTypeClubInvites, @"Invites");
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 5, HONFeedContentTypeSuggestedClubs, @"Suggested");
-		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 6, HONFeedContentTypeMatchedClubs, @"Matched");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 0, HONFeedContentTypeEmpty, @"Empty");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 1, HONFeedContentTypeAutoGenClubs, @"AutoGen");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 2, HONFeedContentTypeOwnedClubs, @"Owned");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 3, HONFeedContentTypeJoinedClubs, @"Joined");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 4, HONFeedContentTypeClubInvites, @"Invites");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 5, HONFeedContentTypeSuggestedClubs, @"Suggested");
+//		NSLog(@"HONFeedContentType[%d]//[%d] -=- (%@)", 6, HONFeedContentTypeMatchedClubs, @"Matched");
+//		NSLog(@"_feedContentType:[%d]", _feedContentType);
 		
 		_timelineItems = nil;
 		_timelineItems = [NSMutableArray array];
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
+		
+		[self _suggestClubs];
+//		_feedContentType = HONFeedContentTypeEmpty;
+//		_feedContentType += (((int)[[_clubIDs objectForKey:@"other"] count] > 0) * HONFeedContentTypeAutoGenClubs);
+//		_feedContentType += (((int)[[_clubIDs objectForKey:@"owned"] count] > 0) * HONFeedContentTypeOwnedClubs);
+//		_feedContentType += (((int)[[_clubIDs objectForKey:@"member"] count] > 0) * HONFeedContentTypeJoinedClubs);
+//		_feedContentType += (((int)[[_clubIDs objectForKey:@"pending"] count] > 0) * HONFeedContentTypeClubInvites);
 		
 		[self _didFinishDataRefresh];
 	}];
@@ -146,6 +157,10 @@
 
 #pragma mark - Data Manip
 - (void)_suggestClubs {
+	
+	_autoGenItems = nil;
+	_autoGenItems = [NSMutableArray array];
+	
 	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
 	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
 	NSMutableArray *unsortedContacts = [NSMutableArray array];
@@ -199,11 +214,6 @@
 		}
 	}
 	
-	
-	
-	NSMutableArray *clubIDs = [_clubIDs objectForKey:@"other"];
-	
-	
 	// family
 	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
 	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"]) {
@@ -235,32 +245,43 @@
 		}
 	}
 	
+	
+	for (HONUserClubVO *vo in _allClubs) {
+		if ([vo.clubName isEqualToString:clubName]) {
+			clubName = @"";
+			break;
+		}
+	}
+	
 	if ([clubName length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"-1" forKey:@"id"];
+		[dict setValue:@"0" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
-		
-		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-		[_clubIDs setValue:clubIDs forKey:@"other"];
-		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_dictClubs addObject:vo.dictionary];
+
+		HONTimelineItemVO *vo = [HONTimelineItemVO timelineItemWithDictionary:[dict copy]];
+		[_autoGenItems addObject:vo];
 	}
 	
 	// area code
 	if ([[HONAppDelegate phoneNumber] length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"-2" forKey:@"id"];
-		[dict setValue:[[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"] forKey:@"name"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		NSString *clubName = [[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"];
+		for (HONUserClubVO *vo in _allClubs) {
+			if ([vo.clubName isEqualToString:clubName]) {
+				clubName = @"";
+				break;
+			}
+		}
 		
-		clubIDs = [_clubIDs objectForKey:@"other"];
-		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-		[_clubIDs setValue:clubIDs forKey:@"other"];
-		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_dictClubs addObject:vo.dictionary];
+		if ([clubName length] > 0) {
+			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+			[dict setValue:@"0" forKey:@"id"];
+			[dict setValue:clubName forKey:@"name"];
+			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+
+			HONTimelineItemVO *vo = [HONTimelineItemVO timelineItemWithDictionary:[dict copy]];
+			[_autoGenItems addObject:vo];
+		}
 	}
 	
 	
@@ -307,16 +328,12 @@
 	
 	if ([clubName length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"-3" forKey:@"id"];
+		[dict setValue:@"0" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
-		
-		clubIDs = [_clubIDs objectForKey:@"other"];
-		[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-		[_clubIDs setValue:clubIDs forKey:@"other"];
-		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_dictClubs addObject:vo.dictionary];
+
+		HONTimelineItemVO *vo = [HONTimelineItemVO timelineItemWithDictionary:[dict copy]];
+		[_autoGenItems addObject:vo];
 	}
 }
 
@@ -382,11 +399,11 @@
 	
 	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
 	if ([HONAppDelegate incTotalForCounter:@"newsTab"] == 1) {
-		[[[UIAlertView alloc] initWithTitle:@"News Tip"
-									message:@"The more clubs you join the more your feed fills up!"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+//		[[[UIAlertView alloc] initWithTitle:@"News Tip"
+//									message:@"The more clubs you join the more your feed fills up!"
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
 	}
 }
 
@@ -445,6 +462,7 @@
 #pragma mark - Notifications
 - (void)_selectedNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedNewsTab <|::");
+//	[self _retrieveTimeline];
 }
 
 - (void)_refreshNewsTab:(NSNotification *)notification {
@@ -467,7 +485,17 @@
 	NSLog(@"[*:*] clubNewsFeedViewCell:createClubWithProtoVO:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
-	[self _createClubWithProtoVO:userClubVO];
+	//[self _createClubWithProtoVO:userClubVO];
+	
+	_selectedClubVO = userClubVO;
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@", _selectedClubVO.clubName]
+														message:@"Would you like to invite friends?"
+													   delegate:self
+											  cancelButtonTitle:@"Yes"
+											  otherButtonTitles:@"No", nil];
+	
+	[alertView setTag:0];
+	[alertView show];
 }
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell enterTimelineForClub:(HONUserClubVO *)userClubVO {
@@ -486,7 +514,16 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Join Club"
 									   withUserClub:userClubVO];
 	
+	_selectedClubVO = userClubVO;
 	[self _joinClub:userClubVO];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@", _selectedClubVO.clubName]
+														message:@"Would you like to invite friends?"
+													   delegate:self
+											  cancelButtonTitle:@"Yes"
+											  otherButtonTitles:@"No", nil];
+	
+	[alertView setTag:0];
+	[alertView show];
 }
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyToClubPhoto:(HONUserClubVO *)userClubVO {
@@ -524,13 +561,13 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	// there's a row for section[0] if content is auto-gen only
-	return ((section == 0) ? (_feedContentType == HONFeedContentTypeAutoGenClubs) ? 1 : 0 : [_timelineItems count]);
-//	return ((section == 1) ? [_timelineItems count] : (_feedContentType == HONFeedContentTypeAutoGenClubs) ? 1 : 0);
+	
+//	NSLog(@"numberOfRowsInSection:[%d][%d]", section, [_autoGenItems count]);
+	return ((section == 0) ? 1 : (section == 1) ? [_autoGenItems count] : [_timelineItems count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (3);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -543,25 +580,15 @@
 	if (cell == nil)
 		cell = [[HONClubNewsFeedViewCell alloc] init];
 	
-	cell.cellType = (indexPath.section == 0) ? HONClubNewsFeedCellTypeCreateClub : HONClubNewsFeedCellTypeClub;
 	
-	if (indexPath.section == 1) {
-		cell.timelineItemVO = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
+	if (indexPath.section == 0) {
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClubNewsFeedBG"]];
+			
+	} else if (indexPath.section == 1) {
+		cell.timelineItemVO = (HONTimelineItemVO *)[_autoGenItems objectAtIndex:indexPath.row];
 	
 	} else {
-		UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createClubButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_nonActive"] forState:UIControlStateNormal];
-		[createClubButton setBackgroundImage:[UIImage imageNamed:@"createClubButton_Active"] forState:UIControlStateHighlighted];
-		[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
-		[cell.contentView addSubview:createClubButton];
-		
-		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 22.0, 180.0, 18.0)];
-		titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
-		titleLabel.textColor = [UIColor blackColor];
-		titleLabel.backgroundColor = [UIColor clearColor];
-		titleLabel.text = @"Create club";
-		[cell.contentView addSubview:titleLabel];
+		cell.timelineItemVO = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
 	}
 	
 	cell.delegate = self;
@@ -573,22 +600,16 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.section == 0)
+		return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
 	
-	if (_feedContentType == HONFeedContentTypeAutoGenClubs)
+	else if (indexPath.section == 1)
 		return (kOrthodoxTableCellHeight);
 	
 	else {
-		if (indexPath.section == 1) {
-			
-		}
+		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
+		return ((vo.userClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) ? 293.0 : kOrthodoxTableCellHeight);
 	}
-	
-	
-	if (indexPath.section == 0)
-		return (kOrthodoxTableCellHeight);
-	
-	HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
-	return ((vo.timelineItemType == HONTimelineItemTypeUserCreated) ? 293.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -604,26 +625,58 @@
 	
 	HONClubNewsFeedViewCell *cell = (HONClubNewsFeedViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
 	
-	if (cell.timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
-		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
+	if (indexPath.section == 0) {
+		[self _goCreateClub];
+	
+	} else if (indexPath.section == 1) {
+		_selectedClubVO = ((HONTimelineItemVO *)[_autoGenItems objectAtIndex:indexPath.row]).userClubVO;
+		//[self _createClubWithProtoVO:_selectedClubVO];
 		
-		NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", vo.userClubVO.clubID, vo.userClubVO.clubName);
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-		[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo.userClubVO] animated:YES];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
+															message:@"Would you like to invite friends?"
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"No", nil];
 		
+		[alertView setTag:0];
+		[alertView show];
+	
+	} else {
+		_selectedClubVO = ((HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row]).userClubVO;
 		
-//		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
-//		feedViewController.clubVO = vo.userClubVO;
-//		[self.navigationController pushViewController:feedViewController animated:YES];
+		if (cell.timelineItemVO.userClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
+			NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
 		
-//		HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];<<
-//		feedViewController.challenges = [vo.userClubVO.submissions];<<
-//		JLBPopSlideTransition *transition = [JLBPopSlideTransition new];<<
-//		feedViewController.transitioningDelegate = transition;<<
-//		[self presentViewController:feedViewController animated:YES completion:nil];<<
+		} else {
+			NSLog(@"/// JOIN CLUB:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
+			[self _joinClub:_selectedClubVO];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
+																message:@"Would you like to invite friends?"
+															   delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+			
+			[alertView setTag:0];
+			[alertView show];
+		}
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubInviteViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		
-	} else
-		NSLog(@"/// SOMETHING ELSE:(%@)", ((HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row]).dictionary);
+		} else
+			[self _retrieveTimeline];
+	}
 }
 
 

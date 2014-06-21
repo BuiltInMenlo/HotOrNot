@@ -52,7 +52,7 @@
 #import "HONSuspendedViewController.h"
 #import "HONSelfieCameraViewController.h"
 
-const CGFloat kDevClubID = 12.0f;
+const CGFloat kDevClubID = 42.0f;
 
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1

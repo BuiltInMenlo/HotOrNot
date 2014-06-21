@@ -27,6 +27,7 @@
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
 @property (nonatomic, strong) NSMutableArray *matchedUserIDs;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UIImageView *noAccessImageView;
 @property (nonatomic) int currentMatchStateCounter;
 @property (nonatomic) int totalMatchStateCounter;
 
@@ -75,18 +76,6 @@
 				[_matchedUserIDs addObject:vo.phoneNumber];
 				[_inAppContacts addObject:vo];
 			}
-			
-			
-//			BOOL isFound = NO;
-//			for (HONTrivialUserVO *searchVO in _inAppContacts) {
-//				if (searchVO.userID == vo.userID) {
-//					isFound = YES;
-//					break;
-//				}
-//			}
-//			
-//			if (!isFound)
-//				[_inAppContacts addObject:vo];
 		}
 		
 		_currentMatchStateCounter++;
@@ -107,17 +96,6 @@
 				[_matchedUserIDs addObject:vo.altID];
 				[_inAppContacts addObject:vo];
 			}
-			
-//			BOOL isFound = NO;
-//			for (HONTrivialUserVO *searchVO in _inAppContacts) {
-//				if (searchVO.userID == vo.userID) {
-//					isFound = YES;
-//					break;
-//				}
-//			}
-//			
-//			if (!isFound)
-//				[_inAppContacts addObject:vo];
 		}
 		
 		_currentMatchStateCounter++;
@@ -338,7 +316,8 @@
 	_matchedUserIDs = [NSMutableArray array];
 	
 	self.edgesForExtendedLayout = UIRectEdgeNone;
-	
+
+		
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
@@ -360,17 +339,6 @@
 	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
 	searchBarView.delegate = self;
 	[self.view addSubview:searchBarView];
-	
-//	_refreshControlTableViewController = [[UITableViewController alloc] initWithStyle:UITableViewStylePlain];
-//	[self addChildViewController:_refreshControlTableViewController];
-//	
-//	_refreshControlTableViewController.tableView.frame = self.view.frame;
-//	_refreshControlTableViewController.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
-//	_refreshControlTableViewController.tableView.backgroundColor = [UIColor clearColor];
-//	_refreshControlTableViewController.tableView.userInteractionEnabled = NO;
-//	_refreshControlTableViewController.refreshControl = [[UIRefreshControl alloc] init];
-//	[_refreshControlTableViewController.refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
-//	[self.view addSubview:_refreshControlTableViewController.tableView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];

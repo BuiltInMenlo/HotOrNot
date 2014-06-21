@@ -6,19 +6,6 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef NS_ENUM(NSInteger, HONClubType) {
-	HONClubTypeFeatured = 0,
-	HONClubTypeNearby,
-	HONClubTypeSchool,
-	HONClubTypeSelfieclub,
-	HONClubTypeSponsored,
-	HONClubTypeSuggested,
-	HONClubTypeUserCreated,
-	HONClubTypeUserCreatedEmpty,
-	HONClubTypeAutoGen,
-	HONClubTypeUnknown,
-	HONClubType__TOTAL
-};
 
 typedef NS_ENUM(NSInteger, HONClubEnrollmentType) {
 	HONClubEnrollmentTypeUndetermined = 0,
@@ -37,7 +24,6 @@ typedef NS_ENUM(NSInteger, HONClubEnrollmentType) {
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic) int clubID;
-@property (nonatomic, assign) HONClubType clubType;
 @property (nonatomic, assign) HONClubEnrollmentType clubEnrollmentType;
 @property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, retain) NSString *coverImagePrefix;

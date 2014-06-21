@@ -63,7 +63,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result]] animated:YES];
+			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)

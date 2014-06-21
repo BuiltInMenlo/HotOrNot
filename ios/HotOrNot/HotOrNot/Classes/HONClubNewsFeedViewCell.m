@@ -14,15 +14,16 @@
 #import "HONClubPhotoVO.h"
 
 @interface HONClubNewsFeedViewCell ()
+@property (nonatomic, strong) HONClubPhotoVO *photoVO;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
-@property (nonatomic) BOOL *isCreateClubCell;
+@property (nonatomic) HONClubNewsFeedCellType clubNewsFeedCellType;
 @end
 
 @implementation HONClubNewsFeedViewCell
 @synthesize timelineItemVO = _timelineItemVO;
-@synthesize cellType = _cellType;
+@synthesize clubVO = _clubVO;
 @synthesize delegate = _delegate;
 
 
@@ -38,35 +39,29 @@
 	return (self);
 }
 
-//- (void)setFrame:(CGRect)frame {
-//	frame.size.height -= 10.0;
-//	[super setFrame:frame];
-//}
-
 
 #pragma mark - Public APIs
-- (void)setCellType:(HONClubNewsFeedCellType)cellType {
-	_cellType = cellType;
-}
-
-- (void)setTimelineItemVO:(HONTimelineItemVO *)timelineItemVO {
-	_timelineItemVO = timelineItemVO;
-	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? @"newsCellBG_normal" : @"viewCellBG_normal"]];
+- (void)setClubVO:(HONUserClubVO *)clubVO {
+	_clubVO = clubVO;
+	
+	_clubNewsFeedCellType = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) ? HONClubNewsFeedCellTypeMember : HONClubNewsFeedCellTypeNonMember;
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? @"newsCellBG_normal" : @"viewCellBG_normal"]];
 	
 	NSString *emotions = @"";
-	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
-		for (NSString *subject in _timelineItemVO.clubPhotoVO.subjectNames) {
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) {
+		_photoVO = (HONClubPhotoVO *)[_clubVO.submissions lastObject];
+		for (NSString *subject in _photoVO.subjectNames) {
 			emotions = [emotions stringByAppendingFormat:@"%@, ", subject];
 		}
-	
+		
 		if ([emotions length] > 0)
 			emotions = [emotions substringToIndex:[emotions length] - 2];
 	}
 	
-	NSString *titleCaption = (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? [NSString stringWithFormat:@"%@ is feeling %@", _timelineItemVO.clubPhotoVO.username, emotions] : _timelineItemVO.userClubVO.clubName;
-	NSString *avatarPrefix = (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? _timelineItemVO.clubPhotoVO.avatarPrefix : _timelineItemVO.userClubVO.coverImagePrefix;
+	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? [NSString stringWithFormat:@"%@ is feeling %@", _photoVO.username, emotions] : _clubVO.clubName;
+	NSString *avatarPrefix = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? _photoVO.avatarPrefix : _clubVO.coverImagePrefix;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? CGRectMake(13.0, 19.0, 32.0, 32.0) : CGRectMake(7.0, 0.0, 64.0, 64.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? CGRectMake(13.0, 19.0, 32.0, 32.0) : CGRectMake(10.0, 10.0, 44.0, 44.0)];
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
@@ -75,7 +70,7 @@
 	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:avatarButton];
 	
-	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? @"avatarMask" : @"thumbMask"]];
+	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? @"avatarMask" : @"thumbMask"]];
 	
 	void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;
@@ -85,7 +80,7 @@
 	};
 	
 	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:avatarPrefix forBucketType:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:avatarPrefix forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 		
 		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -104,33 +99,223 @@
 										  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}
 											 context:nil].size;
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? CGRectMake(59.0, 14.0, maxSize.width, 22.0 + ((int)(size.width > maxSize.width) * 25.0)) : CGRectMake(75.0, 22.0, 238.0, 20.0)];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? CGRectMake(59.0, 14.0, maxSize.width, 22.0 + ((int)(size.width > maxSize.width) * 25.0)) : CGRectMake(75.0, 22.0, 238.0, 20.0)];
 	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:(_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) ? 16 : 14];
+	titleLabel.font = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16] : [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	titleLabel.textColor = [UIColor blackColor];
 	titleLabel.numberOfLines = 1 + ((int)(size.width > maxSize.width));
 	titleLabel.text = titleCaption;
 	[self.contentView addSubview:titleLabel];
 	
-	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) {
 		NSMutableParagraphStyle *paragraphStyle  = [[NSMutableParagraphStyle alloc] init];
 		paragraphStyle.minimumLineHeight = 22.0;
 		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
 		
 		titleLabel.text = @"";
 		titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+		
+	} else {
+		if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
+			titleLabel.frame = CGRectOffset(titleLabel.frame, 0.0, -12.0);
+			
+			UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 30.0, 180.0, 16.0)];
+			subtitleLabel.backgroundColor = [UIColor clearColor];
+			subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+			subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+			[self.contentView addSubview:subtitleLabel];
+			
+			int cnt = 0;
+			NSString *subtitleCaption = @"";
+			for (HONClubPhotoVO *vo in [[_clubVO.submissions reverseObjectEnumerator] allObjects]) {
+				NSString *caption = [subtitleCaption stringByAppendingFormat:@"%@, & %d more", vo.username, ([_clubVO.submissions count] - cnt)];
+				size = [caption boundingRectWithSize:subtitleLabel.frame.size
+											 options:NSStringDrawingTruncatesLastVisibleLine
+										  attributes:@{NSFontAttributeName:subtitleLabel.font}
+											 context:nil].size;
+				
+				if (size.width >= subtitleLabel.frame.size.width)
+					break;
+				
+				subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", vo.username];
+				cnt++;
+			}
+			
+			subtitleCaption = [subtitleCaption substringToIndex:[subtitleCaption length] - 2];
+			int remaining = [_clubVO.submissions count] - cnt;
+			
+			if (remaining > 0)
+				subtitleCaption = [subtitleCaption stringByAppendingFormat:@", & %d more", remaining];
+			
+			subtitleLabel.text = subtitleCaption;
+		}
 	}
 	
 	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createClubButton.frame = CGRectMake(247.0, 0.0, 64.0, 64.0);
 	[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_nonActive"] forState:UIControlStateNormal];
 	[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_Active"] forState:UIControlStateHighlighted];
-	[createClubButton addTarget:self action:@selector(_goCreateClub) forControlEvents:UIControlEventTouchUpInside];
-	createClubButton.hidden = (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated || _timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreatedEmpty);
+	[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
+	createClubButton.hidden = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember);
 	[self.contentView addSubview:createClubButton];
 	
 	
-	if (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated) {
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) {
+		[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16] range:[titleCaption rangeOfString:_photoVO.username]];
+		
+		UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		usernameButton.frame = [titleLabel boundingRectForCharacterRange:[titleCaption rangeOfString:_photoVO.username]];
+		[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:usernameButton];
+		
+		NSString *timeCaption = [NSString stringWithFormat:@"%@ in %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate], _clubVO.clubName];
+		_timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 68.0 - ((int)(size.width < maxSize.width) * 25.0), 238.0, 16.0)];
+		_timeLabel.backgroundColor = [UIColor clearColor];
+		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_timeLabel.text = timeCaption;
+		[_timeLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12] range:[timeCaption rangeOfString:_clubVO.clubName]];
+		[self.contentView addSubview:_timeLabel];
+		
+		UIView *photoStackView = [self _photoStackView];
+		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < maxSize.width) * 9.0));
+		[self.contentView addSubview:photoStackView];
+		
+		UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		likeButton.frame = CGRectMake(54.0, 227.0, 124.0, 64.0);
+		[likeButton setBackgroundImage:[UIImage imageNamed:@"newsLikeButton_nonActive"] forState:UIControlStateNormal];
+		[likeButton setBackgroundImage:[UIImage imageNamed:@"newsLikeButton_Active"] forState:UIControlStateHighlighted];
+		[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:likeButton];
+		
+		UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		replyButton.frame = CGRectMake(184.0, 227.0, 124.0, 64.0);
+		[replyButton setBackgroundImage:[UIImage imageNamed:@"newsReplyButton_nonActive"] forState:UIControlStateNormal];
+		[replyButton setBackgroundImage:[UIImage imageNamed:@"newsReplyButton_Active"] forState:UIControlStateHighlighted];
+		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:replyButton];
+	}
+}
+
+- (void)setTimelineItemVO:(HONTimelineItemVO *)timelineItemVO {
+	_timelineItemVO = timelineItemVO;
+	
+	_clubNewsFeedCellType = (_timelineItemVO.timelineItemType == HONTimelineItemTypeUserCreated && _timelineItemVO.userClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) ? HONClubNewsFeedCellTypeMember : HONClubNewsFeedCellTypeNonMember;
+	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? @"newsCellBG_normal" : @"viewCellBG_normal"]];
+	
+	NSString *emotions = @"";
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) {
+		for (NSString *subject in _timelineItemVO.clubPhotoVO.subjectNames) {
+			emotions = [emotions stringByAppendingFormat:@"%@, ", subject];
+		}
+	
+		if ([emotions length] > 0)
+			emotions = [emotions substringToIndex:[emotions length] - 2];
+	}
+	
+	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? [NSString stringWithFormat:@"%@ is feeling %@", _timelineItemVO.clubPhotoVO.username, emotions] : _timelineItemVO.userClubVO.clubName;
+	NSString *avatarPrefix = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? _timelineItemVO.clubPhotoVO.avatarPrefix : _timelineItemVO.userClubVO.coverImagePrefix;
+	
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? CGRectMake(13.0, 19.0, 32.0, 32.0) : CGRectMake(10.0, 10.0, 44.0, 44.0)];
+	avatarImageView.alpha = 0.0;
+	[self.contentView addSubview:avatarImageView];
+	
+	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	avatarButton.frame = avatarImageView.frame;
+	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+	[self.contentView addSubview:avatarButton];
+	
+	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? @"avatarMask" : @"thumbMask"]];
+	
+	void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		avatarImageView.image = image;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:avatarPrefix forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
+		
+		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+						   placeholderImage:nil
+									success:avatarImageSuccessBlock
+									failure:avatarImageFailureBlock];
+	
+	CGSize maxSize = CGSizeMake(238.0, 38.0);
+	CGSize size = [titleCaption boundingRectWithSize:maxSize
+											 options:NSStringDrawingTruncatesLastVisibleLine
+										  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}
+											 context:nil].size;
+	
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? CGRectMake(59.0, 14.0, maxSize.width, 22.0 + ((int)(size.width > maxSize.width) * 25.0)) : CGRectMake(75.0, 22.0, 238.0, 20.0)];
+	titleLabel.backgroundColor = [UIColor clearColor];
+	titleLabel.font = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) ? [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16] : [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	titleLabel.textColor = [UIColor blackColor];
+	titleLabel.numberOfLines = 1 + ((int)(size.width > maxSize.width));
+	titleLabel.text = titleCaption;
+	[self.contentView addSubview:titleLabel];
+	
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) {
+		NSMutableParagraphStyle *paragraphStyle  = [[NSMutableParagraphStyle alloc] init];
+		paragraphStyle.minimumLineHeight = 22.0;
+		paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
+		
+		titleLabel.text = @"";
+		titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	
+	} else {
+		if (_timelineItemVO.userClubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
+			titleLabel.frame = CGRectOffset(titleLabel.frame, 0.0, -12.0);
+			
+			UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 30.0, 180.0, 16.0)];
+			subtitleLabel.backgroundColor = [UIColor clearColor];
+			subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+			subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+			[self.contentView addSubview:subtitleLabel];
+			
+			int cnt = 0;
+			NSString *subtitleCaption = @"";
+			for (HONClubPhotoVO *vo in [[_timelineItemVO.userClubVO.submissions reverseObjectEnumerator] allObjects]) {
+				NSString *caption = [subtitleCaption stringByAppendingFormat:@"%@, & %d more", vo.username, ([_timelineItemVO.userClubVO.submissions count] - cnt)];
+				size = [caption boundingRectWithSize:subtitleLabel.frame.size
+											 options:NSStringDrawingTruncatesLastVisibleLine
+										  attributes:@{NSFontAttributeName:subtitleLabel.font}
+											 context:nil].size;
+				
+				if (size.width >= subtitleLabel.frame.size.width)
+					break;
+				
+				subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", vo.username];
+				cnt++;
+			}
+			
+			subtitleCaption = [subtitleCaption substringToIndex:[subtitleCaption length] - 2];
+			int remaining = [_timelineItemVO.userClubVO.submissions count] - cnt;
+			
+			if (remaining > 0)
+				subtitleCaption = [subtitleCaption stringByAppendingFormat:@", & %d more", remaining];
+			
+			subtitleLabel.text = subtitleCaption;
+		}
+	}
+	
+	UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createClubButton.frame = CGRectMake(247.0, 0.0, 64.0, 64.0);
+	[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_nonActive"] forState:UIControlStateNormal];
+	[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_Active"] forState:UIControlStateHighlighted];
+	[createClubButton addTarget:self action:(_timelineItemVO.userClubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
+	createClubButton.hidden = (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember);
+	[self.contentView addSubview:createClubButton];
+	
+	
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypeMember) {
 		[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16] range:[titleCaption rangeOfString:_timelineItemVO.clubPhotoVO.username]];
 		
 		
@@ -242,24 +427,5 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 	return (holderView);
 }
 
-
-
-
-//- (CGRect)_boundingRectForCharacterRange:(NSRange)range inLabel:(UILabel *)label {
-//	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:(label.attributedText == nil) ? [[NSAttributedString alloc] initWithString:label.text] : label.attributedText];
-//	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-//	[textStorage addLayoutManager:layoutManager];
-//	
-//	NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:label.frame.size];
-//	[layoutManager addTextContainer:textContainer];
-//	
-//	NSRange glyphRange;
-//	[layoutManager characterRangeForGlyphRange:range actualGlyphRange:&glyphRange];
-//	
-//	CGRect charBounds = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
-//	NSLog(@"--ORG:[%@]--", NSStringFromCGRect(charBounds));
-//	
-//	return (CGRectOffset(charBounds, label.frame.origin.x, label.frame.origin.y));
-//}
 
 @end

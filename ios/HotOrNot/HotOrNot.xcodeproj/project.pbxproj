@@ -160,6 +160,7 @@
 		4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675115F96FA800AA7FCE /* Security.framework */; };
 		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
+		4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C639A2F195502E90059E444 /* NewsFeedElements.xcassets */; };
 		4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C636194F8E590067FEA6 /* UILabel+BoundingRect.m */; };
 		4C65C63A194F904F0067FEA6 /* UILabel+FormattedText.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C639194F904F0067FEA6 /* UILabel+FormattedText.m */; };
 		4C65C63D194F90800067FEA6 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C63C194F90800067FEA6 /* UIImage+ImageEffects.m */; };
@@ -258,7 +259,6 @@
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
 		4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */; };
 		4CEA70B61950AC5D00A33811 /* libCKRefreshControl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */; };
-		4CEA70B81950EDB100A33811 /* GCD in Resources */ = {isa = PBXBuildFile; fileRef = 4CEA70B71950EDB100A33811 /* GCD */; };
 		4CEC303D17DA5E270016AAE1 /* HONSelfieCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */; };
 		4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEC304217DAD3140016AAE1 /* Accelerate.framework */; };
 		4CEC4B0718B9517F00F39C92 /* HONAnalyticsParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC4B0618B9517F00F39C92 /* HONAnalyticsParams.m */; };
@@ -550,21 +550,7 @@
 		4C62675115F96FA800AA7FCE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4C62675215F96FA800AA7FCE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		4C65C626194F836D0067FEA6 /* AppDelegate Referencing */ = {isa = PBXFileReference; lastKnownFileType = text; path = "AppDelegate Referencing"; sourceTree = "<group>"; };
-		4C65C627194F836D0067FEA6 /* CameraOverlays */ = {isa = PBXFileReference; lastKnownFileType = text; path = CameraOverlays; sourceTree = "<group>"; };
-		4C65C628194F836D0067FEA6 /* Challenge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Challenge.json; sourceTree = "<group>"; };
-		4C65C629194F836D0067FEA6 /* FormattedUILabel */ = {isa = PBXFileReference; lastKnownFileType = text; path = FormattedUILabel; sourceTree = "<group>"; };
-		4C65C62A194F836D0067FEA6 /* FPO_Clubs */ = {isa = PBXFileReference; lastKnownFileType = text; path = FPO_Clubs; sourceTree = "<group>"; };
-		4C65C62B194F836D0067FEA6 /* HONInstagramLoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HONInstagramLoginViewController.h; sourceTree = "<group>"; };
-		4C65C62C194F836D0067FEA6 /* HONInstagramLoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HONInstagramLoginViewController.m; sourceTree = "<group>"; };
-		4C65C62D194F836D0067FEA6 /* HONTumblrLoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HONTumblrLoginViewController.h; sourceTree = "<group>"; };
-		4C65C62E194F836D0067FEA6 /* HONTumblrLoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HONTumblrLoginViewController.m; sourceTree = "<group>"; };
-		4C65C62F194F836D0067FEA6 /* HONUserProfileViewController.tar.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = HONUserProfileViewController.tar.gz; sourceTree = "<group>"; };
-		4C65C630194F836D0067FEA6 /* ImageFiltering */ = {isa = PBXFileReference; lastKnownFileType = text; path = ImageFiltering; sourceTree = "<group>"; };
-		4C65C631194F836D0067FEA6 /* Misc Snippets */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Misc Snippets"; sourceTree = "<group>"; };
-		4C65C632194F836D0067FEA6 /* scroll_pull.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = scroll_pull.txt; sourceTree = "<group>"; };
-		4C65C633194F836D0067FEA6 /* sorting */ = {isa = PBXFileReference; lastKnownFileType = text; path = sorting; sourceTree = "<group>"; };
-		4C65C634194F836D0067FEA6 /* UITableView */ = {isa = PBXFileReference; lastKnownFileType = text; path = UITableView; sourceTree = "<group>"; };
+		4C639A2F195502E90059E444 /* NewsFeedElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = NewsFeedElements.xcassets; sourceTree = "<group>"; };
 		4C65C635194F8E590067FEA6 /* UILabel+BoundingRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+BoundingRect.h"; sourceTree = "<group>"; };
 		4C65C636194F8E590067FEA6 /* UILabel+BoundingRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+BoundingRect.m"; sourceTree = "<group>"; };
 		4C65C638194F904F0067FEA6 /* UILabel+FormattedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+FormattedText.h"; sourceTree = "<group>"; };
@@ -588,7 +574,6 @@
 		4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewCell.m; sourceTree = "<group>"; };
 		4C6ECF3E19061D1E00AC2402 /* HONEmoticonPickerItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONEmoticonPickerItemView.h; sourceTree = "<group>"; };
 		4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONEmoticonPickerItemView.m; sourceTree = "<group>"; };
-		4C6F71A919508AD1009C4D53 /* ENUM */ = {isa = PBXFileReference; lastKnownFileType = text; path = ENUM; sourceTree = "<group>"; };
 		4C70F9D71890825D00ED5C4E /* HONMessageRecipientViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientViewCell.h; sourceTree = "<group>"; };
 		4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageRecipientViewCell.m; sourceTree = "<group>"; };
 		4C70F9DA189082B900ED5C4E /* HONMessageRecipientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageRecipientsViewController.h; sourceTree = "<group>"; };
@@ -737,7 +722,6 @@
 		4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONRegisterViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CEA70B41950AC5D00A33811 /* CKRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKRefreshControl.h; sourceTree = "<group>"; };
 		4CEA70B51950AC5D00A33811 /* libCKRefreshControl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCKRefreshControl.a; sourceTree = "<group>"; };
-		4CEA70B71950EDB100A33811 /* GCD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GCD; sourceTree = "<group>"; };
 		4CEC303B17DA5E270016AAE1 /* HONSelfieCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraViewController.h; sourceTree = "<group>"; };
 		4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraViewController.m; sourceTree = "<group>"; };
 		4CEC304217DAD3140016AAE1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -1039,6 +1023,7 @@
 				4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */,
 				4C83FD81190F594D00CAEABB /* MessagingElements.xcassets */,
 				4CED977018E42FFF00482813 /* NavElements.xcassets */,
+				4C639A2F195502E90059E444 /* NewsFeedElements.xcassets */,
 				4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */,
 				4C41A09518F25C78007C103D /* TableViewElements.xcassets */,
 				4C83FD87190F5FA200CAEABB /* TutorialElements.xcassets */,
@@ -1591,23 +1576,6 @@
 		4C65C625194F836D0067FEA6 /* Obj-C Notes */ = {
 			isa = PBXGroup;
 			children = (
-				4C65C626194F836D0067FEA6 /* AppDelegate Referencing */,
-				4C65C627194F836D0067FEA6 /* CameraOverlays */,
-				4C65C628194F836D0067FEA6 /* Challenge.json */,
-				4C65C629194F836D0067FEA6 /* FormattedUILabel */,
-				4C65C62A194F836D0067FEA6 /* FPO_Clubs */,
-				4C65C62B194F836D0067FEA6 /* HONInstagramLoginViewController.h */,
-				4C65C62C194F836D0067FEA6 /* HONInstagramLoginViewController.m */,
-				4C65C62D194F836D0067FEA6 /* HONTumblrLoginViewController.h */,
-				4C65C62E194F836D0067FEA6 /* HONTumblrLoginViewController.m */,
-				4C65C62F194F836D0067FEA6 /* HONUserProfileViewController.tar.gz */,
-				4C65C630194F836D0067FEA6 /* ImageFiltering */,
-				4C65C631194F836D0067FEA6 /* Misc Snippets */,
-				4C65C632194F836D0067FEA6 /* scroll_pull.txt */,
-				4C65C633194F836D0067FEA6 /* sorting */,
-				4C65C634194F836D0067FEA6 /* UITableView */,
-				4C6F71A919508AD1009C4D53 /* ENUM */,
-				4CEA70B71950EDB100A33811 /* GCD */,
 			);
 			path = "Obj-C Notes";
 			sourceTree = "<group>";
@@ -1958,13 +1926,13 @@
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
+				4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */,
 				4C62653415F96C7100AA7FCE /* InfoPlist.strings in Resources */,
 				4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */,
 				4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */,
 				4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
-				4CEA70B81950EDB100A33811 /* GCD in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
 				4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */,
 				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,

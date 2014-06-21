@@ -88,7 +88,7 @@
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
 	[dict setValue:@"Create a club" forKey:@"name"];
-	[dict setValue:@"PRE_BUILT" forKey:@"club_type"];
+	[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
 	[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"] forKey:@"img"];
@@ -122,9 +122,6 @@
 }
 
 - (void)_editClub:(HONUserClubVO *)vo {
-	[[HONAPICaller sharedInstance] editClubWithClubID:vo.clubID withTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSObject *result) {
-		[self _retrieveClubs];
-	}];
 }
 
 
@@ -206,11 +203,11 @@
 	
 	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
 	if ([HONAppDelegate incTotalForCounter:@"clubsTab"] == 1) {
-		[[[UIAlertView alloc] initWithTitle:@"Clubs Tip"
-									message:@"The more clubs you join the more your feed fills up!"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+//		[[[UIAlertView alloc] initWithTitle:@"Clubs Tip"
+//									message:@"The more clubs you join the more your feed fills up!"
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
 	}
 }
 
@@ -273,6 +270,16 @@
 																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
 																							@"mp_event"			: @"User Profile - Share",
 																							@"view_controller"	: self}];
+}
+
+-(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	NSLog(@"goLongPress:[%d]", lpGestureRecognizer.state);
+	
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+	}
 }
 
 
@@ -367,19 +374,34 @@
 		
 		NSLog(@"vo.clubEnrollmentType:[%d]", vo.clubEnrollmentType);
 		
-		if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType ==HONClubEnrollmentTypeMember) {
+		if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
-		
+
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
-			[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSObject *result) {
-				[self _retrieveClubs];
-			}];
+			if (vo.clubID == 0) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
 			
-		}else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
+			} else {
+				[[HONAPICaller sharedInstance] createClubWithTitle:vo.clubName withDescription:vo.blurb withImagePrefix:vo.coverImagePrefix completion:^(NSObject *result) {
+					[self _retrieveClubs];
+				}];
+			}
+			
+		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			[self _joinClub:vo];
+			
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:@""
+															   delegate:self
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView setTag:0];
+			[alertView show];
 		}
-	
 	
 	} else {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
@@ -409,27 +431,6 @@
 		if (buttonIndex == 1)
 			[self _joinClub:_selectedClub];
 	}
-}
-
-
-#pragma mark - Data Manip
-- (HONClubType)_clubTypeForClubVO:(HONUserClubVO *)clubVO {
-	NSArray *typeKeys = @[@"owned",
-						  @"member",
-						  @"pending",
-						  @"other"];
-	
-	int ind = 0;
-	for (NSString *key in typeKeys) {
-		for (NSNumber *clubID in [_clubIDs objectForKey:key]) {
-			if (clubVO.clubID == [clubID intValue])
-				return ((HONClubType)ind);
-		}
-		
-		ind++;
-	}
-	
-	return (HONClubTypeUnknown);
 }
 
 

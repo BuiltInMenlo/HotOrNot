@@ -10,10 +10,10 @@
 #import "HONTimelineItemVO.h"
 #import "HONClubPhotoVO.h"
 
+
 typedef NS_ENUM(NSInteger, HONClubNewsFeedCellType) {
-	HONClubNewsFeedCellTypeClub = 0,
-	HONClubNewsFeedCellTypeCreateClub,
-	HONClubNewsFeedCellTypeConfirmClubs
+	HONClubNewsFeedCellTypeMember = 0,
+	HONClubNewsFeedCellTypeNonMember
 };
 
 @class HONClubNewsFeedViewCell;
@@ -31,6 +31,6 @@ typedef NS_ENUM(NSInteger, HONClubNewsFeedCellType) {
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, retain) HONTimelineItemVO *timelineItemVO;
-@property (nonatomic, assign) HONClubNewsFeedCellType cellType;
+@property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, assign) id <HONClubNewsFeedViewCellDelegate> delegate;
 @end

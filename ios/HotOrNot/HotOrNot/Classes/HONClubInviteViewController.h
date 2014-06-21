@@ -9,12 +9,12 @@
 #import "HONContactsViewController.h"
 
 typedef NS_ENUM(NSInteger, HONUserClubInviteType) {
-	HONUserClubInviteTypeNone = 0,
-	HONUserClubInviteTypeInApp = 1 << 0,
-	HONUserClubInviteTypeNonApp = 1 << 1,
+	HONUserClubInviteTypeNone		= 0,
+	HONUserClubInviteTypeInApp		= 1 << 0,
+	HONUserClubInviteTypeNonApp		= 1 << 1,
 	
 };
 
 @interface HONClubInviteViewController : HONContactsViewController
-- (id)initWithClub:(HONUserClubVO *)userClub;
+- (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed;
 @end

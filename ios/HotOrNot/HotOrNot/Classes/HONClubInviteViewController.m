@@ -18,30 +18,16 @@
 @interface HONClubInviteViewController ()
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
+@property (nonatomic) BOOL isPushed;
 @end
 
 
 @implementation HONClubInviteViewController
 
-- (id)initWithClub:(HONUserClubVO *)userClub {
+- (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed {
 	if ((self = [super init])) {
 		_userClubVO = userClub;
-		
-		if (_userClubVO == nil) {
-			_userClubVO = [HONUserClubVO clubWithDictionary:@{@"id"				: @"32",
-															  @"name"			: @"snap_club",
-															  @"added"			: @"2014-04-06 21:20:02",
-															  @"description"	: @"",
-															  @"img"			: @"",
-															  @"members"		: @[],
-															  @"total_members"	: @"0",
-															  @"owner"			: @{@"id"		: @"131249",
-																					@"username"	: @"snap",
-																					@"avatar"	: @"https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png",
-																					@"age"		: @"2001-04-06 00:00:00"},
-															  @"pending"		: @[],
-															  @"blocked"		: @[]}];
-		}
+		_isPushed = isPushed;
 	}
 	
 	return (self);
@@ -77,20 +63,26 @@
 
 - (void)_sendCombinedUserInvites {
 	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID inviteNonAppContacts:[_selectedNonAppContacts copy] completion:^(NSObject *result) {
-		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
+		}];
 	}];
 }
 
 - (void)_sendInAppUserInvites {
 	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
-		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
+		}];
 	}];
 }
 
 
 - (void)_sendNonAppUserInvites {
 	[[HONAPICaller sharedInstance] inviteNonAppUsers:[_selectedNonAppContacts copy] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
-		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
+		}];
 	}];
 }
 
@@ -106,6 +98,7 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	backButton.hidden = !_isPushed;
 	[_headerView addButton:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -157,7 +150,14 @@
 - (void)_goDone {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"
 									   withUserClub:_userClubVO];
-	[self _sendClubInvites];
+	
+	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
+		[self _sendClubInvites];
+	
+	else
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
+		}];
 }
 
 

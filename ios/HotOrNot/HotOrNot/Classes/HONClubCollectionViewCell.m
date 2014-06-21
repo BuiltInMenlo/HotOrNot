@@ -68,7 +68,7 @@
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_clubVO.coverImagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
 			
-			_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+			_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				_coverImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
@@ -89,7 +89,7 @@
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner) {
 		buttonAsset = @"ownerClubButton";
-		newSelector = (_clubVO.clubType == HONClubTypeAutoGen) ? @selector(_goCreateClub) : @selector(_goEditClub);
+		newSelector = @selector(_goCreateClub);//(_clubVO.clubType == HONClubTypeAutoGen) ? @selector(_goCreateClub) : @selector(_goEditClub);
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		buttonAsset = @"quitClubButton";

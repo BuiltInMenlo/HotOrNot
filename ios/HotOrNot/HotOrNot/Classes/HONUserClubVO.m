@@ -13,7 +13,7 @@
 
 @implementation HONUserClubVO
 @synthesize dictionary;
-@synthesize clubID, clubType, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
+@synthesize clubID, clubName, coverImagePrefix, blurb, ownerID, ownerName, ownerImagePrefix, pendingMembers, activeMembers, bannedMembers, addedDate, updatedDate, totalScore, submissions, clubEnrollmentType;
 
 + (HONUserClubVO *)clubWithDictionary:(NSDictionary *)dictionary {
 	HONUserClubVO *vo = [[HONUserClubVO alloc] init];
@@ -49,23 +49,11 @@
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
 	
 	
-	
-	if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"USER_GENERATED"])
-		vo.clubType = ([vo.submissions count]) ? HONClubTypeUserCreatedEmpty : HONClubTypeUserCreated;
-	
-	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"])
-		vo.clubType = HONClubTypeSuggested;
-	
-	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"AUTO_GEN"])
-		vo.clubType = HONClubTypeAutoGen;
-	
-	
 	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;
-	vo.clubEnrollmentType = (vo.clubType == HONClubTypeAutoGen) ? HONClubEnrollmentTypeAutoGen : vo.clubEnrollmentType;
+	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"AUTO_GEN"]) ? HONClubEnrollmentTypeAutoGen : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 			for (NSDictionary *dict in vo.pendingMembers) {
-				NSLog(@"PENDING:[%d - %@]", [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
 				if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 					vo.clubEnrollmentType = HONClubEnrollmentTypePending;
 					break;

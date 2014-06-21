@@ -13,7 +13,7 @@
 @synthesize timelineItemType, clubPhotoVO, userClubVO, timestamp;
 
 + (HONTimelineItemVO *)timelineItemWithDictionary:(NSDictionary *)dictionary {
-	//NSLog(@"DICTIONARY:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
+//	NSLog(@"DICTIONARY:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	//dictionary = [((NSArray *)dictionary) objectAtIndex:0];
 	
 	HONTimelineItemVO *vo = [[HONTimelineItemVO alloc] init];
@@ -37,6 +37,9 @@
 	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"])
 		vo.timelineItemType = HONTimelineItemTypeSuggested;
 	
+	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"AUTO_GEN"])
+		vo.timelineItemType = HONTimelineItemTypeAutoGen;
+	
 	else if ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"USER_GENERATED"]) {
 		vo.timelineItemType = ([[dictionary objectForKey:@"submissions"] count] > 0) ? HONTimelineItemTypeUserCreated : HONTimelineItemTypeUserCreatedEmpty;
 	}
@@ -46,12 +49,12 @@
 	
 	vo.timestamp = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	
+//	NSLog(@"vo.timelineItemType:[%d]", vo.timelineItemType);
 	
 	switch (vo.timelineItemType) {
 		case HONTimelineItemTypeUserCreated:
 			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
 			vo.clubPhotoVO = [HONClubPhotoVO clubPhotoWithDictionary:[[dictionary objectForKey:@"submissions"] lastObject]];
-//			vo.opponentVO = [HONOpponentVO opponentWithDictionary:[[dictionary objectForKey:@"submissions"] lastObject]];
 			break;
 			
 		case HONTimelineItemTypeUserCreatedEmpty:
@@ -63,6 +66,10 @@
 			break;
 			
 		case HONTimelineItemTypeSuggested:
+			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
+			break;
+			
+		case HONTimelineItemTypeAutoGen:
 			vo.userClubVO = [HONUserClubVO clubWithDictionary:dictionary];
 			break;
 			

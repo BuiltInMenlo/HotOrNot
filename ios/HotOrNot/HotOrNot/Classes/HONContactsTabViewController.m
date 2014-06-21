@@ -83,11 +83,11 @@
 	[super viewDidAppear:animated];
 	
 	if ([HONAppDelegate totalForCounter:@"friendsTab"] == 0 && ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusAuthorized) {
-		[[[UIAlertView alloc] initWithTitle:@"Friends Tip"
-									message:@"Allow access to your Contact List for even more friends!"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
+//		[[[UIAlertView alloc] initWithTitle:@"Friends Tip"
+//									message:@"Allow access to your Contact List for even more friends!"
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
 	}
 	
 	NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");

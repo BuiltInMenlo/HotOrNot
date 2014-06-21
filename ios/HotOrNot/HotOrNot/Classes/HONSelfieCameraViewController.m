@@ -205,7 +205,7 @@
 	} completion:nil];
 	
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-		[self _submitCompleted:result];
+//		[self _submitCompleted:result];
 	}];
 }
 
@@ -462,10 +462,10 @@
 						 @"api_endpt"		: kAPICreateChallenge};
 	
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
-	//[self _submitClubPhoto];
+	[self _submitClubPhoto];
 	
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-//		_isFirstAppearance = YES; //<<*|*>>
+		_isFirstAppearance = YES;
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:YES];
 	}];

@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, HONTimelineItemType) {
 	HONTimelineItemTypeSuggested,
 	HONTimelineItemTypeUserCreated,
 	HONTimelineItemTypeUserCreatedEmpty,
+	HONTimelineItemTypeAutoGen,
 	HONTimelineItemTypeUnknown,
 	HONTimelineItemType__TOTAL
 };

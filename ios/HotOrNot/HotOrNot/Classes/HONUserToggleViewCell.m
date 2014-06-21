@@ -74,7 +74,7 @@
 		
 		_overlayTintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kOrthodoxTableCellHeight)];
 		_overlayTintView.backgroundColor = BOT_TINT_COLOR;
-		[self.contentView addSubview:_overlayTintView];
+		//[self.contentView addSubview:_overlayTintView];
 		
 		
 		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -92,7 +92,7 @@
 		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_toggledOffButton];
 		
-		[self _toggleTintCycle:_isSelected];
+		//[self _toggleTintCycle:_isSelected];
 	}
 	
 	return (self);
@@ -122,7 +122,7 @@
 			}];
 		}
 		
-		[self _toggleTintCycle:_isSelected];
+		//[self _toggleTintCycle:_isSelected];
 	}
 }
 
@@ -182,7 +182,7 @@
 #pragma mark - Navigation
 - (void)_goDeselect {
 	_isSelected = NO;
-	[self _toggleTintCycle:_isSelected];
+//	[self _toggleTintCycle:_isSelected];
 	
 	_toggledOffButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -208,7 +208,7 @@
 	} completion:^(BOOL finished) {
 		_toggledOffButton.hidden = YES;
 		
-		[self _toggleTintCycle:_isSelected];
+//		[self _toggleTintCycle:_isSelected];
 		
 		if (self.trivialUserVO != nil)
 			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
