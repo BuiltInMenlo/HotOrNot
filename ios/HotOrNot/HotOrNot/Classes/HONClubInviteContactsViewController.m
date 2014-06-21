@@ -1,5 +1,5 @@
 //
-//  HONClubInviteViewController.m
+//  HONClubInviteContactsViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 03/01/2014 @ 14:05 .
@@ -12,17 +12,18 @@
 #import "MBProgressHUD.h"
 #import "EGORefreshTableHeaderView.h"
 
-#import "HONClubInviteViewController.h"
+#import "HONClubInviteContactsViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONUserToggleViewCell.h"
 
-@interface HONClubInviteViewController ()
+@interface HONClubInviteContactsViewController ()
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
 @property (nonatomic) BOOL isPushed;
 @end
 
 
-@implementation HONClubInviteViewController
+@implementation HONClubInviteContactsViewController
 
 - (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed {
 	if ((self = [super init])) {
@@ -49,12 +50,12 @@
 
 #pragma mark - Data Calls
 - (void)_sendClubInvites {
-	HONUserClubInviteType userClubInviteType = (HONUserClubInviteTypeInApp * (int)([_selectedInAppContacts count] > 0)) + (HONUserClubInviteTypeNonApp * (int)([_selectedNonAppContacts count] > 0));
+	HONClubInviteContactType clubInviteContactType = (HONClubInviteContactTypeInApp * (int)([_selectedInAppContacts count] > 0)) + (HONClubInviteContactTypeNonApp * (int)([_selectedNonAppContacts count] > 0));
 	
-	if (userClubInviteType == HONUserClubInviteTypeInApp)
+	if (clubInviteContactType == HONClubInviteContactTypeInApp)
 		[self _sendInAppUserInvites];
 	
-	else if (userClubInviteType == HONUserClubInviteTypeNonApp)
+	else if (clubInviteContactType == HONClubInviteContactTypeNonApp)
 		[self _sendNonAppUserInvites];
 	
 	else
@@ -158,6 +159,18 @@
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		}];
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	[cell invertSelected];
+	
+//	int userID = (cell.contactUserVO.userID != 0) ? cell.contactUserVO.userID : cell.trivialUserVO.userID;
+//	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:userID] animated:YES];
+
 }
 
 

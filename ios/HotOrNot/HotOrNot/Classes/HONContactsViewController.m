@@ -13,6 +13,7 @@
 
 #import "HONContactsViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONInviteClubsViewController.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONUserToggleViewCell.h"
 #import "HONHeaderView.h"
@@ -443,35 +444,35 @@
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
-	if (_userClubVO != nil) {
-		if (contactUserVO.contactType == HONContactTypeUnmatched)
-			[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
-		
-		else
-			[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
-	
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
-															message:@"You need to create your own club before inviting anyone."
-														   delegate:nil
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView show];
-	}
+//	if (_userClubVO != nil) {
+//		if (contactUserVO.contactType == HONContactTypeUnmatched)
+//			[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
+//		
+//		else
+//			[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
+//	
+//	} else {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+//															message:@"You need to create your own club before inviting anyone."
+//														   delegate:nil
+//												  cancelButtonTitle:@"OK"
+//												  otherButtonTitles:nil];
+//		[alertView show];
+//	}
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	if (_userClubVO != nil)
-		[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
-	
-	else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
-															message:@"You need to create your own club before inviting anyone."
-														   delegate:nil
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView show];
-	}
+//	if (_userClubVO != nil)
+//		[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
+//	
+//	else {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
+//															message:@"You need to create your own club before inviting anyone."
+//														   delegate:nil
+//												  cancelButtonTitle:@"OK"
+//												  otherButtonTitles:nil];
+//		[alertView show];
+//	}
 }
 
 
@@ -542,17 +543,11 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	return ((cell.contactUserVO.userID != 0 || cell.trivialUserVO.userID != 0) ? indexPath : nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	
-	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	int userID = (cell.contactUserVO.userID != 0) ? cell.contactUserVO.userID : cell.trivialUserVO.userID;
-	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:userID] animated:YES];
 }
 
 

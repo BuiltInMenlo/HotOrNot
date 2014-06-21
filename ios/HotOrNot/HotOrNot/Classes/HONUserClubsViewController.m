@@ -24,7 +24,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONClubSettingsViewController.h"
-#import "HONClubInviteViewController.h"
+#import "HONClubInviteContactsViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONUserClubVO.h"
 

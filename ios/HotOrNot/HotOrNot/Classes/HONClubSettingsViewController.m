@@ -12,7 +12,7 @@
 #import "HONClubSettingsViewController.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
-#import "HONClubInviteViewController.h"
+#import "HONClubInviteContactsViewController.h"
 
 
 @interface HONClubSettingsViewController () <HONClubCoverCameraViewControllerDelegate>
@@ -67,7 +67,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:_userClubVO viewControllerPushed:YES] animated:YES];
+			[self.navigationController pushViewController:[[HONClubInviteContactsViewController alloc] initWithClub:_userClubVO viewControllerPushed:YES] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)
@@ -118,7 +118,7 @@
 		};
 		
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_userClubVO.coverImagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 			
 			_clubCoverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
 			[UIView animateWithDuration:0.25 animations:^(void) {

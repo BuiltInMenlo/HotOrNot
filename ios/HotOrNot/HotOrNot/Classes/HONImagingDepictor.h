@@ -49,6 +49,7 @@ extern const CGFloat kSnapRatio;
 + (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect;
 + (UIImage *)mirrorImage:(UIImage *)image;
 
++ (NSString *)normalizedPrefixForImageURL:(NSString *)imageURL;
 + (UIImage *)prepForUploading:(UIImage *)image;
 + (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username;
 + (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path;

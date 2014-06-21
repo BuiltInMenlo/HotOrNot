@@ -66,7 +66,7 @@
 		};
 		
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_clubVO.coverImagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 			
 			_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];
 			[UIView animateWithDuration:0.25 animations:^(void) {
@@ -98,6 +98,12 @@
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
 		buttonAsset = @"joinClubButton";
 		newSelector = @selector(_goJoinClub);
+		
+		UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsInviteOverlay"]];
+		overlayImageView.frame = CGRectOffset(overlayImageView.frame, 0.0, 9.0);
+		[self.contentView addSubview:overlayImageView];
+		
+		[self _cycleOverlay:overlayImageView];
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 		buttonAsset = @"blankClubButton";
@@ -167,6 +173,19 @@
 - (void)_goCreateClub {
 	if ([self.delegate respondsToSelector:@selector(clubViewCellCreateClub:)])
 		[self.delegate clubViewCellCreateClub:self];
+}
+
+
+- (void)_cycleOverlay:(UIView *)overlayView {
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		overlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			overlayView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[self _cycleOverlay:overlayView];
+		}];
+	}];
 }
 
 

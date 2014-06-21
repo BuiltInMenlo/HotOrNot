@@ -464,11 +464,12 @@
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
 	[self _submitClubPhoto];
 	
-	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
+//	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
+		NSLog(@"---CLUB SELECT---");
 		_isFirstAppearance = YES;
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:YES];
-	}];
+//	}];
 }
 
 

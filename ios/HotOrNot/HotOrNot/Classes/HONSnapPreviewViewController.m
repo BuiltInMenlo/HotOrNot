@@ -114,7 +114,7 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_opponentVO.imagePrefix forBucketType:HONS3BucketTypeSelfies completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeSelfies completion:nil];
 		
 		[_imageLoadingView stopAnimating];
 		[UIView animateWithDuration:0.33 animations:^(void) {

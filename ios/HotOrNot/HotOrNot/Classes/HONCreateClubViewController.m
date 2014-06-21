@@ -11,7 +11,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
-#import "HONClubInviteViewController.h"
+#import "HONClubInviteContactsViewController.h"
 
 @interface HONCreateClubViewController () <HONClubCoverCameraViewControllerDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -63,7 +63,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONClubInviteViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
+			[self.navigationController pushViewController:[[HONClubInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)

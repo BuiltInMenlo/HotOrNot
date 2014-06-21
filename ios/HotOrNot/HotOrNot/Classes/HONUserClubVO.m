@@ -53,17 +53,18 @@
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"AUTO_GEN"]) ? HONClubEnrollmentTypeAutoGen : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-			for (NSDictionary *dict in vo.pendingMembers) {
-				if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-					vo.clubEnrollmentType = HONClubEnrollmentTypePending;
-					break;
-				}
+		for (NSDictionary *dict in vo.pendingMembers) {
+			NSLog(@"PENDING:(%d) - [%d - %@]", vo.clubID, [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
+			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+				vo.clubEnrollmentType = HONClubEnrollmentTypePending;
+				break;
 			}
 		}
+	}
 		
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (NSDictionary *dict in vo.activeMembers) {
-			NSLog(@"ACTIVE:[%d - %@]", [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
+			NSLog(@"ACTIVE:(%d) - [%d - %@]", vo.clubID, [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
 			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeMember;
 				break;
@@ -73,7 +74,7 @@
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (NSDictionary *dict in vo.bannedMembers) {
-			NSLog(@"BANNED:[%d - %@]", [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
+			NSLog(@"BANNED:(%d) - [%d - %@]", vo.clubID, [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
 			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeBanned;
 				break;
@@ -83,7 +84,7 @@
 	
 	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
 	
-//	NSLog(@"/-/-/--/--(%@) [%d - %@] {%d}--/-/-/-/", (vo.clubEnrollmentType == HONClubEnrollmentTypeUnknown) ? @"Unknown" : (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) ? @"AutoGen" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : @"Unknown", vo.clubID, vo.clubName, vo.clubType);
+//	NSLog(@"/-/-/--/--(%@) [%d - %@]--/-/-/-/", (vo.clubEnrollmentType == HONClubEnrollmentTypeUnknown) ? @"Unknown" : (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) ? @"AutoGen" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : @"Unknown", vo.clubID, vo.clubName);
 //	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	return (vo);
 }

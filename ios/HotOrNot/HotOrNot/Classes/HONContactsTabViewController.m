@@ -13,11 +13,13 @@
 
 #import "HONTutorialView.h"
 #import "HONActivityHeaderButtonView.h"
+#import "HONUserToggleViewCell.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONRegisterViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
+#import "HONInviteClubsViewController.h"
 
 @interface HONContactsTabViewController () <HONTutorialViewDelegate>
 @property (nonatomic, strong) HONTutorialView *tutorialView;
@@ -190,6 +192,25 @@
 #pragma mark - UI Presentation
 - (void)_updateDeviceContactsWithMatchedUsers {
 	[super _updateDeviceContactsWithMatchedUsers];
+}
+
+
+#pragma mark - TableView Delegates
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return ([super tableView:tableView willSelectRowAtIndexPath:indexPath]);
+	
+	//HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	//return ((cell.trivialUserVO.userID != 0 || cell.contactUserVO.userID != 0) ? indexPath : nil);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
+	
+	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

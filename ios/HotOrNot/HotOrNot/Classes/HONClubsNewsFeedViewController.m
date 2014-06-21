@@ -19,15 +19,13 @@
 #import "HONSelfieCameraViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
-#import "HONClubInviteViewController.h"
+#import "HONClubInviteContactsViewController.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONTableHeaderView.h"
-
-#import "HONTimelineItemVO.h"
 
 
 @interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate>
@@ -130,7 +128,7 @@
 		_timelineItems = nil;
 		_timelineItems = [NSMutableArray array];
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
-			[_timelineItems addObject:[HONTimelineItemVO timelineItemWithDictionary:dict]];
+			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		[self _suggestClubs];
 //		_feedContentType = HONFeedContentTypeEmpty;
@@ -140,6 +138,14 @@
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"pending"] count] > 0) * HONFeedContentTypeClubInvites);
 		
 		[self _didFinishDataRefresh];
+		
+		if ([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) {
+			UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"newsFeedOverlay"]];
+			overlayImageView.frame = CGRectOffset(overlayImageView.frame, 3.0, 210.0);
+			[_tableView addSubview:overlayImageView];
+			
+			[self _cycleOverlay:overlayImageView];
+		}
 	}];
 }
 
@@ -259,7 +265,7 @@
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
-		HONTimelineItemVO *vo = [HONTimelineItemVO timelineItemWithDictionary:[dict copy]];
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 		[_autoGenItems addObject:vo];
 	}
 	
@@ -279,7 +285,7 @@
 			[dict setValue:clubName forKey:@"name"];
 			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
-			HONTimelineItemVO *vo = [HONTimelineItemVO timelineItemWithDictionary:[dict copy]];
+			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 			[_autoGenItems addObject:vo];
 		}
 	}
@@ -332,7 +338,7 @@
 		[dict setValue:clubName forKey:@"name"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
-		HONTimelineItemVO *vo = [HONTimelineItemVO timelineItemWithDictionary:[dict copy]];
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 		[_autoGenItems addObject:vo];
 	}
 }
@@ -585,10 +591,10 @@
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClubNewsFeedBG"]];
 			
 	} else if (indexPath.section == 1) {
-		cell.timelineItemVO = (HONTimelineItemVO *)[_autoGenItems objectAtIndex:indexPath.row];
+		cell.clubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
 	
 	} else {
-		cell.timelineItemVO = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
+		cell.clubVO = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
 	}
 	
 	cell.delegate = self;
@@ -607,8 +613,8 @@
 		return (kOrthodoxTableCellHeight);
 	
 	else {
-		HONTimelineItemVO *vo = (HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row];
-		return ((vo.userClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) ? 293.0 : kOrthodoxTableCellHeight);
+		HONUserClubVO *vo = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
+		return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 293.0 : kOrthodoxTableCellHeight);
 	}
 }
 
@@ -617,7 +623,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);//return ((indexPath.section == 0) ? indexPath : nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -629,7 +635,7 @@
 		[self _goCreateClub];
 	
 	} else if (indexPath.section == 1) {
-		_selectedClubVO = ((HONTimelineItemVO *)[_autoGenItems objectAtIndex:indexPath.row]).userClubVO;
+		_selectedClubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
 		//[self _createClubWithProtoVO:_selectedClubVO];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
@@ -642,9 +648,9 @@
 		[alertView show];
 	
 	} else {
-		_selectedClubVO = ((HONTimelineItemVO *)[_timelineItems objectAtIndex:indexPath.row]).userClubVO;
+		_selectedClubVO = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
 		
-		if (cell.timelineItemVO.userClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
+		if (cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
@@ -670,7 +676,7 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		if (buttonIndex == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubInviteViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 		
@@ -679,5 +685,17 @@
 	}
 }
 
+
+- (void)_cycleOverlay:(UIView *)overlayView {
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		overlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			overlayView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[self _cycleOverlay:overlayView];
+		}];
+	}];
+}
 
 @end

@@ -12,21 +12,21 @@
 #import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
-#import "HONSelfieCameraSubmitViewController.h"
+#import "HONInviteClubsViewController.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONSelfieCameraClubViewCell.h"
 #import "HONUserClubVO.h"
 
-@interface HONSelfieCameraSubmitViewController () <HONSelfieCameraClubViewCellDelegate>
+@interface HONInviteClubsViewController () <HONSelfieCameraClubViewCellDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
 
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
-@property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic, strong) HONContactUserVO *contactUserVO;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
@@ -39,12 +39,12 @@
 @end
 
 
-@implementation HONSelfieCameraSubmitViewController
+@implementation HONInviteClubsViewController
 
-- (id)initWithClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[:|:] [%@ initWithClub] (%@)", self.class, clubVO.dictionary);
+- (id)initWithContactUser:(HONContactUserVO *)contactUserVO {
+	NSLog(@"[:|:] [%@ initWithContactUser] (%d - %@)", self.class, contactUserVO.userID, contactUserVO.username);
 	if ((self = [super init])) {
-		_clubVO = clubVO;
+		_contactUserVO = contactUserVO;
 	}
 	
 	return (self);
@@ -145,19 +145,12 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select Club"];
 	[self.view addSubview:headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:backButton];
-	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(252.0, 0.0, 93.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:cancelButton];
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:doneButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(0.0, self.view.frame.size.height - 77.0, 320.0, 64.0);
@@ -201,16 +194,10 @@
 
 
 #pragma mark - Navigation
-- (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Back"];
-	[self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)_goCancel {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Cancel"];
+- (void)_goDone {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Done"];
 	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-	}];
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goRefresh {
@@ -235,7 +222,6 @@
 		[alertView show];
 	
 	} else {
-		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		}];
 	}

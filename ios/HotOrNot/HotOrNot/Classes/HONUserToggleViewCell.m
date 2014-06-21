@@ -107,18 +107,19 @@
 		_isSelected = isSelected;
 		
 		if (_isSelected) {
-			_toggledOffButton.hidden = NO;
+			_toggledOnButton.hidden = NO;
 			[UIView animateWithDuration:0.125 animations:^(void) {
-				_toggledOffButton.alpha = 1.0;
+				_toggledOnButton.alpha = 1.0;
 			} completion:^(BOOL finished) {
-				_toggledOnButton.hidden = YES;
+				_toggledOffButton.hidden = YES;
 			}];
 			
 		} else {
+			_toggledOffButton.hidden = NO;
 			[UIView animateWithDuration:0.25 animations:^(void) {
-				_toggledOffButton.alpha = 0.0;
+				_toggledOffButton.alpha = 1.0;
 			} completion:^(BOOL finished) {
-				_toggledOffButton.hidden = YES;
+				_toggledOnButton.hidden = YES;
 			}];
 		}
 		
@@ -236,7 +237,7 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_trivialUserVO.avatarPrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
 		_avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {

@@ -63,7 +63,7 @@
 	};
 	
 	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_clubPhotoVO.imagePrefix forBucketType:HONS3BucketTypeClubs completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
 		imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {

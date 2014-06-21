@@ -137,7 +137,7 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:_challengeVO.creatorVO.avatarPrefix forBucketType:HONS3BucketTypeAvatars completion:nil];
+			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 			avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		};
 		
