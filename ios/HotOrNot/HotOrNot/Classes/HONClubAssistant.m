@@ -172,10 +172,9 @@ static HONClubAssistant *sharedInstance = nil;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableArray *emotions = [NSMutableArray array];
 	for (NSString *subject in clubPhotoVO.subjectNames) {
-		for (HONEmotionVO *vo in [HONAppDelegate freeEmotions]) {
-			if ([vo.emotionName isEqualToString:subject]) {
+		for (HONEmotionVO *vo in [HONAppDelegate orthodoxEmojis]) {
+			if ([[vo.emotionName lowercaseString] isEqualToString:[subject lowercaseString]])
 				[emotions addObject:[HONEmotionVO emotionWithDictionary:vo.dictionary]];
-			}
 		}
 	}
 	

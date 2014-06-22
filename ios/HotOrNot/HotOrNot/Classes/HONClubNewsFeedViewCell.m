@@ -127,27 +127,30 @@
 			subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 			[self.contentView addSubview:subtitleLabel];
 			
-			int cnt = 0;
-			NSString *subtitleCaption = @"";
-			for (HONClubPhotoVO *vo in [[_clubVO.submissions reverseObjectEnumerator] allObjects]) {
-				NSString *caption = [subtitleCaption stringByAppendingFormat:@"%@, & %d more", vo.username, ([_clubVO.submissions count] - cnt)];
-				size = [caption boundingRectWithSize:subtitleLabel.frame.size
-											 options:NSStringDrawingTruncatesLastVisibleLine
-										  attributes:@{NSFontAttributeName:subtitleLabel.font}
-											 context:nil].size;
+			NSString *subtitleCaption = _clubVO.ownerName;
+			if ([_clubVO.activeMembers count] > 0) {
+				subtitleCaption = [subtitleCaption stringByAppendingString:@", "];
+				int cnt = 0;
+				for (HONTrivialUserVO *vo in _clubVO.activeMembers) {
+					NSString *caption = ([_clubVO.activeMembers count] - cnt > 1) ? [subtitleCaption stringByAppendingFormat:@"%@, & %d more", vo.username, ([_clubVO.activeMembers count] - cnt)] : [subtitleCaption stringByAppendingString:vo.username];
+					size = [caption boundingRectWithSize:subtitleLabel.frame.size
+												 options:NSStringDrawingTruncatesLastVisibleLine
+											  attributes:@{NSFontAttributeName:subtitleLabel.font}
+												 context:nil].size;
+					NSLog(@"SIZE:[%@](%@)", NSStringFromCGSize(size), caption);
+					if (size.width >= subtitleLabel.frame.size.width)
+						break;
+					
+					subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", vo.username];
+					cnt++;
+				}
 				
-				if (size.width >= subtitleLabel.frame.size.width)
-					break;
+				subtitleCaption = [subtitleCaption substringToIndex:[subtitleCaption length] - 2];
+				int remaining = [_clubVO.activeMembers count] - cnt;
 				
-				subtitleCaption = [subtitleCaption stringByAppendingFormat:@"%@, ", vo.username];
-				cnt++;
+				if (remaining > 0)
+					subtitleCaption = [subtitleCaption stringByAppendingFormat:@", & %d more", remaining];
 			}
-			
-			subtitleCaption = [subtitleCaption substringToIndex:[subtitleCaption length] - 2];
-			int remaining = [_clubVO.submissions count] - cnt;
-			
-			if (remaining > 0)
-				subtitleCaption = [subtitleCaption stringByAppendingFormat:@", & %d more", remaining];
 			
 			subtitleLabel.text = subtitleCaption;
 		}
@@ -238,7 +241,7 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 	
 	for (HONEmotionVO *vo in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:clubPhotoVO]) {
 		//NSLog(@"EMOTION:[%d - %@]", vo.emotionID, vo.emotionName);
-		[emotionURLs addObject:vo.imageURL];
+		[emotionURLs addObject:vo.largeImageURL];
 		
 		if ([emotionURLs count] >= 2)
 			break;

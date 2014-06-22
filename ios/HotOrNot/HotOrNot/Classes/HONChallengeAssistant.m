@@ -44,8 +44,8 @@ static HONChallengeAssistant *sharedInstance = nil;
 - (HONEmotionVO *)emotionForOpponent:(HONOpponentVO *)opponentVO {
 	HONEmotionVO *emotionVO;
 	
-	for (HONEmotionVO *vo in [HONAppDelegate freeEmotions]) {
-		if ([vo.emotionName isEqualToString:opponentVO.subjectName]) {
+	for (HONEmotionVO *vo in [HONAppDelegate orthodoxEmojis]) {
+		if ([[vo.emotionName lowercaseString] isEqualToString:[opponentVO.subjectName lowercaseString]]) {
 			emotionVO = [HONEmotionVO emotionWithDictionary:vo.dictionary];
 			break;
 		}

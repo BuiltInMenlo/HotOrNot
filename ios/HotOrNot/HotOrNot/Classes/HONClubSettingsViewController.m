@@ -12,7 +12,7 @@
 #import "HONClubSettingsViewController.h"
 #import "HONHeaderView.h"
 #import "HONClubCoverCameraViewController.h"
-#import "HONClubInviteContactsViewController.h"
+#import "HONInviteContactsViewController.h"
 
 
 @interface HONClubSettingsViewController () <HONClubCoverCameraViewControllerDelegate>
@@ -67,7 +67,7 @@
 				_progressHUD = nil;
 			}
 			
-			[self.navigationController pushViewController:[[HONClubInviteContactsViewController alloc] initWithClub:_userClubVO viewControllerPushed:YES] animated:YES];
+			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:_userClubVO viewControllerPushed:YES] animated:YES];
 			
 		} else {
 			if (_progressHUD == nil)

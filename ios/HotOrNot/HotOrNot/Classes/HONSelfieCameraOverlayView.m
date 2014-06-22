@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import "NSString+DataTypes.h"
@@ -27,6 +28,7 @@
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *changeTintButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
+@property (nonatomic, strong) UIImageView *lastCameraRollImageView;
 @property (nonatomic) int tintIndex;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -81,10 +83,15 @@
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_takePhotoButton];
 		
+		_lastCameraRollImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRollBG"]];
+		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 257.0, [UIScreen mainScreen].bounds.size.height - 60.0);
+		[self addSubview:_lastCameraRollImageView];
+		
+		[HONImagingDepictor maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
+		[self _retrieveLastImage];
+		
 		_cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cameraRollButton.frame = CGRectMake(222.0, [UIScreen mainScreen].bounds.size.height - 45.0, 93.0, 44.0);
-		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_nonActive"] forState:UIControlStateNormal];
-		[_cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_Active"] forState:UIControlStateHighlighted];
+		_cameraRollButton.frame = _lastCameraRollImageView.frame;
 		[_cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_cameraRollButton];
 	}
@@ -147,6 +154,41 @@
 	[UIView setAnimationDuration:0.33];
 	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex]];
 	[UIView commitAnimations];
+}
+
+- (void)_retrieveLastImage {
+	ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+	[assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+								 usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+									 if (nil != group) {
+										 // be sure to filter the group so you only get photos
+										 [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+										 
+										 
+//										 [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:group.numberOfAssets - 1]
+//																 options:0
+//															  usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+//																  if (nil != result) {
+//																	  ALAssetRepresentation *repr = [result defaultRepresentation];
+//																	  // this is the most recent saved photo
+//																	  UIImage *img = [UIImage imageWithCGImage:[repr fullResolutionImage]];
+//																	  // we only need the first (most recent) photo -- stop the enumeration
+//																	  *stop = YES;
+//																  }
+//															  }];
+										 
+										 [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+											 if (asset) {
+												 _lastCameraRollImageView.image = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+												 *stop = YES;
+											 }
+										 }];
+									 }
+									 
+									 *stop = NO;
+								 } failureBlock:^(NSError *error) {
+									 NSLog(@"error: %@", error);
+								 }];
 }
 
 

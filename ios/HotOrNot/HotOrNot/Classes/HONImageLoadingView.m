@@ -58,7 +58,7 @@ const CGFloat kAnimationTime = 0.5f;
 #pragma mark - UI Presentation
 - (void)_populateFrames {
 	CGRect frame = (_isLarge) ? CGRectMake(0.0, 0.0, 150.0, 124.0) : CGRectMake(0.0, 0.0, 44.0, 44.0);
-	_animationImageView = [[UIImageView alloc]initWithFrame:frame];
+	_animationImageView = [[UIImageView alloc] initWithFrame:frame];
 	_animationImageView.animationImages = @[[UIImage imageNamed:(_isLarge) ? @"loadDots_lg-01" : @"loadDots_sm-01"],
 											[UIImage imageNamed:(_isLarge) ? @"loadDots_lg-02" : @"loadDots_sm-02"],
 											[UIImage imageNamed:(_isLarge) ? @"loadDots_lg-03" : @"loadDots_sm-03"]];

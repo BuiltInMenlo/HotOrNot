@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIImageView *coverImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIButton *ctaButton;
+@property (nonatomic, strong) UIImageView *overlayImageView;
 @property (nonatomic) SEL currSelector;
 @end
 
@@ -56,6 +57,12 @@
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
 	
+	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
+	_nameLabel.text = _clubVO.clubName;
+	_overlayImageView.hidden = YES;
+	_coverImageView.alpha = 0.0;
+	[_overlayImageView.layer removeAllAnimations];
+	
 	if (_clubVO.clubID != 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			_coverImageView.image = image;
@@ -79,10 +86,14 @@
 							  placeholderImage:nil
 									   success:imageSuccessBlock
 									   failure:imageFailureBlock];
+	
+	} else {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_coverImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
 	}
 	
-	
-	_nameLabel.text = _clubVO.clubName;
 	
 	NSString *buttonAsset;
 	SEL newSelector;
@@ -99,11 +110,15 @@
 		buttonAsset = @"joinClubButton";
 		newSelector = @selector(_goJoinClub);
 		
-		UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsInviteOverlay"]];
-		overlayImageView.frame = CGRectOffset(overlayImageView.frame, 0.0, 9.0);
-		[self.contentView addSubview:overlayImageView];
+		if (_overlayImageView != nil) {
+			[_overlayImageView.layer removeAllAnimations];
+			_overlayImageView = nil;
+		}
 		
-		[self _cycleOverlay:overlayImageView];
+		_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsInviteOverlay"]];
+		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, 9.0);
+		[self.contentView addSubview:_overlayImageView];
+		[self _cycleOverlay:_overlayImageView];
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 		buttonAsset = @"blankClubButton";
@@ -125,9 +140,9 @@
 	[_ctaButton setBackgroundImage:[UIImage imageNamed:[buttonAsset stringByAppendingString:@"_Active"]] forState:UIControlStateHighlighted];
 	[_ctaButton addTarget:self action:_currSelector forControlEvents:UIControlEventTouchUpInside];
 	
-	[UIView animateWithDuration:0.0625 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
-		_ctaButton.alpha = 1.0;
-	} completion:nil];
+//	[UIView animateWithDuration:0.0625 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
+//		_ctaButton.alpha = 1.0;
+//	} completion:nil];
 }
 
 
@@ -143,6 +158,11 @@
 	
 	if (_ctaButton != nil)
 		_ctaButton = nil;
+	
+	if (_overlayImageView != nil) {
+		[_overlayImageView.layer removeAllAnimations];
+		_overlayImageView = nil;
+	}
 	
 	
 	_currSelector = nil;
@@ -177,10 +197,10 @@
 
 
 - (void)_cycleOverlay:(UIView *)overlayView {
-	[UIView animateWithDuration:0.33 animations:^(void) {
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction animations:^(void) {
 		overlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.33 animations:^(void) {
+		[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction animations:^(void) {
 			overlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 			[self _cycleOverlay:overlayView];

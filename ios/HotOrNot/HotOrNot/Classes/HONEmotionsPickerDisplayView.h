@@ -11,7 +11,7 @@
 extern const CGSize kMaxLabelSize;
 
 @interface HONEmotionsPickerDisplayView : UIView
-- (id)initWithFrame:(CGRect)frame withExistingEmotions:(NSArray *)emotions;
+- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image;
 - (void)addEmotion:(HONEmotionVO *)emotionVO;
 - (void)removeEmotion:(HONEmotionVO *)emotionVO;
 @end

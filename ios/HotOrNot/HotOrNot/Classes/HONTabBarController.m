@@ -212,6 +212,7 @@ const CGSize kTabSize = {80.0, 50.0};
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 //	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	
 //	UIStatusBarStyle statusBarStyle = [UIApplication sharedApplication].statusBarStyle;

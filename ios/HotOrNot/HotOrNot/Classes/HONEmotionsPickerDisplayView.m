@@ -15,41 +15,54 @@
 #define COLS_PER_ROW 6
 #define SPACING
 
-NSString * const kBaseCaption = @"is feeling";
+NSString * const kBaseCaption = @"- is feeling";
 const CGSize kImageSize = {37.0f, 37.0f};
 const CGSize kImagePaddingSize = {17.0f, 17.0f};
+const CGSize kLabelMaxSize = {220.0f, 22.0f};
 
 @interface HONEmotionsPickerDisplayView ()
 @property (nonatomic, strong) NSMutableArray *emotions;
 @property (nonatomic, strong) UILabel *label;
-@property (nonatomic, strong) UIView *imageHolderView;
-@property (nonatomic) CGSize captionSize;
+//@property (nonatomic, strong) UIView *emotionHolderView;
+@property (nonatomic, strong) UIImageView *previewImageView;
+@property (nonatomic, strong) UIImageView *cursorImageView;
 @end
 
 @implementation HONEmotionsPickerDisplayView
 
-- (id)initWithFrame:(CGRect)frame withExistingEmotions:(NSArray *)emotions {
+- (id)initWithFrame:(CGRect)frame withPreviewImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
-		_emotions = [emotions mutableCopy];
 		
-		_label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, 300.0, 22.0)];
-		_label.backgroundColor = [UIColor clearColor];
+		_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 71.0, 44.0, 44.0)];
+		_previewImageView.image = image;
+		[self addSubview:_previewImageView];
+		
+
+		[HONImagingDepictor maskImageView:_previewImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		
+		_emotions = [NSMutableArray array];
+		
+		_label = [[UILabel alloc] initWithFrame:CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.width + 10.0, 82.0, kLabelMaxSize.width, kLabelMaxSize.height)];
+		_label.backgroundColor = [UIColor whiteColor];
 		_label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_label.textColor = [UIColor blackColor];
-		_label.textAlignment = NSTextAlignmentCenter;
-		_label.text = [kBaseCaption stringByAppendingString:@"…"];
+		_label.text = kBaseCaption;
 		[self addSubview:_label];
 		
-		_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 40.0, 300.0, self.frame.size.height - 40.0)];
-//		_imageHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
-		[self addSubview:_imageHolderView];
+		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 3.0, 79.0, 2.0, 30.0)];
+		_cursorImageView.animationImages = @[[UIImage imageNamed:@"emojiCursor_off"], [UIImage imageNamed:@"emojiCursor_on"]];
+		_cursorImageView.animationDuration = 0.875;
+		_cursorImageView.animationRepeatCount = 0;
+		[self addSubview:_cursorImageView];
+		[_cursorImageView startAnimating];
+		
+//		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 72.0, 44.0, 44.0)];
+//		_emotionHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
+//		[self addSubview:_emotionHolderView];
 		
 		[self _updateLabel];
-		
-		for (HONEmotionVO *vo in _emotions)
-			[self _appendImageWithEmotion:vo];
 	}
 	
 	return (self);
@@ -61,7 +74,7 @@ const CGSize kImagePaddingSize = {17.0f, 17.0f};
 	[_emotions addObject:emotionVO];
 	
 	[self _updateLabel];
-	[self _appendImageWithEmotion:emotionVO];
+	[self _replaceImageWithEmotion:emotionVO];
 }
 
 - (void)removeEmotion:(HONEmotionVO *)emotionVO {
@@ -75,127 +88,127 @@ const CGSize kImagePaddingSize = {17.0f, 17.0f};
 	
 	if (dropEmotionVO != nil) {
 		[_emotions removeObject:dropEmotionVO];
+		
+		if ([_emotions count] == 0)
+			[self _removeImageEmotion];
+		
+		else
+			[self _replaceImageWithEmotion:[_emotions lastObject]];
+		
 		[self _updateLabel];
 	}
-	
-	
-	int ind = 0;
-	UIImageView *dropImageView = nil;
-	for (UIImageView *imageView in _imageHolderView.subviews) {
-		if (imageView.tag == emotionVO.emotionID) {
-			dropImageView = imageView;
-			break;
-		}
-		
-		ind++;
-	}
-	
-	
-	if (dropImageView != nil)
-		[self _dropImageAtIndex:ind];
-	
-	
-	if ([_emotions count] == 0) {
-		for (UIImageView *imageView in _imageHolderView.subviews)
-			[imageView removeFromSuperview];
-	}
-	
-	if ([_imageHolderView.subviews count] == 0)
-		[_emotions removeAllObjects];
 }
 
 
 #pragma mark - UI Presentation
-- (void)_appendImageWithEmotion:(HONEmotionVO *)emotionVO {
-	int cnt = [_imageHolderView.subviews count];
-	int col = cnt % COLS_PER_ROW;
-	int row = (int)floor(cnt / COLS_PER_ROW);
-	
-	if (cnt <= MIN([_emotions count], ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 18 : 12)) {
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(col * (kImageSize.width + kImagePaddingSize.width), row * (kImageSize.width + kImagePaddingSize.width), kImageSize.width, kImageSize.height)];
-		[imageView setTag:emotionVO.emotionID];
-		imageView.alpha = 0.0;
-		[_imageHolderView addSubview:imageView];
-		
-		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			imageView.image = image;
-			
-			[UIView animateWithDuration:0.33 delay:0.0
-				 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
-								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-			 
-							 animations:^(void) {
-								 imageView.alpha = 1.0;
-							 } completion:^(BOOL finished) {
-							 }];
-		};
-		
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-						 placeholderImage:nil
-								  success:imageSuccessBlock
-								  failure:nil];
-	}
+- (void)_replaceImageWithEmotion:(HONEmotionVO *)emotionVO {
+//	if ([_emotionHolderView.subviews count] > 0) {
+//		UIImageView *imageView = [_emotionHolderView.subviews firstObject];
+//		
+//		[UIView animateWithDuration:0.125 delay:0.0
+//			 usingSpringWithDamping:0.875 initialSpringVelocity:0.0
+//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+//		 
+//						 animations:^(void) {
+//							 imageView.alpha = 0.0;
+//							 
+//						 } completion:^(BOOL finished) {
+//							 void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//								 imageView.image = image;
+//							 
+//								 [UIView animateWithDuration:0.33 delay:0.0
+//									  usingSpringWithDamping:0.875 initialSpringVelocity:0.5
+//													 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+//								  
+//												  animations:^(void) {
+//													  imageView.alpha = 1.0;
+//												  } completion:^(BOOL finished) {
+//												  }];
+//							 };
+//							 
+//							 [imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+//											  placeholderImage:nil
+//													   success:imageSuccessBlock
+//													   failure:nil];
+//						 }];
+//		
+//	} else {
+//		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
+//		imageView.alpha = 0.0;
+//		[_emotionHolderView addSubview:imageView];
+//		
+//		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//			imageView.image = image;
+//			
+//			[UIView animateWithDuration:0.33 delay:0.0
+//				 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
+//								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+//			 
+//							 animations:^(void) {
+//								 imageView.alpha = 1.0;
+//							 } completion:^(BOOL finished) {
+//							 }];
+//		};
+//		
+//		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+//						 placeholderImage:nil
+//								  success:imageSuccessBlock
+//								  failure:nil];
+//	}
 }
 
-- (void)_dropImageAtIndex:(int)index {
-	UIImageView *imageView = (UIImageView *)[_imageHolderView.subviews objectAtIndex:index];
-		
-	[UIView animateWithDuration:0.125 delay:0.0
-		 usingSpringWithDamping:0.875 initialSpringVelocity:0.0
-						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-	 
-					 animations:^(void) {
-						 imageView.alpha = 0.0;
-						 
-					 } completion:^(BOOL finished) {
-						 if (index == [_imageHolderView.subviews count] - 1)
-							 [[_imageHolderView.subviews lastObject] removeFromSuperview];
-						 
-						 else {
-							 if ([_imageHolderView.subviews count] > 0)
-								 [self _consolidateImageViewsInRange:NSMakeRange(index+1, [_imageHolderView.subviews count] - (index + 1))];
-						 }
-					 }];
+- (void)_removeImageEmotion {
+//	UIImageView *imageView = [_emotionHolderView.subviews firstObject];
+//	
+//	[UIView animateWithDuration:0.125 delay:0.0
+//		 usingSpringWithDamping:0.875 initialSpringVelocity:0.0
+//						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+//	 
+//					 animations:^(void) {
+//						 imageView.alpha = 0.0;
+//						 
+//					 } completion:^(BOOL finished) {
+//					 }];
 }
 
-- (void)_consolidateImageViewsInRange:(NSRange)range {
-	UIImageView *dropImageView = (UIImageView *)[_imageHolderView.subviews objectAtIndex:range.location - 1];
-	
-	int col, row;
-	for (int i=range.location; i<[_imageHolderView.subviews count]; i++) {
-		col = (i - 1) % COLS_PER_ROW;
-		row = (int)floor((i - 1) / COLS_PER_ROW);
-		
-		UIImageView *imageView = (UIImageView *)[_imageHolderView.subviews objectAtIndex:i];
-		[UIView animateWithDuration:0.33 delay:0.0
-			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-		 
-						 animations:^(void) {
-							 imageView.frame = CGRectMake(col * (kImageSize.width + kImagePaddingSize.width), row * (kImageSize.width + kImagePaddingSize.width), imageView.frame.size.width, imageView.frame.size.height);
-							 
-						 } completion:^(BOOL finished) {
-							 [dropImageView removeFromSuperview];
-						 }];
-	}
-	
-	
-}
 
 - (void)_updateLabel {
-	
 	if ([_emotions count] > 0) {
 		HONEmotionVO *vo = (HONEmotionVO *)[_emotions lastObject];
 		
-		_label.text = [kBaseCaption stringByAppendingFormat:@" %@…", vo.emotionName];
+		_label.text = [kBaseCaption stringByAppendingFormat:@" %@", vo.emotionName];
 		[_label setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18] range:[_label.text rangeOfString:vo.emotionName]];
 		
 	
 	} else {
-		_label.text = [kBaseCaption stringByAppendingString:@"…"];
-		[_label setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:18] range:[_label.text rangeOfString:_label.text]];
+		_label.text = kBaseCaption;
+		[_label setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18] range:[_label.text rangeOfString:_label.text]];
 	}
 	
+	CGSize neededSize = [[_label.text stringByAppendingString:@" "] boundingRectWithSize:kLabelMaxSize
+																				 options:(NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin)
+																			  attributes:@{NSFontAttributeName:_label.font}
+																				 context:nil].size;
+	
+//	CGSize neededSize = [[[NSAttributedString alloc] initWithString:_label.text attributes:@{NSFontAttributeName:_label.font}]
+//						 boundingRectWithSize:kLabelMaxSize
+//						 options:NSStringDrawingTruncatesLastVisibleLine
+//						 context:nil].size;
+	
+	CGSize actualSize = CGSizeMake(MIN(neededSize.width, kLabelMaxSize.width) + 3.0, kLabelMaxSize.height);
+//	NSLog(@"SIZE:[%@] MAX:[%@] // (%@) <<%@>>", NSStringFromCGSize(neededSize), NSStringFromCGSize(kLabelMaxSize), NSStringFromCGSize(actualSize), _label.text);
+	
+	
+	
+//	int orgX = (320.0 - ((([_emotions count] > 0) ? 103.0 : 54.0) + actualSize.width)) * 0.5;
+	int orgX = (320.0 - (54.0 + actualSize.width)) * 0.5;
+	_previewImageView.frame = CGRectMake(orgX, _previewImageView.frame.origin.y, _previewImageView.frame.size.width, _previewImageView.frame.size.height);
+	_label.frame = CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.width + 10.0, _label.frame.origin.y, actualSize.width, actualSize.height);
+	_cursorImageView.frame = CGRectMake(_label.frame.origin.x + _label.frame.size.width + 3.0, _cursorImageView.frame.origin.y, _cursorImageView.frame.size.width, _cursorImageView.frame.size.height);
+//	_emotionHolderView.frame = CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 72.0, 44.0, 44.0);
+	
+	
+		  
 //	NSLog(@"\n\t\t|--|--|--|--|--|--|:|--|--|--|--|--|--|");
 //	NSLog(@"FONT ATTRIBS:[%@]", _label.font.fontDescriptor.fontAttributes);
 //	NSLog(@"--// %@ @ (%d) //--", [_label.font.fontDescriptor.fontAttributes objectForKey:@"NSFontNameAttribute"], (int)_label.font.pointSize);

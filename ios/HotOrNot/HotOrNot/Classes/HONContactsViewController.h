@@ -12,6 +12,7 @@
 
 #import "HONTableView.h"
 #import "HONHeaderView.h"
+#import "HONUserToggleViewCell.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
@@ -20,6 +21,12 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceMatchedUsers = 0,
 	HONContactsTableViewDataSourceAddressBook,
 	HONContactsTableViewDataSourceSearchResults
+};
+
+typedef NS_ENUM(NSInteger, HONInviteContactType) {
+	HONInviteContactTypeNone		= 0,
+	HONInviteContactTypeInApp		= 1 << 0,
+	HONInviteContactTypeNonApp		= 1 << 1
 };
 
 @interface HONContactsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
@@ -50,4 +57,11 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 
 - (void)_updateDeviceContactsWithMatchedUsers;
 -(NSDictionary *)_populateSegmentedDictionary;
+
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectContactUser:(HONContactUserVO *)contactUserVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO;
+
 @end

@@ -17,6 +17,7 @@
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
 		4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C02601C172B4703001CC476 /* HONContactUserVO.m */; };
 		4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C068AB017028A6B0019428A /* HONWebViewController.m */; };
+		4C08ECEF1956B36D006E83B1 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6BBC871615466200145996 /* AssetsLibrary.framework */; };
 		4C0B691F179E06C200D3E12A /* HONSnapPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0B691E179E06C200D3E12A /* HONSnapPreviewViewController.m */; };
 		4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */; };
 		4C0EC00717FE50E7001CF22A /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C0EC00617FE50E7001CF22A /* Twitter.framework */; };
@@ -125,6 +126,7 @@
 		4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */; };
 		4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C459105189183FF0014FA7E /* HONDeviceIntrinsics.m */; };
 		4C4591091891888A0014FA7E /* HONChallengeAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4591081891888A0014FA7E /* HONChallengeAssistant.m */; };
+		4C46ECDD19566B2C007ABD72 /* HONSelectClubsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C46ECDC19566B2C007ABD72 /* HONSelectClubsViewController.m */; };
 		4C47745E18F50A7F00D78654 /* ClubItemElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C47745D18F50A7F00D78654 /* ClubItemElements.xcassets */; };
 		4C48745816BF0E36007D901B /* HONSearchBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarView.m */; };
 		4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51010D1733002500A5D342 /* HONImagingDepictor.m */; };
@@ -168,7 +170,6 @@
 		4C6A3E1817669D7400B6CD4D /* HONFollowContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1717669D7400B6CD4D /* HONFollowContactViewCell.m */; };
 		4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1A1766AD3500B6CD4D /* HONInviteContactViewCell.m */; };
 		4C6BBC861615455000145996 /* HONSelfieCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBC851615455000145996 /* HONSelfieCameraOverlayView.m */; };
-		4C6BBC881615466200145996 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6BBC871615466200145996 /* AssetsLibrary.framework */; };
 		4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */; };
 		4C6ECF4019061D1E00AC2402 /* HONEmoticonPickerItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6ECF3F19061D1E00AC2402 /* HONEmoticonPickerItemView.m */; };
 		4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C70F9D81890825D00ED5C4E /* HONMessageRecipientViewCell.m */; };
@@ -215,7 +216,7 @@
 		4C99EB57194D581B00283C1A /* HONDateTimeAlloter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C99EB56194D581B00283C1A /* HONDateTimeAlloter.m */; };
 		4C99EB5A194D5B1700283C1A /* HONClubTimelineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C99EB59194D5B1700283C1A /* HONClubTimelineViewController.m */; };
 		4C99EB5D194D5FC100283C1A /* HONClubPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */; };
-		4CA246C21908178B00512295 /* HONSelfieCameraClubViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C11908178B00512295 /* HONSelfieCameraClubViewCell.m */; };
+		4CA246C21908178B00512295 /* HONClubToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C11908178B00512295 /* HONClubToggleViewCell.m */; };
 		4CA246C519083C8B00512295 /* NSString+DataTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA246C419083C8B00512295 /* NSString+DataTypes.m */; };
 		4CA34C5516F6B6550000751E /* HONTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONTableViewCell.m */; };
 		4CA5AE1E1941DE4F007EF9EF /* ContactsElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CA5AE1D1941DE4F007EF9EF /* ContactsElements.xcassets */; };
@@ -249,7 +250,7 @@
 		4CCED5D7181F7A8000D1D673 /* NSDictionary+NullReplacement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */; };
 		4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */; };
 		4CD071A819553039003894F4 /* UIView+ReverseSubviews.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */; };
-		4CD071AA19554431003894F4 /* HONClubInviteContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A919554431003894F4 /* HONClubInviteContactsViewController.m */; };
+		4CD071AA19554431003894F4 /* HONInviteContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A919554431003894F4 /* HONInviteContactsViewController.m */; };
 		4CD071AD19554A87003894F4 /* HONInviteClubsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071AC19554A87003894F4 /* HONInviteClubsViewController.m */; };
 		4CD42F28188B410E00264845 /* HONMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD42F27188B410E00264845 /* HONMessagesViewController.m */; };
 		4CD42F2B188B89CF00264845 /* HONMessageItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */; };
@@ -315,7 +316,7 @@
 		4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewController.m; sourceTree = "<group>"; };
 		4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateSnapButtonView.h; sourceTree = "<group>"; };
 		4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateSnapButtonView.m; sourceTree = "<group>"; };
-		4C2400E818C2910F00C9AE53 /* HONClubInviteContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubInviteContactsViewController.h; sourceTree = "<group>"; };
+		4C2400E818C2910F00C9AE53 /* HONInviteContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteContactsViewController.h; sourceTree = "<group>"; };
 		4C2400EB18C2916C00C9AE53 /* HONClubSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubSettingsViewController.h; sourceTree = "<group>"; };
 		4C2400EC18C2916C00C9AE53 /* HONClubSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubSettingsViewController.m; sourceTree = "<group>"; };
 		4C2400F118C29B8400C9AE53 /* HONClubsSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsSearchViewController.h; sourceTree = "<group>"; };
@@ -499,6 +500,8 @@
 		4C459105189183FF0014FA7E /* HONDeviceIntrinsics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDeviceIntrinsics.m; sourceTree = "<group>"; };
 		4C4591071891888A0014FA7E /* HONChallengeAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeAssistant.h; sourceTree = "<group>"; };
 		4C4591081891888A0014FA7E /* HONChallengeAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeAssistant.m; sourceTree = "<group>"; };
+		4C46ECDB19566B2C007ABD72 /* HONSelectClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelectClubsViewController.h; sourceTree = "<group>"; };
+		4C46ECDC19566B2C007ABD72 /* HONSelectClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelectClubsViewController.m; sourceTree = "<group>"; };
 		4C47745D18F50A7F00D78654 /* ClubItemElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ClubItemElements.xcassets; sourceTree = "<group>"; };
 		4C48745616BF0E36007D901B /* HONSearchBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchBarView.h; sourceTree = "<group>"; };
 		4C48745716BF0E36007D901B /* HONSearchBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchBarView.m; sourceTree = "<group>"; };
@@ -640,8 +643,8 @@
 		4C99EB59194D5B1700283C1A /* HONClubTimelineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubTimelineViewController.m; sourceTree = "<group>"; };
 		4C99EB5B194D5FC100283C1A /* HONClubPhotoViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubPhotoViewCell.h; sourceTree = "<group>"; };
 		4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubPhotoViewCell.m; sourceTree = "<group>"; };
-		4CA246C01908178B00512295 /* HONSelfieCameraClubViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraClubViewCell.h; sourceTree = "<group>"; };
-		4CA246C11908178B00512295 /* HONSelfieCameraClubViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraClubViewCell.m; sourceTree = "<group>"; };
+		4CA246C01908178B00512295 /* HONClubToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubToggleViewCell.h; sourceTree = "<group>"; };
+		4CA246C11908178B00512295 /* HONClubToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubToggleViewCell.m; sourceTree = "<group>"; };
 		4CA246C319083C8B00512295 /* NSString+DataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DataTypes.h"; sourceTree = "<group>"; };
 		4CA246C419083C8B00512295 /* NSString+DataTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DataTypes.m"; sourceTree = "<group>"; };
 		4CA34C5316F6B6550000751E /* HONTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableViewCell.h; sourceTree = "<group>"; };
@@ -705,7 +708,7 @@
 		4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+NullReplacement.m"; sourceTree = "<group>"; };
 		4CD071A619553039003894F4 /* UIView+ReverseSubviews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+ReverseSubviews.h"; sourceTree = "<group>"; };
 		4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+ReverseSubviews.m"; sourceTree = "<group>"; };
-		4CD071A919554431003894F4 /* HONClubInviteContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubInviteContactsViewController.m; sourceTree = "<group>"; };
+		4CD071A919554431003894F4 /* HONInviteContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteContactsViewController.m; sourceTree = "<group>"; };
 		4CD071AB19554A87003894F4 /* HONInviteClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteClubsViewController.h; sourceTree = "<group>"; };
 		4CD071AC19554A87003894F4 /* HONInviteClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteClubsViewController.m; sourceTree = "<group>"; };
 		4CD42F26188B410E00264845 /* HONMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessagesViewController.h; sourceTree = "<group>"; };
@@ -757,6 +760,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C08ECEF1956B36D006E83B1 /* AssetsLibrary.framework in Frameworks */,
 				4C72F6AD1894E2DD00CF67BC /* EventKit.framework in Frameworks */,
 				4C69A20119410CA300971D3F /* libKeenClient-Aggregate.a in Frameworks */,
 				4C72F6AE1894E2DD00CF67BC /* EventKitUI.framework in Frameworks */,
@@ -772,7 +776,6 @@
 				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
 				4C4328F018E3A9FA0035FF06 /* AWSiOSSDK.framework in Frameworks */,
 				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
-				4C6BBC881615466200145996 /* AssetsLibrary.framework in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
 				4CA8D9F61613933600B7B13C /* Accounts.framework in Frameworks */,
 				4C4328A618E3A9FA0035FF06 /* libChartboost.a in Frameworks */,
@@ -835,8 +838,6 @@
 				4C0204E818EA6F5300FAE532 /* Create Club Camera */,
 				4C99EB5B194D5FC100283C1A /* HONClubPhotoViewCell.h */,
 				4C99EB5C194D5FC100283C1A /* HONClubPhotoViewCell.m */,
-				4C2400E818C2910F00C9AE53 /* HONClubInviteContactsViewController.h */,
-				4CD071A919554431003894F4 /* HONClubInviteContactsViewController.m */,
 				4C99EB58194D5B1700283C1A /* HONClubTimelineViewController.h */,
 				4C99EB59194D5B1700283C1A /* HONClubTimelineViewController.m */,
 				4C0113D81898B243007461DB /* HONCreateClubViewController.h */,
@@ -845,6 +846,8 @@
 				4C2400F218C29B8400C9AE53 /* HONClubsSearchViewController.m */,
 				4CD071AB19554A87003894F4 /* HONInviteClubsViewController.h */,
 				4CD071AC19554A87003894F4 /* HONInviteClubsViewController.m */,
+				4C2400E818C2910F00C9AE53 /* HONInviteContactsViewController.h */,
+				4CD071A919554431003894F4 /* HONInviteContactsViewController.m */,
 			);
 			name = "-Shared-";
 			sourceTree = "<group>";
@@ -1000,8 +1003,6 @@
 				4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */,
 				4CEC303B17DA5E270016AAE1 /* HONSelfieCameraViewController.h */,
 				4CEC303C17DA5E270016AAE1 /* HONSelfieCameraViewController.m */,
-				4CA246C01908178B00512295 /* HONSelfieCameraClubViewCell.h */,
-				4CA246C11908178B00512295 /* HONSelfieCameraClubViewCell.m */,
 				4CC94FF01908017900347A34 /* HONSelfieCameraSubmitViewController.h */,
 				4CC94FF11908017900347A34 /* HONSelfieCameraSubmitViewController.m */,
 			);
@@ -1605,10 +1606,18 @@
 		4C7DBBB5194FEF8E00F7A487 /* Abstracts */ = {
 			isa = PBXGroup;
 			children = (
+				4CA246C01908178B00512295 /* HONClubToggleViewCell.h */,
+				4CA246C11908178B00512295 /* HONClubToggleViewCell.m */,
 				4C7DBBB1194FEB9E00F7A487 /* HONCollectionView.h */,
 				4C7DBBB2194FEB9E00F7A487 /* HONCollectionView.m */,
+				4CBDDBAA1913354E002F9723 /* HONContactsViewController.h */,
+				4CBDDBAB1913354E002F9723 /* HONContactsViewController.m */,
+				4CC94FD8190733C900347A34 /* HONPaginationView.h */,
+				4CC94FD9190733C900347A34 /* HONPaginationView.m */,
 				4C7DBBC6195004C100F7A487 /* HONRefreshControl.h */,
 				4C7DBBC7195004C100F7A487 /* HONRefreshControl.m */,
+				4C46ECDB19566B2C007ABD72 /* HONSelectClubsViewController.h */,
+				4C46ECDC19566B2C007ABD72 /* HONSelectClubsViewController.m */,
 				4C7DBBBC194FF43D00F7A487 /* HONTableView.h */,
 				4C7DBBBD194FF43D00F7A487 /* HONTableView.m */,
 				4CA34C5316F6B6550000751E /* HONTableViewCell.h */,
@@ -1619,8 +1628,6 @@
 				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
 				4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */,
 				4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */,
-				4CBDDBAA1913354E002F9723 /* HONContactsViewController.h */,
-				4CBDDBAB1913354E002F9723 /* HONContactsViewController.m */,
 			);
 			name = Abstracts;
 			sourceTree = "<group>";
@@ -1635,8 +1642,6 @@
 				4C2DD84218E3F29600BC8759 /* HONTutorialView.m */,
 				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
-				4CC94FD8190733C900347A34 /* HONPaginationView.h */,
-				4CC94FD9190733C900347A34 /* HONPaginationView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -2042,7 +2047,7 @@
 				4C4328B018E3A9FA0035FF06 /* CatmullRomSpline.m in Sources */,
 				4CED33BD1840070900282A19 /* HONSuggestedFollowViewController.m in Sources */,
 				4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */,
-				4CA246C21908178B00512295 /* HONSelfieCameraClubViewCell.m in Sources */,
+				4CA246C21908178B00512295 /* HONClubToggleViewCell.m in Sources */,
 				4C86C43217FF736E007DC458 /* HONFollowersViewController.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
@@ -2075,7 +2080,7 @@
 				4CCA415B181BE4D100FC9863 /* HONEmotionVO.m in Sources */,
 				4C86C43517FF990A007DC458 /* HONFollowingViewController.m in Sources */,
 				4C382FF4178B7D2000C7FA7C /* HONCelebVO.m in Sources */,
-				4CD071AA19554431003894F4 /* HONClubInviteContactsViewController.m in Sources */,
+				4CD071AA19554431003894F4 /* HONInviteContactsViewController.m in Sources */,
 				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */,
@@ -2183,6 +2188,7 @@
 				4CC94FDA190733C900347A34 /* HONPaginationView.m in Sources */,
 				4C60AF6B17CCFEF800609792 /* HONEmotionsPickerView.m in Sources */,
 				4C7DBEE61911A7EA00E9331D /* HONActivityItemVO.m in Sources */,
+				4C46ECDD19566B2C007ABD72 /* HONSelectClubsViewController.m in Sources */,
 				4C1435CD17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2310,6 +2316,7 @@
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks/HockeySDK.embeddedframework",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks/Tapjoy.embeddedframework",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";
@@ -2347,6 +2354,7 @@
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks/HockeySDK.embeddedframework",
 					"$(SRCROOT)/HotOrNot/Vendor/Frameworks/Tapjoy.embeddedframework",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HotOrNot/HotOrNot-Prefix.pch";

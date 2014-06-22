@@ -6,11 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONSelectClubsViewController.h"
+
 #import "HONChallengeVO.h"
 #import "HONProtoChallengeVO.h"
 #import "HONUserClubVO.h"
 
 @class HONSelfieCameraViewController;
-@interface HONSelfieCameraSubmitViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONSelfieCameraSubmitViewController : HONSelectClubsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 @end

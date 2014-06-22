@@ -37,9 +37,24 @@
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
 	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
 	
-	vo.pendingMembers = [dictionary objectForKey:@"pending"];
-	vo.activeMembers = [dictionary objectForKey:@"members"];
-	vo.bannedMembers = [dictionary objectForKey:@"blocked"];
+//	vo.pendingMembers = [dictionary objectForKey:@"pending"];
+//	vo.activeMembers = [dictionary objectForKey:@"members"];
+//	vo.bannedMembers = [dictionary objectForKey:@"blocked"];
+	
+	NSMutableArray *pending = [NSMutableArray array];
+	for (NSDictionary *dict in [dictionary objectForKey:@"pending"])
+		[pending addObject:[HONTrivialUserVO userWithDictionary:dict]];
+	vo.pendingMembers = pending;
+	
+	NSMutableArray *members = [NSMutableArray array];
+	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
+		[members addObject:[HONTrivialUserVO userWithDictionary:dict]];
+	vo.activeMembers = members;
+	
+	NSMutableArray *banned = [NSMutableArray array];
+	for (NSDictionary *dict in [dictionary objectForKey:@"blocked"])
+		[banned addObject:[HONTrivialUserVO userWithDictionary:dict]];
+	vo.bannedMembers = banned;
 	
 	NSMutableArray *submissions = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
@@ -53,9 +68,9 @@
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"AUTO_GEN"]) ? HONClubEnrollmentTypeAutoGen : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-		for (NSDictionary *dict in vo.pendingMembers) {
-			NSLog(@"PENDING:(%d) - [%d - %@]", vo.clubID, [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
-			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		for (HONTrivialUserVO *trivialUserVO in vo.pendingMembers) {
+			NSLog(@"PENDING:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
+			if (trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypePending;
 				break;
 			}
@@ -63,9 +78,9 @@
 	}
 		
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-		for (NSDictionary *dict in vo.activeMembers) {
-			NSLog(@"ACTIVE:(%d) - [%d - %@]", vo.clubID, [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
-			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		for (HONTrivialUserVO *trivialUserVO in vo.activeMembers) {
+			NSLog(@"ACTIVE:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
+			if (trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeMember;
 				break;
 			}
@@ -73,9 +88,9 @@
 	}
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
-		for (NSDictionary *dict in vo.bannedMembers) {
-			NSLog(@"BANNED:(%d) - [%d - %@]", vo.clubID, [[dict objectForKey:@"id"] intValue], [dict objectForKey:@"username"]);
-			if ([[dict objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		for (HONTrivialUserVO *trivialUserVO in vo.bannedMembers) {
+			NSLog(@"BANNED:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
+			if (trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeBanned;
 				break;
 			}

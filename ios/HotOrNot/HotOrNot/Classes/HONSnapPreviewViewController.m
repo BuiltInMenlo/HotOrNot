@@ -47,8 +47,6 @@
 		_hasTakenVerifyAction = NO;
 		_snapPreviewType = HONSnapPreviewTypeChallenge;
 		
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-		
 		//NSLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCHALLENGE DICT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\n", _challengeVO.dictionary);
 	}
 	
@@ -297,7 +295,6 @@
 	if (_snapPreviewType == HONSnapPreviewTypeVerify && _hasTakenVerifyAction)
 		[self.delegate snapPreviewViewController:self removeVerifyChallenge:_challengeVO];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.delegate snapPreviewViewControllerClose:self];
 }
 
@@ -327,7 +324,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Volley Preview - User Profile"
 									  withChallenge:_challengeVO
 									 andParticipant:_opponentVO];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+
 	_userProfileViewController = [[HONUserProfileViewController alloc] init];
 	_userProfileViewController.userID = _opponentVO.userID;
 	[self.view addSubview:_userProfileViewController.view];

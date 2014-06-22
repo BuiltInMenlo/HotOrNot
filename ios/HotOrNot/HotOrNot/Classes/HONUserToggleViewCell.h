@@ -12,9 +12,9 @@
 
 @class HONUserToggleViewCell;
 @protocol HONUserToggleViewCellDelegate <NSObject>
+@optional
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectContactUser:(HONContactUserVO *)contactUserVO;
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO;
-@optional
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO;
@@ -27,6 +27,7 @@
 
 - (void)invertSelected;
 - (void)toggleSelected:(BOOL)isSelected;
+- (void)toggleIndicator:(BOOL)isEnabled;
 
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;

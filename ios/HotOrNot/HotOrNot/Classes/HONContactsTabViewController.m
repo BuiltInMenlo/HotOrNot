@@ -21,7 +21,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONInviteClubsViewController.h"
 
-@interface HONContactsTabViewController () <HONTutorialViewDelegate>
+@interface HONContactsTabViewController () <HONTutorialViewDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) HONTutorialView *tutorialView;
 @end
 
@@ -195,22 +195,53 @@
 }
 
 
-#pragma mark - TableView Delegates
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ([super tableView:tableView willSelectRowAtIndexPath:indexPath]);
+#pragma mark - UserToggleViewCell Delegates
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell showProfileForTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"[[*:*]] userToggleViewCell:showProfileForTrivialUser");
 	
-	//HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	//return ((cell.trivialUserVO.userID != 0 || cell.contactUserVO.userID != 0) ? indexPath : nil);
+	[super userToggleViewCell:viewCell showProfileForTrivialUser:trivialUserVO];
+	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
 }
+
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
+	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
+	
+	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
+//	if (contactUserVO.contactType == HONContactTypeUnmatched)
+//		[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
+//	
+//	else
+//		[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
+}
+
+- (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
+	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
+	
+//	[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
+}
+
+
+#pragma mark - TableView Delegates
+//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//	return ([super tableView:tableView willSelectRowAtIndexPath:indexPath]);
+//}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	if (cell.trivialUserVO.userID != -1) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 

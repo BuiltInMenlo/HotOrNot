@@ -24,7 +24,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONCreateClubViewController.h"
 #import "HONClubSettingsViewController.h"
-#import "HONClubInviteContactsViewController.h"
+#import "HONInviteContactsViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONUserClubVO.h"
 
@@ -183,9 +183,6 @@
 	
 	[self _retrieveClubs];
 }
-
-
-
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
@@ -350,7 +347,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]
 																				forIndexPath:indexPath];
-	//[cell resetSubviews];
+//	[cell resetSubviews];
 	
 	HONUserClubVO *vo = [_allClubs objectAtIndex:indexPath.row];
 	cell.clubVO = vo;
@@ -393,12 +390,13 @@
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			[self _joinClub:vo];
 			
-			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:@""
+			_selectedClub = vo;
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@", _selectedClub.clubName]
+																message:@"Would you like to invite friends?"
 															   delegate:self
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:nil];
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+			
 			[alertView setTag:0];
 			[alertView show];
 		}
@@ -426,10 +424,14 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Clubs - Accept Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Clubs - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]
 										   withUserClub:_selectedClub];		
-		if (buttonIndex == 1)
-			[self _joinClub:_selectedClub];
+		
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClub viewControllerPushed:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 	}
 }
 

@@ -145,8 +145,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSDictionary *)emailShareCommentForIndex:(int)index;
 
 
-+ (NSArray *)freeEmotions;
-+ (NSArray *)paidEmotions;
++ (NSArray *)orthodoxEmojis;
 + (NSArray *)searchUsers;
 + (NSArray *)subjectFormats;
 

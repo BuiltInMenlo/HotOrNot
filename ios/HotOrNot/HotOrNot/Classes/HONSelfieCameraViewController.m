@@ -269,7 +269,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor blackColor];
 }
 
 - (void)viewDidLoad {
@@ -393,6 +393,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Cancel"];
 	
 	[self _cancelUpload];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
@@ -423,7 +424,6 @@
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && self.imagePickerController.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
@@ -441,12 +441,24 @@
 			self.imagePickerController.cameraOverlayView = _cameraOverlayView;
 		}];
 	}
+	
+	if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
+		}];
+	}
+	
+//	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+//		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
+//		}];
+//	}
 }
 
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Submit"];
 	
 	_hasSubmitted = NO;
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	NSError *error;
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
@@ -464,12 +476,19 @@
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
 	[self _submitClubPhoto];
 	
-//	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-		NSLog(@"---CLUB SELECT---");
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
+			NSLog(@"---CLUB SELECT---CAMERA");
+			_isFirstAppearance = YES;
+			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:YES];
+		}];
+		
+	} else {
+		NSLog(@"---CLUB SELECT---LIB");
 		_isFirstAppearance = YES;
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:YES];
-//	}];
+	}
 }
 
 
@@ -553,6 +572,7 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
@@ -564,8 +584,6 @@
 	[canvasView addSubview:overlayTintView];
 	
 	_processedImage = (isSourceImageMirrored) ? [HONImagingDepictor mirrorImage:[HONImagingDepictor createImageFromView:canvasView]] : [HONImagingDepictor createImageFromView:canvasView];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
 	
@@ -584,6 +602,7 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	NSLog(@"imagePickerControllerDidCancel");
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		
@@ -603,8 +622,6 @@
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		
-		// We want to dismiss the image picker + ourselves so we need to call dismiss on our parent.
 		[self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }

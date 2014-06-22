@@ -127,6 +127,11 @@
 	}
 }
 
+- (void)toggleIndicator:(BOOL)isEnabled {
+	_toggledOffButton.hidden = !isEnabled;
+	_toggledOnButton.hidden = !isEnabled;
+}
+
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	
@@ -139,6 +144,9 @@
 	_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
 	_scoreLabel.hidden = NO;
+	
+	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
+	_nameLabel.text = _trivialUserVO.username;
 	
 //	if (trivialUserVO.isVerified) {
 //		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];

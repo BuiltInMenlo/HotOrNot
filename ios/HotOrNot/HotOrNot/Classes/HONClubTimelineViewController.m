@@ -140,8 +140,9 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
+	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;

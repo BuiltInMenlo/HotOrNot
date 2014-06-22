@@ -11,7 +11,7 @@
 @implementation HONEmotionVO
 
 @synthesize dictionary;
-@synthesize emotionID, emotionName, urlPrefix, imageURL, price, isFree;
+@synthesize emotionID, emotionName, largeImageURL, smallImageURL, price, isFree;
 
 + (HONEmotionVO *)emotionWithDictionary:(NSDictionary *)dictionary {
 	HONEmotionVO *vo = [[HONEmotionVO alloc] init];
@@ -19,8 +19,8 @@
 	
 	vo.emotionID = [[dictionary objectForKey:@"id"] intValue];
 	vo.emotionName = [dictionary objectForKey:@"name"];
-	vo.urlPrefix = [dictionary objectForKey:@"img"];
-	vo.imageURL = [vo.urlPrefix stringByAppendingString:@".png"];
+	vo.largeImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"_88x88.png"];
+	vo.smallImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"_288x288.png"];
 	vo.price = [[dictionary objectForKey:@"price"] floatValue];
 	vo.isFree = (vo.price == 0.0);
 	
@@ -30,8 +30,8 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.emotionName = nil;
-	self.urlPrefix = nil;
-	self.imageURL = nil;
+	self.largeImageURL = nil;
+	self.smallImageURL = nil;
 }
 
 @end

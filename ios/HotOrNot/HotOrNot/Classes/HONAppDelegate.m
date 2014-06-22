@@ -61,7 +61,7 @@ NSString * const kConfigJSON = @"boot_sc0004.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
+NSString * const kConfigJSON = @"boot_devint.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
@@ -254,20 +254,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-+ (NSArray *)freeEmotions {
-	NSMutableArray *emotions = [NSMutableArray array];
-	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"emotions"] objectAtIndex:0])
-		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
++ (NSArray *)orthodoxEmojis {
+	NSMutableArray *emojis = [NSMutableArray array];
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"emotions"])
+		[emojis addObject:[HONEmotionVO emotionWithDictionary:dict]];
 	
-	return ([emotions copy]);
-}
-
-+ (NSArray *)paidEmotions {
-	NSMutableArray *emotions = [NSMutableArray array];
-	for (NSDictionary *dict in [[[NSUserDefaults standardUserDefaults] objectForKey:@"emotions"] objectAtIndex:1])
-		[emotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	return ([emotions copy]);
+	return ([emojis copy]);
 }
 
 + (NSArray *)subjectFormats {
@@ -513,7 +505,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_url"] forKey:@"support_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"splash_image"] forKey:@"splash_image"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_copy"] forKey:@"verify_copy"];
@@ -525,8 +516,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
-		[[NSUserDefaults standardUserDefaults] setObject:@[[result objectForKey:@"free_emotions"],
-														   [result objectForKey:@"paid_emotions"]] forKey:@"emotions"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"emotions"] forKey:@"emotions"];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"stickers"] forKey:@"stickers"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];

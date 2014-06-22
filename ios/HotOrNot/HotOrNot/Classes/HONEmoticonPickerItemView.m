@@ -11,9 +11,13 @@
 
 #import "HONEmoticonPickerItemView.h"
 
+const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
+const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
+
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
 @property (nonatomic, strong) UIImageView *selectedImageView;
+@property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic) BOOL isSelected;
 @end
 
@@ -24,75 +28,75 @@
 		_emotionVO = emotionVO;
 		_isSelected = NO;
 		
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiButtonBG"]]];
+		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
+		_imageView.contentMode = UIViewContentModeScaleAspectFit;
+		[self addSubview:_imageView];
 		
-		_selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiButton_Selected"]];
-		_selectedImageView.alpha = (int)_isSelected;
-		[self addSubview:_selectedImageView];
-		
-		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, 44.0, 44.0)];
-		[self addSubview:imageView];
+		UIImageView *emojiImageView = [[UIImageView alloc] initWithFrame:kNormalFrame];
+		emojiImageView.alpha = 0.0;
+		[_imageView addSubview:emojiImageView];
 		
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			imageView.image = image;
+			emojiImageView.image = image;
 			
 			[UIView animateWithDuration:0.25 animations:^(void) {
-				imageView.alpha = 1.0;
+				emojiImageView.alpha = 1.0;
 			} completion:nil];
 		};
 		
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
-						 placeholderImage:nil
-								  success:imageSuccessBlock
-								  failure:nil];
+		[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.smallImageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+							  placeholderImage:nil
+									   success:imageSuccessBlock
+									   failure:nil];
+
 		
-		
-//		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 60.0, self.frame.size.width, 13.0)];
-//		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:11];
-//		label.textColor = [UIColor blackColor];
-//		label.backgroundColor = [UIColor clearColor];
-//		label.textAlignment = NSTextAlignmentCenter;
-//		label.text = _emotionVO.emotionName;
-//		[self addSubview:label];
-		
-		UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		toggleButton.frame = imageView.frame;
-		[toggleButton addTarget:self action:@selector(_goToggle) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:toggleButton];
+		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		selectButton.frame = _imageView.frame;
+		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:selectButton];
 	}
 	
 	return (self);
 }
 
-- (void)toggleSelected:(BOOL)isSelected {
-	_isSelected = isSelected;
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_selectedImageView.alpha = (int)_isSelected;
-		
-	} completion:^(BOOL finished) {
-	}];
-}
-
 
 #pragma mark - Navigation
-- (void)_goToggle {
-	_isSelected = !_isSelected;
+- (void)_goSelect {
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_selectedImageView.alpha = (int)_isSelected;
-		
-	} completion:^(BOOL finished) {
-		if (_isSelected) {
-			if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
-				[self.delegate emotionItemView:self selectedEmotion:_emotionVO];
-		
-		} else {
-			if ([self.delegate respondsToSelector:@selector(emotionItemView:deselectedEmotion:)])
-				[self.delegate emotionItemView:self deselectedEmotion:_emotionVO];
-		}
-	}];
+	CGSize scaleSize = CGSizeMake(kActiveFrame.size.width / kNormalFrame.size.width, kActiveFrame.size.height / kNormalFrame.size.height);
+	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kActiveFrame) - CGRectGetMidX(kNormalFrame), CGRectGetMidY(kActiveFrame) - CGRectGetMidY(kNormalFrame));
+	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
+	
+	NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
+	
+	[UIView animateWithDuration:0.0625 delay:0.000
+		 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
+						options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent)
+	 
+					 animations:^(void) {
+						 _imageView.transform = transform;
+					 } completion:^(BOOL finished) {
+						 
+						 if ([self.delegate respondsToSelector:@selector(emotionItemView:selectedEmotion:)])
+							 [self.delegate emotionItemView:self selectedEmotion:_emotionVO];
+
+						 
+//						 CGSize scaleSize = CGSizeMake(kNormalFrame.size.width / kActiveFrame.size.width, kNormalFrame.size.height / kActiveFrame.size.height);
+//						 CGPoint offsetPt = CGPointMake(CGRectGetMidX(kNormalFrame) - CGRectGetMidX(kActiveFrame), CGRectGetMidY(kNormalFrame) - CGRectGetMidY(kActiveFrame));
+						 CGAffineTransform transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
+						 
+						 NSLog(@"TRANS:[%@]", NSStringFromCGAffineTransform(transform));
+						 
+						 [UIView animateWithDuration:0.125 delay:0.000
+							  usingSpringWithDamping:0.875 initialSpringVelocity:0.333
+											 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+						  
+										  animations:^(void) {
+											  _imageView.transform = transform;
+										  } completion:^(BOOL finished) {
+										  }];
+					 }];
 }
 
 

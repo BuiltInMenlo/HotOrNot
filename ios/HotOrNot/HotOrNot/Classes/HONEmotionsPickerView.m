@@ -10,10 +10,10 @@
 #import "HONEmoticonPickerItemView.h"
 #import "HONEmotionPaginationView.h"
 
-const CGSize kImageSpacingSize = {75.0f, 75.0f};
+const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
-@property (nonatomic, strong) NSArray *freeEmotions;
+@property (nonatomic, strong) NSArray *orthodoxEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -27,15 +27,15 @@ const CGSize kImageSpacingSize = {75.0f, 75.0f};
 @synthesize delegate = _delegate;
 
 
-- (id)init {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 321.0)])) {
-		_freeEmotions = [HONAppDelegate freeEmotions];
+- (id)initWithFrame:(CGRect)frame {
+	if ((self = [super initWithFrame:frame])) {
+		_orthodoxEmotions = [HONAppDelegate orthodoxEmojis];
 		_selectedEmotions = [NSMutableArray array];
 		
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
-		_totalPages = ((int)([_freeEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+		_totalPages = ((int)([_orthodoxEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
 		[self addSubview:_bgImageView];
@@ -48,12 +48,12 @@ const CGSize kImageSpacingSize = {75.0f, 75.0f};
 		_scrollView.delegate = self;
 		[self addSubview:_scrollView];
 		
-		_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 246.0) withTotalPages:_totalPages];
+		_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 160.0, 49.0);
+		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
@@ -85,13 +85,13 @@ const CGSize kImageSpacingSize = {75.0f, 75.0f};
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 5.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 11.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
 	}
 	
-	for (HONEmotionVO *vo in _freeEmotions) {
+	for (HONEmotionVO *vo in _orthodoxEmotions) {
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
