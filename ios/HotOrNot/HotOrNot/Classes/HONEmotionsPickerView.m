@@ -17,6 +17,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *bgImageView;
+//@property (nonatomic, strong) UIImageView *deleteButtonImageView;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic, strong) HONEmotionPaginationView *paginationView;
@@ -52,6 +53,11 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
 		
+//		_deleteButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"]];
+//		_deleteButtonImageView.frame = CGRectOffset(_deleteButtonImageView.frame, 0.0, self.frame.size.height - 49.0);
+//		_deleteButtonImageView.userInteractionEnabled = YES;
+//		[self addSubview:_deleteButtonImageView];
+		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
@@ -64,6 +70,22 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	
 	return (self);
 }
+
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
+//	
+//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
+//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
+//	
+//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
+//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
+//		[self _goDelete];
+//	}
+//}
 
 
 #pragma mark - Navigation
@@ -109,10 +131,11 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
 #pragma mark - EmotionItemView Delegates
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedEmotion:(HONEmotionVO *)emotionVO {
-	
-	[_selectedEmotions addObject:emotionVO];
-	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:selectedEmotion:)])
-		[self.delegate emotionsPickerView:self selectedEmotion:emotionVO];
+	if ([_selectedEmotions count] < 100) {
+		[_selectedEmotions addObject:emotionVO];
+		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:selectedEmotion:)])
+			[self.delegate emotionsPickerView:self selectedEmotion:emotionVO];
+	}
 }
 
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView deselectedEmotion:(HONEmotionVO *)emotionVO {

@@ -405,11 +405,11 @@
 									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
 	
 	_tintIndex = tintIndex;
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Loading…";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = @"Loading…";
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	[self.imagePickerController takePicture];
 }
@@ -481,13 +481,13 @@
 		[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 			NSLog(@"---CLUB SELECT---CAMERA");
 			_isFirstAppearance = YES;
-			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:YES];
+			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:NO];
 		}];
 		
 	} else {
 		NSLog(@"---CLUB SELECT---LIB");
 		_isFirstAppearance = YES;
-		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:YES];
+		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:NO];
 	}
 }
 

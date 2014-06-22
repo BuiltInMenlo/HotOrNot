@@ -64,7 +64,7 @@
 	
 	__weak HONFollowUserViewCell *weakSelf = self;
 	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
-															 cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData
+															 cachePolicy:kURLRequestCachePolicy
 														 timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil
 									success:^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

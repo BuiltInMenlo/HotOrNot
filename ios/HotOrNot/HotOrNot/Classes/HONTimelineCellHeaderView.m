@@ -141,7 +141,9 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 			avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 		};
 		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[avatars objectAtIndex:i] stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[avatars objectAtIndex:i] stringByAppendingString:kSnapThumbSuffix]]
+																 cachePolicy:kURLRequestCachePolicy
+															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];

@@ -42,169 +42,164 @@ static HONAnalyticsParams *sharedInstance = nil;
 
 
 - (NSDictionary *)userProperty {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]};
-	});
-	
-	return (properties);
+	return (@{@"user": [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]]});
 }
 
 - (NSDictionary *)propertyForActivityItem:(HONActivityItemVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]};
-	});
-	
-	return (properties);
+	return (@{@"activity"	: [NSString stringWithFormat:@"%@ - %d", vo.activityID, vo.activityType]});
 }
 
 - (NSDictionary *)propertyForCameraDevice:(UIImagePickerControllerCameraDevice)cameraDevice {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"};
-	});
-	
-	return (properties);
+	return (@{@"camera"	: (cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"front" : @"rear"});
 }
 
 - (NSDictionary *)propertyForChallenge:(HONChallengeVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectNames]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectNames]};
-	});
-	
-	return (properties);
+	return (@{@"challenge"	: [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectNames]});
 }
 
 - (NSDictionary *)propertyForChallengeCreator:(HONChallengeVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"creator"	: [NSString stringWithFormat:@"%d - %@", vo.creatorVO.userID, vo.creatorVO.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"creator"	: [NSString stringWithFormat:@"%d - %@", vo.creatorVO.userID, vo.creatorVO.username]};
-	});
-	
-	return (properties);
+	return (@{@"creator"	: [NSString stringWithFormat:@"%d - %@", vo.creatorVO.userID, vo.creatorVO.username]});
 }
 
 - (NSDictionary *)propertyForChallengeParticipant:(HONOpponentVO *)vo; {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-	});
-	
-	return (properties);
+	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }
 
 - (NSDictionary *)propertyForClubPhoto:(HONClubPhotoVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-	});
-	
-	return (properties);
+	return (@{@"photo"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }
 
 - (NSDictionary *)propertyForCohortUser:(HONUserVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-	});
-	
-	return (properties);
+	return (@{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }
 
 - (NSDictionary *)propertyForContactUser:(HONContactUserVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]};
-	});
-	
-	return (properties);
+	return ( @{@"cohort"	: [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email]});
 }
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"emotion"	: [NSString stringWithFormat:@"%d - %@", vo.emotionID, vo.emotionName]};
-	});
-	
-	return (properties);
+	return (@{@"emotion"	: [NSString stringWithFormat:@"%d - %@", vo.emotionID, vo.emotionName]});
 }
 
 - (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"message"	: [@"" stringFromInt:vo.messageID]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"message"	: [@"" stringFromInt:vo.messageID]};
-	});
-	
-	return (properties);
+	return (@{@"message"	: [@"" stringFromInt:vo.messageID]});
 }
 
 - (NSDictionary *)propertyForMessage:(HONMessageVO *)messageVO andParticipant:(HONOpponentVO *)participantVO {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"message"		: [@"" stringFromInt:messageVO.messageID],
+//					   @"participant"	: [NSString stringWithFormat:@"%d - %@", participantVO.userID, participantVO.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"message"		: [@"" stringFromInt:messageVO.messageID],
-					   @"participant"	: [NSString stringWithFormat:@"%d - %@", participantVO.userID, participantVO.username]};
-	});
-	
-	return (properties);
+	return (@{@"message"		: [@"" stringFromInt:messageVO.messageID],
+			  @"participant"	: [NSString stringWithFormat:@"%d - %@", participantVO.userID, participantVO.username]});
 }
 
 - (NSDictionary *)propertyForMessageParticipant:(HONOpponentVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-	});
-	
-	return (properties);
+	return (@{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }
 
 - (NSDictionary *)propertyForTrivialUser:(HONTrivialUserVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-	});
-	
-	return (properties);
+	return (@{@"cohort"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]});
 }
 
 - (NSDictionary *)propertyForUserClub:(HONUserClubVO *)vo {
-	static NSDictionary *properties = nil;
-	static dispatch_once_t onceToken;
+//	static NSDictionary *properties = nil;
+//	static dispatch_once_t onceToken;
+//	
+//	dispatch_once(&onceToken, ^{
+//		properties = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName]};
+//	});
 	
-	dispatch_once(&onceToken, ^{
-		properties = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName]};
-	});
-	
-	return (properties);
+	return (@{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.clubID, vo.clubName]});
 }
 
 
@@ -215,18 +210,6 @@ static HONAnalyticsParams *sharedInstance = nil;
 
 - (void)trackEvent:(NSString *)eventName withProperties:(NSDictionary *)properties {
 	NSMutableDictionary *event = (properties == nil) ? [[NSMutableDictionary alloc] init] : [properties mutableCopy];
-//	if (properties == nil) {
-//		[[Mixpanel sharedInstance] track:eventName];
-//		
-//		event = [[NSMutableDictionary alloc] init];
-//		
-//	} else {
-//		[[Mixpanel sharedInstance] track:eventName
-//							  properties:properties];
-//		
-//		event = [properties mutableCopy];
-//	}
-	
 	[event addEntriesFromDictionary:@{@"action"	: eventName}];
 	
 	NSError *error = nil;

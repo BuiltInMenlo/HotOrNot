@@ -360,16 +360,6 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 		[self _retreiveUserClubs];
@@ -380,6 +370,16 @@
 		else
 			[self _submitPhoneNumberForMatching];
 	}
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
+	[super viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

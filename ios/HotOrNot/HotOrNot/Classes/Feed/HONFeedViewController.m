@@ -758,12 +758,13 @@
 	
 	HONOpponentVO *opponent = _challenge.creatorVO;
 	NSString *imageUrl = [opponent.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix];
-	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:(kIsImageCacheEnabled ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData) timeoutInterval:[HONAppDelegate timeoutInterval]];
+	NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:imageUrl] cachePolicy:kURLRequestCachePolicy timeoutInterval:[HONAppDelegate timeoutInterval]];
 	
 	
 	
 	__weak HONFeedItemViewController *weakSelf = self;
-	[_heroImageView setImageWithURLRequest:imageRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+	[_heroImageView setImageWithURLRequest:imageRequest placeholderImage:nil
+								   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		[weakSelf _heroImageFinishedLoadingWithImage:image];
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		[weakSelf _heroImageFinishedLoadingWithError:error];

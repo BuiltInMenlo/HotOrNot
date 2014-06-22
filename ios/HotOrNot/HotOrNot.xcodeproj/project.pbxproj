@@ -43,6 +43,7 @@
 		4C382FF9178B8AA200C7FA7C /* HONSearchUsersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FF8178B8AA200C7FA7C /* HONSearchUsersViewController.m */; };
 		4C382FFC178B8AD700C7FA7C /* HONSearchUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */; };
 		4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */; };
+		4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */; };
 		4C3DCCD8190AD9D60036F440 /* HONClubsNewsFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DCCD7190AD9D60036F440 /* HONClubsNewsFeedViewController.m */; };
 		4C3DCCDB190ADA490036F440 /* HONClubNewsFeedViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DCCDA190ADA490036F440 /* HONClubNewsFeedViewCell.m */; };
 		4C41071F18C16300009E9F9E /* HONEnterPINViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41071E18C16300009E9F9E /* HONEnterPINViewController.m */; };
@@ -345,6 +346,7 @@
 		4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchUserViewCell.m; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONSelfieCameraPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraPreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraPreviewView.m; sourceTree = "<group>"; };
+		4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = badminton_racket_fast_movement_swoosh_002.caf; sourceTree = "<group>"; };
 		4C3DCCD6190AD9D60036F440 /* HONClubsNewsFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsNewsFeedViewController.h; sourceTree = "<group>"; };
 		4C3DCCD7190AD9D60036F440 /* HONClubsNewsFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsNewsFeedViewController.m; sourceTree = "<group>"; };
 		4C3DCCD9190ADA490036F440 /* HONClubNewsFeedViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubNewsFeedViewCell.h; sourceTree = "<group>"; };
@@ -1660,6 +1662,7 @@
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
+				4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */,
 				4C83FD8E190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav */,
 				4C83FD8F190F62E800CAEABB /* BLASTWAVEFX_29648.caf */,
 				4C83FD90190F62E800CAEABB /* fpo_upvote.mp3 */,
@@ -1937,6 +1940,7 @@
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */,
+				4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */,
 				4C62653415F96C7100AA7FCE /* InfoPlist.strings in Resources */,
 				4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */,
 				4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */,

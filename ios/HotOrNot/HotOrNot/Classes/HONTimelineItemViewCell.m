@@ -96,7 +96,9 @@
 	_heroImageView = [[UIImageView alloc] initWithFrame:_heroHolderView.frame];
 	_heroImageView.userInteractionEnabled = YES;
 	[_heroHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_heroOpponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
+															cachePolicy:kURLRequestCachePolicy
+														timeoutInterval:[HONAppDelegate timeoutInterval]]
 								placeholderImage:nil
 								   success:successBlock
 								   failure:failureBlock];
@@ -147,7 +149,9 @@
 			bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
 		};
 		
-		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_timeline.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_timeline.png"]
+																 cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];

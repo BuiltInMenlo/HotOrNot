@@ -12,8 +12,6 @@
 #import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "MBProgressHUD.h"
-
 #import "HONSelfieCameraOverlayView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
@@ -30,7 +28,6 @@
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIImageView *lastCameraRollImageView;
 @property (nonatomic) int tintIndex;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONSelfieCameraOverlayView

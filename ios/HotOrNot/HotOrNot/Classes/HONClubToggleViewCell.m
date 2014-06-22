@@ -78,7 +78,9 @@
 		} completion:nil];
 	};
 	
-	[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userClubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userClubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]]
+															 cachePolicy:kURLRequestCachePolicy
+														 timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil
 									success:imageSuccessBlock
 									failure:imageFailureBlock];

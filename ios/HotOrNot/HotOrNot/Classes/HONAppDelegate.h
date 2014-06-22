@@ -106,7 +106,7 @@ extern NSString * const kSnapMediumSuffix;
 extern NSString * const kSnapTabSuffix;
 extern NSString * const kSnapLargeSuffix;
 
-extern const BOOL kIsImageCacheEnabled;
+extern const NSURLRequestCachePolicy kURLRequestCachePolicy;
 extern NSString * const kTwilioSMS;
 
 // network error descriptions
@@ -181,6 +181,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;
+
++ (void)cafPlaybackWithFilename:(NSString *)filename;
 
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;

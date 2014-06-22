@@ -18,6 +18,8 @@
 #import "HONEmotionsPickerDisplayView.h"
 #import "HONEmotionsPickerView.h"
 
+#define PREVIEW_SIZE 176.0f
+
 @interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
@@ -37,7 +39,7 @@
 	if ((self = [super initWithFrame:frame])) {
 		
 		_subjectNames = [NSMutableArray array];
-		_previewImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(88.0, 112.0)] toRect:CGRectMake(0.0, 12.0, 88.0, 88.0)];
+		_previewImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
@@ -164,7 +166,7 @@
 
 #pragma mark - EmotionsPickerView Delegates
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
-	//NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", emotionsPickerView.class, emotionVO.emotionName);
+	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Selected Emotion"
 										withEmotion:emotionVO];
@@ -175,7 +177,7 @@
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
-	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", emotionsPickerView.class, emotionVO.emotionName);
+	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Deselected Emotion"
 										withEmotion:emotionVO];

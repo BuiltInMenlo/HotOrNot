@@ -74,7 +74,9 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeSelfies completion:nil];
 	};
 	
-	[heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[challengeVO.creatorVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
+														   cachePolicy:kURLRequestCachePolicy
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
 								  failure:failureBlock];
@@ -176,7 +178,9 @@
 			bannerImageView.image = [UIImage imageNamed:@"banner_activity"];
 		};
 		
-		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_verify.png"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/hotornot-banners/banner_verify.png"]
+																 cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];

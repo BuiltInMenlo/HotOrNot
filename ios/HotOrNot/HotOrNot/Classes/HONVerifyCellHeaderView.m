@@ -43,7 +43,9 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		};
 		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_creatorVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_creatorVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
+																 cachePolicy:kURLRequestCachePolicy
+															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:successBlock
 										failure:failureBlock];

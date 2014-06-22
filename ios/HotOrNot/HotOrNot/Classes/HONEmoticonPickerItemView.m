@@ -45,7 +45,9 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 			} completion:nil];
 		};
 		
-		[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.smallImageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.largeImageURL]
+																cachePolicy:NSURLRequestReturnCacheDataElseLoad
+															timeoutInterval:[HONAppDelegate timeoutInterval]]
 							  placeholderImage:nil
 									   success:imageSuccessBlock
 									   failure:nil];

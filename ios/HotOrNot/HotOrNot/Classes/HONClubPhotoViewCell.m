@@ -71,7 +71,9 @@
 		} completion:nil];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
+													   cachePolicy:kURLRequestCachePolicy
+												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:avatarImageSuccessBlock
 							  failure:avatarImageFailureBlock];
@@ -190,7 +192,9 @@
 						 }];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
 							  failure:nil];

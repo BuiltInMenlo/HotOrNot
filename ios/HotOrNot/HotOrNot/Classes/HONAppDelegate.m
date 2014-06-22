@@ -117,7 +117,7 @@ NSString * const kSnapMediumSuffix = @"Medium_320x320.jpg";
 NSString * const kSnapTabSuffix = @"Tab_640x960.jpg";
 NSString * const kSnapLargeSuffix = @"Large_640x1136.jpg";
 
-const BOOL kIsImageCacheEnabled = YES;
+const NSURLRequestCachePolicy kURLRequestCachePolicy = NSURLRequestUseProtocolCachePolicy;
 NSString * const kTwilioSMS = @"6475577873";
 
 // network error descriptions
@@ -394,7 +394,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
 		[imageView setTag:range.location + i];
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[urls objectAtIndex:i]
+														   cachePolicy:kURLRequestCachePolicy
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
 								  failure:failureBlock];
@@ -494,6 +496,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}
 	
 	return (params);
+}
+
+
++ (void)cafPlaybackWithFilename:(NSString *)filename {
+	NSString *filepath = [[NSBundle mainBundle] pathForResource:filename ofType:@"caf"];
+	NSURL *url = [NSURL fileURLWithPath:filepath];
+	SystemSoundID sound;
+	
+	AudioServicesCreateSystemSoundID((__bridge_retained CFURLRef)url, &sound);
+	AudioServicesPlaySystemSound(sound);
 }
 
 

@@ -80,12 +80,16 @@
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeSelfies completion:nil];
 	};
 	
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+															  cachePolicy:kURLRequestCachePolicy
+														  timeoutInterval:[HONAppDelegate timeoutInterval]]
 							placeholderImage:nil
 									 success:avatarSuccessBlock
 									 failure:avatarFailureBlock];
 	
-	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.imagePrefix stringByAppendingString:kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_messageReplyVO.imagePrefix stringByAppendingString:kSnapTabSuffix]]
+																 cachePolicy:kURLRequestCachePolicy
+															 timeoutInterval:[HONAppDelegate timeoutInterval]]
 							   placeholderImage:nil
 										success:challengeSuccessBlock
 										failure:challengeFailureBlock];

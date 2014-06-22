@@ -123,7 +123,9 @@
 	_imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	[_imageHolderView addSubview:_imageView];
 	_imageView.alpha = 0.0;
-	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_opponentVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]
+														cachePolicy:kURLRequestCachePolicy
+													timeoutInterval:[HONAppDelegate timeoutInterval]]
 					  placeholderImage:nil
 							   success:successBlock
 							   failure:failureBlock];

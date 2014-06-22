@@ -97,7 +97,9 @@
 			[imageHolderView addSubview:deleteButton];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[opponentVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
+													   cachePolicy:kURLRequestCachePolicy
+												   timeoutInterval:[HONAppDelegate timeoutInterval] * 50.0]
 							placeholderImage:nil
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];

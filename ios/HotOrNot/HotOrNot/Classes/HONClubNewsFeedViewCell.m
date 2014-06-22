@@ -90,7 +90,9 @@
 		} completion:nil];
 	};
 	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[avatarPrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+															 cachePolicy:kURLRequestCachePolicy
+														 timeoutInterval:[HONAppDelegate timeoutInterval]]
 						   placeholderImage:nil
 									success:avatarImageSuccessBlock
 									failure:avatarImageFailureBlock];
@@ -264,7 +266,9 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 		photoImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];
 	};
 	
-	[photoImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+	[photoImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[clubPhotoVO.imagePrefix stringByAppendingString:kSnapMediumSuffix]]
+															cachePolicy:kURLRequestCachePolicy
+														timeoutInterval:[HONAppDelegate timeoutInterval]]
 						  placeholderImage:nil
 								   success:photoSuccessBlock
 								   failure:photoFailureBlock];
@@ -286,7 +290,9 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 			imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];
 		};
 		
-		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]
+														   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
 						 placeholderImage:nil
 								  success:successBlock
 								  failure:failureBlock];

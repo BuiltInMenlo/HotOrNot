@@ -126,7 +126,9 @@
 			} completion:nil];
 		};
 		
-		[_clubCoverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubImagePrefix stringByAppendingString:kSnapThumbSuffix]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+		[_clubCoverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubImagePrefix stringByAppendingString:kSnapThumbSuffix]]
+																	 cachePolicy:kURLRequestCachePolicy
+																 timeoutInterval:[HONAppDelegate timeoutInterval]]
 								   placeholderImage:[UIImage imageNamed:@"avatarPlaceholder"]
 											success:imageSuccessBlock
 											failure:imageFailureBlock];

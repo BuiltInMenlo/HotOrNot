@@ -64,7 +64,9 @@
 //		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 //		};
 //		
-//		[emoticonImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.urlLarge] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:[HONAppDelegate timeoutInterval]]
+//		[emoticonImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.urlLarge]
+//																   cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+//															   timeoutInterval:[HONAppDelegate timeoutInterval]]
 //								 placeholderImage:nil
 //										  success:successBlock
 //										  failure:failureBlock];
