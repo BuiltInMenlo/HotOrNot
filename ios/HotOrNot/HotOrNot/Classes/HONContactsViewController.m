@@ -67,7 +67,7 @@
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"	: [dict objectForKey:@"id"],
+			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			
@@ -87,9 +87,9 @@
 - (void)_sendPhoneContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"	: [dict objectForKey:@"id"],
-																		  @"username"		: [dict objectForKey:@"username"],
-																		  @"img_url"		: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]],
+			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
+																		  @"username"	: [dict objectForKey:@"username"],
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]],
 																		  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]]}];
 			
 			if (![_matchedUserIDs containsObject:vo.altID]) {
@@ -123,7 +123,7 @@
 	[_inAppUsers addObject:vo];
 	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[HONAppDelegate phoneNumber] completion:^(NSArray *result) {
 		for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
-			[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"	: [dict objectForKey:@"id"],
+			[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}]];
 		}
@@ -331,18 +331,13 @@
 
 		
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];
 	_tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.40 alpha:0.33];
 	_tableView.sectionIndexMinimumDisplayRowCount = 1;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.scrollsToTop = YES;
-	_tableView.showsVerticalScrollIndicator = YES;
-	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
@@ -503,12 +498,12 @@
 		else {
 			HONTrivialUserVO *vo = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 			
-			if (vo.userID != -1)
-				cell.trivialUserVO = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-				
-			else {
+			if (vo.userID == -1) {
 				[cell toggleIndicator:NO];
 				cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsAllowBG"]];
+				
+			} else {
+				cell.trivialUserVO = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 			}
 		}
 	}
@@ -537,8 +532,11 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	//if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && indexPath.section == 0 && indexPath.row == 0) {
-	if (cell.trivialUserVO.userID == -1) {
+	NSLog(@"-[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
+	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
+	
+	
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && (indexPath.section == 0 && indexPath.row == 0)) {
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 			[self _promptForAddressBookPermission];
 		
@@ -546,7 +544,6 @@
 			[self _promptForAddressBookAccess];
 	
 	} else {
-		HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell invertSelected];
 	}
 }
@@ -601,30 +598,11 @@
 			}
 		}
 		
-		
-//		HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"				: @"0",
-//																	  @"username"		: @".",
-//																	  @"img_url"		: @"",
-//																	  @"is_verified"	: @"N",
-//																	  @"abuse_ct"		: @"0"}];
-//		NSString *charKey = @".";
-//		if (![_segmentedKeys containsObject:charKey]) {
-//			[_segmentedKeys addObject:charKey];
-//			
-//			NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-//			[dict setValue:newSegment forKey:charKey];
-//			
-//		} else {
-//			NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
-//			[prevSegment addObject:vo];
-//			[dict setValue:prevSegment forKey:charKey];
-//		}
-//		
 //		for (NSString *key in dict) {
 //			for (HONTrivialUserVO *vo in [dict objectForKey:key])
 //				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.username);
 //		}
-		
+
 	} else {
 		for (HONContactUserVO *vo in _deviceContacts) {
 			if (vo.contactType == HONContactTypeUnmatched) {

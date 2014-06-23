@@ -17,7 +17,10 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		
+		[self setBackgroundColor:[UIColor clearColor]];
+		self.separatorStyle = UITableViewCellSeparatorStyleNone;
+		self.showsHorizontalScrollIndicator = YES;
+		self.alwaysBounceVertical = YES;
 	}
 	
 	return (self);

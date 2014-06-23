@@ -369,13 +369,9 @@
 	[self.view addSubview:headerView];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.showsHorizontalScrollIndicator = YES;
-	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];

@@ -172,7 +172,7 @@
 										withEmotion:emotionVO];
 	
 	
-	[_subjectNames addObject:emotionVO.emotionName];
+	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
 

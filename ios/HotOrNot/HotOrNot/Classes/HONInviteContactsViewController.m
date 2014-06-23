@@ -206,10 +206,6 @@
 
 
 #pragma mark - TableView Delegates
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	return ([super tableView:tableView willSelectRowAtIndexPath:indexPath]);
-//}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 }

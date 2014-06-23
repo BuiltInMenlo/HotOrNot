@@ -11,8 +11,10 @@
 #import "HONChallengeVO.h"
 #import "HONProtoChallengeVO.h"
 #import "HONContactUserVO.h"
+#import "HONTrivialUserVO.h"
 
 @class HONInviteClubsViewController;
 @interface HONInviteClubsViewController : HONSelectClubsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 - (id)initWithContactUser:(HONContactUserVO *)contactUserVO;
+- (id)initWithTrivialUser:(HONTrivialUserVO *)trivialUserVO;
 @end

@@ -16,9 +16,9 @@
 + (HONEmotionVO *)emotionWithDictionary:(NSDictionary *)dictionary {
 	HONEmotionVO *vo = [[HONEmotionVO alloc] init];
 	vo.dictionary = dictionary;
-	
+		
 	vo.emotionID = [[dictionary objectForKey:@"id"] intValue];
-	vo.emotionName = [dictionary objectForKey:@"name"];
+	vo.emotionName = [[dictionary objectForKey:@"name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	vo.largeImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"_88x88.png"];
 	vo.smallImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"_288x288.png"];
 	vo.price = [[dictionary objectForKey:@"price"] floatValue];

@@ -148,6 +148,18 @@
 }
 
 
+- (void)removeOverlay {
+	_overlayImageView.hidden = YES;
+	
+	if (_overlayImageView != nil) {
+		if ([_overlayImageView.layer.animationKeys count] > 0)
+			[_overlayImageView.layer removeAllAnimations];
+		
+		[_overlayImageView removeFromSuperview];
+		_overlayImageView = nil;
+	}
+}
+
 - (void)resetSubviews {
 	for (UIView *view in self.contentView.subviews)
 		[view removeFromSuperview];

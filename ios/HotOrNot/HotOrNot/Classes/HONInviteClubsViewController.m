@@ -23,6 +23,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
+@property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
 @end
 
 
@@ -32,6 +33,15 @@
 	NSLog(@"[:|:] [%@ initWithContactUser] (%d - %@)", self.class, contactUserVO.userID, contactUserVO.username);
 	if ((self = [super init])) {
 		_contactUserVO = contactUserVO;
+	}
+	
+	return (self);
+}
+
+- (id)initWithTrivialUser:(HONTrivialUserVO *)trivialUserVO {
+	NSLog(@"[:|:] [%@ initWithTrivialUser] (%d - %@)", self.class, trivialUserVO.userID, trivialUserVO.username);
+	if ((self = [super init])) {
+		_trivialUserVO = trivialUserVO;
 	}
 	
 	return (self);

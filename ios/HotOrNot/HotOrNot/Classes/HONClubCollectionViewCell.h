@@ -21,6 +21,7 @@
 @interface HONClubCollectionViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)resetSubviews;
+- (void)removeOverlay;
 
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, assign) id <HONClubViewCellDelegate> delegate;

@@ -41,16 +41,6 @@
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
 	
-	NSString *emotions = @"";
-	for (NSString *subject in clubPhotoVO.subjectNames)
-		emotions = [emotions stringByAppendingFormat:@"%@, ", subject];
-		
-	if ([emotions length] > 0)
-		emotions = [emotions substringToIndex:[emotions length] - 2];
-	
-	
-	NSString *titleCaption = [NSString stringWithFormat:@"%@ is feeling %@", _clubPhotoVO.username, emotions];
-	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
@@ -85,31 +75,49 @@
 	[self.contentView addSubview:avatarButton];
 	
 	
+	CGSize size;
+	CGSize maxSize = CGSizeMake(300.0, 38.0);
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.minimumLineHeight = 31.0;
 	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
 	
-	CGSize maxSize = CGSizeMake(300.0, 38.0);
-	CGSize size = [titleCaption boundingRectWithSize:maxSize
-											 options:NSStringDrawingTruncatesLastVisibleLine
-										  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17], NSParagraphStyleAttributeName:paragraphStyle}
-											 context:nil].size;
+	NSString *titleCaption = [NSString stringWithFormat:@"%@ is feeling ", _clubPhotoVO.username];
+	for (NSString *subject in _clubPhotoVO.subjectNames) {
+		size = [[titleCaption stringByAppendingFormat:@"%@, ", subject] boundingRectWithSize:maxSize
+																					 options:(NSStringDrawingTruncatesLastVisibleLine)
+																				  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17], NSParagraphStyleAttributeName:paragraphStyle}
+																					 context:nil].size;
+		
+		if (size.width >= (maxSize.width * 1.875)) {
+			titleCaption = [[titleCaption substringToIndex:[titleCaption length] - 2] stringByAppendingString:@"…"];
+			break;
+		}
+		
+		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", subject];
+	}
+	
+	if ([[titleCaption substringFromIndex:[titleCaption length] - 2] isEqualToString:@", "])
+		titleCaption = [titleCaption substringToIndex:[titleCaption length] - 2];
+	
+	NSString *emotions = [titleCaption stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@ is feeling ", _clubPhotoVO.username] withString:@""];
+	NSLog(@"SIZE:[%@] MAX:[%@] (%@)", NSStringFromCGSize(size), NSStringFromCGSize(maxSize), emotions);
 	
 	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (220.0 + ((int)(size.width > maxSize.width) * 34.0)), 320.0, 220.0 + ((int)(size.width > maxSize.width) * 34.0))];
 	[self.contentView addSubview:footerView];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, maxSize.width, 30.0 + ((int)(size.width > maxSize.width) * 34.0))];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, maxSize.width, 30.0 + ((int)(size.width > (maxSize.width + 5.0)) * 34.0))];
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.textColor = [UIColor whiteColor];
 	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
-	titleLabel.numberOfLines = 1 + (int)(size.width > maxSize.width);
+	titleLabel.numberOfLines = 2 + (int)(size.width > maxSize.width);
 	[footerView addSubview:titleLabel];
 	
 	titleLabel.text = @"";
-	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleCaption attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
+	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:[titleCaption stringByReplacingOccurrencesOfString:@" ," withString:@","]
+																attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
 	
 	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:_clubPhotoVO.username]];
-	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:emotions]];
+	//[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:emotions]];
 	
 	
 	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];

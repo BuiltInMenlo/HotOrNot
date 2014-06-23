@@ -156,8 +156,6 @@
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
 	
-	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
-	
 	if (_tutorialView != nil) {
 		[_tutorialView outroWithCompletion:^(BOOL finished) {
 			[_tutorialView removeFromSuperview];
@@ -223,21 +221,24 @@
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
 	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
 	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
 //	[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
 }
 
 
 #pragma mark - TableView Delegates
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	return ([super tableView:tableView willSelectRowAtIndexPath:indexPath]);
-//}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	if (cell.trivialUserVO.userID != -1) {
+	NSLog(@"[[ cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
+	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
+	
+	if (_tableViewDataSource != HONContactsTableViewDataSourceMatchedUsers || cell.trivialUserVO.userID > 0) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];

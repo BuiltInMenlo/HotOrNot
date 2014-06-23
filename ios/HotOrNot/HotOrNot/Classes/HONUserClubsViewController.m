@@ -41,6 +41,8 @@
 @property (nonatomic, strong) NSMutableArray *dictClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) HONUserClubVO *selectedClub;
+@property (nonatomic) BOOL hasClubMembership;
+
 @end
 
 
@@ -99,11 +101,16 @@
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSDictionary *dict in [result objectForKey:key])
+			for (NSDictionary *dict in [result objectForKey:key]) {
+//				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
 				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+				
+//				if ([vo.submissions count] > 0 || vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
+					[_dictClubs addObject:dict];
+//				}
+			}
 			
 			[_clubIDs setValue:clubIDs forKey:key];
-			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 		}
 		
 		_allClubs = nil;
@@ -112,6 +119,8 @@
 			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		[self _didFinishDataRefresh];
+		
+		_hasClubMembership = ([[_clubIDs objectForKey:@"member"] count] > 0);
 	}];
 }
 
@@ -159,6 +168,7 @@
 	[super loadView];
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	
+	_hasClubMembership = NO;
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
@@ -317,6 +327,7 @@
 - (void)clubViewCell:(HONClubCollectionViewCell *)cell joinClub:(HONUserClubVO *)userClubVO {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Join Club"
 									   withUserClub:userClubVO];
+	
 	[self _joinClub:userClubVO];
 }
 
@@ -328,6 +339,11 @@
 
 - (void)clubViewCellCreateClub:(HONClubCollectionViewCell *)cell {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club"];
+	
+	for (int i=0; i<[_allClubs count]; i++) {
+		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+		[cell removeOverlay];
+	}
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -352,6 +368,9 @@
 	HONUserClubVO *vo = [_allClubs objectAtIndex:indexPath.row];
 	cell.clubVO = vo;
 	cell.delegate = self;
+	
+	if (_hasClubMembership)
+		[cell removeOverlay];
 	
     return (cell);
 }

@@ -106,12 +106,9 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 87.0)) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor whiteColor]];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_tableView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];

@@ -108,7 +108,7 @@
 	titleLabel.font = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16] : [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	titleLabel.textColor = [UIColor blackColor];
 	titleLabel.numberOfLines = 1 + ((int)(size.width > maxSize.width));
-	titleLabel.text = titleCaption;
+	titleLabel.text = [titleCaption stringByReplacingOccurrencesOfString:@" ," withString:@","];
 	[self.contentView addSubview:titleLabel];
 	
 	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) {
@@ -250,7 +250,8 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 	}
 	
 	CGFloat width = kPhotoSize.width + ([emotionURLs count] * 65.0);
-	holderView.frame = CGRectMake(51.0 + ((260.0 - width) * 0.5), 0.0, width, kPhotoSize.height);
+//	holderView.frame = CGRectMake(59.0 + ((261.0 - width) * 0.5), 0.0, width, kPhotoSize.height);
+	holderView.frame = CGRectMake(59.0, 0.0, width, kPhotoSize.height);
 	
 	
 	UIImageView *photoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kPhotoSize.width, kPhotoSize.height)];

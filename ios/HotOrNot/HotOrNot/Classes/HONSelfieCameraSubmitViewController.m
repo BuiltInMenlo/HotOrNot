@@ -71,12 +71,12 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(252.0, 0.0, 93.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addButton:cancelButton];
+//	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	cancelButton.frame = CGRectMake(252.0, 0.0, 93.0, 44.0);
+//	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+//	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+//	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+//	[_headerView addButton:cancelButton];
 }
 
 - (void)viewDidLoad {
@@ -132,22 +132,22 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	[super _goSubmit];
 	
-	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
-															message:@"You have to choose at least one club to submit your photo into."
-														   delegate:self
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView setTag:0];
-		[alertView show];
-	
-	} else {
+//	if ([_selectedClubs count] == 0) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
+//															message:@"You have to choose at least one club to submit your photo into."
+//														   delegate:self
+//												  cancelButtonTitle:@"OK"
+//												  otherButtonTitles:nil];
+//		[alertView setTag:0];
+//		[alertView show];
+//	
+//	} else {
 		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
 		}];
-	}
+//	}
 }
 
 - (void)_goSelectAllToggle {
