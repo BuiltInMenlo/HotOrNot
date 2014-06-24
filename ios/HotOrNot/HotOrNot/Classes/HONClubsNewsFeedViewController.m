@@ -83,11 +83,11 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveTimeline {
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	
 	_allClubs = [[NSMutableArray alloc] init];
@@ -502,7 +502,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Enter Club"
 									   withUserClub:userClubVO];
 	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 	[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:userClubVO] animated:YES];
 }
 
@@ -513,9 +513,8 @@
 									   withUserClub:userClubVO];
 	
 	_selectedClubVO = userClubVO;
-	[self _joinClub:userClubVO];
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@", _selectedClubVO.clubName]
-														message:@"Would you like to invite friends?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
+														message:@"Do you want to join this club?"
 													   delegate:self
 											  cancelButtonTitle:@"Yes"
 											  otherButtonTitles:@"No", nil];
@@ -596,8 +595,13 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0)
-		return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
+	if (indexPath.section == 0) {
+		if ([_allClubs count] == 0)
+			return (0.0);
+		
+		else
+			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
+	}
 	
 	else if (indexPath.section == 1)
 		return (kOrthodoxTableCellHeight);
@@ -628,8 +632,8 @@
 		_selectedClubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
 		//[self _createClubWithProtoVO:_selectedClubVO];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
-															message:@"Would you like to invite friends?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
+															message:@"Do you want to join this club?"
 														   delegate:self
 												  cancelButtonTitle:@"Yes"
 												  otherButtonTitles:@"No", nil];
@@ -642,15 +646,13 @@
 		
 		if (cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner || cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
-			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+			//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
 		
 		} else {
 			NSLog(@"/// JOIN CLUB:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
-			[self _joinClub:_selectedClubVO];
-			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
-																message:@"Would you like to invite friends?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
+																message:@"Do you want to join this club?"
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"No", nil];
@@ -665,6 +667,22 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
+		if (buttonIndex == 0) {
+			[self _joinClub:_selectedClubVO];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
+																message:@"Would you like to invite friends?"
+															   delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+			
+			[alertView setTag:1];
+			[alertView show];
+			
+			
+		
+		}
+	
+	} else if (alertView.tag == 1) {
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];

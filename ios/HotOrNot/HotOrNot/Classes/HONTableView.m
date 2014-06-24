@@ -15,8 +15,8 @@
 
 @implementation HONTableView
 
-- (id)initWithFrame:(CGRect)frame {
-	if ((self = [super initWithFrame:frame])) {
+- (id)initWithFrame:(CGRect)frame style:(UITableViewStyle)style {
+	if ((self = [super initWithFrame:frame style:style])) {
 		[self setBackgroundColor:[UIColor clearColor]];
 		self.separatorStyle = UITableViewCellSeparatorStyleNone;
 		self.showsHorizontalScrollIndicator = YES;
