@@ -61,7 +61,7 @@
 	}
 	
 	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat:@"%@ is feeling %@", _photoVO.username, emotions] : _clubVO.clubName;
-	NSString *avatarPrefix = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? _photoVO.avatarPrefix : _clubVO.coverImagePrefix;
+	NSString *avatarPrefix = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? _photoVO.imagePrefix : _clubVO.coverImagePrefix;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? CGRectMake(13.0, 19.0, 32.0, 32.0) : CGRectMake(10.0, 10.0, 44.0, 44.0)];
 	avatarImageView.alpha = 0.0;
@@ -184,19 +184,33 @@
 		[_timeLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12] range:[timeCaption rangeOfString:_clubVO.clubName]];
 		[self.contentView addSubview:_timeLabel];
 		
-		UIView *photoStackView = [self _photoStackView];
-		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < maxSize.width) * 9.0));
-		[self.contentView addSubview:photoStackView];
+//		UIView *photoStackView = [self _photoStackView];
+//		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < maxSize.width) * 9.0));
+//		[self.contentView addSubview:photoStackView];
+		
+		int row = 0;
+		int col = 0;
+		int tot = 0;
+		for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_photoVO]) {
+			UIImageView *emotionImageView = [self _imageViewForEmotion:emotionVO];
+			row = (tot / 5);
+			col = (tot % 5);
+			emotionImageView.frame = CGRectOffset(emotionImageView.frame, 59.0 + (col * 52), (row * 50) + 95.0 - ((int)(size.width < maxSize.width) * 9.0));
+			[self.contentView addSubview:emotionImageView];
+			tot++;
+			if (tot == 15)
+				break;
+		}
 		
 		UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		likeButton.frame = CGRectMake(54.0, 227.0, 124.0, 64.0);
+		likeButton.frame = CGRectMake(54.0, 241.0, 124.0, 64.0);
 		[likeButton setBackgroundImage:[UIImage imageNamed:@"newsLikeButton_nonActive"] forState:UIControlStateNormal];
 		[likeButton setBackgroundImage:[UIImage imageNamed:@"newsLikeButton_Active"] forState:UIControlStateHighlighted];
 		[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:likeButton];
 		
 		UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		replyButton.frame = CGRectMake(184.0, 227.0, 124.0, 64.0);
+		replyButton.frame = CGRectMake(184.0, 241.0, 124.0, 64.0);
 		[replyButton setBackgroundImage:[UIImage imageNamed:@"newsReplyButton_nonActive"] forState:UIControlStateNormal];
 		[replyButton setBackgroundImage:[UIImage imageNamed:@"newsReplyButton_Active"] forState:UIControlStateHighlighted];
 		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
@@ -306,5 +320,35 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 	return (holderView);
 }
 
+
+- (UIImageView *)_imageViewForEmotion:(HONEmotionVO *)emotionVO {
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 40.0, 40.0)];
+	[imageView setTag:emotionVO.emotionID];
+	imageView.alpha = 0.0;
+	
+	[HONImagingDepictor maskImageView:imageView withMask:[UIImage imageNamed:@"emoticonMask"]];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		imageView.image = image;
+		
+		[UIView animateWithDuration:0.33 delay:0.0
+			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
+							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+		 
+						 animations:^(void) {
+							 imageView.alpha = 1.0;
+						 } completion:^(BOOL finished) {
+						 }];
+	};
+	
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+												   timeoutInterval:[HONAppDelegate timeoutInterval]]
+					 placeholderImage:nil
+							  success:imageSuccessBlock
+							  failure:nil];
+	
+	return (imageView);
+}
 
 @end

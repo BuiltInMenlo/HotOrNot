@@ -608,7 +608,7 @@
 	
 	else {
 		HONUserClubVO *vo = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
-		return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 293.0 : kOrthodoxTableCellHeight);
+		return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 310.0 : kOrthodoxTableCellHeight);
 	}
 }
 
