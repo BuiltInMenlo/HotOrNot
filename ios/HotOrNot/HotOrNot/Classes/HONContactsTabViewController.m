@@ -171,7 +171,10 @@
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[super _retrieveDeviceContacts];
+		[self _retrieveDeviceContacts];
+	
+	else
+		[self _submitPhoneNumberForMatching];
 }
 
 - (void)_tareContactsTab:(NSNotification *)notification {
@@ -206,15 +209,15 @@
 	
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
+	if (contactUserVO.contactType == HONContactTypeUnmatched)
+		[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
+	
+	else
+		[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-//	if (contactUserVO.contactType == HONContactTypeUnmatched)
-//		[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
-//	
-//	else
-//		[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
@@ -226,6 +229,7 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 	
 //	[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
+	
 }
 
 

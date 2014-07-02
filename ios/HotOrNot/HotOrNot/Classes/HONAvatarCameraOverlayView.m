@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import "NSString+DataTypes.h"
@@ -15,6 +16,7 @@
 
 @interface HONAvatarCameraOverlayView ()
 @property (nonatomic, strong) UIView *irisView;
+@property (nonatomic, strong) UIImageView *lastCameraRollImageView;
 @property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIView *submitHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
@@ -50,26 +52,26 @@
 		[self addSubview:_tintedMatteView];
 		
 		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
 		[self addSubview:headerBGView];
 		
-//		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		flipButton.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-//		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
-//		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-//		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-//		[headerBGView addSubview:flipButton];
+		UIButton *flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		flipButton.frame = CGRectMake(275.0, 0.0, 64.0, 64.0);
+		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+		[flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+		[flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[headerBGView addSubview:flipButton];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(250.0, 3.0, 64.0, 44.0);
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+		cancelButton.frame = CGRectMake(5.0, 0.0, 93.0, 44.0);
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[headerBGView addSubview:cancelButton];
 		
-		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 141.0, 320.0, 141.0)];
-		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
-		[self addSubview:gutterView];
+//		UIView *gutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 141.0, 320.0, 141.0)];
+//		gutterView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+//		[self addSubview:gutterView];
 		
 //		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		_changeTintButton.frame = CGRectMake(-5.0, [UIScreen mainScreen].bounds.size.height - 60.0, 64.0, 64.0);
@@ -85,10 +87,15 @@
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_captureButton];
 		
+		_lastCameraRollImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraRollBG"]];
+		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 257.0, [UIScreen mainScreen].bounds.size.height - 60.0);
+		[self addSubview:_lastCameraRollImageView];
+		
+		[HONImagingDepictor maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
+		[self _retrieveLastImage];
+		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(220.0, [UIScreen mainScreen].bounds.size.height - 42.0, 93.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRollButton_nonActive"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cameraRollButton];
 		
@@ -269,6 +276,28 @@
 		_imageLoadingView.alpha = ((int)isIntro);
 	} completion:nil];
 }
+
+- (void)_retrieveLastImage {
+	ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+	[assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+								 usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+									 if (nil != group) {
+										 // be sure to filter the group so you only get photos
+										 [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+										 [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+											 if (asset) {
+												 _lastCameraRollImageView.image = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+												 *stop = YES;
+											 }
+										 }];
+									 }
+									 
+									 *stop = NO;
+								 } failureBlock:^(NSError *error) {
+									 NSLog(@"error: %@", error);
+								 }];
+}
+
 
 
 #pragma mark - AlertView Delegates

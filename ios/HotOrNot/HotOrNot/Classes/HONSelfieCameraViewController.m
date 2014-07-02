@@ -13,6 +13,8 @@
 
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
+//#import "PCCandyStoreSearchController.h"
+//#import "PCContent.h"
 #import "TSTapstream.h"
 
 #import "NSString+DataTypes.h"
@@ -474,7 +476,7 @@
 						 @"api_endpt"		: kAPICreateChallenge};
 	
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
-	[self _submitClubPhoto];
+	//[self _submitClubPhoto];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
@@ -487,9 +489,26 @@
 	} else {
 		NSLog(@"---CLUB SELECT---LIB");
 		_isFirstAppearance = YES;
-		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:NO];
+		
+//		PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+//		candyStoreSearchController.delegate = self;
+//		[candyStoreSearchController fetchNewestStickerPacks];
+		
+		
+//		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:NO];
 	}
 }
+
+
+#pragma mark - CandyStoreSearchController Delegates
+//- (void)candyStoreSearchController:(id)controller fetchedStickerPacks:(PCCandyStoreSearchResult *)result withSearchTerms:(NSString *)text {
+//	
+//	[result.results enumerateObjectsUsingBlock:
+//	 ^(id obj, NSUInteger idx, BOOL *stop) {
+//		 PCContent *content = (PCContent *)obj;
+//		 // Each PCContent object contains information on sticker content
+//	 }];
+//}
 
 
 #pragma mark - AWS Delegates

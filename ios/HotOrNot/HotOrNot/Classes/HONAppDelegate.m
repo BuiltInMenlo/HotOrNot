@@ -27,6 +27,7 @@
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
 #import "KikAPI.h"
+#import "PicoManager.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
 //#import "UAConfig.h"
@@ -52,12 +53,11 @@
 #import "HONSuspendedViewController.h"
 #import "HONSelfieCameraViewController.h"
 
-const CGFloat kDevClubID = 42.0f;
-
+const CGFloat kDevClubID = 48.0f;
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0004.json";
+NSString * const kConfigJSON = @"boot_sc0005.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
@@ -1228,7 +1228,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[BITHockeyManager sharedHockeyManager] startManager];
 #endif
 	
-	[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+	
+	
+	PicoManager *picoManager = [PicoManager sharedManager];
+	[picoManager registerStoreWithAppId:@"1df5644d9e94"
+								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
 	
 	
 	TSConfig *config = [TSConfig configWithDefaults];
@@ -1288,6 +1293,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							[NSNumber numberWithFloat:bDec / 255.0],
 							[NSNumber numberWithFloat:[[dict objectForKey:@"a"] floatValue]]]];
 	}
+	
+	
 	return ([colors copy]);
 }
 

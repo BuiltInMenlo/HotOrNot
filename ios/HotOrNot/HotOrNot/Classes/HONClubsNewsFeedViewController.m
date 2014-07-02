@@ -135,13 +135,13 @@
 			_overlayImageView = nil;
 		}
 		
-		if ([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) {
-			_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"newsFeedOverlay"]];
-			_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 3.0, 210.0);
-			[_tableView addSubview:_overlayImageView];
-			
-			[self _cycleOverlay:_overlayImageView];
-		}
+//		if ([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) {
+//			_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"newsFeedOverlay"]];
+//			_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 3.0, 210.0);
+//			[_tableView addSubview:_overlayImageView];
+//			
+//			[self _cycleOverlay:_overlayImageView];
+//		}
 	}];
 }
 

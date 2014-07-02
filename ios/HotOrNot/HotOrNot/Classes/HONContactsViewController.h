@@ -54,6 +54,7 @@ typedef NS_ENUM(NSInteger, HONInviteContactType) {
 - (void)_inviteNonAppContact:(HONContactUserVO *)contactUserVO toClub:(HONUserClubVO *)userClubVO;
 - (void)_searchUsersWithUsername:(NSString *)username;
 - (void)_retrieveDeviceContacts;
+- (void)_submitPhoneNumberForMatching;
 
 - (void)_updateDeviceContactsWithMatchedUsers;
 -(NSDictionary *)_populateSegmentedDictionary;

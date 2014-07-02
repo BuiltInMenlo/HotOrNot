@@ -17,6 +17,7 @@
 @end
 
 @implementation HONClubPhotoViewCell
+@synthesize indexPath = _indexPath;
 @synthesize clubPhotoVO = _clubPhotoVO;
 @synthesize clubName = _clubName;
 
@@ -69,10 +70,10 @@
 							  failure:avatarImageFailureBlock];
 	
 	
-	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	avatarButton.frame = imageView.frame;
-	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:avatarButton];
+//	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	avatarButton.frame = imageView.frame;
+//	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+//	[self.contentView addSubview:avatarButton];
 	
 	
 	CGSize size;
@@ -161,6 +162,10 @@
 	[footerView addSubview:replyButton];
 }
 
+- (void)setIndexPath:(NSIndexPath *)indexPath {
+	_indexPath = indexPath;
+}
+
 
 #pragma mark - Navigation
 - (void)_goUserProfile {
@@ -208,6 +213,11 @@
 							  failure:nil];
 	
 	return (imageView);
+}
+
+- (void)_nextPhoto {
+	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
+		[self.delegate clubPhotoViewCell:self advancePhoto:_clubPhotoVO];
 }
 
 

@@ -224,6 +224,15 @@
 
 
 #pragma mark - ClubPhotoViewCell Delegates
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
+	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Advance Photo"
+									  withClubPhoto:clubPhotoVO];
+	
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:cell.indexPath.row inSection:cell.indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
+
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
@@ -252,6 +261,9 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:clubPhotoVO.userID asLegit:YES completion:^(NSDictionary *result) {
+		if (cell.indexPath.section < [_clubPhotos count] - 1)
+			[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:cell.indexPath.row inSection:cell.indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
 	}];
 }
@@ -278,6 +290,7 @@
 	
 	cell.delegate = self;
 	cell.clubName = _clubVO.clubName;
+	cell.indexPath = indexPath;
 	cell.clubPhotoVO = (HONClubPhotoVO *)[_clubPhotos objectAtIndex:indexPath.section];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
@@ -295,7 +308,12 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return ((indexPath.section < [_clubPhotos count] - 1) ? indexPath : nil);
+	
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row inSection:indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {

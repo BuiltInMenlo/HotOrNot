@@ -16,11 +16,11 @@
 #define SPACING
 
 NSString * const kBaseCaption = @"- is feeling…";
-const CGSize kImageSize = {88.0f, 88.0f};
+const CGSize kImageSize = {128.0f, 128.0f};
 const CGSize kImagePaddingSize = {0.0f, 0.0f};
 
-const CGRect kEmotionIntroFrame = {32.0f, 32.0f, 24.0f, 24.0f};
-const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 88.0f, 88.0f};
+const CGRect kEmotionIntroFrame = {50.0f, 50.0f, 24.0f, 24.0f};
+const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
 @interface HONEmotionsPickerDisplayView ()
 @property (nonatomic, strong) NSMutableArray *emotions;
@@ -59,7 +59,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 88.0f, 88.0f};
 		[self addSubview:_cursorImageView];
 		[_cursorImageView startAnimating];
 		
-		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 52.0, 0.0, 0.0)];
+		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 25.0, 0.0, 0.0)];
 //		_emotionHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[self addSubview:_emotionHolderView];
 		

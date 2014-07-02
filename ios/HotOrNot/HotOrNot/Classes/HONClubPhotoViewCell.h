@@ -13,11 +13,13 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end
 
 @interface HONClubPhotoViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+@property (nonatomic, retain) NSIndexPath *indexPath;
 @property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;
 @property (nonatomic, retain) NSString *clubName;
 @property (nonatomic, assign) id <HONClubPhotoViewCellDelegate> delegate;

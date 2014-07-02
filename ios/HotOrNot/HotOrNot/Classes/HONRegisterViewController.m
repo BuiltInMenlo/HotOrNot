@@ -184,13 +184,12 @@
 																						  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 				
 				
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
+				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
-				}];
+//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+//				}];
 			}];
 						
 		} else {

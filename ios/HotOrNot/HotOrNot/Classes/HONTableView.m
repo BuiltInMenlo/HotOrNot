@@ -30,8 +30,6 @@
 #pragma mark - Overrides
 - (void)setContentInset:(UIEdgeInsets)contentInset {
 	if (self.tracking) {
-//		CGFloat diff = contentInset.top - self.contentInset.top;
-		
 		CGPoint translation = [self.panGestureRecognizer translationInView:self];
 		translation.y -= ((contentInset.top - self.contentInset.top) * 1.5);
 		[self.panGestureRecognizer setTranslation:translation inView:self];
