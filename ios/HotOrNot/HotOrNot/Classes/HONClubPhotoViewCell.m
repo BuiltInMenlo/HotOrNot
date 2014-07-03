@@ -12,8 +12,10 @@
 
 #import "HONClubPhotoViewCell.h"
 #import "HONEmotionVO.h"
+#import "HONImageLoadingView.h"
 
 @interface HONClubPhotoViewCell ()
+@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -42,6 +44,10 @@
 - (void)setClubPhotoVO:(HONClubPhotoVO *)clubPhotoVO {
 	_clubPhotoVO = clubPhotoVO;
 	
+	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
+	_imageLoadingView.frame = CGRectOffset(_imageLoadingView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5);
+	[self.contentView addSubview:_imageLoadingView];
+	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
@@ -50,16 +56,20 @@
 		imageView.image = image;
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
-		} completion:nil];
+		} completion:^(BOOL finished) {
+			[_imageLoadingView stopAnimating];
+		}];
 	};
 	
 	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
-		imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+		imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSize : kSnapTabSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
-		} completion:nil];
+		} completion:^(BOOL finished) {
+			[_imageLoadingView stopAnimating];
+		}];
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubPhotoVO.imagePrefix stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSuffix : kSnapTabSuffix]]

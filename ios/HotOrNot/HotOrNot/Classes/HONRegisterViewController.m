@@ -174,6 +174,8 @@
 			
 			[HONAppDelegate writeUserInfo:result];
 			[HONAppDelegate writePhoneNumber:_phone];
+			[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"] withDescription:@"" withImagePrefix:@"" completion:^(NSDictionary *result) {
+			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSObject *result) {
 				[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];

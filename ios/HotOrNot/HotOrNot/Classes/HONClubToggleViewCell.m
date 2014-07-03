@@ -13,7 +13,7 @@
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIButton *toggledOnButton;
 @property (nonatomic, strong) UIButton *toggledOffButton;
-@property (nonatomic) BOOL isSelectAllCell;
+@property (nonatomic) HONClubToggleViewCellType viewCellType;
 @property (nonatomic) BOOL isSelected;
 @end
 
@@ -21,9 +21,9 @@
 @synthesize delegate = _delegate;
 @synthesize userClubVO = _userClubVO;
 
-- (id)initAsSelectAllCell:(BOOL)isSelectAll {
+- (id)initAsCellType:(HONClubToggleViewCellType)viewCellType {
 	if ((self = [super init])) {
-		_isSelectAllCell = isSelectAll;
+		_viewCellType = viewCellType;
 		_isSelected = NO;
 
 		_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 11.0, 44.0, 44.0)];
@@ -52,6 +52,11 @@
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_toggledOffButton];
+		
+		if (_viewCellType == HONClubToggleViewCellTypeCreateClub) {
+			[_toggledOffButton removeFromSuperview];
+			[_toggledOnButton removeFromSuperview];
+		}
 	}
 	
 	return (self);
@@ -130,7 +135,7 @@
 		_toggledOnButton.hidden = YES;
 		
 		
-		if (_isSelectAllCell) {
+		if (_viewCellType == HONClubToggleViewCellTypeSelectAll) {
 			if ([self.delegate respondsToSelector:@selector(clubToggleViewCell:selectAllToggled:)])
 				[self.delegate clubToggleViewCell:self selectAllToggled:NO];
 			
@@ -149,7 +154,7 @@
 	} completion:^(BOOL finished) {
 		_toggledOffButton.hidden = YES;
 		
-		if (_isSelectAllCell) {
+		if (_viewCellType == HONClubToggleViewCellTypeSelectAll) {
 			if ([self.delegate respondsToSelector:@selector(clubToggleViewCell:selectAllToggled:)])
 				[self.delegate clubToggleViewCell:self selectAllToggled:YES];
 			

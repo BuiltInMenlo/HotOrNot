@@ -248,7 +248,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply Photo"
 									  withClubPhoto:clubPhotoVO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

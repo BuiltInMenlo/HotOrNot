@@ -9,6 +9,12 @@
 #import "HONTableViewCell.h"
 #import "HONUserClubVO.h"
 
+typedef NS_ENUM(NSInteger, HONClubToggleViewCellType) {
+	HONClubToggleViewCellTypeClub = 0,
+	HONClubToggleViewCellTypeSelectAll,
+	HONClubToggleViewCellTypeCreateClub
+};
+
 @class HONClubToggleViewCell;
 @protocol HONClubToggleViewCellDelegate <NSObject>
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO;
@@ -17,7 +23,7 @@
 @end
 
 @interface HONClubToggleViewCell : HONTableViewCell
-- (id)initAsSelectAllCell:(BOOL)isSelectAll;
+- (id)initAsCellType:(HONClubToggleViewCellType)viewCellType;
 - (void)invertSelected;
 - (void)toggleSelected:(BOOL)isSelected;
 - (BOOL)isSelected;

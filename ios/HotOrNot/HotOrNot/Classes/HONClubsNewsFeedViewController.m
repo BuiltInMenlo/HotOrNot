@@ -529,7 +529,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Reply"
 									   withUserClub:userClubVO];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:userClubVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -596,11 +596,12 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		if ([_allClubs count] == 0)
-			return (0.0);
-		
-		else
-			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
+		return (0.0);
+//		if ([_allClubs count] == 0)
+//			return (0.0);
+//		
+//		else
+//			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
 	}
 	
 	else if (indexPath.section == 1)

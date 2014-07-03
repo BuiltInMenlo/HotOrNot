@@ -21,18 +21,19 @@
 
 @interface HONSelfieCameraSubmitViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
+@property (nonatomic, strong) NSMutableDictionary *submitParams;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @end
 
 
 @implementation HONSelfieCameraSubmitViewController
 
-- (id)initWithClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[:|:] [%@ initWithClub] (%@)", self.class, clubVO.dictionary);
+- (id)initWithSubmitParameters:(NSDictionary *)submitParams {
+	NSLog(@"[:|:] [%@ initWithSubmitParameters] (%@)", self.class, submitParams);
 	if ((self = [super init])) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		_clubVO = clubVO;
+		_submitParams = [submitParams mutableCopy];
+		_clubID = [[_submitParams objectForKey:@"club_id"] intValue];
 	}
 	
 	return (self);
@@ -143,11 +144,31 @@
 //	
 //	} else {
 //		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+	
+	
+	for (HONUserClubVO *vo in _selectedClubs) {
+		[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+		
+		[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
+			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+				_progressHUD.labelText = @"Error!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+				
+			} else {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+				}];
+			}
 		}];
-//	}
+	}
 }
 
 - (void)_goSelectAllToggle {

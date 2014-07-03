@@ -8,6 +8,8 @@
 
 #import "PCCandyStoreSearchResult.h"
 
+@class PCContent, PCContentGroup;
+
 typedef enum {
     kCandyStoreSearchUnknown,
     kCandyStoreSearchNewestStickers,

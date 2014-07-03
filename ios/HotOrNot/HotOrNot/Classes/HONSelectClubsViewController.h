@@ -21,6 +21,7 @@
 	
 	NSMutableArray *_selectedClubs;
 	NSMutableArray *_viewCells;
+	int _clubID;
 	
 	HONTableView *_tableView;
 	UIRefreshControl *_refreshControl;

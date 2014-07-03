@@ -57,9 +57,8 @@
 		for (NSString *key in @[@"owned", @"member"]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSDictionary *dict in [result objectForKey:key]) {
+			for (NSDictionary *dict in [result objectForKey:key])
 				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-			}
 			
 			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
 			[_clubIDs setValue:clubIDs forKey:key];
@@ -239,17 +238,20 @@
 	HONClubToggleViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONClubToggleViewCell alloc] initAsSelectAllCell:(indexPath.section == 1)];
+		cell = [[HONClubToggleViewCell alloc] initAsCellType:(indexPath.section == 0) ? HONClubToggleViewCellTypeClub : ([_allClubs count] == 0) ? HONClubToggleViewCellTypeCreateClub : HONClubToggleViewCellTypeSelectAll];
 	
 	if (indexPath.section == 0) {
 		cell.userClubVO = (HONUserClubVO *)[_allClubs objectAtIndex:indexPath.row];
+		
+		if (_clubID == cell.userClubVO.clubID)
+			[cell toggleSelected:YES];
 		
 		if ([_viewCells containsObject:cell])
 			[_viewCells replaceObjectAtIndex:indexPath.row withObject:cell];
 		
 		else
 			[_viewCells addObject:cell];
-		
+	
 	} else {
 		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 23.0, 238.0, 20.0)];
 		captionLabel.backgroundColor = [UIColor clearColor];
@@ -277,7 +279,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	return (([_allClubs count] == 0) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

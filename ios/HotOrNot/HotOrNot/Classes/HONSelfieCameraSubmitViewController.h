@@ -8,11 +8,7 @@
 
 #import "HONSelectClubsViewController.h"
 
-#import "HONChallengeVO.h"
-#import "HONProtoChallengeVO.h"
-#import "HONUserClubVO.h"
-
 @class HONSelfieCameraViewController;
 @interface HONSelfieCameraSubmitViewController : HONSelectClubsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
-- (id)initWithClub:(HONUserClubVO *)clubVO;
+- (id)initWithSubmitParameters:(NSDictionary *)submitParams;
 @end

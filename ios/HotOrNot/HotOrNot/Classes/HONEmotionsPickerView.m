@@ -30,7 +30,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_orthodoxEmotions = [HONAppDelegate orthodoxEmojis];
+		_orthodoxEmotions = [HONAppDelegate picoCandyStickers];//[HONAppDelegate orthodoxEmojis];
 		_selectedEmotions = [NSMutableArray array];
 		
 		_pageViews = [NSMutableArray array];

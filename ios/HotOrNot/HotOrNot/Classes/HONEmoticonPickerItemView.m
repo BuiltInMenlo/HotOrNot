@@ -45,12 +45,15 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 			} completion:nil];
 		};
 		
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		};
+		
 		[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.largeImageURL]
 																cachePolicy:NSURLRequestReturnCacheDataElseLoad
 															timeoutInterval:[HONAppDelegate timeoutInterval]]
 							  placeholderImage:nil
 									   success:imageSuccessBlock
-									   failure:nil];
+									   failure:imageFailureBlock];
 
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];

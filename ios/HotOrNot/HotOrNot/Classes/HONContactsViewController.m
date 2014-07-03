@@ -133,11 +133,11 @@
 		
 		[self _didFinishDataRefresh];
 		
-		UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsOverlay"]];
-		overlayImageView.frame = CGRectOffset(overlayImageView.frame, 3.0, 0.0);
-		[_tableView addSubview:overlayImageView];
-		
-		[self _cycleOverlay:overlayImageView];
+//		UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsOverlay"]];
+//		overlayImageView.frame = CGRectOffset(overlayImageView.frame, 3.0, 0.0);
+//		[_tableView addSubview:overlayImageView];
+//		
+//		[self _cycleOverlay:overlayImageView];
 	}];
 }
 

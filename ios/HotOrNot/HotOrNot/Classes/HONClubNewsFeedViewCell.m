@@ -184,21 +184,17 @@
 		[_timeLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12] range:[timeCaption rangeOfString:_clubVO.clubName]];
 		[self.contentView addSubview:_timeLabel];
 		
-//		UIView *photoStackView = [self _photoStackView];
-//		photoStackView.frame = CGRectOffset(photoStackView.frame, 0.0, 103.0 - ((int)(size.width < maxSize.width) * 9.0));
-//		[self.contentView addSubview:photoStackView];
-		
 		int row = 0;
 		int col = 0;
 		int tot = 0;
 		for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_photoVO]) {
-			UIImageView *emotionImageView = [self _imageViewForEmotion:emotionVO];
+			
 			row = (tot / 5);
 			col = (tot % 5);
-			emotionImageView.frame = CGRectOffset(emotionImageView.frame, 59.0 + (col * 52), (row * 50) + 95.0 - ((int)(size.width < maxSize.width) * 9.0));
+			UIImageView *emotionImageView = [self _imageViewForEmotion:emotionVO];
+			emotionImageView.frame = CGRectOffset(emotionImageView.frame, 59.0 + (col * 52), (row * 50) + 95.0 - ((int)(size.width < maxSize.width) * 25.0));
 			[self.contentView addSubview:emotionImageView];
-			tot++;
-			if (tot == 15)
+			if (++tot == 15)
 				break;
 		}
 		

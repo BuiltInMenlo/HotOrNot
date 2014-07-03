@@ -13,8 +13,6 @@
 
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
-//#import "PCCandyStoreSearchController.h"
-//#import "PCContent.h"
 #import "TSTapstream.h"
 
 #import "NSString+DataTypes.h"
@@ -207,7 +205,7 @@
 	} completion:nil];
 	
 	[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-//		[self _submitCompleted:result];
+		[self _submitCompleted:result];
 	}];
 }
 
@@ -466,14 +464,14 @@
 	NSString *jsonString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:subjects options:0 error:&error]
 												 encoding:NSUTF8StringEncoding];
 	
-	_submitParams = @{@"user_id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-						 @"img_url"			: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
-						 @"club_id"			: [@"" stringFromCGFloat:kDevClubID],
-						 @"subject"			: @"",
-						 @"subjects"		: jsonString,
-						 @"challenge_id"	: [@"" stringFromInt:0],
-						 @"recipients"		: @"",
-						 @"api_endpt"		: kAPICreateChallenge};
+	_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+					  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
+					  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
+					  @"subject"		: @"",
+					  @"subjects"		: jsonString,
+					  @"challenge_id"	: [@"" stringFromInt:0],
+					  @"recipients"		: @"",
+					  @"api_endpt"		: kAPICreateChallenge};
 	
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
 	//[self _submitClubPhoto];
@@ -483,32 +481,16 @@
 		[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 			NSLog(@"---CLUB SELECT---CAMERA");
 			_isFirstAppearance = YES;
-			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:NO];
+			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
 		}];
 		
 	} else {
 		NSLog(@"---CLUB SELECT---LIB");
 		_isFirstAppearance = YES;
 		
-//		PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-//		candyStoreSearchController.delegate = self;
-//		[candyStoreSearchController fetchNewestStickerPacks];
-		
-		
-//		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithClub:_userClubVO] animated:NO];
+		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
 	}
 }
-
-
-#pragma mark - CandyStoreSearchController Delegates
-//- (void)candyStoreSearchController:(id)controller fetchedStickerPacks:(PCCandyStoreSearchResult *)result withSearchTerms:(NSString *)text {
-//	
-//	[result.results enumerateObjectsUsingBlock:
-//	 ^(id obj, NSUInteger idx, BOOL *stop) {
-//		 PCContent *content = (PCContent *)obj;
-//		 // Each PCContent object contains information on sticker content
-//	 }];
-//}
 
 
 #pragma mark - AWS Delegates
