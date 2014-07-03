@@ -609,7 +609,25 @@
 	
 	else {
 		HONUserClubVO *vo = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
-		return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 310.0 : kOrthodoxTableCellHeight);
+		HONClubPhotoVO *photoVO = (HONClubPhotoVO *)[vo.submissions lastObject];
+		int emotionRows = (MIN([[[HONClubAssistant sharedInstance] emotionsForClubPhoto:photoVO] count], 14) / 5) + 1;
+		NSLog(@"emotionRows:[%d]", emotionRows);
+		
+		NSString *emotions = @"";
+		for (NSString *subject in photoVO.subjectNames)
+			emotions = [emotions stringByAppendingFormat:@"%@, ", subject];
+		emotions = ([emotions length] > 0) ? [emotions substringToIndex:[emotions length] - 2] : emotions;
+		
+		
+		CGSize maxSize = CGSizeMake(238.0, 38.0);
+		CGSize size = [[NSString stringWithFormat:@"%@ is feeling %@", photoVO.username, emotions] boundingRectWithSize:maxSize
+																												options:NSStringDrawingTruncatesLastVisibleLine
+																											 attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}
+																												context:nil].size;
+		
+		
+		return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 135.0 + ((int)(size.width > maxSize.width) * 25.0) + (emotionRows * 50.0) : kOrthodoxTableCellHeight);
+		//return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 310.0 : kOrthodoxTableCellHeight);
 	}
 }
 

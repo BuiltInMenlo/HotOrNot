@@ -192,21 +192,21 @@
 			row = (tot / 5);
 			col = (tot % 5);
 			UIImageView *emotionImageView = [self _imageViewForEmotion:emotionVO];
-			emotionImageView.frame = CGRectOffset(emotionImageView.frame, 59.0 + (col * 52), (row * 50) + 95.0 - ((int)(size.width < maxSize.width) * 25.0));
+			emotionImageView.frame = CGRectOffset(emotionImageView.frame, 59.0 + (col * 52), (row * 50) + 73.0 + ((int)(size.width > maxSize.width) * 25.0));
 			[self.contentView addSubview:emotionImageView];
 			if (++tot == 15)
 				break;
 		}
 		
 		UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		likeButton.frame = CGRectMake(54.0, 241.0, 124.0, 64.0);
+		likeButton.frame = CGRectMake(54.0, 66.0 + ((int)(size.width > maxSize.width) * 25.0) + ((row + 1) * 50.0), 124.0, 64.0);
 		[likeButton setBackgroundImage:[UIImage imageNamed:@"newsLikeButton_nonActive"] forState:UIControlStateNormal];
 		[likeButton setBackgroundImage:[UIImage imageNamed:@"newsLikeButton_Active"] forState:UIControlStateHighlighted];
 		[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:likeButton];
 		
 		UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		replyButton.frame = CGRectMake(184.0, 241.0, 124.0, 64.0);
+		replyButton.frame = CGRectMake(184.0, likeButton.frame.origin.y, 124.0, 64.0);
 		[replyButton setBackgroundImage:[UIImage imageNamed:@"newsReplyButton_nonActive"] forState:UIControlStateNormal];
 		[replyButton setBackgroundImage:[UIImage imageNamed:@"newsReplyButton_Active"] forState:UIControlStateHighlighted];
 		[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
