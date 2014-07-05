@@ -161,6 +161,7 @@
 		4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675115F96FA800AA7FCE /* Security.framework */; };
 		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
+		4C637FDE19673EE000D0D2A8 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C637FDD19673EE000D0D2A8 /* SSKeychain.m */; };
 		4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C639A2F195502E90059E444 /* NewsFeedElements.xcassets */; };
 		4C65C637194F8E590067FEA6 /* UILabel+BoundingRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C636194F8E590067FEA6 /* UILabel+BoundingRect.m */; };
 		4C65C63A194F904F0067FEA6 /* UILabel+FormattedText.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C65C639194F904F0067FEA6 /* UILabel+FormattedText.m */; };
@@ -556,6 +557,8 @@
 		4C62675115F96FA800AA7FCE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4C62675215F96FA800AA7FCE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		4C637FDC19673EE000D0D2A8 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
+		4C637FDD19673EE000D0D2A8 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
 		4C639A2F195502E90059E444 /* NewsFeedElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = NewsFeedElements.xcassets; sourceTree = "<group>"; };
 		4C65C635194F8E590067FEA6 /* UILabel+BoundingRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+BoundingRect.h"; sourceTree = "<group>"; };
 		4C65C636194F8E590067FEA6 /* UILabel+BoundingRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+BoundingRect.m"; sourceTree = "<group>"; };
@@ -1087,6 +1090,7 @@
 		4C4325A518E3A9F80035FF06 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4C637FDB19673EE000D0D2A8 /* SSKeychain */,
 				4CD22C52195B8E0D00E6AD0B /* PicoCandy */,
 				4C6F71A519506A28009C4D53 /* CKRefreshControl */,
 				4C5FD4611917994C00B1BAFC /* Base64 */,
@@ -1615,6 +1619,15 @@
 				4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */,
 			);
 			name = Root;
+			sourceTree = "<group>";
+		};
+		4C637FDB19673EE000D0D2A8 /* SSKeychain */ = {
+			isa = PBXGroup;
+			children = (
+				4C637FDC19673EE000D0D2A8 /* SSKeychain.h */,
+				4C637FDD19673EE000D0D2A8 /* SSKeychain.m */,
+			);
+			path = SSKeychain;
 			sourceTree = "<group>";
 		};
 		4C65C625194F836D0067FEA6 /* Obj-C Notes */ = {
@@ -2168,6 +2181,7 @@
 				4C382FF4178B7D2000C7FA7C /* HONCelebVO.m in Sources */,
 				4CD071AA19554431003894F4 /* HONInviteContactsViewController.m in Sources */,
 				4CCED5DA181F7AE900D1D673 /* NSArray+NullReplacement.m in Sources */,
+				4C637FDE19673EE000D0D2A8 /* SSKeychain.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */,
 				4C4328A718E3A9FA0035FF06 /* EGOCache.m in Sources */,

@@ -131,7 +131,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, PCCandyStoreSearchControllerDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate>
+@interface HONAppDelegate() <ChartboostDelegate, PCCandyStoreSearchControllerDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) UIImageView *launchImageView;
@@ -857,13 +857,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
 		
-		
-//		NSLog(@"ADID:[%@]\nVID:[%@]", [[HONDeviceTraits sharedInstance] advertisingIdentifierWithoutSeperators:YES], [HONAppDelegate identifierForVendorWithoutSeperators:YES]);
-		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
 			   withMessage:@"This app requires a network connection to work."];
 	}
+	
+	
+	NSLog(@"UDID:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
+	
 	
 #ifdef FONTS
 	[self _showFonts];
@@ -1072,10 +1073,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	[[UAPush shared] registerDeviceToken:deviceToken];
 	
-	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
-	[mixpanel.people addPushDeviceToken:deviceToken];
-	
 	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
 	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
 	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -1093,10 +1090,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", error.description);
 	
 	NSString *holderToken = [[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"];
-	
-	Mixpanel *mixpanel = [Mixpanel sharedInstance];
-	[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
-	[mixpanel.people addPushDeviceToken:[holderToken dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[HONAppDelegate writeDeviceToken:holderToken];
 	
@@ -1252,11 +1245,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
-	config.idfa = [[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO];
+	//config.idfa = [[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO];
 	//config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
-	[TSTapstream createWithAccountName:@"volley"
+	[TSTapstream createWithAccountName:@"selfieclub"
 					   developerSecret:kTapStreamSecretKey
 								config:config];
 	

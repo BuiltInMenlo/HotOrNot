@@ -151,7 +151,7 @@ static HONAPICaller *sharedInstance = nil;
 	
 	if( data != nil ){
 	    [data appendString:@"+"];
-	    [data appendString:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+	    [data appendString:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
 	    
 		token = [[[HONAPICaller sharedInstance] hmacForKey:kHMACKey withData:data] mutableCopy];
 	    [token appendString:@"+"];

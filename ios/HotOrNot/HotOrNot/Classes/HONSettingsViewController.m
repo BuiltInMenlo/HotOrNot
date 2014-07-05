@@ -349,7 +349,7 @@
 		
 		if (buttonIndex == 1) {
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
-			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO]];
+			[mixpanel identify:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
 			[mixpanel.people set:@{@"$email"		: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 								   @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 								   @"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],

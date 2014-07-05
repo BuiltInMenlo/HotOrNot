@@ -9,8 +9,11 @@
 @interface HONDeviceIntrinsics : NSObject
 + (HONDeviceIntrinsics *)sharedInstance;
 
+- (NSString *)uniqueIdentifierWithoutSeperators:(BOOL)noDashes;
 - (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes;
 - (NSString *)identifierForVendorWithoutSeperators:(BOOL)noDashes;
+
+- (NSString *)macAddressWithoutSeperators:(BOOL)hasSeperators;
 
 - (BOOL)isIOS7;
 - (BOOL)isPhoneType5s;
