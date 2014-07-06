@@ -121,7 +121,7 @@
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-//		[self _suggestClubs];
+		[self _suggestClubs];
 //		_feedContentType = HONFeedContentTypeEmpty;
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"other"] count] > 0) * HONFeedContentTypeAutoGenClubs);
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"owned"] count] > 0) * HONFeedContentTypeOwnedClubs);
@@ -596,12 +596,12 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		return (0.0);
-//		if ([_allClubs count] == 0)
-//			return (0.0);
-//		
-//		else
-//			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
+//		return (0.0);
+		if ([_allClubs count] == 0)
+			return (0.0);
+		
+		else
+			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
 	}
 	
 	else if (indexPath.section == 1)

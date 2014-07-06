@@ -77,11 +77,11 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClubs {
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	_dictClubs = [NSMutableArray array];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]

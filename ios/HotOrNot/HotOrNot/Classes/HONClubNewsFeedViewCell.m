@@ -107,8 +107,8 @@
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.font = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16] : [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	titleLabel.textColor = [UIColor blackColor];
-	titleLabel.shadowColor = [[HONColorAuthority sharedInstance] orthodoxUIShadowAttribute].shadowColor;
-	titleLabel.shadowOffset = [[HONColorAuthority sharedInstance] orthodoxUIShadowAttribute].shadowOffset;
+//	titleLabel.shadowColor = [[HONColorAuthority sharedInstance] orthodoxUIShadowAttribute].shadowColor;
+//	titleLabel.shadowOffset = [[HONColorAuthority sharedInstance] orthodoxUIShadowAttribute].shadowOffset;
 	titleLabel.numberOfLines = 1 + ((int)(size.width > maxSize.width));
 	titleLabel.text = [titleCaption stringByReplacingOccurrencesOfString:@" ," withString:@","];
 	[self.contentView addSubview:titleLabel];

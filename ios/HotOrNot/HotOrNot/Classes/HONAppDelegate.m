@@ -42,8 +42,10 @@
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONTabBarController.h"
+#import "HONInviteContactsViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONVerifyViewController.h"
+#import "HONClubTimelineViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONFeedViewController.h"
 #import "HONClubsNewsFeedViewController.h"
@@ -53,8 +55,6 @@
 #import "HONSettingsViewController.h"
 #import "HONSuspendedViewController.h"
 #import "HONSelfieCameraViewController.h"
-
-const CGFloat kDevClubID = 48.0f;
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
@@ -139,6 +139,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic) int challengeID;
+@property (nonatomic, strong) HONUserClubVO *selectedClubVO;
+@property (nonatomic, strong) NSString *clubName;
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
@@ -800,14 +802,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
-	if (launchOptions) {
-		NSLog(@"\t—//]> [%@ didFinishLaunchingWithOptions] (%@)", self.class, launchOptions);
-		[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
-									message:[[NSString string] stringFromDictionary:launchOptions]
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
+//	if (launchOptions) {
+//		NSLog(@"\t—//]> [%@ didFinishLaunchingWithOptions] (%@)", self.class, launchOptions);
+//		[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
+//									message:[[NSString string] stringFromDictionary:launchOptions]
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//	}
 	
 	
 #if __FORCE_REGISTER__ == 1
@@ -1008,24 +1010,113 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if (!url)
 		return (NO);
 	
-	NSString *protocol = [[url absoluteString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
+	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
 	if ([protocol isEqualToString:@"selfieclub"]) {
-		NSRange range = [[url absoluteString] rangeOfString:@"://"];
-		NSArray *path = [[[url absoluteString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
+		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
+		NSArray *path = [[[[url absoluteString] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		NSLog(@"PATH:[%@]", path);
 		
-		if ([[path objectAtIndex:0] isEqualToString:@"profile"]) {
-			dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC);
-			dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void){
-				[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:[[path objectAtIndex:1] intValue]]] animated:YES completion:nil];
-			});
-		
-		} else if ([[path objectAtIndex:0] isEqualToString:@"invite"]) {
-			[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]] animated:YES completion:nil];
-		
-		} else if ([[path objectAtIndex:0] isEqualToString:@"create"]) {
-			if ([[path objectAtIndex:1] isEqualToString:@"selfie"])
-				[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]] animated:YES completion:nil];
+		if ([path count] == 2) {
+			NSString *username = [path firstObject];
+			NSString *clubname = [path lastObject];
+			
+			[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
+				int userID = 0;
+				if ([result count] > 0) {
+					
+					for (NSDictionary *user in result) {
+						if ([username isEqualToString:[[user objectForKey:@"username"] lowercaseString]]) {
+							userID = [[user objectForKey:@"id"] intValue];
+							break;
+						}
+					}
+					
+					NSLog(@"userID:[%d]", userID);
+					if (userID > 0) {
+						[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
+							int clubID = 0;
+							for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
+								for (NSDictionary *club in [result objectForKey:key]) {
+									if ([[[club objectForKey:@"name"] lowercaseString] isEqualToString:clubname]) {
+										clubID = [[club objectForKey:@"id"] intValue];
+										break;
+									}
+								}
+							}
+							
+							NSLog(@"clubID:[%d]", clubID);
+							if (clubID > 0) {
+								[[HONAPICaller sharedInstance] retrieveClubByClubID:clubID withOwnerID:userID completion:^(NSDictionary *result) {
+									HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:result];
+									_selectedClubVO = vo;
+									
+									NSLog(@"_selectedClubVO.activeMembers:[%@]", _selectedClubVO.activeMembers);
+									NSLog(@"_selectedClubVO.pendingMembers:[%@]", _selectedClubVO.pendingMembers);
+									BOOL isMember = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _selectedClubVO.ownerID);
+									for (HONTrivialUserVO *trivialUserVO in _selectedClubVO.activeMembers) {
+										NSLog(@"trivialUserVO:[%d](%d)", trivialUserVO.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+										if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == trivialUserVO.userID) {
+											isMember = YES;
+											break;
+										}
+									}
+									
+									for (HONTrivialUserVO *trivialUserVO in _selectedClubVO.pendingMembers) {
+										NSLog(@"trivialUserVO:[%d](%d)", trivialUserVO.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+										if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == trivialUserVO.userID) {
+											isMember = YES;
+											break;
+										}
+									}
+									
+									if (isMember) {
+										[self.tabBarController setSelectedIndex:2];
+										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You are already a member of %@!", _selectedClubVO.clubName]
+																							message:@"Would you like to invite friends?"
+																						   delegate:self
+																				  cancelButtonTitle:@"Yes"
+																				  otherButtonTitles:@"No", nil];
+										
+										[alertView setTag:8];
+										[alertView show];
+									
+									} else {
+										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
+																							message:@"Do you want to join this club?"
+																						   delegate:self
+																				  cancelButtonTitle:@"Yes"
+																				  otherButtonTitles:@"No", nil];
+										
+										[alertView setTag:7];
+										[alertView show];
+									}
+									
+									
+									
+									//[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONClubTimelineViewController alloc] initWithClub:vo]] animated:YES completion:nil];
+								}];
+							
+							} else {
+								_clubName = clubname;
+								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Club Not Found!"
+																					message:@"Would you like to create it?"
+																				   delegate:self
+																		  cancelButtonTitle:@"Yes"
+																		  otherButtonTitles:@"No", nil];
+								[alertView setTag:9];
+								[alertView show];
+							}
+						}];
+					
+					} else {
+						[[[UIAlertView alloc] initWithTitle:@"Username Not Found!"
+													message:@""
+												   delegate:nil
+										  cancelButtonTitle:@"OK"
+										  otherButtonTitles:nil] show];
+					}
+				}
+			}];
 		}
 		
 		return (YES);
@@ -1059,11 +1150,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	application.applicationIconBadgeNumber = 0;
 	
 	
-	[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
-								message:[@"" stringFromDictionary:userInfo]
-							   delegate:nil
-					  cancelButtonTitle:@"OK"
-					  otherButtonTitles:nil] show];
+//	[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
+//								message:[@"" stringFromDictionary:userInfo]
+//							   delegate:nil
+//					  cancelButtonTitle:@"OK"
+//					  otherButtonTitles:nil] show];
 }
 
 
@@ -1677,7 +1768,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			case 1:
 				break;
 		}
+	} else if (alertView.tag == 8) {
+//	} else if (buttonIndex == 8) {
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+		}
 	}
+
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -1696,6 +1795,37 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			} else
 				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
+	
+	} else if (alertView.tag == 7) {
+		if (buttonIndex == 0) {
+			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+				[self.tabBarController setSelectedIndex:2];
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
+																	message:@"Would you like to invite friends?"
+																   delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+				
+				[alertView setTag:8];
+				[alertView show];
+			}];
+		}
+	
+	} else if (alertView.tag == 9) {
+		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:@"" completion:^(NSDictionary *result) {
+			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
+																message:@"Would you like to invite friends?"
+															   delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+			
+			[alertView setTag:8];
+			[alertView show];
+		}];
 	}
 }
 
