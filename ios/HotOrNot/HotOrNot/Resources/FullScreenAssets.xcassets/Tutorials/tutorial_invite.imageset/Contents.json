@@ -3,16 +3,16 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "tutorial_clubs.png"
+      "filename" : "overlaybackground.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "tutorial_clubs@2x.png"
+      "filename" : "overlaybackground@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "tutorial_clubs-568h@2x.png",
+      "filename" : "overlaybackground-568h@2x.png",
       "subtype" : "retina4",
       "scale" : "2x"
     }

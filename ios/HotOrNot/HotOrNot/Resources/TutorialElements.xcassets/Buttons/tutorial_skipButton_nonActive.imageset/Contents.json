@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "tutorial_closeButton_nonActive.png"
+      "filename" : "tutorial_skipThisButton_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "tutorial_closeButton_nonActive@2x.png"
+      "filename" : "tutorial_skipThisButton_nonActive@2x.png"
     }
   ],
   "info" : {

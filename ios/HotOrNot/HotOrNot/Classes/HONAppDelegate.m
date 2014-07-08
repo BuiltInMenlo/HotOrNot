@@ -41,8 +41,10 @@
 #import "HONAppDelegate.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
+#import "HONTutorialView.h"
 #import "HONTabBarController.h"
 #import "HONInviteContactsViewController.h"
+#import "HONClubPreviewViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONVerifyViewController.h"
 #import "HONClubTimelineViewController.h"
@@ -128,10 +130,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #if __APPSTORE_BUILD__ == 0
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, PCCandyStoreSearchControllerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONTutorialViewDelegate, PCCandyStoreSearchControllerDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate, PCCandyStoreSearchControllerDelegate>
+@interface HONAppDelegate() <ChartboostDelegate, HONTutorialViewDelegate, PCCandyStoreSearchControllerDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) UIImageView *launchImageView;
@@ -144,6 +146,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @end
 
 
@@ -835,22 +838,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[HONAppDelegate incTotalForCounter:@"boot"];
 		
 		[self _initThirdPartySDKs];
-		
-//		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
-//		if ([HONAppDelegate totalForCounter:@"boot"] == 5) {
-//			UIAlertView *alertView = [[UIAlertView alloc]
-//									  initWithTitle:[NSString stringWithFormat:@"Rate %@", [HONAppDelegate brandedAppName]]
-//									  message:[NSString stringWithFormat:@"Why not rate %@ in the app store!", [HONAppDelegate brandedAppName]]
-//									  delegate:self
-//									  cancelButtonTitle:nil
-//									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
-//			[alertView setTag:2];
-//			[alertView show];
-//		}
-		
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
-//										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
-		
+				
 		self.launchImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		self.launchImageView.image = [UIImage imageNamed:@"mainBG"];
 		[self.window addSubview:self.launchImageView];
@@ -858,6 +846,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 //		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
+		
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -950,24 +939,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
-				if ([HONAppDelegate totalForCounter:@"background"] == 2 && [HONAppDelegate switchEnabledForKey:@"background_invite"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invite friends?"
-																		message:@"Get more followers now, tap OK."
-																	   delegate:self
-															  cancelButtonTitle:@"No"
-															  otherButtonTitles:@"OK", nil];
-					[alertView setTag:3];
-					[alertView show];
-				}
-				
-				if ([HONAppDelegate totalForCounter:@"background"] == 4 && [HONAppDelegate switchEnabledForKey:@"background_share"]) {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Selfieclub?"
-																		message:@""
-																	   delegate:self
-															  cancelButtonTitle:@"Cancel"
-															  otherButtonTitles:@"OK", nil];
-					[alertView setTag:4];
-					[alertView show];
+				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
+					_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+					_tutorialView.delegate = self;
+					
+					[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+					[_tutorialView introWithCompletion:nil];
 				}
 			}
 			
@@ -983,6 +960,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
+		
+		
+		if ([HONAppDelegate incTotalForCounter:@"boot"] == 3) {
+			_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+			_tutorialView.delegate = self;
+			
+			[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+			[_tutorialView introWithCompletion:nil];
+		}
 	}
 }
 
@@ -1071,6 +1057,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 									
 									if (isMember) {
 										[self.tabBarController setSelectedIndex:2];
+										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
+										
 										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You are already a member of %@!", _selectedClubVO.clubName]
 																							message:@"Would you like to invite friends?"
 																						   delegate:self
@@ -1081,6 +1069,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										[alertView show];
 									
 									} else {
+										UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPreviewViewController alloc] initWithClub:_selectedClubVO]];
+										[navigationController setNavigationBarHidden:YES];
+										[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+										
+										
 										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
 																							message:@"Do you want to join this club?"
 																						   delegate:self
@@ -1224,7 +1217,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		if ([navigationController.navigationBar respondsToSelector:@selector(setShadowImage:)])
 			[navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
 	}
-	
 	
 	self.tabBarController = [[HONTabBarController alloc] init];
 	self.tabBarController.viewControllers = navigationControllers;
@@ -1702,6 +1694,39 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Close"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Invite"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+	}];
+}
+
+- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Skip"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
 }
 
 

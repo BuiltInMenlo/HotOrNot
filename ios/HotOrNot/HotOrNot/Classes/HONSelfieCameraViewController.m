@@ -22,6 +22,7 @@
 #import "HONSelfieCameraOverlayView.h"
 #import "HONSelfieCameraPreviewView.h"
 #import "HONSelfieCameraSubmitViewController.h"
+#import "HONInviteContactsViewController.h"
 #import "HONTrivialUserVO.h"
 
 
@@ -490,6 +491,12 @@
 		
 		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
 	}
+}
+
+- (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_userClubVO viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

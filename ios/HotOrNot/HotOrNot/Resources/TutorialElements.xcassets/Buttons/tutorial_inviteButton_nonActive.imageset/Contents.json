@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "tutorial_profilePhoto_nonActive.png"
+      "filename" : "tutorial_InviteButton_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "tutorial_profilePhoto_nonActive@2x.png"
+      "filename" : "tutorial_InviteButton_nonActive@2x.png"
     }
   ],
   "info" : {

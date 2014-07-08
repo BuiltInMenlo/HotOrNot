@@ -12,6 +12,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSelfieCameraPreviewView.h"
+#import "HONTutorialView.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
@@ -20,11 +21,12 @@
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
@@ -172,6 +174,15 @@
 										withEmotion:emotionVO];
 	
 	
+	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
+	if ([HONAppDelegate incTotalForCounter:@"camera"] == 0 && [_subjectNames count] == 0) {
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+		_tutorialView.delegate = self;
+
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+		[_tutorialView introWithCompletion:nil];
+	}
+	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
@@ -186,6 +197,37 @@
 	[_emotionsDisplayView removeEmotion:emotionVO];
 }
 
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Close"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Invite"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
+			[self.delegate cameraPreviewViewShowInviteContacts:self];
+	}];
+}
+
+- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Skip"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
 
 
 @end

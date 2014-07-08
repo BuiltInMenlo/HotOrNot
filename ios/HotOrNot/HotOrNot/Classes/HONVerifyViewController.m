@@ -13,7 +13,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONVerifyViewController.h"
-#import "HONTutorialView.h"
 #import "HONHeaderView.h"
 #import "HONVerifyFlagButtonView.h"
 #import "HONCreateSnapButtonView.h"
@@ -28,7 +27,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
 
-@interface HONVerifyViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTutorialViewDelegate, HONVerifyViewCellDelegate>
+@interface HONVerifyViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONVerifyViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -38,7 +37,6 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONUserClubVO *userClubVO;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
-@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int imageQueueLocation;
@@ -231,14 +229,6 @@
 #pragma mark - Notifications
 - (void)_selectedVerifyTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedVerifyTab <|::");
-	
-//	if ([HONAppDelegate incTotalForCounter:@"verifyTab"] == 0) {
-//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_verify"]];
-//		_tutorialView.delegate = self;
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
-//		[_tutorialView introWithCompletion:nil];
-//	}
 }
 
 - (void)_refreshVerifyTab:(NSNotification *)notification {
@@ -297,30 +287,6 @@
 			_emptySetImageView.hidden = [_challenges count] > 0;
 		}
 	}
-}
-
-
-#pragma mark - TutorialView Delegates
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Close Tutorial"];
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
-	}];
-}
-
-- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Tutorial Take Avatar"];
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	}];
 }
 
 

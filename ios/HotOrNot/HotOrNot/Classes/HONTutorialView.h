@@ -10,7 +10,8 @@
 @protocol HONTutorialViewDelegate <NSObject>
 @optional
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView;
-- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView;
+- (void)tutorialViewInvite:(HONTutorialView *)tutorialView;
+- (void)tutorialViewSkip:(HONTutorialView *)tutorialView;
 @end
 
 @interface HONTutorialView : UIView

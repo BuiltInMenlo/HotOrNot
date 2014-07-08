@@ -26,7 +26,6 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONHeaderView.h"
-#import "HONTutorialView.h"
 #import "HONMessagesButtonView.h"
 #import "HONAddContactsViewController.h"
 #import "HONSuggestedFollowViewController.h"
@@ -39,7 +38,7 @@
 
 #import "JLBPopSlideTransition.h"
 
-@interface HONTimelineViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTimelineItemViewCellDelegate, HONTutorialViewDelegate>
+@interface HONTimelineViewController() <EGORefreshTableHeaderDelegate, HONSnapPreviewViewControllerDelegate, HONTimelineItemViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -49,7 +48,6 @@
 @property (nonatomic, strong) NSMutableArray *clubs;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) UIView *emptyTimelineView;
 @property (nonatomic, assign, readonly) HONTimelineScrollDirection timelineScrollDirection;
 @property (nonatomic) BOOL isScrollingDown;
@@ -349,14 +347,6 @@
 	
 //	[_tableView setContentOffset:CGPointMake(0.0, -64.0) animated:YES];
 	//[self _retrieveChallenges];
-	
-//	if ([HONAppDelegate incTotalForCounter:@"timeline"] == 1) {
-//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_home"]];
-//		_tutorialView.delegate = self;
-//		
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
-//		[_tutorialView introWithCompletion:nil];
-//	}
 }
 
 - (void)_refreshHomeTab:(NSNotification *)notification {
@@ -497,30 +487,6 @@
 									  withChallenge:challengeVO];
 	
 	[self _goCreateChallenge];
-}
-
-
-#pragma mark - TutorialView Delegates
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Close Tutorial"];
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
-	}];
-}
-
-- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline -Tutorial Take Avatar "];
-
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	}];
 }
 
 

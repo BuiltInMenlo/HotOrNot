@@ -22,13 +22,14 @@
 #import "HONInviteContactsViewController.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONTableView.h"
+#import "HONTutorialView.h"
 #import "HONHeaderView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONTableHeaderView.h"
 
 
-@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate>
+@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -40,6 +41,8 @@
 @property (nonatomic, strong) NSMutableArray *autoGenItems;
 @property (nonatomic, strong) NSMutableArray *timelineItems;
 @property (nonatomic, strong) UIImageView *overlayImageView;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
+@property (nonatomic) BOOL isFromCreateClub;
 @end
 
 
@@ -361,6 +364,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	_isFromCreateClub = NO;
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"News"];
@@ -402,6 +406,16 @@
 //								   delegate:nil
 //						  cancelButtonTitle:@"OK"
 //						  otherButtonTitles:nil] show];
+	}
+	
+	if (_isFromCreateClub) {
+		_isFromCreateClub = NO;
+		
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+		_tutorialView.delegate = self;
+		
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+		[_tutorialView introWithCompletion:nil];
 	}
 }
 
@@ -451,6 +465,7 @@
 - (void)_goCreateClub {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
 	
+	_isFromCreateClub = YES;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -553,6 +568,39 @@
 									   withClubPhoto:clubPhotoVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Tutorial Close"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Tutorial Invite"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}];
+}
+
+- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Tutorial Skip"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
 }
 
 

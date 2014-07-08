@@ -18,6 +18,7 @@
 #import "HONCollectionView.h"
 #import "HONClubCollectionViewCell.h"
 #import "HONHeaderView.h"
+#import "HONTutorialView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONSelfieCameraViewController.h"
@@ -31,7 +32,7 @@
 
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <HONClubViewCellDelegate>
+@interface HONUserClubsViewController () <HONClubViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -40,8 +41,10 @@
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
+@property (nonatomic, strong) HONTutorialView *tutorialView;
 @property (nonatomic, strong) HONUserClubVO *selectedClub;
 @property (nonatomic) BOOL hasClubMembership;
+@property (nonatomic) BOOL isFromCreateClub;
 
 @end
 
@@ -169,6 +172,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	
 	_hasClubMembership = NO;
+	_isFromCreateClub = NO;
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
@@ -215,6 +219,16 @@
 //								   delegate:nil
 //						  cancelButtonTitle:@"OK"
 //						  otherButtonTitles:nil] show];
+	}
+	
+	if (_isFromCreateClub) {
+		_isFromCreateClub = NO;
+		
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+		_tutorialView.delegate = self;
+		
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+		[_tutorialView introWithCompletion:nil];
 	}
 }
 
@@ -353,9 +367,44 @@
 		[cell removeOverlay];
 	}
 	
+	_isFromCreateClub = YES;
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - TutorialView Delegates
+- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Close"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
+}
+
+- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Invite"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}];
+}
+
+- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Skip"];
+	
+	[_tutorialView outroWithCompletion:^(BOOL finished) {
+		[_tutorialView removeFromSuperview];
+		_tutorialView = nil;
+	}];
 }
 
 
@@ -404,6 +453,8 @@
 
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 			if (vo.clubID == 0) {
+				_isFromCreateClub = YES;
+				
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];

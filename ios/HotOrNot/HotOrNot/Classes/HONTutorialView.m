@@ -23,18 +23,23 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:bgImage]];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(241.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 97.0 : 50.0, 44.0, 44.0);
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(_goRemove) forControlEvents:UIControlEventTouchDown];
+		closeButton.frame = self.frame;
+		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:closeButton];
 		
-		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = CGRectMake(-1.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 416.0 : 374.0, 320.0, 64.0);
-		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_nonActive"] forState:UIControlStateNormal];
-		[avatarButton setBackgroundImage:[UIImage imageNamed:@"tutorial_profilePhoto_Active"] forState:UIControlStateHighlighted];
-		[avatarButton addTarget:self action:@selector(_goTakeAvatar) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:avatarButton];
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(128.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 413.0 : 376.0, 64.0, 24.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"tutorial_skipButton_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"tutorial_skipButton_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchDown];
+		[self addSubview:skipButton];
+		
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = CGRectMake(0.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 443.0 : 401.0, 320.0, 51.0);
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"tutorial_inviteButton_nonActive"] forState:UIControlStateNormal];
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"tutorial_inviteButton_Active"] forState:UIControlStateHighlighted];
+		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchDown];
+		[self addSubview:inviteButton];
 	}
 	
 	return (self);
@@ -70,14 +75,19 @@
 
 
 #pragma mark - Navigation
-- (void)_goRemove {
+- (void)_goClose {
 	if ([self.delegate respondsToSelector:@selector(tutorialViewClose:)])
 		[self.delegate tutorialViewClose:self];
 }
 
-- (void)_goTakeAvatar {
-	if ([self.delegate respondsToSelector:@selector(tutorialViewTakeAvatar:)])
-		[self.delegate tutorialViewTakeAvatar:self];
+- (void)_goInvite {
+	if ([self.delegate respondsToSelector:@selector(tutorialViewInvite:)])
+		[self.delegate tutorialViewInvite:self];
+}
+
+- (void)_goSkip {
+	if ([self.delegate respondsToSelector:@selector(tutorialViewClose:)])
+		[self.delegate tutorialViewClose:self];
 }
 
 

@@ -11,7 +11,6 @@
 
 #import "HONContactsTabViewController.h"
 
-#import "HONTutorialView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONUserToggleViewCell.h"
 #import "HONCreateSnapButtonView.h"
@@ -21,8 +20,7 @@
 #import "HONUserProfileViewController.h"
 #import "HONInviteClubsViewController.h"
 
-@interface HONContactsTabViewController () <HONTutorialViewDelegate, HONUserToggleViewCellDelegate>
-@property (nonatomic, strong) HONTutorialView *tutorialView;
+@interface HONContactsTabViewController () <HONUserToggleViewCellDelegate>
 @end
 
 
@@ -143,25 +141,10 @@
 
 - (void)_showContactsTutorial:(NSNotification *)notification {
 	NSLog(@"::|> _showContactsTutorial <|::");
-	
-//	if ([HONAppDelegate incTotalForCounter:@"friendsTab"] == 0) {
-//		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_contacts"]];
-//		_tutorialView.delegate = self;
-//
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_tutorialView];
-//		[_tutorialView introWithCompletion:nil];
-//	}
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
-	
-	if (_tutorialView != nil) {
-		[_tutorialView outroWithCompletion:^(BOOL finished) {
-			[_tutorialView removeFromSuperview];
-			_tutorialView = nil;
-		}];
-	}
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
@@ -248,30 +231,5 @@
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
-
-
-#pragma mark - TutorialView Delegates
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Tutorial Close"];
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
-	}];
-}
-
-- (void)tutorialViewTakeAvatar:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Tutorial Take Avatar"];
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	}];
-}
-
 
 @end
