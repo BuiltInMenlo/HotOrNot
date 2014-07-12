@@ -18,7 +18,9 @@
 #import "MBProgressHUD.h"
 
 #import "HONRegisterViewController.h"
+#import "HONCallingCodesViewController.h"
 #import "HONEnterPINViewController.h"
+#import "HONTermsConditionsViewController.h"
 #import "HONHeaderView.h"
 
 
@@ -29,7 +31,7 @@
 #define SPLASH_TINT_TIMER_DURATION	3.33f
 
 
-@interface HONRegisterViewController ()
+@interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
 @property (nonatomic, strong) UIImagePickerController *profileImagePickerController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -40,6 +42,7 @@
 @property (nonatomic, strong) UIButton *addAvatarButton;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UITextField *usernameTextField;
+@property (nonatomic, strong) UILabel *clubNameLabel;
 @property (nonatomic, strong) UITextField *phoneTextField;
 @property (nonatomic, strong) UIButton *usernameButton;
 @property (nonatomic, strong) UIButton *callCodeButton;
@@ -186,14 +189,14 @@
 																						  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
 				
 				
-//				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
+				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 				
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
-				}];
+//				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+//				[[NSUserDefaults standardUserDefaults] synchronize];
+//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+//				}];
 			}];
 						
 		} else {
@@ -233,27 +236,27 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
+	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextButton.frame = CGRectMake(227.0, -1.0, 93.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Registration"];
-	[headerView addButton:doneButton];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Register"];
+	[headerView addButton:nextButton];
 	[self.view addSubview:headerView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
 	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateHighlighted];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateSelected];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0, 65.0, 64.0, 64.0)];
 	[self.view addSubview:_avatarImageView];
 	
 	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
@@ -265,7 +268,7 @@
 	[_addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_addAvatarButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(64.0, 86.0, 220.0, 22.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 76.0, 220.0, 22.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -281,6 +284,13 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
+	_clubNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 97.0, 220, 18.0)];
+	_clubNameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
+	_clubNameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_clubNameLabel.backgroundColor = [UIColor clearColor];
+	_clubNameLabel.text = @"Getselfieclub.com/";
+	[self.view addSubview:_clubNameLabel];
+	
 	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 65.0);
 	_usernameCheckImageView.alpha = 0.0;
@@ -289,25 +299,31 @@
 	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_phoneButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
 	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateHighlighted];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_selected"] forState:UIControlStateSelected];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateHighlighted];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected];
 	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_phoneButton];
 	
+	CGSize size = [@"+14" boundingRectWithSize:CGSizeMake(60.0, 24.0)
+										options:NSStringDrawingTruncatesLastVisibleLine
+									 attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18]}
+										context:nil].size;
+	
+	NSLog(@"SIZE:[%@]", NSStringFromCGSize(size));
 	_callCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_callCodeButton.frame = CGRectMake(8.0, 126.0, 64.0, 64.0);
+	_callCodeButton.frame = CGRectMake(3.0, 129.0, 64.0, 64.0);
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_nonActive"] forState:UIControlStateNormal];
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColor] forState:UIControlStateNormal];
-	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honBlueTextColorHighlighted] forState:UIControlStateHighlighted];
-	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, -15.0, 0.0, 0.0)];
-	_callCodeButton.titleLabel.font = textFont;
+	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
+	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1.0, 0.0, 0.0, 0.0)];
+	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
 //	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_callCodeButton];
 	
-	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 147.0, 200.0, 22.0)];
+	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 150.0, 200.0, 22.0)];
 	[_phoneTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_phoneTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phoneTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -337,14 +353,14 @@
 		}];
 	}
 	
-	UILabel *phoneInfoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 212.0, 320.0, 35.0)];
-	phoneInfoLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
-	phoneInfoLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-	phoneInfoLabel.backgroundColor = [UIColor clearColor];
-	phoneInfoLabel.textAlignment = NSTextAlignmentCenter;
-	phoneInfoLabel.numberOfLines = 2;
-	phoneInfoLabel.text = @"Please enter your phone number\nit will be used to login";
-	[self.view addSubview:phoneInfoLabel];
+	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"registerFooterText"]];
+	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 204.0);
+	[self.view addSubview:footerTextImageView];
+	
+	UIButton *termsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	termsButton.frame = CGRectMake(200.0, 238.0, 40.0, 20.0);
+	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:termsButton];
 	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
@@ -556,10 +572,18 @@
 }
 
 - (void)_goCallingCodes {
-	NSLog(@"GO CALLING CODES");
+	HONCallingCodesViewController *callingCodesViewController = [[HONCallingCodesViewController alloc] init];
+	callingCodesViewController.delegate = self;
 	
-	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
-	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:callingCodesViewController];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goTerms {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goPhone {
@@ -639,6 +663,8 @@
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
+	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"Getselfieclub.com/%@/%@'s Club", _usernameTextField.text, _usernameTextField.text] : @"Getselfieclub.com/";
+	
 	NSString *phone1 = @"";
 	NSString *phone2 = @"";
 	NSString *phone3 = @"";
@@ -669,6 +695,13 @@
 		_phoneCheckImageView.alpha = 1.0;
 		_phoneCheckImageView.image = [UIImage imageNamed:([_phoneTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
 	}
+}
+
+
+#pragma mark - CallingCodesViewController Delegates
+- (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
+	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.countryCode] forState:UIControlStateNormal];
+	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.countryCode] forState:UIControlStateHighlighted];
 }
 
 
@@ -758,7 +791,7 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	return ([textField.text length] < 10);
+	return ([textField.text length] < 25 || [string isEqualToString:@""]);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {

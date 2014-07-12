@@ -8,8 +8,6 @@
 
 #import "HONSelectClubsViewController.h"
 
-#import "HONChallengeVO.h"
-#import "HONProtoChallengeVO.h"
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 

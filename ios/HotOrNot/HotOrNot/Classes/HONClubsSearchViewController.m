@@ -58,19 +58,6 @@
 	
 	_userClubs = [NSMutableArray array];
 	
-//	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-//	[_tableView setBackgroundColor:[UIColor clearColor]];
-//	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//	_tableView.delegate = self;
-//	_tableView.dataSource = self;
-//	_tableView.showsHorizontalScrollIndicator = NO;
-//	[self.view addSubview:_tableView];
-//	
-//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0, -_tableView.frame.size.height, _tableView.frame.size.width, _tableView.frame.size.height) headerOverlaps:NO];
-//	_refreshTableHeaderView.delegate = self;
-//	_refreshTableHeaderView.scrollView = _tableView;
-//	[_tableView addSubview:_refreshTableHeaderView];
-	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Find Selfieclubs"];
 	[self.view addSubview:headerView];
 	

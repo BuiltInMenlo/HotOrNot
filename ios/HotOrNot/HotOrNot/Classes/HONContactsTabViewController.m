@@ -211,7 +211,7 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 	
-//	[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
+	[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
 	
 }
 

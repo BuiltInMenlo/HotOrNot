@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "defaultCTA_Friends.png"
+      "filename" : "noFriendsTapToAccessDefault.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "defaultCTA_Friends@2x.png"
+      "filename" : "noFriendsTapToAccessDefault@2x.png"
     }
   ],
   "info" : {

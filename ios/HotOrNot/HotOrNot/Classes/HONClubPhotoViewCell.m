@@ -62,6 +62,7 @@
 	};
 	
 	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		NSLog(@"ERROR:[%@]", error.description);
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
 		imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSize : kSnapTabSize];

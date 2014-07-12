@@ -3,16 +3,16 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "overlaybackground.png"
+      "filename" : "modalResumeUserGate_003.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "overlaybackground@2x.png"
+      "filename" : "modalResumeUserGate_003@2x.png"
     },
     {
       "idiom" : "iphone",
-      "filename" : "overlaybackground-568h@2x.png",
+      "filename" : "modalResumeUserGate_003-568h@2x.png",
       "subtype" : "retina4",
       "scale" : "2x"
     }

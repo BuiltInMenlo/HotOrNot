@@ -275,6 +275,8 @@
 		4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CED977018E42FFF00482813 /* NavElements.xcassets */; };
 		4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1C95161A238C00C54FBF /* CoreData.framework */; };
 		4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */; };
+		4CEF9201196DFED9007D56BE /* HONCallingCodeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEF9200196DFED9007D56BE /* HONCallingCodeViewCell.m */; };
+		4CEF9204196DFFE3007D56BE /* HONCountryVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEF9203196DFFE3007D56BE /* HONCountryVO.m */; };
 		4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF07C151686770100E0FBC1 /* MediaPlayer.framework */; };
 		4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CF203FA18F3198600EB57B0 /* VerifiyElements.xcassets */; };
 		4CF2040018F343A700EB57B0 /* HONTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */; };
@@ -781,6 +783,10 @@
 		4CED977018E42FFF00482813 /* NavElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = NavElements.xcassets; sourceTree = "<group>"; };
 		4CEE1C95161A238C00C54FBF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HotOrNotModel.xcdatamodel; sourceTree = "<group>"; };
+		4CEF91FF196DFED9007D56BE /* HONCallingCodeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCallingCodeViewCell.h; sourceTree = "<group>"; };
+		4CEF9200196DFED9007D56BE /* HONCallingCodeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCallingCodeViewCell.m; sourceTree = "<group>"; };
+		4CEF9202196DFFE3007D56BE /* HONCountryVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCountryVO.h; sourceTree = "<group>"; };
+		4CEF9203196DFFE3007D56BE /* HONCountryVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCountryVO.m; sourceTree = "<group>"; };
 		4CF07C151686770100E0FBC1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		4CF203FA18F3198600EB57B0 /* VerifiyElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = VerifiyElements.xcassets; sourceTree = "<group>"; };
 		4CF203FC18F33F2D00EB57B0 /* HONTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableHeaderView.h; sourceTree = "<group>"; };
@@ -944,8 +950,6 @@
 				4CBE874B16371D22004084DF /* HONTermsConditionsViewController.m */,
 				4C51643B1681894500EB3C09 /* HONUsernameViewController.h */,
 				4C51643C1681894600EB3C09 /* HONUsernameViewController.m */,
-				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
-				4C068AB017028A6B0019428A /* HONWebViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -994,6 +998,8 @@
 				4CAD07371948B9A10030E703 /* HONClubPhotoVO.m */,
 				4C02601B172B4703001CC476 /* HONContactUserVO.h */,
 				4C02601C172B4703001CC476 /* HONContactUserVO.m */,
+				4CEF9202196DFFE3007D56BE /* HONCountryVO.h */,
+				4CEF9203196DFFE3007D56BE /* HONCountryVO.m */,
 				4CCA4159181BE4D100FC9863 /* HONEmotionVO.h */,
 				4CCA415A181BE4D100FC9863 /* HONEmotionVO.m */,
 				4CC6AD0F17B1ACE9004E7A3F /* HONOpponentVO.h */,
@@ -1686,6 +1692,8 @@
 				4CF203FF18F343A700EB57B0 /* HONTableHeaderView.m */,
 				4C616AE61911AF9700D9A6F5 /* HONUserToggleViewCell.h */,
 				4C616AE71911AF9700D9A6F5 /* HONUserToggleViewCell.m */,
+				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
+				4C068AB017028A6B0019428A /* HONWebViewController.m */,
 			);
 			name = Abstracts;
 			sourceTree = "<group>";
@@ -1904,6 +1912,8 @@
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
 				4C41071D18C16300009E9F9E /* HONEnterPINViewController.h */,
 				4C41071E18C16300009E9F9E /* HONEnterPINViewController.m */,
+				4CEF91FF196DFED9007D56BE /* HONCallingCodeViewCell.h */,
+				4CEF9200196DFED9007D56BE /* HONCallingCodeViewCell.m */,
 				4C93EAE119140896001F43DE /* HONCallingCodesViewController.h */,
 				4C93EAE219140896001F43DE /* HONCallingCodesViewController.m */,
 			);
@@ -2123,6 +2133,7 @@
 				4C65C63A194F904F0067FEA6 /* UILabel+FormattedText.m in Sources */,
 				4C0204EB18EA6F9800FAE532 /* HONClubCoverCameraOverlayView.m in Sources */,
 				4CD42F2B188B89CF00264845 /* HONMessageItemViewCell.m in Sources */,
+				4CEF9201196DFED9007D56BE /* HONCallingCodeViewCell.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				4C4591091891888A0014FA7E /* HONChallengeAssistant.m in Sources */,
 				4C62674115F96E5600AA7FCE /* HONVerifyViewController.m in Sources */,
@@ -2259,6 +2270,7 @@
 				4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */,
 				4C4328D818E3A9FA0035FF06 /* MPSurveyQuestionViewController.m in Sources */,
 				4C4328D918E3A9FA0035FF06 /* NSData+MPBase64.m in Sources */,
+				4CEF9204196DFFE3007D56BE /* HONCountryVO.m in Sources */,
 				4C4328B518E3A9FA0035FF06 /* Spline.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C459106189183FF0014FA7E /* HONDeviceIntrinsics.m in Sources */,

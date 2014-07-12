@@ -6,7 +6,13 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONCountryVO.h"
 
-@interface HONCallingCodesViewController : UIViewController
+@class HONCallingCodesViewController;
+@protocol HONCallingCodesViewControllerDelegate <NSObject>
+- (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO;
+@end
 
+@interface HONCallingCodesViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@property (nonatomic, assign) id <HONCallingCodesViewControllerDelegate> delegate;
 @end

@@ -152,10 +152,10 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"
 									   withUserClub:_userClubVO];
 	
-//	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
-//		[self _sendClubInvites];
-//	
-//	else
+	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
+		[self _sendClubInvites];
+	
+	else
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];

@@ -173,16 +173,6 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Selected Emotion"
 										withEmotion:emotionVO];
 	
-	
-	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
-	if ([HONAppDelegate incTotalForCounter:@"camera"] == 0 && [_subjectNames count] == 0) {
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
-		_tutorialView.delegate = self;
-
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-		[_tutorialView introWithCompletion:nil];
-	}
-	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
@@ -195,6 +185,21 @@
 	
 	[_subjectNames removeObject:emotionVO.emotionName];
 	[_emotionsDisplayView removeEmotion:emotionVO];
+}
+
+- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page {
+	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) [*:*]", self.class, page);
+	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Changed Emotion Page"];
+	
+	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
+	if ([HONAppDelegate incTotalForCounter:@"camera"] == 0 && page == 1) {
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_camera"]];
+		_tutorialView.delegate = self;
+		
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+		[_tutorialView introWithCompletion:nil];
+	}
 }
 
 

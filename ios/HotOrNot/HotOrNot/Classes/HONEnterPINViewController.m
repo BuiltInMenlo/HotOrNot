@@ -14,6 +14,7 @@
 @property (nonatomic, strong) NSString *pin;
 @property (nonatomic, strong) UIButton *pinButton;
 @property (nonatomic, strong) UITextField *pinTextField;
+@property (nonatomic, strong) UIImageView *pinCheckImageView;
 @end
 
 
@@ -49,7 +50,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Enter pin"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Enter Pin"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -59,41 +60,46 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:backButton];
 	
-	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(222.0, 0.0, 93.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addButton:nextButton];
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(226.0, 0.0, 93.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addButton:doneButton];
 	
 	
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowPinBackround_nonActive"] forState:UIControlStateNormal];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowPinBackround_Active"] forState:UIControlStateHighlighted];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowPinBackround_Active"] forState:UIControlStateSelected];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateHighlighted];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected];
 	[self.view addSubview:_pinButton];
 	
-	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0, 94.0, 77.0, 30.0)];
+	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 81.0, 77.0, 30.0)];
 	[_pinTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_pinTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_pinTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_pinTextField setReturnKeyType:UIReturnKeyDone];
-	[_pinTextField setTextColor:[[HONColorAuthority sharedInstance] honDarkGreyTextColor]];
+	[_pinTextField setTextColor:[UIColor blackColor]];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_pinTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontLight] fontWithSize:19];
+	_pinTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_pinTextField.keyboardType = UIKeyboardTypeDecimalPad;
-	_pinTextField.textAlignment = NSTextAlignmentCenter;
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
 	
+	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
+	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
+//	_pinCheckImageView.alpha = 0.0;
+	[self.view addSubview:_pinCheckImageView];
+	
+	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pinFooterText"]];
+	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 129.0);
+	[self.view addSubview:footerTextImageView];
 	
 	UIButton *resendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	resendButton.frame = CGRectMake(234.0, 88.0, 74.0, 44.0);
-	[resendButton setBackgroundImage:[UIImage imageNamed:@"resendButton_nonActive"] forState:UIControlStateNormal];
-	[resendButton setBackgroundImage:[UIImage imageNamed:@"resendButton_Active"] forState:UIControlStateHighlighted];
+	resendButton.frame = CGRectMake(200.0, 160.0, 55.0, 24.0);
 	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:resendButton];
 	
@@ -131,8 +137,8 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)_goNext {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Next"];
+- (void)_goDone {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Done"];
 	
 	_pin = _pinTextField.text;
 	if ([_pin length] < 4) {
@@ -148,6 +154,16 @@
 		
 		[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSObject *result) {
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				
+				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+				pasteboard.string = [NSString stringWithFormat:@"Getselfieclub://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+				
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 			}];

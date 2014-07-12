@@ -21,6 +21,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
 @property (nonatomic, strong) HONEmotionPaginationView *paginationView;
+@property (nonatomic) int prevPage;
 @property (nonatomic) int totalPages;
 @end
 
@@ -36,6 +37,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
+		_prevPage = 0;
 		_totalPages = ((int)([_orthodoxEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
@@ -152,6 +154,12 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	
 	//NSLog(@"[*|*] scrollViewDidScroll:(%d) [*|*]", offsetPage);
 	[_paginationView updateToPage:offsetPage];
+	
+	if (offsetPage != _prevPage) {
+		_prevPage = offsetPage;
+		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:didChangeToPage:)])
+			[self.delegate emotionsPickerView:self didChangeToPage:offsetPage];
+	}
 }
 
 

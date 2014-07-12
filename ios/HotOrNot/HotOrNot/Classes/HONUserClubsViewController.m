@@ -45,7 +45,6 @@
 @property (nonatomic, strong) HONUserClubVO *selectedClub;
 @property (nonatomic) BOOL hasClubMembership;
 @property (nonatomic) BOOL isFromCreateClub;
-
 @end
 
 
@@ -343,11 +342,11 @@
 									   withUserClub:userClubVO];
 	
 	_selectedClub = userClubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClub.clubName]
-														message:@"Do you want to join this club?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClub.clubName]
 													   delegate:self
-											  cancelButtonTitle:@"Yes"
-											  otherButtonTitles:@"No", nil];
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:@"Cancel", nil];
 	
 	[alertView setTag:0];
 	[alertView show];
@@ -467,11 +466,11 @@
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			_selectedClub = vo;
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClub.clubName]
-																message:@"Do you want to join this club?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClub.clubName]
 															   delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:@"Cancel", nil];
 			
 			[alertView setTag:0];
 			[alertView show];
@@ -505,11 +504,11 @@
 		
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClub];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@", _selectedClub.clubName]
-																message:@"Would you like to invite friends?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClub.clubName]
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
+													  otherButtonTitles:@"Not Now", nil];
 			
 			[alertView setTag:1];
 			[alertView show];

@@ -411,7 +411,7 @@
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_club"]];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
@@ -501,8 +501,8 @@
 	//[self _createClubWithProtoVO:userClubVO];
 	
 	_selectedClubVO = userClubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@", _selectedClubVO.clubName]
-														message:@"Would you like to invite friends?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 													   delegate:self
 											  cancelButtonTitle:@"Yes"
 											  otherButtonTitles:@"No", nil];
@@ -528,11 +528,11 @@
 									   withUserClub:userClubVO];
 	
 	_selectedClubVO = userClubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
-														message:@"Do you want to join this club?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 													   delegate:self
-											  cancelButtonTitle:@"Yes"
-											  otherButtonTitles:@"No", nil];
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:@"Cancel", nil];
 	
 	[alertView setTag:0];
 	[alertView show];
@@ -699,8 +699,8 @@
 		_selectedClubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
 		//[self _createClubWithProtoVO:_selectedClubVO];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
-															message:@"Do you want to join this club?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
 												  cancelButtonTitle:@"Yes"
 												  otherButtonTitles:@"No", nil];
@@ -718,11 +718,11 @@
 		
 		} else {
 			NSLog(@"/// JOIN CLUB:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
-																message:@"Do you want to join this club?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 															   delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:@"Cancel", nil];
 			
 			[alertView setTag:0];
 			[alertView show];
@@ -736,17 +736,14 @@
 	if (alertView.tag == 0) {
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClubVO];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
-																message:@"Would you like to invite friends?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
+													  otherButtonTitles:@"Not Now", nil];
 			
 			[alertView setTag:1];
 			[alertView show];
-			
-			
-		
 		}
 	
 	} else if (alertView.tag == 1) {

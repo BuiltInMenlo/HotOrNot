@@ -8,15 +8,31 @@
 
 #import "NSString+DataTypes.h"
 
+#import "CKRefreshControl.h"
+#import "MBProgressHUD.h"
 
 #import "HONCallingCodesViewController.h"
+#import "HONHeaderView.h"
+#import "HONTableHeaderView.h"
+#import "HONTableView.h"
+#import "HONCallingCodeViewCell.h"
+#import "HONCountryVO.h"
 
 
-@interface HONCallingCodesViewController ()
+@interface HONCallingCodesViewController () <HONCallingCodeViewCellDelegate>
+@property (nonatomic, strong) HONTableView *tableView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) NSMutableArray *countries;
+@property (nonatomic, strong) HONCountryVO *countryVO;
+@property (nonatomic, strong) NSMutableArray *cells;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) NSDictionary *segmentedCountries;
+@property (nonatomic, strong) NSMutableArray *segmentedKeys;
 @end
 
 
 @implementation HONCallingCodesViewController
+@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -40,12 +56,52 @@
 
 
 #pragma mark - Data Calls
+- (void)_retreiveCountries {
+	_countries = [NSMutableArray array];
+}
+
+
+#pragma mark - Data Handling
+- (void)_goDataRefresh:(CKRefreshControl *)sender {
+	[self _retreiveCountries];
+}
+
+- (void)_didFinishDataRefresh {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
+	_segmentedCountries = [self _populateSegmentedDictionary];
+	
+	[_tableView reloadData];
+	[_refreshControl endRefreshing];
+}
 
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
+	_cells = [NSMutableArray array];
+	self.view.backgroundColor = [UIColor whiteColor];
+	
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select"];
+	[headerView addButton:doneButton];
+	[self.view addSubview:headerView];
+	
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	[self.view addSubview:_tableView];
 }
 
 - (void)viewDidLoad {
@@ -80,7 +136,109 @@
 
 
 #pragma mark - Navigation
+- (void)_goDone {
+//	if ([self.delegate respondsToSelector:@selector(callingCodesViewController:didSelectCountry:)])
+//		[self.delegate callingCodesViewController:self didSelectCountry:_countryVO];
+	
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
 
 
+#pragma mark - CallingCodeViewCell Delegates
+- (void)callingCodeViewCell:(HONCallingCodeViewCell *)viewCell didDeselectCountry:(HONCountryVO *)countryVO {
+	_countryVO = nil;
+}
+
+- (void)callingCodeViewCell:(HONCallingCodeViewCell *)viewCell didSelectCountry:(HONCountryVO *)countryVO {
+	_countryVO = countryVO;
+}
+
+
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return ([_segmentedKeys count]);
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return ([[_segmentedCountries valueForKey:[_segmentedKeys objectAtIndex:section]] count]);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	return ([[HONTableHeaderView alloc] initWithTitle:[_segmentedKeys objectAtIndex:section]]);
+}
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+	return ([[UILocalizedIndexedCollation currentCollation] sectionIndexTitles]);
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
+	return ([[UILocalizedIndexedCollation currentCollation] sectionForSectionIndexTitleAtIndex:index]);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONCallingCodeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil)
+		cell = [[HONCallingCodeViewCell alloc] init];
+	
+	
+	cell.countryVO = (HONCountryVO *)[[_segmentedCountries valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+	cell.delegate = self;
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (kOrthodoxTableCellHeight);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (0.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	HONCallingCodeViewCell *cell = (HONCallingCodeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	[cell invertSelected];
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+}
+
+
+#pragma mark - Data Manip
+-(NSDictionary *)_populateSegmentedDictionary {
+	_segmentedKeys = [[NSMutableArray alloc] init];
+	[_segmentedKeys removeAllObjects];
+	
+	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+	for (HONCountryVO *vo in _countries) {
+		if ([vo.countryCode length] > 0) {
+			NSString *charKey = [[vo.countryCode substringToIndex:1] lowercaseString];
+			if (![_segmentedKeys containsObject:charKey]) {
+				[_segmentedKeys addObject:charKey];
+				
+				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+				[dict setValue:newSegment forKey:charKey];
+				
+			} else {
+				NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+				[prevSegment addObject:vo];
+				[dict setValue:prevSegment forKey:charKey];
+			}
+		}
+	}
+	
+	return (dict);
+}
 
 @end

@@ -940,7 +940,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
 				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
-					_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+					_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
 					_tutorialView.delegate = self;
 					
 					[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
@@ -960,15 +960,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
-		
-		
-		if ([HONAppDelegate incTotalForCounter:@"boot"] == 3) {
-			_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
-			_tutorialView.delegate = self;
-			
-			[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-			[_tutorialView introWithCompletion:nil];
-		}
+				
+//		if ([HONAppDelegate incTotalForCounter:@"boot"] == 3) {
+//			_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
+//			_tutorialView.delegate = self;
+//			
+//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+//			[_tutorialView introWithCompletion:nil];
+//		}
 	}
 }
 
@@ -1036,8 +1035,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 									HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:result];
 									_selectedClubVO = vo;
 									
-									NSLog(@"_selectedClubVO.activeMembers:[%@]", _selectedClubVO.activeMembers);
-									NSLog(@"_selectedClubVO.pendingMembers:[%@]", _selectedClubVO.pendingMembers);
+//									NSLog(@"_selectedClubVO.activeMembers:[%@]", _selectedClubVO.activeMembers);
+//									NSLog(@"_selectedClubVO.pendingMembers:[%@]", _selectedClubVO.pendingMembers);
 									BOOL isMember = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _selectedClubVO.ownerID);
 									for (HONTrivialUserVO *trivialUserVO in _selectedClubVO.activeMembers) {
 										NSLog(@"trivialUserVO:[%d](%d)", trivialUserVO.userID, [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
@@ -1060,33 +1059,29 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
 										
 										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You are already a member of %@!", _selectedClubVO.clubName]
-																							message:@"Would you like to invite friends?"
+																							message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																						   delegate:self
 																				  cancelButtonTitle:@"Yes"
-																				  otherButtonTitles:@"No", nil];
+																				  otherButtonTitles:@"Not Now", nil];
 										
 										[alertView setTag:8];
 										[alertView show];
 									
 									} else {
-										UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPreviewViewController alloc] initWithClub:_selectedClubVO]];
-										[navigationController setNavigationBarHidden:YES];
-										[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+//										UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPreviewViewController alloc] initWithClub:_selectedClubVO]];
+//										[navigationController setNavigationBarHidden:YES];
+//										[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 										
 										
-										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Join %@", _selectedClubVO.clubName]
-																							message:@"Do you want to join this club?"
+										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																							message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 																						   delegate:self
-																				  cancelButtonTitle:@"Yes"
-																				  otherButtonTitles:@"No", nil];
+																				  cancelButtonTitle:@"OK"
+																				  otherButtonTitles:@"Cancel", nil];
 										
 										[alertView setTag:7];
 										[alertView show];
 									}
-									
-									
-									
-									//[self.window.rootViewController presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONClubTimelineViewController alloc] initWithClub:vo]] animated:YES completion:nil];
 								}];
 							
 							} else {
@@ -1321,10 +1316,28 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
 	
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-	candyStoreSearchController.delegate = self;
-	[candyStoreSearchController fetchNewestStickerPacks];
-//	[candyStoreSearchController fetchAllContentsWithSearchTerms:@"Domo"];
-	
+//	candyStoreSearchController.delegate = self;
+//	[candyStoreSearchController fetchNewestStickerPacks];
+	[candyStoreSearchController fetchStickerPackInfo:@"813" completion:^(BOOL success, PCContentGroup *contentGroup) {
+		NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+		
+		NSMutableArray *stickers = [NSMutableArray array];
+		[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			PCContent *content = (PCContent *)obj;
+			NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
+			
+			[stickers addObject:@{@"id"		: content.content_id,
+								  @"name"	: content.name,
+								  @"price"	: @"0",
+								  @"img"	: content.large_image}];
+		}];
+		
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1669,6 +1682,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}];
 	}
 	
+	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
 	
@@ -1827,11 +1841,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[self.tabBarController setSelectedIndex:2];
 				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
-																	message:@"Would you like to invite friends?"
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"No", nil];
+														  otherButtonTitles:@"Not Now", nil];
 				
 				[alertView setTag:8];
 				[alertView show];
@@ -1842,8 +1856,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:@"" completion:^(NSDictionary *result) {
 			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You have joined %@!", _selectedClubVO.clubName]
-																message:@"Would you like to invite friends?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"No", nil];

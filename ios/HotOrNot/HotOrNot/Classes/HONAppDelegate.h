@@ -17,7 +17,7 @@
 
 #define __FORCE_SUGGEST__ 0
 #define __IGNORE_SUSPENDED__ 0
-#define __RESET_TOTALS__ 0
+#define __RESET_TOTALS__ 1
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 #define __APPSTORE_BUILD__ 0

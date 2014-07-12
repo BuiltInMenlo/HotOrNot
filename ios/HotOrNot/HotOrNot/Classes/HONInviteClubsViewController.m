@@ -20,8 +20,6 @@
 #import "HONUserClubVO.h"
 
 @interface HONInviteClubsViewController ()
-@property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONProtoChallengeVO *protoChallengeVO;
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
 @property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;
 @end
@@ -127,18 +125,15 @@
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
-	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
-															message:@"You have to choose at least one club to submit your photo into."
-														   delegate:self
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView setTag:0];
-		[alertView show];
+	[super _goSubmit];
 	
-	} else {
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		}];
+	if (_trivialUserVO != nil) {
+		
+	}
+	
+	
+	if (_contactUserVO != nil) {
+		
 	}
 }
 
