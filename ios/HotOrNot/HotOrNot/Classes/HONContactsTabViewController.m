@@ -9,8 +9,9 @@
 
 #import "NSString+DataTypes.h"
 
-#import "HONContactsTabViewController.h"
+#import "KeychainItemWrapper.h"
 
+#import "HONContactsTabViewController.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONUserToggleViewCell.h"
 #import "HONCreateSnapButtonView.h"
@@ -64,7 +65,16 @@
 	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
+	
+//	[[[UIAlertView alloc] initWithTitle:@"Passed 1st Run"
+//								message:passedRegistration
+//							   delegate:nil
+//					  cancelButtonTitle:@"OK"
+//					  otherButtonTitles:nil] show];
+//	
+	if ([passedRegistration length] == 0)
 		[self _goRegistration];
 }
 

@@ -26,6 +26,7 @@
 #import "Chartboost.h"
 #import "MBProgressHUD.h"
 #import "KeenClient.h"
+#import "KeychainItemWrapper.h"
 #import "KikAPI.h"
 #import "PCCandyStoreSearchController.h"
 #import "PicoManager.h"
@@ -299,11 +300,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
 	
-	NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-	if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-		formattedNumber = [@"1" stringByAppendingString:formattedNumber];
+//	NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
+//	if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
+//		formattedNumber = [@"1" stringByAppendingString:formattedNumber];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[@"+" stringByAppendingString:formattedNumber] forKey:@"phone_number"];
+	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -612,11 +613,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)_registerUser {
-	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSObject *result) {
-		if ([(NSDictionary *)result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
+	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
+		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
+			if ([[result objectForKey:@"email"] length] == 0) {
+				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+			}
+			
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			
 			[self _enableNotifications:(![[HONAppDelegate deviceToken] isEqualToString:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]])];
 							
 #if __IGNORE_SUSPENDED__ == 1
@@ -777,6 +782,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
+	NSLog(@"UUID:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
+	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
@@ -816,10 +823,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	
 #if __FORCE_REGISTER__ == 1
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"passed_registration"];
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 #endif
 	
 	[self _styleUIAppearance];
@@ -852,9 +857,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[self _showOKAlert:@"No Network Connection"
 			   withMessage:@"This app requires a network connection to work."];
 	}
-	
-	
-	NSLog(@"UDID:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
 	
 	
 #ifdef FONTS
@@ -938,7 +940,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
+			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
 					_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
 					_tutorialView.delegate = self;
@@ -1318,7 +1321,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
 //	candyStoreSearchController.delegate = self;
 //	[candyStoreSearchController fetchNewestStickerPacks];
-	[candyStoreSearchController fetchStickerPackInfo:@"813" completion:^(BOOL success, PCContentGroup *contentGroup) {
+	[candyStoreSearchController fetchStickerPackInfo:@"824" completion:^(BOOL success, PCContentGroup *contentGroup) {
 		NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
 		
 		NSMutableArray *stickers = [NSMutableArray array];
@@ -1332,12 +1335,58 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  @"img"	: content.large_image}];
 		}];
 		
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+		[candyStoreSearchController fetchStickerPackInfo:@"827" completion:^(BOOL success, PCContentGroup *contentGroup) {
+			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+			
+			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				PCContent *content = (PCContent *)obj;
+				NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
+				
+				[stickers addObject:@{@"id"		: content.content_id,
+									  @"name"	: content.name,
+									  @"price"	: @"0",
+									  @"img"	: content.large_image}];
+			}];
+			
+			PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+			[candyStoreSearchController fetchStickerPackInfo:@"823" completion:^(BOOL success, PCContentGroup *contentGroup) {
+				NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+				
+				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					PCContent *content = (PCContent *)obj;
+					NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
+					
+					[stickers addObject:@{@"id"		: content.content_id,
+										  @"name"	: content.name,
+										  @"price"	: @"0",
+										  @"img"	: content.large_image}];
+				}];
+				
+				PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+				[candyStoreSearchController fetchStickerPackInfo:@"813" completion:^(BOOL success, PCContentGroup *contentGroup) {
+					NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+					
+					[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						PCContent *content = (PCContent *)obj;
+						NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
+						
+						[stickers addObject:@{@"id"		: content.content_id,
+											  @"name"	: content.name,
+											  @"price"	: @"0",
+											  @"img"	: content.large_image}];
+					}];
+					
+					if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
+						[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
+					
+					[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+				}];
+			}];
+		}];
 	}];
+	
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;

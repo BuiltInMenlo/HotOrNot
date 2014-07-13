@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "defaultCTA_news.png"
+      "filename" : "noPostsYet.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "defaultCTA_news@2x.png"
+      "filename" : "noPostsYet@2x.png"
     }
   ],
   "info" : {

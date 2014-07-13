@@ -15,6 +15,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "ImageFilter.h"
+#import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
 
 #import "HONRegisterViewController.h"
@@ -107,34 +108,47 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
 			
 			if (checkErrorType == HONRegisterErrorTypeUsername) {
 				_progressHUD.labelText = @"Username taken!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
 				
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_usernameCheckImageView.alpha = 1.0;
 				
+				_clubNameLabel.text = @"Getselfieclub.com/";
 				_usernameTextField.text = @"";
 				[_usernameTextField becomeFirstResponder];
-			
+				
 			} else if (checkErrorType == HONRegisterCheckErrorTypePhone) {
 				_progressHUD.labelText = @"Phone # taken!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
 				
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_phoneCheckImageView.alpha = 1.0;
 				
 				_phone = @"";
 				_phoneTextField.text = @"";
 				_phoneTextField.text = @"";
 				_phoneTextField.text = @"";
 				[_phoneTextField becomeFirstResponder];
-			
+				
 			} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
 				_progressHUD.labelText = @"Username & phone # taken!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
 				
+				_clubNameLabel.text = @"Getselfieclub.com/";
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_usernameCheckImageView.alpha = 1.0;
+				
 				_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_phoneCheckImageView.alpha = 1.0;
 				
 				_usernameTextField.text = @"";
 				[_usernameTextField becomeFirstResponder];
@@ -144,15 +158,12 @@
 				_phoneTextField.text = @"";
 				_phoneTextField.text = @"";
 			}
-			
-			_usernameCheckImageView.alpha = 1.0;
-			_phoneCheckImageView.alpha = 1.0;
 		}
 	}];
 }
 
 - (void)_uploadPhotos:(UIImage *)image {
-	_imageFilename = [NSString stringWithFormat:@"%@_%@-%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_imageFilename = [NSString stringWithFormat:@"%@_%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], _imageFilename);
 	
 	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
@@ -177,10 +188,23 @@
 			
 			[HONAppDelegate writeUserInfo:result];
 			[HONAppDelegate writePhoneNumber:_phone];
-			[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"] withDescription:@"" withImagePrefix:@"" completion:^(NSDictionary *result) {
+			
+			NSArray *clubCovers = @[[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
+									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
+									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
+									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
+									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
+									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"]];
+			
+			
+			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"owned"] count] == 0) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"] withDescription:@"" withImagePrefix:[clubCovers objectAtIndex:rand() % [clubCovers count]] completion:^(NSDictionary *result) {
+					}];
+				}
 			}];
 			
-			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSObject *result) {
+			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
 				[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];
 				[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
@@ -190,13 +214,6 @@
 				
 				
 				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
-				
-//				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-//				[[NSUserDefaults standardUserDefaults] synchronize];
-//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-//					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
-//				}];
 			}];
 						
 		} else {
@@ -317,10 +334,10 @@
 	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 	[_callCodeButton setTitleColor:[[HONColorAuthority sharedInstance] honGreyTextColor] forState:UIControlStateHighlighted];
 	[_callCodeButton setTitleEdgeInsets:UIEdgeInsetsMake(-1.0, 0.0, 0.0, 0.0)];
-	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:18];
+	_callCodeButton.titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateNormal];
 	[_callCodeButton setTitle:@"+1" forState:UIControlStateHighlighted];
-//	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
+	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_callCodeButton];
 	
 	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 150.0, 200.0, 22.0)];
@@ -379,7 +396,8 @@
 - (void)_goLogin {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Login"];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 		if ([MFMailComposeViewController canSendMail]) {
 			_mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			_mailComposeViewController.mailComposeDelegate = self;
@@ -601,26 +619,17 @@
 	
 	[_usernameButton setSelected:NO];
 	[_phoneButton setSelected:NO];
-	
-	_usernameCheckImageView.alpha = 1.0;
-	_phoneCheckImageView.alpha = 1.0;
-	
+		
 	HONRegisterErrorType registerErrorType = ((int)([_usernameTextField.text length] == 0) * HONRegisterErrorTypeUsername) + ((int)([_phone length] == 0) * HONRegisterErrorTypePhone);
 	if (registerErrorType == HONRegisterErrorTypeNone) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-		
-		_usernameCheckImageView.alpha = 1.0;
-		_phoneCheckImageView.alpha = 1.0;
-		
 		_username = _usernameTextField.text;
-		_phone = _phoneTextField.text;
+		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
 		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		_phoneCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		_usernameCheckImageView.alpha = 1.0;
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to use Selfieclub"
@@ -629,12 +638,13 @@
 						  otherButtonTitles:nil] show];
 		
 		_username = @"";
+		_clubNameLabel.text = @"Getselfieclub.com/";
 		_usernameTextField.text = @"";
 		[_usernameTextField becomeFirstResponder];
 	
 	} else if (registerErrorType == HONRegisterErrorTypePhone) {
-		_usernameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_phoneCheckImageView.alpha = 1.0;
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
 									message:@"You need a phone # to use Selfieclub."
@@ -648,7 +658,10 @@
 	
 	} else if (registerErrorType == (HONRegisterErrorTypeUsername | HONRegisterErrorTypePhone)) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_usernameCheckImageView.alpha = 1.0;
+		
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+		_phoneCheckImageView.alpha = 1.0;
 		
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone!"
 									message:@"You need to enter a username and phone # to use Selfieclub"
@@ -681,27 +694,29 @@
 #if __APPSTORE_BUILD__ == 0
 	if ([_phoneTextField.text isEqualToString:@"¡"]) {
 		_phoneTextField.text = [[phone1 stringByAppendingString:phone2] stringByAppendingString:phone3];
-		_phone = _phoneTextField.text;
+		_phone = [@"+1" stringByAppendingString:_phoneTextField.text];
 	}
 #endif
 	
 	
 	if ([_usernameTextField isFirstResponder]) {
-		_usernameCheckImageView.alpha = 1.0;
-		_usernameCheckImageView.image = [UIImage imageNamed:([_usernameTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
+		_usernameCheckImageView.alpha = 0.0;
+//		_usernameCheckImageView.image = [UIImage imageNamed:([_usernameTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
 	}
-	
+//
 	if ([_phoneTextField isFirstResponder]) {
-		_phoneCheckImageView.alpha = 1.0;
-		_phoneCheckImageView.image = [UIImage imageNamed:([_phoneTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
+		_phoneCheckImageView.alpha = 0.0;
+//		_phoneCheckImageView.image = [UIImage imageNamed:([_phoneTextField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
 	}
 }
 
 
 #pragma mark - CallingCodesViewController Delegates
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO {
-	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.countryCode] forState:UIControlStateNormal];
-	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.countryCode] forState:UIControlStateHighlighted];
+	NSLog(@"[*:*] callingCodesViewController:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
+	
+	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateNormal];
+	[_callCodeButton setTitle:[@"+" stringByAppendingString:countryVO.callingCode] forState:UIControlStateHighlighted];
 }
 
 
@@ -769,12 +784,12 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	if (textField.tag == 0) {
-		_usernameCheckImageView.alpha = 0.0;
+//		_usernameCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:YES];
 		[_phoneButton setSelected:NO];
 	
 	} else if (textField.tag == 1) {
-		_phoneCheckImageView.alpha = 0.0;
+//		_phoneCheckImageView.alpha = 0.0;
 		[_usernameButton setSelected:NO];
 		[_phoneButton setSelected:YES];
 	}
@@ -800,14 +815,14 @@
 	_username = _usernameTextField.text;
 	_phone = _phoneTextField.text;
 	
-	if (textField.tag == 0) {
-		_usernameCheckImageView.alpha = 1.0;
-		_usernameCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
-	
-	} else if (textField.tag == 1) {
-		_phoneCheckImageView.alpha = 1.0;
-		_phoneCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
-	}
+//	if (textField.tag == 0) {
+//		_usernameCheckImageView.alpha = 1.0;
+//		_usernameCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
+//	
+//	} else if (textField.tag == 1) {
+//		_phoneCheckImageView.alpha = 1.0;
+//		_phoneCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
+//	}
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"

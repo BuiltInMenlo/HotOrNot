@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 #include <sys/sysctl.h>
 
-#import "SSKeychain.h"
+#import "KeychainItemWrapper.h"
 
 #import "HONDeviceIntrinsics.h"
 
@@ -41,15 +41,50 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 - (NSString *)uniqueIdentifierWithoutSeperators:(BOOL)noDashes {
-	NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleNameKey];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+//	NSLog(@"//////////KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecValueData)]);	
+//	[[[UIAlertView alloc] initWithTitle:@"VENDOR ID"
+//								message:[keychain objectForKey:CFBridgingRelease(kSecValueData)]
+//							   delegate:nil
+//					  cancelButtonTitle:@"OK"
+//					  otherButtonTitles:nil] show];
+
 	
-	NSString *strApplicationUUID = [SSKeychain passwordForService:appName account:@"incoding"];
-	if (strApplicationUUID == nil) {
-		strApplicationUUID  = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-		[SSKeychain setPassword:strApplicationUUID forService:appName account:@"incoding"];
+	if ([[keychain objectForKey:CFBridgingRelease(kSecValueData)] length] == 0) {
+		CFStringRef uuid = CFUUIDCreateString(NULL, CFUUIDCreate(NULL));
+		NSString * uuidString = (NSString *)CFBridgingRelease(uuid);
+		[keychain setObject:uuidString forKey:CFBridgingRelease(kSecValueData)];
 	}
 	
+	NSString *strApplicationUUID = [keychain objectForKey:CFBridgingRelease(kSecValueData)];
+	
+//	Keychain *keychain = [[Keychain alloc] initWithService:[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey] withGroup:nil];
+//	NSData *data = [keychain find:@"uuid"];
+//    
+//	NSString *strApplicationUUID;
+//    if (data) {
+//		strApplicationUUID = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//    
+//	} else {
+//        strApplicationUUID = [[UIDevice currentDevice].identifierForVendor UUIDString];
+//		if ([keychain insert:@"uuid" :[strApplicationUUID dataUsingEncoding:NSUTF8StringEncoding]]) {
+//			NSLog(@"Successfully added UUID");
+//		
+//		} else
+//			NSLog(@"Failed to add UUID");
+//    }
+	
 	return ((noDashes) ? [strApplicationUUID stringByReplacingOccurrencesOfString:@"-" withString:@""] : strApplicationUUID);
+	
+	
+//	CFStringRef uuid = CFUUIDCreateString(NULL, CFUUIDCreate(NULL));
+//	NSString * uuidString = (NSString *)CFBridgingRelease(uuid);
+//	[SSKeychain setPassword:uuidString forService:@"com.builtinmenlo.selfieclub" account:@"user"];
+//	
+//	return ((noDashes) ? [((NSString *)CFBridgingRelease(uuid)) stringByReplacingOccurrencesOfString:@"-" withString:@""] : (NSString *)CFBridgingRelease(uuid));
+	
+	
+//	return ((noDashes) ? [[[UIDevice currentDevice].identifierForVendor UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""] : [[UIDevice currentDevice].identifierForVendor UUIDString]);
 }
 
 - (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes {

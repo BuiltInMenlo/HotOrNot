@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "KeychainItemWrapper.h"
 
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
@@ -15,6 +16,7 @@
 @property (nonatomic, strong) UIButton *pinButton;
 @property (nonatomic, strong) UITextField *pinTextField;
 @property (nonatomic, strong) UIImageView *pinCheckImageView;
+@property (nonatomic) int validateCounter;
 @end
 
 
@@ -22,7 +24,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		_validateCounter = 0;
 	}
 	
 	return (self);
@@ -91,7 +93,7 @@
 	
 	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
-//	_pinCheckImageView.alpha = 0.0;
+	_pinCheckImageView.alpha = 0.0;
 	[self.view addSubview:_pinCheckImageView];
 	
 	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pinFooterText"]];
@@ -142,6 +144,10 @@
 	
 	_pin = _pinTextField.text;
 	if ([_pin length] < 4) {
+		_pin = @"";
+		_pinTextField.text = @"";
+		[_pinTextField becomeFirstResponder];
+		
 		[[[UIAlertView alloc] initWithTitle:@"Invalid Pin!"
 									message:@"Pin numbers need to be 4 numbers"
 								   delegate:nil
@@ -149,38 +155,63 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSObject *result) {
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		_validateCounter++;
+		[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
+			if ([[result objectForKey:@"result"] intValue] == 0 && _validateCounter < 3) {
 				
-				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-				pasteboard.string = [NSString stringWithFormat:@"Getselfieclub://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+				_pin = @"";
+				_pinTextField.text = @"";
+				[_pinTextField becomeFirstResponder];
 				
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+				_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+				_pinCheckImageView.alpha = 1.0;
+				
+				[[[UIAlertView alloc] initWithTitle:@"Invalid Pin!"
+											message:@"Please try again or press the resend button"
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
+			
+			} else {
+				_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+				_pinCheckImageView.alpha = 1.0;
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
-			}];
-		}];		
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						
+					KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+					[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+					
+					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+					pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@'s Club! Tap to join: getselfieclub://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+					
+					[[[UIAlertView alloc] initWithTitle:@""
+												message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+											   delegate:nil
+									  cancelButtonTitle:@"OK"
+									  otherButtonTitles:nil] show];
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+				}];
+			}
+		}];
 	}
 }
 
 - (void)_goResend {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Resend"];
 	
-	_pinTextField.text = @"";
-	[_pinTextField resignFirstResponder];
+	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
+		_pinTextField.text = @"";
+		[_pinTextField becomeFirstResponder];
+	}];
 }
 
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+	_pinCheckImageView.alpha = (int)([_pinTextField.text length] == 4);
 }
 
 

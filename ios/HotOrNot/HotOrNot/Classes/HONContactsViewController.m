@@ -9,6 +9,7 @@
 #import "NSString+DataTypes.h"
 
 #import "MBProgressHUD.h"
+#import "KeychainItemWrapper.h"
 #import "TSTapstream.h"
 
 #import "HONContactsViewController.h"
@@ -332,7 +333,6 @@
 	
 	self.edgesForExtendedLayout = UIRectEdgeNone;
 
-		
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -359,7 +359,10 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] != nil) {
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
+	
+	if ([passedRegistration length] != 0) {
 		[self _retreiveUserClubs];
 		
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)

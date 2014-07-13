@@ -58,6 +58,13 @@
 #pragma mark - Data Calls
 - (void)_retreiveCountries {
 	_countries = [NSMutableArray array];
+	_cells = [NSMutableArray array];
+	for (NSDictionary *dict in [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"CountryCodes" ofType:@"plist"]]) {
+		[_countries addObject:[HONCountryVO countryWithDictionary:dict]];
+	}
+	
+	_segmentedCountries = [self _populateSegmentedDictionary];
+	[_tableView reloadData];
 }
 
 
@@ -88,7 +95,7 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
+	doneButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
@@ -102,6 +109,12 @@
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	[self.view addSubview:_tableView];
+	
+	_refreshControl = [[UIRefreshControl alloc] init];
+	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
+	[_tableView addSubview: _refreshControl];
+	
+	[self _retreiveCountries];
 }
 
 - (void)viewDidLoad {
@@ -137,8 +150,10 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-//	if ([self.delegate respondsToSelector:@selector(callingCodesViewController:didSelectCountry:)])
-//		[self.delegate callingCodesViewController:self didSelectCountry:_countryVO];
+	if (_countryVO != nil) {
+		if ([self.delegate respondsToSelector:@selector(callingCodesViewController:didSelectCountry:)])
+			[self.delegate callingCodesViewController:self didSelectCountry:_countryVO];
+	}
 	
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -146,11 +161,18 @@
 
 #pragma mark - CallingCodeViewCell Delegates
 - (void)callingCodeViewCell:(HONCallingCodeViewCell *)viewCell didDeselectCountry:(HONCountryVO *)countryVO {
+	NSLog(@"[*:*] callingCodeViewCell:didDeselectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	_countryVO = nil;
 }
 
 - (void)callingCodeViewCell:(HONCallingCodeViewCell *)viewCell didSelectCountry:(HONCountryVO *)countryVO {
+	NSLog(@"[*:*] callingCodeViewCell:didSelectCountry:(%@ - %@)", countryVO.countryName, countryVO.callingCode);
 	_countryVO = countryVO;
+	
+	for (HONCallingCodeViewCell *cell in _cells) {
+		if (![cell isEqual:viewCell])
+			[cell toggleSelected:NO];
+	}
 }
 
 
@@ -186,6 +208,9 @@
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
+	if (![_cells containsObject:cell])
+		[_cells addObject:cell];
+	
 	return (cell);
 }
 
@@ -205,8 +230,15 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	HONCallingCodeViewCell *cell = (HONCallingCodeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	[cell invertSelected];
+	HONCallingCodeViewCell *viewCell = (HONCallingCodeViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	[viewCell invertSelected];
+	
+	for (HONCallingCodeViewCell *cell in _cells) {
+		if (![cell isEqual:viewCell])
+			[cell toggleSelected:NO];
+	}
+	
+	_countryVO = (viewCell.isSelected) ? viewCell.countryVO : nil;
 }
 
 
@@ -222,8 +254,8 @@
 	
 	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
 	for (HONCountryVO *vo in _countries) {
-		if ([vo.countryCode length] > 0) {
-			NSString *charKey = [[vo.countryCode substringToIndex:1] lowercaseString];
+		if ([vo.countryName length] > 0) {
+			NSString *charKey = [[vo.countryName substringToIndex:1] lowercaseString];
 			if (![_segmentedKeys containsObject:charKey]) {
 				[_segmentedKeys addObject:charKey];
 				

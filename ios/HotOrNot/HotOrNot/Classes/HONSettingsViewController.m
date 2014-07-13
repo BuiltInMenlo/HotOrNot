@@ -9,6 +9,7 @@
 #import "NSString+DataTypes.h"
 
 #import "CKRefreshControl.h"
+#import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
@@ -362,9 +363,8 @@
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"is_deactivated"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-				[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
+				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@0];

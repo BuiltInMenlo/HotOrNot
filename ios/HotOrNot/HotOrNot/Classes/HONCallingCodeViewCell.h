@@ -20,5 +20,6 @@
 - (void)toggleSelected:(BOOL)isSelected;
 
 @property (nonatomic, retain) HONCountryVO *countryVO;
+@property (nonatomic) BOOL isSelected;
 @property (nonatomic, assign) id <HONCallingCodeViewCellDelegate> delegate;
 @end

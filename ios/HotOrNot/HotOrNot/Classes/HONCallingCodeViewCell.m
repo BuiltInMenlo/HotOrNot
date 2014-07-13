@@ -13,7 +13,6 @@
 @interface HONCallingCodeViewCell ()
 @property (nonatomic, strong) UIButton *toggledOnButton;
 @property (nonatomic, strong) UIButton *toggledOffButton;
-@property (nonatomic) BOOL isSelected;
 @end
 
 @implementation HONCallingCodeViewCell
@@ -57,18 +56,18 @@
 - (void)setCountryVO:(HONCountryVO *)countryVO {
 	_countryVO = countryVO;
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 22.0, 180.0, 18.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 15.0, 180.0, 18.0)];
 	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 	nameLabel.textColor = [UIColor blackColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = _countryVO.countryName;
 	[self.contentView addSubview:nameLabel];
 	
-	UILabel *codeLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0, 33.0, 25.0, 15.0)];
+	UILabel *codeLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 33.0, 50.0, 15.0)];
 	codeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	codeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	codeLabel.backgroundColor = [UIColor clearColor];
-	codeLabel.text = _countryVO.callingCode;
+	codeLabel.text = [@"+" stringByAppendingString:_countryVO.callingCode];
 	[self.contentView addSubview:codeLabel];
 	
 	_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];

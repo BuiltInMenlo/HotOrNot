@@ -10,15 +10,14 @@
 
 @implementation HONCountryVO
 @synthesize dictionary;
-@synthesize countryName, countryCode, callingCode;
+@synthesize countryName, callingCode;
 
 + (HONCountryVO *)countryWithDictionary:(NSDictionary *)dictionary {
 	HONCountryVO *vo = [[HONCountryVO alloc] init];
 	
 	vo.dictionary = dictionary;
 	vo.countryName = [dictionary objectForKey:@"name"];
-	vo.countryCode = [dictionary objectForKey:@"code"];
-	vo.callingCode = [dictionary objectForKey:@"calling"];
+	vo.callingCode = [dictionary objectForKey:@"code"];
 	
 	return (vo);
 }
@@ -26,7 +25,6 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.countryName = nil;
-	self.countryCode = nil;
 	self.callingCode = nil;
 }
 

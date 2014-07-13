@@ -11,6 +11,5 @@
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 @property (nonatomic, retain) NSString *countryName;
-@property (nonatomic, retain) NSString *countryCode;
 @property (nonatomic, retain) NSString *callingCode;
 @end

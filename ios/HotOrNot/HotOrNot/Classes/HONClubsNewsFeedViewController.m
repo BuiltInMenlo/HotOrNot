@@ -12,6 +12,8 @@
 
 #import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
+#import "PCCandyStoreSearchController.h"
+#import "PicoManager.h"
 
 #import "HONClubsNewsFeedViewController.h"
 #import "HONClubTimelineViewController.h"
@@ -36,6 +38,7 @@
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
+@property (nonatomic, strong) NSMutableArray *ownedClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
 @property (nonatomic, strong) NSMutableArray *autoGenItems;
@@ -57,6 +60,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		
+		_ownedClubs = [[NSMutableArray alloc] init];
 		_allClubs = [[NSMutableArray alloc] init];
 		_dictClubs = [[NSMutableArray alloc] init];
 		_autoGenItems = [[NSMutableArray alloc] init];
@@ -93,6 +97,7 @@
 //	_progressHUD.taskInProgress = YES;
 	
 	
+	_ownedClubs = [[NSMutableArray alloc] init];
 	_allClubs = [[NSMutableArray alloc] init];
 	_dictClubs = [[NSMutableArray alloc] init];
 	_timelineItems = [[NSMutableArray alloc] init];
@@ -109,6 +114,9 @@
 			
 			for (NSDictionary *dict in [result objectForKey:key]) {
 				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:dict];
+				if ([key isEqualToString:@"owned"])
+					[_ownedClubs addObject:vo];
+				
 				[_allClubs addObject:vo];
 				if ([vo.submissions count] > 0 || vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 					[clubIDs addObject:[NSNumber numberWithInt:vo.clubID]];
@@ -165,6 +173,13 @@
 	
 	_autoGenItems = nil;
 	_autoGenItems = [NSMutableArray array];
+	
+	NSArray *clubCovers = @[[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
+							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
+							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
+							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
+							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
+							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"]];
 	
 	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
 	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
@@ -258,10 +273,12 @@
 		}
 	}
 	
+	
 	if ([clubName length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"0" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:[clubCovers objectAtIndex:rand() % [clubCovers count]] forKey:@"img"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -282,6 +299,7 @@
 			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 			[dict setValue:@"0" forKey:@"id"];
 			[dict setValue:clubName forKey:@"name"];
+			[dict setValue:[clubCovers objectAtIndex:rand() % [clubCovers count]] forKey:@"img"];
 			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
 			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -335,6 +353,7 @@
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"0" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:[clubCovers objectAtIndex:rand() % [clubCovers count]] forKey:@"img"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -496,9 +515,7 @@
 #pragma mark - ClubNewsFeedItemViewCell Delegates
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell createClubWithProtoVO:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:createClubWithProtoVO:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
-	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
-	//[self _createClubWithProtoVO:userClubVO];
 	
 	_selectedClubVO = userClubVO;
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -507,7 +524,7 @@
 											  cancelButtonTitle:@"Yes"
 											  otherButtonTitles:@"No", nil];
 	
-	[alertView setTag:0];
+	[alertView setTag:2];
 	[alertView show];
 }
 
@@ -625,7 +642,7 @@
 	
 	
 	if (indexPath.section == 0) {
-		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createClubNewsFeedBG"]];
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createPostNewsFeedBG"]];
 			
 	} else if (indexPath.section == 1) {
 		cell.clubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
@@ -649,7 +666,7 @@
 			return (0.0);
 		
 		else
-			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 210.0 : 0.0);
+			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 160.0 : 0.0);
 	}
 	
 	else if (indexPath.section == 1)
@@ -693,19 +710,23 @@
 	HONClubNewsFeedViewCell *cell = (HONClubNewsFeedViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
 	
 	if (indexPath.section == 0) {
-		[self _goCreateClub];
+		NSLog(@"OWNED:[%@]", [_ownedClubs firstObject]);
+		
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:((HONUserClubVO *)[_ownedClubs firstObject]).clubID withOwnerID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result]]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
+		}];
 	
 	} else if (indexPath.section == 1) {
 		_selectedClubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
-		//[self _createClubWithProtoVO:_selectedClubVO];
-		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
 												  cancelButtonTitle:@"Yes"
 												  otherButtonTitles:@"No", nil];
 		
-		[alertView setTag:0];
+		[alertView setTag:2];
 		[alertView show];
 	
 	} else {
@@ -754,6 +775,17 @@
 		
 		} else
 			[self _retrieveTimeline];
+	
+	} else if (alertView.tag == 2) {
+		[self _createClubWithProtoVO:_selectedClubVO];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"Not Now", nil];
+		
+		[alertView setTag:1];
+		[alertView show];
 	}
 }
 

@@ -1262,7 +1262,7 @@ static HONAPICaller *sharedInstance = nil;
 		
 		if (error != nil) {
 			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
+//			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
 			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);

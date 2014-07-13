@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONEmoticonPickerItemView.h"
+#import "HONImageLoadingView.h"
 
 const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
 const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
@@ -18,12 +19,13 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
 @property (nonatomic, strong) UIImageView *selectedImageView;
 @property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic) BOOL isSelected;
 @end
 
 @implementation HONEmoticonPickerItemView
 
-- (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO {
+- (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay {
 	if ((self = [super initWithFrame:CGRectMake(position.x, position.y, 75.0, 75.0)])) {
 		_emotionVO = emotionVO;
 		_isSelected = NO;
@@ -33,29 +35,13 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 		_imageView.contentMode = UIViewContentModeScaleAspectFit;
 		[self addSubview:_imageView];
 		
-		UIImageView *emojiImageView = [[UIImageView alloc] initWithFrame:kNormalFrame];
-		emojiImageView.alpha = 0.0;
-		[_imageView addSubview:emojiImageView];
+		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageView asLargeLoader:NO];
+		_imageLoadingView.alpha = 0.667;
+		[_imageLoadingView startAnimating];
+		[_imageView addSubview:_imageLoadingView];
 		
-		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			emojiImageView.image = image;
-			
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				emojiImageView.alpha = 1.0;
-			} completion:nil];
-		};
-		
-		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		};
-		
-		[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.largeImageURL]
-																cachePolicy:NSURLRequestReturnCacheDataElseLoad
-															timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
-									   success:imageSuccessBlock
-									   failure:imageFailureBlock];
+		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
 
-		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		selectButton.frame = _imageView.frame;
 		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
@@ -102,6 +88,34 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 										  } completion:^(BOOL finished) {
 										  }];
 					 }];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_loadImage {
+	UIImageView *emojiImageView = [[UIImageView alloc] initWithFrame:kNormalFrame];
+	emojiImageView.alpha = 0.0;
+	[_imageView addSubview:emojiImageView];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		emojiImageView.image = image;
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			emojiImageView.alpha = 1.0;
+			_imageLoadingView.alpha = 0.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		_imageLoadingView.alpha = 0.0;
+	};
+	
+	[emojiImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_emotionVO.largeImageURL]
+															cachePolicy:NSURLRequestReturnCacheDataElseLoad
+														timeoutInterval:[HONAppDelegate timeoutInterval]]
+						  placeholderImage:nil
+								   success:imageSuccessBlock
+								   failure:imageFailureBlock];
 }
 
 
