@@ -433,7 +433,13 @@
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Cancel"];
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-	[_tableView reloadData];
+	
+	[self _retreiveUserClubs];
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+		[self _retrieveDeviceContacts];
+	
+	else
+		[self _submitPhoneNumberForMatching];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {

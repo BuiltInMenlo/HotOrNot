@@ -38,6 +38,8 @@
 	if ((self = [super init])) {
 		_clubVO = clubVO;
 		_clubPhotos = [[_clubVO.submissions reverseObjectEnumerator] allObjects];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
 	}
 	
 	return (self);
@@ -219,6 +221,12 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Refresh"
 									   withUserClub:_clubVO];
 	
+	[self _retrieveClub];
+}
+
+
+#pragma mark - Notifications
+- (void)_refreshClubTimeline:(NSNotification *)notification {
 	[self _retrieveClub];
 }
 

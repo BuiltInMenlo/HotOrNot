@@ -125,16 +125,21 @@
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
-	[super _goSubmit];
-	
 	if (_trivialUserVO != nil) {
-		
+		for (HONUserClubVO *vo in _selectedClubs) {
+			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+			}];
+		}
 	}
 	
 	
 	if (_contactUserVO != nil) {
-		
+		for (HONUserClubVO *vo in _selectedClubs) {
+			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {}];
+		}
 	}
+	
+	[super _goSubmit];
 }
 
 - (void)_goSelectAllToggle {

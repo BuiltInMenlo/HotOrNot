@@ -157,13 +157,15 @@
 }
 
 - (void)_joinClub:(HONUserClubVO *)userClubVO {
-	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 	}];
 }
 
 
 - (void)_createClubWithProtoVO:(HONUserClubVO *)userClubVO {
-	[[HONAPICaller sharedInstance] createClubWithTitle:userClubVO.clubName withDescription:userClubVO.blurb withImagePrefix:userClubVO.coverImagePrefix completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] createClubWithTitle:userClubVO.clubName withDescription:userClubVO.blurb withImagePrefix:userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
+		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
 	}];
 }

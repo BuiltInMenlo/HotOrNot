@@ -468,6 +468,7 @@
 	_submitParams = @{@"user_id"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 					  @"img_url"		: [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename],
 					  @"club_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.clubID : 0],
+					  @"owner_id"		: [@"" stringFromInt:(_selfieSubmitType == HONSelfieCameraSubmitTypeReplyClub) ? _userClubVO.ownerID : 0],
 					  @"subject"		: @"",
 					  @"subjects"		: jsonString,
 					  @"challenge_id"	: [@"" stringFromInt:0],

@@ -34,6 +34,11 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		_submitParams = [submitParams mutableCopy];
 		_clubID = [[_submitParams objectForKey:@"club_id"] intValue];
+		
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:[[_submitParams objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
+			_clubVO = [HONUserClubVO clubWithDictionary:result];
+			[_selectedClubs addObject:_clubVO];
+		}];
 	}
 	
 	return (self);
@@ -131,7 +136,6 @@
 
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
-	[super _goSubmit];
 	
 //	if ([_selectedClubs count] == 0) {
 //		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
@@ -147,6 +151,12 @@
 	
 	
 	[HONAppDelegate incTotalForCounter:@"camera"];
+	
+	if (_clubVO != nil) {
+		if (![_selectedClubs containsObject:_clubVO])
+			[_selectedClubs addObject:_clubVO];
+	}
+	
 	for (HONUserClubVO *vo in _selectedClubs) {
 		[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
 		
@@ -163,13 +173,16 @@
 				_progressHUD = nil;
 				
 			} else {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
 				}];
 			}
 		}];
 	}
+	
+	[super _goSubmit];
 }
 
 - (void)_goSelectAllToggle {

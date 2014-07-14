@@ -19,6 +19,7 @@
 @interface HONInviteContactsViewController ()
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
+@property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic) BOOL isPushed;
 @end
 
@@ -26,8 +27,11 @@
 @implementation HONInviteContactsViewController
 
 - (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed {
+	NSLog(@"%@ - initWithClub:[%d] (%@)", [self description], userClub.clubID, userClub.clubName);
+	
 	if ((self = [super init])) {
 		_userClubVO = userClub;
+		_clubVO = userClub;
 		_isPushed = isPushed;
 	}
 	
@@ -50,6 +54,8 @@
 
 #pragma mark - Data Calls
 - (void)_sendClubInvites {
+	NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
+	
 	HONInviteContactType inviteContactType = (HONInviteContactTypeInApp * (int)([_selectedInAppContacts count] > 0)) + (HONInviteContactTypeNonApp * (int)([_selectedNonAppContacts count] > 0));
 	
 	if (inviteContactType == HONInviteContactTypeInApp)
@@ -63,7 +69,7 @@
 }
 
 - (void)_sendCombinedUserInvites {
-	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID inviteNonAppContacts:[_selectedNonAppContacts copy] completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID inviteNonAppContacts:[_selectedNonAppContacts copy] completion:^(NSDictionary *result) {
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		}];
@@ -71,7 +77,7 @@
 }
 
 - (void)_sendInAppUserInvites {
-	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		}];
@@ -80,7 +86,7 @@
 
 
 - (void)_sendNonAppUserInvites {
-	[[HONAPICaller sharedInstance] inviteNonAppUsers:[_selectedNonAppContacts copy] toClubWithID:_userClubVO.clubID withClubOwnerID:_userClubVO.ownerID completion:^(NSObject *result) {
+	[[HONAPICaller sharedInstance] inviteNonAppUsers:[_selectedNonAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		}];
@@ -91,6 +97,9 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	
+	_selectedInAppContacts = [NSMutableArray array];
+	_selectedNonAppContacts = [NSMutableArray array];
 	
 	[_headerView setTitle:@"Invite Friends"];
 	
@@ -138,19 +147,21 @@
 #pragma mark - Navigation
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Back"
-									   withUserClub:_userClubVO];
+									   withUserClub:_clubVO];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goClose {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Close"
-									   withUserClub:_userClubVO];
+									   withUserClub:_clubVO];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"
-									   withUserClub:_userClubVO];
+									   withUserClub:_clubVO];
+	
+	
 	
 	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
 		[self _sendClubInvites];
@@ -209,6 +220,33 @@
 #pragma mark - TableView Delegates
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
+	
+	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	
+	NSLog(@"CELL.ISSELECTED:[%d]", cell.isSelected);
+	if (cell.contactUserVO.userID == 0 && cell.trivialUserVO.userID == 0) {
+		if (cell.isSelected) {
+			if (![_selectedNonAppContacts containsObject:cell.contactUserVO])
+				[_selectedNonAppContacts addObject:cell.contactUserVO];
+		
+		} else {
+			if ([_selectedNonAppContacts containsObject:cell.contactUserVO])
+				[_selectedNonAppContacts removeObject:cell.contactUserVO];
+		}
+	
+	} else {
+		if (cell.isSelected) {
+			if (![_selectedInAppContacts containsObject:cell.trivialUserVO])
+				[_selectedInAppContacts addObject:cell.trivialUserVO];
+		
+		} else {
+			if ([_selectedInAppContacts containsObject:cell.trivialUserVO])
+				[_selectedInAppContacts removeObject:cell.trivialUserVO];
+		}
+	}
+	
+	NSLog(@"IN-APP:[%@]", _selectedInAppContacts);
+	NSLog(@"NON-APP:[%@]", _selectedNonAppContacts);
 }
 
 
@@ -216,7 +254,7 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Club Invite - No Users Selected " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-										   withUserClub:_userClubVO];
+										   withUserClub:_clubVO];
 		
 		if (buttonIndex == 1)
 			[self.navigationController dismissViewControllerAnimated:YES completion:nil];

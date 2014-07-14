@@ -170,6 +170,7 @@
 }
 
 - (void)_goSubmit {
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goSelectAllToggle {
