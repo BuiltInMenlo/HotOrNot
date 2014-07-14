@@ -54,6 +54,7 @@
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIButton *changeTintButton;
+@property (nonatomic, strong) UIButton *nextButton;
 @property (nonatomic) int tintIndex;
 
 @property (nonatomic) int selfieAttempts;
@@ -175,6 +176,7 @@
 }
 
 - (void)_finalizeUser {
+	[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																@"username"	: _username,
 																@"phone"	: _phone,
@@ -189,17 +191,9 @@
 			[HONAppDelegate writeUserInfo:result];
 			[HONAppDelegate writePhoneNumber:_phone];
 			
-			NSArray *clubCovers = @[[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
-									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
-									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
-									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
-									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
-									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"]];
-			
-			
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				if ([[result objectForKey:@"owned"] count] == 0) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"] withDescription:@"" withImagePrefix:[clubCovers objectAtIndex:rand() % [clubCovers count]] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] completion:^(NSDictionary *result) {
 					}];
 				}
 			}];
@@ -255,14 +249,13 @@
 	
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	
-	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(227.0, -1.0, 93.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_nextButton.frame = CGRectMake(227.0, -1.0, 93.0, 44.0);
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Register"];
-	[headerView addButton:nextButton];
+	[headerView addButton:_nextButton];
 	[self.view addSubview:headerView];
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -389,6 +382,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 }
 
 

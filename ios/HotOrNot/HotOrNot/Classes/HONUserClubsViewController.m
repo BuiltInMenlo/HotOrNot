@@ -95,7 +95,7 @@
 	[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-	[dict setValue:[[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"] forKey:@"img"];
+	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
 	[_dictClubs addObject:[dict copy]];
 	
 	
@@ -223,7 +223,7 @@
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_invite"]];
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_club"]];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];

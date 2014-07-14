@@ -21,6 +21,7 @@
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
+	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? [[HONClubAssistant sharedInstance] defaultCoverImagePrefix] : vo.avatarPrefix;
 	vo.altID = ([dictionary objectForKey:@"alt_id"] != [NSNull null]) ? [dictionary objectForKey:@"alt_id"] : @"";
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.abuseCount = [[dictionary objectForKey:@"abuse_ct"] intValue];

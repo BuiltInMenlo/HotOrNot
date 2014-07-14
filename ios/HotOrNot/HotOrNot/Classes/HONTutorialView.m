@@ -20,7 +20,9 @@
 	if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
 		
 		self.alpha = 0.0;
-		[self addSubview:[[UIImageView alloc] initWithImage:bgImage]];
+		
+		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:bgImage];
+		[self addSubview:bgImageView];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = self.frame;

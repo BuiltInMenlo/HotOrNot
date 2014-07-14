@@ -15,7 +15,7 @@
 
 #import <FacebookSDK/FacebookSDK.h>
 #import <HockeySDK/HockeySDK.h>
-//#import <Tapjoy/Tapjoy.h>
+#import <Tapjoy/Tapjoy.h>
 
 //#import "NSData+Base64.h"
 #import "Base64.h"
@@ -297,6 +297,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 + (void)writePhoneNumber:(NSString *)phoneNumber {
+	NSLog(@"AppDelegate writePhoneNumber:[%@]", phoneNumber);
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
 	
@@ -306,10 +307,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	[keychain setObject:phoneNumber forKey:CFBridgingRelease(kSecAttrService)];
 }
 
 + (NSString *)phoneNumber {
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : @"");
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	[keychain objectForKey:CFBridgingRelease(kSecAttrService)];
+	
+	NSLog(@"AppDelegate phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 }
 
 
@@ -1400,9 +1408,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	//TSTapstream *tapstream = [TSTapstream instance];
 	
-//	[Tapjoy requestTapjoyConnect:kTapjoyAppID
-//					   secretKey:kTapjoyAppSecretKey
-//						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
+	[Tapjoy requestTapjoyConnect:kTapjoyAppID
+					   secretKey:kTapjoyAppSecretKey
+						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 	
 //	[KikAPIClient registerAsKikPluginWithAppID:@"com.builtinmenlo.selfieclub.kik"
 //							   withHomepageURI:@"http://www.builtinmenlo.com"

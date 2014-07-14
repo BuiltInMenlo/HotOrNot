@@ -29,13 +29,15 @@
 	vo.clubName = [dictionary objectForKey:@"name"];
 	vo.blurb = [dictionary objectForKey:@"description"];
 	
-	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img"]] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsCloudFront] stringByAppendingString:@"/defaultClubCover"];
+	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img"]] : [[HONClubAssistant sharedInstance] defaultCoverImagePrefix];
+	vo.coverImagePrefix = ([vo.coverImagePrefix rangeOfString:@"defaultClubCover"].location != NSNotFound) ? [[HONClubAssistant sharedInstance] defaultCoverImagePrefix] : vo.coverImagePrefix;
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
 	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
+	
 	
 //	vo.pendingMembers = [dictionary objectForKey:@"pending"];
 //	vo.activeMembers = [dictionary objectForKey:@"members"];

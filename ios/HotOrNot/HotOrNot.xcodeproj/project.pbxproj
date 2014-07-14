@@ -193,6 +193,8 @@
 		4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81A014163337C200AB188B /* UIImage+fixOrientation.m */; };
 		4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C81A016163367F300AB188B /* AVFoundation.framework */; };
 		4C81D8541972082200BAFDA3 /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81D8531972082200BAFDA3 /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4C81D8571973582E00BAFDA3 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C81D8551973582E00BAFDA3 /* Default-568h@2x.png */; };
+		4C81D8581973582E00BAFDA3 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C81D8561973582E00BAFDA3 /* Default@2x.png */; };
 		4C83FD82190F594D00CAEABB /* MessagingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD81190F594D00CAEABB /* MessagingElements.xcassets */; };
 		4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */; };
 		4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */; };
@@ -621,6 +623,8 @@
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4C81D8521972082200BAFDA3 /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
 		4C81D8531972082200BAFDA3 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
+		4C81D8551973582E00BAFDA3 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		4C81D8561973582E00BAFDA3 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		4C83FD81190F594D00CAEABB /* MessagingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MessagingElements.xcassets; sourceTree = "<group>"; };
 		4C83FD83190F5A5000CAEABB /* BackupS3Elements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = BackupS3Elements.xcassets; sourceTree = "<group>"; };
 		4C83FD85190F5B2500CAEABB /* RegistrationElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = RegistrationElements.xcassets; sourceTree = "<group>"; };
@@ -1576,6 +1580,8 @@
 		4C62652F15F96C7100AA7FCE /* HotOrNot */ = {
 			isa = PBXGroup;
 			children = (
+				4C81D8551973582E00BAFDA3 /* Default-568h@2x.png */,
+				4C81D8561973582E00BAFDA3 /* Default@2x.png */,
 				4C1AF63819720524003DB714 /* Selfieclub.entitlements */,
 				4C4C9D1817285630003899F4 /* HotOrNot.entitlements */,
 				4C68936B1719EF88005F8D0A /* Localizable.strings */,
@@ -2023,7 +2029,7 @@
 								enabled = 1;
 							};
 							com.apple.iCloud = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -2067,6 +2073,7 @@
 				4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */,
 				4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */,
 				4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */,
+				4C81D8571973582E00BAFDA3 /* Default-568h@2x.png in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
@@ -2092,6 +2099,7 @@
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,
 				4C83FD86190F5B2500CAEABB /* RegistrationElements.xcassets in Resources */,
 				4C4328F518E3A9FA0035FF06 /* TapjoyResources.bundle in Resources */,
+				4C81D8581973582E00BAFDA3 /* Default@2x.png in Resources */,
 				4C83FD8A190F600700CAEABB /* SearchElements.xcassets in Resources */,
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
 				4C4328CA18E3A9FA0035FF06 /* MPArrowLeft.png in Resources */,
@@ -2439,7 +2447,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/Selfieclub.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2479,7 +2486,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/Selfieclub.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

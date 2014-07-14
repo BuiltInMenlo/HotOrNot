@@ -174,13 +174,6 @@
 	_autoGenItems = nil;
 	_autoGenItems = [NSMutableArray array];
 	
-	NSArray *clubCovers = @[[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
-							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
-							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
-							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
-							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
-							[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"]];
-	
 	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
 	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
 	NSMutableArray *unsortedContacts = [NSMutableArray array];
@@ -234,6 +227,50 @@
 		}
 	}
 	
+	// sand hill
+	NSArray *emailDomains = @[@"dcm.com",
+							  @"500.co",
+							  @"firstround.com",
+							  @"a16z.com",
+							  @"ggvc.com",
+							  @"yomorrowvc.com",
+							  @"hcp.com",
+							  @"sequoiacap.com",
+							  @"cyberagentventures.com",
+							  @"accel.com",
+							  @"idgvc.com",
+							  @"nhninv.com",
+							  @"menloventures.com",
+							  @"svangel.com",
+							  @"sherpavc.com",
+							  @"techcrunch.com"];
+	
+	for (HONContactUserVO *vo in unsortedContacts) {
+		if ([vo.email length] == 0)
+			continue;
+		
+		for (NSString *domain in emailDomains) {
+			NSLog(@"vo.email:[%@] >> [%@]", [vo.email lowercaseString], domain);
+			if ([[vo.email lowercaseString] rangeOfString:domain].location != NSNotFound) {
+				clubName = @"Sand Hill Bros";
+				break;
+			}
+		}
+	}
+	
+	if ([clubName length] > 0) {
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		
+		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+		[_autoGenItems addObject:vo];
+		clubName = @"";
+	}
+	
+	
 	// family
 	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
 	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"]) {
@@ -278,7 +315,7 @@
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"0" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[clubCovers objectAtIndex:rand() % [clubCovers count]] forKey:@"img"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -299,7 +336,7 @@
 			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 			[dict setValue:@"0" forKey:@"id"];
 			[dict setValue:clubName forKey:@"name"];
-			[dict setValue:[clubCovers objectAtIndex:rand() % [clubCovers count]] forKey:@"img"];
+			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
 			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
 			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -353,7 +390,7 @@
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"0" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[clubCovers objectAtIndex:rand() % [clubCovers count]] forKey:@"img"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
 		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
 
 		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -430,7 +467,7 @@
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_club"]];
+		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];

@@ -558,6 +558,7 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
+		NSLog(@"CONTACTS:[%d]", buttonIndex);
 		if (buttonIndex == 1) {
 			if (ABAddressBookRequestAccessWithCompletion) {
 				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -570,10 +571,15 @@
 						[_inAppUsers removeAllObjects];
 						[self _retrieveDeviceContacts];
 					});
-					
-				} else {
+				
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+						[_inAppUsers removeAllObjects];
+						[self _retrieveDeviceContacts];
+					});
+				
+				} else
 					[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Address Book Unknown / Denied "];
-				}
 			}
 		}
 	}
