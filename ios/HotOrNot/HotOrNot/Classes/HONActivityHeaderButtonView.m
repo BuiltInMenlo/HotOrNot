@@ -35,14 +35,14 @@ const CGFloat kMaxActivityWidth = 44.0;
 		[_activityBGImageView setCenter:kOrthodoxActivityCenterPt];
 		_activityBGImageView.hidden = YES;
 		[self addSubview:_activityBGImageView];
-		
+		/*
 		_activityTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMaxActivityWidth, 44.0)];
 		_activityTotalLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:15];
 		_activityTotalLabel.textColor = [UIColor whiteColor];
 		_activityTotalLabel.backgroundColor = [UIColor clearColor];
 		_activityTotalLabel.textAlignment = NSTextAlignmentCenter;
 		[_activityBGImageView addSubview:_activityTotalLabel];
-		
+		*/
 		[self updateActivityBadge];
 	}
 	
