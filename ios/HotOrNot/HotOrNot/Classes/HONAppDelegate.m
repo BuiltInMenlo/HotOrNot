@@ -84,7 +84,7 @@ NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 NSString * const kChartboostAppID = @"";
 NSString * const kChartboostAppSignature = @"";
-NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
+NSString * const kTapjoyAppID = @"	";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
@@ -137,7 +137,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @interface HONAppDelegate() <ChartboostDelegate, HONTutorialViewDelegate, PCCandyStoreSearchControllerDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
-@property (nonatomic, strong) UIImageView *launchImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *shareInfo;
 @property (nonatomic) BOOL isFromBackground;
@@ -850,11 +849,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		[HONAppDelegate incTotalForCounter:@"boot"];
 		
-		[self _initThirdPartySDKs];
-				
-		self.launchImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		self.launchImageView.image = [UIImage imageNamed:@"mainBG"];
-		[self.window addSubview:self.launchImageView];
+		[self _initThirdPartySDKs];				
 		[self.window makeKeyAndVisible];
 		
 //		[self _initUrbanAirship];
