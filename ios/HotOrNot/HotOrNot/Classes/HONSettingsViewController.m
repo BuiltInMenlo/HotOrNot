@@ -257,6 +257,7 @@
 		
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Rate App"];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		
 	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Netwrok Status"];
