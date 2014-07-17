@@ -17,7 +17,8 @@ typedef NS_ENUM(NSInteger, HONSettingsCellType) {
 	HONSettingsCellTypePrivacyPolicy,
 	HONSettingsCellTypeSupport,
 	HONSettingsCellTypeRateThisApp,
-	HONSettingsCellTypeNetworkStatus
+	HONSettingsCellTypeNetworkStatus,
+    HONSettingsCellTypeLogout
 };
 
 typedef NS_ENUM(NSInteger, HONSettingsMailComposerType) {
@@ -28,7 +29,8 @@ typedef NS_ENUM(NSInteger, HONSettingsMailComposerType) {
 typedef NS_ENUM(NSInteger, HONSettingsAlertType) {
 	HONSettingsAlertTypeNotifications = 0,
 	HONSettingsAlertTypeDeleteChallenges,
-	HONSettingsAlertTypeDeactivate
+	HONSettingsAlertTypeDeactivate,
+    HONSettingsAlertTypeLogout
 };
 
 

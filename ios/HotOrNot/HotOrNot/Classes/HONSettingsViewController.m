@@ -38,7 +38,8 @@
 					  @"Privacy policy",
 					  @"Support",
 					  @"Rate this app",
-					  @"Network status"];
+					  @"Network status",
+                      @"Logout"];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -266,7 +267,17 @@
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	} else if (indexPath.row == HONSettingsCellTypeLogout) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+                                                            message:@""
+                                                           delegate:self
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:@"Log out", nil];
+        
+        [alertView setTag:HONSettingsAlertTypeLogout];
+        [alertView show];
+        
+    }
 }
 
 
@@ -387,7 +398,47 @@
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 			}];
 		}
-	}
+	} else if (alertView.tag == HONSettingsAlertTypeLogout){
+        if (buttonIndex == 1){
+            
+            NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
+                                           @"votes"				: @[],
+                                           @"local_challenges"	: @[],
+                                           @"upvotes"			: @[],
+                                           @"activity_total"	: @0,
+                                           @"activity_updated"	: @"0000-00-00 00:00:00"};
+            
+            for (NSString *key in userDefaults) {
+                if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
+                    [[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+            }
+            
+            for (NSString *key in userDefaults) {
+                if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+                    [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+                
+                [[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+            }
+            
+            [HONAppDelegate resetTotals];
+            
+            
+            [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
+            KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+            [keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+            
+            [[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
+            }];
+          
+
+        }
+    }
 }
 
 @end
