@@ -789,18 +789,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
-	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-	localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:30];
-	localNotification.timeZone = [NSTimeZone systemTimeZone];
-	localNotification.alertAction = @"View";
-	localNotification.alertBody = @"Hey looks like you're meeting up with Anne Elk, why don't you let your other friends know what fun they're missing out on? Share a photo :)";
-	//localNotification.soundName = UILocalNotificationDefaultSoundName;
-	localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
-	
-	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
-    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
-    [HONAppDelegate cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
@@ -909,6 +897,25 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[KeenClient sharedClient] uploadWithFinishedBlock:^(void) {
 		[application endBackgroundTask:taskId];
 	}];
+    
+    
+    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+    NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
+    
+    if ([passedRegistration length] == 0) {
+        
+        UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+        localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
+        localNotification.timeZone = [NSTimeZone systemTimeZone];
+        localNotification.alertAction = @"View";
+        localNotification.alertBody = @"Hey looks like you're meeting up with Anne Elk, why don't you let your other friends know what fun they're missing out on? Share a photo :)";
+        localNotification.soundName = @"selfie_notification.caf";
+        localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+        
+        [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+
+    }
+
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
