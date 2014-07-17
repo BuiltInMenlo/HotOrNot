@@ -22,7 +22,7 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning { 
 	[super didReceiveMemoryWarning];
 }
 
