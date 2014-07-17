@@ -789,7 +789,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
-	NSLog(@"UUID:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]);
+	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+	localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:30];
+	localNotification.timeZone = [NSTimeZone systemTimeZone];
+	localNotification.alertAction = @"View";
+	localNotification.alertBody = @"Hey looks like you're meeting up with Anne Elk, why don't you let your other friends know what fun they're missing out on? Share a photo :)";
+	localNotification.soundName = UILocalNotificationDefaultSoundName;
+	localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+	
+	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
@@ -849,7 +857,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		[HONAppDelegate incTotalForCounter:@"boot"];
 		
-		[self _initThirdPartySDKs];				
+		[self _initThirdPartySDKs];
+		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
 //		[self _initUrbanAirship];
@@ -1122,6 +1131,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+- (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)notification {
+    [[UIApplication sharedApplication]cancelAllLocalNotifications];
+    app.applicationIconBadgeNumber = notification.applicationIconBadgeNumber -1;
+	
+    notification.soundName = UILocalNotificationDefaultSoundName;
+	
+    [self _showOKAlert:@"Local Notification" withMessage:[notification.alertBody stringByAppendingFormat:@" %@", notification.userInfo]];
+}
+
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
 	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
@@ -1150,6 +1168,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //					  cancelButtonTitle:@"OK"
 //					  otherButtonTitles:nil] show];
 }
+
 
 
 
@@ -1330,7 +1349,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSMutableArray *stickers = [NSMutableArray array];
 		[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			PCContent *content = (PCContent *)obj;
-			NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
+			NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
 			
 			[stickers addObject:@{@"id"		: content.content_id,
 								  @"name"	: content.name,
@@ -1393,8 +1412,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
-	//config.idfa = [[HONDeviceIntrinsics sharedInstance] advertisingIdentifierWithoutSeperators:NO];
-	//config.odin1 = @"<ODIN-1 value goes here>";
+	config.idfa = [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO];
+	config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
 	[TSTapstream createWithAccountName:@"selfieclub"

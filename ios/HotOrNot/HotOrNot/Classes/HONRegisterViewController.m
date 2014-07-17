@@ -246,6 +246,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	

@@ -82,7 +82,6 @@ NSString * const kAPIUsersValidatePIN		= @"userPhone/validatePhone";
 NSString * const kHMACKey = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
 
 
-
 const CGFloat kNotifiyDelay = (float)(2 / 3);
 
 

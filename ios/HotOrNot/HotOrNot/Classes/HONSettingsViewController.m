@@ -19,6 +19,7 @@
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONUsernameViewController.h"
+#import "HONNetworkStatusViewController.h"
 
 @interface HONSettingsViewController ()
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -203,7 +204,7 @@
 	label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.textAlignment = NSTextAlignmentCenter;
-	label.text = @"Version1.1";
+	label.text = [@"Version " stringByAppendingString:[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
 	[footerView addSubview:label];
 	
 	return (footerView);
@@ -260,7 +261,11 @@
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		
 	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Netwrok Status"];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Network Status"];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 

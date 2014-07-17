@@ -263,6 +263,7 @@
 		4CD42F28188B410E00264845 /* HONMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD42F27188B410E00264845 /* HONMessagesViewController.m */; };
 		4CD42F2B188B89CF00264845 /* HONMessageItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */; };
 		4CD42F2E188B8EC900264845 /* HONMessageVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD42F2D188B8EC900264845 /* HONMessageVO.m */; };
+		4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */; };
 		4CDB1546180C9F6600FD93CB /* UIImage+Pixels.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */; };
 		4CDFB3181889349900E9F33B /* HONFontAllocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CDFB3171889349900E9F33B /* HONFontAllocator.m */; };
 		4CE0399E185727150005256F /* HONAPICaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0399D185727150005256F /* HONAPICaller.m */; };
@@ -766,6 +767,8 @@
 		4CD42F2A188B89CF00264845 /* HONMessageItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageItemViewCell.m; sourceTree = "<group>"; };
 		4CD42F2C188B8EC900264845 /* HONMessageVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessageVO.h; sourceTree = "<group>"; };
 		4CD42F2D188B8EC900264845 /* HONMessageVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONMessageVO.m; sourceTree = "<group>"; };
+		4CD5616519775FCB006F1DB5 /* HONNetworkStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONNetworkStatusViewController.h; sourceTree = "<group>"; };
+		4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONNetworkStatusViewController.m; sourceTree = "<group>"; };
 		4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Pixels.h"; sourceTree = "<group>"; };
 		4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Pixels.m"; sourceTree = "<group>"; };
 		4CDFB3161889349900E9F33B /* HONFontAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFontAllocator.h; sourceTree = "<group>"; };
@@ -957,6 +960,8 @@
 				4CBE874B16371D22004084DF /* HONTermsConditionsViewController.m */,
 				4C51643B1681894500EB3C09 /* HONUsernameViewController.h */,
 				4C51643C1681894600EB3C09 /* HONUsernameViewController.m */,
+				4CD5616519775FCB006F1DB5 /* HONNetworkStatusViewController.h */,
+				4CD5616619775FCB006F1DB5 /* HONNetworkStatusViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -2227,6 +2232,7 @@
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
 				4CBE874C16371D24004084DF /* HONTermsConditionsViewController.m in Sources */,
 				4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */,
+				4CD5616719775FCB006F1DB5 /* HONNetworkStatusViewController.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4C43280618E3A9FA0035FF06 /* AFHTTPClient.m in Sources */,
