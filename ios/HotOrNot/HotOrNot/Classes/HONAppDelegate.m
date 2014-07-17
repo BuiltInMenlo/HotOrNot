@@ -794,10 +794,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	localNotification.timeZone = [NSTimeZone systemTimeZone];
 	localNotification.alertAction = @"View";
 	localNotification.alertBody = @"Hey looks like you're meeting up with Anne Elk, why don't you let your other friends know what fun they're missing out on? Share a photo :)";
-	localNotification.soundName = UILocalNotificationDefaultSoundName;
+	//localNotification.soundName = UILocalNotificationDefaultSoundName;
 	localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
 	
 	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
+    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
+    [HONAppDelegate cafPlaybackWithFilename:@"badminton_racket_fast_movement_swoosh_002"];
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
@@ -1136,6 +1139,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
     app.applicationIconBadgeNumber = notification.applicationIconBadgeNumber -1;
 	
     notification.soundName = UILocalNotificationDefaultSoundName;
+    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
     [self _showOKAlert:@"Local Notification" withMessage:[notification.alertBody stringByAppendingFormat:@" %@", notification.userInfo]];
 }
@@ -1158,6 +1162,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
+    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
 	application.applicationIconBadgeNumber = 0;
 	

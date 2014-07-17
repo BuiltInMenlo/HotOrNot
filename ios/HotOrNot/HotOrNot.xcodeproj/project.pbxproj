@@ -287,6 +287,7 @@
 		4CF2040318F352DC00EB57B0 /* HONVerifyFlagButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CF2040218F352DC00EB57B0 /* HONVerifyFlagButtonView.m */; };
 		4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CF2040418F3647C00EB57B0 /* FPOElements.xcassets */; };
 		4CFA8B7A18918E8C00DCCCB1 /* HONTrivialUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */; };
+		8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B187B197856870085AC03 /* selfie_notification.caf */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONSearchSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONSearchSubjectVO.m */; };
 /* End PBXBuildFile section */
@@ -806,6 +807,7 @@
 		4CF2040418F3647C00EB57B0 /* FPOElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FPOElements.xcassets; sourceTree = "<group>"; };
 		4CFA8B7818918E8C00DCCCB1 /* HONTrivialUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTrivialUserVO.h; sourceTree = "<group>"; };
 		4CFA8B7918918E8C00DCCCB1 /* HONTrivialUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTrivialUserVO.m; sourceTree = "<group>"; };
+		8F2B187B197856870085AC03 /* selfie_notification.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.caf; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONSearchSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchSubjectVO.h; sourceTree = "<group>"; };
@@ -1734,6 +1736,7 @@
 		4C83FD8D190F62E800CAEABB /* SFX */ = {
 			isa = PBXGroup;
 			children = (
+				8F2B187B197856870085AC03 /* selfie_notification.caf */,
 				4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */,
 				4C83FD8E190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav */,
 				4C83FD8F190F62E800CAEABB /* BLASTWAVEFX_29648.caf */,
@@ -2080,6 +2083,7 @@
 				4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */,
 				4C81D8571973582E00BAFDA3 /* Default-568h@2x.png in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
+				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
 				4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */,
 				4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */,
 				4C4328D118E3A9FA0035FF06 /* MPDismissKeyboard@2x.png in Resources */,
