@@ -35,10 +35,12 @@
 		_submitParams = [submitParams mutableCopy];
 		_clubID = [[_submitParams objectForKey:@"club_id"] intValue];
 		
-		[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:[[_submitParams objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
-			_clubVO = [HONUserClubVO clubWithDictionary:result];
-			[_selectedClubs addObject:_clubVO];
-		}];
+		if (_clubID != 0) {
+			[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:[[_submitParams objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
+				_clubVO = [HONUserClubVO clubWithDictionary:result];
+				[_selectedClubs addObject:_clubVO];
+			}];
+		}
 	}
 	
 	return (self);

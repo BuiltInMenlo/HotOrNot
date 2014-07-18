@@ -84,7 +84,7 @@ NSString * const kHockeyAppToken = @"a2f42fed0f269018231f6922af0d8ad3";
 NSString * const kTapStreamSecretKey = @"xJCRiJCqSMWFVF6QmWdp8g";
 NSString * const kChartboostAppID = @"";
 NSString * const kChartboostAppSignature = @"";
-NSString * const kTapjoyAppID = @"	";
+NSString * const kTapjoyAppID = @"13b84737-f359-4bf1-b6a0-079e515da029";
 NSString * const kTapjoyAppSecretKey = @"llSjQBKKaGBsqsnJZlxE";
 
 
@@ -102,7 +102,7 @@ const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
 const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
-const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 49.0, 0.0};
+const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
 const CGFloat kHUDTime = 0.5f;

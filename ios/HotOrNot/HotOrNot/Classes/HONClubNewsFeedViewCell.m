@@ -339,7 +339,7 @@ static const CGSize kPhotoSize = {114.0f, 114.0f};
 						 }];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
 													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil

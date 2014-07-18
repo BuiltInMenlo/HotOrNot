@@ -216,7 +216,8 @@
 						 }];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+	NSLog(@"emotionVO.smallImageURL:[%@]", emotionVO.smallImageURL);
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
 													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
