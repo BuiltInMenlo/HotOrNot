@@ -361,10 +361,10 @@
 - (void)clubViewCellCreateClub:(HONClubCollectionViewCell *)cell {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs - Create Club"];
 	
-	for (int i=0; i<[_allClubs count]; i++) {
-		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-		[cell removeOverlay];
-	}
+//	for (int i=0; i<[_allClubs count]; i++) {
+//		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[_collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+//		[cell removeOverlay];
+//	}
 	
 	_isFromCreateClub = YES;
 	
@@ -425,8 +425,8 @@
 	cell.clubVO = vo;
 	cell.delegate = self;
 	
-	if (_hasClubMembership)
-		[cell removeOverlay];
+//	if (_hasClubMembership)
+//		[cell removeOverlay];
 	
     return (cell);
 }
@@ -448,7 +448,18 @@
 		
 		if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
+			_selectedClub = vo;
+			if ([vo.submissions count] == 0) {
+				UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"This club does not have any status updates yet!"
+																	 message:@"Would you like to create one?"
+																	delegate:self
+														   cancelButtonTitle:@"No"
+														   otherButtonTitles:@"Yes", nil];
+				[alertView setTag: 2];
+				[alertView show];
+			}
+			else
+				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
 
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 			if (vo.clubID == 0) {
@@ -519,6 +530,12 @@
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClub viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	} else if (alertView.tag ==2) {
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_selectedClub]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	}
 }

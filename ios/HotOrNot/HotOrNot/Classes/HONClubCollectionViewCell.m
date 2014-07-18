@@ -59,9 +59,9 @@
 	
 	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 	_nameLabel.text = _clubVO.clubName;
-	_overlayImageView.hidden = YES;
+	//_overlayImageView.hidden = YES;
 	_coverImageView.alpha = 0.0;
-	[_overlayImageView.layer removeAllAnimations];
+//	[_overlayImageView.layer removeAllAnimations];
 	
 	if (_clubVO.clubID != 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -112,15 +112,15 @@
 		buttonAsset = @"joinClubButton";
 		newSelector = @selector(_goJoinClub);
 		
-		if (_overlayImageView != nil) {
-			[_overlayImageView.layer removeAllAnimations];
-			_overlayImageView = nil;
-		}
+//		if (_overlayImageView != nil) {
+//			[_overlayImageView.layer removeAllAnimations];
+//			_overlayImageView = nil;
+//		}
 		
-		_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsInviteOverlay"]];
-		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, 9.0);
-		[self.contentView addSubview:_overlayImageView];
-		[self _cycleOverlay:_overlayImageView];
+//		_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsInviteOverlay"]];
+//		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, 9.0);
+//		[self.contentView addSubview:_overlayImageView];
+//		[self _cycleOverlay:_overlayImageView];
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 		buttonAsset = @"blankClubButton";
@@ -148,17 +148,17 @@
 }
 
 
-- (void)removeOverlay {
-	_overlayImageView.hidden = YES;
-	
-	if (_overlayImageView != nil) {
-		if ([_overlayImageView.layer.animationKeys count] > 0)
-			[_overlayImageView.layer removeAllAnimations];
-		
-		[_overlayImageView removeFromSuperview];
-		_overlayImageView = nil;
-	}
-}
+//- (void)removeOverlay {
+//	_overlayImageView.hidden = YES;
+//	
+//	if (_overlayImageView != nil) {
+//		if ([_overlayImageView.layer.animationKeys count] > 0)
+//			[_overlayImageView.layer removeAllAnimations];
+//		
+//		[_overlayImageView removeFromSuperview];
+//		_overlayImageView = nil;
+//	}
+//}
 
 - (void)resetSubviews {
 	for (UIView *view in self.contentView.subviews)
@@ -173,10 +173,10 @@
 	if (_ctaButton != nil)
 		_ctaButton = nil;
 	
-	if (_overlayImageView != nil) {
-		[_overlayImageView.layer removeAllAnimations];
-		_overlayImageView = nil;
-	}
+//	if (_overlayImageView != nil) {
+//		[_overlayImageView.layer removeAllAnimations];
+//		_overlayImageView = nil;
+//	}
 	
 	
 	_currSelector = nil;

@@ -165,9 +165,11 @@
 	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
-																		   @"username"	: [dict objectForKey:@"username"],
-																		   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
+			if([[dict objectForKey:@"id"] intValue] != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]){
+				[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
+																			   @"username"	: [dict objectForKey:@"username"],
+																			   @"img_url"	: [dict objectForKey:@"avatar_url"]}]];
+			}
 		}
 		
 			if ([_searchUsers count] == 0) {

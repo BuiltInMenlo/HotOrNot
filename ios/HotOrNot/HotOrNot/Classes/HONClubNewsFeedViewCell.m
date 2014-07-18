@@ -67,10 +67,12 @@
 	avatarImageView.alpha = 0.0;
 	[self.contentView addSubview:avatarImageView];
 	
-	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	avatarButton.frame = avatarImageView.frame;
-	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-	[self.contentView addSubview:avatarButton];
+	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) {
+		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		avatarButton.frame = avatarImageView.frame;
+		[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+		[self.contentView addSubview:avatarButton];
+	}
 	
 	[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? @"avatarMask" : @"thumbMask"]];
 	

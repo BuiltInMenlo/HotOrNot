@@ -105,6 +105,13 @@
 	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:resendButton];
 	
+#if __APPSTORE_BUILD__ == 0
+	UIButton *cheatButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cheatButton.frame = CGRectMake(152.0, 250.0, 16.0, 16.0);
+	[cheatButton addTarget:self action:@selector(_goCheat) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:cheatButton];
+	cheatButton.backgroundColor=[UIColor orangeColor];
+#endif
 	[_pinTextField becomeFirstResponder];
 }
 
@@ -155,9 +162,8 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		_validateCounter++;
 		[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
-			if ([[result objectForKey:@"result"] intValue] == 0 && _validateCounter < 3) {
+			if ([[result objectForKey:@"result"] intValue] == 0) {
 				
 				_pin = @"";
 				_pinTextField.text = @"";
@@ -207,6 +213,29 @@
 	}];
 }
 
+- (void)_goCheat {
+	_pinTextField.text=@"0000";
+	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+	_pinCheckImageView.alpha = 1.0;
+	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		
+		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+		
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@'s Club! Tap to join: getselfieclub://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+		
+		[[[UIAlertView alloc] initWithTitle:@""
+									message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
+	}];
+}
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {

@@ -141,10 +141,10 @@
 		
 		[self _didFinishDataRefresh];
 		
-		if (_overlayImageView != nil) {
-			[_overlayImageView removeFromSuperview];
-			_overlayImageView = nil;
-		}
+//		if (_overlayImageView != nil) {
+//			[_overlayImageView removeFromSuperview];
+//			_overlayImageView = nil;
+//		}
 		
 //		if ([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) {
 //			_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"newsFeedOverlay"]];
@@ -819,14 +819,16 @@
 	
 	} else if (alertView.tag == 2) {
 		[self _createClubWithProtoVO:_selectedClubVO];
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
-														   delegate:self
-												  cancelButtonTitle:@"Yes"
-												  otherButtonTitles:@"Not Now", nil];
-		
-		[alertView setTag:1];
-		[alertView show];
+		if (buttonIndex == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+															   delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"Not Now", nil];
+			
+			[alertView setTag:1];
+			[alertView show];
+		}
 	}
 }
 
