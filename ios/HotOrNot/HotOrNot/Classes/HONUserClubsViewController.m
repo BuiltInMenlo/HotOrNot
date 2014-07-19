@@ -45,6 +45,7 @@
 @property (nonatomic, strong) HONUserClubVO *selectedClub;
 @property (nonatomic) BOOL hasClubMembership;
 @property (nonatomic) BOOL isFromCreateClub;
+@property (nonatomic) BOOL didCloseCreateClub;
 @end
 
 
@@ -59,6 +60,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closedCreateClub:) name:@"CLOSED_CREATE_CLUB" object:nil];
+		_didCloseCreateClub = NO;
 	}
 	
 	return (self);
@@ -219,8 +222,9 @@
 //						  cancelButtonTitle:@"OK"
 //						  otherButtonTitles:nil] show];
 	}
-	
-	if (_isFromCreateClub) {
+	NSLog(@"invite pop over %d", _didCloseCreateClub);
+	if (_isFromCreateClub && !_didCloseCreateClub) {
+		NSLog(@"did getpopup %d", _didCloseCreateClub);
 		_isFromCreateClub = NO;
 		
 		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_club"]];
@@ -229,6 +233,7 @@
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
 		[_tutorialView introWithCompletion:nil];
 	}
+	_didCloseCreateClub = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -320,6 +325,10 @@
 		_collectionView.pagingEnabled = NO;
 		[_collectionView setContentOffset:CGPointZero animated:YES];
 	}
+}
+
+- (void)_closedCreateClub: (NSNotification *)notification {
+	_didCloseCreateClub = YES;
 }
 
 

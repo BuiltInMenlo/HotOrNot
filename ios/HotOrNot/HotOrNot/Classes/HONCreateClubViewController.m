@@ -206,6 +206,7 @@
 #pragma mark - Navigation
 - (void)_goClose {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Close"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSED_CREATE_CLUB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

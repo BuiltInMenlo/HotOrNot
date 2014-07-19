@@ -23,6 +23,7 @@
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
+#import "HONInviteClubsViewController.h"
 
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
@@ -52,10 +53,7 @@
 												 selector:@selector(_refreshProfile:)
 													 name:@"REFRESH_PROFILE" object:nil];
 		
-		_cohortRows = @[@"Invite to my club",
-						@"Shoutout",
-						@"Share",
-						@"Report"];
+		_cohortRows = @[@"Invite to my club"];
 	}
 	
 	return  (self);
@@ -489,8 +487,15 @@
 		mpAlertType = @"Club Invite";
 		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
-		viewController = userPofileViewController;
+		if (_userProfileType == HONUserProfileTypeOpponent) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO: _userVO]]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+		else{
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+			viewController = userPofileViewController;
+		}
 		
 	} else if (vo.activityType == HONActivityItemTypeLike) {
 		mpAlertType = @"Like";
@@ -513,12 +518,6 @@
 		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
 		viewController = userPofileViewController;
 		
-	} else {
-		mpAlertType = @"Profile";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
-		viewController = userPofileViewController;
 	}
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"User Profile - Select %@ Row", mpAlertType]
