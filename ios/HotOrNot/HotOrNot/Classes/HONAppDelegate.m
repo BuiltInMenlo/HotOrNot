@@ -1027,8 +1027,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSLog(@"PATH:[%@]", path);
 		
 		if ([path count] == 2) {
-			NSString *username = [path firstObject];
-			NSString *clubname = [path lastObject];
+			NSString *username = [[path firstObject] lowercaseString];
+			NSString *clubname = [[path lastObject] lowercaseString];
 			
 			[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
 				int userID = 0;

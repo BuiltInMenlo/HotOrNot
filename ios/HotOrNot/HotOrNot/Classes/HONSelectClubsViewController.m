@@ -9,7 +9,6 @@
 #import "NSString+DataTypes.h"
 
 #import "HONSelectClubsViewController.h"
-#import "HONClubToggleViewCell.h"
 
 @interface HONSelectClubsViewController () <HONClubToggleViewCellDelegate>
 @end
@@ -212,6 +211,9 @@
 	
 	if ([_selectedClubs containsObject:userClubVO])
 		[_selectedClubs removeObject:userClubVO];
+	
+	HONClubToggleViewCell *toggleAllCell = (HONClubToggleViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+	[toggleAllCell toggleSelected:NO];
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {

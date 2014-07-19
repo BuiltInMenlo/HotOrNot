@@ -11,6 +11,7 @@
 
 #import "HONTableView.h"
 #import "HONHeaderView.h"
+#import "HONClubToggleViewCell.h"
 
 @interface HONSelectClubsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	NSMutableDictionary *_clubIDs;
@@ -36,6 +37,10 @@
 - (void)_goRefresh;
 - (void)_goSubmit;
 - (void)_goSelectAllToggle;
+
+- (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO;
+- (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO;
+- (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected;
 
 - (NSDictionary *)_populateSegmentedDictionary;
 

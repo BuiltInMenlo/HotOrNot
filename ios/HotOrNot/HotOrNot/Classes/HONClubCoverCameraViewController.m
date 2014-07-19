@@ -7,6 +7,7 @@
 //
 
 
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <CoreImage/CoreImage.h>
 #import <QuartzCore/QuartzCore.h>
@@ -38,6 +39,14 @@
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
+		
+		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+		[library addAssetsGroupAlbumWithName:@"Selfieclub Club Covers" resultBlock:^(ALAssetsGroup *group) {
+			NSLog(@"added album:%@", @"Selfieclub Club Covers");
+		
+		} failureBlock:^(NSError *error) {
+			NSLog(@"error adding album");
+		}];
 	}
 	
 	return (self);
@@ -128,24 +137,25 @@
 
 #pragma mark - UI Presentation
 - (void)_presentCamera {
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker = [[UIImagePickerController alloc] init];
-		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
-		_imagePicker.delegate = self;
-		
-		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f);
-		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		
-		_cameraOverlayView = [[HONClubCoverCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_cameraOverlayView.delegate = self;
-		_imagePicker.cameraOverlayView = _cameraOverlayView;
-		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {}];
-		
-	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//		_imagePicker = [[UIImagePickerController alloc] init];
+//		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+//		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
+//		_imagePicker.delegate = self;
+//		
+//		_imagePicker.showsCameraControls = NO;
+//		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.65f : 1.25f);
+//		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+//		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+//		
+//		_cameraOverlayView = [[HONClubCoverCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_cameraOverlayView.delegate = self;
+//		_imagePicker.cameraOverlayView = _cameraOverlayView;
+//
+//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+//		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {}];
+//		
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 		_imagePicker.delegate = self;
@@ -155,7 +165,7 @@
 //		_imagePicker.wantsFullScreenLayout = NO;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
 		}];
 	}
 }
@@ -168,7 +178,9 @@
 
 
 #pragma mark - Navigation
-
+- (void)_goCancel {
+	[self.navigationController dismissViewControllerAnimated:NO completion:^(void){}];
+}
 
 
 
@@ -191,23 +203,28 @@
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		picker.showsCameraControls = NO;
-		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
-		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f);
-		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		
-		_cameraOverlayView = [[HONClubCoverCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		_cameraOverlayView.delegate = self;
-		_imagePicker.cameraOverlayView = _cameraOverlayView;
-		
-	} else {
+//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//		picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//		picker.showsCameraControls = NO;
+//		picker.cameraViewTransform = CGAffineTransformMakeTranslation(24.0, 90.0);
+//		picker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f);
+//		picker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+//		picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+//		
+//		_cameraOverlayView = [[HONClubCoverCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//		_cameraOverlayView.delegate = self;
+//		_imagePicker.cameraOverlayView = _cameraOverlayView;
+//		
+//	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		}];
-	}
+		
+	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
+		[self _goCancel];
+	}];
+		
+//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//		}];
+//	}
 }
 
 

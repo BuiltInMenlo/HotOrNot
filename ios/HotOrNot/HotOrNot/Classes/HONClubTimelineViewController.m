@@ -60,6 +60,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
+	
+	if (_progressHUD == nil)
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;

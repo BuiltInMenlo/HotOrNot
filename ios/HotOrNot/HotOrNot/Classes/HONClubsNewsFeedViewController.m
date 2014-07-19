@@ -252,7 +252,7 @@
 			continue;
 		
 		for (NSString *domain in emailDomains) {
-			NSLog(@"vo.email:[%@] >> [%@]", [vo.email lowercaseString], domain);
+			//NSLog(@"vo.email:[%@] >> [%@]", [vo.email lowercaseString], domain);
 			if ([[vo.email lowercaseString] rangeOfString:domain].location != NSNotFound) {
 				clubName = @"Sand Hill Bros";
 				break;

@@ -99,7 +99,7 @@
 }
 
 - (void)toggleSelected:(BOOL)isSelected {
-	if (isSelected != _isSelected) {
+//	if (isSelected != _isSelected) {
 		_isSelected = isSelected;
 		
 		if (_isSelected) {
@@ -118,7 +118,7 @@
 				_toggledOnButton.hidden = YES;
 			}];
 		}
-	}
+//	}
 }
 
 - (BOOL)isSelected {

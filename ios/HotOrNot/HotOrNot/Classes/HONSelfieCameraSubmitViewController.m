@@ -19,7 +19,7 @@
 #import "HONClubToggleViewCell.h"
 #import "HONUserClubVO.h"
 
-@interface HONSelfieCameraSubmitViewController ()
+@interface HONSelfieCameraSubmitViewController () <HONClubToggleViewCellDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSMutableDictionary *submitParams;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
@@ -139,52 +139,53 @@
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
-//	if ([_selectedClubs count] == 0) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
-//															message:@"You have to choose at least one club to submit your photo into."
-//														   delegate:self
-//												  cancelButtonTitle:@"OK"
-//												  otherButtonTitles:nil];
-//		[alertView setTag:0];
-//		[alertView show];
-//	
-//	} else {
-//		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
-	
-	
-	[HONAppDelegate incTotalForCounter:@"camera"];
-	
 	if (_clubVO != nil) {
 		if (![_selectedClubs containsObject:_clubVO])
 			[_selectedClubs addObject:_clubVO];
 	}
 	
-	for (HONUserClubVO *vo in _selectedClubs) {
-		[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
-		
-		[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
-			if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = @"Error!";
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-				
-			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				}];
-			}
-		}];
-	}
+	if ([_selectedClubs count] == 0) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
+															message:@"You have to choose at least one club to submit your photo into."
+														   delegate:self
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView setTag:0];
+		[alertView show];
 	
-	[super _goSubmit];
+	} else {
+//		[[[UIApplication sharedApplication] delegate] performSelector:@selector(changeTabToIndex:) withObject:@1];
+	
+	
+		[HONAppDelegate incTotalForCounter:@"camera"];
+		
+		for (HONUserClubVO *vo in _selectedClubs) {
+			[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+			
+			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
+				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {
+					if (_progressHUD == nil)
+						_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+					_progressHUD.labelText = @"Error!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+					_progressHUD = nil;
+					
+				} else {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUB_TIMELINE" object:@"Y"];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					}];
+				}
+			}];
+		}
+	
+		[super _goSubmit];
+	}
 }
 
 - (void)_goSelectAllToggle {
@@ -194,6 +195,20 @@
 
 
 #pragma mark - ClubToggleViewCell Delegates
+- (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
+	[super clubToggleViewCell:viewCell deselectedClub:userClubVO];
+	
+	if (_clubVO != nil && userClubVO.clubID == _clubVO.clubID)
+		_clubVO = nil;
+}
+
+- (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
+	[super clubToggleViewCell:viewCell selectedClub:userClubVO];
+}
+
+- (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {
+	[super clubToggleViewCell:viewCell selectAllToggled:isSelected];
+}
 
 
 #pragma mark - TableView DataSource Delegates
@@ -213,10 +228,13 @@
 		if (cell.isSelected) {
 			if (![_selectedClubs containsObject:cell.userClubVO])
 				[_selectedClubs addObject:cell.userClubVO];
-		
+			
 		} else {
 			if ([_selectedClubs containsObject:cell.userClubVO])
 				[_selectedClubs removeObject:cell.userClubVO];
+			
+			if (_clubVO != nil && _clubVO.clubID == cell.userClubVO.clubID)
+				_clubVO = nil;
 		}
 		
 	} else
