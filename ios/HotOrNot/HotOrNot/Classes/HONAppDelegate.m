@@ -551,8 +551,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"emotions"] forKey:@"emotions"];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"stickers"] forKey:@"stickers"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
@@ -1352,76 +1351,33 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[picoManager registerStoreWithAppId:@"1df5644d9e94"
 								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
 	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
+	
+	NSLog(@"PICOCANDY:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]);
+	
+	NSMutableArray *stickers = [NSMutableArray array];
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-//	candyStoreSearchController.delegate = self;
-//	[candyStoreSearchController fetchNewestStickerPacks];
-	[candyStoreSearchController fetchStickerPackInfo:@"824" completion:^(BOOL success, PCContentGroup *contentGroup) {
-		NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
-		
-		NSMutableArray *stickers = [NSMutableArray array];
-		[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			PCContent *content = (PCContent *)obj;
-			NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
-			
-			[stickers addObject:@{@"id"		: content.content_id,
-								  @"name"	: content.name,
-								  @"price"	: @"0",
-								  @"img"	: content.large_image}];
-		}];
-		
-		PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-		[candyStoreSearchController fetchStickerPackInfo:@"827" completion:^(BOOL success, PCContentGroup *contentGroup) {
+	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]) {
+		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
 			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
 			
 			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				PCContent *content = (PCContent *)obj;
-				NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
+				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
 				
 				[stickers addObject:@{@"id"		: content.content_id,
 									  @"name"	: content.name,
 									  @"price"	: @"0",
 									  @"img"	: content.large_image}];
-			}];
-			
-			PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-			[candyStoreSearchController fetchStickerPackInfo:@"823" completion:^(BOOL success, PCContentGroup *contentGroup) {
-				NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
 				
-				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					PCContent *content = (PCContent *)obj;
-					NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
-					
-					[stickers addObject:@{@"id"		: content.content_id,
-										  @"name"	: content.name,
-										  @"price"	: @"0",
-										  @"img"	: content.large_image}];
-				}];
-				
-				PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-				[candyStoreSearchController fetchStickerPackInfo:@"813" completion:^(BOOL success, PCContentGroup *contentGroup) {
-					NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
-					
-					[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-						PCContent *content = (PCContent *)obj;
-						NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
-						
-						[stickers addObject:@{@"id"		: content.content_id,
-											  @"name"	: content.name,
-											  @"price"	: @"0",
-											  @"img"	: content.large_image}];
-					}];
-					
-					if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-						[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-					
-					[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-				}];
+				[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
 			}];
 		}];
-	}];
+	}
 	
-	
+		
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
 	config.idfa = [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO];
@@ -1431,8 +1387,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[TSTapstream createWithAccountName:@"selfieclub"
 					   developerSecret:kTapStreamSecretKey
 								config:config];
-	
-	//TSTapstream *tapstream = [TSTapstream instance];
 	
 	[Tapjoy requestTapjoyConnect:kTapjoyAppID
 					   secretKey:kTapjoyAppSecretKey
