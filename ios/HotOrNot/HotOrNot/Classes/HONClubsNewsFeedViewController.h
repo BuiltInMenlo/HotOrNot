@@ -1,5 +1,5 @@
 //
-//  HONClubsTimelineViewController.h
+//  HONClubsNewsFeedViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 04/25/2014 @ 10:58 .
@@ -15,6 +15,12 @@ typedef NS_OPTIONS(NSInteger, HONFeedContentType) {
 	HONFeedContentTypeClubInvites		= 1 << 3,	// 001000 - 8  */*
 	HONFeedContentTypeSuggestedClubs	= 1 << 4,	// 010000 - 16 */*
 	HONFeedContentTypeMatchedClubs		= 1 << 5	// 100000 - 32 */*
+};
+
+typedef NS_ENUM(NSInteger, HONClubsNewsFeedAlertType) {
+	HONClubsNewsFeedAlertTypeJoinClub = 0,
+	HONClubsNewsFeedAlertTypeInviteFriends,
+	HONClubsNewsFeedAlertTypeCreateClub
 };
 
 @interface HONClubsNewsFeedViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>

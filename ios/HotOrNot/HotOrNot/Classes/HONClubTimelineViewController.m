@@ -25,19 +25,20 @@
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-
 @property (nonatomic, strong) HONUserClubVO *clubVO;
 @property (nonatomic, strong) NSArray *clubPhotos;
+@property (nonatomic) int index;
 @property (nonatomic) int imageQueueLocation;
 @end
 
 
 @implementation HONClubTimelineViewController
 
-- (id)initWithClub:(HONUserClubVO *)clubVO {
+- (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
 	if ((self = [super init])) {
 		_clubVO = clubVO;
-		_clubPhotos = [[_clubVO.submissions reverseObjectEnumerator] allObjects];
+		_index = index;
+		_clubPhotos = _clubVO.submissions;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
 	}
@@ -72,7 +73,7 @@
 	_clubPhotos = [NSArray array];
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
-		_clubPhotos = [[_clubVO.submissions reverseObjectEnumerator] allObjects];
+		_clubPhotos = _clubVO.submissions;
 		
 		
 		_emptySetImageView.hidden = [_clubPhotos count] > 0;
@@ -146,7 +147,6 @@
 	
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -177,11 +177,15 @@
 	
 	if (_clubVO == nil)
 		[self _retrieveClub];
+	
+	[_tableView setContentOffset:CGPointMake(0.0, 20.0 + (_index * [UIScreen mainScreen].bounds.size.height))];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -215,6 +219,7 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back"
 									   withUserClub:_clubVO];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	[self.navigationController popViewControllerAnimated:YES];
 }

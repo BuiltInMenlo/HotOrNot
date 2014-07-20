@@ -477,7 +477,7 @@
 //		[_profileCameraOverlayView addSubview:_changeTintButton];
 		
 		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		takePhotoButton.frame = CGRectMake(113.0, [UIScreen mainScreen].bounds.size.height - 118.0, 94.0, 94.0);
+		takePhotoButton.frame = CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
 		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];

@@ -1,5 +1,5 @@
 //
-//  HONClubsTimelineViewController.m
+//  HONClubsNewsFeedViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 04/25/2014 @ 10:58 .
@@ -563,7 +563,7 @@
 											  cancelButtonTitle:@"Yes"
 											  otherButtonTitles:@"No", nil];
 	
-	[alertView setTag:2];
+	[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
 	[alertView show];
 }
 
@@ -573,8 +573,8 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Enter Club"
 									   withUserClub:userClubVO];
 	
-	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-	[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:userClubVO] animated:YES];
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+	[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:userClubVO atPhotoIndex:0] animated:YES];
 }
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
@@ -590,7 +590,7 @@
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:@"Cancel", nil];
 	
-	[alertView setTag:0];
+	[alertView setTag:HONClubsNewsFeedAlertTypeJoinClub];
 	[alertView show];
 }
 
@@ -711,9 +711,11 @@
 	}
 	
 	else if (indexPath.section == 1)
-		return (kOrthodoxTableCellHeight);
+		return (50.0);
 	
 	else {
+		return (74.0);
+		
 		HONUserClubVO *vo = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
 		HONClubPhotoVO *photoVO = (HONClubPhotoVO *)[vo.submissions lastObject];
 		int emotionRows = (MIN([[[HONClubAssistant sharedInstance] emotionsForClubPhoto:photoVO] count], 14) / 5) + 1;
@@ -767,7 +769,7 @@
 												  cancelButtonTitle:@"Yes"
 												  otherButtonTitles:@"No", nil];
 		
-		[alertView setTag:2];
+		[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
 		[alertView show];
 	
 	} else {
@@ -775,8 +777,8 @@
 		
 		if (cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner || cell.clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			NSLog(@"/// SHOW CLUB TIMELINE:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
-			//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 		
 		} else {
 			NSLog(@"/// JOIN CLUB:(%d - %@)", _selectedClubVO.clubID, _selectedClubVO.clubName);
@@ -786,7 +788,7 @@
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:@"Cancel", nil];
 			
-			[alertView setTag:0];
+			[alertView setTag:HONClubsNewsFeedAlertTypeJoinClub];
 			[alertView show];
 		}
 	}
@@ -804,11 +806,11 @@
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"Not Now", nil];
 			
-			[alertView setTag:1];
+			[alertView setTag:HONClubsNewsFeedAlertTypeInviteFriends];
 			[alertView show];
 		}
 	
-	} else if (alertView.tag == 1) {
+	} else if (alertView.tag == HONClubsNewsFeedAlertTypeInviteFriends) {
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
@@ -817,16 +819,16 @@
 		} else
 			[self _retrieveTimeline];
 	
-	} else if (alertView.tag == 2) {
-		[self _createClubWithProtoVO:_selectedClubVO];
+	} else if (alertView.tag == HONClubsNewsFeedAlertTypeCreateClub) {
 		if (buttonIndex == 0) {
+			[self _createClubWithProtoVO:_selectedClubVO];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"Not Now", nil];
 			
-			[alertView setTag:1];
+			[alertView setTag:HONClubsNewsFeedAlertTypeInviteFriends];
 			[alertView show];
 		}
 	}

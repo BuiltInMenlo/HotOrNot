@@ -14,16 +14,17 @@
 
 #import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
 
 #import "HONClubCoverCameraViewController.h"
-#import "HONClubCoverCameraOverlayView.h"
+//#import "HONClubCoverCameraOverlayView.h"
 
-@interface HONClubCoverCameraViewController () <HONClubCoverCameraOverlayViewDelegate>
+@interface HONClubCoverCameraViewController () //<HONClubCoverCameraOverlayViewDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic, strong) HONClubCoverCameraOverlayView *cameraOverlayView;
+//@property (nonatomic, strong) HONClubCoverCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *imagePrefix;
 @property (nonatomic) int tintIndex;
@@ -39,14 +40,6 @@
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
-		
-		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-		[library addAssetsGroupAlbumWithName:@"Selfieclub Club Covers" resultBlock:^(ALAssetsGroup *group) {
-			NSLog(@"added album:%@", @"Selfieclub Club Covers");
-		
-		} failureBlock:^(NSError *error) {
-			NSLog(@"error adding album");
-		}];
 	}
 	
 	return (self);
@@ -83,8 +76,7 @@
 			_progressHUD = nil;
 		}
 		
-		[_cameraOverlayView uploadComplete];
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//		[_cameraOverlayView uploadComplete];
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 	}];
 }
@@ -171,7 +163,7 @@
 }
 
 -(void)_destroyCamera {
-	_cameraOverlayView = nil;
+//	_cameraOverlayView = nil;
 	_imagePicker.cameraOverlayView = nil;
 	_imagePicker = nil;
 }
@@ -216,7 +208,6 @@
 //		_imagePicker.cameraOverlayView = _cameraOverlayView;
 //		
 //	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
 		[self _goCancel];
@@ -235,6 +226,7 @@
 
 
 #pragma mark - CameraOverlayView Delegates
+/*
 - (void)cameraOverlayViewCloseCamera:(HONClubCoverCameraOverlayView *)cameraOverlayView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Cancel"];
 	
@@ -306,5 +298,6 @@
 //	processedImage = [HONImagingDepictor createImageFromView:canvasView];
 //	[self _uploadPhotos:processedImage];
 }
+*/
 
 @end

@@ -456,7 +456,7 @@
 		NSLog(@"vo.clubEnrollmentType:[%d]", vo.clubEnrollmentType);
 		
 		if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
-			//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			_selectedClub = vo;
 			if ([vo.submissions count] == 0) {
 				UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"This club does not have any status updates yet!"
@@ -468,7 +468,7 @@
 				[alertView show];
 			}
 			else
-				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo] animated:YES];
+				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo atPhotoIndex:0] animated:YES];
 
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 			if (vo.clubID == 0) {

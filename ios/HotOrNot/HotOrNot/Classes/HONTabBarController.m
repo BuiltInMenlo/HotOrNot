@@ -224,26 +224,29 @@ const CGSize kTabSize = {80.0, 50.0};
 #pragma mark - Notifications
 - (void)_toggleTabs:(NSNotification *)notification {
 	if ([[notification object] isEqualToString:@"SHOW"]) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
-			_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
-			
-			_tabHolderView.alpha = 1.0;
-			_nativeTabBar.alpha = 1.0;
-			
-		} completion:^(BOOL finished) {
-		}];
+		[UIView animateWithDuration:0.333 delay:0.0
+			 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, -kTabSize.height);
+								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, -_nativeTabBar.frame.size.height);
+								
+								_tabHolderView.alpha = 1.0;
+								_nativeTabBar.alpha = 1.0;
+							} completion:^(BOOL finished) {
+							}];
 		
 	} else {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
-			_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
-			
-			_tabHolderView.alpha = 0.0;
-			_nativeTabBar.alpha = 0.0;
-			
-		} completion:^(BOOL finished) {
-		}];
+		[UIView animateWithDuration:0.333 delay:0.0
+			 usingSpringWithDamping:0.875 initialSpringVelocity:0.000
+							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent animations:^(void) {
+								_tabHolderView.frame = CGRectOffset(_tabHolderView.frame, 0.0, kTabSize.height);
+								_nativeTabBar.frame = CGRectOffset(_nativeTabBar.frame, 0.0, _nativeTabBar.frame.size.height);
+								
+								_tabHolderView.alpha = 0.0;
+								_nativeTabBar.alpha = 0.0;
+								
+							} completion:^(BOOL finished) {
+							}];
 	}
 }
 

@@ -1081,7 +1081,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 									
 									if (isMember) {
 										[self.tabBarController setSelectedIndex:2];
-										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO] animated:YES];
+										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 										
 										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You are already a member of %@!", _selectedClubVO.clubName]
 																							message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]

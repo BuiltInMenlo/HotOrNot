@@ -9,5 +9,5 @@
 #import "HONUserClubVO.h"
 
 @interface HONClubTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-- (id)initWithClub:(HONUserClubVO *)clubVO;
+- (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index;
 @end

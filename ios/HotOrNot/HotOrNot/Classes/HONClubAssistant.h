@@ -18,6 +18,7 @@
 - (NSDictionary *)fpoJoinedClubDictionary;
 - (NSDictionary *)fpoOwnedClubDictionary;
 - (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
+- (NSArray *)defaultCoverImagePrefixes;
 - (NSString *)defaultCoverImagePrefix;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end

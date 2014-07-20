@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
 #import "UIImageView+AFNetworking.h"
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
@@ -52,7 +53,11 @@
 	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
 	
-	void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieFullSizeGradientOverlay"]];
+	gradientImageView.frame = [UIScreen mainScreen].bounds;
+	[self.contentView addSubview:gradientImageView];
+	
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
@@ -61,7 +66,7 @@
 		}];
 	};
 	
-	void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		NSLog(@"ERROR:[%@]", error.description);
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
@@ -77,100 +82,75 @@
 													   cachePolicy:kURLRequestCachePolicy
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
-							  success:avatarImageSuccessBlock
-							  failure:avatarImageFailureBlock];
+							  success:imageSuccessBlock
+							  failure:imageFailureBlock];
 	
 	
-//	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	avatarButton.frame = imageView.frame;
-//	[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-//	[self.contentView addSubview:avatarButton];
+	CGSize maxSize = CGSizeMake(296.0, 24.0);
+	CGSize size = [_clubPhotoVO.username boundingRectWithSize:maxSize
+													  options:(NSStringDrawingTruncatesLastVisibleLine)
+												   attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19]}
+													  context:nil].size;
 	
-	
-	CGSize size;
-	CGSize maxSize = CGSizeMake(300.0, 38.0);
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.minimumLineHeight = 31.0;
-	paragraphStyle.maximumLineHeight = paragraphStyle.minimumLineHeight;
-	
-	NSString *titleCaption = [NSString stringWithFormat:@"%@ is feeling ", _clubPhotoVO.username];
-	for (NSString *subject in _clubPhotoVO.subjectNames) {
-		size = [[titleCaption stringByAppendingFormat:@"%@, ", subject] boundingRectWithSize:maxSize
-																					 options:(NSStringDrawingTruncatesLastVisibleLine)
-																				  attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17], NSParagraphStyleAttributeName:paragraphStyle}
-																					 context:nil].size;
-		
-		if (size.width >= (maxSize.width * 1.875)) {
-			titleCaption = [[titleCaption substringToIndex:[titleCaption length] - 2] stringByAppendingString:@"…"];
-			break;
-		}
-		
-		titleCaption = [titleCaption stringByAppendingFormat:@"%@, ", subject];
-	}
-	
-	if ([[titleCaption substringFromIndex:[titleCaption length] - 2] isEqualToString:@", "])
-		titleCaption = [titleCaption substringToIndex:[titleCaption length] - 2];
-	
-	NSString *emotions = [titleCaption stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@ is feeling ", _clubPhotoVO.username] withString:@""];
-	NSLog(@"SIZE:[%@] MAX:[%@] (%@)", NSStringFromCGSize(size), NSStringFromCGSize(maxSize), emotions);
-	
-	UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (220.0 + ((int)(size.width > maxSize.width) * 34.0)), 320.0, 220.0 + ((int)(size.width > maxSize.width) * 34.0))];
-	[self.contentView addSubview:footerView];
-	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, maxSize.width, 30.0 + ((int)(size.width > (maxSize.width + 5.0)) * 34.0))];
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.textColor = [UIColor whiteColor];
-	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:17];
-	titleLabel.numberOfLines = 2 + (int)(size.width > maxSize.width);
-	[footerView addSubview:titleLabel];
-	
-	titleLabel.text = @"";
-	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:[titleCaption stringByReplacingOccurrencesOfString:@" ," withString:@","]
-																attributes:@{NSParagraphStyleAttributeName	: paragraphStyle}];
-	
-	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:_clubPhotoVO.username]];
-	//[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:17] range:[titleCaption rangeOfString:emotions]];
-	
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 63.0, MIN(maxSize.width, size.width), 24.0)];
+	usernameLabel.backgroundColor = [UIColor clearColor];
+	usernameLabel.textColor = [UIColor whiteColor];
+	usernameLabel.shadowColor = [UIColor blackColor];
+	usernameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	usernameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19];
+	usernameLabel.text = _clubPhotoVO.username;
+	[self.contentView addSubview:usernameLabel];
 	
 	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	usernameButton.frame = [titleLabel boundingRectForCharacterRange:[titleCaption rangeOfString:_clubPhotoVO.username]];
+	usernameButton.frame = usernameLabel.frame;
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-	[footerView addSubview:usernameButton];
-	
-	
-	NSString *timeCaption = [NSString stringWithFormat:@"%@ in %@", [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate], _clubName];
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 11.0 + titleLabel.frame.origin.y + titleLabel.frame.size.height, 300.0, 16.0)];
+	[self.contentView addSubview:usernameButton];
+			
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 94.0, 200.0, 16.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
+	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
-	timeLabel.text = timeCaption;
-	[timeLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12] range:[timeCaption rangeOfString:_clubName]];
-	[footerView addSubview:timeLabel];
+	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:@" ago with %d emotion%@", [_clubPhotoVO.subjectNames count], ([_clubPhotoVO.subjectNames count] != 1) ? @"s" : @""];
+	[self.contentView addSubview:timeLabel];
 	
-	UIView *emoticonsView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0 + timeLabel.frame.origin.y + timeLabel.frame.size.height, 300.0, 48.0)];
-	[footerView addSubview:emoticonsView];
+	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(8.0, [UIScreen mainScreen].bounds.size.height - 160.0, 312.0, 84.0)];
+	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
+	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
+	emoticonsScrollView.showsVerticalScrollIndicator = NO;
+	emoticonsScrollView.pagingEnabled = NO;
+	[self.contentView addSubview:emoticonsScrollView];
 	
-	int tot = 0;
+	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
-		UIImageView *emotionImageView = [self _imageViewForEmotion:emotionVO];
-		emotionImageView.frame = CGRectOffset(emotionImageView.frame, tot * 63, 0.0);
-		[emoticonsView addSubview:emotionImageView];
-		tot++;
+		UIView *emotionView = [self _viewForEmotion:emotionVO];
+		emotionView.frame = CGRectOffset(emotionView.frame, cnt * 90.0, 0.0);
+		[emoticonsScrollView addSubview:emotionView];
+		cnt++;
 	}
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(5.0, footerView.frame.size.height - 114.0, 134.0, 64.0);
+	likeButton.frame = CGRectMake(5.0, [UIScreen mainScreen].bounds.size.height - 74.0, 134.0, 64.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
-	[footerView addSubview:likeButton];
+	[self.contentView addSubview:likeButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(181.0, footerView.frame.size.height - 114.0, 134.0, 64.0);
+	replyButton.frame = CGRectMake(181.0, [UIScreen mainScreen].bounds.size.height - 74.0, 134.0, 64.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
-	[footerView addSubview:replyButton];
+	[self.contentView addSubview:replyButton];
+	
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 51.0, 50.0, 16.0)];
+	scoreLabel.backgroundColor = [UIColor clearColor];
+	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
+	scoreLabel.textColor = [UIColor whiteColor];
+	scoreLabel.textAlignment = NSTextAlignmentCenter;
+	scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+	[self.contentView addSubview:scoreLabel];
 }
 
 - (void)setIndexPath:(NSIndexPath *)indexPath {
@@ -196,15 +176,22 @@
 
 
 #pragma mark - UI Presentation
-- (UIImageView *)_imageViewForEmotion:(HONEmotionVO *)emotionVO {
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
+- (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO {
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 84.0, 84.0)];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:holderView asLargeLoader:NO];
+	imageLoadingView.alpha = 0.667;
+	[imageLoadingView startAnimating];
+	[holderView addSubview:imageLoadingView];
+	
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
 	[imageView setTag:emotionVO.emotionID];
 	imageView.alpha = 0.0;
-	
-	[HONImagingDepictor maskImageView:imageView withMask:[UIImage imageNamed:@"emoticonMask"]];
+	[holderView addSubview:imageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
+		[imageLoadingView stopAnimating];
 		
 		[UIView animateWithDuration:0.33 delay:0.0
 			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
@@ -216,15 +203,14 @@
 						 }];
 	};
 	
-	NSLog(@"emotionVO.smallImageURL:[%@]", emotionVO.smallImageURL);
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.mediumImageURL]
 													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
 							  failure:nil];
 	
-	return (imageView);
+	return (holderView);
 }
 
 - (void)_nextPhoto {

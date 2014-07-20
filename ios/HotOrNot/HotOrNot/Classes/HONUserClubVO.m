@@ -62,9 +62,8 @@
 	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
 		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
 	
-	vo.submissions = [submissions copy];
+	vo.submissions = [[[submissions copy] reverseObjectEnumerator] allObjects];
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
-	
 	
 	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : HONClubEnrollmentTypeUndetermined;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"AUTO_GEN"]) ? HONClubEnrollmentTypeAutoGen : vo.clubEnrollmentType;

@@ -85,9 +85,9 @@
 		[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
 																 cachePolicy:kURLRequestCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
-							  placeholderImage:nil
-									   success:imageSuccessBlock
-									   failure:imageFailureBlock];
+							   placeholderImage:nil
+										success:imageSuccessBlock
+										failure:imageFailureBlock];
 	
 	} else {
 		[UIView animateWithDuration:0.25 animations:^(void) {

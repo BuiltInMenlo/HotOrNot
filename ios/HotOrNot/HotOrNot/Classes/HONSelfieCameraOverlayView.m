@@ -41,9 +41,9 @@
 		_blackMatteView.hidden = YES;
 		[self addSubview:_blackMatteView];
 		
-		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]];
-		gradientImageView.frame = self.frame;
-		[self addSubview:gradientImageView];
+//		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]];
+//		gradientImageView.frame = self.frame;
+//		[self addSubview:gradientImageView];
 		
 		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
@@ -78,7 +78,7 @@
 //		[self addSubview:_changeTintButton];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake(112.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
+		_takePhotoButton.frame = CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
@@ -159,37 +159,23 @@
 
 - (void)_retrieveLastImage {
 	ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
-	[assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
-								 usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-									 if (nil != group) {
-										 // be sure to filter the group so you only get photos
-										 [group setAssetsFilter:[ALAssetsFilter allPhotos]];
-										 
-										 
-//										 [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:group.numberOfAssets - 1]
-//																 options:0
-//															  usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-//																  if (nil != result) {
-//																	  ALAssetRepresentation *repr = [result defaultRepresentation];
-//																	  // this is the most recent saved photo
-//																	  UIImage *img = [UIImage imageWithCGImage:[repr fullResolutionImage]];
-//																	  // we only need the first (most recent) photo -- stop the enumeration
-//																	  *stop = YES;
-//																  }
-//															  }];
-										 
-										 [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-											 if (asset) {
-												 _lastCameraRollImageView.image = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-												 *stop = YES;
-											 }
-										 }];
-									 }
-									 
-									 *stop = NO;
-								 } failureBlock:^(NSError *error) {
-									 NSLog(@"error: %@", error);
-								 }];
+	[assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+		if (nil != group) {
+			// be sure to filter the group so you only get photos
+			[group setAssetsFilter:[ALAssetsFilter allPhotos]];
+			
+			[group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+				if (asset) {
+					_lastCameraRollImageView.image = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+					*stop = YES;
+				}
+			}];
+		}
+		
+		*stop = NO;
+	} failureBlock:^(NSError *error) {
+		NSLog(@"error: %@", error);
+	}];
 }
 
 

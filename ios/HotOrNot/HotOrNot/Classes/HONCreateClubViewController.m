@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AssetsLibrary/AssetsLibrary.h>
+
 #import "MBProgressHUD.h"
 
 #import "HONCreateClubViewController.h"
@@ -26,6 +28,8 @@
 @property (nonatomic, strong) NSString *clubName;
 //@property (nonatomic, strong) NSString *clubBlurb;
 @property (nonatomic, strong) NSString *clubImagePrefix;
+@property (nonatomic, strong) ALAssetsLibrary *library;
+@property (nonatomic) BOOL isAlbumFound;
 @end
 
 
@@ -36,6 +40,9 @@
 		_clubName = @"";
 //		_clubBlurb = @"";
 		_clubImagePrefix = @"";
+		
+		_library = [[ALAssetsLibrary alloc] init];
+		[self _searchForAlbum];
 	}
 	
 	return (self);
@@ -82,6 +89,136 @@
 }
 
 
+#pragma mark - Device functions
+- (void)_searchForAlbum {
+	__weak HONCreateClubViewController *weakSelf = self;
+	__block ALAssetsGroup *assetsGroup;
+	
+	_isAlbumFound = NO;
+	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+		NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
+		
+		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Selfieclub Club Covers"]) {
+			NSLog(@"Found Album");
+			assetsGroup = group;
+			*stop = YES;
+			
+			weakSelf.isAlbumFound = YES;
+		}
+		
+	} failureBlock:^(NSError* error) {
+		NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+	}];
+	
+	[self performSelector:@selector(_delayedAlbumEnumeration)
+			   withObject:nil
+			   afterDelay:0.50];
+}
+
+- (void)_createAlbum {
+	__weak HONCreateClubViewController *weakSelf = self;
+	
+	[_library addAssetsGroupAlbumWithName:@"Selfieclub Club Covers" resultBlock:^(ALAssetsGroup *group) {
+		NSLog(@"added album: %@", @"Selfieclub Club Covers");
+		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			NSLog(@"LOADED:[%@]", request.URL.absoluteString);
+			
+			imageView.image = image;
+			
+			__block ALAssetsGroup *assetsGroup;
+			[weakSelf.library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+				NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
+				
+				if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Selfieclub Club Covers"]) {
+					NSLog(@"Found Album");
+					assetsGroup = group;
+					
+					if ([assetsGroup numberOfAssets] != [[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] count]) {
+						[weakSelf.library writeImageToSavedPhotosAlbum:[image CGImage] metadata:@{} completionBlock:^(NSURL* assetURL, NSError* error) {
+							if (error.code == 0) {
+								NSLog(@"saved image completed:\nurl: %@", assetURL);
+								
+								// try to get the asset
+								[weakSelf.library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+									// assign the photo to the album
+									[assetsGroup addAsset:asset];
+									NSLog(@"Added %@ to Selfie Club Covers", [[asset defaultRepresentation] filename]);
+									
+								} failureBlock:^(NSError* error) {
+									NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
+								}];
+								
+							} else
+								NSLog(@"saved image failed.\nerror code %i\n%@", error.code, [error localizedDescription]);
+						}];
+					}
+				}
+				
+			} failureBlock:^(NSError* error) {
+				NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+			}];
+			
+			[weakSelf _addImageToAlbum:image];
+		};
+		
+		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			NSLog(@"ERROR:(%@)\n[%@]", request.URL.absoluteString, error.description);
+		};
+		
+		for (NSString *imgURL in [[HONClubAssistant sharedInstance] defaultCoverImagePrefixes]) {
+			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[imgURL stringByAppendingString:kSnapMediumSuffix]]
+															   cachePolicy:kURLRequestCachePolicy
+														   timeoutInterval:[HONAppDelegate timeoutInterval]]
+							 placeholderImage:nil
+									  success:imageSuccessBlock
+									  failure:imageFailureBlock];
+		}
+		
+	} failureBlock:^(NSError *error) {
+		NSLog(@"error adding album");
+	}];
+}
+
+- (void)_addImageToAlbum:(UIImage *)image {
+	__block ALAssetsGroup *assetsGroup;
+	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Selfieclub Club Covers"]) {
+			NSLog(@"Found Album");
+			assetsGroup = group;
+			
+			[_library writeImageToSavedPhotosAlbum:[image CGImage] metadata:@{} completionBlock:^(NSURL* assetURL, NSError* error) {
+				if (error.code == 0) {
+					NSLog(@"saved image completed:\nurl: %@", assetURL);
+					
+					// try to get the asset
+					[_library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+						// assign the photo to the album
+						[assetsGroup addAsset:asset];
+						NSLog(@"Added %@ to Selfie Club Covers", [[asset defaultRepresentation] filename]);
+						
+					} failureBlock:^(NSError* error) {
+						NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
+					}];
+					
+				} else
+					NSLog(@"saved image failed.\nerror code %i\n%@", error.code, [error localizedDescription]);
+			}];
+		}
+		
+	} failureBlock:^(NSError* error) {
+		NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+	}];
+}
+
+- (void)_delayedAlbumEnumeration {
+	if (!_isAlbumFound)
+		[self _createAlbum];
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -120,9 +257,9 @@
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;
-	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateNormal];
-	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateHighlighted];
-	[_addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchDown];
+	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"clubCoverButton_nonActive"] forState:UIControlStateNormal];
+	[_addImageButton setBackgroundImage:[UIImage imageNamed:@"clubCoverButton_Active"] forState:UIControlStateHighlighted];
+	[_addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_addImageButton];
 	
 	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(64.0, 87.0, 220.0, 22.0)];
@@ -192,6 +329,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+	[_clubNameTextField becomeFirstResponder];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
