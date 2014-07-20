@@ -61,36 +61,32 @@
 	[self.contentView addSubview:titleLabel];
 	
 	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 16.0, 44.0, 44.0)];
-		avatarImageView.alpha = 0.0;
-		[self.contentView addSubview:avatarImageView];
-		[HONImagingDepictor maskImageView:avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 16.0, 44.0, 44.0)];
+		[self.contentView addSubview:imageView];
+		[HONImagingDepictor maskImageView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			avatarImageView.image = image;
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				avatarImageView.alpha = 1.0;
-			} completion:nil];
+			imageView.image = image;
 		};
 		
 		void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 			
-			avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+			imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
 			[UIView animateWithDuration:0.25 animations:^(void) {
-				avatarImageView.alpha = 1.0;
+				imageView.alpha = 1.0;
 			} completion:nil];
 		};
 		
-		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_photoVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
-																 cachePolicy:kURLRequestCachePolicy
-															 timeoutInterval:[HONAppDelegate timeoutInterval]]
-							   placeholderImage:nil
-										success:avatarImageSuccessBlock
-										failure:avatarImageFailureBlock];
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_photoVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
+														   cachePolicy:kURLRequestCachePolicy
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:avatarImageSuccessBlock
+								  failure:avatarImageFailureBlock];
 		
 		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		avatarButton.frame = avatarImageView.frame;
+		avatarButton.frame = imageView.frame;
 		[avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:avatarButton];
 		
@@ -200,11 +196,17 @@
 
 #pragma mark - UI Presentation
 - (UIImageView *)_imageViewForEmotion:(HONEmotionVO *)emotionVO {
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
+	CGRect orgFrame = {0.0, 0.0, 150.0, 150.0};
+	CGRect adjFrame = {0.0, 0.0, 25.0, 25.0};
+	
+	CGSize scaleSize = CGSizeMake(adjFrame.size.width / orgFrame.size.width, adjFrame.size.height / orgFrame.size.height);
+	CGPoint offsetPt = CGPointMake(CGRectGetMidX(adjFrame) - CGRectGetMidX(orgFrame), CGRectGetMidY(adjFrame) - CGRectGetMidY(orgFrame));
+	
+	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 150.0, 150.0)];
+	imageView.transform = transform;
 	[imageView setTag:emotionVO.emotionID];
 	imageView.alpha = 0.0;
-	
-	[HONImagingDepictor maskImageView:imageView withMask:[UIImage imageNamed:@"emoticonMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
