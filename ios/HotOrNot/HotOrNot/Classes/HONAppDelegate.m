@@ -847,13 +847,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		[HONAppDelegate incTotalForCounter:@"boot"];
 		
-		[self _initThirdPartySDKs];
 		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
 //		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
-		
+		[self _initThirdPartySDKs];
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
