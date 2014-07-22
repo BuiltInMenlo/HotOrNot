@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "NSObject+PCObjectMap.h"
+#import "NSString+PCStringAdditions.h"
 #import "PCModelObject.h"
 #import "PCStore.h"
 #import "PCCurrency.h"

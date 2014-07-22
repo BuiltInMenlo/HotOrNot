@@ -8,15 +8,18 @@
 
 #import "PCCandyStoreSearchResult.h"
 
-@class PCContent, PCContentGroup;
-
 typedef enum {
+    
     kCandyStoreSearchUnknown,
     kCandyStoreSearchNewestStickers,
     kCandyStoreSearchNewestStickerPacks,
     kCandyStoreSearchFeaturedStickers,
+    kCandyStoreSearchFeaturedStickerPacks,
     kCandyStoreSearchPopularStickers,
-    kCandyStoreSearchMostPurchasedStickers
+    kCandyStoreSearchPopularStickerPacks,
+    kCandyStoreSearchMostPurchasedStickers,
+    kCandyStoreSearchMostPurchasedStickerPacks
+
 } kCandyStoreSearchType;
 
 /**
@@ -165,6 +168,19 @@ typedef enum {
 -(void)fetchMostPurchasedStickersAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
 
 /**
+ *  <#Description#>
+ */
+-(void)fetchMostPurchasedStickerPacks;
+
+/**
+ *  <#Description#>
+ *
+ *  @param page    <#page description#>
+ *  @param perPage <#perPage description#>
+ */
+//-(void)fetchMostPurchasedStickersAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
+
+/**
  *  Description
  */
 -(void)fetchFeaturedStickers;
@@ -178,6 +194,19 @@ typedef enum {
 -(void)fetchFeaturedStickersAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
 
 /**
+ *  <#Description#>
+ */
+-(void)fetchFeaturedStickerPacks;
+
+/**
+ *  <#Description#>
+ *
+ *  @param page    <#page description#>
+ *  @param perPage <#perPage description#>
+ */
+-(void)fetchFeaturedStickerPacksAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
+
+/**
  *  Description
  */
 -(void)fetchPopularStickers;
@@ -189,6 +218,19 @@ typedef enum {
  *  @param perPage <#perPage description#>
  */
 -(void)fetchPopularStickersAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
+
+/**
+ *  <#Description#>
+ */
+-(void)fetchPopularStickerPacks;
+
+/**
+ *  <#Description#>
+ *
+ *  @param page    <#page description#>
+ *  @param perPage <#perPage description#>
+ */
+-(void)fetchPopularStickerPacksAtPage:(NSUInteger)page itemsPerPage:(NSUInteger)perPage;
 
 /**
  *  Description
