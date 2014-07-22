@@ -531,6 +531,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	
 	return ((_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && indexPath.section == 0 && indexPath.row == 0) ? 160.0 : kOrthodoxTableCellHeight);
 }
 

@@ -11,6 +11,7 @@
 #import "UILabel+FormattedText.h"
 
 #import "HONEmotionsPickerDisplayView.h"
+#import "HONImageLoadingView.h"
 
 #define COLS_PER_ROW 6
 #define SPACING
@@ -25,9 +26,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 @interface HONEmotionsPickerDisplayView ()
 @property (nonatomic, strong) NSMutableArray *emotions;
 @property (nonatomic, strong) UILabel *label;
+@property (nonatomic, strong) UIView *loaderHolderView;
 @property (nonatomic, strong) UIView *emotionHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *cursorImageView;
+@property (nonatomic) CGPoint prevPt;
+@property (nonatomic) BOOL isDragging;
 @end
 
 @implementation HONEmotionsPickerDisplayView
@@ -36,6 +40,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
+		_isDragging = NO;
 		_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 49.0, 88.0, 88.0)];
 		_previewImageView.image = image;
 		[self addSubview:_previewImageView];
@@ -59,8 +64,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		[self addSubview:_cursorImageView];
 		[_cursorImageView startAnimating];
 		
+		_loaderHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 25.0, 0.0, 0.0)];
+		[self addSubview:_loaderHolderView];
+		
 		_emotionHolderView = [[UIView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 5.0, 25.0, 0.0, 0.0)];
-//		_emotionHolderView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugBlueColor];
 		[self addSubview:_emotionHolderView];
 		
 		[self _updateDisplay];
@@ -68,6 +75,28 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	
 	return (self);
 }
+
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	_prevPt = [[touches anyObject] locationInView:self];
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//	if (CGRectContainsPoint(_emotionHolderView.frame, [[touches anyObject] locationInView:self]))
+//		[self _updateDisplay];
+//}
+//
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+//	CGPoint touchPt = [[touches anyObject] locationInView:self];
+//	
+//	if (CGRectContainsPoint(_emotionHolderView.frame, touchPt)) {
+//		_previewImageView.frame = CGRectOffset(_previewImageView.frame, -(_prevPt.x - touchPt.x), 0.0);
+//		_label.frame = CGRectOffset(_label.frame, -(_prevPt.x - touchPt.x), 0.0);
+//		_emotionHolderView.frame = CGRectOffset(_emotionHolderView.frame, -(_prevPt.x - touchPt.x), 0.0);
+//		_cursorImageView.frame = CGRectOffset(_cursorImageView.frame, -(_prevPt.x - touchPt.x), 0.0);
+//	}
+//	
+//	_prevPt = touchPt;
+//}
 
 
 #pragma mark - Public APIs
@@ -87,6 +116,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 #pragma mark - UI Presentation
 - (void)_addImageEmotion:(HONEmotionVO *)emotionVO {
 	_emotionHolderView.frame = CGRectMake(_emotionHolderView.frame.origin.x, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
+	_loaderHolderView.frame = _emotionHolderView.frame;
 	
 	CGSize scaleSize = CGSizeMake(kEmotionIntroFrame.size.width / kEmotionNormalFrame.size.width, kEmotionIntroFrame.size.height / kEmotionNormalFrame.size.height);
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionIntroFrame) - CGRectGetMidX(kEmotionNormalFrame), CGRectGetMidY(kEmotionIntroFrame) - CGRectGetMidY(kEmotionNormalFrame));
@@ -97,6 +127,12 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
 	imageView.transform = transform;
 	[_emotionHolderView addSubview:imageView];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
+	imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
+	imageLoadingView.alpha = 0.667;
+	[imageLoadingView startAnimating];
+	[_loaderHolderView addSubview:imageLoadingView];
 	
 	[self _updateDisplay];
 	
@@ -111,6 +147,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 							 imageView.alpha = 1.0;
 							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 						 } completion:^(BOOL finished) {
+							 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
+							 [loadingView stopAnimating];
+							 
+							 [loadingView removeFromSuperview];
 						 }];
 	};
 	
@@ -152,7 +192,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
 
 - (void)_updateDisplay {
-	int offset = 199.0 - (([_emotions count] >= 1) ? (kImageSize.width + kImagePaddingSize.width) : 0);
+	int offset = 215.0 - (([_emotions count] >= 1) ? (kImageSize.width + kImagePaddingSize.width) : 0);
 	int orgX = ((320.0 - offset) * 0.5) - (_emotionHolderView.frame.size.width + (([_emotions count] > 0) ? 3.0 : 0.0));
 	
 	[UIView animateWithDuration:0.333 delay:0.000
@@ -163,6 +203,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 						 _previewImageView.frame = CGRectMake(orgX, _previewImageView.frame.origin.y, _previewImageView.frame.size.width, _previewImageView.frame.size.height);
 						 _label.frame = CGRectMake(_previewImageView.frame.origin.x + _previewImageView.frame.size.width + 10.0, _label.frame.origin.y, _label.frame.size.width, _label.frame.size.height);
 						 _emotionHolderView.frame = CGRectMake(_label.frame.origin.x + _label.frame.size.width + 3.0, _emotionHolderView.frame.origin.y, [_emotions count] * (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
+						 _loaderHolderView.frame = _emotionHolderView.frame;
 						 _cursorImageView.frame = CGRectMake(_emotionHolderView.frame.origin.x + _emotionHolderView.frame.size.width + 3.0, _cursorImageView.frame.origin.y, _cursorImageView.frame.size.width, _cursorImageView.frame.size.height);
 						 
 					 } completion:^(BOOL finished) {
