@@ -4,6 +4,11 @@
       "idiom" : "universal",
       "scale" : "1x",
       "filename" : "closeButton_nonActive.png"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x",
+      "filename" : "closeButton_nonActive@2x.png"
     }
   ],
   "info" : {

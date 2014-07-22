@@ -193,8 +193,8 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Changed Emotion Page"];
 	
 	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
-	if ([HONAppDelegate incTotalForCounter:@"camera"] == 0 && page == 1) {
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_camera"]];
+	if (page == 1) {
+		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_camera"];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
