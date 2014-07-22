@@ -205,8 +205,8 @@
 		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
 		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
 		
-		if ([fName length] == 0)
-			continue;
+//		if ([fName length] == 0)
+//			continue;
 		
 		if ([lName length] == 0)
 			lName = @"";

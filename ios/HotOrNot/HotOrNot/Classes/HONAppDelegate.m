@@ -847,13 +847,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		[HONAppDelegate incTotalForCounter:@"boot"];
 		
-		[self _initThirdPartySDKs];
 		self.window.backgroundColor = [UIColor whiteColor];
 		[self.window makeKeyAndVisible];
 		
 //		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
-		
+		[self _initThirdPartySDKs];
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -907,7 +906,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
         localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
         localNotification.timeZone = [NSTimeZone systemTimeZone];
         localNotification.alertAction = @"View";
-        localNotification.alertBody = @"Hey looks like you're meeting up with Anne Elk, why don't you let your other friends know what fun they're missing out on? Share a photo :)";
+        localNotification.alertBody = @"Create your Selfieclub profile!";
         localNotification.soundName = @"selfie_notification.caf";
         localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
         
