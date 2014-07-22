@@ -13,6 +13,7 @@
 
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
 	HONSettingsCellTypeNotifications = 0,
+    HONSettingsCellTypeCopyClub,
 	HONSettingsCellTypeTermsOfService,
 	HONSettingsCellTypePrivacyPolicy,
 	HONSettingsCellTypeSupport,

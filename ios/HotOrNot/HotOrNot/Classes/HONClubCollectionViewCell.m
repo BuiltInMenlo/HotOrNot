@@ -117,10 +117,9 @@
 //			_overlayImageView = nil;
 //		}
 		
-//		_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubsInviteOverlay"]];
-//		_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 0.0, 9.0);
-//		[self.contentView addSubview:_overlayImageView];
-//		[self _cycleOverlay:_overlayImageView];
+		UIImageView *iconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"inviteClubIcon"]];
+		iconImageView.frame = CGRectOffset(iconImageView.frame, 0.0, 9.0);
+		[self.contentView addSubview:iconImageView];
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
 		buttonAsset = @"blankClubButton";

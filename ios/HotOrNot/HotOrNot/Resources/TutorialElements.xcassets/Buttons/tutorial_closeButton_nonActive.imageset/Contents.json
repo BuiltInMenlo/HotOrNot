@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "upVoteGraphic.png"
+      "filename" : "closeButton_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "upVoteGraphic@2x.png"
+      "filename" : "closeButton_nonActive@2x.png"
     }
   ],
   "info" : {

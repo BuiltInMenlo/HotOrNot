@@ -469,7 +469,7 @@
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
+		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_resume"];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];

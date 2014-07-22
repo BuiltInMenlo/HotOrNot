@@ -154,7 +154,6 @@
 
 - (void)_searchUsersWithUsername:(NSString *)username {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
@@ -206,8 +205,8 @@
 		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
 		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
 		
-		if ([fName length] == 0)
-			continue;
+//		if ([fName length] == 0)
+//			continue;
 		
 		if ([lName length] == 0)
 			lName = @"";
@@ -427,7 +426,7 @@
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 	_searchUsers = [NSMutableArray array];
 	[_tableView reloadData];
 }
@@ -435,7 +434,7 @@
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Cancel"];
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-	
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[self _retreiveUserClubs];
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];

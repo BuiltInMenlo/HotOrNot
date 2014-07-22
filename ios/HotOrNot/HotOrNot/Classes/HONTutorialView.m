@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-
 #import "HONTutorialView.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface HONTutorialView ()
 @end
@@ -16,28 +16,46 @@
 @implementation HONTutorialView
 @synthesize delegate = _delegate;
 
-- (id)initWithBGImage:(UIImage *)bgImage {
-	if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
+- (id)initWithImageURL:(NSString *)imageURL;
+{
+    if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
 		
 		self.alpha = 0.0;
-		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:bgImage];
-		[self addSubview:bgImageView];
-		
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            imageView.image = image;
+            [UIView animateWithDuration:0.25 animations:^(void) {
+                imageView.alpha = 1.0;
+            } completion:^(BOOL finished) {
+            }];
+        };
+        
+        void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+            };
+        NSString *URL = [[@"https://s3.amazonaws.com/hotornot-banners/" stringByAppendingString:imageURL] stringByAppendingFormat:@"%@@2x.png",[[HONDeviceIntrinsics sharedInstance] isRetina4Inch]? @"-568h" : @""];
+        [imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: URL]
+                                                           cachePolicy:kURLRequestCachePolicy
+                                                       timeoutInterval:[HONAppDelegate timeoutInterval]]
+                         placeholderImage:nil
+                                  success:imageSuccessBlock
+                                  failure:imageFailureBlock];
+		[self addSubview:imageView];
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = self.frame;
-		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:closeButton];
+         closeButton.frame = CGRectMake(280.0, 40.0, 44, 44);
+         [closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+        [closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
+         [self addSubview:closeButton];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(128.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 413.0 : 376.0, 64.0, 24.0);
+		skipButton.frame = CGRectMake(128.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 413.0 : 341.0, 64.0, 24.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"tutorial_skipButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"tutorial_skipButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:skipButton];
 		
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(0.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 443.0 : 401.0, 320.0, 51.0);
+		inviteButton.frame = CGRectMake(0.0, ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 443.0 : 366.0, 320.0, 51.0);
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"tutorial_inviteButton_nonActive"] forState:UIControlStateNormal];
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"tutorial_inviteButton_Active"] forState:UIControlStateHighlighted];
 		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchDown];
@@ -45,8 +63,8 @@
 	}
 	
 	return (self);
-}
 
+}
 
 #pragma mark - Public APIs
 - (void)introWithCompletion:(void (^)(BOOL finished))completion {

@@ -34,6 +34,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_captions = @[@"Notifications",
+                      @"Copy Club",
 					  @"Terms of service",
 					  @"Privacy policy",
 					  @"Support",
@@ -249,14 +250,21 @@
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
-		} else {
+        } else {
 			[[[UIAlertView alloc] initWithTitle:@"Email Error"
 										message:@"Cannot send email from this device!"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
 		}
-		
+    } else if(indexPath.row == HONSettingsCellTypeCopyClub){
+        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@'s Club! Tap to join: getselfieclub://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+        [[[UIAlertView alloc] initWithTitle:@""
+                                    message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Rate App"];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];

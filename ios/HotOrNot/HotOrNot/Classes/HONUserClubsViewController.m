@@ -233,7 +233,7 @@
 		NSLog(@"did getpopup %d", _didCloseCreateClub);
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_club"]];
+		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_club"];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
