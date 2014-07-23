@@ -39,7 +39,7 @@
 	if ((self = [super init])) {
 		_clubName = @"";
 //		_clubBlurb = @"";
-		_clubImagePrefix = @"";
+		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImagePrefix];
 		
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];

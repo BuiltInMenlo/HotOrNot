@@ -1839,7 +1839,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else if (alertView.tag == 9) {
-		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:@"" completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] completion:^(NSDictionary *result) {
 			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
