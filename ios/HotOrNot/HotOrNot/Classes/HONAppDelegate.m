@@ -786,6 +786,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[HONAnalyticsParams sharedInstance] trackEvent:@"Did Finish First Boot"];
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
 	
@@ -917,6 +918,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    [[HONAnalyticsParams sharedInstance] trackEvent:@"Finished Resuming Background"];
 	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
 	_isFromBackground = YES;

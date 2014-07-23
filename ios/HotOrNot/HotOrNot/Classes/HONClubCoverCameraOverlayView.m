@@ -213,7 +213,6 @@
 }
 
 - (void)_goCancel {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Skip Photo"];
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"Choosing a cover photo for your club"
 													   delegate:self
@@ -248,8 +247,7 @@
 }
 
 - (void)_goChangeTint {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Change Tint Overlay"
-									 withProperties:@{@"tint"	: [@"" stringFromInt:(_tintIndex+1)]}];
+
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
 	[UIView beginAnimations:@"fade" context:nil];
@@ -276,7 +274,6 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Club Cover Photo - Skip Photo " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]];
 		
 		if (buttonIndex == 0)
 			[self.delegate cameraOverlayViewCloseCamera:self];

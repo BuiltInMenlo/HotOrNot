@@ -259,28 +259,23 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Refresh"];
 	[HONAppDelegate incTotalForCounter:@"timelineRefresh"];
 	[self _retrieveChallenges];
 }
 
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Profile"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goMessages {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Messages"];
 	[self.navigationController pushViewController:[[HONMessagesViewController alloc] init] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Create Volley"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -293,14 +288,12 @@
 }
 
 - (void)_goAddContacts {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Invite Friends"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goMatchPhone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Match Phone"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -384,9 +377,7 @@
 
 #pragma mark - TimelineItemCell Delegates
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Profile"
-									  withChallenge:challengeVO
-									 andParticipant:opponentVO];
+				
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:opponentVO.userID] animated:YES];
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUserProfileViewController alloc] initWithUserID:userID]];
@@ -399,9 +390,7 @@
 	_opponentVO = challengeVO.creatorVO;
 	
 	NSLog(@"upvoteCreatorForChallenge:[%@]", _opponentVO.dictionary);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Upvote Challenge"
-									  withChallenge:challengeVO];
+
 	
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:challengeVO.creatorVO completion:^(NSDictionary *result) {
 		_challengeVO = [HONChallengeVO challengeWithDictionary:result];
@@ -427,8 +416,7 @@
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO {
 //	_challengeVO = challengeVO;
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Join Challenge"
-									  withChallenge:challengeVO];
+
 	
 	[cell showTapOverlay];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsJoinChallenge:challengeVO]];
@@ -437,13 +425,11 @@
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell shareChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Share Challenge"
-									  withChallenge:challengeVO];
+
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Challenge"
-									  withChallenge:challengeVO];
+
 	
 	HONFeedViewController *feedViewController = [[HONFeedViewController alloc] init];
 //	feedViewController.challenges = _challenges;<<
@@ -455,8 +441,6 @@
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Comments"
-									  withChallenge:challengeVO];
 	
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
@@ -464,18 +448,14 @@
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showVoters:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Voters"
-									  withChallenge:challengeVO];
+
 	
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:challengeVO] animated:YES];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showPreviewForParticipant:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_opponentVO = opponentVO;
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Photo Detail"
-									  withChallenge:challengeVO
-									 andParticipant:opponentVO];
+
 	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO];
 	_snapPreviewViewController.delegate = self;
@@ -483,8 +463,7 @@
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showBannerForChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Banner"
-									  withChallenge:challengeVO];
+
 	
 	[self _goCreateChallenge];
 }
@@ -657,7 +636,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONTimelineAlertTypeInvite) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Timeline - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"No" : @"Yes"]];
 		
 		if (buttonIndex == 0) {
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
@@ -676,7 +654,6 @@
 		}
 	
 	} else if (alertView.tag == HONTimelineAlertTypeInviteConfirm) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Timeline - Invite Confirm " stringByAppendingString:(buttonIndex == 0) ? @"No" : @"Yes"]];
 		
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] initAsFirstRun:YES]];

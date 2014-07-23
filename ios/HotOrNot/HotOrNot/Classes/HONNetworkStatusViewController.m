@@ -80,7 +80,6 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Network Status - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

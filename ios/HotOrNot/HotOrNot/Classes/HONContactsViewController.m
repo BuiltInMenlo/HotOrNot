@@ -432,7 +432,6 @@
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Cancel"];
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[self _retreiveUserClubs];
@@ -444,8 +443,7 @@
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Submit"
-									 withProperties:@{@"query"	: searchQuery}];
+
 	
 	[self _searchUsersWithUsername:searchQuery];
 }
@@ -573,7 +571,6 @@
 				
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-						[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Address Book Granted"];
 						
 						[_inAppUsers removeAllObjects];
 						[self _retrieveDeviceContacts];
@@ -585,13 +582,12 @@
 						[self _retrieveDeviceContacts];
 					});
 				
-				} else
-					[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Address Book Unknown / Denied "];
+				} else {
 			}
 		}
 	}
 }
-
+}
 
 #pragma mark - Data Manip
 -(NSDictionary *)_populateSegmentedDictionary {

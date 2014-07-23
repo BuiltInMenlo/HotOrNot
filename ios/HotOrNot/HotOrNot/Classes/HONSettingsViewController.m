@@ -130,13 +130,10 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Close"];
 	[self dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - Notifications Toggle " stringByAppendingString:(switchView.on) ? @"On" : @"Off"]
-									 withProperties:@{@"enabled"	: [@"" stringFromBOOL:switchView.on]}];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
@@ -224,21 +221,18 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if (indexPath.row == HONSettingsCellTypeTermsOfService) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Terms of Service"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Privacy Policy"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypeSupport) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Support"];
 		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -266,11 +260,9 @@
                           cancelButtonTitle:@"OK"
                           otherButtonTitles:nil] show];
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Rate App"];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		
 	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Settings - Network Status"];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONNetworkStatusViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
@@ -310,7 +302,6 @@
 			break;
 	}
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - " stringByAppendingString:mpAction]];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -349,7 +340,6 @@
 			break;
 	}
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[[NSString stringWithFormat:@"Settings - %@ - Message ", mpEvent] stringByAppendingString:mpAction]];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -357,8 +347,7 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONSettingsAlertTypeNotifications) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - Notifications Toggle " stringByAppendingString:(_notificationSwitch.on) ? @"On" : @"Off"]
-										 withProperties:@{@"enabled"	: [@"" stringFromBOOL:_notificationSwitch.on]}];
+		
 		
 		if (buttonIndex == 0)
 			_notificationSwitch.on = !_notificationSwitch.on;
@@ -371,7 +360,6 @@
 		}
 		
 	} else if (alertView.tag == HONSettingsAlertTypeDeactivate) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - Deactivate " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			Mixpanel *mixpanel = [Mixpanel sharedInstance];
@@ -399,7 +387,6 @@
 		}
 	
 	} else if (alertView.tag == HONSettingsAlertTypeDeleteChallenges) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Settings - " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] removeAllChallengesForUserWithCompletion:^(NSObject *result){

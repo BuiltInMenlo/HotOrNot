@@ -112,18 +112,15 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Done"];
 	
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Refresh"];
 	[super _goRefresh];
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
 	if (_trivialUserVO != nil) {
 		for (HONUserClubVO *vo in _selectedClubs) {
@@ -143,7 +140,6 @@
 }
 
 - (void)_goSelectAllToggle {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Create Selfie - Select %@", ([_selectedClubs count] == [_allClubs count]) ? @"None" : @"All"]];
 	[super _goSelectAllToggle];
 }
 
@@ -162,8 +158,7 @@
 		HONClubToggleViewCell *cell = (HONClubToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell invertSelected];
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Create Selfie - %@elected Club", (cell.isSelected) ? @"S" : @"Des"]
-										   withUserClub:cell.userClubVO];
+		
 		
 		if (cell.isSelected) {
 			if (![_selectedClubs containsObject:cell.userClubVO])

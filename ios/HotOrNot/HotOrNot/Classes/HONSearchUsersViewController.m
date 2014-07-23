@@ -169,7 +169,6 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Done"];
 //	void (^completionBlock)(NSObject *result) = ^void(NSObject *result) {
 //		[HONAppDelegate writeFollowingList:(NSArray *)result];
 //	};
@@ -190,7 +189,6 @@
 }
 
 - (void)_goSelectAll {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Select All"];
 	
 	_hasUpdated = YES;
 	[_selectedUsers removeAllObjects];
@@ -208,8 +206,7 @@
 
 #pragma mark - SearchUserViewCell Delegates
 - (void)searchUserViewCell:(HONSearchUserViewCell *)cell user:(HONTrivialUserVO *)trivialUserVO toggleSelected:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Search Users - %@elect", (isSelected) ? @"Des" : @"S"]
-									withTrivialUser:trivialUserVO];
+
 	
 	_hasUpdated = YES;
 	if (isSelected) {
@@ -235,7 +232,6 @@
 
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Cancel"];
 	
 	_users = [NSMutableArray array];
 	for (NSDictionary *dict in [HONAppDelegate searchUsers])
@@ -245,7 +241,6 @@
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Search Users - Entered Username"];
 	[self _retrieveUsers:searchQuery];
 }
 
@@ -324,7 +319,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Search Users - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];

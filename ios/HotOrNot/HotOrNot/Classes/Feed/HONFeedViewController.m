@@ -220,14 +220,12 @@
 
 - (void)_goRefresh
 {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Refresh"];
 	[HONAppDelegate incTotalForCounter:@"timeline"];
 	[self _refreshChallengesFromServer];
 }
 
 - (void)_goBack
 {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Back"];
 //	[[self _popSlideTransition] setInteractiveDismissEnabled:NO];
 //	[self dismissViewControllerAnimated:YES completion:nil];
 	
@@ -235,7 +233,6 @@
 }
 
 - (void)_goSuggested {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Suggested"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -244,7 +241,6 @@
 
 - (void)_goCreateChallenge
 {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Create Volley"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -371,8 +367,6 @@
 #pragma mark - FeedItem Delegate Replacement
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController showChallenge:(HONChallengeVO *)challengeVO
 {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Show Challange"
-									  withChallenge:challengeVO];
 	
 	
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPhotoViewController alloc] initWithChallenge:challengeVO]];
@@ -381,9 +375,7 @@
 }
 
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController upvoteChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Upvote Challenge"
-									  withChallenge:challengeVO
-									 andParticipant:opponentVO];
+
 	
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSDictionary *result) {
 		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:result];
@@ -408,8 +400,7 @@
 
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController joinChallenge:(HONChallengeVO *)challengeVO
 {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Join Challenge"
-									  withChallenge:challengeVO];
+
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsJoinChallenge:challengeVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -417,8 +408,7 @@
 }
 
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController shareChallenge:(HONChallengeVO *)challengeVO fromParticipant:(HONOpponentVO *)opponentVO withImage:(UIImage *)image {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Share Challenge"
-									  withChallenge:challengeVO];
+
 
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:0], [challengeVO.subjectNames firstObject], opponentVO.username];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:0], [challengeVO.subjectNames firstObject], opponentVO.username, [HONAppDelegate shareURL]];

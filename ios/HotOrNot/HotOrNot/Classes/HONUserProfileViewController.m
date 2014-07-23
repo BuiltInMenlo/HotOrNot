@@ -227,14 +227,12 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Back"
-									 withCohortUser:_userVO];
+	
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goChangeAvatar {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Take New Avatar"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -247,8 +245,7 @@
 }
 
 - (void)_goShoutout {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Shoutout"
-									 withCohortUser:_userVO];
+
 	
 	[[HONAPICaller sharedInstance] createShoutoutChallengeWithUserID:_userVO.userID completion:^(NSObject *result) {
 		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
@@ -260,8 +257,7 @@
 }
 
 - (void)_goFlag {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Flag"
-									 withCohortUser:_userVO];
+
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
@@ -274,7 +270,6 @@
 }
 
 - (void)_goShare {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Share"];
 	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -290,14 +285,12 @@
 }
 
 - (void)_goFAQ {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - FAQ"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSettings {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Profile - Settings"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -518,8 +511,7 @@
 		
 	}
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"User Profile - Select %@ Row", mpAlertType]
-									 withProperties:mpParams];
+	
 	
 	if (viewController != nil) {
 		[self.navigationController pushViewController:viewController animated:YES];

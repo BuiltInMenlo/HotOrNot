@@ -238,15 +238,13 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Back"
-									   withUserClub:_userClubVO];
+
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goNext {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Next"
-									   withUserClub:_userClubVO];
+
 	
 	if ([_clubNameTextField isFirstResponder])
 		[_clubNameTextField resignFirstResponder];
@@ -277,16 +275,13 @@
 
 
 - (void)_goClubName {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Title"
-									   withUserClub:_userClubVO];
+
 	
 	[_clubNameButton setSelected:YES];
 	[_blurbButton setSelected:NO];
 }
 
 - (void)_goCamera {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Choose Image"
-									   withUserClub:_userClubVO];
 	
 	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
 	clubCoverCameraViewController.delegate = self;
@@ -299,8 +294,6 @@
 }
 
 - (void)_goBlurb {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Edit Club - Description"
-									   withUserClub:_userClubVO];
 	
 	[_blurbButton setSelected:YES];
 	[_clubNameButton setSelected:NO];

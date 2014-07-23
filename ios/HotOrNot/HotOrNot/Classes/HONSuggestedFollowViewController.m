@@ -126,7 +126,6 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suggested People - Done"];
 	
 //	for (HONTrivialUserVO *vo in _removeUsers) {
 //		[[HONAPICaller sharedInstance] stopFollowingUserWithUserID:vo.userID completion:^(NSArray *result) {
@@ -160,7 +159,6 @@
 }
 
 - (void)_goSelectAll {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suggested People - Select All"];
 	
 	[_selectedUsers removeAllObjects];
 	[_removeUsers removeAllObjects];
@@ -177,7 +175,6 @@
 
 #pragma mark - SuggestedViewCell Delegates
 - (void)followViewCell:(HONSuggestedFollowViewCell *)cell user:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Suggested People - %@elect User", (isSelected) ? @"Des" : @"S"]];
 		
 	if (isSelected) {
 		[_selectedUsers addObject:userVO];
@@ -266,7 +263,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Suggested People - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -279,7 +275,6 @@
 		}
 		
 	} else if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Suggested People - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];

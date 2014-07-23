@@ -184,7 +184,6 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Cancel"];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
@@ -197,8 +196,6 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Switch Camera"
-								   withCameraDevice:_imagePicker.cameraDevice];
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
@@ -211,16 +208,12 @@
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Camera Roll"];
 	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Take Photo"
-									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
-	
 	_tintIndex = tintIndex;
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
@@ -232,12 +225,9 @@
 }
 
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Retake"];
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Submit"];
-	
 //	UIImage *processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 //	
 //	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));

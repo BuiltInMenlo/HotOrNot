@@ -339,15 +339,12 @@
 			
 			// already granted access
 		} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@""];
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Address Book Granted"];
 			
 			
 			[self _retrieveContacts];
 			
 			// denied permission
 		} else {
-			[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Address Book Denied"];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
 																message:nil
@@ -386,7 +383,6 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Close"];
 	
 	if ([_selectedInAppContacts count] > 0)
 		[self _followUsers];
@@ -402,7 +398,6 @@
 
 - (void)_goSelectAllToggle {
 	if ([_selectedNonAppContacts count] == [_nonAppContacts count] && [_selectedInAppContacts count] == [_inAppContacts count]) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Deselect All"];
 		
 		for (int i=0; i<[_inAppContacts count]; i++) {
 			HONFollowContactViewCell *cell = (HONFollowContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
@@ -447,8 +442,7 @@
 
 #pragma mark - FollowContactViewCell Delegates
 - (void)followContactUserViewCell:(HONFollowContactViewCell *)viewCell followUser:(HONTrivialUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Add Contacts - %@elect Follow In-App Contact", (isSelected) ? @"S" : @"Des"]
-									withTrivialUser:userVO];
+
 	
 	_hasUpdated = YES;
 	if (isSelected)
@@ -472,8 +466,7 @@
 
 #pragma mark - InviteContactCell Delegates
 - (void)inviteContactViewCell:(HONInviteContactViewCell *)viewCell inviteUser:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Add Contacts - %@elect Non-App Contact", (isSelected) ? @"S" : @"Des"]
-									withContactUser:userVO];
+	
 	
 	if (isSelected)
 		[_selectedNonAppContacts addObject:userVO];
@@ -572,10 +565,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONTrivialUserVO *vo = [_inAppContacts objectAtIndex:indexPath.row];
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Add Contacts - Select Non-App Contact"
-									withTrivialUser:vo];
-	
+		
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:vo.userID] animated:YES];
 }
 
@@ -583,7 +573,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Add Contacts - Select All " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]];
 		 
 		if (buttonIndex == 0) {
 			for (int i=0; i<[_inAppContacts count]; i++) {
