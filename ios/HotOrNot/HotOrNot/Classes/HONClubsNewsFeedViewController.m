@@ -707,7 +707,7 @@
 			return (0.0);
 		
 		else
-			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? 160.0 : 0.0);
+			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? kOrthodoxTableCellHeight : 0.0);
 	}
 	
 	else if (indexPath.section == 1)

@@ -405,8 +405,8 @@
 
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
-	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-								message:@"Flip the switch in Settings->Privacy->Contacts->Selfieclub to grant access."
+	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
+								message:@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
@@ -530,11 +530,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && indexPath.section == 0 && indexPath.row == 0) ? 160.0 : kOrthodoxTableCellHeight);
+	return (kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ?  kOrthodoxTableHeaderHeight : 0.0);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

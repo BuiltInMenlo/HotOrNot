@@ -332,7 +332,7 @@
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Invite Friends", @"Copy Club URL", @"Delete Club", nil];
+														otherButtonTitles:@"Invite Friends", @"Copy Club URL", nil];
 		[actionSheet setTag:0];
 		[actionSheet showInView:self.view];
     }
