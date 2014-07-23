@@ -5,7 +5,7 @@
 //  Created by Matt Holcombe on 03/26/2014 @ 22:45 .
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
-
+#import "HONImageLoadingView.h"
 #import "HONTutorialView.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -22,11 +22,14 @@
 		
 		self.alpha = 0.0;
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        HONImageLoadingView *imageLoading = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
+        [self addSubview:imageView];
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
             imageView.image = image;
             [UIView animateWithDuration:0.25 animations:^(void) {
                 imageView.alpha = 1.0;
             } completion:^(BOOL finished) {
+                [imageLoading stopAnimating];
             }];
         };
         
@@ -41,7 +44,7 @@
                                   failure:imageFailureBlock];
 		[self addSubview:imageView];
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-         closeButton.frame = CGRectMake(280.0, 40.0, 44, 44);
+         closeButton.frame = CGRectMake(275.0, 60.0, 44, 44);
          [closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
         [closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"tutorial_closeButton_Active"] forState:UIControlStateHighlighted];
