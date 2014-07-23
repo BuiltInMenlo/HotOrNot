@@ -7,6 +7,7 @@
 //
 
 #import "KeychainItemWrapper.h"
+#import "MBProgressHUD.h"
 
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
@@ -16,6 +17,7 @@
 @property (nonatomic, strong) UIButton *pinButton;
 @property (nonatomic, strong) UITextField *pinTextField;
 @property (nonatomic, strong) UIImageView *pinCheckImageView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int validateCounter;
 @end
 
@@ -160,7 +162,19 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
+		
 		[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
 			if ([[result objectForKey:@"result"] intValue] == 0) {
 				
 				_pin = @"";
@@ -193,6 +207,8 @@
 											   delegate:nil
 									  cancelButtonTitle:@"OK"
 									  otherButtonTitles:nil] show];
+					
+					[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 					
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];

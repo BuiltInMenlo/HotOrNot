@@ -125,13 +125,13 @@ static HONAPICaller *sharedInstance = nil;
 #pragma mark - Utility
 - (AFHTTPClient *)getHttpClientWithHMAC {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken] ];
+	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken]];
 	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	
 	return (httpClient);
 }
 
-- (NSString *)hmacForKey:(NSString *)key withData:(NSString *)data{
+- (NSString *)hmacForKey:(NSString *)key withData:(NSString *)data {
     const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cData = [data cStringUsingEncoding:NSASCIIStringEncoding];
     unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
@@ -146,8 +146,8 @@ static HONAPICaller *sharedInstance = nil;
 
 - (NSString *)hmacToken {
     NSMutableString *token = [@"unknown" mutableCopy];
-    NSMutableString *data = [[HONAppDelegate deviceToken] mutableCopy];
-	
+    NSMutableString *data = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] mutableCopy];
+		
 	if( data != nil ){
 	    [data appendString:@"+"];
 	    [data appendString:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];

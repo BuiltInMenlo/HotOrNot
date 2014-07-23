@@ -44,6 +44,7 @@
 		4C382FFC178B8AD700C7FA7C /* HONSearchUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C382FFB178B8AD700C7FA7C /* HONSearchUserViewCell.m */; };
 		4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */; };
 		4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */; };
+		4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */; };
 		4C3DCCD8190AD9D60036F440 /* HONClubsNewsFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DCCD7190AD9D60036F440 /* HONClubsNewsFeedViewController.m */; };
 		4C3DCCDB190ADA490036F440 /* HONClubNewsFeedViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DCCDA190ADA490036F440 /* HONClubNewsFeedViewCell.m */; };
 		4C41071F18C16300009E9F9E /* HONEnterPINViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41071E18C16300009E9F9E /* HONEnterPINViewController.m */; };
@@ -360,6 +361,8 @@
 		4C3D7E90176D3B8400AE07B3 /* HONSelfieCameraPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraPreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraPreviewView.m; sourceTree = "<group>"; };
 		4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = badminton_racket_fast_movement_swoosh_002.caf; sourceTree = "<group>"; };
+		4C3DA71D197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONHighSchoolSearchViewController.h; sourceTree = "<group>"; };
+		4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONHighSchoolSearchViewController.m; sourceTree = "<group>"; };
 		4C3DCCD6190AD9D60036F440 /* HONClubsNewsFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsNewsFeedViewController.h; sourceTree = "<group>"; };
 		4C3DCCD7190AD9D60036F440 /* HONClubsNewsFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsNewsFeedViewController.m; sourceTree = "<group>"; };
 		4C3DCCD9190ADA490036F440 /* HONClubNewsFeedViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubNewsFeedViewCell.h; sourceTree = "<group>"; };
@@ -911,6 +914,8 @@
 				4CD071A919554431003894F4 /* HONInviteContactsViewController.m */,
 				4C8734EE196BBA850052D16E /* HONClubPreviewViewController.h */,
 				4C8734EF196BBA850052D16E /* HONClubPreviewViewController.m */,
+				4C3DA71D197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.h */,
+				4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */,
 			);
 			name = "-Shared-";
 			sourceTree = "<group>";
@@ -2277,6 +2282,7 @@
 				4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,
 				4C4328EB18E3A9FA0035FF06 /* TSResponse.m in Sources */,
+				4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */,
 				4CC94FD7190733B200347A34 /* HONEmotionPaginationView.m in Sources */,
 				4C4328B618E3A9FA0035FF06 /* ImageFilter.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,

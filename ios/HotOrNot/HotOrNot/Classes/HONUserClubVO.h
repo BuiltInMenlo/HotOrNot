@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, HONClubEnrollmentType) {
 	HONClubEnrollmentTypePending,
 	HONClubEnrollmentTypeBanned,
 	HONClubEnrollmentTypeAutoGen,
+	HONClubEnrollmentTypeHighSchool,
 	HONClubEnrollmentTypeUnknown,
 	HONClubembershipType__TOTAL
 };

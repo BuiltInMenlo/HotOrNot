@@ -27,12 +27,13 @@
 #import "HONClubSettingsViewController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONClubTimelineViewController.h"
+#import "HONHighSchoolSearchViewController.h"
 #import "HONUserClubVO.h"
 
 
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <HONClubViewCellDelegate, HONTutorialViewDelegate>
+@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONTutorialViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -96,6 +97,15 @@
 	[dict setValue:@"0" forKey:@"id"];
 	[dict setValue:@"Create a club" forKey:@"name"];
 	[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
+	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
+	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
+	[_dictClubs addObject:[dict copy]];
+	
+	dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+	[dict setValue:@"0" forKey:@"id"];
+	[dict setValue:@"Create a club" forKey:@"name"];
+	[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
@@ -404,6 +414,10 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)clubViewCellHighSchoolClub:(HONClubCollectionViewCell *)cell {
+	[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+}
+
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
@@ -502,6 +516,9 @@
 					[self _retrieveClubs];
 				}];
 			}
+			
+		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
+			[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			_selectedClub = vo;

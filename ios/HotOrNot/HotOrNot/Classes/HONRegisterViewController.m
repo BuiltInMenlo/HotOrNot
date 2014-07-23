@@ -119,7 +119,7 @@
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				_usernameCheckImageView.alpha = 1.0;
 				
-				_clubNameLabel.text = @"Getselfieclub.com/";
+				_clubNameLabel.text = @"joinselfie.club/";
 				_usernameTextField.text = @"";
 				[_usernameTextField becomeFirstResponder];
 				
@@ -144,7 +144,7 @@
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 				
-				_clubNameLabel.text = @"Getselfieclub.com/";
+				_clubNameLabel.text = @"joinselfie.club/";
 				_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				_usernameCheckImageView.alpha = 1.0;
 				
@@ -176,6 +176,13 @@
 }
 
 - (void)_finalizeUser {
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																@"username"	: _username,
@@ -298,7 +305,7 @@
 	_clubNameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 	_clubNameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_clubNameLabel.backgroundColor = [UIColor clearColor];
-	_clubNameLabel.text = @"Getselfieclub.com/";
+	_clubNameLabel.text = @"joinselfie.club/";
 	[self.view addSubview:_clubNameLabel];
 	
 	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
@@ -625,7 +632,7 @@
 						  otherButtonTitles:nil] show];
 		
 		_username = @"";
-		_clubNameLabel.text = @"Getselfieclub.com/";
+		_clubNameLabel.text = @"joinselfie.club/";
 		_usernameTextField.text = @"";
 		[_usernameTextField becomeFirstResponder];
 	
@@ -663,7 +670,7 @@
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
-	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"Getselfieclub.com/%@/%@'s Club", _usernameTextField.text, _usernameTextField.text] : @"Getselfieclub.com/";
+	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@'s Club", _usernameTextField.text, _usernameTextField.text] : @"Getselfieclub.com/";
 	
 	NSString *phone1 = @"";
 	NSString *phone2 = @"";

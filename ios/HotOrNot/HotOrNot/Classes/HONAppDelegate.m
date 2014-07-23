@@ -816,8 +816,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	NSLog(@"DEC:[%@]", [[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]);
 //	NSLog(@"ORG:[%@]", [blowfishAlgorithm decrypt:[[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]]);
 	
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-	
 //	if (launchOptions) {
 //		NSLog(@"\t—//]> [%@ didFinishLaunchingWithOptions] (%@)", self.class, launchOptions);
 //		[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
@@ -1157,14 +1155,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
 	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
 	
-	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, deviceID);//[deviceToken description]);
+	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, deviceID);
 	[HONAppDelegate writeDeviceToken:deviceID];
+	[self _enableNotifications:YES];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
 	[HONAppDelegate writeDeviceToken:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]];
+	[self _enableNotifications:NO];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1180,59 +1180,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //					  cancelButtonTitle:@"OK"
 //					  otherButtonTitles:nil] show];
 }
-
-
-
-
-
-/*
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-	[[UAPush shared] registerDeviceToken:deviceToken];
-	
-	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
-	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
-	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
-	
-	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
-	
-	[HONAppDelegate writeDeviceToken:deviceID];
-	
-//	if ([HONAppDelegate apiServerPath] != nil && [HONAppDelegate infoForUser] != nil)// && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"N"])
-//		[self _enableNotifications:YES];
-}
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
-	UALOG(@"Failed To Register For Remote Notifications With Error: %@", error);
-	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", error.description);
-	
-	NSString *holderToken = [[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"];
-	
-	[HONAppDelegate writeDeviceToken:holderToken];
-	
-//	if ([HONAppDelegate apiServerPath] != nil && [HONAppDelegate infoForUser] != nil)// && [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"])
-//		[self _enableNotifications:NO];
-}
- 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-	UALOG(@"Received remote notification: %@", userInfo);
-	
-	[[UAPush shared] handleNotification:userInfo applicationState:application.applicationState];
-	
-	if (application.applicationState != UIApplicationStateBackground)
-		[[UAPush shared] resetBadge]; // zero badge after push received
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    UA_LINFO(@"Received remote notification (in appDelegate): %@", userInfo);
-	
-    // Reset the badge after a push is received in a active or inactive state
-	if (application.applicationState != UIApplicationStateBackground)
-		[[UAPush shared] resetBadge];
-	
-	completionHandler(UIBackgroundFetchResultNoData);
-}
-*/
-
 
 #pragma mark - Startup Operations
 - (void)_initTabs {

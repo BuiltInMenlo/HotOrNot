@@ -443,8 +443,6 @@
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-
-	
 	[self _searchUsersWithUsername:searchQuery];
 }
 

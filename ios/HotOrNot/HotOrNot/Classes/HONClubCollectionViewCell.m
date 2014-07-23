@@ -125,6 +125,10 @@
 		buttonAsset = @"blankClubButton";
 		newSelector = @selector(_goCreateClub);
 		
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
+		buttonAsset = @"blankClubButton";
+		newSelector = @selector(_goHighSchool);
+	
 	} else {
 		buttonAsset = @"blankClubButton";
 		newSelector = nil;
@@ -206,6 +210,11 @@
 - (void)_goCreateClub {
 	if ([self.delegate respondsToSelector:@selector(clubViewCellCreateClub:)])
 		[self.delegate clubViewCellCreateClub:self];
+}
+
+- (void)_goHighSchool {
+	if ([self.delegate respondsToSelector:@selector(clubViewCellHighSchoolClub:)])
+		[self.delegate clubViewCellHighSchoolClub:self];
 }
 
 
