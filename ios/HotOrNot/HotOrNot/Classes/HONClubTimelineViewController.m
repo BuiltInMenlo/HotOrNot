@@ -216,8 +216,6 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Back"
-									   withUserClub:_clubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
@@ -225,9 +223,6 @@
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Refresh"
-									   withUserClub:_clubVO];
-	
 	[self _retrieveClub];
 }
 
@@ -242,8 +237,6 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Advance Photo"
-									  withClubPhoto:clubPhotoVO];
 	
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:cell.indexPath.row inSection:cell.indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
@@ -251,8 +244,6 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Show Profile"
-									  withClubPhoto:clubPhotoVO];
 	
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
@@ -260,8 +251,6 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell replyToPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:replyToPhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Reply Photo"
-									  withClubPhoto:clubPhotoVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_clubVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -271,8 +260,6 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Timeline - Upvote Photo"
-									   withClubPhoto:clubPhotoVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:clubPhotoVO.userID asLegit:YES completion:^(NSDictionary *result) {

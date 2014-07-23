@@ -145,8 +145,7 @@
 
 - (void)_goChangeTint {
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Change Tint Overlay"
-									 withProperties:@{@"tint"	: [@"" stringFromInt:_tintIndex]}];
+
 	
 //	UIColor *color = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
 //	NSLog(@"TINT:[%@]", [color colorWithAlphaComponent:0.5]);

@@ -189,7 +189,6 @@
 }
 
 - (void)_goSelectAllToggle {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Create Selfie - Select %@", ([_selectedClubs count] == [_allClubs count]) ? @"None" : @"All"]];
 	[super _goSelectAllToggle];
 }
 

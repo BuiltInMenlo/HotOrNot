@@ -15,7 +15,7 @@
 @end
 
 @interface HONTutorialView : UIView
-- (id)initWithBGImage:(UIImage *)bgImage;
+- (id)initWithImageURL:(NSString *)imageURL;
 - (void)introWithCompletion:(void (^)(BOOL finished))completion;
 - (void)outroWithCompletion:(void (^)(BOOL finished))completion;
 

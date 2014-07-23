@@ -307,8 +307,6 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Comments - Back"
-									  withChallenge:_challengeVO];
 	
 	_isGoingBack = YES;
 	//[_commentTextField resignFirstResponder];
@@ -324,8 +322,6 @@
 }
 
 - (void)_goSend {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline Comments - Submit"
-									  withChallenge:_challengeVO];
 	
 	if ([_commentTextField.text length] > 0) {
 		[self _submitComment];

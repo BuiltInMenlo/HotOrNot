@@ -217,7 +217,6 @@
 }
 
 - (void)_goCancel {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Change Avatar - Skip Photo"];
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"Your profile photo helps the Selfieclub community know your real."
 													   delegate:self
@@ -252,8 +251,7 @@
 }
 
 - (void)_goChangeTint {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Change Tint Overlay"
-									 withProperties:@{@"tint"	: [@"" stringFromInt:(_tintIndex + 1)]}];
+	
 	
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
@@ -303,7 +301,6 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Change Avatar - Skip Photo " stringByAppendingString:(buttonIndex == 0) ? @"Confirm" : @"Cancel"]];
 		
 		switch(buttonIndex) {
 			case 0:

@@ -137,7 +137,6 @@
 
 #pragma mark - Navigation
 - (void)_goMail {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suspended Account - Request Support"];
 	
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -158,8 +157,7 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Suspended Account - Submit"
-									 withProperties:@{@"passcode"	: _passcode}];
+
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, 320.0, _submitButton.frame.size.height);
@@ -231,7 +229,6 @@
 			break;
 	}
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Suspended Account - Message" stringByAppendingString:mpAction]];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

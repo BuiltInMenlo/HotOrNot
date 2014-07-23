@@ -142,12 +142,10 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Done"];
 	
 	_pin = _pinTextField.text;
 	if ([_pin length] < 4) {
@@ -205,7 +203,6 @@
 }
 
 - (void)_goResend {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Validate PIN - Resend"];
 	
 	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
 		_pinTextField.text = @"";

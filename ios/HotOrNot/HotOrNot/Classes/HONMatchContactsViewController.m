@@ -135,7 +135,6 @@
 }
 
 - (void)_goCancel {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[(_isEmail) ? @"Email" : @"Phone" stringByAppendingString:@" Matching - Cancel"]];
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -144,7 +143,6 @@
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Email Matching - Invalid Email"];
 		[_textField becomeFirstResponder];
 	
 	} else if (alertView.tag == 1) {
@@ -175,8 +173,6 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	if ([textField.text length] > 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[(_isEmail) ? @"Email" : @"Phone" stringByAppendingString:[@" Matching - Entered " stringByAppendingString:(_isEmail) ? @"Email" : @"Phone"]]
-										 withProperties:@{(_isEmail) ? @"email" : @"phone"	: textField.text}];
 				
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_submitButton.frame = CGRectMake(_submitButton.frame.origin.x, _submitButtonOriginY + 216.0, _submitButton.frame.size.width, _submitButton.frame.size.height);//_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);

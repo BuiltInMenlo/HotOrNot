@@ -130,7 +130,6 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Following List - Done"];
 	
 	if (_hasUpdated)
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
@@ -196,7 +195,6 @@
 
 #pragma mark - SubscriberCell Delegates
 - (void)followViewCell:(HONFollowUserViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Subscribers List - %@elect User", (isSelected) ? @"S" : @"Des"]];
 	
 	_hasUpdated = YES;
 	

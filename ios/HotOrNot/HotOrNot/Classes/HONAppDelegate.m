@@ -786,6 +786,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[HONAnalyticsParams sharedInstance] trackEvent:@"Did Finish First Boot"];
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
 	
@@ -917,6 +918,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    [[HONAnalyticsParams sharedInstance] trackEvent:@"Finished Resuming Background"];
 	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
 	_isFromBackground = YES;
@@ -963,7 +965,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
 			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
-					_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
+					_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_resume"];
 					_tutorialView.delegate = self;
 					
 					[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];

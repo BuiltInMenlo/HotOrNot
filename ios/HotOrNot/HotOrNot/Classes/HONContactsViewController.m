@@ -154,7 +154,6 @@
 
 - (void)_searchUsersWithUsername:(NSString *)username {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
@@ -406,8 +405,8 @@
 
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
-	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
-								message:@"Flip the switch in Settings->Privacy->Contacts->Selfieclub to grant access."
+	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
+								message:@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
@@ -427,15 +426,14 @@
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 	_searchUsers = [NSMutableArray array];
 	[_tableView reloadData];
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Cancel"];
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-	
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[self _retreiveUserClubs];
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
@@ -445,8 +443,7 @@
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Search Users Submit"
-									 withProperties:@{@"query"	: searchQuery}];
+
 	
 	[self _searchUsersWithUsername:searchQuery];
 }
@@ -531,13 +528,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && indexPath.section == 0 && indexPath.row == 0) ? 160.0 : kOrthodoxTableCellHeight);
+	return (kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) ?  kOrthodoxTableHeaderHeight : 0.0);
+	return ((_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -576,7 +571,6 @@
 				
 				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-						[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Address Book Granted"];
 						
 						[_inAppUsers removeAllObjects];
 						[self _retrieveDeviceContacts];
@@ -588,13 +582,12 @@
 						[self _retrieveDeviceContacts];
 					});
 				
-				} else
-					[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Address Book Unknown / Denied "];
+				} else {
 			}
 		}
 	}
 }
-
+}
 
 #pragma mark - Data Manip
 -(NSDictionary *)_populateSegmentedDictionary {

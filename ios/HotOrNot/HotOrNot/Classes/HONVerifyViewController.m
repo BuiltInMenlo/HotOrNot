@@ -200,8 +200,7 @@
 	NSIndexPath *indexPath = (NSIndexPath *)[[_tableView indexPathsForVisibleRows] firstObject];
 	_challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Flag"
-							   withChallengeCreator:_challengeVO];
+
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Flag this user?"
 														message:@""
@@ -213,7 +212,6 @@
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Create Snap"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -221,7 +219,6 @@
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Refresh"];
 	[self _retrieveVerifyList];
 }
 
@@ -292,16 +289,14 @@
 
 #pragma mark - VerifyViewCell Delegates
 - (void)verifyViewCell:(HONVerifyViewCell *)cell showCreatorProfile:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Show Profile"
-							   withChallengeCreator:challengeVO];
+
 	
 	_challengeVO = challengeVO;
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:challengeVO.creatorVO.userID] animated:YES];
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell approveChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Approve"
-							   withChallengeCreator:challengeVO];
+
 	
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:challengeVO.creatorVO.userID asLegit:YES completion:nil];
 	[self _removeCellForChallenge:challengeVO];
@@ -309,8 +304,7 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell unapproveChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Unapprove"
-							   withChallengeCreator:challengeVO];
+
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Disprove Confirm"
 														message:@""
@@ -322,8 +316,7 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell skipChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Skip"
-							   withChallengeCreator:challengeVO];
+
 		
 	_challengeVO = challengeVO;
 	[[HONAPICaller sharedInstance] removeUserFromVerifyListWithUserID:challengeVO.creatorVO.userID completion:nil];
@@ -333,8 +326,7 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell inviteChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Invite"
-							   withChallengeCreator:challengeVO];
+
 	
 	if (_userClubVO == nil) {
 		[[[UIAlertView alloc] initWithTitle:@"You Haven't Created A Club!"
@@ -352,8 +344,7 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell moreActionsForChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - More Shelf"
-							   withChallengeCreator:challengeVO];
+
 	
 	_challengeVO = challengeVO;
 	[self _removeCellForChallenge:challengeVO];
@@ -368,8 +359,7 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell fullSizeDisplayForChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Preview"
-							   withChallengeCreator:challengeVO];
+
 	
 	_challengeVO = challengeVO;
 	[cell showTapOverlay];
@@ -382,8 +372,7 @@
 }
 
 - (void)verifyViewCell:(HONVerifyViewCell *)cell bannerTappedForChallenge:(HONChallengeVO *)challengeVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Verify - Banner"
-							   withChallengeCreator:challengeVO];
+	
 	
 	_challengeVO = challengeVO;
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
@@ -519,9 +508,7 @@
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - More Sheet %@" stringByAppendingString:(buttonIndex == 0) ? @"Invite" : (buttonIndex == 1) ? @"Flag" : @"Cancel"]
-								   withChallengeCreator:_challengeVO];
-		
+				
 		[self _removeCellForChallenge:_challengeVO];
 		if (buttonIndex == 0) {
 			if (_userClubVO == nil) {
@@ -557,8 +544,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == HONVerifyAlertTypeDisproveConfirm) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - Dissaprove " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @" Confirm"]
-								   withChallengeCreator:_challengeVO];
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] verifyUserWithUserID:_challengeVO.creatorVO.userID asLegit:NO completion:nil];
@@ -566,8 +551,7 @@
 		}
 	
 	} else if (alertView.tag == HONVerifyAlertTypeFlag) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Verify - Flag " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-								   withChallengeCreator:_challengeVO];
+		
 		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] flagChallengeByChallengeID:_challengeVO.challengeID completion:nil];

@@ -87,23 +87,19 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Details - Back"
-										withMessage:_messageVO];
+
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Details - Refresh"
-										withMessage:_messageVO];
-	
+		
 	[HONAppDelegate incTotalForCounter:@"messages"];
 	[self _retrieveMessage];
 }
 
 - (void)_goReply {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Details - Reply"
-										withMessage:_messageVO];
+
 	
 	NSMutableArray *recipients = [NSMutableArray array];
 	for (HONOpponentVO *vo in _messageVO.participants) {

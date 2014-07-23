@@ -18,4 +18,7 @@
                  success:(void (^)(NSString *contentId, NSString *contentGroupId))success
                     fail:(void (^)(NSString *contentId, NSString *contentGroupId))fail;
 
+-(void)markContentAsFavorite:(NSString *)contentId
+                     success:(void (^)(NSString *contentId))success
+                        fail:(void (^)(NSString *contentId))fail;
 @end

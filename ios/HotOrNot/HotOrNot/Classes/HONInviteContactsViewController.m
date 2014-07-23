@@ -101,7 +101,7 @@
 	_selectedInAppContacts = [NSMutableArray array];
 	_selectedNonAppContacts = [NSMutableArray array];
 	
-	[_headerView setTitle:@"Invite Friends"];
+	[_headerView setTitle:@"Invite to Club"];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
@@ -146,21 +146,14 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Back"
-									   withUserClub:_clubVO];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Close"
-									   withUserClub:_clubVO];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"
-									   withUserClub:_clubVO];
-	
 	
 	
 	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
@@ -253,8 +246,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Club Invite - No Users Selected " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-										   withUserClub:_clubVO];
 		
 		if (buttonIndex == 1)
 			[self.navigationController dismissViewControllerAnimated:YES completion:nil];

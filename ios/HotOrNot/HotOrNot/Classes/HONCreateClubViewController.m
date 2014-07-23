@@ -344,13 +344,11 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Close"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSED_CREATE_CLUB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goNext {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Next"];
 	
 	if ([_clubNameTextField isFirstResponder])
 		[_clubNameTextField resignFirstResponder];
@@ -382,14 +380,12 @@
 
 
 - (void)_goClubName {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Enter Name"];
 	
 	[_clubNameButton setSelected:YES];
 //	[_blurbButton setSelected:NO];
 }
 
 - (void)_goCamera {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Choose Image"];
 	
 	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
 	clubCoverCameraViewController.delegate = self;
@@ -400,7 +396,6 @@
 }
 
 - (void)_goBlurb {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Club - Enter Description"];
 	
 //	[_blurbButton setSelected:YES];
 	[_clubNameButton setSelected:NO];
