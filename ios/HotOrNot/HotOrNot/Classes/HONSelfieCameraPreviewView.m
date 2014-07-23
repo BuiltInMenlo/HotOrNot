@@ -107,7 +107,6 @@
 
 #pragma mark - Navigation
 - (void)_goToggleOverlay {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Main Camera - Toggle Overlay " stringByAppendingString:(_emotionsPickerView.hidden) ? @"Up" : @"Down"]];
 	
 	if (_emotionsPickerView.hidden)
 		[self _showOverlay];
@@ -117,14 +116,12 @@
 }
 
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Back"];
 //	[[UIApplication sharedApplication] performSelector:@selector(setStatusBarHidden:withAnimation:) withObject:@YES afterDelay:0.125];
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 	[self _removeOverlayAndRemove:YES];
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Submit"];
 	
 	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewSubmit:withSubjects:)])
 		[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
@@ -170,18 +167,14 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Selected Emotion"
-										withEmotion:emotionVO];
-	
+
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Deselected Emotion"
-										withEmotion:emotionVO];
+
 	
 	[_subjectNames removeObject:emotionVO.emotionName];
 	[_emotionsDisplayView removeEmotion:emotionVO];
@@ -190,7 +183,6 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page {
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) [*:*]", self.class, page);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Changed Emotion Page"];
 	
 	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
 	if (page == 1) {
@@ -205,7 +197,6 @@
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Close"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -214,7 +205,6 @@
 }
 
 - (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Invite"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -226,7 +216,6 @@
 }
 
 - (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Skip"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];

@@ -196,8 +196,7 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] clubToggleViewCell:selectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Selected Club"
-									   withUserClub:userClubVO];
+
 	
 	if (![_selectedClubs containsObject:userClubVO])
 		[_selectedClubs addObject:userClubVO];
@@ -206,8 +205,7 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] clubToggleViewCell:deselectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Deselected Club"
-									   withUserClub:userClubVO];
+
 	
 	if ([_selectedClubs containsObject:userClubVO])
 		[_selectedClubs removeObject:userClubVO];
@@ -219,7 +217,6 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {
 	NSLog(@"[*|*] clubToggleViewCell:selectAllToggled(%d)", isSelected);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Create Selfie - Select All " stringByAppendingString:(isSelected) ? @"On" : @"Off"]];
 	[self _goSelectAllToggle];
 }
 
@@ -292,8 +289,6 @@
 		HONClubToggleViewCell *cell = (HONClubToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell invertSelected];
 		
-		[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Create Selfie - %@elected Club", (cell.isSelected) ? @"S" : @"Des"]
-										   withUserClub:cell.userClubVO];
 		
 		if (cell.isSelected) {
 			if (![_selectedClubs containsObject:cell.userClubVO])
@@ -312,7 +307,6 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Create Selfie - Empty Selection " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Select All"]];
 		
 		if (buttonIndex == 1)
 			[self _goSelectAllToggle];

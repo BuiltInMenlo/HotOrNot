@@ -136,7 +136,6 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -149,7 +148,6 @@
 						  otherButtonTitles:nil] show];
 		
 	} else {
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Create Message"];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewMessageWithRecipients:[_selectedRecipients copy]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
@@ -157,7 +155,6 @@
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Message Recipients - Refresh"];
 	[self _buildRecipients];
 }
 
@@ -174,8 +171,6 @@
 
 #pragma mark - MessageRecipientViewCell Delegates
 - (void)messageRecipientViewCell:(HONMessageRecipientViewCell *)recipientViewCell toggleSelected:(BOOL)isSelected forRecipient:(HONTrivialUserVO *)userVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Message Recipients - %@elect Recipient", (isSelected) ? @"S" : @"De"]
-									withTrivialUser:userVO];
 
 	
 	if (isSelected) {

@@ -121,20 +121,16 @@
 
 #pragma mark - Navigation
 - (void)_goRegistration {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register User"];
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Start First Run"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:^(void) {}];
 }
 
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Profile"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Contacts - Create Volley"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -199,7 +195,7 @@
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
-	
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friend Row Tap"];
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
 	if (contactUserVO.contactType == HONContactTypeUnmatched)

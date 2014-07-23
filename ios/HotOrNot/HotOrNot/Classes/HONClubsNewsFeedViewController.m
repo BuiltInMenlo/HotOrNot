@@ -500,7 +500,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Create Challenge"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Camera Step 1 hit camera button"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -508,12 +508,10 @@
 }
 
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Refresh"];
 	[self _retrieveTimeline];
 }
 
 - (void)_goConfirmClubs {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Confirm Clubs"];
 	
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 //	[navigationController setNavigationBarHidden:YES];
@@ -554,8 +552,6 @@
 #pragma mark - ClubNewsFeedItemViewCell Delegates
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell createClubWithProtoVO:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:createClubWithProtoVO:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
-	
 	_selectedClubVO = userClubVO;
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 														message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
@@ -570,7 +566,7 @@
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell enterTimelineForClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:enterTimelineForClub:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Enter Club"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Newsfeed Row Tap"
 									   withUserClub:userClubVO];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
@@ -597,8 +593,6 @@
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyToClubPhoto:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:replyToClubPhoto:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Reply"
-									   withUserClub:userClubVO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:userClubVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -608,7 +602,7 @@
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:likeClubChallenge:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Liked"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Newsfeed Upvote"
 									   withUserClub:userClubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
@@ -621,17 +615,13 @@
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.clubID, clubPhotoVO.username);
-	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - User Profile"
-									   withClubPhoto:clubPhotoVO];
-	
+    [[HONAnalyticsParams sharedInstance] trackEvent:@"User Avatar Tap"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
 
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Tutorial Close"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -640,7 +630,6 @@
 }
 
 - (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Tutorial Invite"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
@@ -653,7 +642,6 @@
 }
 
 - (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Tutorial Skip"];
 	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];

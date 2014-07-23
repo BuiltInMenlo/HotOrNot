@@ -203,7 +203,6 @@ const CGSize kTabSize = {80.0, 50.0};
 	}
 	
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Tab Bar %@ - %@", (touch.tapCount == 1) ? @"Select" : @"Double Tap", analyticsEventName]];
 	[HONAppDelegate incTotalForCounter:totalKey];
 	
 	[super setSelectedIndex:tabBarButtonType];

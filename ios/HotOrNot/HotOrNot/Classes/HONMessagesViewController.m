@@ -142,24 +142,20 @@
 
 #pragma mark - Navigation
 - (void)_goRefresh {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Refresh"];
 	
 	[HONAppDelegate incTotalForCounter:@"messages"];
 	[self _retreiveMessages];
 }
 
 - (void)_goCreateMessage {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Create Message"];
 	[self.navigationController pushViewController:[[HONMessageRecipientsViewController alloc] init] animated:YES];
 }
 
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goMatchPhone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Match Phone"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:NO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -167,14 +163,12 @@
 }
 
 - (void)_goMatchEmail {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Match Email"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONMatchContactsViewController alloc] initAsEmailVerify:YES]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSearch {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Search"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSearchUsersViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -182,7 +176,6 @@
 }
 
 - (void)_goSuggested {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Suggested Follow"];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuggestedFollowViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -213,9 +206,7 @@
 
 #pragma mark - MessageItemViewCell Delegates
 - (void)messageItemViewCell:(HONMessageItemViewCell *)cell showProfileForParticipant:(HONOpponentVO *)opponentVO forMessage:(HONMessageVO *)messageVO {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Show Details"
-										withMessage:messageVO
-									 andParticipant:opponentVO];
+	
 }
 
 
@@ -313,9 +304,7 @@
 	} else {
 		HONMessageItemViewCell *cell = (HONMessageItemViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 		HONMessageVO *messageVO = cell.messageVO;
-		
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Messages - Show Details"
-											withMessage:messageVO];
+	
 				
 		if (!messageVO.hasViewed)
 			[[HONAPICaller sharedInstance] markMessageAsSeenForMessageID:messageVO.messageID forParticipant:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:nil];

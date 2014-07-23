@@ -199,8 +199,7 @@
 			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-				[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Pass First Run"];
-				[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+            [[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 																						  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																						  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
@@ -390,7 +389,6 @@
 
 #pragma mark - Navigation
 - (void)_goLogin {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Login"];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
@@ -419,7 +417,6 @@
 }
 
 - (void)_goCamera {
-	[[HONAnalyticsParams sharedInstance] trackEvent:[NSString stringWithFormat:@"Register - Camera %@vailable", ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? @"A" : @"Una"]];
 	
 	UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
 	imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
@@ -524,7 +521,6 @@
 }
 
 - (void)_goFlipCamera {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Switch Camera"];
 	
 	if (self.profileImagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		self.profileImagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -536,14 +532,12 @@
 }
 
 - (void)_goCameraRoll {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Camera Roll"];
 	
 	self.profileImagePickerController.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	self.profileImagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)_goChangeTint {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Change Tint Overlay"];
 	
 	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
 	
@@ -554,14 +548,12 @@
 }
 
 - (void)_goSkip {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Skip Photo"];
 
 	_imageFilename = @"";
 	[self _finalizeUser];
 }
 
 - (void)_goTakePhoto {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Take Photo"];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
@@ -605,7 +597,6 @@
 }
 
 - (void)_goSubmit {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Register - Submit"];
 	
 	if ([_usernameTextField isFirstResponder])
 		[_usernameTextField resignFirstResponder];
@@ -845,7 +836,6 @@
 	}
 	
 	else if (alertView.tag == 1) {
-		[[HONAnalyticsParams sharedInstance] trackEvent:[@"Register - Skip Photo " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 
 		if (buttonIndex == 1) {
 			_imageFilename = @"";
@@ -886,7 +876,6 @@
 			mpAction = @"Not Sent";
 			break;
 	}
-	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Register - Login Message " stringByAppendingString:mpAction]];
 	[_mailComposeViewController dismissViewControllerAnimated:YES completion:^(void) {
 	}];
 }

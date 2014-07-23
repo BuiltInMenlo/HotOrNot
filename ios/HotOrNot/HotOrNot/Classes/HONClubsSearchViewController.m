@@ -113,17 +113,14 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goClose {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Close"];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goDone {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Invite - Done"];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -372,7 +372,7 @@
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewShowCameraRoll:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Camera Roll"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Roll"];
 	
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -380,7 +380,7 @@
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Flip Camera"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Flip Camera"
 								   withCameraDevice:self.imagePickerController.cameraDevice];
 	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
@@ -391,7 +391,7 @@
 
 - (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView {
 	NSLog(@"cameraOverlayViewCloseCamera");
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Cancel"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Cancel"];
 	
 	[self _cancelUpload];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -402,7 +402,7 @@
 }
 
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Take Photo"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 2 Take Photo"
 									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
 	
 	_tintIndex = tintIndex;
@@ -420,7 +420,7 @@
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"cameraPreviewViewBackToCamera");
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Volley - Retake Photo"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Retake Photo"];
 	[self _cancelUpload];
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
@@ -489,7 +489,7 @@
 	} else {
 		NSLog(@"---CLUB SELECT---LIB");
 		_isFirstAppearance = YES;
-		
+        [[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
 		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
 	}
 }

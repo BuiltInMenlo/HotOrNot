@@ -136,6 +136,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	if ([_selectedEmotions count] < 100) {
 		[_selectedEmotions addObject:emotionVO];
 		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:selectedEmotion:)])
+            [[HONAnalyticsParams sharedInstance] trackEvent:@"Stickerboard Sticker Selected"];
 			[self.delegate emotionsPickerView:self selectedEmotion:emotionVO];
 	}
 }
@@ -157,6 +158,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	
 	if (offsetPage != _prevPage) {
 		_prevPage = offsetPage;
+        [[HONAnalyticsParams sharedInstance] trackEvent:@"Stickerboard Swipe"];
 		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:didChangeToPage:)])
 			[self.delegate emotionsPickerView:self didChangeToPage:offsetPage];
 	}
