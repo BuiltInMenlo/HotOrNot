@@ -899,8 +899,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
     KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
     NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
     
-    if ([passedRegistration length] == 0) {
-        
+    if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
         UILocalNotification *localNotification = [[UILocalNotification alloc] init];
         localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
         localNotification.timeZone = [NSTimeZone systemTimeZone];
@@ -910,7 +909,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
         localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
         
         [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"local_reg"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
     }
 
 }
@@ -1146,7 +1147,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
     notification.soundName = UILocalNotificationDefaultSoundName;
     [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
-    [self _showOKAlert:@"Local Notification" withMessage:[notification.alertBody stringByAppendingFormat:@" %@", notification.userInfo]];
+    [self _showOKAlert:@"Local Notification" withMessage:notification.alertBody];
 }
 
 
