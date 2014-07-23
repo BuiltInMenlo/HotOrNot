@@ -124,7 +124,7 @@
 	
 	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
-		UIView *emotionView = [self _viewForEmotion:emotionVO];
+		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
 		emotionView.frame = CGRectOffset(emotionView.frame, cnt * 90.0, 0.0);
 		[emoticonsScrollView addSubview:emotionView];
 		cnt++;
@@ -176,7 +176,7 @@
 
 
 #pragma mark - UI Presentation
-- (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO {
+- (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO atIndex:(int)index {
 	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 84.0, 84.0)];
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:holderView asLargeLoader:NO];
@@ -189,9 +189,20 @@
 	imageView.alpha = 0.0;
 	[holderView addSubview:imageView];
 	
+	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
+																	 @"image_view"		: imageView,
+																	 @"emotion"			: emotionVO} afterDelay:0.25];
+	
+	return (holderView);
+}
+
+- (void)_delayedImageLoad:(NSDictionary *)dict {
+	HONImageLoadingView *imageLoadingView = (HONImageLoadingView *)[dict objectForKey:@"loading_view"];
+	UIImageView *imageView = (UIImageView *)[dict objectForKey:@"image_view"];
+	HONEmotionVO *emotionVO = (HONEmotionVO *)[dict objectForKey:@"emotion"];
+	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
-		[imageLoadingView stopAnimating];
 		
 		[UIView animateWithDuration:0.33 delay:0.0
 			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
@@ -200,6 +211,7 @@
 						 animations:^(void) {
 							 imageView.alpha = 1.0;
 						 } completion:^(BOOL finished) {
+							 [imageLoadingView stopAnimating];
 						 }];
 	};
 	
@@ -209,9 +221,8 @@
 					 placeholderImage:nil
 							  success:imageSuccessBlock
 							  failure:nil];
-	
-	return (holderView);
 }
+
 
 - (void)_nextPhoto {
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:advancePhoto:)])
