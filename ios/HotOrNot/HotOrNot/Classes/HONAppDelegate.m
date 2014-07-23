@@ -786,6 +786,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	[KeenClient disableGeoLocation];
+	
     [[HONAnalyticsParams sharedInstance] trackEvent:@"Did Finish First Boot"];
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	
@@ -928,7 +930,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[FBAppEvents activateApp];
 	
-	[KeenClient disableGeoLocation];
 	[KeenClient sharedClientWithProjectId:kKeenIOProductID
                               andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];

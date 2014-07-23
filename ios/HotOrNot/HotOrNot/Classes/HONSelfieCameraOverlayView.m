@@ -63,7 +63,7 @@
 //		_cancelButton.frame = CGRectMake(0.0, 0.0, 114.0, 64.0);
 //		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_nonActive"] forState:UIControlStateNormal];
 //		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_Active"] forState:UIControlStateHighlighted];
-		_cancelButton.frame = CGRectMake(5.0, 0.0, 93.0, 44.0);
+		_cancelButton.frame = CGRectMake(-15.0, 0.0, 93.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 
@@ -78,7 +78,7 @@
 //		[self addSubview:_changeTintButton];
 		
 		_takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_takePhotoButton.frame = CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
+		_takePhotoButton.frame = CGRectMake(115.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[_takePhotoButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];

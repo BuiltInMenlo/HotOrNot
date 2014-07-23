@@ -126,8 +126,9 @@
 		newSelector = @selector(_goCreateClub);
 		
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
-		buttonAsset = @"blankClubButton";
+        buttonAsset = @"blankClubButton";
 		newSelector = @selector(_goHighSchool);
+        _coverImageView.image = [UIImage imageNamed:@"highSchoolButton_nonActive"];
 	
 	} else {
 		buttonAsset = @"blankClubButton";

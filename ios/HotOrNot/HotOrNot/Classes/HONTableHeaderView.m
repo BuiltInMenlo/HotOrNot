@@ -20,7 +20,7 @@
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 6.0, 200.0, 11.0)];
 		label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:11];
-		label.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+		label.textColor = [UIColor colorWithRed:0.741 green:0.741 blue:0.741 alpha:1] /*#bdbdbd*/;
 		label.backgroundColor = [UIColor clearColor];
 		label.text = [title uppercaseString];
 		[self addSubview:label];
