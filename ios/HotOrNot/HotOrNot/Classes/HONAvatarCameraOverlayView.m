@@ -63,7 +63,7 @@
 		[headerBGView addSubview:flipButton];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(5.0, 0.0, 93.0, 44.0);
+		cancelButton.frame = CGRectMake(-15.0, 0.0, 93.0, 44.0);
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -81,7 +81,7 @@
 //		[self addSubview:_changeTintButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
+		_captureButton.frame = CGRectMake(.0, [UIScreen mainScreen].bounds.size.height - 113.0, 94.0, 94.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"takePhotoButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];

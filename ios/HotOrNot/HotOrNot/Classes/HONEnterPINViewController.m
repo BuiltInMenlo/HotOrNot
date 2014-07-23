@@ -200,10 +200,10 @@
 					[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 					
 					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-					pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@'s Club! Tap to join: joinselfie.club://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+					pasteboard.string = [NSString stringWithFormat:@"I have created the %@'s Club! Tap here to join: joinselfie.club://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 					
 					[[[UIAlertView alloc] initWithTitle:@""
-												message:[NSString stringWithFormat:@"Your %@ club URL has been copied to your devices clipboard!\njoinselfie.club://%@/%@'s Club\nPaste this URL anywhere to have your friends join!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]
+												message:[NSString stringWithFormat:@"Share your club!\n\njoinselfie.club://%@/%@'s Club\nIt is copied to your clipboard!",[[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]
 											   delegate:nil
 									  cancelButtonTitle:@"OK"
 									  otherButtonTitles:nil] show];

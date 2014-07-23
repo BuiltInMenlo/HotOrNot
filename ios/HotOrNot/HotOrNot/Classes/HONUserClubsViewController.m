@@ -104,7 +104,7 @@
 	
 	dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
-	[dict setValue:@"Create a club" forKey:@"name"];
+	[dict setValue:@"Find High School" forKey:@"name"];
 	[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
@@ -415,7 +415,12 @@
 }
 
 - (void)clubViewCellHighSchoolClub:(HONClubCollectionViewCell *)cell {
-	[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+    [[[UIAlertView alloc] initWithTitle:@""
+                                message:[NSString stringWithFormat:@"No High Schools Found"]
+                               delegate:nil
+                      cancelButtonTitle:@"Ok"
+                      otherButtonTitles: nil] show];
+	//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
 }
 
 
@@ -518,7 +523,12 @@
 			}
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
-			[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+			//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+            [[[UIAlertView alloc] initWithTitle:@""
+                                        message:[NSString stringWithFormat:@"No High Schools Found"]
+                                       delegate:nil
+                              cancelButtonTitle:@"Ok"
+                              otherButtonTitles: nil] show];
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			_selectedClub = vo;
