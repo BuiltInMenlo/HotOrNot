@@ -262,7 +262,7 @@
 	[_addImageButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_addImageButton];
 	
-	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(64.0, 87.0, 220.0, 22.0)];
+	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(72.0, 87.0, 220.0, 22.0)];
 	//[_clubNameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_clubNameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_clubNameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -271,7 +271,7 @@
 	[_clubNameTextField setTextColor:[UIColor blackColor]];
 	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
+	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16];
 	_clubNameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_clubNameTextField.placeholder = @"Club Name";
 	_clubNameTextField.text = @"";

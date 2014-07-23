@@ -339,7 +339,7 @@
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Invite Friends", @"Copy Club URL", nil];
+														otherButtonTitles:@"Invite Friends", @"Copy my club URL", nil];
 		[actionSheet setTag:0];
 		[actionSheet showInView:self.view];
     }
@@ -552,10 +552,10 @@
 		}
 		else if (buttonIndex == 1){
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@ Tap to join: getselfieclub://%@/%@'s Club", _selectedClub.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClub.clubName];
+			pasteboard.string = [NSString stringWithFormat:@"I created %@! Tap here to join: joinselfie.club/%@/%@", _selectedClub.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClub.clubName];
 			
 			[[[UIAlertView alloc] initWithTitle:@""
-										message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", _selectedClub.clubName]
+										message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard!\n\nPlease share with friends!", _selectedClub.clubName]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
