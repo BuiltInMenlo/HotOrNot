@@ -144,6 +144,16 @@ typedef void (^PicoManagerConnectFailureBlock)(void);
 -(BOOL)allConnected;
 
 /**
+ *  Enable Push Notification for CandyStore for the CandyStore user by registering the push notification device token. To retrieve the device token,
+ *  you can register for push notification service by using -[UIApplication registerForRemoteNotificationTypes:] 
+ *
+ *  @param deviceToken The device token that when application:didRegisterForRemoteNotificationWithDeviceToken: is called
+ *
+ */
+-(void)registerPushDeviceToken:(NSData *)deviceToken;
+
+
+/**
  * Notification name sent out when PicoCandy store and box services are up and running.
  * Subscribe to this notification through the default NSNotificationCenter
  */

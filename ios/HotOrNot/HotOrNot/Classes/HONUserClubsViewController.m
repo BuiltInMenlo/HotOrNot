@@ -203,6 +203,12 @@
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
+	
+	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_handleLongPress:)];
+    lpgr.minimumPressDuration = .5; //seconds
+    lpgr.delegate = self;
+	lpgr.delaysTouchesBegan = YES;
+    [self.collectionView addGestureRecognizer:lpgr];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -294,14 +300,39 @@
 																							@"view_controller"	: self}];
 }
 
--(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
-	NSLog(@"goLongPress:[%d]", lpGestureRecognizer.state);
+//-(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+//	NSLog(@"goLongPress:[%d]", lpGestureRecognizer.state);
+//	
+//	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+//		
+//		
+//	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+//	}
+//}
+
+-(void)_handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+    CGPoint p = [gestureRecognizer locationInView:self.collectionView];
 	
-	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		
-		
-	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-	}
+    NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:p];
+    if (indexPath == nil){
+        NSLog(@"couldn't find index path");
+    } else {
+        // get the cell at indexPath (the one you long pressed)
+        HONClubCollectionViewCell* cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+        // do stuff with the cell
+		_selectedClub = cell.clubVO;
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:nil
+														otherButtonTitles:@"Invite Friends", @"Copy Club URL", @"Delete Club", nil];
+		[actionSheet setTag:0];
+		[actionSheet showInView:self.view];
+    }
 }
 
 
@@ -497,8 +528,21 @@
 	if (actionSheet.tag == 0) {
 		
 		
-		if (buttonIndex == 0)
-			[self _leaveClub:_selectedClub];
+		if (buttonIndex == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClub viewControllerPushed:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+		else if (buttonIndex == 1){
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@ Tap to join: getselfieclub://%@/%@'s Club", _selectedClub.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClub.clubName];
+			
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard, please share with friends", _selectedClub.clubName]
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		}
 	}
 }
 
