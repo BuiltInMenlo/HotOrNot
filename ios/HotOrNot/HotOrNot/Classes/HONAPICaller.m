@@ -330,7 +330,7 @@ static HONAPICaller *sharedInstance = nil;
 							 @"username"	: [dict objectForKey:@"username"],
 							 @"password"	: [dict objectForKey:@"phone"],
 							 @"age"			: @"0000-00-00 00:00:00",
-							 @"token"		: [HONAppDelegate deviceToken],
+							 @"token"		: @"",
 							 @"imgURL"		: [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:([[dict objectForKey:@"filename"] length] == 0) ? @"/defaultAvatar" : [@"/" stringByAppendingString:[dict objectForKey:@"filename"]]]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete, params);

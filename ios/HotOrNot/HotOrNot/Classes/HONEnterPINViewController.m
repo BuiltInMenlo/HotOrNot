@@ -8,6 +8,8 @@
 
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
+#import "PCCandyStoreSearchController.h"
+#import "PicoManager.h"
 
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
@@ -71,7 +73,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	
+	 
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
@@ -115,6 +117,38 @@
 	cheatButton.backgroundColor=[UIColor orangeColor];
 #endif
 	[_pinTextField becomeFirstResponder];
+	
+	
+	
+	PicoManager *picoManager = [PicoManager sharedManager];
+	[picoManager registerStoreWithAppId:@"1df5644d9e94"
+								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
+	
+	NSLog(@"PICOCANDY:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]);
+	
+	NSMutableArray *stickers = [NSMutableArray array];
+	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]) {
+		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
+			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+			
+			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				PCContent *content = (PCContent *)obj;
+				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
+				
+				[stickers addObject:@{@"id"		: content.content_id,
+									  @"name"	: content.name,
+									  @"price"	: @"0",
+									  @"img"	: content.large_image}];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}];
+		}];
+	}
 }
 
 - (void)viewDidLoad {
@@ -237,10 +271,10 @@
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@'s Club! Tap to join: joinselfie.club://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: joinselfie.club://%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
 		
-		[[[UIAlertView alloc] initWithTitle:@""
-									message:[NSString stringWithFormat:@"Your %@ club URL has been copied to your devices clipboard!\njoinselfie.club://%@/%@'s Club\nPaste this URL anywhere to have your friends join!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+									message:[NSString stringWithFormat:@"joinselfie.club://%@/%@\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

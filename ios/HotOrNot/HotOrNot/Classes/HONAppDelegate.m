@@ -28,8 +28,6 @@
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
 #import "KikAPI.h"
-#import "PCCandyStoreSearchController.h"
-#import "PicoManager.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
 //#import "UAConfig.h"
@@ -131,7 +129,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #if __APPSTORE_BUILD__ == 0
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONTutorialViewDelegate, PCCandyStoreSearchControllerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONTutorialViewDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
 @interface HONAppDelegate() <ChartboostDelegate, HONTutorialViewDelegate, PCCandyStoreSearchControllerDelegate>
@@ -1295,38 +1293,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
-	
-	
-	PicoManager *picoManager = [PicoManager sharedManager];
-	[picoManager registerStoreWithAppId:@"1df5644d9e94"
-								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-	
-	NSLog(@"PICOCANDY:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]);
-	
-	NSMutableArray *stickers = [NSMutableArray array];
-	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]) {
-		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
-			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
-			
-			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				PCContent *content = (PCContent *)obj;
-				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
-				
-				[stickers addObject:@{@"id"		: content.content_id,
-									  @"name"	: content.name,
-									  @"price"	: @"0",
-									  @"img"	: content.large_image}];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}];
-		}];
-	}
-	
 		
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1579,106 +1545,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)didFailToLoadInterstitial:(NSString *)location withError:(CBLoadError)error {
 	
-}
-
-
-#pragma mark - CandyStoreSearchController Delegates
-- (void)candyStoreSearchController:(id)controller failedToFetchAllContentsForSearchTerms:(NSString *)text {
-	NSLog(@"[[*:*]] candyStoreSearchController:failedToFetchAllContentsForSearchTerms");
-}
-
-- (void)candyStoreSearchController:(id)controller failedToFetchStickerPacksForSearchTerms:(NSString *)text {
-	NSLog(@"[[*:*]] candyStoreSearchController:failedToFetchStickerPacksForSearchTerms");
-}
-
-- (void)candyStoreSearchController:(id)controller failedToFetchStickersForCategory:(NSString *)categoryId {
-	NSLog(@"[[*:*]] candyStoreSearchController:failedToFetchStickersForCategory");
-}
-
-- (void)candyStoreSearchController:(id)controller failedToFetchStickersForSearchTerms:(NSString *)text {
-	NSLog(@"[[*:*]] candyStoreSearchController:failedToFetchStickersForSearchTerms");
-}
-
-- (void)candyStoreSearchController:(id)controller failedToFetchStickersForSearchType:(kCandyStoreSearchType)searchType {
-	NSLog(@"[[*:*]] candyStoreSearchController:failedToFetchStickersForSearchType");
-}
-
-- (void)candyStoreSearchController:(id)controller fetchedStickerPacks:(PCCandyStoreSearchResult *)result withSearchTerms:(NSString *)text {
-	NSLog(@"[[*:*]] candyStoreSearchController:fetchedStickerPacks:[%@]", result);
-	
-//	NSMutableArray *stickers = [NSMutableArray array];
-//	[result.results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//		PCContent *content = (PCContent *)obj;
-//		NSLog(@"content.large_image:[%@]", content.large_image);
-//		[stickers addObject:@{@"id"		: content.content_id,
-//							  @"name"	: content.name,
-//							  @"price"	: @"0",
-//							  @"img"	: content.large_image}];
-//	}];
-//	
-//	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-//		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-//	
-//	[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (void)candyStoreSearchController:(id)controller fetchedAllContents:(PCCandyStoreSearchResult *)result withSearchTerms:(NSString *)text {
-	NSLog(@"[[*:*]] candyStoreSearchController:fetchedAllContents:[%@]", result);
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-	
-	NSMutableArray *stickers = [NSMutableArray array];
-	[result.results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		PCContent *content = (PCContent *)obj;
-		NSLog(@"content.large_image:[%@]", content.large_image);
-	}];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (void)candyStoreSearchController:(id)controller fetchedStickers:(PCCandyStoreSearchResult *)result withSearchTerms:(NSString *)text {
-	NSLog(@"[[*:*]] candyStoreSearchController:fetchedStickers:withSearchTerms");
-}
-
-- (void)candyStoreSearchController:(id)controller fetchedStickers:(PCCandyStoreSearchResult *)result forSearchType:(kCandyStoreSearchType)searchType {
-	NSLog(@"[[*:*]] candyStoreSearchController:fetchedStickers:forSearchType:[%d]", searchType);
-	
-	NSMutableArray *stickers = [NSMutableArray array];
-	if (searchType == kCandyStoreSearchNewestStickerPacks) {
-		[result.results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			PCContentGroup *contentGroup = (PCContentGroup *)obj;
-			
-			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				PCContent *content = (PCContent *)obj;
-				//NSLog(@"content.large_image:[%@] (%@)", content.large_image, content.name);
-				
-				[stickers addObject:@{@"id"		: content.content_id,
-									  @"name"	: content.name,
-									  @"price"	: @"0",
-									  @"img"	: content.large_image}];
-			}];
-		}];
-		
-	} else {
-		[result.results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			PCContent *content = (PCContent *)obj;
-			NSLog(@"content.large_image:[%@]", content.large_image);
-		}];
-	}
-	
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (void)candyStoreSearchController:(id)controller fetchedStickers:(PCCandyStoreSearchResult *)result withCategory:(NSString *)categoryId {
-	NSLog(@"[[*:*]] candyStoreSearchController:fetchedStickers:withCategory");
 }
 
 
