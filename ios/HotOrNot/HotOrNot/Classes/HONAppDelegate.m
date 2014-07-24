@@ -132,7 +132,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONTutorialViewDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate, HONTutorialViewDelegate, PCCandyStoreSearchControllerDelegate>
+@interface HONAppDelegate() <ChartboostDelegate, HONTutorialViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
