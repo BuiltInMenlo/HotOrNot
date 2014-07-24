@@ -960,16 +960,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
-			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
-				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
-					_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_resume"];
-					_tutorialView.delegate = self;
-					
-					[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-					[_tutorialView introWithCompletion:nil];
-				}
-			}
+//			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+//			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
+//				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
+//					_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_resume"];
+//					_tutorialView.delegate = self;
+//					
+//					[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+//					[_tutorialView introWithCompletion:nil];
+//				}
+//			}
 			
 			
 			if (![HONAppDelegate canPingConfigServer]) {

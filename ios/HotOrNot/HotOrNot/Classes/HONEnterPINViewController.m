@@ -8,8 +8,6 @@
 
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
-#import "PCCandyStoreSearchController.h"
-#import "PicoManager.h"
 
 #import "HONEnterPINViewController.h"
 #import "HONHeaderView.h"
@@ -117,38 +115,6 @@
 	cheatButton.backgroundColor=[UIColor orangeColor];
 #endif
 	[_pinTextField becomeFirstResponder];
-	
-	
-	
-	PicoManager *picoManager = [PicoManager sharedManager];
-	[picoManager registerStoreWithAppId:@"1df5644d9e94"
-								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-	
-	NSLog(@"PICOCANDY:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]);
-	
-	NSMutableArray *stickers = [NSMutableArray array];
-	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]) {
-		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
-			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
-			
-			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				PCContent *content = (PCContent *)obj;
-				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
-				
-				[stickers addObject:@{@"id"		: content.content_id,
-									  @"name"	: content.name,
-									  @"price"	: @"0",
-									  @"img"	: content.large_image}];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}];
-		}];
-	}
 }
 
 - (void)viewDidLoad {
@@ -234,10 +200,10 @@
 					[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 					
 					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-					pasteboard.string = [NSString stringWithFormat:@"I have created the %@'s Club! Tap here to join: joinselfie.club://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+					pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
 					
-					[[[UIAlertView alloc] initWithTitle:@""
-												message:[NSString stringWithFormat:@"Share your club!\n\njoinselfie.club://%@/%@'s Club\nIt is copied to your clipboard!",[[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]
+					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+												message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 											   delegate:nil
 									  cancelButtonTitle:@"OK"
 									  otherButtonTitles:nil] show];
@@ -271,13 +237,15 @@
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: joinselfie.club://%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
-		
+        pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
+        
 		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
-									message:[NSString stringWithFormat:@"joinselfie.club://%@/%@\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
+		
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];

@@ -807,10 +807,10 @@
 		}
 		else if (buttonIndex == 1){
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I created %@! Tap here to join: joinselfie.club/%@/%@", _selectedClub.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClub.clubName];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
 			
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard!\n\nPlease share with friends!", _selectedClub.clubName]
+			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];

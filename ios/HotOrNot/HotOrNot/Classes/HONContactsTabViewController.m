@@ -10,6 +10,8 @@
 #import "NSString+DataTypes.h"
 
 #import "KeychainItemWrapper.h"
+#import "PCCandyStoreSearchController.h"
+#import "PicoManager.h"
 
 #import "HONContactsTabViewController.h"
 #import "HONActivityHeaderButtonView.h"
@@ -76,6 +78,37 @@
 //	
 	if ([passedRegistration length] == 0)
 		[self _goRegistration];
+	
+	
+	PicoManager *picoManager = [PicoManager sharedManager];
+	[picoManager registerStoreWithAppId:@"1df5644d9e94"
+								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
+	
+	NSLog(@"PICOCANDY:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]);
+	
+	NSMutableArray *stickers = [NSMutableArray array];
+	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
+	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]) {
+		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
+			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+			
+			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				PCContent *content = (PCContent *)obj;
+				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
+				
+				[stickers addObject:@{@"id"		: content.content_id,
+									  @"name"	: content.name,
+									  @"price"	: @"0",
+									  @"img"	: content.large_image}];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}];
+		}];
+	}
 }
 
 - (void)viewDidLoad {
