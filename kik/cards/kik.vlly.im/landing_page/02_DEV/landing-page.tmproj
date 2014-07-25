@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>landing-page/index.html</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -34,9 +32,7 @@
 			<key>filename</key>
 			<string>landing-page/index.html</string>
 			<key>lastUsed</key>
-			<date>2013-11-19T00:39:18Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2014-07-25T04:52:34Z</date>
 		</dict>
 		<dict>
 			<key>expanded</key>
@@ -78,71 +74,7 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>229</integer>
 	<key>metaData</key>
-	<dict>
-		<key>landing-page/css/cdn.kik.com_app_1_default.css</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>9</integer>
-				<key>line</key>
-				<integer>125</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>21</integer>
-		</dict>
-		<key>landing-page/css/main.css</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>13</integer>
-				<key>line</key>
-				<integer>8</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>37</integer>
-		</dict>
-		<key>landing-page/index.html</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>16</integer>
-				<key>line</key>
-				<integer>173</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>landing-page/js/main.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>5</integer>
-				<key>line</key>
-				<integer>33</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>landing-page/css/cdn.kik.com_app_1_default.css</string>
-		<string>landing-page/index.html</string>
-		<string>landing-page/js/main.js</string>
-		<string>landing-page/css/main.css</string>
-	</array>
+	<dict/>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>

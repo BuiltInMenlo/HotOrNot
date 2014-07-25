@@ -1158,6 +1158,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, deviceID);
 	[HONAppDelegate writeDeviceToken:deviceID];
 	[self _enableNotifications:YES];
+	
+//	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
+//								message:[HONAppDelegate deviceToken]
+//							   delegate:nil
+//					  cancelButtonTitle:@"OK"
+//					  otherButtonTitles:nil] show];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
@@ -1165,6 +1171,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[HONAppDelegate writeDeviceToken:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]];
 	[self _enableNotifications:NO];
+	
+//	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
+//								message:@"didFailToRegisterForRemoteNotificationsWithError"
+//							   delegate:nil
+//					  cancelButtonTitle:@"OK"
+//					  otherButtonTitles:nil] show];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1174,8 +1186,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	application.applicationIconBadgeNumber = 0;
 	
 	
-//	[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
-//								message:[@"" stringFromDictionary:userInfo]
+//	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
+//								message:[HONAppDelegate deviceToken]
 //							   delegate:nil
 //					  cancelButtonTitle:@"OK"
 //					  otherButtonTitles:nil] show];
