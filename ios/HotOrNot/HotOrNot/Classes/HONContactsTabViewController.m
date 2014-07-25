@@ -202,13 +202,13 @@
 - (void)_tareContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> tareContactsTab <|::");
 	
-	if (_tableView.contentOffset.y > 0) {
-		_tableView.pagingEnabled = NO;
-		[_tableView setContentOffset:CGPointZero animated:YES];
-	}
+//	if (_tableView.contentOffset.y > 0) {
+//		_tableView.pagingEnabled = NO;
+//		[_tableView setContentOffset:CGPointZero animated:YES];
+//	}
 	
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
+//	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
 }
 
 

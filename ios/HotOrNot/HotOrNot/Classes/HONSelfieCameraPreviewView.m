@@ -195,7 +195,7 @@
 	
 	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
 	if (page == 1) {
-		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_camera"];
+		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_camera"];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
