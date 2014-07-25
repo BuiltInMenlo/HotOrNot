@@ -488,11 +488,11 @@
 		NSLog(@"did getpopup %d", _didCloseCreateClub);
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_club"];
-		_tutorialView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-		[_tutorialView introWithCompletion:nil];
+//		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_club"];
+//		_tutorialView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
 	}
 	_didCloseCreateClub = NO;
 }
@@ -660,12 +660,12 @@
 }
 
 - (void)clubViewCellHighSchoolClub:(HONClubCollectionViewCell *)cell {
-    [[[UIAlertView alloc] initWithTitle:@""
-                                message:[NSString stringWithFormat:@"No High Schools Found"]
-                               delegate:nil
-                      cancelButtonTitle:@"Ok"
-                      otherButtonTitles: nil] show];
-	//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+//    [[[UIAlertView alloc] initWithTitle:@""
+//                                message:[NSString stringWithFormat:@"No High Schools Found"]
+//                               delegate:nil
+//                      cancelButtonTitle:@"Ok"
+//                      otherButtonTitles: nil] show];
+    [self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
 }
 
 
@@ -768,12 +768,12 @@
 			}
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
-			//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
-            [[[UIAlertView alloc] initWithTitle:@""
-                                        message:[NSString stringWithFormat:@"No High Schools Found"]
-                                       delegate:nil
-                              cancelButtonTitle:@"Ok"
-                              otherButtonTitles: nil] show];
+			[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+//            [[[UIAlertView alloc] initWithTitle:@""
+//                                        message:[NSString stringWithFormat:@"No High Schools Found"]
+//                                       delegate:nil
+//                              cancelButtonTitle:@"Ok"
+//                              otherButtonTitles: nil] show];
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			_selectedClub = vo;
@@ -807,7 +807,7 @@
 		}
 		else if (buttonIndex == 1){
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
