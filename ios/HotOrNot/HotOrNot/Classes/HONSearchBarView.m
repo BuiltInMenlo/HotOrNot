@@ -21,7 +21,38 @@
 
 - (id)initAsHighSchoolSearchWithFrame:(CGRect)frame {
 	if ((self = [self initWithFrame:frame])) {
-		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_school"]];
+		_isUser = NO;
+		
+		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_clubs"]];
+		_unfocusedBGImageView.userInteractionEnabled = YES;
+		[self addSubview:_unfocusedBGImageView];
+		
+		_focusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_blank"]];
+		_focusedBGImageView.userInteractionEnabled = YES;
+		_focusedBGImageView.alpha = 0.0;
+		[self addSubview:_focusedBGImageView];
+		
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 11.0, 296.0, 22.0)];
+		[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_searchTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
+		[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
+		[_searchTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_searchTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:14];
+		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
+		_searchTextField.text = @"";
+		_searchTextField.delegate = self;
+		[self addSubview:_searchTextField];
+		
+		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_cancelButton.frame = CGRectMake(275.0, 0.0, 44.0, 44.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"xIcon"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"xIcon"] forState:UIControlStateHighlighted];
+		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+		_cancelButton.alpha = 0.0;
+		[self addSubview:_cancelButton];
 	}
 	
 	return (self);

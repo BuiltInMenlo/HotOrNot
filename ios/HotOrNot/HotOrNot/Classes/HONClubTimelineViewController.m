@@ -176,9 +176,9 @@
 	[headerView addButton:backButton];
     
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(247,1.0, 93.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareHeader_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareHeader_Active"] forState:UIControlStateHighlighted];
+	shareButton.frame = CGRectMake(257,1.0, 64.0, 44.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:shareButton];
 	if (_clubVO == nil)

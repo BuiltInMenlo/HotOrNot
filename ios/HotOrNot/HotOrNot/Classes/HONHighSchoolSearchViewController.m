@@ -89,7 +89,7 @@
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
 	
-	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initAsHighSchoolWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initAsHighSchoolSearchWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
 	searchBarView.delegate = self;
 	[self.view addSubview:searchBarView];
 	

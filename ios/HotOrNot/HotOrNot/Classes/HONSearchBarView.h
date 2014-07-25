@@ -19,5 +19,4 @@
 - (void)backgroundingReset;
 
 @property(nonatomic, assign) id <HONSearchBarViewDelegate> delegate;
--(id) initAsHighSchoolWithFrame:(CGRect) frame;
 @end
