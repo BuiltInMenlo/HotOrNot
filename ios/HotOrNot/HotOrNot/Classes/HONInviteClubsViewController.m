@@ -19,6 +19,7 @@
 #import "HONClubToggleViewCell.h"
 #import "HONUserClubVO.h"
 
+
 @interface HONInviteClubsViewController ()
 @property (nonatomic, strong) HONContactUserVO *contactUserVO;
 @property (nonatomic, strong) HONTrivialUserVO *trivialUserVO;

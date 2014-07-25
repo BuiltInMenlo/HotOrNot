@@ -19,6 +19,14 @@
 @implementation HONSearchBarView
 @synthesize delegate = _delegate;
 
+- (id)initAsHighSchoolSearchWithFrame:(CGRect)frame {
+	if ((self = [self initWithFrame:frame])) {
+		_unfocusedBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBG_school"]];
+	}
+	
+	return (self);
+}
+
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_isUser = YES;

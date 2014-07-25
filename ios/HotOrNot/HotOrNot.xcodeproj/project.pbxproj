@@ -881,6 +881,8 @@
 				4C663EDC18BFBC1800EDB1A2 /* HONUserClubsViewController.m */,
 				4C2400EB18C2916C00C9AE53 /* HONClubSettingsViewController.h */,
 				4C2400EC18C2916C00C9AE53 /* HONClubSettingsViewController.m */,
+				4C3DA71D197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.h */,
+				4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */,
 			);
 			name = Clubs;
 			sourceTree = "<group>";
@@ -914,8 +916,6 @@
 				4CD071A919554431003894F4 /* HONInviteContactsViewController.m */,
 				4C8734EE196BBA850052D16E /* HONClubPreviewViewController.h */,
 				4C8734EF196BBA850052D16E /* HONClubPreviewViewController.m */,
-				4C3DA71D197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.h */,
-				4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */,
 			);
 			name = "-Shared-";
 			sourceTree = "<group>";

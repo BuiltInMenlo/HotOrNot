@@ -15,6 +15,7 @@
 @end
 
 @interface HONSearchBarView : UIView <UITextFieldDelegate>
+- (id)initAsHighSchoolSearchWithFrame:(CGRect)frame;
 - (void)backgroundingReset;
 
 @property(nonatomic, assign) id <HONSearchBarViewDelegate> delegate;

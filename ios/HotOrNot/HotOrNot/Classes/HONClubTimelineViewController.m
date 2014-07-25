@@ -164,7 +164,7 @@
 	_emptySetImageView.hidden = YES;
 	[_tableView addSubview:_emptySetImageView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName hasBackground:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName];
 	[headerView toggleLightStyle:YES];
 	[self.view addSubview:headerView];
 	

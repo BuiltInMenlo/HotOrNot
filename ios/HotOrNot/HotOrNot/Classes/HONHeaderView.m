@@ -9,6 +9,7 @@
 #import "HONHeaderView.h"
 
 @interface HONHeaderView()
+@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @end
 
@@ -24,7 +25,8 @@
 
 - (id)initWithTitle:(NSString *)title hasBackground:(BOOL)withBG {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
-		[self addSubview:[[UIImageView alloc] initWithImage:(withBG) ? [UIImage imageNamed:@"navHeaderBackground"] : [[UIImage alloc] init]]];
+		_bgImageView = [[UIImageView alloc] initWithImage:(withBG) ? [UIImage imageNamed:@"navHeaderBackground"] : [[UIImage alloc] init]];
+		[self addSubview:_bgImageView];
 		
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 31.0, 170.0, 19.0)];
@@ -56,6 +58,8 @@
 }
 
 - (void)toggleLightStyle:(BOOL)isLightStyle {
+	_bgImageView.image = (isLightStyle) ? [UIImage imageNamed:@"navHeaderBackgroundLight"] : [UIImage imageNamed:@"navHeaderBackground"];
+	
 	_titleLabel.textColor = (isLightStyle) ? [UIColor whiteColor] : [UIColor blackColor];
 	_titleLabel.shadowColor = (isLightStyle) ? [UIColor colorWithWhite:0.0 alpha:0.75] : [UIColor clearColor];
 }

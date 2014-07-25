@@ -518,6 +518,7 @@
 	}
 	
 	cell.delegate = self;
+	cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsCellBG_normal"]];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);

@@ -28,12 +28,11 @@
 #import "HONInviteContactsViewController.h"
 #import "HONClubTimelineViewController.h"
 #import "HONHighSchoolSearchViewController.h"
+#import "HONSearchBarView.h"
 #import "HONUserClubVO.h"
-
-
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONTutorialViewDelegate>
+@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONTutorialViewDelegate, HONSearchBarViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -438,7 +437,7 @@
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
-	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) collectionViewLayout:[[HONClubsViewFlowLayout alloc] init]];
+	_collectionView = [[HONCollectionView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + kSearchHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) collectionViewLayout:[[HONClubsViewFlowLayout alloc] init]];
 	[_collectionView registerClass:[HONClubCollectionViewCell class] forCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]];
 	_collectionView.backgroundColor = [UIColor whiteColor];
 	[_collectionView setContentInset:UIEdgeInsetsZero];
@@ -451,6 +450,10 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_collectionView addSubview: _refreshControl];
+	
+	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initAsHighSchoolSearchWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+	searchBarView.delegate = self;
+	[self.view addSubview:searchBarView];
 	
 	[self _retrieveClubs];
 }
@@ -479,14 +482,14 @@
 	NSLog(@"invite pop over %d", _didCloseCreateClub);
 	
 //	if (_isFromCreateClub && !_didCloseCreateClub) {
-		NSLog(@"did getpopup %d", _didCloseCreateClub);
-		_isFromCreateClub = NO;
-		
-		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_club"];
-		_tutorialView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-		[_tutorialView introWithCompletion:nil];
+//		NSLog(@"did getpopup %d", _didCloseCreateClub);
+//		_isFromCreateClub = NO;
+//		
+//		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_club"];
+//		_tutorialView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
 //	}
 	
 	_didCloseCreateClub = NO;
@@ -666,6 +669,17 @@
 		[_tutorialView removeFromSuperview];
 		_tutorialView = nil;
 	}];
+}
+
+
+#pragma mark - SearchBarHeader Delegates
+- (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
+}
+
+- (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
+}
+
+- (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
 }
 
 
