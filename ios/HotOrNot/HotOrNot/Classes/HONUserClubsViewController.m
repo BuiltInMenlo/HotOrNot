@@ -479,18 +479,14 @@
 	[super viewDidAppear:animated];
 	
 	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
-	NSLog(@"invite pop over %d", _didCloseCreateClub);
-	
-//	if (_isFromCreateClub && !_didCloseCreateClub) {
-//		NSLog(@"did getpopup %d", _didCloseCreateClub);
-//		_isFromCreateClub = NO;
-//		
-//		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_club"];
-//		_tutorialView.delegate = self;
-//		
-//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-//		[_tutorialView introWithCompletion:nil];
-//	}
+	if (_isFromCreateClub && !_didCloseCreateClub) {
+		_isFromCreateClub = NO;
+        [[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                    message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+	}
 	
 	_didCloseCreateClub = NO;
 }
@@ -526,16 +522,20 @@
 }
 
 - (void)_goRefresh {
+	
 	[self _retrieveClubs];
 }
 
 - (void)_goClubSettings:(HONUserClubVO *)userClubVO {
+
+		
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goShare {
+	
 	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
 	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
@@ -549,18 +549,32 @@
 																							@"view_controller"	: self}];
 }
 
--(void)_handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
+//-(void)goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+//	NSLog(@"goLongPress:[%d]", lpGestureRecognizer.state);
+//	
+//	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+//		
+//		
+//	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+//	}
+//}
+
+-(void)_handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) {
         return;
-    
-    NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
-    if (indexPath == nil)
-        NSLog(@"couldn't find index path");
+    }
+    CGPoint p = [gestureRecognizer locationInView:self.collectionView];
 	
-	else {
-        HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+    NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:p];
+    if (indexPath == nil){
+        NSLog(@"couldn't find index path");
+    } else {
+        // get the cell at indexPath (the one you long pressed)
+        HONClubCollectionViewCell* cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+        // do stuff with the cell
 		_selectedClub = cell.clubVO;
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""//[NSString stringWithFormat:[_tabInfo objectForKey:@"nay_format"], _challengeVO.creatorVO.username]
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:nil
@@ -601,10 +615,13 @@
 }
 
 - (void)clubViewCell:(HONClubCollectionViewCell *)cell editClub:(HONUserClubVO *)userClubVO {
+
+	
 	[self.navigationController pushViewController:[[HONClubSettingsViewController alloc] initWithClub:userClubVO] animated:YES];
 }
 
 - (void)clubViewCell:(HONClubCollectionViewCell *)cell joinClub:(HONUserClubVO *)userClubVO {
+
 	
 	_selectedClub = userClubVO;
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -618,6 +635,7 @@
 }
 
 - (void)clubViewCell:(HONClubCollectionViewCell *)cell quitClub:(HONUserClubVO *)userClubVO {
+
 	[self _leaveClub:userClubVO];
 }
 
@@ -636,17 +654,18 @@
 }
 
 - (void)clubViewCellHighSchoolClub:(HONClubCollectionViewCell *)cell {
-    [[[UIAlertView alloc] initWithTitle:@""
-                                message:[NSString stringWithFormat:@"No High Schools Found"]
-                               delegate:nil
-                      cancelButtonTitle:@"Ok"
-                      otherButtonTitles: nil] show];
-	//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+//    [[[UIAlertView alloc] initWithTitle:@""
+//                                message:[NSString stringWithFormat:@"No High Schools Found"]
+//                               delegate:nil
+//                      cancelButtonTitle:@"Ok"
+//                      otherButtonTitles: nil] show];
+    [self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
 }
 
 
 #pragma mark - TutorialView Delegates
 - (void)tutorialViewClose:(HONTutorialView *)tutorialView {
+	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
 		_tutorialView = nil;
@@ -654,6 +673,7 @@
 }
 
 - (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
+	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
 		_tutorialView = nil;
@@ -665,6 +685,7 @@
 }
 
 - (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
+	
 	[_tutorialView outroWithCompletion:^(BOOL finished) {
 		[_tutorialView removeFromSuperview];
 		_tutorialView = nil;
@@ -710,6 +731,7 @@
 
 #pragma mark - CollectionView Delegates
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+//	HONUserClubVO *vo =  ((HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath]).clubVO;
 	return (YES);
 }
 
@@ -724,7 +746,6 @@
 		if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 			_selectedClub = vo;
-			
 			if ([vo.submissions count] == 0) {
 				UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"This club does not have any status updates yet!"
 																	 message:@"Would you like to create one?"
@@ -733,8 +754,8 @@
 														   otherButtonTitles:@"Yes", nil];
 				[alertView setTag: 2];
 				[alertView show];
-			
-			} else
+			}
+			else
 				[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo atPhotoIndex:0] animated:YES];
 
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) {
@@ -752,12 +773,12 @@
 			}
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
-			//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
-            [[[UIAlertView alloc] initWithTitle:@""
-                                        message:[NSString stringWithFormat:@"No High Schools Found"]
-                                       delegate:nil
-                              cancelButtonTitle:@"Ok"
-                              otherButtonTitles: nil] show];
+			[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+//            [[[UIAlertView alloc] initWithTitle:@""
+//                                        message:[NSString stringWithFormat:@"No High Schools Found"]
+//                                       delegate:nil
+//                              cancelButtonTitle:@"Ok"
+//                              otherButtonTitles: nil] show];
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			_selectedClub = vo;
@@ -783,21 +804,21 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
 		
+		
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClub viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
-		
-		} else if (buttonIndex == 1){
-			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
-			
-			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
-										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
 		}
+		else if (buttonIndex == 1){
+			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
+			
+			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                        message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];		}
 	}
 }
 
@@ -805,6 +826,8 @@
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
+				
+		
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClub];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -823,7 +846,6 @@
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}
-		
 	} else if (alertView.tag ==2) {
 		if (buttonIndex == 1) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:_selectedClub]];
