@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "noFriendsTapToAccessDefault.png"
+      "filename" : "accessContacts.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "noFriendsTapToAccessDefault@2x.png"
+      "filename" : "accessContacts@2x.png"
     }
   ],
   "info" : {

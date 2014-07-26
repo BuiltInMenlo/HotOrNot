@@ -113,7 +113,6 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -122,20 +121,22 @@
 }
 
 - (void)_goSubmit {
-	
-	if (_trivialUserVO != nil) {
+	if (_contactUserVO != nil) {
 		for (HONUserClubVO *vo in _selectedClubs) {
-			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+				[[HONContactsAssistant sharedInstance] writeContactUser:_contactUserVO toInvitedClub:vo];
 			}];
 		}
 	}
 	
-	
-	if (_contactUserVO != nil) {
+	if (_trivialUserVO != nil) {
 		for (HONUserClubVO *vo in _selectedClubs) {
-			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {}];
+			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+				[[HONContactsAssistant sharedInstance] writeTrivialUser:_trivialUserVO toInvitedClub:vo];
+			}];
 		}
 	}
+	
 	
 	[super _goSubmit];
 }

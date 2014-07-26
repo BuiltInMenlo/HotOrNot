@@ -11,23 +11,15 @@
 #import "HONAPICaller.h"
 #import "HONChallengeAssistant.h"
 #import "HONClubAssistant.h"
+#import "HONContactsAssistant.h"
 #import "HONColorAuthority.h"
 #import "HONDateTimeAlloter.h"
 #import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
 #import "HONImagingDepictor.h"
 #import "HONScreenManager.h"
-
-
-//@class HONAnalyticsParams;
-//@class HONAPICaller;
-//@class HONChallengeAssistant;
-//@class HONClubAssistant;
-//@class HONColorAuthority;
-//@class HONDeviceIntrinsics;
-//@class HONFontAllocator;
-//@class HONImagingDepictor;
-//@class HONMainScreenManager;
+#import "HONStickerAssistant.h"
+#import "HONStoreAssistant.h"
 
 
 @interface HONUtilsSuite : NSObject

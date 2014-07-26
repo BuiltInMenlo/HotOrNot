@@ -10,8 +10,6 @@
 #import "NSString+DataTypes.h"
 
 #import "KeychainItemWrapper.h"
-#import "PCCandyStoreSearchController.h"
-#import "PicoManager.h"
 
 #import "HONContactsTabViewController.h"
 #import "HONActivityHeaderButtonView.h"
@@ -79,36 +77,8 @@
 	if ([passedRegistration length] == 0)
 		[self _goRegistration];
 	
-	
-	PicoManager *picoManager = [PicoManager sharedManager];
-	[picoManager registerStoreWithAppId:@"1df5644d9e94"
-								 apiKey:@"8Xzg4rCwWpwHfNCPLBvV"];
-	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"picocandy"];
-	
-	NSLog(@"PICOCANDY:[%@]", [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]);
-	
-	NSMutableArray *stickers = [NSMutableArray array];
-	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
-	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"]) {
-		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
-			NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
-			
-			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-				PCContent *content = (PCContent *)obj;
-				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
-				
-				[stickers addObject:@{@"id"		: content.content_id,
-									  @"name"	: content.name,
-									  @"price"	: @"0",
-									  @"img"	: content.large_image}];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:[stickers copy] forKey:@"picocandy"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}];
-		}];
-	}
+	else
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 }
 
 - (void)viewDidLoad {
@@ -125,15 +95,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
-	if ([HONAppDelegate totalForCounter:@"friendsTab"] == 0 && ABAddressBookGetAuthorizationStatus() != kABAuthorizationStatusAuthorized) {
-//		[[[UIAlertView alloc] initWithTitle:@"Friends Tip"
-//									message:@"Allow access to your Contact List for even more friends!"
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
-	}
-	
-	NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithContentGroupIDs:[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"] completion:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -261,10 +223,15 @@
 	
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	NSLog(@"[[ cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
+	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
-	if (_tableViewDataSource != HONContactsTableViewDataSourceMatchedUsers || cell.trivialUserVO.userID > 0) {
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];

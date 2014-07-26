@@ -15,8 +15,8 @@
 @implementation HONTermsConditionsViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[[HONAppDelegate customerServiceURL] stringByAppendingString:@"/terms2.htm"] title:@"Terms"])) {
-		self.view.backgroundColor = [UIColor colorWithWhite:1.00 alpha:1.0];
+	if ((self = [super initWithURL:[[HONAppDelegate customerServiceURL] stringByAppendingString:@"/terms.html"]
+							 title:@"Terms"])) {
 	}
 	
 	return (self);

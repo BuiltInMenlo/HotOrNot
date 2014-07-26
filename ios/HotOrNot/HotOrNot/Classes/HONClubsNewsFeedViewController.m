@@ -12,8 +12,6 @@
 
 #import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
-#import "PCCandyStoreSearchController.h"
-#import "PicoManager.h"
 
 #import "HONClubsNewsFeedViewController.h"
 #import "HONClubTimelineViewController.h"
@@ -109,6 +107,8 @@
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
@@ -126,6 +126,7 @@
 			
 			[_clubIDs setValue:clubIDs forKey:key];
 		}
+		
 		
 		_timelineItems = nil;
 		_timelineItems = [NSMutableArray array];

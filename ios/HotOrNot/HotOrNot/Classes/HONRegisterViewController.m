@@ -199,6 +199,8 @@
 			[HONAppDelegate writePhoneNumber:_phone];
 			
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+				[[HONClubAssistant sharedInstance] writeUserClubs:result];
+				
 				if ([[result objectForKey:@"owned"] count] == 0) {
 					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] completion:^(NSDictionary *result) {
 					}];

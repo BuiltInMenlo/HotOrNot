@@ -40,6 +40,7 @@ extern NSString * const kAPIPhoneVerify;
 extern NSString * const kAPIEmailContacts;
 extern NSString * const kAPIChallengeObject;
 extern NSString * const kAPIGetPublicChallenges;
+extern NSString * const kAPIUsersGetUsersClubs;
 extern NSString * const kAPICheckNameAndEmail;
 extern NSString * const kAPIUsersFirstRunComplete;
 extern NSString * const kAPISetUserAgeGroup;
@@ -71,6 +72,7 @@ extern NSString * const kAPIClubsBlock;
 extern NSString * const kAPIClubsUnblock;
 extern NSString * const kAPIClubsFeatured;
 extern NSString * const kAPIUsersGetClubs;
+extern NSString * const kAPIUsersSetDeviceToken;
 extern NSString * const kAPIUsersGetClubInvites;
 
 // network times
@@ -127,9 +129,9 @@ extern const CGFloat kNotifiyDelay;
 - (void)updateAvatarWithImagePrefix:(NSString *)avatarPrefix completion:(void (^)(id result))completion;
 - (void)updateTabBarBadgeTotalsForUserByUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)updateUsernameForUser:(NSString *)username completion:(void (^)(id result))completion;
+- (void)updateDeviceTokenWithCompletion:(void (^)(id result))completion;
 - (void)updatePhoneNumberForUserWithCompletion:(void (^)(id result))completion;
 - (void)validatePhoneNumberForUser:(int)userID usingPINCode:(NSString *)pinCode completion:(void (^)(id result))completion;
-
 - (void)verifyUserWithUserID:(int)userID asLegit:(BOOL)isLegit completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
@@ -173,6 +175,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubByClubID:(int)clubID withOwnerID:(int)ownerID completion:(void (^)(id result))completion;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
+- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

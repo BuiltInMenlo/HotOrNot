@@ -15,7 +15,7 @@
 @implementation HONFAQViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/privacy.htm", [HONAppDelegate customerServiceURL]]
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/privacy.html", [HONAppDelegate customerServiceURL]]
 							 title:@"Privacy policy"])) {
 	}
 	

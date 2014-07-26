@@ -330,6 +330,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]);
 }
 
++ (NSArray *)inviteList {
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] : @[]);
+}
+
++ (void)addToInviteList:(NSDictionary *)contactDict {
+	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] mutableCopy];
+	[invites addObject:contactDict];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[contactDict copy] forKey:@"invites"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 + (void)writeUserInfo:(NSDictionary *)userInfo {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
@@ -382,7 +394,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						   @"search_total",
 						   @"suggested_total",
 						   @"details_total",
-						   @"profile_total"];
+						   @"profile_total",
+						   @"invite_total"];
 	
 	for (NSString *key in totalKeys) {
 		if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
@@ -1041,7 +1054,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					
 					NSLog(@"userID:[%d]", userID);
 					if (userID > 0) {
-						[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
+						[[HONAPICaller sharedInstance] retrieveUserClubsWithUserID:userID completion:^(NSDictionary *result) {
 							int clubID = 0;
 							for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 								for (NSDictionary *club in [result objectForKey:key]) {
@@ -1159,6 +1172,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[HONAppDelegate writeDeviceToken:deviceID];
 	[self _enableNotifications:YES];
 	
+	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+	}];
+	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:[HONAppDelegate deviceToken]
 //							   delegate:nil
@@ -1171,6 +1187,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[HONAppDelegate writeDeviceToken:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]];
 	[self _enableNotifications:NO];
+	
+	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+	}];
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
 //								message:@"didFailToRegisterForRemoteNotificationsWithError"
@@ -1305,6 +1324,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
+	
+	[[HONStickerAssistant sharedInstance] registerStickerStore];
 		
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;

@@ -56,39 +56,29 @@
 - (void)_sendClubInvites {
 	NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
 	
-	HONInviteContactType inviteContactType = (HONInviteContactTypeInApp * (int)([_selectedInAppContacts count] > 0)) + (HONInviteContactTypeNonApp * (int)([_selectedNonAppContacts count] > 0));
-	
-	if (inviteContactType == HONInviteContactTypeInApp)
+	if ([_selectedInAppContacts count] > 0)
 		[self _sendInAppUserInvites];
 	
-	else if (inviteContactType == HONInviteContactTypeNonApp)
+	if ([_selectedNonAppContacts count] > 0)
 		[self _sendNonAppUserInvites];
-	
-	else
-		[self _sendCombinedUserInvites];
-}
-
-- (void)_sendCombinedUserInvites {
-	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID inviteNonAppContacts:[_selectedNonAppContacts copy] completion:^(NSDictionary *result) {
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
-		}];
-	}];
 }
 
 - (void)_sendInAppUserInvites {
 	[[HONAPICaller sharedInstance] inviteInAppUsers:[_selectedInAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+		for (HONTrivialUserVO *vo in _selectedInAppContacts)
+			[[HONContactsAssistant sharedInstance] writeTrivialUser:vo toInvitedClub:_clubVO];
+		
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		}];
 	}];
 }
 
-
 - (void)_sendNonAppUserInvites {
 	[[HONAPICaller sharedInstance] inviteNonAppUsers:[_selectedNonAppContacts copy] toClubWithID:_clubVO.clubID withClubOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+		for (HONContactUserVO *vo in _selectedNonAppContacts)
+			[[HONContactsAssistant sharedInstance] writeContactUser:vo toInvitedClub:_clubVO];
+		
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		}];
 	}];
 }

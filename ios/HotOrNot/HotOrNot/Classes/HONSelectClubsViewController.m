@@ -52,14 +52,39 @@
 												  forKeys:@[@"owned",
 															@"member"]];
 	
-	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+	if ([[[HONClubAssistant sharedInstance] fetchUserClubs] count] == 0) {
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+			[[HONClubAssistant sharedInstance] writeUserClubs:result];
+			
+			for (NSString *key in @[@"owned", @"member"]) {
+				NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
+				
+				for (NSDictionary *dict in [result objectForKey:key])
+					[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+				
+				[_dictClubs addObjectsFromArray:[result objectForKey:key]];
+				[_clubIDs setValue:clubIDs forKey:key];
+			}
+			
+			for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
+				[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+			
+			_segmentedClubs = [self _populateSegmentedDictionary];
+			
+			_selectedClubs = [NSMutableArray array];
+			_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
+			
+			[self _didFinishDataRefresh];
+		}];
+	
+	} else {
 		for (NSString *key in @[@"owned", @"member"]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
 			
-			for (NSDictionary *dict in [result objectForKey:key])
+			for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key])
 				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
 			
-			[_dictClubs addObjectsFromArray:[result objectForKey:key]];
+			[_dictClubs addObjectsFromArray:[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]];
 			[_clubIDs setValue:clubIDs forKey:key];
 		}
 		
@@ -72,7 +97,7 @@
 		_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
 		
 		[self _didFinishDataRefresh];
-	}];
+	}
 }
 
 
@@ -82,6 +107,7 @@
 	[_allClubs removeAllObjects];
 	[_clubIDs removeAllObjects];
 	
+	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	[self _retrieveClubs];
 }
 

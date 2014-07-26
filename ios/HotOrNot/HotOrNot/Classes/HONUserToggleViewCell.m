@@ -7,6 +7,7 @@
 //
 
 #import "NSString+DataTypes.h"
+#import "UILabel+FormattedText.h"
 
 #import "HONUserToggleViewCell.h"
 
@@ -102,34 +103,30 @@
 	[self toggleSelected:!_isSelected];
 }
 
-- (void)toggleSelected:(BOOL)isSelected {
-	if (isSelected != _isSelected) {
-		_isSelected = isSelected;
-		
-		if (_isSelected) {
-			_toggledOnButton.hidden = NO;
-			[UIView animateWithDuration:0.125 animations:^(void) {
-				_toggledOnButton.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				_toggledOffButton.hidden = YES;
-			}];
-			
-		} else {
-			_toggledOffButton.hidden = NO;
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_toggledOffButton.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				_toggledOnButton.hidden = YES;
-			}];
-		}
-		
-		//[self _toggleTintCycle:_isSelected];
-	}
-}
-
 - (void)toggleIndicator:(BOOL)isEnabled {
 	_toggledOffButton.hidden = !isEnabled;
 	_toggledOnButton.hidden = !isEnabled;
+}
+
+- (void)toggleSelected:(BOOL)isSelected {
+	_isSelected = isSelected;
+	
+	if (_isSelected) {
+		_toggledOnButton.hidden = NO;
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_toggledOnButton.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			_toggledOffButton.hidden = YES;
+		}];
+		
+	} else {
+		_toggledOffButton.hidden = NO;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_toggledOffButton.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			_toggledOnButton.hidden = YES;
+		}];
+	}
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
@@ -159,9 +156,18 @@
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
-	_avatarImageView.image = (_contactUserVO.avatarImage != nil) ? _contactUserVO.avatarImage : [UIImage imageNamed:@"avatarPlaceholder"];
+	NSString *nameCaption = (_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 	
-	_nameLabel.text = (_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
+	_avatarImageView.image = _contactUserVO.avatarImage;
+	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])]) {
+		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix]];
+	}
+	
+	
+	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
+	if ([_contactUserVO.lastName length] > 0)
+		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.lastName]];
+	
 	
 	if (_contactUserVO.contactType == HONContactTypeMatched) {
 		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
@@ -171,7 +177,6 @@
 		
 		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 		_arrowImageView.hidden = NO;
-		
 		
 		
 		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -191,7 +196,6 @@
 #pragma mark - Navigation
 - (void)_goDeselect {
 	_isSelected = NO;
-//	[self _toggleTintCycle:_isSelected];
 	
 	_toggledOffButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -209,15 +213,12 @@
 
 - (void)_goSelect {
 	_isSelected = YES;
-	[self _toggleTintCycle:_isSelected];
 	
 	_toggledOnButton.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
 		_toggledOffButton.hidden = YES;
-		
-//		[self _toggleTintCycle:_isSelected];
 		
 		if (self.trivialUserVO != nil)
 			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
@@ -259,39 +260,6 @@
 							placeholderImage:nil
 									 success:imageSuccessBlock
 									 failure:imageFailureBlock];
-}
-
-- (void)_nextTintCycle {
-	_isTintCycleFull = !_isTintCycleFull;
-	
-	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:TINT_FADE_DURATION];
-	[_overlayTintView setBackgroundColor:(_isTintCycleFull) ? TOP_TINT_COLOR : BOT_TINT_COLOR];
-	[UIView commitAnimations];
-}
-
-
-- (void)_toggleTintCycle:(BOOL)isCycling {
-	_isTintCycleFull = NO;
-	
-	if (_tintTimer != nil) {
-		[_tintTimer invalidate];
-		_tintTimer = nil;
-	}
-	
-	[_overlayTintView.layer removeAllAnimations];
-	_overlayTintView.backgroundColor = BOT_TINT_COLOR;
-	_overlayTintView.hidden = !isCycling;
-	
-	if (isCycling) {
-		_tintTimer = [NSTimer scheduledTimerWithTimeInterval:TINT_TIMER_DURATION
-													  target:self
-													selector:@selector(_nextTintCycle)
-													userInfo:nil
-													 repeats:YES];
-	} else {
-		
-	}
 }
 
 @end

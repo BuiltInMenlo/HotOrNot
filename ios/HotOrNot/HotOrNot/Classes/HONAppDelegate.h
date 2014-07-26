@@ -10,7 +10,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 
-#define __DEV_BUILD__ 0
+#define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 #define __FORCE_REGISTER__ 0
@@ -20,7 +20,7 @@
 #define __RESET_TOTALS__ 0
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __APPSTORE_BUILD__ 1
+#define __APPSTORE_BUILD__ 0
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -162,7 +162,8 @@ extern NSString * const kNetErrorStatusCode404;
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 
 + (void)resetTotals;
-
++ (NSArray *)inviteList;
++ (void)addToInviteList:(NSDictionary *)contactDict;
 
 - (void)changeTabToIndex:(NSNumber *)selectedIndex;
 + (UIViewController *)appTabBarController;

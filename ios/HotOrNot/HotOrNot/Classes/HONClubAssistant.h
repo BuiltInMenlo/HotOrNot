@@ -14,11 +14,12 @@
 + (HONClubAssistant *)sharedInstance;
 
 - (NSArray *)clubTypeKeys;
-- (NSDictionary *)fpoInviteClubDictionary;
-- (NSDictionary *)fpoJoinedClubDictionary;
-- (NSDictionary *)fpoOwnedClubDictionary;
 - (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSArray *)defaultCoverImagePrefixes;
 - (NSString *)defaultCoverImagePrefix;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+
+- (void)wipeUserClubs;
+- (NSDictionary *)fetchUserClubs;
+- (void)writeUserClubs:(NSDictionary *)clubs;
 @end

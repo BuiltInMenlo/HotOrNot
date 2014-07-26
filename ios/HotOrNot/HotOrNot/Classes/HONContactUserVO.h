@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, HONContactType) {
 @property (nonatomic, retain) NSString *rawNumber;
 @property (nonatomic, retain) NSString *mobileNumber;
 @property (nonatomic, retain) NSString *email;
+@property (nonatomic, retain) NSData *avatarData;
 @property (nonatomic, retain) UIImage *avatarImage;
 @property (nonatomic) BOOL isSMSAvailable;
 @property (nonatomic, assign) HONContactType contactType;

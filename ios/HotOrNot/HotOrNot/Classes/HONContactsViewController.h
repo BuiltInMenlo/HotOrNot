@@ -23,11 +23,6 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceSearchResults
 };
 
-typedef NS_ENUM(NSInteger, HONInviteContactType) {
-	HONInviteContactTypeNone		= 0,
-	HONInviteContactTypeInApp		= 1 << 0,
-	HONInviteContactTypeNonApp		= 1 << 1
-};
 
 @interface HONContactsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
