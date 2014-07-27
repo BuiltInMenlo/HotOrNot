@@ -22,14 +22,14 @@
 #import "HONInviteContactsViewController.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONTableView.h"
-#import "HONTutorialView.h"
+#import "HONInviteOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONTableHeaderView.h"
 
 
-@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONTutorialViewDelegate>
+@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONInviteOverlayViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -39,10 +39,10 @@
 @property (nonatomic, strong) NSMutableArray *ownedClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
-@property (nonatomic, strong) NSMutableArray *autoGenItems;
+@property (nonatomic, strong) NSArray *autoGenItems;
 @property (nonatomic, strong) NSMutableArray *timelineItems;
 @property (nonatomic, strong) UIImageView *overlayImageView;
-@property (nonatomic, strong) HONTutorialView *tutorialView;
+@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
 @property (nonatomic) BOOL isFromCreateClub;
 @end
 
@@ -61,7 +61,7 @@
 		_ownedClubs = [[NSMutableArray alloc] init];
 		_allClubs = [[NSMutableArray alloc] init];
 		_dictClubs = [[NSMutableArray alloc] init];
-		_autoGenItems = [[NSMutableArray alloc] init];
+		_autoGenItems = [[NSArray alloc] init];
 		_timelineItems = [[NSMutableArray alloc] init];
 		_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 																[NSMutableArray array],
@@ -99,7 +99,7 @@
 	_allClubs = [[NSMutableArray alloc] init];
 	_dictClubs = [[NSMutableArray alloc] init];
 	_timelineItems = [[NSMutableArray alloc] init];
-	_autoGenItems = [[NSMutableArray alloc] init];
+	_autoGenItems = [[NSArray alloc] init];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 															[NSMutableArray array],
 															[NSMutableArray array],
@@ -130,10 +130,11 @@
 		
 		_timelineItems = nil;
 		_timelineItems = [NSMutableArray array];
-		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
+		for (NSDictionary *dict in _dictClubs)//[NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		[self _suggestClubs];
+		_autoGenItems = nil;
+		_autoGenItems = [[HONClubAssistant sharedInstance] suggestedClubs];
 //		_feedContentType = HONFeedContentTypeEmpty;
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"other"] count] > 0) * HONFeedContentTypeAutoGenClubs);
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"owned"] count] > 0) * HONFeedContentTypeOwnedClubs);
@@ -169,236 +170,6 @@
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
 	}];
-}
-
-#pragma mark - Data Manip
-- (void)_suggestClubs {
-	
-	_autoGenItems = nil;
-	_autoGenItems = [NSMutableArray array];
-	
-	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
-	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
-	NSMutableArray *unsortedContacts = [NSMutableArray array];
-	NSString *clubName = @"";
-	
-	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
-	
-	for (int i=0; i<nPeople; i++) {
-		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
-		
-		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
-		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
-		
-		if ([fName length] == 0)
-			continue;
-		
-		if ([lName length] == 0)
-			lName = @"";
-		
-		
-		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
-		
-		NSString *phoneNumber = @"";
-		if (phoneCount > 0)
-			phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
-		
-		CFRelease(phoneProperties);
-		
-		
-		NSString *email = @"";
-		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
-		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
-		
-		if (emailCount > 0)
-			email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0);
-		
-		CFRelease(emailProperties);
-		
-		if ([email length] == 0)
-			email = @"";
-		
-		if ([phoneNumber length] > 0 || [email length] > 0) {
-			[unsortedContacts addObject:[HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
-																				  @"l_name"	: lName,
-																				  @"phone"	: phoneNumber,
-																				  @"email"	: email,
-																				  @"image"	: UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}]];
-		}
-	}
-	
-	// sand hill
-	NSArray *emailDomains = @[@"dcm.com",
-							  @"500.co",
-							  @"firstround.com",
-							  @"a16z.com",
-							  @"ggvc.com",
-							  @"yomorrowvc.com",
-							  @"hcp.com",
-							  @"sequoiacap.com",
-							  @"cyberagentventures.com",
-							  @"accel.com",
-							  @"idgvc.com",
-							  @"nhninv.com",
-							  @"menloventures.com",
-							  @"svangel.com",
-							  @"sherpavc.com",
-							  @"techcrunch.com"];
-	
-	for (HONContactUserVO *vo in unsortedContacts) {
-		if ([vo.email length] == 0)
-			continue;
-		
-		for (NSString *domain in emailDomains) {
-			//NSLog(@"vo.email:[%@] >> [%@]", [vo.email lowercaseString], domain);
-			if ([[vo.email lowercaseString] rangeOfString:domain].location != NSNotFound) {
-				clubName = @"Sand Hill Bros";
-				break;
-			}
-		}
-	}
-	
-	if ([clubName length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
-		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
-		
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_autoGenItems addObject:vo];
-		clubName = @"";
-	}
-	
-	
-	// family
-	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
-	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"]) {
-		NSString *familyName = [deviceName objectAtIndex:1];
-		familyName = [familyName substringToIndex:[familyName length] - 2];
-		clubName = [NSString stringWithFormat:@"%@ Family", [[[familyName substringToIndex:1] uppercaseString] stringByAppendingString:[familyName substringFromIndex:1]]];
-	}
-	
-	else {
-		for (HONContactUserVO *vo in unsortedContacts) {
-			if (![segmentedKeys containsObject:vo.lastName]) {
-				[segmentedKeys addObject:vo.lastName];
-				
-				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-				[segmentedDict setValue:newSegment forKey:vo.lastName];
-				
-			} else {
-				NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:vo.lastName];
-				[prevSegment addObject:vo];
-				[segmentedDict setValue:prevSegment forKey:vo.lastName];
-			}
-		}
-	
-		for (NSString *key in segmentedDict) {
-			if ([[segmentedDict objectForKey:key] count] >= 2) {
-				clubName = [NSString stringWithFormat:@"%@ Family", key];
-				break;
-			}
-		}
-	}
-	
-	
-	for (HONUserClubVO *vo in _allClubs) {
-		if ([vo.clubName isEqualToString:clubName]) {
-			clubName = @"";
-			break;
-		}
-	}
-	
-	
-	if ([clubName length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
-		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
-
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_autoGenItems addObject:vo];
-	}
-	
-	// area code
-	if ([[HONAppDelegate phoneNumber] length] > 0) {
-		NSString *clubName = [[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"];
-		for (HONUserClubVO *vo in _allClubs) {
-			if ([vo.clubName isEqualToString:clubName]) {
-				clubName = @"";
-				break;
-			}
-		}
-		
-		if ([clubName length] > 0) {
-			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-			[dict setValue:@"0" forKey:@"id"];
-			[dict setValue:clubName forKey:@"name"];
-			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
-
-			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-			[_autoGenItems addObject:vo];
-		}
-	}
-	
-	
-	// email domain
-	[segmentedDict removeAllObjects];
-	[segmentedKeys removeAllObjects];
-	
-	for (HONContactUserVO *vo in unsortedContacts) {
-		if ([vo.email length] > 0) {
-			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
-			
-			
-			BOOL isValid = YES;
-			for (NSString *domain in [HONAppDelegate excludedClubDomains]) {
-				if ([emailDomain isEqualToString:domain]) {
-					isValid = NO;
-					break;
-				}
-			}
-			
-			if (isValid) {
-				if (![segmentedKeys containsObject:emailDomain]) {
-					[segmentedKeys addObject:emailDomain];
-					
-					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-					[segmentedDict setValue:newSegment forKey:emailDomain];
-					
-				} else {
-					NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:emailDomain];
-					[prevSegment addObject:vo];
-					[segmentedDict setValue:prevSegment forKey:emailDomain];
-				}
-			}
-		}
-	}
-	
-	clubName = @"";
-	for (NSString *key in segmentedDict) {
-		if ([[segmentedDict objectForKey:key] count] >= 2) {
-			clubName = [key stringByAppendingString:@" Club"];
-			break;
-		}
-	}
-	
-	if ([clubName length] > 0) {
-		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
-		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
-
-		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
-		[_autoGenItems addObject:vo];
-	}
 }
 
 
@@ -470,11 +241,11 @@
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_resume"];
-		_tutorialView.delegate = self;
+		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_resume"];
+		_inviteOverlayView.delegate = self;
 		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-		[_tutorialView introWithCompletion:nil];
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+		[_inviteOverlayView introWithCompletion:nil];
 	}
 }
 
@@ -616,25 +387,23 @@
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.clubID, clubPhotoVO.username);
-    [[HONAnalyticsParams sharedInstance] trackEvent:@"User Avatar Tap"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Avatar Tap"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
 
 
-#pragma mark - TutorialView Delegates
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+#pragma mark - InviteOverlayView Delegates
+- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 	}];
 }
 
-- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 		[navigationController setNavigationBarHidden:YES];
@@ -642,11 +411,10 @@
 	}];
 }
 
-- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 	}];
 }
 
@@ -691,40 +459,18 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-//		return (0.0);
 		if ([_allClubs count] == 0)
 			return (0.0);
 		
 		else
 			return (([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) ? kOrthodoxTableCellHeight : 0.0);
-	}
 	
-	else if (indexPath.section == 1)
+	} else if (indexPath.section == 1) {
 		return (50.0);
 	
-	else {
-		return (74.0);
-		
-		HONUserClubVO *vo = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
-		HONClubPhotoVO *photoVO = (HONClubPhotoVO *)[vo.submissions lastObject];
-		int emotionRows = (MIN([[[HONClubAssistant sharedInstance] emotionsForClubPhoto:photoVO] count], 14) / 5) + 1;
-		NSLog(@"emotionRows:[%d]", emotionRows);
-		
-		NSString *emotions = @"";
-		for (NSString *subject in photoVO.subjectNames)
-			emotions = [emotions stringByAppendingFormat:@"%@, ", subject];
-		emotions = ([emotions length] > 0) ? [emotions substringToIndex:[emotions length] - 2] : emotions;
-		
-		
-		CGSize maxSize = CGSizeMake(238.0, 38.0);
-		CGSize size = [[NSString stringWithFormat:@"%@ is feeling %@", photoVO.username, emotions] boundingRectWithSize:maxSize
-																												options:NSStringDrawingTruncatesLastVisibleLine
-																											 attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16]}
-																												context:nil].size;
-		
-		
-		return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 135.0 + ((int)(size.width > maxSize.width) * 25.0) + (emotionRows * 50.0) : kOrthodoxTableCellHeight);
-		//return ((vo.clubEnrollmentType == HONClubEnrollmentTypeMember || (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner && [vo.submissions count] > 0)) ? 310.0 : kOrthodoxTableCellHeight);
+	} else {
+		HONUserClubVO *vo = [_allClubs objectAtIndex:indexPath.row];
+		return ((vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? 50 : 74.0);
 	}
 }
 

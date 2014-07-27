@@ -68,7 +68,7 @@
 	_removeUsers = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
-	for (NSDictionary *dict in [HONAppDelegate searchUsers])
+	for (NSDictionary *dict in @[])
 		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Suggested"];
@@ -154,8 +154,6 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 }
 
 - (void)_goSelectAll {
@@ -278,7 +276,7 @@
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
-			for (NSDictionary *dict in [HONAppDelegate searchUsers])
+			for (NSDictionary *dict in @[])
 				[_selectedUsers addObject:[HONTrivialUserVO userWithDictionary:dict]];
 			
 			for (HONSuggestedFollowViewCell *cell in _cells)

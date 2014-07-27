@@ -23,7 +23,6 @@
 #import "HONTrivialUserVO.h"
 
 @interface HONContactsViewController () <HONSearchBarViewDelegate, HONUserToggleViewCellDelegate>
-@property (nonatomic, strong) NSArray *invitedContacts;
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
@@ -41,22 +40,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_invitedContacts = [HONAppDelegate inviteList];
 	}
 	
 	return (self);
-}
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
 }
 
 
@@ -146,7 +132,7 @@
 																  @"is_verified"	: @"N",
 																  @"abuse_ct"		: @"0"}];
 	[_inAppUsers addObject:vo];
-	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[HONAppDelegate phoneNumber] completion:^(NSArray *result) {
+	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[[HONDeviceIntrinsics sharedInstance] phoneNumber] completion:^(NSArray *result) {
 		NSLog(@"(NSArray *result[%@]", (NSArray *)result);
 		if ([(NSArray *)result count] > 1) {
 			for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
@@ -157,16 +143,6 @@
 		}
 		
 		[self _didFinishDataRefresh];
-	}];
-}
-
-- (void)_inviteInAppContact:(HONTrivialUserVO *)trivialUserVO toClub:(HONUserClubVO *)userClubVO {
-	[[HONAPICaller sharedInstance] inviteInAppUsers:[NSArray arrayWithObject:trivialUserVO] toClubWithID:userClubVO.clubID withClubOwnerID:userClubVO.ownerID completion:^(NSObject *result) {
-	}];
-}
-
-- (void)_inviteNonAppContact:(HONContactUserVO *)contactUserVO toClub:(HONUserClubVO *)userClubVO {
-	[[HONAPICaller sharedInstance] inviteNonAppUsers:[NSArray arrayWithObject:contactUserVO] toClubWithID:userClubVO.clubID withClubOwnerID:userClubVO.ownerID completion:^(NSObject *result) {
 	}];
 }
 
@@ -211,64 +187,76 @@
 #pragma mark - Device Functions
 - (void)_retrieveDeviceContacts {
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-	NSMutableArray *unsortedContacts = [NSMutableArray array];
-	
-	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
-	
-	for (int i=0; i<nPeople; i++) {
-		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
-		
-		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
-		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
-		
-		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : fName;
-		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
-		
-		if ([fName length] == 0 && [lName length] == 0)
-			continue;
-		
-		
-		NSData *imageData = nil;
-		if (ABPersonHasImageData(ref))
-			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
-		imageData = (imageData == nil) ? UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"]) : imageData;
-		
-		
-		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
-		NSString *phoneNumber = (phoneCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0) : @"";
-		CFRelease(phoneProperties);
-		
-		
-		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
-		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
-		NSString *email = (emailCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0) : @"";
-		CFRelease(emailProperties);
-		
-		if ([phoneNumber length] > 0 || [email length] > 0) {
-			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
-																			 @"l_name"	: lName,
-																			 @"phone"	: phoneNumber,
-																			 @"email"	: email,
-																			 @"image"	: imageData}];
-			[unsortedContacts addObject:vo.dictionary];
-			
-			
-			if (vo.isSMSAvailable)
-				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
-			
-			else
-				_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
-		}
-	}
+//	NSMutableArray *unsortedContacts = [NSMutableArray array];
+//	
+//	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+//	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+//	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
+//	
+//	for (int i=0; i<nPeople; i++) {
+//		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
+//		
+//		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
+//		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
+//		
+//		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : fName;
+//		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
+//		
+//		if ([fName length] == 0 && [lName length] == 0)
+//			continue;
+//		
+//		
+//		NSData *imageData = nil;
+//		if (ABPersonHasImageData(ref))
+//			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
+//		imageData = (imageData == nil) ? UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"]) : imageData;
+//		
+//		
+//		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+//		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
+//		NSString *phoneNumber = (phoneCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0) : @"";
+//		CFRelease(phoneProperties);
+//		
+//		
+//		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
+//		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
+//		NSString *email = (emailCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0) : @"";
+//		CFRelease(emailProperties);
+//		
+//		if ([phoneNumber length] > 0 || [email length] > 0) {
+//			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
+//																			 @"l_name"	: lName,
+//																			 @"phone"	: phoneNumber,
+//																			 @"email"	: email,
+//																			 @"image"	: imageData}];
+//			[unsortedContacts addObject:vo.dictionary];
+//			
+//			
+//			if (vo.isSMSAvailable)
+//				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
+//			
+//			else
+//				_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
+//		}
+//	}
+//	
+//	_deviceContacts = [NSMutableArray array];
+//	for (NSDictionary *dict in [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
+//		[_deviceContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
 	
 	_deviceContacts = [NSMutableArray array];
-	for (NSDictionary *dict in [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
-		[_deviceContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
+	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:YES]) {
+		[_deviceContacts addObject:vo];
+		
+		if (vo.isSMSAvailable)
+			_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
+		
+		else
+			_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
+	}
 	
 	[self _didFinishDataRefresh];
+	
 	
 	if ([_smsRecipients length] > 0 || [_emailRecipients length] > 0) {
 		if (_progressHUD == nil)
@@ -326,7 +314,6 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
-	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -362,10 +349,9 @@
 }
 
 - (void)viewDidLoad {
-	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
 	
 	if ([passedRegistration length] != 0) {
@@ -377,31 +363,6 @@
 		else
 			[self _submitPhoneNumberForMatching];
 	}
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidDisappear:animated];
-}
-
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
 }
 
 
@@ -548,8 +509,8 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
-	NSLog(@"-[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
-	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
+//	NSLog(@"-[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
+//	NSLog(@"-[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && (indexPath.section == 0 && indexPath.row == 0)) {
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
@@ -658,17 +619,12 @@
 			}
 		}
 		
-		NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"" ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {
-			NSStringCompareOptions comparisonOptions = (NSCaseInsensitiveSearch | NSNumericSearch | NSAnchoredSearch);
-			return ([(NSString *)obj1 compare:(NSString *)obj2 options:comparisonOptions range:NSMakeRange(0, 1) locale:[NSLocale currentLocale]]);
-		}];
-		
-		_segmentedKeys = [[_segmentedKeys sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
-		
-//		for (NSString *key in dict) {
-//			for (HONContactUserVO *vo in [dict objectForKey:key])
-//				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.mobileNumber);
-//		}
+		_segmentedKeys = [[_segmentedKeys sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"" ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {
+			return ([(NSString *)obj1 compare:(NSString *)obj2
+									  options:(NSCaseInsensitiveSearch | NSNumericSearch | NSAnchoredSearch)
+										range:NSMakeRange(0, 1)
+									   locale:[NSLocale currentLocale]]);
+		}]]] mutableCopy];
 	}
 	
 	return (dict);

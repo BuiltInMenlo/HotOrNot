@@ -10,6 +10,7 @@
 
 #import "CKRefreshControl.h"
 
+#import "HONViewController.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONUserToggleViewCell.h"
@@ -24,7 +25,7 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 };
 
 
-@interface HONContactsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface HONContactsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
 	
 	NSMutableArray *_deviceContacts;
@@ -45,8 +46,6 @@ typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
 - (void)_retreiveUserClubs;
 - (void)_sendEmailContacts;
 - (void)_sendPhoneContacts;
-- (void)_inviteInAppContact:(HONTrivialUserVO *)trivialUserVO toClub:(HONUserClubVO *)userClubVO;
-- (void)_inviteNonAppContact:(HONContactUserVO *)contactUserVO toClub:(HONUserClubVO *)userClubVO;
 - (void)_searchUsersWithUsername:(NSString *)username;
 - (void)_retrieveDeviceContacts;
 - (void)_submitPhoneNumberForMatching;

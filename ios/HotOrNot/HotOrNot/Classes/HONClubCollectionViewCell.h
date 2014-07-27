@@ -11,18 +11,11 @@
 
 @class HONClubCollectionViewCell;
 @protocol HONClubCollectionViewCellDelegate <NSObject>
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell deleteClub:(HONUserClubVO *)userClubVO;
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell editClub:(HONUserClubVO *)userClubVO;
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell joinClub:(HONUserClubVO *)userClubVO;
-- (void)clubViewCell:(HONClubCollectionViewCell *)cell quitClub:(HONUserClubVO *)userClubVO;
-- (void)clubViewCellCreateClub:(HONClubCollectionViewCell *)cell;
-- (void)clubViewCellHighSchoolClub:(HONClubCollectionViewCell *)cell;
 @end
 
 @interface HONClubCollectionViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)resetSubviews;
-//- (void)removeOverlay;
 
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, assign) id <HONClubCollectionViewCellDelegate> delegate;

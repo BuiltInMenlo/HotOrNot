@@ -13,13 +13,15 @@
 @interface HONContactsAssistant : NSObject
 + (HONContactsAssistant *)sharedInstance;
 
-- (void)writeContactUser:(HONContactUserVO *)contactUserVO toInvitedClub:(HONUserClubVO *)clubVO;
-- (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO;
+- (NSArray *)deviceContactsSortedByName:(BOOL)isSorted;
 
 - (BOOL)isContactUserInvitedToClubs:(HONContactUserVO *)contactUserVO;
 - (BOOL)isTrivialUserInvitedToClubs:(HONTrivialUserVO *)trivialUserVO;
-
 - (BOOL)isContactUser:(HONContactUserVO *)contactUserVO invitedToClub:(HONUserClubVO *)clubVO;
 - (BOOL)isTrivialUser:(HONTrivialUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO;
+
+- (int)totalInvitedContacts;
+- (void)writeContactUser:(HONContactUserVO *)contactUserVO toInvitedClub:(HONUserClubVO *)clubVO;
+- (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO;
 
 @end

@@ -83,7 +83,7 @@
 				_progressHUD = nil;
 				
 				_users = [NSMutableArray array];
-				for (NSDictionary *dict in [HONAppDelegate searchUsers])
+				for (NSDictionary *dict in @[])
 					[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 				
 			} else {
@@ -108,7 +108,7 @@
 	_removeUsers = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
-	for (NSDictionary *dict in [HONAppDelegate searchUsers])
+	for (NSDictionary *dict in @[])
 		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Search"];
@@ -234,7 +234,7 @@
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	
 	_users = [NSMutableArray array];
-	for (NSDictionary *dict in [HONAppDelegate searchUsers])
+	for (NSDictionary *dict in @[])
 		[_users addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	
 	[_tableView reloadData];
@@ -322,7 +322,7 @@
 		
 		if (buttonIndex == 1) {
 			[_selectedUsers removeAllObjects];
-			for (NSDictionary *dict in [HONAppDelegate searchUsers])
+			for (NSDictionary *dict in @[])
 				[_selectedUsers addObject:[HONTrivialUserVO userWithDictionary:dict]];
 			
 			for (HONSearchUserViewCell *cell in _cells)

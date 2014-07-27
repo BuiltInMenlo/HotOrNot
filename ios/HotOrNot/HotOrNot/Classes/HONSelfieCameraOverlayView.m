@@ -19,7 +19,6 @@
 @interface HONSelfieCameraOverlayView()
 @property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
-@property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIView *headerBGView;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *cameraRollButton;
@@ -27,7 +26,6 @@
 @property (nonatomic, strong) UIButton *changeTintButton;
 @property (nonatomic, strong) UIButton *takePhotoButton;
 @property (nonatomic, strong) UIImageView *lastCameraRollImageView;
-@property (nonatomic) int tintIndex;
 @end
 
 @implementation HONSelfieCameraOverlayView
@@ -35,7 +33,6 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_tintIndex = 0;
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
 		_blackMatteView.hidden = YES;
@@ -44,10 +41,6 @@
 //		UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraGradientOverlay"]];
 //		gradientImageView.frame = self.frame;
 //		[self addSubview:gradientImageView];
-		
-		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
-		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-		[self addSubview:_tintedMatteView];
 		
 		_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		[self addSubview:_headerBGView];
@@ -140,20 +133,7 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePhoto:self withTintIndex:_tintIndex];
-}
-
-- (void)_goChangeTint {
-	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
-
-	
-//	UIColor *color = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_snapOverlayTint];
-//	NSLog(@"TINT:[%@]", [color colorWithAlphaComponent:0.5]);
-	
-	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:0.33];
-	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex]];
-	[UIView commitAnimations];
+	[self.delegate cameraOverlayViewTakePhoto:self];
 }
 
 - (void)_retrieveLastImage {

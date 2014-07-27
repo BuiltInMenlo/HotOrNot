@@ -17,7 +17,6 @@
 @interface HONAvatarCameraOverlayView ()
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIImageView *lastCameraRollImageView;
-@property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIView *submitHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIButton *changeTintButton;
@@ -25,7 +24,6 @@
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIView *blackMatteView;
-@property (nonatomic) int tintIndex;
 @end
 
 @implementation HONAvatarCameraOverlayView
@@ -35,7 +33,6 @@
 #pragma mark - View Lifecycle
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_tintIndex = 0;
 		
 		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
 		[self addSubview:_previewHolderView];
@@ -46,10 +43,6 @@
 		_irisView.backgroundColor = [UIColor blackColor];
 		_irisView.alpha = 0.0;
 		[self addSubview:_irisView];
-		
-		_tintedMatteView = [[UIView alloc] initWithFrame:self.frame];
-		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-		[self addSubview:_tintedMatteView];
 		
 		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
@@ -213,7 +206,7 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePicture:self withTintIndex:_tintIndex];
+	[self.delegate cameraOverlayViewTakePicture:self];
 }
 
 - (void)_goCancel {
@@ -248,17 +241,6 @@
 	
 	_captureButton.hidden = NO;
 	[self.delegate cameraOverlayViewRetake:self];
-}
-
-- (void)_goChangeTint {
-	
-	
-	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
-	
-	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:0.33];
-	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex]];
-	[UIView commitAnimations];
 }
 
 

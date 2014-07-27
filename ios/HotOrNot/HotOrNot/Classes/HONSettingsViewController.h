@@ -10,16 +10,18 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
+#import "HONViewController.h"
+
 
 typedef NS_ENUM(NSInteger, HONSettingsCellType) {
 	HONSettingsCellTypeNotifications = 0,
-    HONSettingsCellTypeCopyClub,
+	HONSettingsCellTypeCopyClub,
 	HONSettingsCellTypeTermsOfService,
 	HONSettingsCellTypePrivacyPolicy,
 	HONSettingsCellTypeSupport,
 	HONSettingsCellTypeRateThisApp,
 	HONSettingsCellTypeNetworkStatus,
-    HONSettingsCellTypeLogout
+	HONSettingsCellTypeLogout
 };
 
 typedef NS_ENUM(NSInteger, HONSettingsMailComposerType) {
@@ -31,9 +33,9 @@ typedef NS_ENUM(NSInteger, HONSettingsAlertType) {
 	HONSettingsAlertTypeNotifications = 0,
 	HONSettingsAlertTypeDeleteChallenges,
 	HONSettingsAlertTypeDeactivate,
-    HONSettingsAlertTypeLogout
+	HONSettingsAlertTypeLogout
 };
 
 
-@interface HONSettingsViewController : UIViewController <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONSettingsViewController : HONViewController <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @end

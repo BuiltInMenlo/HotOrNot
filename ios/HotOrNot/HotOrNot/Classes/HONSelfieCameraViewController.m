@@ -42,7 +42,6 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDictionary *submitParams;
 @property (nonatomic, strong) UIImageView *submitImageView;
-@property (nonatomic) int tintIndex;
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL isUploadComplete;
@@ -402,11 +401,9 @@
 	}];
 }
 
-- (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 2 Take Photo"
-									 withProperties:@{@"tint"	: [@"" stringFromInt:tintIndex]}];
+- (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 2 Take Photo"];
 	
-	_tintIndex = tintIndex;
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 //	_progressHUD.labelText = @"Loading…";
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -490,7 +487,7 @@
 	} else {
 		NSLog(@"---CLUB SELECT---LIB");
 		_isFirstAppearance = YES;
-        [[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
+		[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
 		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
 	}
 }
@@ -588,10 +585,6 @@
 	
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _processedImage.size.width, _processedImage.size.height)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
-	
-	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-	[canvasView addSubview:overlayTintView];
 	
 	_processedImage = (isSourceImageMirrored) ? [HONImagingDepictor mirrorImage:[HONImagingDepictor createImageFromView:canvasView]] : [HONImagingDepictor createImageFromView:canvasView];
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];

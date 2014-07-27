@@ -12,7 +12,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSelfieCameraPreviewView.h"
-#import "HONTutorialView.h"
+#import "HONInviteOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
@@ -21,12 +21,12 @@
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONTutorialViewDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInviteOverlayViewDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONTutorialView *tutorialView;
+@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
@@ -93,7 +93,6 @@
 	[self addSubview:_emotionsDisplayView];
 		
 	_emotionsPickerView = [[HONEmotionsPickerView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 308.0, 320.0, 308.0)];
-//	_emotionsPickerView.frame = CGRectOffset(_emotionsPickerView.frame, 0.0, self.frame.size.height);
 	_emotionsPickerView.alpha = 0.0;
 	_emotionsPickerView.hidden = YES;
 	_emotionsPickerView.delegate = self;
@@ -122,7 +121,6 @@
 }
 
 - (void)_goSubmit {
-	
 	if ([_subjectNames count] > 0) {
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewSubmit:withSubjects:)])
 			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
@@ -176,7 +174,9 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 	
-
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
+										withEmotion:emotionVO];
+	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
 }
@@ -189,46 +189,43 @@
 	[_emotionsDisplayView removeEmotion:emotionVO];
 }
 
-- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page {
-	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) [*:*]", self.class, page);
+- (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView didChangeToPage:(int)page withDirection:(int)direction {
+	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
+	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 	
-	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
-	if (page == 1) {
-		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_camera"];
-		_tutorialView.delegate = self;
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 3 && page == 2 && direction == 1) {
+		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_camera"];
+		_inviteOverlayView.delegate = self;
 		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-		[_tutorialView introWithCompletion:nil];
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+		[_inviteOverlayView introWithCompletion:nil];
 	}
 }
 
 
-#pragma mark - TutorialView Delegates
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+#pragma mark - InviteOverlay Delegates
+- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 	}];
 }
 
-- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 		
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
 			[self.delegate cameraPreviewViewShowInviteContacts:self];
 	}];
 }
 
-- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
-	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 	}];
 }
 

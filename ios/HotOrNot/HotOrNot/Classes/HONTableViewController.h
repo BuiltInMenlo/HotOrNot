@@ -26,8 +26,5 @@
 - (void)_didFinishDataRefresh;
 
 
-
 @property (nonatomic, retain) HONTableView *tableView;
-//@property (nonatomic, retain) HONRefreshControl *refreshControl;
-
 @end

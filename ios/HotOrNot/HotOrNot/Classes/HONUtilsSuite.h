@@ -9,7 +9,6 @@
 
 #import "HONAnalyticsParams.h"
 #import "HONAPICaller.h"
-#import "HONChallengeAssistant.h"
 #import "HONClubAssistant.h"
 #import "HONContactsAssistant.h"
 #import "HONColorAuthority.h"

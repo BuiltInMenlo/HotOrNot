@@ -78,13 +78,6 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
-	
-//	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	cancelButton.frame = CGRectMake(252.0, 0.0, 93.0, 44.0);
-//	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-//	[cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-//	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-//	[_headerView addButton:cancelButton];
 }
 
 - (void)viewDidLoad {
@@ -122,13 +115,6 @@
 - (void)_goBack {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Back"];
 	[self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)_goCancel {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Cancel"];
-	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-	}];
 }
 
 - (void)_goRefresh {

@@ -30,9 +30,9 @@ const CGSize kTabSize = {80.0, 50.0};
 - (id)init {
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleTabs:) name:@"TOGGLE_TABS" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_changeTab:) name:@"CHANGE_TAB" object:nil];
 	}
-    
+	
 	return (self);
 }
 
@@ -250,8 +250,8 @@ const CGSize kTabSize = {80.0, 50.0};
 }
 
 - (void)_changeTab:(NSNotification *)notification {
-    NSLog(@"Gets notification %d", [notification.object intValue]);
-    [super setSelectedIndex:[notification.object intValue]];
+	NSLog(@"Gets notification %d", [notification.object intValue]);
+	[super setSelectedIndex:[notification.object intValue]];
 }
 
 #pragma mark - UI Presentation

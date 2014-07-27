@@ -13,22 +13,22 @@
 
 - (NSDictionary *)dictionaryByReplacingNullsWithBlanks {
 	const NSMutableDictionary *replaced = [NSMutableDictionary dictionaryWithDictionary: self];
-    const id nul = [NSNull null];
-    const NSString *blank = @"";
+	const id nul = [NSNull null];
+	const NSString *blank = @"";
 	
-    for (NSString *key in self) {
-        const id object = [self objectForKey:key];
+	for (NSString *key in self) {
+		const id object = [self objectForKey:key];
 		
-        if (object == nul) {
-            [replaced setObject: blank forKey:key];
-        }
+		if (object == nul) {
+			[replaced setObject: blank forKey:key];
+		}
 		
-        else if ([object isKindOfClass:[NSDictionary class]]) {
-            [replaced setObject:[(NSDictionary *) object dictionaryByReplacingNullsWithBlanks] forKey:key];
-        }
-    }
+		else if ([object isKindOfClass:[NSDictionary class]]) {
+			[replaced setObject:[(NSDictionary *) object dictionaryByReplacingNullsWithBlanks] forKey:key];
+		}
+	}
 	
-    return [NSDictionary dictionaryWithDictionary:[replaced copy]];
+	return [NSDictionary dictionaryWithDictionary:[replaced copy]];
 }
 
 @end

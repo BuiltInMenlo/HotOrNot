@@ -42,7 +42,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 }
 
 - (NSString *)uniqueIdentifierWithoutSeperators:(BOOL)noDashes {
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 //	NSLog(@"//////////KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecValueData)]);	
 //	[[[UIAlertView alloc] initWithTitle:@"VENDOR ID"
 //								message:[keychain objectForKey:CFBridgingRelease(kSecValueData)]
@@ -58,34 +58,11 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	}
 	
 	NSString *strApplicationUUID = [keychain objectForKey:CFBridgingRelease(kSecValueData)];
-	
-//	Keychain *keychain = [[Keychain alloc] initWithService:[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey] withGroup:nil];
-//	NSData *data = [keychain find:@"uuid"];
-//    
-//	NSString *strApplicationUUID;
-//    if (data) {
-//		strApplicationUUID = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-//    
-//	} else {
-//        strApplicationUUID = [[UIDevice currentDevice].identifierForVendor UUIDString];
-//		if ([keychain insert:@"uuid" :[strApplicationUUID dataUsingEncoding:NSUTF8StringEncoding]]) {
-//			NSLog(@"Successfully added UUID");
-//		
-//		} else
-//			NSLog(@"Failed to add UUID");
-//    }
-	
 	return ((noDashes) ? [strApplicationUUID stringByReplacingOccurrencesOfString:@"-" withString:@""] : strApplicationUUID);
 	
 	
 //	CFStringRef uuid = CFUUIDCreateString(NULL, CFUUIDCreate(NULL));
 //	NSString * uuidString = (NSString *)CFBridgingRelease(uuid);
-//	[SSKeychain setPassword:uuidString forService:@"com.builtinmenlo.selfieclub" account:@"user"];
-//	
-//	return ((noDashes) ? [((NSString *)CFBridgingRelease(uuid)) stringByReplacingOccurrencesOfString:@"-" withString:@""] : (NSString *)CFBridgingRelease(uuid));
-	
-	
-//	return ((noDashes) ? [[[UIDevice currentDevice].identifierForVendor UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""] : [[UIDevice currentDevice].identifierForVendor UUIDString]);
 }
 
 - (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes {
@@ -121,6 +98,31 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	uname(&systemInfo);
 	
 	return ([NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+}
+
+- (NSString *)pushToken {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]);
+}
+
+
+- (void)writePhoneNumber:(NSString *)phoneNumber {
+	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	[keychain setObject:phoneNumber forKey:CFBridgingRelease(kSecAttrService)];
+}
+
+- (NSString *)phoneNumber {
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	[keychain objectForKey:CFBridgingRelease(kSecAttrService)];
+	
+//	NSLog(@"DeviceInstrinsics phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 }
 
 

@@ -25,7 +25,6 @@
 @property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *imagePrefix;
-@property (nonatomic) int tintIndex;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
 @end
@@ -145,10 +144,6 @@
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
-	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-	[canvasView addSubview:overlayTintView];
-	
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
 	
 	[self _uploadPhotos:processedImage];
@@ -213,8 +208,7 @@
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex {
-	_tintIndex = tintIndex;
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;

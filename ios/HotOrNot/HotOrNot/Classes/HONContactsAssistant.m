@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AddressBook/AddressBook.h>
+
 #import "NSString+DataTypes.h"
 
 #import "HONContactsAssistant.h"
@@ -32,11 +34,75 @@ static HONContactsAssistant *sharedInstance = nil;
 }
 
 
+- (NSArray *)deviceContactsSortedByName:(BOOL)isSorted {
+	NSMutableArray *contactVOs = [NSMutableArray array];
+	NSMutableArray *contactDicts = [NSMutableArray array];
+	
+	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
+	
+	for (int i=0; i<nPeople; i++) {
+		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
+		
+		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
+		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
+		
+		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : fName;
+		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
+		
+		if ([fName length] == 0 && [lName length] == 0)
+			continue;
+		
+		
+		NSData *imageData = nil;
+		if (ABPersonHasImageData(ref))
+			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
+		imageData = (imageData == nil) ? UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"]) : imageData;
+		
+		
+		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
+		NSString *phoneNumber = (phoneCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0) : @"";
+		CFRelease(phoneProperties);
+		
+		
+		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
+		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
+		NSString *email = (emailCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0) : @"";
+		CFRelease(emailProperties);
+		
+		
+		if ([phoneNumber length] > 0 || [email length] > 0) {
+			[contactDicts addObject:@{@"f_name"	: fName,
+									  @"l_name"	: lName,
+									  @"phone"	: phoneNumber,
+									  @"email"	: email,
+									  @"image"	: imageData}];
+		}
+	}
+	
+	
+	contactDicts = (isSorted) ? [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy] : contactDicts;
+	for (NSDictionary *dict in contactDicts)
+		[contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
+
+	
+	return ([contactVOs copy]);
+}
+
+
+- (int)totalInvitedContacts {
+	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil) ? 0 : [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] count]);
+}
+
+
 - (void)writeContactUser:(HONContactUserVO *)contactUserVO toInvitedClub:(HONUserClubVO *)clubVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
 	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] mutableCopy];
+//	NSLog(@"CLUB INVITES:[%@]", invites);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
@@ -54,6 +120,9 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"club_invites"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
+	
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= 3)
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 }
 
 - (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {
@@ -61,6 +130,7 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
 	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] mutableCopy];
+//	NSLog(@"CLUB INVITES:[%@]", invites);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
@@ -78,16 +148,19 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] setObject:[invites copy] forKey:@"club_invites"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
+	
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= 3)
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 }
 
 - (BOOL)isContactUserInvitedToClubs:(HONContactUserVO *)contactUserVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
+//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
-		NSLog(@"CLUB INVITES:[%@]", dict);
-		
 		for (NSString *key in @[@"owned", @"member"]) {
 			for (NSDictionary *clubDict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]) {
 				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:clubDict];
@@ -107,10 +180,10 @@ static HONContactsAssistant *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
+//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
-		NSLog(@"CLUB INVITES:[%@]", dict);
-		
 		for (NSString *key in @[@"owned", @"member"]) {
 			for (NSDictionary *clubDict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]) {
 				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:clubDict];
@@ -130,10 +203,10 @@ static HONContactsAssistant *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
+//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
-		NSLog(@"CLUB INVITES:[%@]", dict);
-		
 		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
 			isFound = YES;
 			break;
@@ -147,10 +220,10 @@ static HONContactsAssistant *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
+//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
-		NSLog(@"CLUB INVITES:[%@]", dict);
-		
 		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:[@"" stringFromInt:trivialUserVO.userID]]) {
 			isFound = YES;
 			break;

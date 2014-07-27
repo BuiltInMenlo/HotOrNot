@@ -19,9 +19,9 @@
 		
 	vo.emotionID = [[dictionary objectForKey:@"id"] intValue];
 	vo.emotionName = [[[dictionary objectForKey:@"name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] stringByReplacingOccurrencesOfString:@".png" withString:@""];
-	vo.largeImageURL = [dictionary objectForKey:@"img"];
-	vo.mediumImageURL = [vo.largeImageURL stringByReplacingOccurrencesOfString:@"/large" withString:@"/medium"];
-	vo.smallImageURL = [vo.largeImageURL stringByReplacingOccurrencesOfString:@"/large" withString:@"/small"];
+	vo.largeImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"large.png"];
+	vo.mediumImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"medium.png"];
+	vo.smallImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"small.png"];
 	vo.price = [[dictionary objectForKey:@"price"] floatValue];
 	vo.isFree = (vo.price == 0.0);
 	

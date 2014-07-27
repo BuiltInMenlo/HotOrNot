@@ -39,10 +39,6 @@
 	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
 	
 	
-//	vo.pendingMembers = [dictionary objectForKey:@"pending"];
-//	vo.activeMembers = [dictionary objectForKey:@"members"];
-//	vo.bannedMembers = [dictionary objectForKey:@"blocked"];
-	
 	NSMutableArray *pending = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"pending"])
 		[pending addObject:[HONTrivialUserVO userWithDictionary:dict]];
@@ -71,7 +67,7 @@
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (HONTrivialUserVO *trivialUserVO in vo.pendingMembers) {
-			NSLog(@"PENDING:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
+//			NSLog(@"PENDING:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
 			if (trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypePending;
 				break;
@@ -81,7 +77,7 @@
 		
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (HONTrivialUserVO *trivialUserVO in vo.activeMembers) {
-			NSLog(@"ACTIVE:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
+//			NSLog(@"ACTIVE:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
 			if (trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeMember;
 				break;
@@ -91,7 +87,7 @@
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (HONTrivialUserVO *trivialUserVO in vo.bannedMembers) {
-			NSLog(@"BANNED:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
+//			NSLog(@"BANNED:(%d) - [%d - %@]", vo.clubID, trivialUserVO.userID, trivialUserVO.username);
 			if (trivialUserVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				vo.clubEnrollmentType = HONClubEnrollmentTypeBanned;
 				break;

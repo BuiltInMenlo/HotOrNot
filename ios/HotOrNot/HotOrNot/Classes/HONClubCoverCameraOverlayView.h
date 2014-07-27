@@ -8,7 +8,7 @@
 
 @class HONClubCoverCameraOverlayView;
 @protocol HONClubCoverCameraOverlayViewDelegate
-- (void)cameraOverlayViewTakePicture:(HONClubCoverCameraOverlayView *)cameraOverlayView withTintIndex:(int)tintIndex;
+- (void)cameraOverlayViewTakePicture:(HONClubCoverCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewRetake:(HONClubCoverCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmit:(HONClubCoverCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONClubCoverCameraOverlayView *)cameraOverlayView;

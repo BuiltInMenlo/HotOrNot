@@ -114,7 +114,7 @@ extern NSString * const kNetErrorStatusCode404;
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UIAlertViewDelegate, UIActionSheetDelegate, UIDocumentInteractionControllerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
 + (NSString *)apiServerPath;
-+ (NSString *)customerServiceURL;
++ (NSString *)customerServiceURLForKey:(NSString *)key;
 + (NSString *)kikCardURL;
 + (NSString *)shareURL;
 
@@ -123,15 +123,11 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType;
 
-+ (int)minimumAge;
-
-
 + (BOOL)switchEnabledForKey:(NSString *)key;
 + (int)incTotalForCounter:(NSString *)key;
 + (int)totalForCounter:(NSString *)key;
 
 + (CGFloat)minSnapLuminosity;
-+ (NSString *)verifyCopyForKey:(NSString *)key;
 
 + (NSString *)smsInviteFormat;
 + (NSDictionary *)emailInviteFormat;
@@ -142,28 +138,17 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSDictionary *)emailShareCommentForIndex:(int)index;
 
 
-+ (NSArray *)picoCandyStickers;
-+ (NSArray *)searchUsers;
 + (NSArray *)subjectFormats;
 
-+ (NSArray *)excludedClubDomains;
-
 + (NSRange)rangeForImageQueue;
-
-+ (void)writePhoneNumber:(NSString *)phoneNumber;
-+ (NSString *)phoneNumber;
-
-+ (void)writeDeviceToken:(NSString *)token;
-+ (NSString *)deviceToken;
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 + (UIImage *)avatarImage;
+
 + (void)cacheNextImagesWithRange:(NSRange)range fromURLs:(NSArray *)urls withTag:(NSString *)tag;
 
 + (void)resetTotals;
-+ (NSArray *)inviteList;
-+ (void)addToInviteList:(NSDictionary *)contactDict;
 
 - (void)changeTabToIndex:(NSNumber *)selectedIndex;
 + (UIViewController *)appTabBarController;
@@ -173,7 +158,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (BOOL)canPingConfigServer;
 
 + (CGFloat)compressJPEGPercentage;
-+ (NSArray *)colorsForOverlayTints;
 
 + (BOOL)isValidEmail:(NSString *)checkString;
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL;

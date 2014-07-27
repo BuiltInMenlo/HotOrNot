@@ -40,7 +40,7 @@
 #import "HONAppDelegate.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
-#import "HONTutorialView.h"
+#import "HONInviteOverlayView.h"
 #import "HONTabBarController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONClubPreviewViewController.h"
@@ -129,10 +129,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #if __APPSTORE_BUILD__ == 0
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONTutorialViewDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInviteOverlayViewDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate, HONTutorialViewDelegate>
+@interface HONAppDelegate() <ChartboostDelegate, HONInviteOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -144,7 +144,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
-@property (nonatomic, strong) HONTutorialView *tutorialView;
+@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
 @end
 
 
@@ -160,8 +160,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 }
 
-+ (NSString *)customerServiceURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"support_url"]);
++ (NSString *)customerServiceURLForKey:(NSString *)key {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"support_urls"] objectForKey:key]);
+}
+
++ (NSString *)shareURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"share_url"]);
 }
 
 + (NSDictionary *)s3Credentials {
@@ -174,10 +178,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (CGFloat)minSnapLuminosity {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_luminosity"] floatValue]);
-}
-
-+ (NSString *)verifyCopyForKey:(NSString *)key {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"verify_copy"] objectForKey:key]);
 }
 
 + (NSString *)smsInviteFormat {
@@ -206,10 +206,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSDictionary *)emailShareCommentForIndex:(int)index {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
-}
-
-+ (int)minimumAge {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"min_age"] intValue]);
 }
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
@@ -253,94 +249,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"kik_card"]);
 }
 
-+ (NSString *)shareURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"share_url"]);
-}
-
-
-+ (NSArray *)orthodoxEmojis {
-	NSMutableArray *emojis = [NSMutableArray array];
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"emotions"])
-		[emojis addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	return ([emojis copy]);
-}
-
-+ (NSArray *)picoCandyStickers {
-	NSMutableArray *picoCandy = [NSMutableArray array];
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"picocandy"])
-		[picoCandy addObject:[HONEmotionVO emotionWithDictionary:dict]];
-	
-	return ([picoCandy copy]);
-}
-
 + (NSArray *)subjectFormats {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"subject_formats"]);
-}
-
-+ (NSArray *)excludedClubDomains {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"excluded_domains"]);
-}
-
-+ (NSArray *)searchUsers {
-	return ([NSMutableArray arrayWithArray:[[[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username"
-																																																  ascending:YES
-																																																   selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
 }
 
 + (NSRange)rangeForImageQueue {
 	return (NSRangeFromString([[NSUserDefaults standardUserDefaults] objectForKey:@"image_queue"]));;
 }
 
-
-+ (void)writePhoneNumber:(NSString *)phoneNumber {
-	NSLog(@"AppDelegate writePhoneNumber:[%@]", phoneNumber);
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
-	
-//	NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-//	if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-//		formattedNumber = [@"1" stringByAppendingString:formattedNumber];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
-	[keychain setObject:phoneNumber forKey:CFBridgingRelease(kSecAttrService)];
-}
-
-+ (NSString *)phoneNumber {
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
-	[keychain objectForKey:CFBridgingRelease(kSecAttrService)];
-	
-	NSLog(@"AppDelegate phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
-}
-
-
-+ (void)writeDeviceToken:(NSString *)token {
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (NSString *)deviceToken {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]);
-}
-
-+ (NSArray *)inviteList {
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] : @[]);
-}
-
-+ (void)addToInviteList:(NSDictionary *)contactDict {
-	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"invites"] mutableCopy];
-	[invites addObject:contactDict];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[contactDict copy] forKey:@"invites"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
 
 + (void)writeUserInfo:(NSDictionary *)userInfo {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
@@ -441,14 +357,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"jpeg_compress"] floatValue]);
 }
 
-+ (NSArray *)colorsForOverlayTints {
-	NSMutableArray *overlayTints = [NSMutableArray arrayWithCapacity:[[[NSUserDefaults standardUserDefaults] objectForKey:@"overlay_tint_rbgas"] count]];
-	for (NSArray *rgba in [[NSUserDefaults standardUserDefaults] objectForKey:@"overlay_tint_rbgas"])
-		[overlayTints addObject:[UIColor colorWithRed:[[rgba objectAtIndex:0] floatValue] green:[[rgba objectAtIndex:1] floatValue] blue:[[rgba objectAtIndex:2] floatValue] alpha:[[rgba objectAtIndex:3] floatValue]]];
-	
-	return ([overlayTints copy]);
-}
-
 
 + (UIViewController *)appTabBarController {
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
@@ -547,41 +455,33 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_url"] forKey:@"support_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"verify_copy"] forKey:@"verify_copy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_age"] forKey:@"min_age"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"min_luminosity"] forKey:@"min_luminosity"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
 		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"filter_vals"] forKey:@"filter_vals"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"emotions"] forKey:@"emotions"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"subject_formats"] forKey:@"subject_formats"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"search_users"] forKey:@"search_users"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"switches"] forKey:@"switches"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"avatars"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"],
 														   @"banners"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"banners"],
 														   @"clubs"			: [[result objectForKey:@"s3_buckets"] objectForKey:@"clubs"],
 														   @"emoticons"		: [[result objectForKey:@"s3_buckets"] objectForKey:@"emoticons"]} forKey:@"s3_buckets"];
 		
-		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
-		
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"sms"		: [[result objectForKey:@"invite_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"invite_formats"] objectForKey:@"email"]} forKey:@"invite_formats"];
 		
+		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"share_formats"] objectForKey:@"sheet_title"] forKey:@"share_title"];
 		[[NSUserDefaults standardUserDefaults] setObject:@{@"instagram"	: [[result objectForKey:@"share_formats"] objectForKey:@"instagram"],
 														   @"twitter"	: [[result objectForKey:@"share_formats"] objectForKey:@"twitter"],
 														   @"facebook"	: [[result objectForKey:@"share_formats"] objectForKey:@"facebook"],
 														   @"sms"		: [[result objectForKey:@"share_formats"] objectForKey:@"sms"],
 														   @"email"		: [[result objectForKey:@"share_formats"] objectForKey:@"email"]} forKey:@"share_formats"];
-		
 		
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
@@ -633,13 +533,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAPICaller sharedInstance] registerNewUserWithCompletion:^(NSDictionary *result) {
 		if ([result objectForKey:@"id"] != [NSNull null] || [(NSDictionary *)result count] > 0) {
 			if ([[result objectForKey:@"email"] length] == 0) {
-				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			}
 			
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
+			
 			[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
-			[self _enableNotifications:(![[HONAppDelegate deviceToken] isEqualToString:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]])];
 							
 #if __IGNORE_SUSPENDED__ == 1
 				if (self.tabBarController == nil)
@@ -797,50 +698,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	[KeenClient disableGeoLocation];
-	
-    [[HONAnalyticsParams sharedInstance] trackEvent:@"Did Finish First Boot"];
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
 	
+	NSLog(@"BUNDLE:[%@]", [[NSBundle mainBundle] bundleIdentifier]);
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
-	char bytes[] = "„7ì”~ís";
-	NSString * string = [NSString string];
-	string = [[NSString alloc] initWithBytes:bytes length:8 encoding:NSUTF8StringEncoding];
-	//NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-	
-	//@"YXJ0aHVyLnBld3R5QGdteC5jb20="
-//	NSData *data = [NSData dataFromBase64String:string];
-//	NSString *decodedString;// = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
-	
-//	decodedString = @"6787449c";//@"Ñ7Ïî~Ìès";//[NSString stringWithUTF8String:[data bytes]];
-//	NSLog(@"BASE64 DECODE(%i):%@\n", [string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], string);
-//	
-//	BlowfishAlgorithm *blowfishAlgorithm = [BlowfishAlgorithm new];
-//	[blowfishAlgorithm setMode:[BlowfishAlgorithm buildModeEnum:@"CBC"]];
-//	[blowfishAlgorithm setKey:kBlowfishKey];
-//	[blowfishAlgorithm setInitVector:@"„7ì”~ís"];
-//	[blowfishAlgorithm setupKey];
-//	
-//	NSLog(@"ORG:[%@]", [blowfishAlgorithm encrypt:@"+12133009127"]);
-//	NSLog(@"ENC:[%@]", [[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString]);
-//	NSLog(@"DEC:[%@]", [[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]);
-//	NSLog(@"ORG:[%@]", [blowfishAlgorithm decrypt:[[[blowfishAlgorithm encrypt:@"+12133009127"] base64EncodedString] base64DecodedString]]);
-	
-//	if (launchOptions) {
-//		NSLog(@"\t—//]> [%@ didFinishLaunchingWithOptions] (%@)", self.class, launchOptions);
-//		[[[UIAlertView alloc] initWithTitle:@"¡Message Recieved!"
-//									message:[[NSString string] stringFromDictionary:launchOptions]
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
-//	}
-	
 	
 #if __FORCE_REGISTER__ == 1
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 #endif
 	
@@ -907,30 +775,30 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[KeenClient sharedClient] uploadWithFinishedBlock:^(void) {
 		[application endBackgroundTask:taskId];
 	}];
-    
-    
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
-    NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
-    
-    if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
-        UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-        localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
-        localNotification.timeZone = [NSTimeZone systemTimeZone];
-        localNotification.alertAction = @"View";
-        localNotification.alertBody = @"Create your Selfieclub profile!";
-        localNotification.soundName = @"selfie_notification.caf";
-        localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
-        
-        [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+	
+	
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
+	
+	if ([passedRegistration length] == 0 && [[NSUserDefaults standardUserDefaults] objectForKey:@"local_reg"] == nil) {
+		UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
+		localNotification.timeZone = [NSTimeZone systemTimeZone];
+		localNotification.alertAction = @"View";
+		localNotification.alertBody = @"Create your Selfieclub profile!";
+		localNotification.soundName = @"selfie_notification.caf";
+		localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+		
+		[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"local_reg"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
-    }
+	}
 
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    [[HONAnalyticsParams sharedInstance] trackEvent:@"Finished Resuming Background"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Finished Resuming Background"];
 	//NSLog(@"[:|:] [applicationWillEnterForeground] [:|:]");
 	
 	_isFromBackground = YES;
@@ -942,7 +810,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[FBAppEvents activateApp];
 	
 	[KeenClient sharedClientWithProjectId:kKeenIOProductID
-                              andWriteKey:kKeenIOWriteKey
+							  andWriteKey:kKeenIOWriteKey
 							   andReadKey:kKeenIOReadKey];
 	
 #if KEENIO_LOG == 1
@@ -952,12 +820,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//[[UAPush shared] resetBadge];
 	
 //	Chartboost *chartboost = [Chartboost sharedChartboost];
-//    chartboost.appId = kChartboostAppID;
-//    chartboost.appSignature = kChartboostAppSignature;
-//    chartboost.delegate = self;
+//	chartboost.appId = kChartboostAppID;
+//	chartboost.appSignature = kChartboostAppSignature;
+//	chartboost.delegate = self;
 //	
-//    [chartboost startSession];
-//    [chartboost showInterstitial];
+//	[chartboost startSession];
+//	[chartboost showInterstitial];
 	
 	
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil)
@@ -973,14 +841,14 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-//			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+//			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 //			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 //				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
-//					_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_resume"];
-//					_tutorialView.delegate = self;
+//					_inviteOverlayView = [[HONInviteOverlayView alloc] initWithImageURL:@"tutorial_resume"];
+//					_inviteOverlayView.delegate = self;
 //					
-//					[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-//					[_tutorialView introWithCompletion:nil];
+//					[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+//					[_inviteOverlayView introWithCompletion:nil];
 //				}
 //			}
 			
@@ -998,11 +866,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
 				
 //		if ([HONAppDelegate incTotalForCounter:@"boot"] == 3) {
-//			_tutorialView = [[HONTutorialView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
-//			_tutorialView.delegate = self;
+//			_inviteOverlayView = [[HONInviteOverlayView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
+//			_inviteOverlayView.delegate = self;
 //			
-//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-//			[_tutorialView introWithCompletion:nil];
+//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+//			[_inviteOverlayView introWithCompletion:nil];
 //		}
 	}
 }
@@ -1153,42 +1021,51 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 - (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)notification {
-    [[UIApplication sharedApplication]cancelAllLocalNotifications];
-    app.applicationIconBadgeNumber = notification.applicationIconBadgeNumber -1;
+	[[UIApplication sharedApplication]cancelAllLocalNotifications];
+	app.applicationIconBadgeNumber = notification.applicationIconBadgeNumber -1;
 	
-    notification.soundName = UILocalNotificationDefaultSoundName;
-    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
+	notification.soundName = UILocalNotificationDefaultSoundName;
+	[HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
-    [self _showOKAlert:@"Local Notification" withMessage:notification.alertBody];
+	[self _showOKAlert:@"Local Notification" withMessage:notification.alertBody];
 }
 
 
-- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
-	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
-	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+	NSString *pushToken = [[deviceToken description] substringFromIndex:1];
+	pushToken = [pushToken substringToIndex:[pushToken length] - 1];
+	pushToken = [pushToken stringByReplacingOccurrencesOfString:@" " withString:@""];
 	
-	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, deviceID);
-	[HONAppDelegate writeDeviceToken:deviceID];
-	[self _enableNotifications:YES];
+	NSLog(@"\t—//]> [%@ didRegisterForRemoteNotificationsWithDeviceToken] (%@)", self.class, pushToken);
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:pushToken forKey:@"device_token"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+		[self _enableNotifications:YES];
 	}];
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
-//								message:[HONAppDelegate deviceToken]
+//								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
 //							   delegate:nil
 //					  cancelButtonTitle:@"OK"
 //					  otherButtonTitles:nil] show];
 }
 
-- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	NSLog(@"\t—//]> [%@ didFailToRegisterForRemoteNotificationsWithError] (%@)", self.class, error);
 	
-	[HONAppDelegate writeDeviceToken:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"]];
-	[self _enableNotifications:NO];
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"] forKey:@"device_token"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
+		[self _enableNotifications:NO];
 	}];
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
@@ -1200,13 +1077,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	NSLog(@"\t—//]> [%@ didReceiveRemoteNotification] (%@)", self.class, userInfo);
-    [HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
+	[HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
 	application.applicationIconBadgeNumber = 0;
 	
 	
 //	[[[UIAlertView alloc] initWithTitle:@"Remote Notification"
-//								message:[HONAppDelegate deviceToken]
+//								message:[[HONDeviceIntrinsics sharedInstance] pushToken]
 //							   delegate:nil
 //					  cancelButtonTitle:@"OK"
 //					  otherButtonTitles:nil] show];
@@ -1313,8 +1190,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	
 //	[UAPush shared].tags = [NSArray arrayWithArray:tags];
 //	[[UAPush shared] updateRegistration];
-//	
-//	[HONAppDelegate writeDeviceToken:@""];
+//
 //}
 
 - (void)_initThirdPartySDKs {
@@ -1326,6 +1202,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 	
 	[[HONStickerAssistant sharedInstance] registerStickerStore];
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
 		
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1341,7 +1218,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					   secretKey:kTapjoyAppSecretKey
 						 options:@{TJC_OPTION_ENABLE_LOGGING	: @(YES)}];
 	
-//	[KikAPIClient registerAsKikPluginWithAppID:@"com.builtinmenlo.selfieclub.kik"
+//	[KikAPIClient registerAsKikPluginWithAppID:[[[NSBundle mainBundle] bundleIdentifier] stringByAppendingString:@".kik"]
 //							   withHomepageURI:@"http://www.builtinmenlo.com"
 //								  addAppButton:YES];
 }
@@ -1597,22 +1474,22 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-#pragma mark - TutorialView Delegates
-- (void)tutorialViewClose:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Close"];
+#pragma mark - InviteOverlay Delegates
+- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Close"];
 	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 	}];
 }
 
-- (void)tutorialViewInvite:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Invite"];
+- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay CTA"];
 	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
 		[navigationController setNavigationBarHidden:YES];
@@ -1620,12 +1497,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	}];
 }
 
-- (void)tutorialViewSkip:(HONTutorialView *)tutorialView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Main Camera - Tutorial Skip"];
+- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Skip"];
 	
-	[_tutorialView outroWithCompletion:^(BOOL finished) {
-		[_tutorialView removeFromSuperview];
-		_tutorialView = nil;
+	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
+		[_inviteOverlayView removeFromSuperview];
+		_inviteOverlayView = nil;
 	}];
 }
 

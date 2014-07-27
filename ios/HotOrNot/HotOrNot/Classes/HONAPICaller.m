@@ -1,4 +1,4 @@
-       //
+	   //
 //  HONAPICaller.m
 //  HotOrNot
 //
@@ -134,32 +134,32 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (NSString *)hmacForKey:(NSString *)key withData:(NSString *)data {
-    const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
-    const char *cData = [data cStringUsingEncoding:NSASCIIStringEncoding];
-    unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
-    CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
-    
-    NSMutableString *result = [NSMutableString string];
-    for (int i=0; i<sizeof cHMAC; i++)
-        [result appendFormat:@"%02hhx", cHMAC[i]];
+	const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
+	const char *cData = [data cStringUsingEncoding:NSASCIIStringEncoding];
+	unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
+	CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+	
+	NSMutableString *result = [NSMutableString string];
+	for (int i=0; i<sizeof cHMAC; i++)
+		[result appendFormat:@"%02hhx", cHMAC[i]];
 		
-    return ([result copy]);
+	return ([result copy]);
 }
 
 - (NSString *)hmacToken {
-    NSMutableString *token = [@"unknown" mutableCopy];
-    NSMutableString *data = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] mutableCopy];
+	NSMutableString *token = [@"unknown" mutableCopy];
+	NSMutableString *data = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] mutableCopy];
 		
 	if( data != nil ){
-	    [data appendString:@"+"];
-	    [data appendString:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
-	    
+		[data appendString:@"+"];
+		[data appendString:[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO]];
+		
 		token = [[[HONAPICaller sharedInstance] hmacForKey:kHMACKey withData:data] mutableCopy];
-	    [token appendString:@"+"];
-	    [token appendString:data];
-    }
+		[token appendString:@"+"];
+		[token appendString:data];
+	}
 	
-    return ([token copy]);
+	return ([token copy]);
 }
 
 - (void)retreiveBootConfigWithCompletion:(void (^)(id result))completion {
@@ -767,7 +767,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)updatePhoneNumberForUserWithCompletion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"phone"	: [HONAppDelegate phoneNumber]};
+							 @"phone"	: [[HONDeviceIntrinsics sharedInstance] phoneNumber]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersUpdatePhone, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -794,7 +794,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)validatePhoneNumberForUser:(int)userID usingPINCode:(NSString *)pinCode completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"phone"	: [HONAppDelegate phoneNumber],
+							 @"phone"	: [[HONDeviceIntrinsics sharedInstance] phoneNumber],
 							 @"pin"		: pinCode};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersValidatePIN, params);
@@ -822,7 +822,7 @@ static HONAPICaller *sharedInstance = nil;
 
 - (void)updateDeviceTokenWithCompletion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"token"	: [HONAppDelegate deviceToken]};
+							 @"token"	: [[HONDeviceIntrinsics sharedInstance] pushToken]};
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersSetDeviceToken, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];

@@ -11,15 +11,15 @@
 #import "HONWebViewController.h"
 #import "HONHeaderView.h"
 
-@interface HONWebViewController () <UIWebViewDelegate>
+@interface HONWebViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) NSString *url;
-@property (nonatomic, strong) NSString *headerTitle;
-@property (nonatomic, strong) UIButton *doneButton;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONWebViewController
+@synthesize headerTitle = _headerTitle;
+@synthesize url = _url;
 
 - (id)initWithURL:(NSString *)url title:(NSString *)title {
 	if ((self = [super init])) {
@@ -30,16 +30,24 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
 
-- (void)dealloc {
+#pragma mark - Public APIs
+- (void)setHeaderTitle:(NSString *)headerTitle {
+	_headerTitle = headerTitle;
 	
+	[_headerView setTitle:_headerTitle];
 }
 
-- (BOOL)shouldAutorotate {
-	return (NO);
+- (void)setUrl:(NSString *)url {
+	_url = url;
+	
+	if ([_webView isLoading])
+		[_webView stopLoading];
+	
+	[self _removeHUD];
+	
+	
+	[_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
 }
 
 
@@ -60,34 +68,9 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_headerTitle];
-	[headerView addButton:doneButton];
-	[self.view addSubview:headerView];
-	
-	if (!_progressHUD) {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.taskInProgress = YES;
-		_progressHUD.minShowTime = kHUDTime;
-		
-		[self performSelector:@selector(_removeHUD) withObject:nil afterDelay:8.0];
-	}
-	
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
-
-#pragma mark - Accessors
-- (void)hideDoneButton {
-	[_doneButton removeTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[_doneButton removeFromSuperview];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_headerTitle];
+	[_headerView addButton:doneButton];
+	[self.view addSubview:_headerView];
 }
 
 
@@ -96,6 +79,8 @@
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
+
+#pragma mark - UI Presentation
 - (void)_removeHUD {
 	if (_progressHUD != nil) {
 		_progressHUD.taskInProgress = NO;
@@ -111,6 +96,11 @@
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.taskInProgress = YES;
+	_progressHUD.minShowTime = kHUDTime;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
@@ -120,9 +110,20 @@
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
 	NSLog(@"didFailLoadWithError:[%@]", error);
 	
-	[self _removeHUD];
-	if ([error code] == NSURLErrorCancelled)
+	if ([error code] == NSURLErrorCancelled) {
+		[self _removeHUD];
 		return;
+	}
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.mode = MBProgressHUDModeCustomView;
+	_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+	[_progressHUD show:NO];
+	[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+	_progressHUD = nil;
 }
 
 @end

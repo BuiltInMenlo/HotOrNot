@@ -17,9 +17,18 @@
 - (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSArray *)defaultCoverImagePrefixes;
 - (NSString *)defaultCoverImagePrefix;
+- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
+- (NSArray *)suggestedClubs;
+
+- (HONUserClubVO *)suggestedAreaCodeClubVO;
+- (HONUserClubVO *)suggestedEmailClubVO:(NSArray *)domains;
+- (HONUserClubVO *)suggestedFamilyClubVO;
+- (HONUserClubVO *)suggestedWorkplaceClubVO;
 
 - (void)wipeUserClubs;
 - (NSDictionary *)fetchUserClubs;
 - (void)writeUserClubs:(NSDictionary *)clubs;
+
+- (NSArray *)excludedClubDomains;
 @end

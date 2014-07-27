@@ -24,7 +24,6 @@
 @end
 
 @implementation HONClubNewsFeedViewCell
-//@synthesize timelineItemVO = _timelineItemVO;
 @synthesize clubVO = _clubVO;
 @synthesize delegate = _delegate;
 

@@ -35,6 +35,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 
 - (id)init {
 	if ((self = [super init])) {
+		[KeenClient disableGeoLocation];
 	}
 	
 	return (self);

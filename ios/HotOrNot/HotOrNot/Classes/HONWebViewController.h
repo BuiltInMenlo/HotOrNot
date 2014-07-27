@@ -6,7 +6,11 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONWebViewController : UIViewController
+#import "HONViewController.h"
+
+@interface HONWebViewController : HONViewController <UIWebViewDelegate>
 - (id)initWithURL:(NSString *)url title:(NSString *)title;
-- (void)hideDoneButton;
+
+@property (nonatomic, strong) NSString *headerTitle;
+@property (nonatomic, strong) NSString *url;
 @end

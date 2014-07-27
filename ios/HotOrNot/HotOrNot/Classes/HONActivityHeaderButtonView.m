@@ -41,7 +41,7 @@ const CGFloat kMaxActivityWidth = 44.0;
 		_activityTotalLabel.textColor = [UIColor whiteColor];
 		_activityTotalLabel.backgroundColor = [UIColor clearColor];
 		_activityTotalLabel.textAlignment = NSTextAlignmentCenter;
-        _activityTotalLabel.text = @"N";
+		_activityTotalLabel.text = @"N";
 		[_activityBGImageView addSubview:_activityTotalLabel];
 		
 		[self updateActivityBadge];

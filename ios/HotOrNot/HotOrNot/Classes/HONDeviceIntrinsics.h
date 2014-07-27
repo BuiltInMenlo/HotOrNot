@@ -20,6 +20,11 @@
 - (NSString *)locale;
 - (NSString *)modelName;
 - (NSString *)deviceName;
+- (NSString *)pushToken;
+
+- (void)writePhoneNumber:(NSString *)phoneNumber;
+- (NSString *)phoneNumber;
+
 
 - (BOOL)hasAdressBookPermission;
 @end

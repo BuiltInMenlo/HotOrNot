@@ -34,7 +34,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showContactsTutorial:) name:@"SHOW_CONTACTS_TUTORIAL" object:nil];
 	}
 	
 	return (self);
@@ -65,16 +64,8 @@
 	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
-	NSString *passedRegistration = [keychain objectForKey:CFBridgingRelease(kSecAttrAccount)];
-	
-//	[[[UIAlertView alloc] initWithTitle:@"Passed 1st Run"
-//								message:passedRegistration
-//							   delegate:nil
-//					  cancelButtonTitle:@"OK"
-//					  otherButtonTitles:nil] show];
-//	
-	if ([passedRegistration length] == 0)
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
 		[self _goRegistration];
 	
 	else
@@ -94,8 +85,6 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
-	
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithContentGroupIDs:[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:@"free"] completion:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -126,7 +115,6 @@
 }
 
 - (void)_goCreateChallenge {
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -140,10 +128,6 @@
 	[self _goRegistration];
 }
 
-- (void)_showContactsTutorial:(NSNotification *)notification {
-	NSLog(@"::|> _showContactsTutorial <|::");
-}
-
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
 }
@@ -151,8 +135,7 @@
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
 	
-	if (_tableView.contentOffset.y < 150.0)
-		[_tableView setContentOffset:CGPointZero animated:YES];
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
@@ -164,13 +147,7 @@
 - (void)_tareContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> tareContactsTab <|::");
 	
-//	if (_tableView.contentOffset.y > 0) {
-//		_tableView.pagingEnabled = NO;
-//		[_tableView setContentOffset:CGPointZero animated:YES];
-//	}
-	
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-//	[_tableView setContentOffset:CGPointMake(0.0, [UIScreen mainScreen].bounds.size.height) animated:NO];
 }
 
 
@@ -193,12 +170,6 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friend Row Tap"];
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
-	if (contactUserVO.contactType == HONContactTypeUnmatched)
-		[self _inviteNonAppContact:contactUserVO toClub:_userClubVO];
-	
-	else
-		[self _inviteInAppContact:[HONTrivialUserVO userFromContactVO:contactUserVO] toClub:_userClubVO];
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -211,9 +182,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	[self _inviteInAppContact:trivialUserVO toClub:_userClubVO];
-	
 }
 
 

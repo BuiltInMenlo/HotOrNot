@@ -13,7 +13,7 @@
 const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
-@property (nonatomic, strong) NSArray *orthodoxEmotions;
+@property (nonatomic, strong) NSMutableArray *availableEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -31,14 +31,25 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_orthodoxEmotions = [HONAppDelegate picoCandyStickers];//[HONAppDelegate orthodoxEmojis];
+		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
 		
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
+			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+		
+		if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= 3) {
+			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeInviteBonus])
+				[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+		}
+		
+		
+		NSLog(@"INVITES:[%d]", [[HONContactsAssistant sharedInstance] totalInvitedContacts]);
+		
 		_prevPage = 0;
-		_totalPages = ((int)([_orthodoxEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
 		[self addSubview:_bgImageView];
@@ -115,12 +126,12 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[_scrollView addSubview:holderView];
 	}
 	
-	for (HONEmotionVO *vo in _orthodoxEmotions) {
+	for (HONEmotionVO *vo in _availableEmotions) {
 		col = cnt % COLS_PER_ROW;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.25];
+		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		emotionItemView.delegate = self;
 		[emotionItemView setTag:cnt];
 		[_itemViews addObject:emotionItemView];
@@ -135,8 +146,8 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView selectedEmotion:(HONEmotionVO *)emotionVO {
 	if ([_selectedEmotions count] < 100) {
 		[_selectedEmotions addObject:emotionVO];
+		
 		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:selectedEmotion:)])
-            [[HONAnalyticsParams sharedInstance] trackEvent:@"Stickerboard Sticker Selected"];
 			[self.delegate emotionsPickerView:self selectedEmotion:emotionVO];
 	}
 }
@@ -153,14 +164,13 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	int offsetPage = MIN(MAX(round(scrollView.contentOffset.x / scrollView.frame.size.width), 0), _totalPages);
 	
-	//NSLog(@"[*|*] scrollViewDidScroll:(%d) [*|*]", offsetPage);
-	[_paginationView updateToPage:offsetPage];
-	
 	if (offsetPage != _prevPage) {
+		[_paginationView updateToPage:offsetPage];
+		
+		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:didChangeToPage:withDirection:)])
+			[self.delegate emotionsPickerView:self didChangeToPage:offsetPage withDirection:(_prevPage < offsetPage) ? 1 : -1];
+		
 		_prevPage = offsetPage;
-        [[HONAnalyticsParams sharedInstance] trackEvent:@"Stickerboard Swipe"];
-		if ([self.delegate respondsToSelector:@selector(emotionsPickerView:didChangeToPage:)])
-			[self.delegate emotionsPickerView:self didChangeToPage:offsetPage];
 	}
 }
 

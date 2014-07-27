@@ -16,7 +16,7 @@
 
 #import "HONUserProfileViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONFAQViewController.h"
+#import "HONPrivacyPolicyViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONImageLoadingView.h"
 #import "HONActivityItemViewCell.h"
@@ -285,7 +285,7 @@
 }
 
 - (void)_goFAQ {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }

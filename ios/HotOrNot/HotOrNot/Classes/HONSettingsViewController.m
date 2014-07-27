@@ -13,11 +13,11 @@
 #import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
-#import "HONSettingsViewCell.h"
-#import "HONFAQViewController.h"
-#import "HONTermsConditionsViewController.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
+#import "HONSettingsViewCell.h"
+#import "HONPrivacyPolicyViewController.h"
+#import "HONTermsViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONNetworkStatusViewController.h"
 
@@ -34,13 +34,13 @@
 - (id)init {
 	if ((self = [super init])) {
 		_captions = @[@"Notifications",
-                      @"Copy my club URL",
-					  @"Terms of service",
+					  @"Copy my club URL",
+					  @"Terms of use",
 					  @"Privacy policy",
 					  @"Support",
 					  @"Rate this app",
 					  @"Network status",
-                      @"Logout"];
+					  @"Logout"];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -54,18 +54,6 @@
 	}
 	
 	return (self);
-}
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
 }
 
 
@@ -117,14 +105,6 @@
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
 }
 
 
@@ -222,13 +202,13 @@
 	
 	if (indexPath.row == HONSettingsCellTypeTermsOfService) {
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else if (indexPath.row == HONSettingsCellTypePrivacyPolicy) {
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFAQViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
@@ -244,17 +224,17 @@
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
-        } else {
+		} else {
 			[[[UIAlertView alloc] initWithTitle:@"Email Error"
 										message:@"Cannot send email from this device!"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
 		}
-    } else if(indexPath.row == HONSettingsCellTypeCopyClub){
-        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-        pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
-        
+	} else if(indexPath.row == HONSettingsCellTypeCopyClub){
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
+		
 		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 								   delegate:nil
@@ -262,7 +242,7 @@
 						  otherButtonTitles:nil] show];
 		
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		
 	} else if (indexPath.row == HONSettingsCellTypeNetworkStatus) {
 		
@@ -270,16 +250,16 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-                                                            message:@""
-                                                           delegate:self
-                                                  cancelButtonTitle:@"Cancel"
-                                                  otherButtonTitles:@"Log out", nil];
-        
-        [alertView setTag:HONSettingsAlertTypeLogout];
-        [alertView show];
-        
-    }
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@""
+														   delegate:self
+												  cancelButtonTitle:@"Cancel"
+												  otherButtonTitles:@"Log out", nil];
+		
+		[alertView setTag:HONSettingsAlertTypeLogout];
+		[alertView show];
+		
+	}
 }
 
 
@@ -378,7 +358,7 @@
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"is_deactivated"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
@@ -396,46 +376,46 @@
 			}];
 		}
 	} else if (alertView.tag == HONSettingsAlertTypeLogout){
-        if (buttonIndex == 1){
-            
-            NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
-                                           @"votes"				: @[],
-                                           @"local_challenges"	: @[],
-                                           @"upvotes"			: @[],
-                                           @"activity_total"	: @0,
-                                           @"activity_updated"	: @"0000-00-00 00:00:00"};
-            
-            for (NSString *key in userDefaults) {
-                if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
-                    [[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-            }
-            
-            for (NSString *key in userDefaults) {
-                if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-                    [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-                
-                [[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-            }
-            
-            [HONAppDelegate resetTotals];
-            
-            
-            [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
-            KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
-            [keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
-            
-            [[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
-            }];
-          
+		if (buttonIndex == 1){
+			
+			NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
+										   @"votes"				: @[],
+										   @"local_challenges"	: @[],
+										   @"upvotes"			: @[],
+										   @"activity_total"	: @0,
+										   @"activity_updated"	: @"0000-00-00 00:00:00"};
+			
+			for (NSString *key in userDefaults) {
+				if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
+					[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+			}
+			
+			for (NSString *key in userDefaults) {
+				if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
+					[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
+			}
+			
+			[HONAppDelegate resetTotals];
+			
+			
+			[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+			[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
+			}];
+		  
 
-        }
-    }
+		}
+	}
 }
 
 @end

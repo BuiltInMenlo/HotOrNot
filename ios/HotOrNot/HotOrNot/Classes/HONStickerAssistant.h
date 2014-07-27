@@ -9,10 +9,20 @@
 #import "PicoManager.h"
 #import "PCCandyStoreSearchController.h"
 
+typedef NS_ENUM(NSInteger, HONStickerPakType) {
+	HONStickerPakTypeAll = 0,
+	HONStickerPakTypeAvatars,
+	HONStickerPakTypeClubCovers,
+	HONStickerPakTypeInviteBonus,
+	HONStickerPakTypeFree,
+	HONStickerPakTypePaid
+};
+
 
 @interface HONStickerAssistant : NSObject
 + (HONStickerAssistant *)sharedInstance;
 
 - (void)registerStickerStore;
-- (void)retrieveStickersWithContentGroupIDs:(NSArray *)contentGroupIDs completion:(void (^)(id result))completion;
+- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType completion:(void (^)(id result))completion;
+- (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
 @end

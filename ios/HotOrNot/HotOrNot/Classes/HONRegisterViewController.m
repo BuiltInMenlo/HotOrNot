@@ -21,7 +21,7 @@
 #import "HONRegisterViewController.h"
 #import "HONCallingCodesViewController.h"
 #import "HONEnterPINViewController.h"
-#import "HONTermsConditionsViewController.h"
+#import "HONTermsViewController.h"
 #import "HONHeaderView.h"
 
 
@@ -52,10 +52,8 @@
 @property (nonatomic, strong) UIImageView *phoneCheckImageView;
 @property (nonatomic, strong) UIView *profileCameraOverlayView;
 @property (nonatomic, strong) UIView *irisView;
-@property (nonatomic, strong) UIView *tintedMatteView;
 @property (nonatomic, strong) UIButton *changeTintButton;
 @property (nonatomic, strong) UIButton *nextButton;
-@property (nonatomic) int tintIndex;
 
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
@@ -69,7 +67,6 @@
 		_imageFilename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
-		_tintIndex = 0;
 	}
 	
 	return (self);
@@ -196,7 +193,7 @@
 			
 			
 			[HONAppDelegate writeUserInfo:result];
-			[HONAppDelegate writePhoneNumber:_phone];
+			[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
 			
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
@@ -208,7 +205,7 @@
 			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-            [[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 																						  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																						  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
@@ -399,7 +396,7 @@
 #pragma mark - Navigation
 - (void)_goLogin {
 	
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:@"com.builtinmenlo.selfieclub" accessGroup:nil];
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
 		if ([MFMailComposeViewController canSendMail]) {
 			_mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -447,11 +444,6 @@
 		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_profileCameraOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {}];
-		
-		_tintIndex = 0;
-		_tintedMatteView = [[UIView alloc] initWithFrame:_profileCameraOverlayView.frame];
-		_tintedMatteView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-		[_profileCameraOverlayView addSubview:_tintedMatteView];
 		
 		UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
@@ -546,16 +538,6 @@
 	self.profileImagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)_goChangeTint {
-	
-	_tintIndex = ++_tintIndex % [[HONAppDelegate colorsForOverlayTints] count];
-	
-	[UIView beginAnimations:@"fade" context:nil];
-	[UIView setAnimationDuration:0.33];
-	[_tintedMatteView setBackgroundColor:[[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex]];
-	[UIView commitAnimations];
-}
-
 - (void)_goSkip {
 
 	_imageFilename = @"";
@@ -596,7 +578,7 @@
 }
 
 - (void)_goTerms {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsConditionsViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -731,10 +713,6 @@
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
-	
-	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-	[canvasView addSubview:overlayTintView];
 	
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
 	

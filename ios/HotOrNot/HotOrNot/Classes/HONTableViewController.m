@@ -16,7 +16,6 @@
 
 @implementation HONTableViewController
 @synthesize tableView = _tableView;
-//@synthesize refreshControl = _refreshControl;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -121,11 +120,11 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return (1);
+	return (1);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (0);
+	return (0);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -133,13 +132,13 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    HONTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
 		cell = [[HONTableViewCell alloc] init];
-    
 	
-    return (cell);
+	
+	return (cell);
 }
 
 

@@ -12,13 +12,13 @@
 
 
 unsigned long long unistrlen(unichar *chars) {
-    unsigned long long length = 0llu;
-    if(NULL == chars) return length;
+	unsigned long long length = 0llu;
+	if(NULL == chars) return length;
 	
-    while(NULL != &chars[length])
-        length++;
+	while(NULL != &chars[length])
+		length++;
 	
-    return length;
+	return length;
 }
 
 
