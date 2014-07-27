@@ -18,4 +18,4 @@ bash/purge.log
 *.xcuserdata*
 *.xcuserstate
 ios/HotOrNot/Obj-C Notes
-ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata/Gullinbursti.xcuserdatad/UserInterfaceState.xcuserstate
+#// ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata
