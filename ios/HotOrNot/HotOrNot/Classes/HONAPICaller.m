@@ -60,9 +60,9 @@ NSString * const kAPIRemoveFriend	= @"social/removefriend";
 
 NSString * const kAPICheckNameAndEmail		= @"users/checkNameAndEmail";
 NSString * const kAPIGetActivity			= @"users/getactivity";
-NSString * const kAPIUsersGetClubs			= @"users/getclubs";
+NSString * const kAPIUsersGetClubs			= @"users/getOtherUsersClubs";//@"users/getclubs";
 NSString * const kAPIUsersGetClubInvites	= @"users/getclubinvites";
-NSString * const kAPIUsersGetUsersClubs		= @"users/getOtherUsersClubs";
+//NSString * const kAPIUsersGetUsersClubs	= @"users/getOtherUsersClubs";
 NSString * const kAPIGetSubscribees			= @"users/getsubscribees";
 NSString * const kAPIEmailContacts			= @"users/ffemail";
 NSString * const kAPIUsersFirstRunComplete	= @"users/firstruncomplete";
@@ -265,7 +265,7 @@ static HONAPICaller *sharedInstance = nil;
 		_progressHUD = nil;
 		
 		if ([bucketName rangeOfString:@"hotornot-challenges"].location != NSNotFound)
-			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 	}
 	
 	if (completion)
@@ -1541,31 +1541,31 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"userID"		: [@"" stringFromInt:userID]};
-	
-	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetUsersClubs);
-	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsersGetUsersClubs parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil) {
-			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			[[HONAPICaller sharedInstance] showDataErrorHUD];
-			
-		} else {
-			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
-			
-			if (completion)
-				completion(result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetUsersClubs, [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
-	}];
-}
+//- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion {
+//	NSDictionary *params = @{@"userID"		: [@"" stringFromInt:userID]};
+//	
+//	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetUsersClubs);
+//	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
+//	[httpClient postPath:kAPIUsersGetUsersClubs parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//		NSError *error = nil;
+//		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//		
+//		if (error != nil) {
+//			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+//			
+//		} else {
+//			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+//			
+//			if (completion)
+//				completion(result);
+//		}
+//		
+//	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetUsersClubs, [error localizedDescription]);
+//		[[HONAPICaller sharedInstance] showDataErrorHUD];
+//	}];
+//}
 
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"userID"		: [dict objectForKey:@"user_id"],
@@ -1835,7 +1835,7 @@ static HONAPICaller *sharedInstance = nil;
 	if ([[tag objectAtIndex:1] isEqualToString:kSnapLargeSuffix]) {
 		switch ((HONS3BucketType)[[tag objectAtIndex:2] intValue]) {
 			case HONS3BucketTypeAvatars:
-				[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+				[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 				break;
 				
 			case HONS3BucketTypeClubs:
@@ -1849,14 +1849,14 @@ static HONAPICaller *sharedInstance = nil;
 		}
 		
 		if (bucketType == HONS3BucketTypeAvatars)
-			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@", request.url] forBucketType:bucketType completion:nil];
 		
 		
 //		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[NSString stringWithFormat:@"%@", request.url] forBucketType:([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"]) ? HONS3BucketTypeAvatars : HONS3BucketTypeSelfies completion:nil];
 //		if ([[tag objectAtIndex:0] isEqualToString:@"hotornot-avatars"])
-//			[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+//			[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@", request.url] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		
 		/*
 		NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:[NSString stringWithFormat:@"%@", request.url]]};
@@ -1901,7 +1901,7 @@ static HONAPICaller *sharedInstance = nil;
 	_progressHUD = nil;
 	
 	if ([[tag firstObject] isEqualToString:@"hotornot-avatars"]) {
-		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+		[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 	}
 }

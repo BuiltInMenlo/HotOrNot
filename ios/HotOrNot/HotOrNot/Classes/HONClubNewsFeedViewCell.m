@@ -62,7 +62,7 @@
 	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) {
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 16.0, 44.0, 44.0)];
 		[self.contentView addSubview:imageView];
-		[HONImagingDepictor maskImageView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		[[HONImageBroker sharedInstance] maskImageView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			imageView.image = image;
@@ -71,7 +71,7 @@
 		void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 			
-			imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+			imageView.image = [UIImage imageNamed:@"defaultClubCover"];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				imageView.alpha = 1.0;
 			} completion:nil];
@@ -160,7 +160,7 @@
 		createClubButton.frame = CGRectMake(253.0, 3.0, 64.0, 44.0);
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_nonActive"] forState:UIControlStateNormal];
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_Active"] forState:UIControlStateHighlighted];
-		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
+		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:createClubButton];
 	}
 }

@@ -81,7 +81,7 @@
 																						   forBucketType:HONS3BucketTypeAvatars
 																							  completion:nil];
 										
-										weakSelf.avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+										weakSelf.avatarImageView.image = [[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapTabSize];
 										[UIView animateWithDuration:0.25 animations:^(void) {
 											weakSelf.avatarImageView.alpha = 1.0;
 										} completion:nil];

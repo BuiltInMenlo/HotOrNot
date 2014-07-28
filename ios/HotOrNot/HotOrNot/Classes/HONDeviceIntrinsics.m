@@ -125,10 +125,4 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 }
 
-
-- (BOOL)hasAdressBookPermission {
-	return (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
-}
-
-
 @end

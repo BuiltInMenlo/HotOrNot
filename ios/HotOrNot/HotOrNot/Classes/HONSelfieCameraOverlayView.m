@@ -56,7 +56,7 @@
 //		_cancelButton.frame = CGRectMake(0.0, 0.0, 114.0, 64.0);
 //		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_nonActive"] forState:UIControlStateNormal];
 //		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_Active"] forState:UIControlStateHighlighted];
-		_cancelButton.frame = CGRectMake(-25.0, 0.0, 93.0, 44.0);
+		_cancelButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 
@@ -81,7 +81,7 @@
 		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 257.0, [UIScreen mainScreen].bounds.size.height - 60.0);
 		[self addSubview:_lastCameraRollImageView];
 		
-		[HONImagingDepictor maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
+		[[HONImageBroker sharedInstance] maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
 		[self _retrieveLastImage];
 		
 		_cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -47,7 +47,7 @@
 		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 8.0, 48.0, 48.0)];
 		[self.contentView addSubview:_avatarImageView];
 		
-		[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_avatarButton.frame = _avatarImageView.frame;
@@ -82,7 +82,6 @@
 		_toggledOnButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
 		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
 		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
-		[_toggledOnButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
 		_toggledOnButton.hidden = !_isSelected;
 		[self.contentView addSubview:_toggledOnButton];
 		
@@ -90,7 +89,6 @@
 		_toggledOffButton.frame = _toggledOnButton.frame;
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
-		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_toggledOffButton];
 		
 		//[self _toggleTintCycle:_isSelected];
@@ -131,6 +129,17 @@
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
+	NSLog(@":|: CELL >> TRIVIALUSER:[%@]", trivialUserVO.username);
+	
+//	if ([_toggledOnButton.allTargets count] > 0)
+		[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
+	
+//	if ([_toggledOffButton.allTargets count] > 0)
+		[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
+	
+	[_toggledOnButton addTarget:self action:@selector(_goDeselectTrivialUser) forControlEvents:UIControlEventTouchUpInside];
+	[_toggledOffButton addTarget:self action:@selector(_goSelectTrivalUser) forControlEvents:UIControlEventTouchUpInside];
+
 	
 	[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
 	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
@@ -156,11 +165,21 @@
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
-	NSString *nameCaption = (_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
+//	if ([_toggledOnButton.allTargets count] > 0)
+		[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
+	
+//	if ([_toggledOffButton.allTargets count] > 0)
+		[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
+	
+	[_toggledOnButton addTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventTouchUpInside];
+	[_toggledOffButton addTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventTouchUpInside];
+	
+	
+	NSString *nameCaption = _contactUserVO.fullName;//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 	
 	_avatarImageView.image = _contactUserVO.avatarImage;
 	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])]) {
-		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix]];
+		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
 	}
 	
 	
@@ -169,19 +188,19 @@
 		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.lastName]];
 	
 	
-	if (_contactUserVO.contactType == HONContactTypeMatched) {
-		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
-		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
-		
-		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-		
-		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
-		_arrowImageView.hidden = NO;
-		
-		
-		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
-		_scoreLabel.hidden = NO;
+//	if (_contactUserVO.contactType == HONContactTypeMatched) {
+//		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
+//		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+//		
+//		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
+//		
+//		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
+//		_arrowImageView.hidden = NO;
+//		
+//		
+//		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+//		_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
+//		_scoreLabel.hidden = NO;
 		
 //		if (_trivialUserVO.isVerified) {
 //			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
@@ -189,12 +208,12 @@
 //			verifiedImageView.hidden = !_trivialUserVO.isVerified;
 //			[self.contentView addSubview:verifiedImageView];
 //		}
-	}
+//	}
 }
 
 
 #pragma mark - Navigation
-- (void)_goDeselect {
+- (void)_goDeselectContactUser {
 	_isSelected = NO;
 	
 	_toggledOffButton.hidden = NO;
@@ -203,15 +222,27 @@
 	} completion:^(BOOL finished) {
 		_toggledOnButton.hidden = YES;
 		
-		if (_trivialUserVO != nil)
-			[self.delegate userToggleViewCell:self didDeselectTrivialUser:_trivialUserVO];
-		
-		else
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectContactUser:)])
 			[self.delegate userToggleViewCell:self didDeselectContactUser:_contactUserVO];
 	}];
 }
 
-- (void)_goSelect {
+- (void)_goDeselectTrivialUser {
+	_isSelected = NO;
+	
+	_toggledOffButton.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_toggledOffButton.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		_toggledOnButton.hidden = YES;
+		
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
+			[self.delegate userToggleViewCell:self didDeselectTrivialUser:_trivialUserVO];
+	}];
+}
+
+
+- (void)_goSelectContactUser {
 	_isSelected = YES;
 	
 	_toggledOnButton.hidden = NO;
@@ -220,11 +251,21 @@
 	} completion:^(BOOL finished) {
 		_toggledOffButton.hidden = YES;
 		
-		if (self.trivialUserVO != nil)
-			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
-		
-		else
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectContactUser:)])
 			[self.delegate userToggleViewCell:self didSelectContactUser:_contactUserVO];
+	}];
+}
+- (void)_goSelectTrivalUser {
+	_isSelected = YES;
+	
+	_toggledOnButton.hidden = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_toggledOnButton.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		_toggledOffButton.hidden = YES;
+		
+		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
+			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
 	}];
 }
 
@@ -248,7 +289,7 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		_avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapThumbSize];
+		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_avatarImageView.alpha = 1.0;
 		} completion:nil];

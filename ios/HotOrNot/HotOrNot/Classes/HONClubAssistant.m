@@ -40,8 +40,13 @@ static HONClubAssistant *sharedInstance = nil;
 			  @"other"]);
 }
 
-- (NSString *)defaultCoverImagePrefix {
-	return ([[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] objectAtIndex:arc4random() % [[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] count]]);
+- (NSString *)defaultCoverImageURL {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"club_cover"]);
+//	return ([[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] objectAtIndex:arc4random() % [[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] count]]);
+}
+
+- (NSString *)defaultClubPhotoURL {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"club_photo"]);
 }
 
 - (NSArray *)defaultCoverImagePrefixes {
@@ -51,6 +56,10 @@ static HONClubAssistant *sharedInstance = nil;
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"]]);
+}
+
+- (NSArray *)clubCoverPhotoAlbumPrefixes {
+	return ([[HONClubAssistant sharedInstance] defaultCoverImagePrefixes]);
 }
 
 - (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner {
@@ -296,10 +305,10 @@ static HONClubAssistant *sharedInstance = nil;
 		
 		if ([clubName length] > 0) {
 			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-			[dict setValue:@"0" forKey:@"id"];
+			[dict setValue:@"-1" forKey:@"id"];
 			[dict setValue:clubName forKey:@"name"];
-			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+			[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 			
 			vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 		}
@@ -327,10 +336,10 @@ static HONClubAssistant *sharedInstance = nil;
 	clubName = ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) ? @"" : clubName;
 	if ([clubName length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 	}
@@ -378,10 +387,10 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	if ([clubName length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 	}
@@ -435,10 +444,10 @@ static HONClubAssistant *sharedInstance = nil;
 	
 	if ([clubName length] > 0) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
-		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
 	}
@@ -449,6 +458,16 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (void)wipeUserClubs {
 	[[HONClubAssistant sharedInstance] writeUserClubs:@{}];
+}
+
+- (void)addClub:(NSDictionary *)club forKey:(NSString *)key {
+	NSMutableDictionary *allclubs = [[[HONClubAssistant sharedInstance] fetchUserClubs] mutableCopy];
+	
+	NSMutableArray *clubs = [[allclubs objectForKey:key] mutableCopy];
+	[clubs addObject:club];
+	[allclubs setObject:[clubs copy] forKey:key];
+	
+	[[HONClubAssistant sharedInstance] writeUserClubs:[allclubs copy]];
 }
 
 - (void)writeUserClubs:(NSDictionary *)clubs {

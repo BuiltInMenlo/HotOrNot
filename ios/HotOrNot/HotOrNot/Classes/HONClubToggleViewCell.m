@@ -30,7 +30,7 @@
 		_coverImageView.alpha = 0.0;
 		[self.contentView addSubview:_coverImageView];
 		
-		[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		[[HONImageBroker sharedInstance] maskImageView:_coverImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 23.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
@@ -77,7 +77,7 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
-		_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+		_coverImageView.image = [UIImage imageNamed:@"defaultClubCover"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_coverImageView.alpha = 1.0;
 		} completion:nil];

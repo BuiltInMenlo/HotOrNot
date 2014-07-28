@@ -40,9 +40,10 @@
 	
 	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
 	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
+	_coverImageView.alpha = 0.0;
 	[self.contentView addSubview:_coverImageView];
 	
-	[HONImagingDepictor maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+	[[HONImageBroker sharedInstance] maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
 	_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 9.0, 34.0, 34.0)];
 	[self.contentView addSubview:_iconImageView];
@@ -51,14 +52,9 @@
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.textAlignment = NSTextAlignmentCenter;
+	_nameLabel.text = _clubVO.clubName;
 	[self.contentView addSubview:_nameLabel];
 
-	
-	
-	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
-	_coverImageView.alpha = 0.0;
-	
-	_nameLabel.text = _clubVO.clubName;
 	
 	if (_clubVO.clubID != 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -72,8 +68,11 @@
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 			
-			_coverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapMediumSize];
-			[UIView animateWithDuration:0.5 animations:^(void) {
+			_clubVO.coverImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
+			[_coverImageView setImageWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
+							placeholderImage:[UIImage imageNamed:@"defaultClubPhoto"]];
+			
+			[UIView animateWithDuration:0.5 delay:0.25 options:(UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
 				_coverImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
 			}];
@@ -96,6 +95,9 @@
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
 		_iconImageView.image = [UIImage imageNamed:@"inviteClubIcon"];
+	
+	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
+		_iconImageView.image = [UIImage imageNamed:@"suggestedClubIcon"];
 	}
 }
 

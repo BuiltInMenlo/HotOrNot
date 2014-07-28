@@ -6,6 +6,12 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONCreateClubViewController : UIViewController <UITextFieldDelegate>
+@class HONCreateClubViewController;
+@protocol HONCreateClubViewControllerDelegate <NSObject>
+@optional
+- (void)createClubViewController:(HONCreateClubViewController *)viewController didDismissByCanceling:(BOOL)isCanceled;
+@end
 
+@interface HONCreateClubViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
+@property (nonatomic, assign) id <HONCreateClubViewControllerDelegate> delegate;
 @end

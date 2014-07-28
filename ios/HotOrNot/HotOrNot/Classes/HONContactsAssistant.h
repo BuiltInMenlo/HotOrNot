@@ -13,6 +13,7 @@
 @interface HONContactsAssistant : NSObject
 + (HONContactsAssistant *)sharedInstance;
 
+- (BOOL)hasAdressBookPermission;
 - (NSArray *)deviceContactsSortedByName:(BOOL)isSorted;
 
 - (BOOL)isContactUserInvitedToClubs:(HONContactUserVO *)contactUserVO;
