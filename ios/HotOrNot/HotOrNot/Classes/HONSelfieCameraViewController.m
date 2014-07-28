@@ -51,6 +51,7 @@
 
 
 @implementation HONSelfieCameraViewController
+@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -136,8 +137,8 @@
 	_filename = [NSString stringWithFormat:@"%@_%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], _filename);
 	
-	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:_processedImage toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 //	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucket:@"hotornot-challenges" withFilename:_filename completion:^(NSObject *result) {
 //		_isUploadComplete = YES;
@@ -394,9 +395,12 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Cancel"];
 	
 	[self _cancelUpload];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		
+		if ([self.delegate respondsToSelector:@selector(selfieCameraViewController:didDismissByCanceling:)])
+			[self.delegate selfieCameraViewController:self didDismissByCanceling:YES];
+		
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
 }
@@ -580,25 +584,34 @@
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	_processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
+	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _processedImage.size.width, _processedImage.size.height)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:_processedImage]];
 	
-	_processedImage = (isSourceImageMirrored) ? [HONImagingDepictor mirrorImage:[HONImagingDepictor createImageFromView:canvasView]] : [HONImagingDepictor createImageFromView:canvasView];
+	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
 	
-	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-		[_cameraOverlayView submitStep:_previewView];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[self.view addSubview:_previewView];
+	}];
+
 	
-	} else {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[self.view addSubview:_previewView];
-		}];
-	}
+	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
+    emotionsViewConteroller.view = _previewView;
+    [self.navigationController pushViewController:emotionsViewConteroller animated:YES];
 	
+//	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+//		[_cameraOverlayView submitStep:_previewView];
+//	
+//	} else {
+//		[self dismissViewControllerAnimated:NO completion:^(void) {
+//			[self.view addSubview:_previewView];
+//		}];
+//	}
+//	
 	[self _uploadPhotos];
 }
 
@@ -625,6 +638,10 @@
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		
+		if ([self.delegate respondsToSelector:@selector(selfieCameraViewController:didDismissByCanceling:)])
+			[self.delegate selfieCameraViewController:self didDismissByCanceling:YES];
+		
 		[self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }

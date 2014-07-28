@@ -25,6 +25,7 @@
 @interface HONContactsViewController () <HONSearchBarViewDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) NSString *smsRecipients;
 @property (nonatomic, strong) NSString *emailRecipients;
+@property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) NSMutableArray *clubInviteContacts;
 @property (nonatomic, strong) NSMutableArray *matchedUserIDs;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -40,6 +41,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_cells = [NSMutableArray array];
 	}
 	
 	return (self);
@@ -56,26 +58,24 @@
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
+			NSLog(@"EMAIL CONTACT:[%@]", dict);
+			BOOL isDuplicate = NO;
+			for (HONTrivialUserVO *vo in _inAppUsers) {
+				if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
+					isDuplicate = YES;
+					break;
+				}
+			}
+			
+			if (isDuplicate)
+				continue;
+			
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
 			
-			
-			if (![_matchedUserIDs containsObject:vo.phoneNumber]) {
-				BOOL isFound = NO;
-				for (HONTrivialUserVO *matchVO in _inAppContacts) {
-					if ([matchVO.username isEqualToString:vo.username]) {
-						isFound = YES;
-						break;
-					}
-				}
-				
-				if (isFound)
-					continue;
-				
-				[_matchedUserIDs addObject:vo.phoneNumber];
-				[_inAppContacts addObject:vo];
-			}
+			[_matchedUserIDs addObject:vo.phoneNumber];
+			[_inAppContacts addObject:vo];
 		}
 		
 		_currentMatchStateCounter++;
@@ -87,26 +87,25 @@
 - (void)_sendPhoneContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
+			NSLog(@"PHONE CONTACT:[%@]", dict);
+			BOOL isDuplicate = NO;
+			for (HONTrivialUserVO *vo in _inAppUsers) {
+				if ([vo.username isEqualToString:[dict objectForKey:@"username"]] || vo.userID == [[dict objectForKey:@"id"] intValue]) {
+					isDuplicate = YES;
+					break;
+				}
+			}
+			
+			if (isDuplicate)
+				continue;
+			
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
 																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]],
 																		  @"alt_id"		: [HONAppDelegate normalizedPhoneNumber:[dict objectForKey:@"phone"]]}];
-			
-			if (![_matchedUserIDs containsObject:vo.altID]) {
-				BOOL isFound = NO;
-				for (HONTrivialUserVO *matchVO in _inAppContacts) {
-					if ([matchVO.username isEqualToString:vo.username]) {
-						isFound = YES;
-						break;
-					}
-				}
-				
-				if (isFound)
-					continue;
-				
 				[_matchedUserIDs addObject:vo.altID];
 				[_inAppContacts addObject:vo];
-			}
+//			}
 		}
 		
 		_currentMatchStateCounter++;
@@ -136,13 +135,25 @@
 		NSLog(@"(NSArray *result[%@]", (NSArray *)result);
 		if ([(NSArray *)result count] > 1) {
 			for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
+				BOOL isDuplicate = NO;
+				for (HONTrivialUserVO *vo in _inAppUsers) {
+					if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
+						isDuplicate = YES;
+						break;
+					}
+				}
+				
+				if (isDuplicate)
+					continue;
+				
 				[_inAppUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																			  @"username"	: [dict objectForKey:@"username"],
 																			  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}]];
 			}
 		}
 		
-		[self _didFinishDataRefresh];
+		if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers)
+			[self _didFinishDataRefresh];
 	}];
 }
 
@@ -158,6 +169,18 @@
 	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
+			NSLog(@"SEARCH USER:[%@]", dict);
+			BOOL isDuplicate = NO;
+			for (HONTrivialUserVO *vo in _inAppUsers) {
+				if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
+					isDuplicate = YES;
+					break;
+				}
+			}
+			
+			if (isDuplicate)
+				continue;
+			
 			if([[dict objectForKey:@"id"] intValue] != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]){
 				[_searchUsers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
 																			   @"username"	: [dict objectForKey:@"username"],
@@ -255,7 +278,10 @@
 			_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
 	}
 	
-	[self _didFinishDataRefresh];
+//	[self _didFinishDataRefresh];
+	
+	if ([_smsRecipients length] == 0 && [_emailRecipients length] == 0)
+		[self _didFinishDataRefresh];
 	
 	
 	if ([_smsRecipients length] > 0 || [_emailRecipients length] > 0) {
@@ -284,27 +310,31 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
+	_cells = [NSMutableArray array];
 	[[HONClubAssistant sharedInstance] wipeUserClubs];
-	[self _retreiveUserClubs];
-	
 	[_matchedUserIDs removeAllObjects];
+	
+	[self _retreiveUserClubs];
+	[self _submitPhoneNumberForMatching];
+	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
-	
-	else
-		[self _submitPhoneNumberForMatching];
 }
 
 - (void)_didFinishDataRefresh {
 	if (_tableViewDataSource != HONContactsTableViewDataSourceSearchResults) {
 		[self _updateDeviceContactsWithMatchedUsers];
-		_segmentedContacts = [self _populateSegmentedDictionary];
 	}
+	
+	_segmentedContacts = [self _populateSegmentedDictionary];
 	
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
+	
+	for (HONUserToggleViewCell *cell in _cells)
+		[cell toggleSelected:NO];
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
@@ -321,6 +351,7 @@
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";
+	_cells = [NSMutableArray array];
 	_inAppContacts = [NSMutableArray array];
 	_clubInviteContacts = [NSMutableArray array];
 	_matchedUserIDs = [NSMutableArray array];
@@ -356,12 +387,10 @@
 	
 	if ([passedRegistration length] != 0) {
 		[self _retreiveUserClubs];
+		[self _submitPhoneNumberForMatching];
 		
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 			[self _retrieveDeviceContacts];
-		
-		else
-			[self _submitPhoneNumberForMatching];
 	}
 }
 
@@ -403,11 +432,9 @@
 	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	
 	[self _retreiveUserClubs];
+	[self _submitPhoneNumberForMatching];
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
-	
-	else
-		[self _submitPhoneNumberForMatching];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {
@@ -465,7 +492,11 @@
 		cell = [[HONUserToggleViewCell alloc] init];
 	
 	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
+		[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:cell.trivialUserVO]];
+		
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		HONTrivialUserVO *vo = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 		
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(vo.userID == -1) ? @"contactsAllowBG" : @"contactsCellBG_normal"]];
@@ -478,15 +509,19 @@
 		
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		cell.contactUserVO = (HONContactUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+		
+		if (cell.contactUserVO.contactType == HONContactTypeMatched)
+			cell.trivialUserVO = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+				
 		[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:cell.contactUserVO]];
 		
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
-		[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:cell.trivialUserVO]];
 	}
 	
 	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	if (![_cells containsObject:cell])
+		[_cells addObject:cell];
 	
 	return (cell);
 }
@@ -522,6 +557,12 @@
 	} else {
 		[cell invertSelected];
 	}
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONUserToggleViewCell *viewCell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	if ([_cells containsObject:viewCell])
+		[_cells removeObject:viewCell];
 }
 
 
@@ -560,7 +601,9 @@
 	[_segmentedKeys removeAllObjects];
 	
 	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+		
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
 		for (HONTrivialUserVO *vo in _inAppUsers) {
 			if ([vo.username length] > 0) {
 				NSString *charKey = [[vo.username substringToIndex:1] lowercaseString];
@@ -585,9 +628,24 @@
 //				NSLog(@"_segmentedKeys[%@] = [%@]", key, vo.username);
 //		}
 
-	} else {
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		for (HONContactUserVO *vo in _deviceContacts) {
-			if (vo.contactType == HONContactTypeUnmatched) {
+			if (vo.contactType == HONContactTypeMatched) {
+				
+				NSString *charKey = [vo.username substringToIndex:1];
+				if (![_segmentedKeys containsObject:charKey]) {
+					[_segmentedKeys addObject:charKey];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[dict setValue:newSegment forKey:charKey];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+					[prevSegment addObject:vo];
+					[dict setValue:prevSegment forKey:charKey];
+				}
+				
+			} else {
 				if ([vo.lastName length] > 0 || ([vo.firstName length] > 0 && [vo.lastName length] == 0)) {
 					NSString *charKey = ([vo.lastName length] > 0) ? [vo.lastName substringToIndex:1] : [vo.firstName substringToIndex:1];
 					if (![_segmentedKeys containsObject:charKey]) {
@@ -602,73 +660,95 @@
 						[dict setValue:prevSegment forKey:charKey];
 					}
 				}
-			
-			} else {
-				NSString *charKey = [vo.username substringToIndex:1];
-				if (![_segmentedKeys containsObject:charKey]) {
-					[_segmentedKeys addObject:charKey];
-					
-					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-					[dict setValue:newSegment forKey:charKey];
-					
-				} else {
-					NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
-					[prevSegment addObject:vo];
-					[dict setValue:prevSegment forKey:charKey];
-				}
 			}
 		}
-		
-		_segmentedKeys = [[_segmentedKeys sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"" ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {
-			return ([(NSString *)obj1 compare:(NSString *)obj2
-									  options:(NSCaseInsensitiveSearch | NSNumericSearch | NSAnchoredSearch)
-										range:NSMakeRange(0, 1)
-									   locale:[NSLocale currentLocale]]);
-		}]]] mutableCopy];
 	}
+	
+	_segmentedKeys = [[_segmentedKeys sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:@"" ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {
+		return ([(NSString *)obj1 compare:(NSString *)obj2
+								  options:(NSCaseInsensitiveSearch | NSNumericSearch | NSAnchoredSearch)
+									range:NSMakeRange(0, 1)
+								   locale:[NSLocale currentLocale]]);
+	}]]] mutableCopy];
 	
 	return (dict);
 }
 
 - (void)_updateDeviceContactsWithMatchedUsers {
-	for (HONTrivialUserVO *inAppContactVO in _inAppContacts) {
-		for (HONContactUserVO *deviceContactVO in _deviceContacts) {
-			if ([deviceContactVO.mobileNumber isEqualToString:inAppContactVO.altID]) {
-				deviceContactVO.contactType = HONContactTypeMatched;
-				deviceContactVO.userID = inAppContactVO.userID;
-				deviceContactVO.username = inAppContactVO.username;
-				deviceContactVO.avatarPrefix = inAppContactVO.avatarPrefix;
+	for (HONContactUserVO *deviceContactVO in _deviceContacts) {
+		for (HONTrivialUserVO *inAppContactVO in _inAppContacts) {
+			if ([(deviceContactVO.isSMSAvailable) ? deviceContactVO.mobileNumber : deviceContactVO.email isEqualToString:inAppContactVO.altID]) {
+				
+				__block NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+				for (NSString *sectionKey in _segmentedKeys) {
+					indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + 1];
+					
+					[[_segmentedContacts valueForKey:sectionKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						if (indexPath != nil) {
+							HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
+							if ([cell.contactUserVO.mobileNumber isEqual:[NSNull null]] || [deviceContactVO.mobileNumber isEqual:[NSNull null]])
+								return;
+								
+							NSLog(@"cell.contactUserVO.mobileNumber:[%@] </|/> deviceContactVO.mobileNumber:[%@] inAppContactVO.username:[%@]", cell.contactUserVO.mobileNumber, deviceContactVO.mobileNumber, inAppContactVO.username);
+							
+							if ([cell.contactUserVO.mobileNumber isEqualToString:deviceContactVO.mobileNumber]) {
+								cell.contactUserVO.contactType = HONContactTypeMatched;
+								cell.trivialUserVO = inAppContactVO;
+							}
+						}
+						
+						indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
+					}];
+					
+					indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + 1];
+				}
+
+//				deviceContactVO.contactType = HONContactTypeMatched;
+//				deviceContactVO.userID = inAppContactVO.userID;
+//				deviceContactVO.username = inAppContactVO.username;
+//				deviceContactVO.avatarPrefix = inAppContactVO.avatarPrefix;
 			}
 		}
 	}
 	
-	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+	__block NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 	for (NSString *sectionKey in _segmentedKeys) {
-		indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + 1];
+		indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + ((int)HONContactsTableViewDataSourceMatchedUsers)];
 		
-		if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-			for (HONContactUserVO *vo in [_segmentedContacts valueForKey:sectionKey]) {
-//				NSLog(@"CONTACT:[%@] INDEXPATH:[%@]", vo.mobileNumber, indexPath);
-				
+		if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+		} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+			[[_segmentedContacts valueForKey:sectionKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				if (indexPath != nil) {
 					HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
-					[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:vo]];
+					
+					if ([obj isKindOfClass:[HONContactUserVO class]]) {
+						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:(HONContactUserVO *)obj]];
+					}
+					
+					if ([obj isKindOfClass:[HONTrivialUserVO class]]) {
+						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:(HONTrivialUserVO *)obj]];
+					}
 				}
 				
 				indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
-			}
-		
-		} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
-			for (HONTrivialUserVO *vo in [_segmentedContacts valueForKey:sectionKey]) {
+			}];
+			
+//			for (HONTrivialUserVO *vo in [_segmentedContacts valueForKey:sectionKey]) {
 //				NSLog(@"USER:[%@] INDEXPATH:[%@]", vo.username, indexPath);
 				
-				if (indexPath != nil) {
-					HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
-					[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:vo]];
-				}
-				
-				indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
-			}
+//			}
+			
+//		} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
+//			for (HONContactUserVO *vo in [_segmentedContacts valueForKey:sectionKey]) {
+//				NSLog(@"CONTACT:[%@] INDEXPATH:[%@]", vo.mobileNumber, indexPath);
+//
+//				if (indexPath != nil) {
+//					HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
+//					[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:vo]];
+//				}
+//				
+//				indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
+//			}
 		}
 	}
 }

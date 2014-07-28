@@ -39,9 +39,8 @@
 @property (nonatomic, strong) NSMutableArray *ownedClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
-@property (nonatomic, strong) NSArray *autoGenItems;
+@property (nonatomic, strong) NSArray *suggestedClubs;
 @property (nonatomic, strong) NSMutableArray *timelineItems;
-@property (nonatomic, strong) UIImageView *overlayImageView;
 @property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
 @property (nonatomic) BOOL isFromCreateClub;
 @end
@@ -61,7 +60,6 @@
 		_ownedClubs = [[NSMutableArray alloc] init];
 		_allClubs = [[NSMutableArray alloc] init];
 		_dictClubs = [[NSMutableArray alloc] init];
-		_autoGenItems = [[NSArray alloc] init];
 		_timelineItems = [[NSMutableArray alloc] init];
 		_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 																[NSMutableArray array],
@@ -99,7 +97,6 @@
 	_allClubs = [[NSMutableArray alloc] init];
 	_dictClubs = [[NSMutableArray alloc] init];
 	_timelineItems = [[NSMutableArray alloc] init];
-	_autoGenItems = [[NSArray alloc] init];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array],
 															[NSMutableArray array],
 															[NSMutableArray array],
@@ -133,8 +130,8 @@
 		for (NSDictionary *dict in _dictClubs)//[NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		_autoGenItems = nil;
-		_autoGenItems = [[HONClubAssistant sharedInstance] suggestedClubs];
+		_suggestedClubs = nil;
+		_suggestedClubs = [[HONClubAssistant sharedInstance] suggestedClubs];
 //		_feedContentType = HONFeedContentTypeEmpty;
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"other"] count] > 0) * HONFeedContentTypeAutoGenClubs);
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"owned"] count] > 0) * HONFeedContentTypeOwnedClubs);
@@ -142,19 +139,6 @@
 //		_feedContentType += (((int)[[_clubIDs objectForKey:@"pending"] count] > 0) * HONFeedContentTypeClubInvites);
 		
 		[self _didFinishDataRefresh];
-		
-//		if (_overlayImageView != nil) {
-//			[_overlayImageView removeFromSuperview];
-//			_overlayImageView = nil;
-//		}
-		
-//		if ([[_clubIDs objectForKey:@"owned"] count] == 0 && [[_clubIDs objectForKey:@"member"] count] == 0) {
-//			_overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"newsFeedOverlay"]];
-//			_overlayImageView.frame = CGRectOffset(_overlayImageView.frame, 3.0, 210.0);
-//			[_tableView addSubview:_overlayImageView];
-//			
-//			[self _cycleOverlay:_overlayImageView];
-//		}
 	}];
 }
 
@@ -267,12 +251,12 @@
 
 #pragma mark - Navigation
 - (void)_goProfile {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Timeline - Profile"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Activity"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]] animated:YES];
 }
 
 - (void)_goCreateChallenge {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Camera Step 1 hit camera button"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Create Selfie"];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
 	[navigationController setNavigationBarHidden:YES];
@@ -284,7 +268,6 @@
 }
 
 - (void)_goConfirmClubs {
-	
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
@@ -303,7 +286,6 @@
 #pragma mark - Notifications
 - (void)_selectedNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedNewsTab <|::");
-//	[self _retrieveTimeline];
 }
 
 - (void)_refreshNewsTab:(NSNotification *)notification {
@@ -324,13 +306,13 @@
 #pragma mark - ClubNewsFeedItemViewCell Delegates
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell createClubWithProtoVO:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:createClubWithProtoVO:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
+	
 	_selectedClubVO = userClubVO;
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 														message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 													   delegate:self
 											  cancelButtonTitle:@"Yes"
 											  otherButtonTitles:@"No", nil];
-	
 	[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
 	[alertView show];
 }
@@ -338,7 +320,7 @@
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell enterTimelineForClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:enterTimelineForClub:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Newsfeed Row Tap"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Club Timeline"
 									   withUserClub:userClubVO];
 	
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
@@ -348,7 +330,7 @@
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:joinClub:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Join Club"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Join Club"
 									   withUserClub:userClubVO];
 	
 	_selectedClubVO = userClubVO;
@@ -374,7 +356,7 @@
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:likeClubChallenge:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Newsfeed Upvote"
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Upvote"
 									   withUserClub:userClubVO];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
@@ -387,7 +369,7 @@
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:showUserProfileForClubPhoto:(%d - %@)", clubPhotoVO.clubID, clubPhotoVO.username);
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"User Avatar Tap"];
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Newsfeed - Activity Avatar"];
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:clubPhotoVO.userID] animated:YES];
 }
 
@@ -421,7 +403,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? 1 : (section == 1) ? [_autoGenItems count] : [_timelineItems count]);
+	return ((section == 0) ? 1 : (section == 1) ? [_suggestedClubs count] : [_timelineItems count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -443,7 +425,7 @@
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createPostNewsFeedBG"]];
 			
 	} else if (indexPath.section == 1) {
-		cell.clubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
+		cell.clubVO = (HONUserClubVO *)[_suggestedClubs objectAtIndex:indexPath.row];
 	
 	} else {
 		cell.clubVO = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
@@ -497,13 +479,12 @@
 		}];
 	
 	} else if (indexPath.section == 1) {
-		_selectedClubVO = (HONUserClubVO *)[_autoGenItems objectAtIndex:indexPath.row];
+		_selectedClubVO = (HONUserClubVO *)[_suggestedClubs objectAtIndex:indexPath.row];
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
 												  cancelButtonTitle:@"Yes"
 												  otherButtonTitles:@"No", nil];
-		
 		[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
 		[alertView show];
 	
@@ -522,7 +503,6 @@
 															   delegate:self
 													  cancelButtonTitle:@"OK"
 													  otherButtonTitles:@"Cancel", nil];
-			
 			[alertView setTag:HONClubsNewsFeedAlertTypeJoinClub];
 			[alertView show];
 		}
@@ -532,7 +512,7 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
+	if (alertView.tag == HONClubsNewsFeedAlertTypeJoinClub) {
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClubVO];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -540,7 +520,6 @@
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"Not Now", nil];
-			
 			[alertView setTag:HONClubsNewsFeedAlertTypeInviteFriends];
 			[alertView show];
 		}
@@ -562,24 +541,10 @@
 															   delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"Not Now", nil];
-			
 			[alertView setTag:HONClubsNewsFeedAlertTypeInviteFriends];
 			[alertView show];
 		}
 	}
-}
-
-
-- (void)_cycleOverlay:(UIView *)overlayView {
-	[UIView animateWithDuration:0.33 animations:^(void) {
-		overlayView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.33 animations:^(void) {
-			overlayView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			[self _cycleOverlay:overlayView];
-		}];
-	}];
 }
 
 @end

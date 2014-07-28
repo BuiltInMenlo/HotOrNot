@@ -15,7 +15,7 @@
 #import "HONDateTimeAlloter.h"
 #import "HONDeviceIntrinsics.h"
 #import "HONFontAllocator.h"
-#import "HONImagingDepictor.h"
+#import "HONImageBroker.h"
 #import "HONScreenManager.h"
 #import "HONStickerAssistant.h"
 #import "HONStoreAssistant.h"

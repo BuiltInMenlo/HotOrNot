@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONImagingDepictorShareTemplateType) {
 	HONImagingDepictorShareTemplateTypeDefault = 0,
 	HONImagingDepictorShareTemplateTypeInstagram,
 	HONImagingDepictorShareTemplateTypeTwitter,
@@ -14,7 +14,7 @@ typedef enum {
 	HONImagingDepictorShareTemplateTypeKik,
 	HONImagingDepictorShareTemplateTypeSMS,
 	HONImagingDepictorShareTemplateTypeEmail
-} HONImagingDepictorShareTemplateType;
+};
 
 typedef NS_ENUM(NSInteger, HONImagingDepictorImageFormat) {
 	HONImagingDepictorImageFormatJPEG = 0,

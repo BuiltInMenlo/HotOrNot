@@ -16,7 +16,6 @@
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "ImageFilter.h"
 #import "MBProgressHUD.h"
 
 #import "HONClubCoverCameraViewController.h"
@@ -62,8 +61,8 @@
 	
 	NSLog(@"FILE PREFIX: %@", _imagePrefix);
 	
-	UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
-	UIImage *tabImage = [HONImagingDepictor cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	[self.delegate clubCoverCameraViewController:self didFinishProcessingImage:largeImage withPrefix:_imagePrefix];
 	
@@ -85,8 +84,6 @@
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	
-	self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)viewDidLoad {
@@ -153,9 +150,11 @@
 		_imagePicker.allowsEditing = NO;
 		_imagePicker.navigationBarHidden = YES;
 		_imagePicker.toolbarHidden = YES;
-//		_imagePicker.wantsFullScreenLayout = NO;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+		_imagePicker.view.backgroundColor = [UIColor whiteColor];
+		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
 		
+		self.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
 		}];
 	}
@@ -175,15 +174,15 @@
 
 
 
-#pragma mark - ImagePicker Delegates
+#pragma mark - ImagePickerViewController Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	UIImage *processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
+	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
-	processedImage = [HONImagingDepictor createImageFromView:canvasView];
+	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	[self _uploadPhotos:processedImage];
 }
 
@@ -277,7 +276,7 @@
 - (void)cameraOverlayViewSubmit:(HONClubCoverCameraOverlayView *)cameraOverlayView {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club Cover Photo - Submit"];
 	
-//	UIImage *processedImage = [HONImagingDepictor prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
+//	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 //
 //	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
 //	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
@@ -287,7 +286,7 @@
 //	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
 //	[canvasView addSubview:overlayTintView];
 //
-//	processedImage = [HONImagingDepictor createImageFromView:canvasView];
+//	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 //	[self _uploadPhotos:processedImage];
 }
 */

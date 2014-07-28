@@ -40,7 +40,7 @@ extern NSString * const kAPIPhoneVerify;
 extern NSString * const kAPIEmailContacts;
 extern NSString * const kAPIChallengeObject;
 extern NSString * const kAPIGetPublicChallenges;
-extern NSString * const kAPIUsersGetUsersClubs;
+//extern NSString * const kAPIUsersGetUsersClubs;
 extern NSString * const kAPICheckNameAndEmail;
 extern NSString * const kAPIUsersFirstRunComplete;
 extern NSString * const kAPISetUserAgeGroup;
@@ -175,7 +175,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubByClubID:(int)clubID withOwnerID:(int)ownerID completion:(void (^)(id result))completion;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
-- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion;
+//- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

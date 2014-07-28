@@ -1,9 +1,9 @@
 //
-//  HONImagingDepictor.h
+//  HONImageBroker.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 05.02.13.
-//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 07/27/2014 @ 07:28 .
+//  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <QuartzCore/QuartzCore.h>
@@ -15,15 +15,34 @@
 
 #import "AFImageRequestOperation.h"
 
-#import "HONImagingDepictor.h"
-
+#import "HONImageBroker.h"
 
 const CGFloat kSnapRatio = 1.775;//1.853125f;
 const CGSize kInstagramSize = {612.0, 612.0};
 
-@implementation HONImagingDepictor
+@implementation HONImageBroker
+static HONImageBroker *sharedInstance = nil;
 
-+ (UIImage *)createImageFromView:(UIView *)view {
++ (HONImageBroker *)sharedInstance {
+	static HONImageBroker *s_sharedInstance = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		s_sharedInstance = [[self alloc] init];
+	});
+	
+	return (s_sharedInstance);
+}
+
+- (id)init {
+	if ((self = [super init])) {
+	}
+	
+	return (self);
+}
+
+
+- (UIImage *)createImageFromView:(UIView *)view {
 	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0f);
 	[view.layer renderInContext:UIGraphicsGetCurrentContext()];
 	
@@ -33,7 +52,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (image);
 }
 
-+ (UIImage *)createImageFromScreen {
+- (UIImage *)createImageFromScreen {
 	CGSize imageSize = [[UIScreen mainScreen] bounds].size;
 	if (NULL != UIGraphicsBeginImageContextWithOptions)
 		UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
@@ -77,39 +96,39 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (image);
 }
 
-+ (UIImage *)createBlurredScreenShot {
+- (UIImage *)createBlurredScreenShot {
 	return ([[[HONImageBroker sharedInstance] createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:1.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
 }
 
-+ (UIImage *)shareTemplateImageForType:(HONImagingDepictorShareTemplateType)shareTemplateType {
+- (UIImage *)shareTemplateImageForType:(HONImageBrokerShareTemplateType)shareTemplateType {
 	NSString *keySuffix = @"";
 	
 	switch (shareTemplateType) {
-		case HONImagingDepictorShareTemplateTypeDefault:
+		case HONImageBrokerShareTemplateTypeDefault:
 			keySuffix = @"default";
 			break;
 			
-		case HONImagingDepictorShareTemplateTypeInstagram:
+		case HONImageBrokerShareTemplateTypeInstagram:
 			keySuffix = @"instagram";
 			break;
 			
-		case HONImagingDepictorShareTemplateTypeTwitter:
+		case HONImageBrokerShareTemplateTypeTwitter:
 			keySuffix = @"twitter";
 			break;
 			
-		case HONImagingDepictorShareTemplateTypeFacebook:
+		case HONImageBrokerShareTemplateTypeFacebook:
 			keySuffix = @"facebook";
 			break;
 			
-		case HONImagingDepictorShareTemplateTypeKik:
+		case HONImageBrokerShareTemplateTypeKik:
 			keySuffix = @"kik";
 			break;
 			
-		case HONImagingDepictorShareTemplateTypeSMS:
+		case HONImageBrokerShareTemplateTypeSMS:
 			keySuffix = @"sms";
 			break;
 			
-		case HONImagingDepictorShareTemplateTypeEmail:
+		case HONImageBrokerShareTemplateTypeEmail:
 			keySuffix = @"email";
 			break;
 			
@@ -121,7 +140,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:[@"share_template-" stringByAppendingString:keySuffix]]]);
 }
 
-+ (UIImage *)defaultAvatarImageAtSize:(CGSize)size {
+- (UIImage *)defaultAvatarImageAtSize:(CGSize)size {
 	UIImage *lImage = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"default_avatar"]];
 	float scale = (kSnapLargeSize.width / size.width);
 	
@@ -145,7 +164,11 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	}
 }
 
-+ (double)totalLuminance:(UIImage *)image {
+- (NSString *)defaultAvatarImageURL {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"defualt_imgs"] objectForKey:@"avatar"]);
+}
+
+- (double)totalLuminance:(UIImage *)image {
 	unsigned char* pixels = [image rgbaPixels];
 	
 	double luminance = 0.0;
@@ -158,7 +181,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (luminance);
 }
 
-+ (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
+- (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -173,7 +196,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	[operation start];
 }
 
-+ (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
+- (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
 	SelfieclubJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
@@ -189,7 +212,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	[operation start];
 }
 
-+ (void)writeImage:(UIImage *)image toUserDefaulsWithKey:(NSString *)key {
+- (void)writeImage:(UIImage *)image toUserDefaulsWithKey:(NSString *)key {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
 	
@@ -200,7 +223,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor {
+- (CATextLayer *)drawTextToLayer:(NSString *)caption inFrame:(CGRect)frame withFont:(UIFont *)font textColor:(UIColor *)textColor {
 	CATextLayer *layer = [[CATextLayer alloc] init];
 	
 	CGSize size = [caption sizeWithAttributes:@{NSFontAttributeName:font}];
@@ -218,7 +241,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (layer);
 }
 
-+ (void)flipLayer:(CALayer *)layer horizontally:(BOOL)xAxisFlipped{
+- (void)flipLayer:(CALayer *)layer horizontally:(BOOL)xAxisFlipped{
 	CGRect bounds = layer.bounds;
 	CATransform3D translate = CATransform3DMakeTranslation(0.0, (xAxisFlipped) ? -bounds.size.height : -bounds.size.width, 0.0);
 	CATransform3D scale = CATransform3DMakeScale((xAxisFlipped) ? 1.0 : -1.0, (xAxisFlipped) ? -1.0 : 1.0, 1.0);
@@ -226,7 +249,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	layer.transform = transform;
 }
 
-+ (void)maskImageView:(UIImageView *)imageView withMask:(UIImage *)maskImage {
+- (void)maskImageView:(UIImageView *)imageView withMask:(UIImage *)maskImage {
 	CALayer *maskLayer = [CALayer layer];
 	maskLayer.contents = (id)[maskImage CGImage];
 	maskLayer.frame = CGRectMake(0.0, 0.0, imageView.frame.size.width, imageView.frame.size.height);
@@ -235,7 +258,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	imageView.layer.masksToBounds = YES;
 }
 
-+ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
+- (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
 	UIGraphicsBeginImageContext(size);
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
@@ -250,7 +273,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 }
 
 
-+ (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor {
+- (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor {
 	CGSize size = CGSizeMake(image.size.width * factor, image.size.height * factor);
 	
 	UIGraphicsBeginImageContext(size);
@@ -266,7 +289,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (scaledImage);
 }
 
-+ (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect {
+- (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect {
 	CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], rect);
 	
 	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
@@ -275,7 +298,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (croppedImage);
 }
 
-+ (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect {
+- (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect {
 	CGContextRef				context;
 	CGImageRef				  imageRef;
 	CGSize					  inputSize;
@@ -325,7 +348,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (outputImage);
 }
 
-+ (UIImage *)mirrorImage:(UIImage *)image {
+- (UIImage *)mirrorImage:(UIImage *)image {
 	NSLog(@"ORIENTATION:[%d]", image.imageOrientation);
 	
 //	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
@@ -337,7 +360,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 						  orientation:(image.imageOrientation + 4) % 8]);
 }
 
-+ (NSString *)normalizedPrefixForImageURL:(NSString *)imageURL {
+- (NSString *)normalizedPrefixForImageURL:(NSString *)imageURL {
 	NSMutableString *imagePrefix = [imageURL mutableCopy];
 	
 	[imagePrefix replaceOccurrencesOfString:[kSnapThumbSuffix substringToIndex:[kSnapThumbSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
@@ -350,7 +373,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return ([imagePrefix copy]);
 }
 
-+ (UIImage *)prepForUploading:(UIImage *)image {
+- (UIImage *)prepForUploading:(UIImage *)image {
 	if (image.imageOrientation != 0)
 		image = [image fixOrientation];
 	
@@ -362,17 +385,17 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	
 	if (ratio > 1.0)
 		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0 * ratio, 1280.0)] toRect:CGRectMake(((1280.0 * ratio) - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
-		
+	
 	else if (ratio == 0.75) {
 		if (CGSizeEqualToSize(image.size, CGSizeMake(960.0, 1280.0)))
 			return (image);
 		
 		else
 			processedImage = [[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
-	
+		
 	} else if (ratio < 1.0)
 		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(960.0, 960.0 / ratio)] toRect:CGRectMake(0.0, ((960.0 / ratio) - 1280.0) * 0.5, 960.0, 1280.0)];
-		
+	
 	else
 		processedImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(1280.0, 1280.0)] toRect:CGRectMake((1280.0 - 960.0) * 0.5, 0.0, 960.0, 1280.0)];
 	
@@ -380,7 +403,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return (processedImage);
 }
 
-+ (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {
+- (UIImage *)prepForInstagram:(UIImage *)templateImage withShareImage:(UIImage *)shareImage andUsername:(NSString *)username {
 	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
 	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
 	
@@ -395,7 +418,7 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	return ([[HONImageBroker sharedInstance] createImageFromView:canvasView]);
 }
 
-+ (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path {
+- (void)saveForInstagram:(UIImage *)shareImage withUsername:(NSString *)username toPath:(NSString *)path {
 	CGSize scaledSize = CGSizeMake(kInstagramSize.width, kInstagramSize.width * (shareImage.size.height / shareImage.size.width));
 	UIImage *processedImage = (CGSizeEqualToSize(shareImage.size, scaledSize) || CGSizeEqualToSize(shareImage.size, kInstagramSize)) ? shareImage : [[HONImageBroker sharedInstance] scaleImage:shareImage toSize:scaledSize];
 	
@@ -409,5 +432,6 @@ const CGSize kInstagramSize = {612.0, 612.0};
 	
 	[UIImageJPEGRepresentation([[HONImageBroker sharedInstance] createImageFromView:canvasView], 1.0f) writeToFile:path atomically:YES];
 }
+
 
 @end

@@ -57,13 +57,21 @@
 #import "HONSuspendedViewController.h"
 #import "HONSelfieCameraViewController.h"
 
+typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
+	HONAppDelegateBitTesting0	= 0 << 0,
+	HONAppDelegateBitTesting1	= 1 << 0,
+	HONAppDelegateBitTesting2	= 1 << 0,
+	HONAppDelegateBitTesting3	= 1 << 0,
+	HONAppDelegateBitTesting4	= 1 << 0,
+};
+
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_sc0005.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_devint.json";
+NSString * const kConfigJSON = @"boot_matt.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
@@ -413,7 +421,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //	
 //	return ([imagePrefix copy]);
 	
-	return ([HONImagingDepictor normalizedPrefixForImageURL:imageURL]);
+	return ([[HONImageBroker sharedInstance] normalizedPrefixForImageURL:imageURL]);
 }
 
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
@@ -456,6 +464,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
@@ -495,7 +504,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		
 		[self _writeShareTemplates];
-		[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
+		[[HONImageBroker sharedInstance] writeImageFromWeb:[NSString stringWithFormat:@"%@/defaultAvatar%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource], kSnapLargeSuffix] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"default_avatar"];
 		[self _registerUser];
 		
 		if (_isFromBackground) {
@@ -540,7 +549,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			
-			[HONImagingDepictor writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 							
 #if __IGNORE_SUSPENDED__ == 1
 				if (self.tabBarController == nil)
@@ -696,12 +705,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+
+
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
 	
-	NSLog(@"BUNDLE:[%@]", [[NSBundle mainBundle] bundleIdentifier]);
+	
+	
+	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
@@ -733,6 +746,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
 		[self _initThirdPartySDKs];
+		
+		
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -922,7 +937,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 					
 					NSLog(@"userID:[%d]", userID);
 					if (userID > 0) {
-						[[HONAPICaller sharedInstance] retrieveUserClubsWithUserID:userID completion:^(NSDictionary *result) {
+						[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:userID completion:^(NSDictionary *result) {
 							int clubID = 0;
 							for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 								for (NSDictionary *club in [result objectForKey:key]) {
@@ -1228,7 +1243,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"share_templates"]) {
 		for (NSString *key in [dict keyEnumerator])
-			[HONImagingDepictor writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
+			[[HONImageBroker sharedInstance] writeImageFromWeb:[dict objectForKey:key] withUserDefaultsKey:[@"share_template-" stringByAppendingString:key]];
 	}
 }
 
@@ -1616,7 +1631,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else if (alertView.tag == 9) {
-		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
 			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -1642,7 +1657,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 		} else if (buttonIndex == HONShareSheetActionTypeInstagram) {
 			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/selfieclub_instagram.igo"];
-			[HONImagingDepictor saveForInstagram:[_shareInfo objectForKey:@"image"]
+			[[HONImageBroker sharedInstance] saveForInstagram:[_shareInfo objectForKey:@"image"]
 									withUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]
 										  toPath:savePath];
 			

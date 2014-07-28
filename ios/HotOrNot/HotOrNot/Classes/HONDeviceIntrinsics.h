@@ -24,7 +24,4 @@
 
 - (void)writePhoneNumber:(NSString *)phoneNumber;
 - (NSString *)phoneNumber;
-
-
-- (BOOL)hasAdressBookPermission;
 @end

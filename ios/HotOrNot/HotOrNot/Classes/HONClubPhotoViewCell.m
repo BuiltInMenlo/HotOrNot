@@ -70,7 +70,7 @@
 		NSLog(@"ERROR:[%@]", error.description);
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
-		imageView.image = [HONImagingDepictor defaultAvatarImageAtSize:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? kSnapLargeSize : kSnapTabSize];
+		imageView.image = [UIImage imageNamed:@"defaultClubCover"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -204,7 +204,7 @@
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
 		
-		[UIView animateWithDuration:0.33 delay:0.0
+		[UIView animateWithDuration:0.25 delay:0.0
 			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 		 

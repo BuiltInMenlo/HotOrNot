@@ -49,7 +49,7 @@ static HONStickerAssistant *sharedInstance = nil;
 - (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType completion:(void (^)(id result))completion {
 	NSString *key = (stickerPakType == HONStickerPakTypeAvatars) ? kAvatarPak : (stickerPakType == HONStickerPakTypeClubCovers) ? kClubCoverPak : (stickerPakType == HONStickerPakTypeFree) ? kFreePak : (stickerPakType == HONStickerPakTypeInviteBonus) ? kInvitePak : (stickerPakType == HONStickerPakTypePaid) ? kPaidPak : @"all";
 	
-	NSMutableDictionary *allStickers = ([[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] mutableCopy] : [NSMutableArray array];
+	NSMutableDictionary *allStickers = ([[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] mutableCopy] : [NSMutableDictionary dictionary];
 	
 	if ([allStickers objectForKey:key] != nil)
 		[allStickers removeObjectForKey:key];

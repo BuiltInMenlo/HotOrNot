@@ -41,7 +41,7 @@
 	if ((self = [super initWithFrame:frame])) {
 		
 		_subjectNames = [NSMutableArray array];
-		_previewImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
+		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
 		
@@ -194,7 +194,7 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 	
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 3 && page == 2 && direction == 1) {
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 3 && page == 1 && direction == 1) {
 		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_camera"];
 		_inviteOverlayView.delegate = self;
 		

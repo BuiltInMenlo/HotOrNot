@@ -70,7 +70,7 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		avatarImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+		avatarImageView.image = [[HONImageBroker sharedInstance] defaultAvatarImageAtSize:kSnapTabSize];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];

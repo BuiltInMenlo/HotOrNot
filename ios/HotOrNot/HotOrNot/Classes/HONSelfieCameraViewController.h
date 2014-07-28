@@ -21,6 +21,12 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 	HONSelfieSubmitTypeReplyMessage
 };
 
+@class HONSelfieCameraViewController;
+@protocol HONSelfieCameraViewControllerDelegate <NSObject>
+@optional
+- (void)selfieCameraViewController:(HONSelfieCameraViewController *)viewController didDismissByCanceling:(BOOL)isCanceled;
+@end
+
 @interface HONSelfieCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 
@@ -29,4 +35,6 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 - (id)initAsJoinChallenge:(HONChallengeVO *)challengeVO;
 - (id)initAsNewMessageWithRecipients:(NSArray *)recipients;
 - (id)initAsMessageReply:(HONMessageVO *)messageVO withRecipients:(NSArray *)recipients;
+
+@property (nonatomic, assign) id <HONSelfieCameraViewControllerDelegate> delegate;
 @end

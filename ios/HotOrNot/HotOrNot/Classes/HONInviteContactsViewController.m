@@ -144,8 +144,6 @@
 }
 
 - (void)_goDone {
-	
-	
 	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
 		[self _sendClubInvites];
 	
@@ -174,7 +172,7 @@
 }
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didDeselectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"[[*:*]] userToggleViewCell:didDeselectContactUser");
+	NSLog(@"[[*:*]] userToggleViewCell:didDeselectTrivialUser");
 	[super userToggleViewCell:viewCell didDeselectTrivialUser:trivialUserVO];
 	
 	if ([_selectedInAppContacts containsObject:trivialUserVO])
@@ -183,7 +181,6 @@
 
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectContactUser:(HONContactUserVO *)contactUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectContactUser");
-	
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
 	if (![_selectedNonAppContacts containsObject:contactUserVO])
@@ -207,7 +204,13 @@
 	HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	NSLog(@"CELL.ISSELECTED:[%d]", cell.isSelected);
-	if (cell.contactUserVO.userID == 0 && cell.trivialUserVO.userID == 0) {
+	NSLog(@"CELL.CONTACT:[%@]", cell.contactUserVO.dictionary);
+	NSLog(@"CELL.TRIVIAL:[%@]", cell.trivialUserVO.dictionary);
+	
+	NSLog(@"::PRE:: IN-APP:[%@]", _selectedInAppContacts);
+	NSLog(@"::PRE:: NON-APP:[%@]", _selectedNonAppContacts);
+	
+	if (cell.trivialUserVO == nil) {
 		if (cell.isSelected) {
 			if (![_selectedNonAppContacts containsObject:cell.contactUserVO])
 				[_selectedNonAppContacts addObject:cell.contactUserVO];
@@ -221,15 +224,15 @@
 		if (cell.isSelected) {
 			if (![_selectedInAppContacts containsObject:cell.trivialUserVO])
 				[_selectedInAppContacts addObject:cell.trivialUserVO];
-		
+			
 		} else {
 			if ([_selectedInAppContacts containsObject:cell.trivialUserVO])
 				[_selectedInAppContacts removeObject:cell.trivialUserVO];
 		}
 	}
-	
-	NSLog(@"IN-APP:[%@]", _selectedInAppContacts);
-	NSLog(@"NON-APP:[%@]", _selectedNonAppContacts);
+		
+	NSLog(@"::POST:: IN-APP:[%@]", _selectedInAppContacts);
+	NSLog(@"::POST:: NON-APP:[%@]", _selectedNonAppContacts);
 }
 
 

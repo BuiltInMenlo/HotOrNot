@@ -46,7 +46,7 @@
 	_avatarImageView.userInteractionEnabled = YES;
 	[imageHolderView addSubview:_avatarImageView];
 	
-	[HONImagingDepictor maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.alpha = (int)((request.URL == nil));

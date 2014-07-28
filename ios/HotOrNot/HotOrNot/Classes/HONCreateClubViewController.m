@@ -7,6 +7,13 @@
 //
 
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import <CoreImage/CoreImage.h>
+#import <QuartzCore/QuartzCore.h>
+
+#import "NSString+DataTypes.h"
+#import "UIImage+fixOrientation.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "MBProgressHUD.h"
 
@@ -15,31 +22,38 @@
 #import "HONClubCoverCameraViewController.h"
 #import "HONInviteContactsViewController.h"
 
-@interface HONCreateClubViewController () <HONClubCoverCameraViewControllerDelegate>
+@interface HONCreateClubViewController () //<HONClubCoverCameraViewControllerDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *clubCoverImageView;
 @property (nonatomic, strong) UIButton *addImageButton;
-@property (nonatomic, strong) UIButton *clubNameButton;
-//@property (nonatomic, strong) UIButton *blurbButton;
-@property (nonatomic, strong) UITextField *clubNameTextField;
-//@property (nonatomic, strong) UITextField *blurbTextField;
-@property (nonatomic, strong) UIImageView *clubNameCheckImageView;
-//@property (nonatomic, strong) UIImageView *blurbCheckImageView;
 @property (nonatomic, strong) NSString *clubName;
-//@property (nonatomic, strong) NSString *clubBlurb;
 @property (nonatomic, strong) NSString *clubImagePrefix;
+@property (nonatomic, strong) UITextField *clubNameTextField;
+@property (nonatomic, strong) UIButton *clubNameButton;
+@property (nonatomic, strong) UIImageView *clubNameCheckImageView;
+//@property (nonatomic, strong) NSString *clubBlurb;
+//@property (nonatomic, strong) UITextField *blurbTextField;
+//@property (nonatomic, strong) UIButton *blurbButton;
+//@property (nonatomic, strong) UIImageView *blurbCheckImageView;
 @property (nonatomic, strong) ALAssetsLibrary *library;
 @property (nonatomic) BOOL isAlbumFound;
+
+@property (nonatomic, strong) UIImagePickerController *imagePicker;
+@property (nonatomic, strong) NSString *imagePrefix;
+@property (nonatomic) BOOL isFirstAppearance;
 @end
 
 
 @implementation HONCreateClubViewController
+@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super init])) {
+		_isFirstAppearance = YES;
+		
 		_clubName = @"";
 //		_clubBlurb = @"";
-		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImagePrefix];
+		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 		
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];
@@ -62,6 +76,35 @@
 
 
 #pragma mark - Data Calls
+- (void)_uploadPhotos:(UIImage *)image {
+	NSString *filename = [NSString stringWithFormat:@"%@_%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
+	_imagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
+	
+	NSLog(@"FILE PREFIX: %@", _imagePrefix);
+	
+	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
+	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
+	
+	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+	_clubCoverImageView.image = thumbImage;
+	_clubImagePrefix = _imagePrefix;
+	
+	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
+	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
+	
+	
+	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeClubs withFilename:filename completion:^(NSObject *result) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+		}];
+	}];
+}
+
+
 - (void)_submitClub {
 	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
 		if (result != nil) {
@@ -222,7 +265,6 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Add Club"];
@@ -253,7 +295,7 @@
 	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
 	[self.view addSubview:_clubCoverImageView];
 	
-	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;
@@ -315,41 +357,23 @@
 //	[self.view addSubview:_blurbCheckImageView];
 }
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
 	
 	[_clubNameTextField becomeFirstResponder];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
 }
 
 
 #pragma mark - Navigation
 - (void)_goClose {
+	if ([self.delegate respondsToSelector:@selector(createClubViewController:didDismissByCanceling:)])
+		[self.delegate createClubViewController:self didDismissByCanceling:YES];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSED_CREATE_CLUB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goNext {
-	
 	if ([_clubNameTextField isFirstResponder])
 		[_clubNameTextField resignFirstResponder];
 	
@@ -380,23 +404,36 @@
 
 
 - (void)_goClubName {
-	
 	[_clubNameButton setSelected:YES];
 //	[_blurbButton setSelected:NO];
 }
 
 - (void)_goCamera {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+		_imagePicker = [[UIImagePickerController alloc] init];
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+		_imagePicker.delegate = self;
+		_imagePicker.allowsEditing = NO;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+		_imagePicker.view.backgroundColor = [UIColor whiteColor];
+		_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
+		
+		self.modalPresentationStyle = UIModalPresentationCurrentContext;
+		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
+		}];
+	}
 	
-	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
-	clubCoverCameraViewController.delegate = self;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubCoverCameraViewController];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+//	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
+//	clubCoverCameraViewController.delegate = self;
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubCoverCameraViewController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goBlurb {
-	
 //	[_blurbButton setSelected:YES];
 	[_clubNameButton setSelected:NO];
 }
@@ -417,17 +454,43 @@
 }
 
 
-#pragma mark - ClubCoverCameraViewController Delegates
-- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix {
-	NSLog(@"\n**_[clubCoverCameraViewController:didFinishProcessingImage:(%@)withPrefix:(%@)]_**\n", NSStringFromCGSize(image.size), imagePrefix);
+//#pragma mark - ClubCoverCameraViewController Delegates
+//- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix {
+//	NSLog(@"\n**_[clubCoverCameraViewController:didFinishProcessingImage:(%@)withPrefix:(%@)]_**\n", NSStringFromCGSize(image.size), imagePrefix);
+//	
+//	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+//	_clubCoverImageView.image = thumbImage;
+//	_clubImagePrefix = imagePrefix;
+//	
+//	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
+//	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
+//}
+
+
+#pragma mark - ImagePickerViewController Delegates
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
 	
-	UIImage *thumbImage = [HONImagingDepictor scaleImage:[HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
-	_clubCoverImageView.image = thumbImage;
-	_clubImagePrefix = imagePrefix;
+	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
+	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
+	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
-	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
-	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
+	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
+	[self _uploadPhotos:processedImage];
 }
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	[_imagePicker dismissViewControllerAnimated:YES completion:^(void){
+//		[self.navigationController dismissViewControllerAnimated:NO completion:^(void){}];
+	}];
+}
+
+
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+}
+
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {

@@ -107,7 +107,7 @@
 	_clubCoverImageView.frame = CGRectOffset(_clubCoverImageView.frame, 8.0, 85.0);
 	[_formHolderView addSubview:_clubCoverImageView];
 	
-	[HONImagingDepictor maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	if ([_clubImagePrefix length] > 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -120,7 +120,7 @@
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 			
-			_clubCoverImageView.image = [HONImagingDepictor defaultAvatarImageAtSize:kSnapTabSize];
+			_clubCoverImageView.image = [UIImage imageNamed:@"defaultClubCover"];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				_clubCoverImageView.alpha = 1.0;
 			} completion:nil];
@@ -319,7 +319,7 @@
 - (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix {
 	NSLog(@"\n**_[clubCoverCameraViewController:didFinishProcessingImage:(%@)withPrefix:(%@)]_**\n", NSStringFromCGSize(image.size), imagePrefix);
 	
-	UIImage *thumbImage = [HONImagingDepictor scaleImage:[HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 	_clubCoverImageView.image = thumbImage;
 	_clubImagePrefix = imagePrefix;
 }

@@ -34,6 +34,11 @@ static HONContactsAssistant *sharedInstance = nil;
 }
 
 
+- (BOOL)hasAdressBookPermission {
+	return (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
+}
+
+
 - (NSArray *)deviceContactsSortedByName:(BOOL)isSorted {
 	NSMutableArray *contactVOs = [NSMutableArray array];
 	NSMutableArray *contactDicts = [NSMutableArray array];

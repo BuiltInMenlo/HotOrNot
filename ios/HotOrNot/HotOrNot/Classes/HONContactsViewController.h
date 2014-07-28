@@ -18,16 +18,18 @@
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
 
-typedef NS_ENUM(NSInteger, HONContactsTableViewDataSource) {
-	HONContactsTableViewDataSourceMatchedUsers = 0,
-	HONContactsTableViewDataSourceAddressBook,
-	HONContactsTableViewDataSourceSearchResults
+typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
+	HONContactsTableViewDataSourceEmpty			= 0 << 0,
+	HONContactsTableViewDataSourceMatchedUsers	= 1 << 0,
+	HONContactsTableViewDataSourceAddressBook	= 1 << 1,
+	HONContactsTableViewDataSourceSearchResults	= 1 << 2,
 };
 
 
 @interface HONContactsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
 	
+	NSMutableArray *_cells;
 	NSMutableArray *_deviceContacts;
 	NSMutableArray *_inAppContacts;
 	NSMutableArray *_inAppUsers;

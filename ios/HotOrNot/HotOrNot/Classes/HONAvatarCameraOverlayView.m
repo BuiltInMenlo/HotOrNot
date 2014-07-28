@@ -56,7 +56,7 @@
 		[headerBGView addSubview:flipButton];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(-15.0, 0.0, 93.0, 44.0);
+		cancelButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -84,7 +84,7 @@
 		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 257.0, [UIScreen mainScreen].bounds.size.height - 60.0);
 		[self addSubview:_lastCameraRollImageView];
 		
-		[HONImagingDepictor maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
+		[[HONImageBroker sharedInstance] maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
 		[self _retrieveLastImage];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -125,7 +125,7 @@
 
 #pragma mark - Public APIs
 - (void)addPreview:(UIImage *)image {
-	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	image = [[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
 	[_previewHolderView addSubview:imgView];
@@ -144,7 +144,7 @@
 }
 
 - (void)addPreviewAsFlipped:(UIImage *)image {
-	image = [HONImagingDepictor scaleImage:image byFactor:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 0.55f : 0.83333f];
+	image = [[HONImageBroker sharedInstance] scaleImage:image byFactor:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 0.55f : 0.83333f];
 	
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
 	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, (-26.0 + (ABS(self.frame.size.height - image.size.height) * -0.5)) + (-26.0 * [[HONDeviceIntrinsics sharedInstance] isRetina4Inch]));
