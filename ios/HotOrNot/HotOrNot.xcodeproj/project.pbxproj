@@ -42,7 +42,6 @@
 		4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BBE19844AA80023123A /* HONStoreAssistant.m */; };
 		4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BC219844C090023123A /* HONStickerAssistant.m */; };
 		4C386BC6198482130023123A /* HONViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BC5198482130023123A /* HONViewController.m */; };
-		4C386BC81984AC6A0023123A /* Blowfish in Resources */ = {isa = PBXBuildFile; fileRef = 4C386BC71984AC6A0023123A /* Blowfish */; };
 		4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */; };
 		4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */; };
 		4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */; };
@@ -287,6 +286,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07BBC21C1986EBF90003F727 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		07BBC21D1986EBF90003F727 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		07BBC21E1986EC010003F727 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/Localizable.strings; sourceTree = "<group>"; };
+		07BBC21F1986EC010003F727 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		07BBC2201986EC050003F727 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		07BBC2211986EC050003F727 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCollectionViewCell.h; sourceTree = "<group>"; };
@@ -359,7 +364,6 @@
 		4C386BC219844C090023123A /* HONStickerAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerAssistant.m; sourceTree = "<group>"; };
 		4C386BC4198482130023123A /* HONViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONViewController.h; sourceTree = "<group>"; };
 		4C386BC5198482130023123A /* HONViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONViewController.m; sourceTree = "<group>"; };
-		4C386BC71984AC6A0023123A /* Blowfish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Blowfish; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONSelfieCameraPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraPreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSelfieCameraPreviewView.m; sourceTree = "<group>"; };
 		4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = badminton_racket_fast_movement_swoosh_002.caf; sourceTree = "<group>"; };
@@ -1695,7 +1699,6 @@
 		4C65C625194F836D0067FEA6 /* Obj-C Notes */ = {
 			isa = PBXGroup;
 			children = (
-				4C386BC71984AC6A0023123A /* Blowfish */,
 			);
 			path = "Obj-C Notes";
 			sourceTree = "<group>";
@@ -2096,6 +2099,7 @@
 				vi,
 				es,
 				ru,
+				pt,
 			);
 			mainGroup = 4C62651A15F96C7100AA7FCE;
 			productRefGroup = 4C62652615F96C7100AA7FCE /* Products */;
@@ -2133,7 +2137,6 @@
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
 				4C6893691719EF88005F8D0A /* Localizable.strings in Resources */,
-				4C386BC81984AC6A0023123A /* Blowfish in Resources */,
 				4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */,
 				4C83FD82190F594D00CAEABB /* MessagingElements.xcassets in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
@@ -2384,6 +2387,9 @@
 			isa = PBXVariantGroup;
 			children = (
 				4C62653315F96C7100AA7FCE /* en */,
+				07BBC21D1986EBF90003F727 /* ko */,
+				07BBC21F1986EC010003F727 /* pt */,
+				07BBC2211986EC050003F727 /* es */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2392,6 +2398,9 @@
 			isa = PBXVariantGroup;
 			children = (
 				4C68936A1719EF88005F8D0A /* en */,
+				07BBC21C1986EBF90003F727 /* ko */,
+				07BBC21E1986EC010003F727 /* pt */,
+				07BBC2201986EC050003F727 /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
