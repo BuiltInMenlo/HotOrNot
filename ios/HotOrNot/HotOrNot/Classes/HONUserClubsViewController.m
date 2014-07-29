@@ -310,8 +310,17 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
 		return;
-	
-	NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
+	if(gestureRecognizer.state != UIGestureRecognizerStatePossible){
+        return;
+    }
+    NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
+    HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+    if(gestureRecognizer.state == UIGestureRecognizerStatePossible){
+        [cell tintCell:NO];
+    }
+    if(gestureRecognizer.state == UIGestureRecognizerStateBegan){
+        [cell removeTint];
+    }
 	if (indexPath != nil) {
 		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
 		_selectedClubVO = cell.clubVO;
@@ -479,7 +488,8 @@
 	_selectedClubVO = vo;
 	
 	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-	[cell resetSubviews];
+	//[cell resetSubviews];
+    [cell tintCell:YES];
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
