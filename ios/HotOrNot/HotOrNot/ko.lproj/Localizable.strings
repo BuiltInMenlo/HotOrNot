@@ -24,7 +24,9 @@
 "hud_searchUsers" = "Searching users…";
 "hud_searchHashtags" = "Searching hashtags…";
 "hud_sent" = "   Sent   ";
-
+"Enter phone" = "전화번호";
+"Enter username" = "사용자 이름";
+"Register" = "등록하기";
 "header_restricted" = "restricted access";
 
 //"search_placeHolder" = "Search for people or tags";
