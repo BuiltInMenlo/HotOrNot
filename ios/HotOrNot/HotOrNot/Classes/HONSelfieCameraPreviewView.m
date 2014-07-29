@@ -123,8 +123,17 @@
 
 - (void)_goSubmit {
 	
-	if ([self.delegate respondsToSelector:@selector(cameraPreviewViewSubmit:withSubjects:)])
-		[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
+	if ([_subjectNames count] > 0) {
+		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewSubmit:withSubjects:)])
+			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
+	
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"No Emotions Selected!"
+									message:@"You need to coose some emotions to make a status update."
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
 				
 }
 
@@ -186,7 +195,7 @@
 	
 	NSLog(@"totalForCounter:[%d]", [HONAppDelegate totalForCounter:@"camera"]);
 	if (page == 1) {
-		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_camera"];
+		_tutorialView = [[HONTutorialView alloc] initWithContentImage:@"tutorial_camera"];
 		_tutorialView.delegate = self;
 		
 		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];

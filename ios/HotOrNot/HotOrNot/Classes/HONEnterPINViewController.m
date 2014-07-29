@@ -71,7 +71,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	
+	 
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
 	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
@@ -200,15 +200,13 @@
 					[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 					
 					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-					pasteboard.string = [NSString stringWithFormat:@"I have created the %@'s Club! Tap here to join: joinselfie.club://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+					pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
 					
-					[[[UIAlertView alloc] initWithTitle:@""
-												message:[NSString stringWithFormat:@"Share your club!\n\njoinselfie.club://%@/%@'s Club\nIt is copied to your clipboard!",[[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]
+					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+												message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 											   delegate:nil
 									  cancelButtonTitle:@"OK"
 									  otherButtonTitles:nil] show];
-					
-					[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 					
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_CONTACTS_TUTORIAL" object:nil];
@@ -237,10 +235,10 @@
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@'s Club! Tap to join: joinselfie.club://%@/%@'s Club", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
-		
-		[[[UIAlertView alloc] initWithTitle:@""
-									message:[NSString stringWithFormat:@"Your %@ club URL has been copied to your devices clipboard!\njoinselfie.club://%@/%@'s Club\nPaste this URL anywhere to have your friends join!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"username"]]
+        pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
+        
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

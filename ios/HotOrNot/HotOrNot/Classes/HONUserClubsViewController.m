@@ -111,7 +111,7 @@
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
 	[_dictClubs addObject:[dict copy]];
 	
-	
+//	[self _suggestClubs];
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
 			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
@@ -178,6 +178,251 @@
 }
 
 
+#pragma mark - Data Manip
+- (void)_suggestClubs {
+	
+	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
+	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
+	NSMutableArray *unsortedContacts = [NSMutableArray array];
+	NSString *clubName = @"";
+	
+	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
+	
+	for (int i=0; i<nPeople; i++) {
+		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
+		
+		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
+		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
+		
+		if ([fName length] == 0)
+			continue;
+		
+		if ([lName length] == 0)
+			lName = @"";
+		
+		
+		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
+		
+		NSString *phoneNumber = @"";
+		if (phoneCount > 0)
+			phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
+		
+		CFRelease(phoneProperties);
+		
+		
+		NSString *email = @"";
+		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
+		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
+		
+		if (emailCount > 0)
+			email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0);
+		
+		CFRelease(emailProperties);
+		
+		if ([email length] == 0)
+			email = @"";
+		
+		if ([phoneNumber length] > 0 || [email length] > 0) {
+			[unsortedContacts addObject:[HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
+																				  @"l_name"	: lName,
+																				  @"phone"	: phoneNumber,
+																				  @"email"	: email,
+																				  @"image"	: UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])}]];
+		}
+	}
+	
+	// sand hill
+	NSArray *emailDomains = @[@"dcm.com",
+							  @"500.co",
+							  @"firstround.com",
+							  @"a16z.com",
+							  @"ggvc.com",
+							  @"yomorrowvc.com",
+							  @"hcp.com",
+							  @"sequoiacap.com",
+							  @"cyberagentventures.com",
+							  @"accel.com",
+							  @"idgvc.com",
+							  @"nhninv.com",
+							  @"menloventures.com",
+							  @"svangel.com",
+							  @"sherpavc.com",
+							  @"techcrunch.com"];
+	
+	for (HONContactUserVO *vo in unsortedContacts) {
+		if ([vo.email length] == 0)
+			continue;
+		
+		for (NSString *domain in emailDomains) {
+			//NSLog(@"vo.email:[%@] >> [%@]", [vo.email lowercaseString], domain);
+			if ([[vo.email lowercaseString] rangeOfString:domain].location != NSNotFound) {
+				clubName = @"Sand Hill Bros";
+				break;
+			}
+		}
+	}
+	
+	if ([clubName length] > 0) {
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		[dict setValue:@"9999-99-99 99:99:98" forKey:@"added"];
+		[dict setValue:@"9999-99-99 99:99:98" forKey:@"updated"];
+		
+		[_dictClubs addObject:[dict copy]];
+		
+//		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+//		[_autoGenItems addObject:vo];
+		clubName = @"";
+	}
+	
+	
+	// family
+	NSArray *deviceName = [[[HONDeviceIntrinsics sharedInstance] deviceName] componentsSeparatedByString:@" "];
+	if ([[deviceName lastObject] isEqualToString:@"iPhone"] || [[deviceName lastObject] isEqualToString:@"iPod"]) {
+		NSString *familyName = [deviceName objectAtIndex:1];
+		familyName = [familyName substringToIndex:[familyName length] - 2];
+		clubName = [NSString stringWithFormat:@"%@ Family", [[[familyName substringToIndex:1] uppercaseString] stringByAppendingString:[familyName substringFromIndex:1]]];
+	}
+	
+	else {
+		for (HONContactUserVO *vo in unsortedContacts) {
+			if (![segmentedKeys containsObject:vo.lastName]) {
+				[segmentedKeys addObject:vo.lastName];
+				
+				NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+				[segmentedDict setValue:newSegment forKey:vo.lastName];
+				
+			} else {
+				NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:vo.lastName];
+				[prevSegment addObject:vo];
+				[segmentedDict setValue:prevSegment forKey:vo.lastName];
+			}
+		}
+		
+		for (NSString *key in segmentedDict) {
+			if ([[segmentedDict objectForKey:key] count] >= 2) {
+				clubName = [NSString stringWithFormat:@"%@ Family", key];
+				break;
+			}
+		}
+	}
+	
+	
+	for (HONUserClubVO *vo in _allClubs) {
+		if ([vo.clubName isEqualToString:clubName]) {
+			clubName = @"";
+			break;
+		}
+	}
+	
+	
+	if ([clubName length] > 0) {
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		[dict setValue:@"9999-99-99 99:99:98" forKey:@"added"];
+		[dict setValue:@"9999-99-99 99:99:98" forKey:@"updated"];
+		
+		[_dictClubs addObject:[dict copy]];
+		clubName = @"";
+		
+//		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+//		[_autoGenItems addObject:vo];
+	}
+	
+	// area code
+	if ([[HONAppDelegate phoneNumber] length] > 0) {
+		NSString *clubName = [[[HONAppDelegate phoneNumber] substringWithRange:NSMakeRange(2, 3)] stringByAppendingString:@" club"];
+		for (HONUserClubVO *vo in _allClubs) {
+			if ([vo.clubName isEqualToString:clubName]) {
+				clubName = @"";
+				break;
+			}
+		}
+		
+		if ([clubName length] > 0) {
+			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+			[dict setValue:@"0" forKey:@"id"];
+			[dict setValue:clubName forKey:@"name"];
+			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
+			[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+			[dict setValue:@"9999-99-99 99:99:98" forKey:@"added"];
+			[dict setValue:@"9999-99-99 99:99:98" forKey:@"updated"];
+			
+			[_dictClubs addObject:[dict copy]];
+			clubName = @"";
+			
+//			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+//			[_autoGenItems addObject:vo];
+		}
+	}
+	
+	
+	// email domain
+	[segmentedDict removeAllObjects];
+	[segmentedKeys removeAllObjects];
+	
+	for (HONContactUserVO *vo in unsortedContacts) {
+		if ([vo.email length] > 0) {
+			NSString *emailDomain = [[vo.email componentsSeparatedByString:@"@"] lastObject];
+			
+			
+			BOOL isValid = YES;
+			for (NSString *domain in [HONAppDelegate excludedClubDomains]) {
+				if ([emailDomain isEqualToString:domain]) {
+					isValid = NO;
+					break;
+				}
+			}
+			
+			if (isValid) {
+				if (![segmentedKeys containsObject:emailDomain]) {
+					[segmentedKeys addObject:emailDomain];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[segmentedDict setValue:newSegment forKey:emailDomain];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[segmentedDict valueForKey:emailDomain];
+					[prevSegment addObject:vo];
+					[segmentedDict setValue:prevSegment forKey:emailDomain];
+				}
+			}
+		}
+	}
+	
+	clubName = @"";
+	for (NSString *key in segmentedDict) {
+		if ([[segmentedDict objectForKey:key] count] >= 2) {
+			clubName = [key stringByAppendingString:@" Club"];
+			break;
+		}
+	}
+	
+	if ([clubName length] > 0) {
+		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+		[dict setValue:@"0" forKey:@"id"];
+		[dict setValue:clubName forKey:@"name"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImagePrefix] forKey:@"img"];
+		[dict setValue:@"AUTO_GEN" forKey:@"club_type"];
+		[dict setValue:@"9999-99-99 99:99:98" forKey:@"added"];
+		[dict setValue:@"9999-99-99 99:99:98" forKey:@"updated"];
+		
+		[_dictClubs addObject:[dict copy]];
+//		HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[dict copy]];
+//		[_autoGenItems addObject:vo];
+	}
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -232,22 +477,22 @@
 	
 	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
 	if ([HONAppDelegate incTotalForCounter:@"clubsTab"] == 1) {
-//		[[[UIAlertView alloc] initWithTitle:@"Clubs Tip"
-//									message:@"The more clubs you join the more your feed fills up!"
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
+        [[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                    message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
 	}
 	NSLog(@"invite pop over %d", _didCloseCreateClub);
 	if (_isFromCreateClub && !_didCloseCreateClub) {
 		NSLog(@"did getpopup %d", _didCloseCreateClub);
 		_isFromCreateClub = NO;
 		
-		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_club"];
-		_tutorialView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
-		[_tutorialView introWithCompletion:nil];
+//		_tutorialView = [[HONTutorialView alloc] initWithImageURL:@"tutorial_club"];
+//		_tutorialView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_tutorialView];
+//		[_tutorialView introWithCompletion:nil];
 	}
 	_didCloseCreateClub = NO;
 }
@@ -415,12 +660,12 @@
 }
 
 - (void)clubViewCellHighSchoolClub:(HONClubCollectionViewCell *)cell {
-    [[[UIAlertView alloc] initWithTitle:@""
-                                message:[NSString stringWithFormat:@"No High Schools Found"]
-                               delegate:nil
-                      cancelButtonTitle:@"Ok"
-                      otherButtonTitles: nil] show];
-	//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+//    [[[UIAlertView alloc] initWithTitle:@""
+//                                message:[NSString stringWithFormat:@"No High Schools Found"]
+//                               delegate:nil
+//                      cancelButtonTitle:@"Ok"
+//                      otherButtonTitles: nil] show];
+    [self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
 }
 
 
@@ -523,12 +768,12 @@
 			}
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) {
-			//[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
-            [[[UIAlertView alloc] initWithTitle:@""
-                                        message:[NSString stringWithFormat:@"No High Schools Found"]
-                                       delegate:nil
-                              cancelButtonTitle:@"Ok"
-                              otherButtonTitles: nil] show];
+			[self.navigationController pushViewController:[[HONHighSchoolSearchViewController alloc] init] animated:YES];
+//            [[[UIAlertView alloc] initWithTitle:@""
+//                                        message:[NSString stringWithFormat:@"No High Schools Found"]
+//                                       delegate:nil
+//                              cancelButtonTitle:@"Ok"
+//                              otherButtonTitles: nil] show];
 			
 		} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			_selectedClub = vo;
@@ -562,14 +807,13 @@
 		}
 		else if (buttonIndex == 1){
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I created %@! Tap here to join: joinselfie.club/%@/%@", _selectedClub.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClub.clubName];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]];
 			
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:[NSString stringWithFormat:@"Your club %@ has been copied to your clipboard!\n\nPlease share with friends!", _selectedClub.clubName]
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-		}
+			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                        message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"'s Club"]]
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];		}
 	}
 }
 

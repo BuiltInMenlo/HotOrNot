@@ -77,7 +77,9 @@
 		}
 		
 //		[_cameraOverlayView uploadComplete];
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			[self.navigationController dismissViewControllerAnimated:NO completion:^(void) {}];
+		}];
 	}];
 }
 
@@ -189,9 +191,7 @@
 	[canvasView addSubview:overlayTintView];
 	
 	processedImage = [HONImagingDepictor createImageFromView:canvasView];
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[self _uploadPhotos:processedImage];
-	}];
+	[self _uploadPhotos:processedImage];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

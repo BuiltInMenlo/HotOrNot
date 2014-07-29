@@ -39,7 +39,7 @@
 	if ((self = [super init])) {
 		_clubName = @"";
 //		_clubBlurb = @"";
-		_clubImagePrefix = @"";
+		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImagePrefix];
 		
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];
@@ -271,7 +271,7 @@
 	[_clubNameTextField setTextColor:[UIColor blackColor]];
 	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_clubNameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:16];
+	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_clubNameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_clubNameTextField.placeholder = @"Club Name";
 	_clubNameTextField.text = @"";
