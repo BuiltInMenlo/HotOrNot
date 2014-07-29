@@ -77,6 +77,7 @@
 		
 		
 		_emptySetImageView.hidden = [_clubPhotos count] > 0;
+		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
 		[self _didFinishDataRefresh];
 		
 		
@@ -99,8 +100,6 @@
 											fromURLs:imageQueue
 											 withTag:@"club"];
 		}
-		
-		
 	}];
 }
 
@@ -145,8 +144,11 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
+	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
+	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 2.0), 0.0)];
+	[_tableView setBackgroundColor:[UIColor blackColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -181,10 +183,11 @@
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareClubButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:shareButton];
+	
+	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
+	
 	if (_clubVO == nil)
 		[self _retrieveClub];
-	
-	[_tableView setContentOffset:CGPointMake(0.0, 20.0 + (_index * [UIScreen mainScreen].bounds.size.height))];
 }
 
 - (void)viewDidLoad {
@@ -250,12 +253,15 @@
 }
 
 
+#pragma mark - UI Presentation
+- (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:MIN(amount, ([_tableView numberOfSections] - [_tableView indexPathForCell:cell].section))] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+//	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MIN(amount, ([_tableView numberOfRowsInSection:0] - [_tableView indexPathForCell:cell].row)) inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+}
+
 #pragma mark - ClubPhotoViewCell Delegates
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:advancePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
-	
-	
-	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:cell.indexPath.row inSection:cell.indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
@@ -277,9 +283,9 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:cell.indexPath.row inSection:cell.indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	[self _advanceTimelineFromCell:cell byAmount:1];
+	
 	[[HONAPICaller sharedInstance] verifyUserWithUserID:clubPhotoVO.userID asLegit:YES completion:^(NSDictionary *result) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
 	}];
@@ -317,7 +323,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (self.view.bounds.size.height);
+	return ([UIScreen mainScreen].bounds.size.height);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -325,12 +331,12 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section < [_clubPhotos count] - 1) ? indexPath : nil);
+	return (indexPath);
 	
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row inSection:indexPath.section + 1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	[self _advanceTimelineFromCell:(HONClubPhotoViewCell *)[tableView cellForRowAtIndexPath:indexPath] byAmount:1];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {

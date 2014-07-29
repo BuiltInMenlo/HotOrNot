@@ -312,7 +312,7 @@
 	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Friends"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: @"Friends"]; //NSLocalizedString(@"header_friends", nil)];  @"Friends"];
 	[self.view addSubview:headerView];
 	[headerView addButton:closeButton];
 	

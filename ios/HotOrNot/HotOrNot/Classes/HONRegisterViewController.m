@@ -257,10 +257,10 @@
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_nextButton.frame = CGRectMake(227.0, -1.0, 93.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[_nextButton setBackgroundImage:[UIImage imageNamed: @"nextButton_nonActive"] forState:UIControlStateNormal]; //@"nextButton_nonActive"]
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Register"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"Register", nil)]; //@"Register"]; header_register
 	[headerView addButton:_nextButton];
 	[self.view addSubview:headerView];
 	
@@ -294,7 +294,7 @@
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = textFont;
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.placeholder = NSLocalizedString(@"Enter username", nil);
+	_usernameTextField.placeholder = NSLocalizedString(@"Enter username", nil); //@"Enter username";
 	_usernameTextField.text = @"";
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
@@ -349,7 +349,7 @@
 	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_phoneTextField.font = textFont;
 	_phoneTextField.keyboardType = UIKeyboardTypePhonePad;
-	_phoneTextField.placeholder = NSLocalizedString(@"Enter phone", nil);
+	_phoneTextField.placeholder = NSLocalizedString(@"Enter phone", nil); //@"Enter phone";
 	_phoneTextField.text = @"";
 	[_phoneTextField setTag:1];
 	_phoneTextField.delegate = self;

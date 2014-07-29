@@ -157,7 +157,7 @@
 		subtitleLabel.text = subtitleCaption;
 		
 		UIButton *createClubButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createClubButton.frame = CGRectMake(253.0, 3.0, 64.0, 44.0);
+		createClubButton.frame = CGRectMake(253.0, 2.0, 64.0, 44.0);
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_nonActive"] forState:UIControlStateNormal];
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_Active"] forState:UIControlStateHighlighted];
 		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
