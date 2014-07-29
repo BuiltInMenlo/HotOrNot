@@ -593,11 +593,12 @@
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
+    
 	
-//	[self dismissViewControllerAnimated:NO completion:^(void) {
-//		[self.view addSubview:_previewView];
-//	}];
-//
+	//[self dismissViewControllerAnimated:NO completion:^(void) {
+	//	[self.view addSubview:_previewView];
+	//}];
+
 //	
 //	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
 //    emotionsViewConteroller.view = _previewView;

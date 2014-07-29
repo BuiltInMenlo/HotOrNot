@@ -114,8 +114,21 @@
 	if (_iconImageView != nil)
 		_iconImageView = nil;
 }
-
-
+-(void) tintCell:(BOOL)reset {
+    [UIView animateWithDuration:0.5 animations:^(void) {
+        self.contentView.alpha = .40;
+    } completion:^(BOOL finished) {
+        if(reset){
+            [self removeTint];
+        }
+    }];
+}
+-(void) removeTint{
+    [UIView animateWithDuration:0.5 animations:^(void) {
+        self.contentView.alpha = 1.0;
+    } completion:^(BOOL finished) {
+    }];
+}
 #pragma mark - Navigation
 
 
