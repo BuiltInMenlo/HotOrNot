@@ -32,6 +32,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		self.contentView.frame = [UIScreen mainScreen].bounds;
 		self.backgroundColor = [UIColor blackColor];
 	}
 	
@@ -46,15 +47,15 @@
 	_clubPhotoVO = clubPhotoVO;
 	
 	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
-	_imageLoadingView.frame = CGRectOffset(_imageLoadingView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height - 44.0) * 0.5);
+	_imageLoadingView.frame = [UIScreen mainScreen].bounds;
 	[self.contentView addSubview:_imageLoadingView];
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
 	imageView.alpha = 0.0;
 	[self.contentView addSubview:imageView];
 	
-	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"selfieFullSizeGradientOverlay"]];
-	gradientImageView.frame = [UIScreen mainScreen].bounds;
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
+	gradientImageView.image = [UIImage imageNamed:@"selfieFullSizeGradientOverlay"];
 	[self.contentView addSubview:gradientImageView];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -131,20 +132,20 @@
 	}
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 134.0, 64.0);
+	likeButton.frame = CGRectMake(5.0, [UIScreen mainScreen].bounds.size.height - 67.0, 134.0, 64.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:likeButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(181.0, [UIScreen mainScreen].bounds.size.height - 74.0, 134.0, 64.0);
+	replyButton.frame = CGRectMake(181.0, [UIScreen mainScreen].bounds.size.height - 67.0, 134.0, 64.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:replyButton];
 	
-	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 51.0, 50.0, 16.0)];
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 50.0, 50.0, 16.0)];
 	scoreLabel.backgroundColor = [UIColor clearColor];
 	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
 	scoreLabel.textColor = [UIColor whiteColor];

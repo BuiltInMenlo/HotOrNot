@@ -231,12 +231,15 @@
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
 		}
-	} else if(indexPath.row == HONSettingsCellTypeCopyClub){
-		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
+	} else if(indexPath.row == HONSettingsCellTypeCopyClub) {
+		NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"];
+		NSString *clubDeeplink = [NSString stringWithFormat:@"%@/%@", [[HONAppDelegate infoForUser] objectForKey:@"username"], clubName];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste this URL anywhere to have your friends join!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@", clubName, clubDeeplink];
+		
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", clubName]
+									message:[NSString stringWithFormat:@"http://joinselfie.club/%@\n\nPaste this URL anywhere to have your friends join!", clubDeeplink]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

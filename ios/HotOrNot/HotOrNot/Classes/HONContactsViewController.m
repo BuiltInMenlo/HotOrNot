@@ -491,7 +491,6 @@
 	if (cell == nil)
 		cell = [[HONUserToggleViewCell alloc] init];
 	
-	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
 		cell.trivialUserVO = (HONTrivialUserVO *)[_searchUsers objectAtIndex:indexPath.row];
 		[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:cell.trivialUserVO]];
@@ -702,11 +701,6 @@
 					
 					indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section + 1];
 				}
-
-//				deviceContactVO.contactType = HONContactTypeMatched;
-//				deviceContactVO.userID = inAppContactVO.userID;
-//				deviceContactVO.username = inAppContactVO.username;
-//				deviceContactVO.avatarPrefix = inAppContactVO.avatarPrefix;
 			}
 		}
 	}

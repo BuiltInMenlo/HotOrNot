@@ -2,13 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "defaultClubCover.png"
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "defaultClubCover@2x.png"
+      "filename" : "accessContacts_Active@2x.png"
     }
   ],
   "info" : {
