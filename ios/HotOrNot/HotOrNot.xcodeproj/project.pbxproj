@@ -815,6 +815,9 @@
 		57202A3519870B7F0093F28C /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/picocandy.png; sourceTree = "<group>"; };
 		57202A3719870F010093F28C /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/picocandy.png; sourceTree = "<group>"; };
 		57202A3C1987137B0093F28C /* SearchElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SearchElements.xcassets; sourceTree = "<group>"; };
+		57BA596E1988350100CD55A6 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		57BA596F1988350100CD55A6 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/picocandy.png"; sourceTree = "<group>"; };
+		57BA59701988350100CD55A6 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		8F2B187B197856870085AC03 /* selfie_notification.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_notification.caf; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserVO.m; sourceTree = "<group>"; };
@@ -2080,6 +2083,7 @@
 				es,
 				ru,
 				pt,
+				"pt-BR",
 			);
 			mainGroup = 4C62651A15F96C7100AA7FCE;
 			productRefGroup = 4C62652615F96C7100AA7FCE /* Products */;
@@ -2371,6 +2375,7 @@
 				57202A2D1986F4290093F28C /* ja */,
 				57202A2F1986F4380093F28C /* pt */,
 				57202A311986F4410093F28C /* ko */,
+				57BA59701988350100CD55A6 /* pt-BR */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2382,6 +2387,7 @@
 				57202A2C1986F4290093F28C /* ja */,
 				57202A2E1986F4380093F28C /* pt */,
 				57202A301986F4410093F28C /* ko */,
+				57BA596E1988350100CD55A6 /* pt-BR */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2391,6 +2397,7 @@
 			children = (
 				57202A3519870B7F0093F28C /* ja */,
 				57202A3719870F010093F28C /* en */,
+				57BA596F1988350100CD55A6 /* pt-BR */,
 			);
 			name = picocandy.png;
 			sourceTree = "<group>";

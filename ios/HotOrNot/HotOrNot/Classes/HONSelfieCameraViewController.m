@@ -594,24 +594,24 @@
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
 	
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[self.view addSubview:_previewView];
-	}];
-
-	
-	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
-    emotionsViewConteroller.view = _previewView;
-    [self.navigationController pushViewController:emotionsViewConteroller animated:YES];
-	
-//	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-//		[_cameraOverlayView submitStep:_previewView];
+//	[self dismissViewControllerAnimated:NO completion:^(void) {
+//		[self.view addSubview:_previewView];
+//	}];
+//
 //	
-//	} else {
-//		[self dismissViewControllerAnimated:NO completion:^(void) {
-//			[self.view addSubview:_previewView];
-//		}];
-//	}
-//	
+//	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
+//    emotionsViewConteroller.view = _previewView;
+//    [self.navigationController pushViewController:emotionsViewConteroller animated:YES];
+	
+	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		[_cameraOverlayView submitStep:_previewView];
+	
+	} else {
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			[self.view addSubview:_previewView];
+		}];
+	}
+	
 	[self _uploadPhotos];
 }
 

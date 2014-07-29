@@ -401,7 +401,7 @@
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
 	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
-								message:@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
+								message: NSLocalizedString(@"grant_access", nil) //@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];

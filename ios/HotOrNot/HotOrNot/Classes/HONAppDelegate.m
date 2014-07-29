@@ -977,7 +977,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										[self.tabBarController setSelectedIndex:2];
 										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 										
-										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"You are already a member of %@!", _selectedClubVO.clubName]
+										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", nil), _selectedClubVO.clubName] //@"You are already a member of"
 																							message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																						   delegate:self
 																				  cancelButtonTitle:@"Yes"
@@ -993,7 +993,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										
 										
 										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																							message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]//@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 																						   delegate:self
 																				  cancelButtonTitle:@"OK"
 																				  otherButtonTitles:@"Cancel", nil];
