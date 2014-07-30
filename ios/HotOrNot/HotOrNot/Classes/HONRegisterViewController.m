@@ -369,7 +369,7 @@
 		}];
 	}
 	
-	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"registerFooterText"]];
+	UIImageView *footerTextImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"termsText"]];
 	footerTextImageView.frame = CGRectOffset(footerTextImageView.frame, 0.0, 204.0);
 	[self.view addSubview:footerTextImageView];
 	
