@@ -163,7 +163,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-	[[HONClubAssistant sharedInstance] wipeUserClubs];
+//	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	[self _retrieveClubs];
 }
 
@@ -260,15 +260,7 @@
 //		_isCreateClubViewControllerPresented = NO;
 //
 	
-	NSLog(@"_appearedType:[%d]", _appearedType);
-	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	}
-	
+
 //	_didCloseCreateClubOrSelfieCamera = NO;
 }
 
@@ -478,8 +470,8 @@
 	NSLog(@"vo.clubEnrollmentType:[%d]", vo.clubEnrollmentType);
 	_selectedClubVO = vo;
 	
-	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-	[cell resetSubviews];
+//	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+//	[cell resetSubviews];
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
@@ -540,7 +532,7 @@
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+										message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -558,7 +550,7 @@
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+										message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -574,7 +566,7 @@
 				pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 				
 				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-											message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+											message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
@@ -601,13 +593,13 @@
 				[[HONClubAssistant sharedInstance] addClub:result forKey:@"owned"];
 				[self _retrieveClubs];
 				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
-																   delegate:self
-														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"Not Now", nil];
-				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
-				[alertView show];
+//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+//																   delegate:self
+//														  cancelButtonTitle:@"Yes"
+//														  otherButtonTitles:@"Not Now", nil];
+//				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
+//				[alertView show];
 			}];
 		}
 		
@@ -615,13 +607,13 @@
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClubVO];
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
-															   delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"Not Now", nil];
-			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
-			[alertView show];
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+//															   delegate:self
+//													  cancelButtonTitle:@"Yes"
+//													  otherButtonTitles:@"Not Now", nil];
+//			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
+//			[alertView show];
 		}
 	
 	} else if (alertView.tag == HONUserClubsAlertTypeLeave) {

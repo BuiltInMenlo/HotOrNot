@@ -256,6 +256,7 @@
 	for (HONCountryVO *vo in _countries) {
 		if ([vo.countryName length] > 0) {
 			NSString *charKey = [[vo.countryName substringToIndex:1] lowercaseString];
+			NSLog(@"Country name! %@", charKey);
 			if (![_segmentedKeys containsObject:charKey]) {
 				[_segmentedKeys addObject:charKey];
 				
