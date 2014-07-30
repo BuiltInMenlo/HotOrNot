@@ -99,7 +99,19 @@
 
 
 - (void)backgroundingReset {
-	[self _goCancel];
+	//[self _goCancel];
+	[_searchTextField resignFirstResponder];
+	
+	_searchTextField.text = @"";
+	[_searchTextField setTextColor:[[HONColorAuthority sharedInstance] honLightGreyTextColor]];
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_cancelButton.alpha = 0.0;
+		_focusedBGImageView.alpha = 0.0;
+	}];
+	
+	NSLog(@"blah");
+	
+	_searchTextField.frame = CGRectMake(_searchTextField.frame.origin.x, _searchTextField.frame.origin.y, 296.0, _searchTextField.frame.size.height);
 }
 
 
