@@ -33,14 +33,14 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_captions = @[@"Notifications",
-					  @"Copy my club URL",
-					  @"Terms of use",
-					  @"Privacy policy",
-					  @"Support",
-					  @"Rate this app",
-					  @"Network status",
-					  @"Logout"];
+		_captions = @[ NSLocalizedString(@"settings_notification", nil),  //@"Notifications",
+					  NSLocalizedString(@"copy_url", nil), //@"Copy my club URL",
+					  NSLocalizedString(@"terms_service", nil), //@"Terms of use",
+					  NSLocalizedString(@"privacy_policy", nil), //@"Privacy policy",
+					  NSLocalizedString(@"settings_support", nil), //@"Support",
+					  NSLocalizedString(@"rate_app", nil), //@"Rate this app",
+					  NSLocalizedString(@"network_status", nil), //@"Network status",
+					   NSLocalizedString(@"settings_logout", nil)]; //@"Logout"];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -82,7 +82,7 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
 	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
