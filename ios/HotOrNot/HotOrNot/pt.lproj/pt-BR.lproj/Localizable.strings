@@ -1,0 +1,85 @@
+/* 
+  Localizable.strings
+  HotOrNot
+
+  Created by Matthew Holcombe on 04.13.13.
+  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+*/
+
+
+//"hud_connectionError" = "No connection found!";
+"hud_loadError" = "Problem loading data!";
+"hud_dlFailed" = "Download failed";
+"hud_submitFailed" = "Failed submission";
+"hud_refresh" = "Refreshing…";
+"hud_loading" = "Loading…";
+"hud_submitComment" = "Submitting comment…";
+"hud_uploadFail" = "Upload error";
+"hud_usernameNotFound" = "Username not found!";
+"hud_checkUsername" = "Checking username…";
+"hud_updateFail" = "Update failed";
+"hud_usernameTaken" = "Username taken!";
+"hud_submit" = "Submitting…";
+"hud_noResults" = "No results found!";
+"hud_searchUsers" = "Searching users…";
+"hud_searchHashtags" = "Searching hashtags…";
+"hud_sent" = "   Sent   ";
+
+"header_restricted" = "restricted access";
+
+//"search_placeHolder" = "Search for people or tags";
+//"search_snap" = "1 snap";
+//"search_snaps" = "%d snaps";
+
+"restricted_caption" = "";
+"restricted_inviteCode" = "Enter invite code";
+
+//"register_username" = "Please enter a username";
+//"register_caption1" = "";
+//"register_caption2" = "";
+
+//"timeline_snapAt" = "snap @%@";
+//"timeline_like" = "%d Like";
+//"timeline_likes" = "%d Likes";
+//"timeline_0comments" = "Comment";
+//"timeline_1comment" = "%d Comment";
+//"timeline_comments" = "%d Comments";
+//"timeline_99comments" = "99+ Comments";
+
+"voters_caption" = "@%@ liked this";
+
+//"activity_waiting" = "You are waiting…";
+//"activity_waiting_f" = "You are waiting… (F)";
+
+//"settings_myPhotos" = "My Photos";
+//"settings_inviteSMS" = "Invite Friends via SMS";
+//"settings_inviteEmail" = "Invite Friends via Email";
+//"settings_changeUsername" = "Change Username";
+//"settings_support" = "Support";
+//"settings_privacy" = "Privacy Policy";
+
+"alert_yes" = "Yes";
+"alert_no" = "No";
+"alert_ok" = "OK";
+"alert_cancel" = "Cancel";
+"alert_connectionError_t" = "Connection Error";
+"alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
+"alert_instagramError_t" = "Not Available";
+"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
+"alert_networkError_t" = "No Network Connection";
+"alert_networkError_m" = "This app requires a network connection to work.";
+"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_later" = "Ask Me Later";
+"alert_rateApp_store" = "Visit App Store";
+"alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
+"alert_noSelfie_m" = "You need a profile photo to proceed.";
+
+"Enter username" = "Digite o nome de usuário";
+"Enter phone" = "Digite o telefone";
+"Register" = "Cadastrar";
+//"firstrun_next" = "Avançar";
+//"Search for friends" = "Procurar amigos";
+"header_friends" = "Amigos";
+
+
+
