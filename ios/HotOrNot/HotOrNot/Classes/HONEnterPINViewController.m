@@ -235,8 +235,8 @@
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-									message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_title", nil), [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]] //@"Your %@ has been copied to your device's clipboard!"
+									message:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_msg", nil)] //@"\nPaste this URL anywhere to have your friends join!"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

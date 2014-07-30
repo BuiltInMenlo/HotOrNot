@@ -106,3 +106,5 @@
 "header_settings" = "설정";
 "alert_noemotions_title" = "No Emotions selected!";
 "alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"popup_clubcopied_title" = "당신의 %@ 클럽이 복사되었습니다!";
+"popup_clubcopied_msg" = "다른 사람과 공유하려면, URL을 붙여넣기 하세요!";

@@ -106,3 +106,5 @@
 "header_settings" = "設定";
 "alert_noemotions_title" = "No Emotions selected!";
 "alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"popup_clubcopied_title" = "%@ クラブがコピーされました!";
+"popup_clubcopied_msg" = "URLをどこかにペーストしてシェアしましょう!";

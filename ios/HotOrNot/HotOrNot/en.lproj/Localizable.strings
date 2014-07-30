@@ -106,5 +106,6 @@
 "header_settings" = "Settings";
 "alert_noemotions_title" = "No Emotions selected!";
 "alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
-
+"popup_clubcopied_title" = "Your %@ Club has been copied to your device's clipboard!";
+"popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
 
