@@ -68,7 +68,7 @@
 	[_overlayToggleButton addTarget:self action:@selector(_goToggleOverlay) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:_overlayToggleButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Select Feeling"];
+	_headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"select_feeling", nil)]; //@"Select Feeling"];
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -1,38 +1,38 @@
-/* 
-  Localizable.strings
-  HotOrNot
-
-  Created by Matthew Holcombe on 04.13.13.
-  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
-*/
+/*
+ Localizable.strings
+ HotOrNot
+ 
+ Created by Matthew Holcombe on 04.13.13.
+ Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+ */
 
 
 //"hud_connectionError" = "No connection found!";
-"hud_loadError" = "Problem loading data!";
-"hud_dlFailed" = "Download failed";
-"hud_submitFailed" = "Failed submission";
+"hud_loadError" = "Problema no Carregamento dos Dados";
+"hud_dlFailed" = "Falha no Download!";
+"hud_submitFailed" = "Falha no Download!";
 "hud_refresh" = "Refreshing…";
-"hud_loading" = "Loading…";
-"hud_submitComment" = "Submitting comment…";
-"hud_uploadFail" = "Upload error";
-"hud_usernameNotFound" = "Username not found!";
-"hud_checkUsername" = "Checking username…";
-"hud_updateFail" = "Update failed";
-"hud_usernameTaken" = "Username taken!";
-"hud_submit" = "Submitting…";
-"hud_noResults" = "No results found!";
-"hud_searchUsers" = "Searching users…";
-"hud_searchHashtags" = "Searching hashtags…";
-"hud_sent" = "   Sent   ";
+"hud_loading" = "Carregando...";
+"hud_submitComment" = "Enviando comentário...";
+"hud_uploadFail" = "Erro de upload";
+"hud_usernameNotFound" = "Nome de usuário não encontrado!";
+"hud_checkUsername" = "Verificando nome de usuário_";
+"hud_updateFail" = "Falha na atualização";
+"hud_usernameTaken" = "Nome de usuário aceito!";
+"hud_submit" = "Enviando...";
+"hud_noResults" = "Nenhum resultado encontrado!";
+"hud_searchUsers" = "Pesquisando usuários...";
+"hud_searchHashtags" = "Pesquisando hashtags...";
+"hud_sent" = "   Enviado   ";
 
-"header_restricted" = "restricted access";
+"header_restricted" = "acesso restrito";
 
 //"search_placeHolder" = "Search for people or tags";
 //"search_snap" = "1 snap";
 //"search_snaps" = "%d snaps";
 
 "restricted_caption" = "";
-"restricted_inviteCode" = "Enter invite code";
+"restricted_inviteCode" = "Insira o código de convite";
 
 //"register_username" = "Please enter a username";
 //"register_caption1" = "";
@@ -46,7 +46,7 @@
 //"timeline_comments" = "%d Comments";
 //"timeline_99comments" = "99+ Comments";
 
-"voters_caption" = "@%@ liked this";
+"voters_caption" = "@%@ gostou disso";
 
 //"activity_waiting" = "You are waiting…";
 //"activity_waiting_f" = "You are waiting… (F)";
@@ -58,8 +58,8 @@
 //"settings_support" = "Support";
 //"settings_privacy" = "Privacy Policy";
 
-"alert_yes" = "Yes";
-"alert_no" = "No";
+"alert_yes" = "Sim";
+"alert_no" = "Não";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
 "alert_connectionError_t" = "Connection Error";
@@ -74,12 +74,33 @@
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
 
-"Enter username" = "Digite o nome de usuário";
-"Enter phone" = "Digite o telefone";
+"enter_username" = "Digite o nome de usuário";
+"enter_phone" = "Digite o telefone";
 "Register" = "Cadastrar";
 //"firstrun_next" = "Avançar";
 //"Search for friends" = "Procurar amigos";
 "header_friends" = "Amigos";
-
-
-
+//"alert_member" = "PT >> You are already a member of %@!"
+"header_news" = "Novidades";
+"header_clubs" = "Clubes";
+"alert_join" = "Gostaria de participar do Selfieclub %@?";
+"header_addclub" = "Adicionar clube";
+"create_club" = "Criar um clube";
+"invite_club" = "Convidar para clube";
+"select_allclubs" = "Selecionar todos os clubes";
+"header_activity" = "Atividade";
+"alert_status" = "Este clube ainda não tem atualizações de status!";
+"alert_create" = "Gostaria de criar uma?";
+"select_feeling" = "Escolha o sentimento";
+"grant_access" = "Ative o botão em Ajustes -> Privacidade -> Contatos -> Selfieclub para permitir o acesso.";
+"select_club" = "Selecionar clube";
+"club_name" = "Nome do clube";
+"settings_notification" = "Notificação";
+"copy_url" = "Copiar link do meu clube";
+"terms_service" = "Termos de serviço";
+"privacy_policy" = "Política de privacidade";
+"settings_support" = "Suporte";
+"rate_app" = "Avalie este aplicativo";
+"network_status" = "Status da rede";
+"settings_logout" = "Sair";
+"header_settings" = "Ajustes";

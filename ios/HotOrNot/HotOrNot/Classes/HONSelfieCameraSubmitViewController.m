@@ -70,7 +70,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	[_headerView setTitle:@"Select Club"];
+	[_headerView setTitle: NSLocalizedString(@"select_club", nil)]; //@"Select Club"];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);

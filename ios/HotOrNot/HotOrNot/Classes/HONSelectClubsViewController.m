@@ -288,7 +288,7 @@
 		captionLabel.backgroundColor = [UIColor clearColor];
 		captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		captionLabel.textColor = [UIColor blackColor];
-		captionLabel.text = @"Select all clubs";
+		captionLabel.text = NSLocalizedString(@"select_allclubs", nil);//@"Select all clubs";
 		[cell.contentView addSubview:captionLabel];
 	}
 	

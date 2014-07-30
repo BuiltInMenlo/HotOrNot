@@ -1,40 +1,38 @@
-/* 
-  Localizable.strings
-  HotOrNot
-
-  Created by Matthew Holcombe on 04.13.13.
-  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
-*/
+/*
+ Localizable.strings
+ HotOrNot
+ 
+ Created by Matthew Holcombe on 04.13.13.
+ Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+ */
 
 
 //"hud_connectionError" = "No connection found!";
-"hud_loadError" = "Problem loading data!";
-"hud_dlFailed" = "Download failed";
-"hud_submitFailed" = "Failed submission";
-"hud_refresh" = "Refreshing…";
-"hud_loading" = "사용자 이름";
-"hud_submitComment" = "Submitting comment…";
-"hud_uploadFail" = "Upload error";
-"hud_usernameNotFound" = "Username not found!";
-"hud_checkUsername" = "Checking username…";
-"hud_updateFail" = "Update failed";
-"hud_usernameTaken" = "Username taken!";
-"hud_submit" = "Submitting…";
-"hud_noResults" = "No results found!";
-"hud_searchUsers" = "Searching users…";
-"hud_searchHashtags" = "Searching hashtags…";
-"hud_sent" = "   Sent   ";
-"Enter phone" = "전화번호";
-"Enter username" = "사용자 이름";
-"Register" = "등록하기";
-"header_restricted" = "restricted access";
+"hud_loadError" = "데이터 로드 중 문제 발생";
+"hud_dlFailed" = "다운로드 실패!";
+"hud_submitFailed" = "전송 실패";
+"hud_refresh" = "새로고침 중...";
+"hud_loading" = "로딩 중...";
+"hud_submitComment" = "코멘트 제출 중...";
+"hud_uploadFail" = "업로드 오류";
+"hud_usernameNotFound" = "사용자 이름을 찾을 수 없습니다!";
+"hud_checkUsername" = "username_ 확인 중";
+"hud_updateFail" = "업데이트 실패";
+"hud_usernameTaken" = "사용자 이름이 이미 사용 중!";
+"hud_submit" = "제출 중...";
+"hud_noResults" = "결과가 없습니다!";
+"hud_searchUsers" = "사용자 검색 중...";
+"hud_searchHashtags" = "해시태그 검색 중...";
+"hud_sent" = "   전송   ";
+
+"header_restricted" = "접근 제한";
 
 //"search_placeHolder" = "Search for people or tags";
 //"search_snap" = "1 snap";
 //"search_snaps" = "%d snaps";
 
 "restricted_caption" = "";
-"restricted_inviteCode" = "Enter invite code";
+"restricted_inviteCode" = "초청 코드를 입력";
 
 //"register_username" = "Please enter a username";
 //"register_caption1" = "";
@@ -48,7 +46,7 @@
 //"timeline_comments" = "%d Comments";
 //"timeline_99comments" = "99+ Comments";
 
-"voters_caption" = "@%@ liked this";
+"voters_caption" = "@% 좋아했습니다";
 
 //"activity_waiting" = "You are waiting…";
 //"activity_waiting_f" = "You are waiting… (F)";
@@ -60,13 +58,13 @@
 //"settings_support" = "Support";
 //"settings_privacy" = "Privacy Policy";
 
-"alert_yes" = "Yes";
-"alert_no" = "No";
+"alert_yes" = "예";
+"alert_no" = "아니요";
 "alert_ok" = "OK";
-"alert_cancel" = "Cancel";
-"alert_connectionError_t" = "Connection Error";
-"alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
-"alert_instagramError_t" = "Not Available";
+"alert_cancel" = "취소";
+"alert_connectionError_t" = "연결 오류";
+"alert_connectionError_m" = "초기화 서버에 연결할 수 없습니다, ​​다시 시도해 주세요.";
+"alert_instagramError_t" = "사용할 수 없음";
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
@@ -75,3 +73,34 @@
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
+
+"enter_username" = "사용자 이름";
+"enter_phone" = "전화번호";
+"Register" = "등록하기";
+//"firstrun_next" = "Avançar";
+//"Search for friends" = "Procurar amigos";
+"header_friends" = "친구";
+//"alert_member" = "PT >> You are already a member of %@!"
+"header_news" = "친구";
+"header_clubs" = "클럽";
+"alert_join" = "%@ Selfieclub에 참가하실래요?";
+"header_addclub" = "클럽 추가하기";
+"create_club" = "클럽 만들기";
+"invite_club" = "클럽으로 초대하기";
+"select_allclubs" = "모든 클럽을 선택";
+"header_activity" = "활동";
+"alert_status" = "이 클럽에는 아직 상태 업데이트가 없습니다!";
+"alert_create" = "하나 만드실래요?";
+"select_feeling" = "느낌을 선택";
+"grant_access" = "접근을 허용하려면, 설정 > 개인 정보 보호 > 연락처 > Selfieclub의 스위치를 켜 주세요.";
+"select_club" = "클럽 선택하기";
+"club_name" = "클럽 이름";
+"settings_notification" = "알림";
+"copy_url" = "내 클럽 URL을 복사";
+"terms_service" = "서비스 약관";
+"privacy_policy" = "개인정보 보호정책";
+"settings_support" = "지원 요청";
+"rate_app" = "이 앱을 평가하기";
+"network_status" = "네트워크 상태";
+"settings_logout" = "로그아웃";
+"header_settings" = "설정";

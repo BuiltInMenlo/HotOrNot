@@ -91,7 +91,7 @@
 	_selectedInAppContacts = [NSMutableArray array];
 	_selectedNonAppContacts = [NSMutableArray array];
 	
-	[_headerView setTitle:@"Invite to Club"];
+	[_headerView setTitle: NSLocalizedString(@"invite_club", nil)];  //@"Invite to Club"];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);

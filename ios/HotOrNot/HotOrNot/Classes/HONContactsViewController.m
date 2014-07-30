@@ -159,6 +159,7 @@
 
 - (void)_searchUsersWithUsername:(NSString *)username {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
+	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
@@ -201,8 +202,14 @@
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
+			
 		
+		if ([_searchUsers count] > 0) {
+			_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+			_tableView.separatorInset = UIEdgeInsetsZero;
+			
 			[self _didFinishDataRefresh];
+		}
 	}];
 }
 
@@ -401,7 +408,7 @@
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
 	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
-								message:@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
+								message: NSLocalizedString(@"grant_access", nil) //@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
@@ -421,14 +428,17 @@
 #pragma mark - SearchBarHeader Delegates
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
+//	_tableView.separatorInset = UIEdgeInsetsMake(20.0, 0.0, 0.0, 20.0);
 	_searchUsers = [NSMutableArray array];
 	[_tableView reloadData];
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
+//	_tableView.separatorInset = UIEdgeInsetsZero;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	
 	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	
 	[self _retreiveUserClubs];

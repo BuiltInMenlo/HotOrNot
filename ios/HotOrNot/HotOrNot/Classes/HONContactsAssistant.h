@@ -25,4 +25,6 @@
 - (void)writeContactUser:(HONContactUserVO *)contactUserVO toInvitedClub:(HONUserClubVO *)clubVO;
 - (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO;
 
+- (void)writeTrivialUserToDeviceContacts:(HONTrivialUserVO *)trivialUserVO;
+
 @end
