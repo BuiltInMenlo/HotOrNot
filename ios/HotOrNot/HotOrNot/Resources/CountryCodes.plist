@@ -4,6 +4,30 @@
 	<array>
 		<dict>
 			<key>name</key>
+			<string> United States</string>
+			<key>code</key>
+			<string>1</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string> Brazil</string>
+			<key>code</key>
+			<string>55</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string> Japan</string>
+			<key>code</key>
+			<string>81</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string> South Korea</string>
+			<key>code</key>
+			<string>82</string>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Afghanistan</string>
 			<key>code</key>
 			<string>93</string>
@@ -151,12 +175,6 @@
 			<string>Botswana</string>
 			<key>code</key>
 			<string>267</string>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Brazil</string>
-			<key>code</key>
-			<string>55</string>
 		</dict>
 		<dict>
 			<key>name</key>
@@ -577,12 +595,6 @@
 			<string>Jamaica</string>
 			<key>code</key>
 			<string>1876</string>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Japan</string>
-			<key>code</key>
-			<string>81</string>
 		</dict>
 		<dict>
 			<key>name</key>
@@ -1030,12 +1042,6 @@
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>South Korea</string>
-			<key>code</key>
-			<string>82</string>
-		</dict>
-		<dict>
-			<key>name</key>
 			<string>Spain</string>
 			<key>code</key>
 			<string>34</string>
@@ -1195,12 +1201,6 @@
 			<string>United Kingdom</string>
 			<key>code</key>
 			<string>44</string>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>United States</string>
-			<key>code</key>
-			<string>1</string>
 		</dict>
 		<dict>
 			<key>name</key>

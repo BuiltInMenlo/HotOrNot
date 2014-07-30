@@ -239,7 +239,7 @@
 		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@", clubName, clubDeeplink];
 		
 		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", clubName]
-									message:[NSString stringWithFormat:@"http://joinselfie.club/%@\n\nPaste this URL anywhere to have your friends join!", clubDeeplink]
+									message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
