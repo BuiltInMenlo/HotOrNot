@@ -92,7 +92,7 @@
 			_userVO = [HONUserVO userWithDictionary:result];
 			_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) ? HONUserProfileTypeUser : HONUserProfileTypeOpponent;
 	
-			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : @"Activity"];
+			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : NSLocalizedString(@"header_activity", nil)]; //@"Activity"];
 			[self _makeProfile];
 			[self _retrieveActivityItems];
 			
@@ -399,7 +399,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:@"ACTIVITY"]);
+	return ([[HONTableHeaderView alloc] initWithTitle: NSLocalizedString(@"header_activity", nil)]); //@"ACTIVITY"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

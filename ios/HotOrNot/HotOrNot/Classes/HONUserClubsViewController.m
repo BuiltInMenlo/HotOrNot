@@ -95,7 +95,7 @@
 	
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
-	[dict setValue:@"Create a club" forKey:@"name"];
+	[dict setValue: NSLocalizedString(@"create_club", nil) forKey:@"name"]; //@"Create a club" forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
@@ -163,7 +163,7 @@
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-//	[[HONClubAssistant sharedInstance] wipeUserClubs];
+	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	[self _retrieveClubs];
 }
 
@@ -190,7 +190,7 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Clubs"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"header_clubs", nil)]; //@"Clubs"];
 	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
@@ -260,7 +260,15 @@
 //		_isCreateClubViewControllerPresented = NO;
 //
 	
-
+	NSLog(@"_appearedType:[%d]", _appearedType);
+	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
+	
 //	_didCloseCreateClubOrSelfieCamera = NO;
 }
 
@@ -302,8 +310,17 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
 		return;
-	
-	NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
+	if(gestureRecognizer.state != UIGestureRecognizerStatePossible){
+        return;
+    }
+    NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
+    HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+    if(gestureRecognizer.state == UIGestureRecognizerStatePossible){
+        [cell tintCell:NO];
+    }
+    if(gestureRecognizer.state == UIGestureRecognizerStateBegan){
+        [cell removeTint];
+    }
 	if (indexPath != nil) {
 		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
 		_selectedClubVO = cell.clubVO;
@@ -438,8 +455,8 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]
 																				forIndexPath:indexPath];
-	[cell resetSubviews];
 	
+	[cell resetSubviews];
 //	HONUserClubVO *vo;
 //	if (indexPath.section == 0) {
 //		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
@@ -470,18 +487,19 @@
 	NSLog(@"vo.clubEnrollmentType:[%d]", vo.clubEnrollmentType);
 	_selectedClubVO = vo;
 	
-//	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-//	[cell resetSubviews];
+	HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+	//[cell resetSubviews];
+    [cell tintCell:YES];
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner || vo.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
 		
 		if ([vo.submissions count] == 0) {
-			UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"This club does not have any status updates yet!"
-																 message:@"Would you like to create one?"
+			UIAlertView * alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_status", nil) //@"This club does not have any status updates yet!"
+																 message: NSLocalizedString(@"alert_create", nil) //@"Would you like to create one?"
 																delegate:self
-													   cancelButtonTitle:@"No"
-													   otherButtonTitles:@"Yes", nil];
+													   cancelButtonTitle: NSLocalizedString(@"alert_no", nil) //@"No"
+													   otherButtonTitles: NSLocalizedString(@"alert_yes", nil), nil]; // @"Yes", nil];
 			[alertView setTag:HONUserClubsAlertTypeSubmitPhoto];
 			[alertView show];
 			
@@ -500,7 +518,7 @@
 		
 	} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+															message:[NSString stringWithFormat: NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]//@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:@"Cancel", nil];
@@ -509,7 +527,7 @@
 				
 	} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+															message:[NSString stringWithFormat: NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:@"Cancel", nil];
@@ -518,6 +536,10 @@
 	}
 }
 
+//- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+//	HONClubCollectionViewCell *viewCell = (HONClubCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+//	[viewCell resetSubviews];
+//}
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -532,7 +554,7 @@
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-										message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
+										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -550,7 +572,7 @@
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-										message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
+										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -566,7 +588,7 @@
 				pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 				
 				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-											message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
+											message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];
@@ -593,13 +615,13 @@
 				[[HONClubAssistant sharedInstance] addClub:result forKey:@"owned"];
 				[self _retrieveClubs];
 				
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
-//																   delegate:self
-//														  cancelButtonTitle:@"Yes"
-//														  otherButtonTitles:@"Not Now", nil];
-//				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
-//				[alertView show];
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																   delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"Not Now", nil];
+				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
+				[alertView show];
 			}];
 		}
 		
@@ -607,13 +629,13 @@
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClubVO];
 			
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-//																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
-//															   delegate:self
-//													  cancelButtonTitle:@"Yes"
-//													  otherButtonTitles:@"Not Now", nil];
-//			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
-//			[alertView show];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+															   delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"Not Now", nil];
+			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
+			[alertView show];
 		}
 	
 	} else if (alertView.tag == HONUserClubsAlertTypeLeave) {

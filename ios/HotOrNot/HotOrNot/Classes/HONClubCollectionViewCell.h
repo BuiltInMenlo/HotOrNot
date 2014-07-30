@@ -16,6 +16,8 @@
 @interface HONClubCollectionViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)resetSubviews;
+-(void) tintCell:(BOOL)reset;
+-(void) removeTint;
 
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, assign) id <HONClubCollectionViewCellDelegate> delegate;

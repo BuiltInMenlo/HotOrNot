@@ -294,7 +294,7 @@
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = textFont;
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.placeholder = NSLocalizedString(@"Enter username", nil); //@"Enter username";
+	_usernameTextField.placeholder = NSLocalizedString(@"enter_username", nil); //@"Enter username";
 	_usernameTextField.text = @"";
 	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
@@ -349,7 +349,7 @@
 	[_phoneTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_phoneTextField.font = textFont;
 	_phoneTextField.keyboardType = UIKeyboardTypePhonePad;
-	_phoneTextField.placeholder = NSLocalizedString(@"Enter phone", nil); //@"Enter phone";
+	_phoneTextField.placeholder = NSLocalizedString(@"enter_phone", nil); //@"Enter phone";
 	_phoneTextField.text = @"";
 	[_phoneTextField setTag:1];
 	_phoneTextField.delegate = self;

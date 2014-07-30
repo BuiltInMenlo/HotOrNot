@@ -73,3 +73,27 @@
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
+
+"enter_username" = "Enter username";
+"enter_phone" = "Enter phone";
+"Register" = "Register";
+//"firstrun_next" = "Avançar";
+//"Search for friends" = "Procurar amigos";
+"header_friends" = "Friends";
+//"alert_member" = "PT >> You are already a member of %@!"
+"header_news" = "News";
+"header_clubs" = "Clubs";
+"alert_join" = "Would you like to join the %@ Selfieclub?";
+"header_addclub" = "Add Club";
+"create_club" = "Create a club";
+"invite_club" = "Invite to Club";
+"select_allclubs" = "Select all clubs";
+"header_activity" = "Activity";
+"alert_status" = "This club does not have any status updates yet!";
+"alert_create" = "Would you like to create one?";
+"select_feeling" = "Select Feeling";
+"grant_access" = "Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.";
+"select_club" = "Select Club";
+"club_name" = "Club Name";
+
+

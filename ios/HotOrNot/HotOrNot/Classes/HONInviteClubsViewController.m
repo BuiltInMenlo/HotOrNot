@@ -70,7 +70,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	[_headerView setTitle:@"Invite to Club"];
+	[_headerView setTitle:NSLocalizedString(@"invite_club", nil)];//@"Invite to Club"];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(228.0, 1.0, 93.0, 44.0);
