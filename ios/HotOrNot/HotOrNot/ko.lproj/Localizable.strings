@@ -104,3 +104,5 @@
 "network_status" = "네트워크 상태";
 "settings_logout" = "로그아웃";
 "header_settings" = "설정";
+"alert_noemotions_title" = "No Emotions selected!";
+"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";

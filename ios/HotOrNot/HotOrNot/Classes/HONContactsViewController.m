@@ -50,9 +50,11 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveUserClubs {
+	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 	}];
+	
 }
 
 - (void)_sendEmailContacts {
@@ -115,6 +117,7 @@
 }
 
 - (void)_submitPhoneNumberForMatching {
+	[_searchBarView backgroundingReset];
 	_tableViewDataSource = HONContactsTableViewDataSourceMatchedUsers;
 	
 	if (_progressHUD == nil)
@@ -381,9 +384,9 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasBackground:YES];
 	[self.view addSubview:_headerView];
 	
-	HONSearchBarView *searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
-	searchBarView.delegate = self;
-	[self.view addSubview:searchBarView];
+	_searchBarView = [[HONSearchBarView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, kSearchHeaderHeight)];
+	_searchBarView.delegate = self;
+	[self.view addSubview:_searchBarView];
 }
 
 - (void)viewDidLoad {

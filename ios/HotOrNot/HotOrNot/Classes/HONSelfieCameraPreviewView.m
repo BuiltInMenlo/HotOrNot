@@ -126,10 +126,10 @@
 			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle:@"No Emotions Selected!"
-									message:@"You need to coose some emotions to make a status update."
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_noemotions_title", nil) //@"No Emotions Selected!"
+									message: NSLocalizedString(@"alert_noemotions_msg", nil) //@"You need to choose some emotions to make a status update."
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:  NSLocalizedString(@"alert_ok", nil) //@"OK"
 						  otherButtonTitles:nil] show];
 	}
 				
