@@ -1,7 +1,99 @@
-/* 
-  Localizable.strings
-  HotOrNot
+/*
+ Localizable.strings
+ HotOrNot
+ 
+ Created by Matthew Holcombe on 04.13.13.
+ Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+ */
 
-  Created by Matt Holcombe on 07/30/2014.
-  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
-*/
+
+//"hud_connectionError" = "No connection found!";
+"hud_loadError" = "データの読み込みに問題があります";
+"hud_dlFailed" = "ダウンロードに失敗しました!";
+"hud_submitFailed" = "送信に失敗しました";
+"hud_refresh" = "リフレッシュ中...";
+"hud_loading" = "ロード中...";
+"hud_submitComment" = "コメントを提出中...";
+"hud_uploadFail" = "エラーをアップロード";
+"hud_usernameNotFound" = "ユーザーネームが見つかりません!";
+"hud_checkUsername" = "ユーザーネームを調べています_";
+"hud_updateFail" = "アップデートに失敗しました。";
+"hud_usernameTaken" = "ユーザーネームは既に使われています。";
+"hud_submit" = "提出中...";
+"hud_noResults" = "結果がありません!";
+"hud_searchUsers" = "ユーザーを検索中...";
+"hud_searchHashtags" = "ハッシュタグを検索中...";
+"hud_sent" = "  送信しました。  ";
+
+"header_restricted" = "制限されたアクセス";
+
+//"search_placeHolder" = "Search for people or tags";
+//"search_snap" = "1 snap";
+//"search_snaps" = "%d snaps";
+
+"restricted_caption" = "";
+"restricted_inviteCode" = "招待コードを入力";
+
+//"register_username" = "Please enter a username";
+//"register_caption1" = "";
+//"register_caption2" = "";
+
+//"timeline_snapAt" = "snap @%@";
+//"timeline_like" = "%d Like";
+//"timeline_likes" = "%d Likes";
+//"timeline_0comments" = "Comment";
+//"timeline_1comment" = "%d Comment";
+//"timeline_comments" = "%d Comments";
+//"timeline_99comments" = "99+ Comments";
+
+"voters_caption" = "@% これにイイねしました。";
+
+//"activity_waiting" = "You are waiting…";
+//"activity_waiting_f" = "You are waiting… (F)";
+
+//"settings_myPhotos" = "My Photos";
+//"settings_inviteSMS" = "Invite Friends via SMS";
+//"settings_inviteEmail" = "Invite Friends via Email";
+//"settings_changeUsername" = "Change Username";
+//"settings_support" = "Support";
+//"settings_privacy" = "Privacy Policy";
+
+"alert_yes" = "はい";
+"alert_no" = "いいえ";
+"alert_ok" = "OK";
+"alert_cancel" = "キャンセル";
+"alert_connectionError_t" = "接続エラー";
+"alert_connectionError_m" = "初期化サーバーに接続できませんでした。再試行してください。";
+"alert_instagramError_t" = "利用不可";
+"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
+"alert_networkError_t" = "No Network Connection";
+"alert_networkError_m" = "This app requires a network connection to work.";
+"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_later" = "Ask Me Later";
+"alert_rateApp_store" = "Visit App Store";
+"alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
+"alert_noSelfie_m" = "You need a profile photo to proceed.";
+
+"enter_username" = "ユーザー名を入力する";
+"enter_phone" = "電話番号を入力する";
+"Register" = "登録する";
+//"firstrun_next" = "Avançar";
+//"Search for friends" = "Procurar amigos";
+"header_friends" = "友達";
+//"alert_member" = "PT >> You are already a member of %@!"
+"header_news" = "ニュース";
+"header_clubs" = "クラブ";
+"alert_join" = "%@ セルフィークラブに参加しますか?";
+"header_addclub" = "クラブを追加する";
+"create_club" = "クラブを作る";
+"invite_club" = "クラブに招待する";
+"select_allclubs" = "全てのクラブを選択する";
+"header_activity" = "アクティビティ";
+"alert_status" = "このクラブはステータス更新がまだされていません!";
+"alert_create" = "作成しますか?";
+"select_feeling" = "気持ちを選択する";
+"grant_access" = "アクセスを付与するには、設定 -> プライバシー -> 連絡先 -> セルフィークラブでスイッチをフリップします。";
+"select_club" = "クラブを選択する";
+"club_name" = "クラブ名";
+
+

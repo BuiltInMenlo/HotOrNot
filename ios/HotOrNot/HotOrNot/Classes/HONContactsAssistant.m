@@ -60,6 +60,12 @@ static HONContactsAssistant *sharedInstance = nil;
 		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : fName;
 		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
 		
+		// swap first and last names for sorting
+		if ([lName length] == 0 && [fName length] > 0) {
+			lName = fName;
+			fName = @"";
+		}
+		
 		if ([fName length] == 0 && [lName length] == 0)
 			continue;
 		
