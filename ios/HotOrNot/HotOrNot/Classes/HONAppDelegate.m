@@ -713,9 +713,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
 	
 	
-	
-	
-	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
@@ -1870,6 +1867,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
 		NSLog(@"Font Names = %@", names);
+	}
+}
+
+- (void)_writeRandomContacts:(int)amt {
+	for (int i=0; i<amt; i++) {
+		[[HONContactsAssistant sharedInstance] writeTrivialUserToDeviceContacts:nil];
 	}
 }
 

@@ -43,9 +43,13 @@ static HONContactsAssistant *sharedInstance = nil;
 	NSMutableArray *contactVOs = [NSMutableArray array];
 	NSMutableArray *contactDicts = [NSMutableArray array];
 	
-	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+	CFErrorRef error = NULL;
+	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
+	if (error)
+		return (@[]);
+	
 	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
+	CFIndex nPeople = MIN(600, ABAddressBookGetPersonCount(addressBook));
 	
 	for (int i=0; i<nPeople; i++) {
 		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
@@ -78,7 +82,7 @@ static HONContactsAssistant *sharedInstance = nil;
 		CFRelease(emailProperties);
 		
 		
-		if ([phoneNumber length] > 0 || [email length] > 0) {
+		if ((fName != nil && lName != nil && phoneNumber != nil && email != nil && imageData != nil) && ([phoneNumber length] > 0 || [email length] > 0)) {
 			[contactDicts addObject:@{@"f_name"	: fName,
 									  @"l_name"	: lName,
 									  @"phone"	: phoneNumber,
@@ -236,6 +240,126 @@ static HONContactsAssistant *sharedInstance = nil;
 	}
 	
 	return (isFound);
+}
+
+- (void)writeTrivialUserToDeviceContacts:(HONTrivialUserVO *)trivialUserVO {
+	CFErrorRef error = NULL;
+	
+	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
+	
+	if (error)
+		NSLog(@"ERROR(ABAddressBookRef): - [%@]", error);
+	
+	ABRecordRef person = ABPersonCreate();
+	
+	
+	int len = arc4random_uniform(7) + 4;
+	NSMutableString *fName = [NSMutableString stringWithCapacity:len];
+    for (int i=0; i<len; i++)
+        [fName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+	
+	
+	len = arc4random_uniform(13) + 5;
+	NSMutableString *lName = [NSMutableString stringWithCapacity:len];
+    for (int i=0; i<len; i++)
+        [lName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+	
+	
+    ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)(fName), &error);
+	if (error)
+		NSLog(@"ERROR(kABPersonFirstNameProperty): - [%@]", error);
+	
+	
+	ABRecordSetValue(person, kABPersonLastNameProperty, (__bridge CFTypeRef)(lName), &error);
+	if (error)
+		NSLog(@"ERROR(kABPersonLastNameProperty): - [%@]", error);
+	
+	
+	NSString *phoneNumber = @"";
+	NSString *email = @"";
+	
+	if (arc4random_uniform(100) < 50) {
+		for (int i=0; i<3; i++)
+			phoneNumber = [phoneNumber stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
+		
+		for (int i=0; i<3; i++)
+			phoneNumber = [phoneNumber stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
+		
+		for (int i=0; i<4; i++)
+			phoneNumber = [phoneNumber stringByAppendingString:[@"" stringFromInt:(arc4random() % 9)]];
+		
+	} else {
+		len = arc4random_uniform(10) + 5;
+		for (int i=0; i<len; i++)
+			email = [email stringByAppendingFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+		
+		email = [email stringByAppendingString:@"@"];
+		
+		len = arc4random_uniform(10) + 5;
+		for (int i=0; i<len; i++)
+			email = [email stringByAppendingFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+		
+		email = [email stringByAppendingString:@".com"];
+	}
+	
+	if ([phoneNumber length] > 0) {
+		ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+		
+		int phoneType = arc4random_uniform(4);
+		CFStringRef phoneLabel;
+		
+		if (phoneType == 0)
+			phoneLabel = kABPersonPhoneMobileLabel;
+		
+		else if (phoneType == 1)
+			phoneLabel = kABPersonPhoneIPhoneLabel;
+		
+		else if (phoneType == 2)
+			phoneLabel = kABPersonPhoneHomeFAXLabel;
+		
+		else
+			phoneLabel = kABPersonPhoneMainLabel;
+		
+		
+		ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)(phoneNumber), phoneLabel, NULL);
+		ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+		if (error)
+			NSLog(@"ERROR(kABPersonPhoneProperty):[%@]", error);
+		
+		CFRelease(multiPhone);
+	}
+	
+	if ([email length] > 0) {
+		int emailType = arc4random_uniform(3);
+		CFStringRef emailLabel;
+		
+		if (emailType == 0)
+			emailLabel = kABWorkLabel;
+		
+		else if (emailType == 1)
+			emailLabel = kABHomeLabel;
+		
+		else
+			emailLabel = kABOtherLabel;
+		
+		ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+		ABMultiValueAddValueAndLabel(multiEmail, (__bridge CFTypeRef)(email), emailLabel, NULL);
+		ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
+		if (error)
+			NSLog(@"ERROR(kABPersonEmailProperty):[%@]", error);
+		
+		CFRelease(multiEmail);
+	}
+	
+	NSLog(@"ADDING:[%@ %@] (%@) {%@}", fName, lName, phoneNumber, email);
+	ABAddressBookAddRecord(addressBook, person, &error);
+	CFRelease(person);
+	
+	ABAddressBookSave(addressBook, nil);
+	CFRelease(addressBook);
+	
+	if (error)
+		NSLog(@"ERROR(ABAddressBookAddRecord):[%@]", error);
 }
 
 @end

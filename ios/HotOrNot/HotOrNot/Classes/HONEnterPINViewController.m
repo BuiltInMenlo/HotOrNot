@@ -112,7 +112,7 @@
 	cheatButton.frame = CGRectMake(152.0, 250.0, 16.0, 16.0);
 	[cheatButton addTarget:self action:@selector(_goCheat) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:cheatButton];
-	cheatButton.backgroundColor=[UIColor orangeColor];
+	cheatButton.backgroundColor = [UIColor orangeColor];
 #endif
 	[_pinTextField becomeFirstResponder];
 }
