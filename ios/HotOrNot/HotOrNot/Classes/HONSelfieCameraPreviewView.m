@@ -127,7 +127,7 @@
 	
 	} else {
 		[[[UIAlertView alloc] initWithTitle:@"No Emotions Selected!"
-									message:@"You need to coose some emotions to make a status update."
+									message:@"You need to choose some emotions to make a status update."
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
