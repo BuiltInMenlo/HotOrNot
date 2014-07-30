@@ -308,8 +308,8 @@
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(222.0, 0.0, 93.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButtonBlue_Active"] forState:UIControlStateHighlighted];
 	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: @"Friends"]; //NSLocalizedString(@"header_friends", nil)];  @"Friends"];

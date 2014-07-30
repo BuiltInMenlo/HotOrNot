@@ -45,7 +45,7 @@
 	
 	[[HONImageBroker sharedInstance] maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
-	_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 9.0, 34.0, 34.0)];
+	_iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 55.0, 80, 30.0)];
 	[self.contentView addSubview:_iconImageView];
 	
 	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 128.0, 120.0, 20.0)];
@@ -94,10 +94,10 @@
 	
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
-		_iconImageView.image = [UIImage imageNamed:@"inviteClubIcon"];
+		_iconImageView.image = [UIImage imageNamed:@"newInviteOverlay"];
 	
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
-		_iconImageView.image = [UIImage imageNamed:@"suggestedClubIcon"];
+		_iconImageView.image = [UIImage imageNamed:@"suggestionOverlay"];
 	}
 }
 
