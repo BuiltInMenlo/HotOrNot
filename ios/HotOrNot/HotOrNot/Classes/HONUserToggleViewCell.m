@@ -47,7 +47,18 @@
 		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 		[self.contentView addSubview:_avatarImageView];
 		
-		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+//		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+		CALayer *maskLayer = [CALayer layer];
+		maskLayer.contents = (id)[[UIImage imageNamed:@"contactMask"] CGImage];
+		maskLayer.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
+		
+		_avatarImageView.layer.mask = maskLayer;
+		_avatarImageView.layer.masksToBounds = YES;
+//		UIImageView *cheapMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"maskOverlay"]];
+//		cheapMaskImageView.frame = CGRectOffset(cheapMaskImageView.frame, -3.0, 0.0);
+//		[self.contentView addSubview:cheapMaskImageView];
+////		cheapMaskImageView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+
 		
 		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_avatarButton.frame = _avatarImageView.frame;
@@ -186,8 +197,8 @@
 	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])
 		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 	
-	else
-		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
+//	else
+//		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
 	
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];

@@ -338,7 +338,7 @@
 		} completion:nil];
 	};
 	
-	if ([_userVO.avatarPrefix rangeOfString:@"avatarPlaceholder"].location != NSNotFound) {
+	if ([_userVO.avatarPrefix rangeOfString:@"defaultAvatar"].location == NSNotFound) {
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																 cachePolicy:kURLRequestCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]

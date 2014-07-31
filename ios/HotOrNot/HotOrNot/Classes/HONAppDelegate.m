@@ -759,7 +759,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	
-//	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:5.0];
+//	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
 	
 	
 	return (YES);
@@ -1886,7 +1886,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 	NSLog(@"CandyBox:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents]);
 	
-	[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
+	//[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
 }
 
 - (void)_picoCandyTest2 {

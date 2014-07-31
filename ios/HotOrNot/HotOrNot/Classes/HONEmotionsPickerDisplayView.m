@@ -16,7 +16,7 @@
 #define COLS_PER_ROW 6
 #define SPACING
 
-NSString * const kBaseCaption = @"- is feeling…";
+//NSString * const kBaseCaption = @"- is feeling…";
 const CGSize kImageSize = {128.0f, 128.0f};
 const CGSize kImagePaddingSize = {0.0f, 0.0f};
 
@@ -54,7 +54,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		_label.backgroundColor = [UIColor whiteColor];
 		_label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_label.textColor = [UIColor blackColor];
-		_label.text = kBaseCaption;
+		_label.text = NSLocalizedString(@"is_feeling", nil); //kBaseCaption;
 		[self addSubview:_label];
 		
 		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 3.0, 22.0, 3.0, 144.0)];

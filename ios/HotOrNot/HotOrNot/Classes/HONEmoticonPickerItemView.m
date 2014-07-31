@@ -40,8 +40,9 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
+		NSLog(@"EMOTION STICKER:[%@]", emotionVO.picoSticker);
 		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
-
+		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		selectButton.frame = _imageView.frame;
 		[selectButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];

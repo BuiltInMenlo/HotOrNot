@@ -118,4 +118,8 @@
 "in_news" = "%@ - 안 %@";
 "real_profile" = "프로필 사진은 셀카 클럽 커뮤니티가 여러분의 진짜 얼굴을 알 수 있도록 도와줍니다";
 "take_photo" = "사진 촬영";
+"is_feeling" = "- 기분이...";
+"enter_pin" = "PIN 번호 입력";
+"invalid_pin" = "잘못된 PIN 번호입니다!";
+"invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";
 
