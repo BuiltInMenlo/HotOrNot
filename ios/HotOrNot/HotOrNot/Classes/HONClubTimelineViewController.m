@@ -257,7 +257,10 @@
 
 #pragma mark - UI Presentation
 - (void)_advanceTimelineFromCell:(HONClubPhotoViewCell *)cell byAmount:(int)amount {
-	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:MIN(amount, ([_tableView numberOfSections] - [_tableView indexPathForCell:cell].section))] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+	int rows = MIN(amount, (([_tableView numberOfSections] - 1) - [_tableView indexPathForCell:cell].section));
+	
+	NSIndexPath *indexPath = [_tableView indexPathForCell:(UITableViewCell *)cell];
+	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:indexPath.section + rows] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 //	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MIN(amount, ([_tableView numberOfRowsInSection:0] - [_tableView indexPathForCell:cell].row)) inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
 }
 
