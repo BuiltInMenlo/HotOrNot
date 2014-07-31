@@ -78,13 +78,18 @@
 			}];
 		};
 		
-		[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
-																 cachePolicy:kURLRequestCachePolicy
-															 timeoutInterval:[HONAppDelegate timeoutInterval]]
-							   placeholderImage:nil
-										success:imageSuccessBlock
-										failure:imageFailureBlock];
-	
+		if ([_clubVO.coverImagePrefix length] == 0)
+			_coverImageView.image = [UIImage imageNamed:@"defaultClubCover"];
+		
+		else {
+			[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
+																	 cachePolicy:kURLRequestCachePolicy
+																 timeoutInterval:[HONAppDelegate timeoutInterval]]
+								   placeholderImage:nil
+											success:imageSuccessBlock
+											failure:imageFailureBlock];
+		}
+		
 	} else {
 		[UIView animateWithDuration:0.0 animations:^(void) {
 			_coverImageView.alpha = 1.0;
