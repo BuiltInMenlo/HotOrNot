@@ -86,7 +86,7 @@
 	
 	
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
-		_iconImageView.image = [UIImage imageNamed:@"newInviteOverlay"];
+		_iconImageView.image = [UIImage imageNamed:@"inviteOverlay"];
 	
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
 		_iconImageView.image = [UIImage imageNamed:@"suggestionOverlay"];
