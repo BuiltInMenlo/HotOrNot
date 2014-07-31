@@ -95,5 +95,17 @@
 "grant_access" = "Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access.";
 "select_club" = "Select Club";
 "club_name" = "Club Name";
-
+"settings_notification" = "Notification";
+"copy_url" = "Copy my club URL";
+"terms_service" = "Terms of service";
+"privacy_policy" = "Privacy policy";
+"settings_support" = "Support";
+"rate_app" = "Rate this app";
+"network_status" = "Network status";
+"settings_logout" = "Logout";
+"header_settings" = "Settings";
+"alert_noemotions_title" = "No Emotions selected!";
+"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"popup_clubcopied_title" = "Your %@ Club has been copied to your device's clipboard!";
+"popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
 

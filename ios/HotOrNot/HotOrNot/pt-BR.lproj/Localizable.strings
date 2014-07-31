@@ -95,3 +95,16 @@
 "grant_access" = "Ative o botão em Ajustes -> Privacidade -> Contatos -> Selfieclub para permitir o acesso.";
 "select_club" = "Selecionar clube";
 "club_name" = "Nome do clube";
+"settings_notification" = "Notificação";
+"copy_url" = "Copiar link do meu clube";
+"terms_service" = "Termos de serviço";
+"privacy_policy" = "Política de privacidade";
+"settings_support" = "Suporte";
+"rate_app" = "Avalie este aplicativo";
+"network_status" = "Status da rede";
+"settings_logout" = "Sair";
+"header_settings" = "Ajustes";
+"alert_noemotions_title" = "No Emotions selected!";
+"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"popup_clubcopied_title" = "O seu clube %@ foi copiado!";
+"popup_clubcopied_msg" = "Cole o link em qualquer lugar para compartilhar!";

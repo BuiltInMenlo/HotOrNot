@@ -95,3 +95,16 @@
 "grant_access" = "접근을 허용하려면, 설정 > 개인 정보 보호 > 연락처 > Selfieclub의 스위치를 켜 주세요.";
 "select_club" = "클럽 선택하기";
 "club_name" = "클럽 이름";
+"settings_notification" = "알림";
+"copy_url" = "내 클럽 URL을 복사";
+"terms_service" = "서비스 약관";
+"privacy_policy" = "개인정보 보호정책";
+"settings_support" = "지원 요청";
+"rate_app" = "이 앱을 평가하기";
+"network_status" = "네트워크 상태";
+"settings_logout" = "로그아웃";
+"header_settings" = "설정";
+"alert_noemotions_title" = "No Emotions selected!";
+"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"popup_clubcopied_title" = "당신의 %@ 클럽이 복사되었습니다!";
+"popup_clubcopied_msg" = "다른 사람과 공유하려면, URL을 붙여넣기 하세요!";

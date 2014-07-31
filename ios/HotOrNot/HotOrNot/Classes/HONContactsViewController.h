@@ -17,6 +17,7 @@
 #import "HONContactUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
+#import "HONSearchBarView.h"
 
 typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceEmpty			= 0 << 0,
@@ -41,6 +42,7 @@ typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONTableView *_tableView;
 	UIRefreshControl *_refreshControl;
 	HONHeaderView *_headerView;
+	HONSearchBarView *_searchBarView;
 }
 
 - (void)_promptForAddressBookAccess;

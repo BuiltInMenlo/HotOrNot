@@ -95,5 +95,16 @@
 "grant_access" = "アクセスを付与するには、設定 -> プライバシー -> 連絡先 -> セルフィークラブでスイッチをフリップします。";
 "select_club" = "クラブを選択する";
 "club_name" = "クラブ名";
-
-
+"settings_notification" = "通知";
+"copy_url" = "自分のクラブURLをコピーする";
+"terms_service" = "サービス規約";
+"privacy_policy" = "プライバシーポリシー";
+"settings_support" = "サポート";
+"rate_app" = "このアプリを評価する";
+"network_status" = "ネットワークステータス";
+"settings_logout" = "ログアウトする";
+"header_settings" = "設定";
+"alert_noemotions_title" = "No Emotions selected!";
+"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"popup_clubcopied_title" = "%@ クラブがコピーされました!";
+"popup_clubcopied_msg" = "URLをどこかにペーストしてシェアしましょう!";
