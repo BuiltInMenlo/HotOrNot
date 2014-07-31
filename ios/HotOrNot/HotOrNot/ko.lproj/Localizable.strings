@@ -110,4 +110,6 @@
 "popup_clubcopied_msg" = "다른 사람과 공유하려면, URL을 붙여넣기 하세요!";
 "email_error" = "이메일 오류";
 "email_errormsg" = "이 기기에서 메일을 전송할 수 없습니다!";
+"are_you_sure" = "확실합니까";
+//"ago_emotions" = "전에 %@ 이모티콘과 함께";
 

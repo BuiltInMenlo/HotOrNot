@@ -110,3 +110,6 @@
 "popup_clubcopied_msg" = "URLをどこかにペーストしてシェアしましょう!";
 "email_error" = "メールエラー";
 "email_errormsg" = "このデバイスからメールは送れません!";
+"are_you_sure" = "よろしいですか";
+//"ago_emotions" = "前に、気持ちが%@つ";
+

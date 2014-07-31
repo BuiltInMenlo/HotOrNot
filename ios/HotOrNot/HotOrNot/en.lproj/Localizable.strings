@@ -110,5 +110,6 @@
 "popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
 "email_error" = "Email Error";
 "email_errormsg" = "Cannot send email from this device!";
-
+"are_you_sure" = "Are you sure?";
+//"ago_emotions" = "ago with %@ emotion%@";
 

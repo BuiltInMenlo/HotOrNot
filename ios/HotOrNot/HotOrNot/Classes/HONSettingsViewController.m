@@ -253,11 +253,11 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 															message:@""
 														   delegate:self
 												  cancelButtonTitle: NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
-												  otherButtonTitles:@"Log out", nil];
+												  otherButtonTitles: NSLocalizedString(@"settings_logout", nil), nil]; //@"Log out", nil];
 		
 		[alertView setTag:HONSettingsAlertTypeLogout];
 		[alertView show];

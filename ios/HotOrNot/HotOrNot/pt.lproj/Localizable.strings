@@ -110,6 +110,5 @@
 "popup_clubcopied_msg" = "Cole o link em qualquer lugar para compartilhar!";
 "email_error" = "Erro de E-mail";
 "email_errormsg" = "Não é possível enviar e-mail a partir deste dispositivo!";
-
-
-
+"are_you_sure" = "você tem certeza";
+//"ago_emotions" = "atrás, com %@ emoção";
