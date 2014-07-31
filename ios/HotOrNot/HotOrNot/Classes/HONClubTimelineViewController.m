@@ -227,10 +227,12 @@
 #pragma mark - Navigation
 -(void) _goShare{
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
+	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", _clubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _clubVO.clubName];
 	
-	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-								message:[NSString stringWithFormat:@"\nPaste your URL anywhere to share!"]
+	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _clubVO.clubName]
+								message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
+//	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _clubVO.clubName]
+//								message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 							   delegate:nil
 					  cancelButtonTitle:@"OK"
 					  otherButtonTitles:nil] show];
