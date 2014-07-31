@@ -61,7 +61,7 @@
 "alert_yes" = "Sim";
 "alert_no" = "Não";
 "alert_ok" = "OK";
-"alert_cancel" = "Cancel";
+"alert_cancel" = "Cancelar";
 "alert_connectionError_t" = "Connection Error";
 "alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
 "alert_instagramError_t" = "Not Available";

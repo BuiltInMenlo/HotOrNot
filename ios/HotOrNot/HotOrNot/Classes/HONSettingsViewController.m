@@ -256,7 +256,7 @@
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 															message:@""
 														   delegate:self
-												  cancelButtonTitle:@"Cancel"
+												  cancelButtonTitle: NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
 												  otherButtonTitles:@"Log out", nil];
 		
 		[alertView setTag:HONSettingsAlertTypeLogout];
