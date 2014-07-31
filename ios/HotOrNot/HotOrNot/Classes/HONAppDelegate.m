@@ -550,6 +550,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[HONAppDelegate writeUserInfo:(NSDictionary *)result];
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
+			
+//			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
+			[[HONStickerAssistant sharedInstance] refreshPicoCandyUser];
 							
 #if __IGNORE_SUSPENDED__ == 1
 				if (self.tabBarController == nil)
@@ -916,6 +919,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
 		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		NSLog(@"PATH:[%@]", path);
+		
 		
 		if ([path count] == 2) {
 			NSString *username = [[path firstObject] lowercaseString];
