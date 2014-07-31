@@ -38,17 +38,4 @@ const CGSize kClubCollectionViewSize = {120.0, 150.0};
 	return (array);
 }
 
-//- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity {
-//	CGFloat offsetAdjustment = MAXFLOAT;
-//	CGFloat hCenter = proposedContentOffset.x + (CGRectGetWidth(self.collectionView.bounds) * 0.5);
-//	
-//	for (UICollectionViewLayoutAttributes *layoutAtrtributes in [super layoutAttributesForElementsInRect:CGRectMake(proposedContentOffset.x, 0.0, self.collectionView.bounds.size.width, self.collectionView.bounds.size.height)]) {
-//		CGFloat hItemCenter = layoutAtrtributes.center.x;
-//		if (ABS(hItemCenter - hCenter) < ABS(offsetAdjustment))
-//			offsetAdjustment = hItemCenter - hCenter;
-//	}
-//	
-//	return (CGPointMake(proposedContentOffset.x + offsetAdjustment, proposedContentOffset.y));
-//}
-
 @end

@@ -50,7 +50,6 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveUserClubs {
-	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 	}];
@@ -432,22 +431,21 @@
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
-//	_tableView.separatorInset = UIEdgeInsetsMake(20.0, 0.0, 0.0, 20.0);
 	_searchUsers = [NSMutableArray array];
 	[_tableView reloadData];
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-//	_tableView.separatorInset = UIEdgeInsetsZero;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	[_tableView reloadData];
 	
-	[[HONClubAssistant sharedInstance] wipeUserClubs];
-	
-	[self _retreiveUserClubs];
-	[self _submitPhoneNumberForMatching];
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[self _retrieveDeviceContacts];
+//	[[HONClubAssistant sharedInstance] wipeUserClubs];
+//	
+//	[self _retreiveUserClubs];
+//	[self _submitPhoneNumberForMatching];
+//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//		[self _retrieveDeviceContacts];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {

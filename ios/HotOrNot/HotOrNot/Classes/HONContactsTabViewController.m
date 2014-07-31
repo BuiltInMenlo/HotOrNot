@@ -172,6 +172,8 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friend Row Tap"];
 	[super userToggleViewCell:viewCell didSelectContactUser:contactUserVO];
 	
+	[viewCell toggleSelected:NO];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:contactUserVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -180,6 +182,8 @@
 - (void)userToggleViewCell:(HONUserToggleViewCell *)viewCell didSelectTrivialUser:(HONTrivialUserVO *)trivialUserVO {
 	NSLog(@"[[*:*]] userToggleViewCell:didSelectTrivialUser");
 	[super userToggleViewCell:viewCell didSelectTrivialUser:trivialUserVO];
+	
+	[viewCell toggleSelected:NO];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:trivialUserVO]];
 	[navigationController setNavigationBarHidden:YES];
@@ -196,15 +200,20 @@
 	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
+	
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
 		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+		[self presentViewController:navigationController animated:YES completion:^(void) {
+			[cell invertSelected];
+		}];
 	
 	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
 		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+		[self presentViewController:navigationController animated:YES completion:^(void) {
+			[cell invertSelected];
+		}];
 	}
 }
 

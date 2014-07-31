@@ -1963,9 +1963,9 @@
 			children = (
 				4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */,
 				4C62653115F96C7100AA7FCE /* HotOrNot-Info.plist */,
+				4C1E9D99198AD8D900021156 /* InfoPlist.strings */,
 				4C62653515F96C7100AA7FCE /* main.m */,
 				4C62653715F96C7100AA7FCE /* HotOrNot-Prefix.pch */,
-				4C1E9D99198AD8D900021156 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";

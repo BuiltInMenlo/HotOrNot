@@ -47,8 +47,6 @@
 @property (nonatomic, strong) HONClubCollectionViewCell *selectedCell;
 @property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
 @property (nonatomic) HONUserClubsViewControllerAppearedType appearedType;
-//@property (nonatomic) BOOL isCreateClubViewControllerPresented;
-//@property (nonatomic) BOOL didCloseCreateClubOrSelfieCamera;
 @end
 
 
@@ -61,8 +59,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closedSelfieCamera:) name:@"CLOSED_SELFIE_CAMERA" object:nil];
-//		_didCloseCreateClubOrSelfieCamera = NO;
 	}
 	
 	return (self);
@@ -193,7 +189,6 @@
 	[super loadView];
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	
-//	_isCreateClubViewControllerPresented = NO;
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
@@ -263,22 +258,14 @@
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
 	
-//	if (_isCreateClubViewControllerPresented && !_didCloseCreateClubOrSelfieCamera) {
-//		_isCreateClubViewControllerPresented = NO;
-//
-	
 	NSLog(@"_appearedType:[%d]", _appearedType);
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
 		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
-//		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _selectedClubVO.clubName]
-//								  message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
 	}
-	
-//	_didCloseCreateClubOrSelfieCamera = NO;
 }
 
 
@@ -319,9 +306,7 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
 		return;
-//	if(gestureRecognizer.state != UIGestureRecognizerStatePossible){
-//        return;
-//    }
+
     NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
     HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
     if(gestureRecognizer.state == UIGestureRecognizerStatePossible){
@@ -391,23 +376,12 @@
 		[_collectionView setContentOffset:CGPointZero animated:YES];
 }
 
-//- (void)_closedSelfieCamera:(NSNotification *)notification {
-//	_didCloseCreateClubOrSelfieCamera = YES;
-//}
 
-//#pragma mark - CreateClubViewController Delegates
+#pragma mark - CreateClubViewController Delegates
 - (void)createClubViewController:(HONCreateClubViewController *)viewController didCreateClub:(HONUserClubVO *)clubV0 {
 	_selectedClubVO = clubV0;
 	
 }
-//
-//
-//#pragma mark - SelfieCameraViewController Delegates
-//- (void)selfieCameraViewController:(HONSelfieCameraViewController *)viewController didDismissByCanceling:(BOOL)isCanceled {
-//	_didCloseCreateClubOrSelfieCamera = isCanceled;
-//	
-//	_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled;
-//}
 
 
 #pragma mark - ClubViewCell Delegates

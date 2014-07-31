@@ -759,7 +759,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #endif
 	
 	
-	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
+//	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:4.0];
 	
 	
 	return (YES);
