@@ -143,7 +143,7 @@ static HONAnalyticsParams *sharedInstance = nil;
 
 - (NSDictionary *)propertyForEmotion:(HONEmotionVO *)vo {
 	
-	return (@{@"emotion"	: [NSString stringWithFormat:@"%d - %@", vo.emotionID, vo.emotionName]});
+	return (@{@"emotion"	: [NSString stringWithFormat:@"%@ - %@", vo.emotionID, vo.emotionName]});
 }
 
 - (NSDictionary *)propertyForMessage:(HONMessageVO *)vo {

@@ -238,8 +238,8 @@
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@", clubName, clubDeeplink];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", clubName]
-									message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_title", nil), clubName] //@"Your %@ has been copied to your device's clipboard!", clubName]
+									message:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_msg", nil) ] //@"\nPaste this URL anywhere to have your friends join!"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -256,7 +256,7 @@
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 															message:@""
 														   delegate:self
-												  cancelButtonTitle:@"Cancel"
+												  cancelButtonTitle: NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
 												  otherButtonTitles:@"Log out", nil];
 		
 		[alertView setTag:HONSettingsAlertTypeLogout];

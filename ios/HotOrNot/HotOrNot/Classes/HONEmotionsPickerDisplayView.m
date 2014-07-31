@@ -128,17 +128,39 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	imageView.transform = transform;
 	[_emotionHolderView addSubview:imageView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
-	imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
-	imageLoadingView.alpha = 0.667;
-	[imageLoadingView startAnimating];
-	[_loaderHolderView addSubview:imageLoadingView];
-	
-	[self _updateDisplay];
-	
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		imageView.image = image;
+	if (emotionVO.image == nil) {
+		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
+		imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
+		imageLoadingView.alpha = 0.667;
+		[imageLoadingView startAnimating];
+		[_loaderHolderView addSubview:imageLoadingView];
 		
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			imageView.image = image;
+			
+			[UIView animateWithDuration:0.200 delay:0.125
+				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+			 
+							 animations:^(void) {
+								 imageView.alpha = 1.0;
+								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+							 } completion:^(BOOL finished) {
+								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
+								 [loadingView stopAnimating];
+								 [loadingView removeFromSuperview];
+							 }];
+		};
+		
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+														   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:imageSuccessBlock
+								  failure:nil];
+		
+	} else {
+		imageView.image = emotionVO.image;
 		[UIView animateWithDuration:0.200 delay:0.125
 			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
@@ -146,21 +168,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 						 animations:^(void) {
 							 imageView.alpha = 1.0;
 							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-						 } completion:^(BOOL finished) {
-							 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
-							 [loadingView stopAnimating];
-							 
-							 [loadingView removeFromSuperview];
-						 }];
-	};
+						 } completion:^(BOOL finished) {}];
+	}
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
-												   timeoutInterval:[HONAppDelegate timeoutInterval]]
-					 placeholderImage:nil
-							  success:imageSuccessBlock
-							  failure:nil];
-
+	[self _updateDisplay];
 }
 
 - (void)_removeImageEmotion {

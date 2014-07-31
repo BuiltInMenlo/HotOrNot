@@ -187,7 +187,7 @@
 	[holderView addSubview:imageLoadingView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
-	[imageView setTag:emotionVO.emotionID];
+	[imageView setTag:[emotionVO.emotionID intValue]];
 	imageView.alpha = 0.0;
 	[holderView addSubview:imageView];
 	

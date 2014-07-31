@@ -60,7 +60,7 @@
 - (void)_sendEmailContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedEmailContacts:[_emailRecipients substringToIndex:[_emailRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			NSLog(@"EMAIL CONTACT:[%@]", dict);
+			//NSLog(@"EMAIL CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
 			for (HONTrivialUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {
@@ -89,7 +89,7 @@
 - (void)_sendPhoneContacts {
 	[[HONAPICaller sharedInstance] submitDelimitedPhoneContacts:[_smsRecipients substringToIndex:[_smsRecipients length] - 1] completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			NSLog(@"PHONE CONTACT:[%@]", dict);
+			//NSLog(@"PHONE CONTACT:[%@]", dict);
 			BOOL isDuplicate = NO;
 			for (HONTrivialUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]] || vo.userID == [[dict objectForKey:@"id"] intValue]) {
@@ -135,7 +135,7 @@
 																  @"abuse_ct"		: @"0"}];
 	[_inAppUsers addObject:vo];
 	[[HONAPICaller sharedInstance] submitPhoneNumberForUserMatching:[[HONDeviceIntrinsics sharedInstance] phoneNumber] completion:^(NSArray *result) {
-		NSLog(@"(NSArray *result[%@]", (NSArray *)result);
+		//NSLog(@"(NSArray *result[%@]", (NSArray *)result);
 		if ([(NSArray *)result count] > 1) {
 			for (NSDictionary *dict in [NSArray arrayWithArray:[result sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]) {
 				BOOL isDuplicate = NO;
@@ -173,7 +173,7 @@
 	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
 		for (NSDictionary *dict in result) {
-			NSLog(@"SEARCH USER:[%@]", dict);
+			//NSLog(@"SEARCH USER:[%@]", dict);
 			BOOL isDuplicate = NO;
 			for (HONTrivialUserVO *vo in _inAppUsers) {
 				if ([vo.username isEqualToString:[dict objectForKey:@"username"]]) {

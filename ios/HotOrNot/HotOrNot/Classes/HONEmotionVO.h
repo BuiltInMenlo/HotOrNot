@@ -11,11 +11,12 @@
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 
-@property (nonatomic) int emotionID;
+@property (nonatomic, retain) NSString *emotionID;
 @property (nonatomic, retain) NSString *emotionName;
 @property (nonatomic, retain) NSString *largeImageURL;
 @property (nonatomic, retain) NSString *mediumImageURL;
 @property (nonatomic, retain) NSString *smallImageURL;
+@property (nonatomic, retain) UIImage *image;
 @property (nonatomic) CGFloat price;
 @property (nonatomic) BOOL isFree;
 @end
