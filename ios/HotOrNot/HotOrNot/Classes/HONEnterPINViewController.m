@@ -155,8 +155,8 @@
 		_pinTextField.text = @"";
 		[_pinTextField becomeFirstResponder];
 		
-		[[[UIAlertView alloc] initWithTitle:@"Invalid Pin!"
-									message:@"Pin numbers need to be 4 numbers"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_pin", nil) //@"Invalid Pin!"
+									message: NSLocalizedString(@"invalid_pin_msg", nil) //@"Pin numbers need to be 4 numbers"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -184,7 +184,7 @@
 				_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				_pinCheckImageView.alpha = 1.0;
 				
-				[[[UIAlertView alloc] initWithTitle:@"Invalid Pin!"
+				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_pin", nil)  //@"Invalid Pin!"
 											message:@"Please try again or press the resend button"
 										   delegate:nil
 								  cancelButtonTitle:@"OK"

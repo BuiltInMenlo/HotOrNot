@@ -120,4 +120,6 @@
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
 "enter_pin" = "Enter Pin";
+"invalid_pin" = "Invalid Pin!";
+"invalid_pin_msg" = "Pin numbers need to be 4 numbers";
 

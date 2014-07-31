@@ -120,4 +120,6 @@
 "take_photo" = "사진 촬영";
 "is_feeling" = "- 기분이...";
 "enter_pin" = "PIN 번호 입력";
+"invalid_pin" = "잘못된 PIN 번호입니다!";
+"invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";
 

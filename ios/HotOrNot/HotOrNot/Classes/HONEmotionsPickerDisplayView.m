@@ -16,7 +16,7 @@
 #define COLS_PER_ROW 6
 #define SPACING
 
-//NSString * const kBaseCaption = @"- is feeling…"; 
+//NSString * const kBaseCaption = @"- is feeling…";
 const CGSize kImageSize = {128.0f, 128.0f};
 const CGSize kImagePaddingSize = {0.0f, 0.0f};
 

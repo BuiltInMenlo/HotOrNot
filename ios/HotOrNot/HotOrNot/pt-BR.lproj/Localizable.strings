@@ -120,6 +120,6 @@
 "take_photo" = "Tirar Foto";
 "is_feeling" = "- está se sentindo…";
 "enter_pin" = "Digite o PIN";
-
-
+"invalid_pin" = "PIN inválido!";
+"invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
 
