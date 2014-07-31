@@ -392,8 +392,8 @@
 		_clubNameCheckImageView.alpha = 1.0;
 		_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
-									message:@"You need to enter a name for your club!"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_club", nil) //@"No Club Name!"
+									message: NSLocalizedString(@"no_club_msg", nil)  //@"You need to enter a name for your club!"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

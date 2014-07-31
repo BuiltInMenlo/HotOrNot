@@ -113,3 +113,7 @@
 "are_you_sure" = "확실합니까";
 "ago_emotion" = " 전에 %d 이모티콘과 함께";
 "ago_emotions" = " 전에 %d 이모티콘과 함께";
+"no_club" = "클럽 이름이 없습니다!";
+"no_club_msg" = "클럽 이름을 기입하셔야 합니다!";
+"in_news" = "%@ - 안 %@";
+

@@ -113,3 +113,6 @@
 "are_you_sure" = "você tem certeza";
 "ago_emotion" = " atrás, com %d emoção";
 "ago_emotions" = " atrás, com %d emoções";
+"no_club" = "Clube Sem Nome!";
+"no_club_msg" = "Você precisa inserir um nome para seu clube!";
+"in_news" = "%@ - em %@";

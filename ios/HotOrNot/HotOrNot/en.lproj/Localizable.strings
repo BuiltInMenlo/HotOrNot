@@ -113,3 +113,7 @@
 "are_you_sure" = "Are you sure?";
 "ago_emotion" = " ago with %d emotion";
 "ago_emotions" = " ago with %d emotions";
+"no_club" = "No Club Name!";
+"no_club_msg" = "You need to enter a name for your club!";
+"in_news" = "%@ - in %@";
+

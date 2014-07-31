@@ -113,3 +113,7 @@
 "are_you_sure" = "よろしいですか";
 "ago_emotion" = " 前に、気持ちが%dつ";
 "ago_emotions" = " 前に、気持ちが%dつ";
+"no_club" = "クラブ名がありません!";
+"no_club_msg" = "クラブの名前を入力して下さい!";
+"in_news" = "%@ - 入る %@";
+
