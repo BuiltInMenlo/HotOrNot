@@ -225,11 +225,11 @@
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
 		
-		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_resume"];
-		_inviteOverlayView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-		[_inviteOverlayView introWithCompletion:nil];
+//		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_resume"];
+//		_inviteOverlayView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+//		[_inviteOverlayView introWithCompletion:nil];
 	}
 }
 

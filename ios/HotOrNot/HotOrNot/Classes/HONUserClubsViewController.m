@@ -255,10 +255,15 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
-	
+    
+//	_inviteOverlayView = [[HONInviteOverlayView alloc] initWithOverlayType:Overlaytypeinvite];
+//    [[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+//    _inviteOverlayView.delegate = self;
+    //[self.view addSubview:_inviteOverlayView];
 //	if (_isCreateClubViewControllerPresented && !_didCloseCreateClubOrSelfieCamera) {
 //		_isCreateClubViewControllerPresented = NO;
 //
+    [_inviteOverlayView introWithCompletion:nil];
 	
 	NSLog(@"_appearedType:[%d]", _appearedType);
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {

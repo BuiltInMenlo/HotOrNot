@@ -245,11 +245,11 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 	
 	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 3 && page == 1 && direction == 1) {
-		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_camera"];
-		_inviteOverlayView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-		[_inviteOverlayView introWithCompletion:nil];
+//		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_camera"];
+//		_inviteOverlayView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
+//		[_inviteOverlayView introWithCompletion:nil];
 	}
 }
 

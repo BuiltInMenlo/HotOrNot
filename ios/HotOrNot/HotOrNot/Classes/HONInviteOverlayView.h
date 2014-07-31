@@ -5,7 +5,10 @@
 //  Created by Matt Holcombe on 03/26/2014 @ 22:45 .
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
-
+typedef enum{
+    Overlaytypeinvite = 0,
+    Overlaytypeunlock
+} Overlaytype;
 @class HONInviteOverlayView;
 @protocol HONInviteOverlayViewDelegate <NSObject>
 @optional
@@ -15,7 +18,7 @@
 @end
 
 @interface HONInviteOverlayView : UIView
-- (id)initWithContentImage:(NSString *)imageURL;
+- (id)initWithOverlayType:(Overlaytype)type;
 - (void)introWithCompletion:(void (^)(BOOL finished))completion;
 - (void)outroWithCompletion:(void (^)(BOOL finished))completion;
 
