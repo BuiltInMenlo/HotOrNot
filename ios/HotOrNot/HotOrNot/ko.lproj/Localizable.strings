@@ -68,7 +68,7 @@
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
-"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_no" = "아뇨, 괜찮습니다";
 "alert_rateApp_later" = "Ask Me Later";
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
@@ -116,4 +116,6 @@
 "no_club" = "클럽 이름이 없습니다!";
 "no_club_msg" = "클럽 이름을 기입하셔야 합니다!";
 "in_news" = "%@ - 안 %@";
+"real_profile" = "프로필 사진은 셀카 클럽 커뮤니티가 여러분의 진짜 얼굴을 알 수 있도록 도와줍니다";
+"take_photo" = "사진 촬영";
 

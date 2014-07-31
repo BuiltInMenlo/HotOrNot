@@ -68,7 +68,7 @@
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
-"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_no" = "いいえ、結構です";
 "alert_rateApp_later" = "Ask Me Later";
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
@@ -116,4 +116,6 @@
 "no_club" = "クラブ名がありません!";
 "no_club_msg" = "クラブの名前を入力して下さい!";
 "in_news" = "%@ - 入る %@";
+"real_profile" = "プロフィール写真があればSelfieclubコミュニティーがあなたをもっとよく知ることができます";
+"take_photo" = "写真を撮る";
 

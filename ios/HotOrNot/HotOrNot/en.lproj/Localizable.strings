@@ -116,4 +116,7 @@
 "no_club" = "No Club Name!";
 "no_club_msg" = "You need to enter a name for your club!";
 "in_news" = "%@ - in %@";
+"real_profile" = "Your profile photo helps the Selfieclub community know your real.";
+"take_photo" = "Take Photo";
+
 

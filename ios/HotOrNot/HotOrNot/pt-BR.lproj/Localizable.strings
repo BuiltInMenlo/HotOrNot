@@ -68,7 +68,7 @@
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
-"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_no" = "Não, Obrigado";
 "alert_rateApp_later" = "Ask Me Later";
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
@@ -116,4 +116,8 @@
 "no_club" = "Clube Sem Nome!";
 "no_club_msg" = "Você precisa inserir um nome para seu clube!";
 "in_news" = "%@ - em %@";
+"real_profile" = "Sua foto do perfil ajuda a comunidade Selfieclub a conhecer sua verdadeira";
+"take_photo" = "Tirar Foto";
+
+
 
