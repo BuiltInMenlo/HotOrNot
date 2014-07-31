@@ -74,7 +74,7 @@
 			
 			HONTrivialUserVO *vo = [HONTrivialUserVO userWithDictionary:@{@"id"			: [dict objectForKey:@"id"],
 																		  @"username"	: [dict objectForKey:@"username"],
-																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront]] stringByAppendingString:kSnapLargeSuffix]}];
+																		  @"img_url"	: ([dict objectForKey:@"avatar_url"] != nil) ? [dict objectForKey:@"avatar_url"] : [[NSString stringWithFormat:@"%@/defaultAvatar", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsSource]] stringByAppendingString:kSnapLargeSuffix]}];
 			
 			[_matchedUserIDs addObject:vo.phoneNumber];
 			[_inAppContacts addObject:vo];
@@ -432,7 +432,6 @@
 - (void)searchBarViewHasFocus:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = HONContactsTableViewDataSourceSearchResults;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
-//	_tableView.separatorInset = UIEdgeInsetsMake(20.0, 0.0, 0.0, 20.0);
 	_searchUsers = [NSMutableArray array];
 	[_tableView reloadData];
 }

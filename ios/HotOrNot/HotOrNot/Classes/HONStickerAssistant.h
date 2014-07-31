@@ -40,7 +40,8 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 
 - (NSDictionary *)fetchAllCandyBoxContents;
 - (BOOL)candyBoxContainsContentForContentID:(NSString *)contentID;
-- (UIImage *)stickerImageFromCandyBoxWithContentID:(NSString *)contentID;
+- (BOOL)candyBoxContainsContentGroupForContentGroupID:(NSString *)contentGroupID;
+- (PicoSticker *)stickerImageFromCandyBoxWithContentID:(NSString *)contentID;
 
 
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;

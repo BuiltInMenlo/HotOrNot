@@ -44,7 +44,7 @@
 		
 		_headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 		[self addSubview:_headerBGView];
-				
+		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_flipButton.frame = CGRectMake(275.0, 0.0, 64.0, 64.0);
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];

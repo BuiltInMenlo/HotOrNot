@@ -70,6 +70,7 @@
 		4C106066184D916100B361A6 /* HONActivityItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C106065184D916100B361A6 /* HONActivityItemViewCell.m */; };
 		4C1435CD17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1435CC17D3C19A00ACBF41 /* HONActivityHeaderButtonView.m */; };
 		4C1924801948BDE8002439E3 /* HONFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C19247F1948BDE8002439E3 /* HONFeedViewController.m */; };
+		4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1E9D99198AD8D900021156 /* InfoPlist.strings */; };
 		4C1F19AC1915CBA200E9A9D4 /* HONScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19AB1915CBA200E9A9D4 /* HONScreenManager.m */; };
 		4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F19B1191623D500E9A9D4 /* HONClubAssistant.m */; };
 		4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
@@ -560,6 +561,11 @@
 		4C19247E1948BDE8002439E3 /* HONFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HONFeedViewController.h; path = Feed/HONFeedViewController.h; sourceTree = "<group>"; };
 		4C19247F1948BDE8002439E3 /* HONFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HONFeedViewController.m; path = Feed/HONFeedViewController.m; sourceTree = "<group>"; };
 		4C1AF63819720524003DB714 /* Selfieclub.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Selfieclub.entitlements; sourceTree = "<group>"; };
+		4C1E9D98198AD8D900021156 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4C1E9D9A198AD8E900021156 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		4C1E9D9B198AD8ED00021156 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4C1E9D9C198AD8ED00021156 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4C1E9D9D198AD8F100021156 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4C1F19AA1915CBA200E9A9D4 /* HONScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONScreenManager.h; sourceTree = "<group>"; };
 		4C1F19AB1915CBA200E9A9D4 /* HONScreenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONScreenManager.m; sourceTree = "<group>"; };
 		4C1F19B0191623D500E9A9D4 /* HONClubAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubAssistant.h; sourceTree = "<group>"; };
@@ -1929,6 +1935,7 @@
 				4C62653115F96C7100AA7FCE /* HotOrNot-Info.plist */,
 				4C62653515F96C7100AA7FCE /* main.m */,
 				4C62653715F96C7100AA7FCE /* HotOrNot-Prefix.pch */,
+				4C1E9D99198AD8D900021156 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2522,6 +2529,7 @@
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */,
 				07B6E6F51988514B00DA0805 /* accessContacts@2x.png in Resources */,
+				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
 				4C4328CC18E3A9FA0035FF06 /* MPArrowRight.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3299,6 +3307,18 @@
 				4C0F3D191988E6A100703D09 /* ko */,
 			);
 			name = "tabMenu_clubsButton_Active@2x.png";
+			sourceTree = "<group>";
+		};
+		4C1E9D99198AD8D900021156 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4C1E9D98198AD8D900021156 /* en */,
+				4C1E9D9A198AD8E900021156 /* pt-BR */,
+				4C1E9D9B198AD8ED00021156 /* ja */,
+				4C1E9D9C198AD8ED00021156 /* ko */,
+				4C1E9D9D198AD8F100021156 /* pt */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		575B3969198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png */ = {

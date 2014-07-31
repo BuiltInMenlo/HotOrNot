@@ -11,13 +11,14 @@
 @implementation HONEmotionVO
 
 @synthesize dictionary;
-@synthesize emotionID, emotionName, largeImageURL, smallImageURL, image, price, isFree;
+@synthesize emotionID, contentGroupID, emotionName, largeImageURL, smallImageURL, image, price, isFree, picoSticker;
 
 + (HONEmotionVO *)emotionWithDictionary:(NSDictionary *)dictionary {
 	HONEmotionVO *vo = [[HONEmotionVO alloc] init];
 	vo.dictionary = dictionary;
 		
 	vo.emotionID = [dictionary objectForKey:@"id"];
+	vo.contentGroupID = [dictionary objectForKey:@"cg_id"];
 	vo.emotionName = [[[dictionary objectForKey:@"name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] stringByReplacingOccurrencesOfString:@".png" withString:@""];
 	vo.largeImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"large.png"];
 	vo.mediumImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"medium.png"];
@@ -31,11 +32,13 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.emotionID = nil;
+	self.contentGroupID = nil;
 	self.emotionName = nil;
 	self.largeImageURL = nil;
 	self.mediumImageURL = nil;
 	self.smallImageURL = nil;
 	self.image = nil;
+	self.picoSticker = nil;
 }
 
 @end

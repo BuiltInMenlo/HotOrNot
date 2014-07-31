@@ -47,7 +47,7 @@
 		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 		[self.contentView addSubview:_avatarImageView];
 		
-		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+//		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_avatarButton.frame = _avatarImageView.frame;
@@ -145,7 +145,7 @@
 		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
 	
 	else
-		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
+		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 	
 	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -296,7 +296,7 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
+		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_avatarImageView.alpha = 1.0;
 		} completion:nil];
