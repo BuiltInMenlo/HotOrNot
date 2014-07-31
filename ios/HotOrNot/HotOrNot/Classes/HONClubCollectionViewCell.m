@@ -40,7 +40,6 @@
 	
 	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
 	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
-	_coverImageView.alpha = 0.0;
 	[self.contentView addSubview:_coverImageView];
 	
 	[[HONImageBroker sharedInstance] maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
@@ -59,26 +58,14 @@
 	if (_clubVO.clubID != 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			_coverImageView.image = image;
-			[UIView animateWithDuration:0.0 animations:^(void) {
-				_coverImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-			}];
 		};
 		
 		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
-			
-			_clubVO.coverImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
-			[_coverImageView setImageWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
-							placeholderImage:[UIImage imageNamed:@"defaultClubPhoto"]];
-			
-			[UIView animateWithDuration:0.0 delay:0.0 options:(UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
-				_coverImageView.alpha = 1.0;
-			} completion:^(BOOL finished) {
-			}];
+			_coverImageView.image = [UIImage imageNamed:@"defaultClubCover"];
 		};
 		
-		if ([_clubVO.coverImagePrefix length] == 0)
+		if ([_clubVO.coverImagePrefix rangeOfString:@"defaultClubCover"].location != NSNotFound)
 			_coverImageView.image = [UIImage imageNamed:@"defaultClubCover"];
 		
 		else {

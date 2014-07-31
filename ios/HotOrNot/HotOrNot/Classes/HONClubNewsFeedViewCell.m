@@ -204,7 +204,7 @@
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 150.0, 150.0)];
 	imageView.transform = transform;
-	[imageView setTag:emotionVO.emotionID];
+	[imageView setTag:[emotionVO.emotionID intValue]];
 	imageView.alpha = 0.0;
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

@@ -153,7 +153,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 }
 
 - (void)emotionItemView:(HONEmoticonPickerItemView *)emotionItemView deselectedEmotion:(HONEmotionVO *)emotionVO {
-	
 	[_selectedEmotions removeObject:emotionVO];
 	if ([self.delegate respondsToSelector:@selector(emotionsPickerView:deselectedEmotion:)])
 		[self.delegate emotionsPickerView:self deselectedEmotion:emotionVO];

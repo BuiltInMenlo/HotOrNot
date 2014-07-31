@@ -136,8 +136,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 
 #if __APPSTORE_BUILD__ == 0
-//@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInviteOverlayViewDelegate>
+//@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInviteOverlayViewDelegate, PicoStickerDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
 @interface HONAppDelegate() <ChartboostDelegate, HONInviteOverlayViewDelegate>
@@ -551,8 +551,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
-//			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
-			[[HONStickerAssistant sharedInstance] refreshPicoCandyUser];
+			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 							
 #if __IGNORE_SUSPENDED__ == 1
 				if (self.tabBarController == nil)
@@ -758,6 +757,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #ifdef FONTS
 	[self _showFonts];
 #endif
+	
+	
+//	[self performSelector:@selector(_picoCandyTest) withObject:nil afterDelay:5.0];
+	
 	
 	return (YES);
 }
@@ -1875,6 +1878,34 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	for (int i=0; i<amt; i++) {
 		[[HONContactsAssistant sharedInstance] writeTrivialUserToDeviceContacts:nil];
 	}
+}
+
+
+- (void)_picoCandyTest {
+	NSLog(@"CandyStore:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchStickerStoreInfo]);
+	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
+	NSLog(@"CandyBox:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents]);
+	
+	[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
+}
+
+- (void)_picoCandyTest2 {
+	__block int idx = 0;
+	[[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		PicoSticker *sticker = (PicoSticker *)obj;
+		sticker.frame = CGRectMake((idx % 5) * 60.0, (idx / 5) * 60.0, 50.0, 50.0);
+		sticker.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5];
+		sticker.userInteractionEnabled = YES;
+		sticker.delegate = self;
+		[sticker setTag:idx];
+		[self.tabBarController.view addSubview:sticker];
+		
+		idx++;
+	}];
+}
+
+- (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
+	NSLog(@"sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
 }
 
 
