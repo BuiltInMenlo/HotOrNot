@@ -210,11 +210,11 @@
 }
 
 - (void)_goCancel {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"Your profile photo helps the Selfieclub community know your real."
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
+														message: NSLocalizedString(@"real_profile", nil)  //@"Your profile photo helps the Selfieclub community know your real."
 													   delegate:self
-											  cancelButtonTitle:@"No Thanks"
-											  otherButtonTitles:@"Take Photo", nil];
+											  cancelButtonTitle: NSLocalizedString(@"alert_rateApp_no", nil) //@"No Thanks"
+											  otherButtonTitles: NSLocalizedString(@"take_photo", nil), nil]; //@"Take Photo", nil];
 	[alertView setTag:0];
 	[alertView show];
 }

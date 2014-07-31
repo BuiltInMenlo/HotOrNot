@@ -1764,8 +1764,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:@"Email Error"
-											message:@"Cannot send email from this device!"
+				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"email_error", nil) //@"Email Error"
+											message: NSLocalizedString(@"email_errormsg", nil) //@"Cannot send email from this device!"
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];

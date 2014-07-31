@@ -48,7 +48,7 @@
 	_clubNewsFeedCellType = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember || (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner && [_clubVO.submissions count] > 0)) ? HONClubNewsFeedCellTypePhotoSubmission : HONClubNewsFeedCellTypeNonMember;
 	
 	_photoVO = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? (HONClubPhotoVO *)[_clubVO.submissions firstObject] : nil;
-	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat:@"%@ - in %@", _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
+	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat: NSLocalizedString(@"in_news", nil) /* @"%@ - in %@" */, _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
 
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? CGRectMake(69.0, 10.0, 210.0, 16.0) : CGRectMake(17.0, 7.0, 238.0, 16.0)];
 	titleLabel.backgroundColor = [UIColor clearColor];

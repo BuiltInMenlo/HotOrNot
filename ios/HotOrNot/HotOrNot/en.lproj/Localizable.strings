@@ -108,5 +108,15 @@
 "alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
 "popup_clubcopied_title" = "Your %@ Club has been copied to your device's clipboard!";
 "popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
-
+"email_error" = "Email Error";
+"email_errormsg" = "Cannot send email from this device!";
+"are_you_sure" = "Are you sure?";
+"ago_emotion" = " ago with %d emotion";
+"ago_emotions" = " ago with %d emotions";
+"no_club" = "No Club Name!";
+"no_club_msg" = "You need to enter a name for your club!";
+"in_news" = "%@ - in %@";
+"real_profile" = "Your profile photo helps the Selfieclub community know your real.";
+"take_photo" = "Take Photo";
+"is_feeling" = "- is feeling…";
 
