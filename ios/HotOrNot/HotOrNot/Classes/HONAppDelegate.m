@@ -914,7 +914,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSString *protocol = [[[url absoluteString] lowercaseString] substringToIndex:[[url absoluteString] rangeOfString:@"://"].location];
 	if ([protocol isEqualToString:@"selfieclub"]) {
 		NSRange range = [[[url absoluteString] lowercaseString] rangeOfString:@"://"];
-		NSArray *path = [[[[url absoluteString] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
+		NSArray *path = [[[[[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] lowercaseString] substringFromIndex:range.location + range.length] componentsSeparatedByString:@"/"];
 		NSLog(@"PATH:[%@]", path);
 		
 		if ([path count] == 2) {
@@ -974,14 +974,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										[self.tabBarController setSelectedIndex:2];
 										[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:_selectedClubVO atPhotoIndex:0] animated:YES];
 										
-										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", nil), _selectedClubVO.clubName] //@"You are already a member of"
-																							message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
-																						   delegate:self
-																				  cancelButtonTitle:@"Yes"
-																				  otherButtonTitles:@"Not Now", nil];
-										
-										[alertView setTag:8];
-										[alertView show];
+										[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", nil), _selectedClubVO.clubName] //@"You are already a member of"
+																							message:@""
+																						   delegate:nil
+																				  cancelButtonTitle:@"Ok"
+																				  otherButtonTitles:nil] show];
 									
 									} else {
 //										UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONClubPreviewViewController alloc] initWithClub:_selectedClubVO]];

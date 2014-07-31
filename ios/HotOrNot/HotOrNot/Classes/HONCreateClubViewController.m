@@ -113,6 +113,9 @@
 				_progressHUD = nil;
 			}
 			
+			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
+				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
+			
 			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
 			
 		} else {
@@ -366,8 +369,6 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	if ([self.delegate respondsToSelector:@selector(createClubViewController:didDismissByCanceling:)])
-		[self.delegate createClubViewController:self didDismissByCanceling:YES];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSED_CREATE_CLUB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];

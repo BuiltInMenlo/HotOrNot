@@ -59,7 +59,7 @@
 	if (_clubVO.clubID != 0) {
 		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			_coverImageView.image = image;
-			[UIView animateWithDuration:0.25 animations:^(void) {
+			[UIView animateWithDuration:0.0 animations:^(void) {
 				_coverImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
 			}];
@@ -72,7 +72,7 @@
 			[_coverImageView setImageWithURL:[NSURL URLWithString:[_clubVO.coverImagePrefix stringByAppendingString:kSnapMediumSuffix]]
 							placeholderImage:[UIImage imageNamed:@"defaultClubPhoto"]];
 			
-			[UIView animateWithDuration:0.5 delay:0.25 options:(UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
+			[UIView animateWithDuration:0.0 delay:0.0 options:(UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction) animations:^(void) {
 				_coverImageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
 			}];
@@ -86,7 +86,7 @@
 										failure:imageFailureBlock];
 	
 	} else {
-		[UIView animateWithDuration:0.5 animations:^(void) {
+		[UIView animateWithDuration:0.0 animations:^(void) {
 			_coverImageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];

@@ -93,7 +93,7 @@
 												   attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19]}
 													  context:nil].size;
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 68.0, MIN(maxSize.width, size.width), 24.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 80.0, MIN(maxSize.width, size.width), 24.0)];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.shadowColor = [UIColor blackColor];
@@ -107,7 +107,7 @@
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:usernameButton];
 			
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 102.0, 200.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 110.0, 200.0, 16.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];

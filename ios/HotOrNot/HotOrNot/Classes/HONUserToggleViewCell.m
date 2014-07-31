@@ -44,7 +44,7 @@
 		_isSelected = NO;
 		_isTintCycleFull = NO;
 		
-		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 8.0, 48.0, 48.0)];
+		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 		[self.contentView addSubview:_avatarImageView];
 		
 		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
@@ -180,7 +180,8 @@
 	_avatarImageView.image = _contactUserVO.avatarImage;
 	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])]) {
 		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
-	}
+	} else
+		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
 	
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
