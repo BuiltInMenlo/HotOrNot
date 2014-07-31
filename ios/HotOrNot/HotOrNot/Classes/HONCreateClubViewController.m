@@ -113,6 +113,9 @@
 				_progressHUD = nil;
 			}
 			
+			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
+				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
+			
 			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
 			
 		} else {
@@ -366,8 +369,6 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	if ([self.delegate respondsToSelector:@selector(createClubViewController:didDismissByCanceling:)])
-		[self.delegate createClubViewController:self didDismissByCanceling:YES];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSED_CREATE_CLUB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
@@ -391,8 +392,8 @@
 		_clubNameCheckImageView.alpha = 1.0;
 		_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
-									message:@"You need to enter a name for your club!"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_club", nil) //@"No Club Name!"
+									message: NSLocalizedString(@"no_club_msg", nil)  //@"You need to enter a name for your club!"
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];

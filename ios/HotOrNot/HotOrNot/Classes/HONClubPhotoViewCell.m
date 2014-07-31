@@ -93,7 +93,7 @@
 												   attributes:@{NSFontAttributeName:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:19]}
 													  context:nil].size;
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 68.0, MIN(maxSize.width, size.width), 24.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 80.0, MIN(maxSize.width, size.width), 24.0)];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.textColor = [UIColor whiteColor];
 	usernameLabel.shadowColor = [UIColor blackColor];
@@ -107,13 +107,15 @@
 	[usernameButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:usernameButton];
 			
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 102.0, 200.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 110.0, 200.0, 16.0)];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:12];
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:@" ago with %d emotion%@", [_clubPhotoVO.subjectNames count], ([_clubPhotoVO.subjectNames count] != 1) ? @"s" : @""];
+	
+	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) : NSLocalizedString(@"ago_emotions", nil);
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
 	[self.contentView addSubview:timeLabel];
 	
 	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(8.0, [UIScreen mainScreen].bounds.size.height - 168.0, 312.0, 84.0)];
@@ -186,7 +188,7 @@
 	[holderView addSubview:imageLoadingView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
-	[imageView setTag:emotionVO.emotionID];
+	[imageView setTag:[emotionVO.emotionID intValue]];
 	imageView.alpha = 0.0;
 	[holderView addSubview:imageView];
 	

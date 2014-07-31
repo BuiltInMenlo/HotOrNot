@@ -16,7 +16,7 @@
 
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"terms"]
-							 title:@"Terms of Use"])) {
+							 title: NSLocalizedString(@"terms_service", nil)])) { //@"Terms of Use"])) {
 	}
 	
 	return (self);

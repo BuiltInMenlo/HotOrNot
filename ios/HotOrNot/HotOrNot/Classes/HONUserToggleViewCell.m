@@ -44,7 +44,7 @@
 		_isSelected = NO;
 		_isTintCycleFull = NO;
 		
-		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 8.0, 48.0, 48.0)];
+		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 		[self.contentView addSubview:_avatarImageView];
 		
 		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
@@ -139,9 +139,14 @@
 	
 	[_toggledOnButton addTarget:self action:@selector(_goDeselectTrivialUser) forControlEvents:UIControlEventTouchUpInside];
 	[_toggledOffButton addTarget:self action:@selector(_goSelectTrivalUser) forControlEvents:UIControlEventTouchUpInside];
-
 	
-	[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
+	NSLog(@"AVATAR:[%@]", _trivialUserVO.avatarPrefix);
+	if ([_trivialUserVO.avatarPrefix rangeOfString:@"default"].location == NSNotFound)
+		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
+	
+	else
+		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
+	
 	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
 	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
@@ -178,9 +183,11 @@
 	NSString *nameCaption = _contactUserVO.fullName;//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 	
 	_avatarImageView.image = _contactUserVO.avatarImage;
-	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])]) {
+	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])
+		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+	
+	else
 		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
-	}
 	
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];

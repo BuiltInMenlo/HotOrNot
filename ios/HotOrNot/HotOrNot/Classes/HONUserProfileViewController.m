@@ -315,6 +315,7 @@
 	[avatarHolderView addSubview:imageLoadingView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
+	avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
@@ -331,18 +332,20 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
+		avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];
 	};
 	
-	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
-															 cachePolicy:kURLRequestCachePolicy
-														 timeoutInterval:[HONAppDelegate timeoutInterval]]
-						   placeholderImage:nil
-									success:imageSuccessBlock
-									failure:imageFailureBlock];
+	if ([_userVO.avatarPrefix rangeOfString:@"avatarPlaceholder"].location != NSNotFound) {
+		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+																 cachePolicy:kURLRequestCachePolicy
+															 timeoutInterval:[HONAppDelegate timeoutInterval]]
+							   placeholderImage:[UIImage imageNamed:@"avatarPlaceholder"]
+										success:imageSuccessBlock
+										failure:imageFailureBlock];
+	}
 	
 	_nameLabel.text = _userVO.username;
 	

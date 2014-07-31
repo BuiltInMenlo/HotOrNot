@@ -262,8 +262,10 @@
 	
 	NSLog(@"_appearedType:[%d]", _appearedType);
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-									message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
+									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
+//		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _selectedClubVO.clubName]
+//								  message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -310,9 +312,9 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
 	if (gestureRecognizer.state != UIGestureRecognizerStateBegan)
 		return;
-	if(gestureRecognizer.state != UIGestureRecognizerStatePossible){
-        return;
-    }
+//	if(gestureRecognizer.state != UIGestureRecognizerStatePossible){
+//        return;
+//    }
     NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:self.collectionView]];
     HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
     if(gestureRecognizer.state == UIGestureRecognizerStatePossible){
@@ -387,11 +389,10 @@
 //}
 
 //#pragma mark - CreateClubViewController Delegates
-//- (void)createClubViewController:(HONCreateClubViewController *)viewController didDismissByCanceling:(BOOL)isCanceled {
-//	_appearedType = HONUserClubsViewControllerAppearedTypeCreateClubCanceled;
-//	
-//	_didCloseCreateClubOrSelfieCamera = isCanceled;
-//}
+- (void)createClubViewController:(HONCreateClubViewController *)viewController didCreateClub:(HONUserClubVO *)clubV0 {
+	_selectedClubVO = clubV0;
+	
+}
 //
 //
 //#pragma mark - SelfieCameraViewController Delegates
@@ -551,10 +552,12 @@
 		
 		} else if (buttonIndex == 1) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
-			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
+										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
+//			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _selectedClubVO.clubName]
+//										message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -569,10 +572,12 @@
 			
 		} else if (buttonIndex == 1) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
+			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
-			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-										message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
+										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
+//			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _selectedClubVO.clubName]
+//										message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -585,10 +590,12 @@
 				
 			} else if (buttonIndex == 1) {
 				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-				pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
+				pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 				
-				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-											message:[NSString stringWithFormat:@"http://joinselfie.club/%@/%@\n\nPaste your URL anywhere to share!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
+				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
+											message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
+//				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _selectedClubVO.clubName]
+//											message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 										   delegate:nil
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil] show];

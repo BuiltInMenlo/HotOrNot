@@ -61,14 +61,14 @@
 "alert_yes" = "Sim";
 "alert_no" = "Não";
 "alert_ok" = "OK";
-"alert_cancel" = "Cancel";
+"alert_cancel" = "Cancelar";
 "alert_connectionError_t" = "Connection Error";
 "alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
 "alert_instagramError_t" = "Not Available";
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
-"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_no" = "Não, Obrigado";
 "alert_rateApp_later" = "Ask Me Later";
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
@@ -104,5 +104,20 @@
 "network_status" = "Status da rede";
 "settings_logout" = "Sair";
 "header_settings" = "Ajustes";
-"alert_noemotions_title" = "No Emotions selected!";
-"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"alert_noemotions_title" = "Nenhuma Emoção selecionada!";
+"alert_noemotions_msg" = "Você precisa escolher algumas emoções para fazer uma atualização de status.";
+"popup_clubcopied_title" = "O seu clube %@ foi copiado!";
+"popup_clubcopied_msg" = "Cole o link em qualquer lugar para compartilhar!";
+"email_error" = "Erro de E-mail";
+"email_errormsg" = "Não é possível enviar e-mail a partir deste dispositivo!";
+"are_you_sure" = "você tem certeza";
+"ago_emotion" = " atrás, com %d emoção";
+"ago_emotions" = " atrás, com %d emoções";
+"no_club" = "Clube Sem Nome!";
+"no_club_msg" = "Você precisa inserir um nome para seu clube!";
+"in_news" = "%@ - em %@";
+"real_profile" = "Sua foto do perfil ajuda a comunidade Selfieclub a conhecer sua verdadeira";
+"take_photo" = "Tirar Foto";
+
+
+

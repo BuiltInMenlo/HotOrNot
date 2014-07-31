@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "HONStickerAssistant.h"
 
 
@@ -39,12 +41,75 @@ static HONStickerAssistant *sharedInstance = nil;
 	return (self);
 }
 
+- (NSDictionary *)fetchStickerStoreInfo {
+	PCStore *storeInfo = [PicoManager sharedManager].candyStore.storeInfo;
+	
+	return (@{@"name"			: storeInfo.name,
+			  @"created"		: storeInfo.created_at,
+			  @"updated"		: storeInfo.updated_at,
+			  @"description"	: storeInfo.description,
+			  @"currency"		: storeInfo.currency.name,
+			  @"products_tot"	: [@"" stringFromInt:[storeInfo.availableProducts count]],
+			  @"vendor_tot"		: [@"" stringFromInt:[storeInfo.availableVendorIds count]]});
+	
+}
+
 - (void)registerStickerStore {
 	PicoManager *picoManager = [PicoManager sharedManager];
 	[picoManager registerStoreWithAppId:kPicoCandyAppID
 								 apiKey:kPicoCandyAPIKey];
+	
+	PCStore *storeInfo = picoManager.candyStore.storeInfo;
+	
+	NSLog(@"PCStore.name:[%@]", storeInfo.name);
+	NSLog(@"PCStore.created_at:[%@]", storeInfo.created_at);
+	NSLog(@"PCStore.updated_at:[%@]", storeInfo.updated_at);
+	NSLog(@"PCStore.description:[%@]", storeInfo.description);
 }
 
+- (NSArray *)retrieveStickerStoreProducts {
+	NSMutableArray *products = [[PicoManager sharedManager].candyStore.storeInfo.availableProducts mutableCopy];
+	[products enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSLog(@"CandyStore.availableProduct[%d] : %@", idx, obj);
+		[products addObject:obj];
+	}];
+	
+	return ([products copy]);
+}
+
+- (void)retrievePicoCandyUser {
+	PicoUser *picoUser = [PicoUser currentUser];
+	NSLog(@"PicoUser.storeUserId:[%@]", picoUser.storeUserId);
+	NSLog(@"PicoUser.accessToken:[%@]", picoUser.accessToken);
+	NSLog(@"PicoUser.busy:[%d]", picoUser.busy);
+	NSLog(@"PicoUser.requireAccountCreation:[%d]", picoUser.requireAccountCreation);
+	NSLog(@"PicoUser.connected:[%d]", picoUser.connected);
+	NSLog(@"PicoUser.newAccount:[%d]", picoUser.newAccount);
+	NSLog(@"PicoUser.accountBalance:[%@]", picoUser.accountBalance);
+	
+	if (picoUser.requireAccountCreation || !picoUser.connected)
+		[[PicoManager sharedManager] linkCurrentStoreUserWithClientAppId:[[HONAppDelegate infoForUser] objectForKey:@"id"]];
+	
+	[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents];
+}
+
+- (void)refreshPicoCandyUser {
+	NSLog(@"refreshing PicoUser:");
+	PicoUser *picoUser = [PicoUser currentUser];
+	[picoUser fetchInfoFromServer:^(id user) {
+		PicoUser *userInfo = (PicoUser *)user;
+		NSLog(@"PicoUser.busy:[%d] {()}", userInfo.busy);
+		NSLog(@"PicoUser.requireAccountCreation:[%d]", userInfo.requireAccountCreation);
+		NSLog(@"PicoUser.connected:[%d]", userInfo.connected);
+		NSLog(@"PicoUser.newAccount:[%d]", userInfo.newAccount);
+		NSLog(@"PicoUser.accountBalance:[%@]", userInfo.accountBalance);
+		
+		[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents];
+		
+	} fail:^(void) {
+		NSLog(@"PicoUser.fetchInfoFromServer FAILED");
+	}];
+}
 
 - (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType completion:(void (^)(id result))completion {
 	NSString *key = (stickerPakType == HONStickerPakTypeAvatars) ? kAvatarPak : (stickerPakType == HONStickerPakTypeClubCovers) ? kClubCoverPak : (stickerPakType == HONStickerPakTypeFree) ? kFreePak : (stickerPakType == HONStickerPakTypeInviteBonus) ? kInvitePak : (stickerPakType == HONStickerPakTypePaid) ? kPaidPak : @"all";
@@ -65,11 +130,11 @@ static HONStickerAssistant *sharedInstance = nil;
 			
 			[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				PCContent *content = (PCContent *)obj;
-				NSLog(@"content.image:[%@][%@][%@] (%@)", content.medium_image, content.medium_image, content.large_image, content.name);
+				NSLog(@"PCContent:\n[%@] -=- (%@)\n[%@] -=- [%@]", content.content_id, content.name, content.price, content.content_url);
 				
 				[stickers addObject:@{@"id"		: content.content_id,
 									  @"name"	: content.name,
-									  @"price"	: @"0",
+									  @"price"	: content.price,
 									  @"img"	: [content.large_image stringByReplacingOccurrencesOfString:@"/large.png" withString:@"/"]}];
 			}];
 			
@@ -107,6 +172,62 @@ static HONStickerAssistant *sharedInstance = nil;
 	[stickers addObjectsFromArray:[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypePaid]];
 	
 	return ([stickers copy]);
+}
+
+- (BOOL)candyBoxContainsContentForContentID:(NSString *)contentID {
+	__block BOOL isFound = NO;
+	[[[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		PicoSticker *sticker = (PicoSticker *)obj;
+		isFound = ([sticker.candyBoxContent.contentId isEqualToString:contentID]);
+		*stop = isFound;
+	}];
+	
+	return (isFound);
+}
+
+- (void)purchaseStickerWithContentID:(NSString *)contentID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate {
+	if (![[HONStickerAssistant sharedInstance] candyBoxContainsContentForContentID:contentID]) {
+		PCCandyStorePurchaseController *candyStorePurchaseController = [[PCCandyStorePurchaseController alloc] init];
+		candyStorePurchaseController.delegate = delegate;
+		[candyStorePurchaseController purchaseStickerWithId:contentID];
+	}
+}
+
+- (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate {
+	PCCandyStorePurchaseController *candyStorePurchaseController = [[PCCandyStorePurchaseController alloc] init];
+	candyStorePurchaseController.delegate = delegate;
+	[candyStorePurchaseController purchaseStickerPackWithId:contentGroupID];
+}
+
+- (NSDictionary *)fetchAllCandyBoxContents {
+	CandyBox *candyBox = [PicoManager sharedManager].candyBox;
+	NSArray *cbContents = candyBox.contents;
+	
+	NSMutableDictionary *contents = [NSMutableDictionary dictionary];
+	[cbContents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		CandyBoxContent *cbContent = (CandyBoxContent *)obj;
+		NSLog(@"contentInfo:[%@]", cbContent.contentInfo);
+		[contents setObject:[[PicoSticker alloc] initWithContent:cbContent]
+					 forKey:[[cbContent.contentInfo objectForKey:@"file_name"] stringByReplacingOccurrencesOfString:@".png" withString:@""]];
+	}];
+	
+	return ([contents copy]);
+}
+
+- (UIImage *)stickerImageFromCandyBoxWithContentID:(NSString *)contentID {
+	__block UIImage *image = nil;
+	
+	CandyBox *candyBox = [PicoManager sharedManager].candyBox;
+	[candyBox.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		CandyBoxContent *content = (CandyBoxContent *)obj;
+		if ([content.contentId isEqualToString:contentID]) {
+			PicoSticker *sticker = [[PicoSticker alloc] initWithContent:content];
+			image = sticker.image;
+			*stop = YES;
+		}
+	}];
+	
+	return (image);
 }
 
 @end

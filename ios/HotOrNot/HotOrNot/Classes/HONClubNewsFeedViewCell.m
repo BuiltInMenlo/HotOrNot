@@ -48,7 +48,7 @@
 	_clubNewsFeedCellType = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember || (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner && [_clubVO.submissions count] > 0)) ? HONClubNewsFeedCellTypePhotoSubmission : HONClubNewsFeedCellTypeNonMember;
 	
 	_photoVO = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? (HONClubPhotoVO *)[_clubVO.submissions firstObject] : nil;
-	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat:@"%@ - in %@", _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
+	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat: NSLocalizedString(@"in_news", nil) /* @"%@ - in %@" */, _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
 
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? CGRectMake(69.0, 10.0, 210.0, 16.0) : CGRectMake(17.0, 7.0, 238.0, 16.0)];
 	titleLabel.backgroundColor = [UIColor clearColor];
@@ -204,7 +204,7 @@
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 150.0, 150.0)];
 	imageView.transform = transform;
-	[imageView setTag:emotionVO.emotionID];
+	[imageView setTag:[emotionVO.emotionID intValue]];
 	imageView.alpha = 0.0;
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {

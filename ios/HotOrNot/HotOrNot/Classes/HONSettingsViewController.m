@@ -225,8 +225,8 @@
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Email Error"
-										message:@"Cannot send email from this device!"
+			[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"email_error", nil) //@"Email Error"
+										message: NSLocalizedString(@"email_errormsg", msg) //@"Cannot send email from this device!"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -238,8 +238,8 @@
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@", clubName, clubDeeplink];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied to your device's clipboard!", clubName]
-									message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_title", nil), clubName] //@"Your %@ has been copied to your device's clipboard!", clubName]
+									message:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_msg", nil) ] //@"\nPaste this URL anywhere to have your friends join!"]
 								   delegate:nil
 						  cancelButtonTitle:@"OK"
 						  otherButtonTitles:nil] show];
@@ -253,11 +253,11 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 															message:@""
 														   delegate:self
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:@"Log out", nil];
+												  cancelButtonTitle: NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
+												  otherButtonTitles: NSLocalizedString(@"settings_logout", nil), nil]; //@"Log out", nil];
 		
 		[alertView setTag:HONSettingsAlertTypeLogout];
 		[alertView show];

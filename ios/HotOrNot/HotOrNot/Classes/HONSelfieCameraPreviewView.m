@@ -11,6 +11,8 @@
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
+#import "PCCandyStorePurchaseController.h"
+
 #import "HONSelfieCameraPreviewView.h"
 #import "HONInviteOverlayView.h"
 #import "HONHeaderView.h"
@@ -21,7 +23,7 @@
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInviteOverlayViewDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInviteOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
@@ -170,6 +172,42 @@
 }
 
 
+#pragma mark - CandyStorePurchaseController
+- (void)purchaseController:(id)controller downloadedStickerWithId:(NSString *)contentId {
+	NSLog(@"[*:*] purchaseController:downloadedStickerWithId:[%@]", contentId);
+}
+
+-(void)purchaseController:(id)controller downloadStickerWithIdFailed:(NSString *)contentId {
+	NSLog(@"[*:*] purchaseController:downloadedStickerWithIdFailed:[%@]", contentId);
+}
+
+- (void)purchaseController:(id)controller purchasedStickerWithId:(NSString *)contentId userInfo:(NSDictionary *)userInfo {
+	NSLog(@"[*:*] purchaseController:purchasedStickerWithId:[%@] userInfo:[%@]", contentId, userInfo);
+}
+
+- (void)purchaseController:(id)controller purchaseStickerWithIdFailed:(NSString *)contentId userInfo:(NSDictionary *)userInfo {
+	NSLog(@"[*:*] purchaseController:purchaseStickerWithIdFailed:[%@] userInfo:[%@]", contentId, userInfo);
+}
+
+
+- (void)purchaseController:(id)controller downloadedStickerPackWithId:(NSString *)contentGroupId {
+	NSLog(@"[*:*] purchaseController:downloadedStickerPackWithId:[%@]", contentGroupId);
+}
+
+- (void)purchaseController:(id)controller downloadStickerPackWithIdFailed:(NSString *)contentGroupId {
+	NSLog(@"[*:*] purchaseController:downloadStickerPackWithIdFailed:[%@]", contentGroupId);
+}
+
+- (void)purchaseController:(id)controller purchasedStickerPackWithId:(NSString *)contentGroupId userInfo:(NSDictionary *)userInfo {
+	NSLog(@"[*:*] purchaseController:downloadStickerPackWithIdFailed:[%@] userInfo:[%@]", contentGroupId, userInfo);
+}
+
+- (void)purchaseController:(id)controller purchaseStickerPackWithContentGroupFailed:(PCContentGroup *)contentGroup userInfo:(NSDictionary *)userInfo {
+	NSLog(@"[*:*] purchaseController:purchaseStickerPackWithContentGroupFailed:[%@] userInfo:[%@]", contentGroup, userInfo);
+}
+
+
+
 #pragma mark - EmotionsPickerView Delegates
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView selectedEmotion:(HONEmotionVO *)emotionVO {
 	NSLog(@"[*:*] emotionItemView:(%@) selectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
@@ -177,8 +215,20 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
 										withEmotion:emotionVO];
 	
+//	if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentForContentID:emotionVO.emotionID]) {
+//		NSLog(@"Sticker in CandyBox");
+//		emotionVO.image = [[HONStickerAssistant sharedInstance] stickerImageFromCandyBoxWithContentID:emotionVO.emotionID];
+//	
+//	} else {
+//		NSLog(@"Purchasing sticker");
+//		[[HONStickerAssistant sharedInstance] purchaseStickerWithContentID:emotionVO.emotionID usingDelegate:self];
+//	}
+	
+	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
+	
+//	[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:@"813" usingDelegate:self];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
