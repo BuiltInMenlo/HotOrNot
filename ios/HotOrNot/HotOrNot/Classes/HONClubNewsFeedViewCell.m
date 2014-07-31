@@ -71,7 +71,7 @@
 		void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 			
-			imageView.image = [UIImage imageNamed:@"defaultClubCover"];
+			imageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				imageView.alpha = 1.0;
 			} completion:nil];
