@@ -104,7 +104,9 @@
 "network_status" = "ネットワークステータス";
 "settings_logout" = "ログアウトする";
 "header_settings" = "設定";
-"alert_noemotions_title" = "No Emotions selected!";
-"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"alert_noemotions_title" = "気持ちが選択されていません!";
+"alert_noemotions_msg" = "ステータスを更新するには、いずれかの気持ちを選択して下さい。";
 "popup_clubcopied_title" = "%@ クラブがコピーされました!";
 "popup_clubcopied_msg" = "URLをどこかにペーストしてシェアしましょう!";
+"email_error" = "メールエラー";
+"email_errormsg" = "このデバイスからメールは送れません!";

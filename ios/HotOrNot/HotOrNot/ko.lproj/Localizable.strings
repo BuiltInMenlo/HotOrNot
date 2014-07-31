@@ -104,7 +104,10 @@
 "network_status" = "네트워크 상태";
 "settings_logout" = "로그아웃";
 "header_settings" = "설정";
-"alert_noemotions_title" = "No Emotions selected!";
-"alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
+"alert_noemotions_title" = "어떠한 이모티콘도 선택되지 않았습니다!";
+"alert_noemotions_msg" = "상태 업데이트를 하기 위해서는 이모티콘을 선택해야 합니다.";
 "popup_clubcopied_title" = "당신의 %@ 클럽이 복사되었습니다!";
 "popup_clubcopied_msg" = "다른 사람과 공유하려면, URL을 붙여넣기 하세요!";
+"email_error" = "이메일 오류";
+"email_errormsg" = "이 기기에서 메일을 전송할 수 없습니다!";
+

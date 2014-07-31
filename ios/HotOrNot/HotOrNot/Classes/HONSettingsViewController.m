@@ -225,8 +225,8 @@
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Email Error"
-										message:@"Cannot send email from this device!"
+			[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"email_error", nil) //@"Email Error"
+										message: NSLocalizedString(@"email_errormsg", msg) //@"Cannot send email from this device!"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
