@@ -54,7 +54,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Enter Pin"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"enter_pin", nil)]; //@"Enter Pin"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
