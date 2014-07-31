@@ -57,8 +57,8 @@
 //		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_nonActive"] forState:UIControlStateNormal];
 //		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_Active"] forState:UIControlStateHighlighted];
 		_cancelButton.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelbuttonwhite_nonactive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelbuttonwhite_active"] forState:UIControlStateHighlighted];
 
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[_headerBGView addSubview:_cancelButton];

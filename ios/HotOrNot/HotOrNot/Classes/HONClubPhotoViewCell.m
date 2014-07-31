@@ -113,14 +113,17 @@
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:@" ago with %d emotion%@", [_clubPhotoVO.subjectNames count], ([_clubPhotoVO.subjectNames count] != 1) ? @"s" : @""];
+	
+	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) : NSLocalizedString(@"ago_emotions", nil);
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
 	[self.contentView addSubview:timeLabel];
 	
-	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(8.0, [UIScreen mainScreen].bounds.size.height - 168.0, 312.0, 84.0)];
+	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 312.0, 84.0)];
 	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
 	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
 	emoticonsScrollView.showsVerticalScrollIndicator = NO;
 	emoticonsScrollView.pagingEnabled = NO;
+	emoticonsScrollView.contentInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
 	[self.contentView addSubview:emoticonsScrollView];
 	
 	int cnt = 0;

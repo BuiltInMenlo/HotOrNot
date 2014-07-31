@@ -48,7 +48,7 @@
 	_clubNewsFeedCellType = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember || (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner && [_clubVO.submissions count] > 0)) ? HONClubNewsFeedCellTypePhotoSubmission : HONClubNewsFeedCellTypeNonMember;
 	
 	_photoVO = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? (HONClubPhotoVO *)[_clubVO.submissions firstObject] : nil;
-	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat:@"%@ - in %@", _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
+	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat: NSLocalizedString(@"in_news", nil) /* @"%@ - in %@" */, _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
 
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? CGRectMake(69.0, 10.0, 210.0, 16.0) : CGRectMake(17.0, 7.0, 238.0, 16.0)];
 	titleLabel.backgroundColor = [UIColor clearColor];
@@ -71,7 +71,7 @@
 		void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 			
-			imageView.image = [UIImage imageNamed:@"defaultClubCover"];
+			imageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				imageView.alpha = 1.0;
 			} completion:nil];
