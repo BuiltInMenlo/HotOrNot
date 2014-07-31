@@ -111,5 +111,5 @@
 "email_error" = "Email Error";
 "email_errormsg" = "Cannot send email from this device!";
 "are_you_sure" = "Are you sure?";
-//"ago_emotions" = "ago with %@ emotion%@";
-
+"ago_emotion" = " ago with %d emotion";
+"ago_emotions" = " ago with %d emotions";

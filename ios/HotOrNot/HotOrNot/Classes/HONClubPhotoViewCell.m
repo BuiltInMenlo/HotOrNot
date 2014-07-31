@@ -113,7 +113,9 @@
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honLightGreyTextColor];
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat: /* NSLocalizedString(@"ago_emotions", nil) */ @" ago with %d emotion%@", [_clubPhotoVO.subjectNames count], ([_clubPhotoVO.subjectNames count] != 1) ? @"s" : @""];
+	
+	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) : NSLocalizedString(@"ago_emotions", nil);
+	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
 	[self.contentView addSubview:timeLabel];
 	
 	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(8.0, [UIScreen mainScreen].bounds.size.height - 168.0, 312.0, 84.0)];
