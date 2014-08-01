@@ -30,6 +30,8 @@
 #import "HONHighSchoolSearchViewController.h"
 #import "HONSearchBarView.h"
 #import "HONUserClubVO.h"
+#import "RatingModal.h"
+#import "SuggestionModal.h"
 #import "HONTrivialUserVO.h"
 
 @interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONCreateClubViewControllerDelegate, HONInviteOverlayViewDelegate, HONSearchBarViewDelegate, HONSelfieCameraViewControllerDelegate>
@@ -46,6 +48,9 @@
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) HONClubCollectionViewCell *selectedCell;
 @property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
+@property (nonatomic, strong) SuggestionModal *suggestionOverlayView;
+@property (nonatomic, strong) RatingModal *ratingOverlayView;
+
 @property (nonatomic) HONUserClubsViewControllerAppearedType appearedType;
 @end
 
@@ -261,11 +266,11 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
     
-//	_inviteOverlayView = [[HONInviteOverlayView alloc] initWithOverlayType:Overlaytypeinvite];
-//    [[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-//    _inviteOverlayView.delegate = self;
+	_ratingOverlayView = [[RatingModal alloc] init];
+   [[HONScreenManager sharedInstance] appWindowAdoptsView:_ratingOverlayView];
+    _ratingOverlayView.delegate = self;
 
-    [_inviteOverlayView introWithCompletion:nil];
+    [_ratingOverlayView introWithCompletion:nil];
 	
 	NSLog(@"_appearedType:[%d]", _appearedType);
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {

@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */; };
+		07B25326198C177000F6D8B1 /* appStoreReview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */; };
+		07B25327198C177000F6D8B1 /* dimBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25322198C176F00F6D8B1 /* dimBackground@2x.png */; };
+		07B25328198C177B00F6D8B1 /* tapToReview_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B2532A198C177B00F6D8B1 /* tapToReview_Active@2x.png */; };
+		07B2532F198C178400F6D8B1 /* tapToReview_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25331198C178400F6D8B1 /* tapToReview_nonActive@2x.png */; };
+		07B25338198C18A400F6D8B1 /* RatingModal.m in Sources */ = {isa = PBXBuildFile; fileRef = 07B25337198C18A400F6D8B1 /* RatingModal.m */; };
+		07B2533B198C1FEE00F6D8B1 /* modalReviewBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B2533D198C1FEE00F6D8B1 /* modalReviewBackground@2x.png */; };
+		07B25344198C256500F6D8B1 /* SuggestionModal.m in Sources */ = {isa = PBXBuildFile; fileRef = 07B25343198C256500F6D8B1 /* SuggestionModal.m */; };
 		07B6E643198849FC00DA0805 /* profileButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E645198849FC00DA0805 /* profileButton_Active@2x.png */; };
 		07B6E64919884A0500DA0805 /* profileButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E64B19884A0500DA0805 /* profileButton_nonActive@2x.png */; };
 		07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B6E65119884A1200DA0805 /* backButton_Active@2x.png */; };
@@ -336,6 +344,28 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "modalCloseButton@2x.png"; sourceTree = "<group>"; };
+		07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appStoreReview@2x.png"; sourceTree = "<group>"; };
+		07B25322198C176F00F6D8B1 /* dimBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dimBackground@2x.png"; sourceTree = "<group>"; };
+		07B25329198C177B00F6D8B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
+		07B2532B198C177E00F6D8B1 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
+		07B2532C198C177E00F6D8B1 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
+		07B2532D198C177F00F6D8B1 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
+		07B2532E198C177F00F6D8B1 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
+		07B25330198C178400F6D8B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tapToReview_nonActive@2x.png"; sourceTree = "<group>"; };
+		07B25332198C178A00F6D8B1 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/tapToReview_nonActive@2x.png"; sourceTree = "<group>"; };
+		07B25333198C178B00F6D8B1 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/tapToReview_nonActive@2x.png"; sourceTree = "<group>"; };
+		07B25334198C178C00F6D8B1 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/tapToReview_nonActive@2x.png"; sourceTree = "<group>"; };
+		07B25335198C178C00F6D8B1 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/tapToReview_nonActive@2x.png"; sourceTree = "<group>"; };
+		07B25336198C18A400F6D8B1 /* RatingModal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RatingModal.h; sourceTree = "<group>"; };
+		07B25337198C18A400F6D8B1 /* RatingModal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RatingModal.m; sourceTree = "<group>"; };
+		07B2533C198C1FEE00F6D8B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/modalReviewBackground@2x.png"; sourceTree = "<group>"; };
+		07B2533E198C1FF400F6D8B1 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/modalReviewBackground@2x.png"; sourceTree = "<group>"; };
+		07B2533F198C1FF400F6D8B1 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/modalReviewBackground@2x.png"; sourceTree = "<group>"; };
+		07B25340198C1FF500F6D8B1 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/modalReviewBackground@2x.png"; sourceTree = "<group>"; };
+		07B25341198C1FF600F6D8B1 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/modalReviewBackground@2x.png"; sourceTree = "<group>"; };
+		07B25342198C256500F6D8B1 /* SuggestionModal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuggestionModal.h; sourceTree = "<group>"; };
+		07B25343198C256500F6D8B1 /* SuggestionModal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuggestionModal.m; sourceTree = "<group>"; };
 		07B6E644198849FC00DA0805 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/profileButton_Active@2x.png"; sourceTree = "<group>"; };
 		07B6E64619884A0000DA0805 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/profileButton_Active@2x.png"; sourceTree = "<group>"; };
 		07B6E64719884A0100DA0805 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/profileButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -2007,6 +2037,12 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				07B2533D198C1FEE00F6D8B1 /* modalReviewBackground@2x.png */,
+				07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */,
+				07B2532A198C177B00F6D8B1 /* tapToReview_Active@2x.png */,
+				07B25331198C178400F6D8B1 /* tapToReview_nonActive@2x.png */,
+				07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */,
+				07B25322198C176F00F6D8B1 /* dimBackground@2x.png */,
 				4C0A4CF7198B419700450680 /* Buttons */,
 				4C0F3CC81988E61F00703D09 /* Tab Bar */,
 				07B6E72B1988548D00DA0805 /* lockedOverlay@2x.png */,
@@ -2109,6 +2145,10 @@
 				4C2DD84218E3F29600BC8759 /* HONInviteOverlayView.m */,
 				4C48745616BF0E36007D901B /* HONSearchBarView.h */,
 				4C48745716BF0E36007D901B /* HONSearchBarView.m */,
+				07B25336198C18A400F6D8B1 /* RatingModal.h */,
+				07B25337198C18A400F6D8B1 /* RatingModal.m */,
+				07B25342198C256500F6D8B1 /* SuggestionModal.h */,
+				07B25343198C256500F6D8B1 /* SuggestionModal.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -2464,6 +2504,8 @@
 				8F4E6214198ACD6900E8A171 /* cancelbuttonwhite_nonactive@2x.png in Resources */,
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
+				07B25327198C177000F6D8B1 /* dimBackground@2x.png in Resources */,
+				07B25328198C177B00F6D8B1 /* tapToReview_Active@2x.png in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
 				07B6E6A919884AE100DA0805 /* searchInputBG_users@2x.png in Resources */,
 				4C639A30195502E90059E444 /* NewsFeedElements.xcassets in Resources */,
@@ -2490,11 +2532,13 @@
 				4C0F3CE11988E64400703D09 /* tabMenu_newsButton_Active@2x.png in Resources */,
 				07B6E6A319884AD800DA0805 /* replyTimelineButton_nonActive@2x.png in Resources */,
 				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,
+				07B25326198C177000F6D8B1 /* appStoreReview@2x.png in Resources */,
 				07B6E6E519884B3B00DA0805 /* likeTimelineButton_Active@2x.png in Resources */,
 				4C0F3CEA1988E65000703D09 /* tabMenu_friendsButton_Active@2x.png in Resources */,
 				8F4E6217198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png in Resources */,
 				4C4328F418E3A9FA0035FF06 /* HockeySDKResources.bundle in Resources */,
 				4C01BAD3190CAAD1006CD80D /* ClubsElements.xcassets in Resources */,
+				07B2532F198C178400F6D8B1 /* tapToReview_nonActive@2x.png in Resources */,
 				4C83FD8C190F610B00CAEABB /* DeprecatedElements.xcassets in Resources */,
 				4C43224E18E37E740035FF06 /* HONElementals.xcassets in Resources */,
 				4C83FD9C190F62FB00CAEABB /* CartoGothicStd-Bold.otf in Resources */,
@@ -2520,6 +2564,7 @@
 				07B6E71A198851C300DA0805 /* modalSuggestionBackground@2x.png in Resources */,
 				07B6E6B519884AF300DA0805 /* settingsButton_Active@2x.png in Resources */,
 				4C4328EF18E3A9FA0035FF06 /* release_notes.md in Resources */,
+				07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */,
 				4C83FD95190F62E800CAEABB /* push_02.caf in Resources */,
 				07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */,
 				07B6E65B19884A2E00DA0805 /* backWhiteButton_Active@2x.png in Resources */,
@@ -2552,6 +2597,7 @@
 				4C83FD92190F62E800CAEABB /* 3048__starpause__k9dhhpulseeffect.wav in Resources */,
 				4C4328CF18E3A9FA0035FF06 /* MPCheckmark@2x.png in Resources */,
 				07B6E6AF19884AE700DA0805 /* searchInputBG_clubs@2x.png in Resources */,
+				07B2533B198C1FEE00F6D8B1 /* modalReviewBackground@2x.png in Resources */,
 				4C83FD88190F5FA200CAEABB /* TutorialElements.xcassets in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
 				4C4328D218E3A9FA0035FF06 /* MPLogo.png in Resources */,
@@ -2614,6 +2660,7 @@
 				4C4328A418E3A9FA0035FF06 /* BitHelper.m in Sources */,
 				4CE0399E185727150005256F /* HONAPICaller.m in Sources */,
 				4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */,
+				07B25344198C256500F6D8B1 /* SuggestionModal.m in Sources */,
 				4C4328B318E3A9FA0035FF06 /* NSArray_PointArray.m in Sources */,
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				4C43280718E3A9FA0035FF06 /* AFHTTPRequestOperation.m in Sources */,
@@ -2728,6 +2775,7 @@
 				4C4328D418E3A9FA0035FF06 /* MPSurvey.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONInviteContactViewCell.m in Sources */,
 				4C4328B918E3A9FA0035FF06 /* JLBPagedView.m in Sources */,
+				07B25338198C18A400F6D8B1 /* RatingModal.m in Sources */,
 				4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */,
 				4C4328DC18E3A9FA0035FF06 /* UIView+MPSnapshotImage.m in Sources */,
 				4C980589188CA02900E4FEA4 /* HONMessageReplyViewCell.m in Sources */,
@@ -2777,6 +2825,42 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		07B2532A198C177B00F6D8B1 /* tapToReview_Active@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				07B25329198C177B00F6D8B1 /* en */,
+				07B2532B198C177E00F6D8B1 /* pt-BR */,
+				07B2532C198C177E00F6D8B1 /* pt */,
+				07B2532D198C177F00F6D8B1 /* ja */,
+				07B2532E198C177F00F6D8B1 /* ko */,
+			);
+			name = "tapToReview_Active@2x.png";
+			sourceTree = "<group>";
+		};
+		07B25331198C178400F6D8B1 /* tapToReview_nonActive@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				07B25330198C178400F6D8B1 /* en */,
+				07B25332198C178A00F6D8B1 /* pt-BR */,
+				07B25333198C178B00F6D8B1 /* ko */,
+				07B25334198C178C00F6D8B1 /* ja */,
+				07B25335198C178C00F6D8B1 /* pt */,
+			);
+			name = "tapToReview_nonActive@2x.png";
+			sourceTree = "<group>";
+		};
+		07B2533D198C1FEE00F6D8B1 /* modalReviewBackground@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				07B2533C198C1FEE00F6D8B1 /* en */,
+				07B2533E198C1FF400F6D8B1 /* pt-BR */,
+				07B2533F198C1FF400F6D8B1 /* ko */,
+				07B25340198C1FF500F6D8B1 /* pt */,
+				07B25341198C1FF600F6D8B1 /* ja */,
+			);
+			name = "modalReviewBackground@2x.png";
+			sourceTree = "<group>";
+		};
 		07B6E645198849FC00DA0805 /* profileButton_Active@2x.png */ = {
 			isa = PBXVariantGroup;
 			children = (

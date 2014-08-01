@@ -49,7 +49,7 @@
 	
 	[[HONImageBroker sharedInstance] maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
-	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 55.0, 80, 30.0)];
+	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 80, 30.0)];
 	[self.contentView addSubview:_badgeImageView];
 	
 	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 128.0, 120.0, 20.0)];
