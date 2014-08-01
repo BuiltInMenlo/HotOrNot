@@ -247,6 +247,19 @@
 	}];
 }
 
+- (void)_validateUsername {
+	if ([_username rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/'"]].location == NSNotFound)
+		[self _checkUsername];
+		
+	else {
+		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
+									message:@"You cannot have / or ' in your club's name"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
+}
+
 
 #pragma mark - View Lifecycle
 - (void)loadView {
@@ -603,7 +616,7 @@
 		_username = _usernameTextField.text;
 		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
-		[self _checkUsername];
+		[self _validateUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -833,7 +846,7 @@
 		}
 	
 	} else if (alertView.tag == 2) {
-		[self _checkUsername];
+		[self _validateUsername];
 	}
 }
 

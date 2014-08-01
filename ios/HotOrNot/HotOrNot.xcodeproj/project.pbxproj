@@ -1224,6 +1224,38 @@
 			name = "-Shared-";
 			sourceTree = "<group>";
 		};
+		4C0A4CF7198B419700450680 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				8F4E6213198ACD6500E8A171 /* cancelbuttonwhite_active@2x.png */,
+				8F4E6216198ACD6900E8A171 /* cancelbuttonwhite_nonactive@2x.png */,
+				8F4E6219198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png */,
+				8F4E621C198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png */,
+				07B6E645198849FC00DA0805 /* profileButton_Active@2x.png */,
+				07B6E64B19884A0500DA0805 /* profileButton_nonActive@2x.png */,
+				07B6E65119884A1200DA0805 /* backButton_Active@2x.png */,
+				07B6E65719884A2400DA0805 /* backButton_nonActive@2x.png */,
+				07B6E65D19884A2E00DA0805 /* backWhiteButton_Active@2x.png */,
+				07B6E66319884A3700DA0805 /* backWhiteButton_nonActive@2x.png */,
+				07B6E66919884A4100DA0805 /* cancelButtonBlue_Active@2x.png */,
+				07B6E66F19884A6C00DA0805 /* cancelButtonBlue_nonActive@2x.png */,
+				07B6E68119884A8600DA0805 /* doneButtonBlue_nonActive@2x.png */,
+				07B6E68719884A9100DA0805 /* nextButton_Active@2x.png */,
+				07B6E68D19884AB400DA0805 /* nextButton_nonActive@2x.png */,
+				07B6E69F19884ACF00DA0805 /* replyTimelineButton_Active@2x.png */,
+				07B6E6A519884AD800DA0805 /* replyTimelineButton_nonActive@2x.png */,
+				07B6E6B719884AF300DA0805 /* settingsButton_Active@2x.png */,
+				07B6E6BD19884B0100DA0805 /* settingsButton_nonActive@2x.png */,
+				07B6E6C319884B0A00DA0805 /* submitButton_Active@2x.png */,
+				07B6E6C919884B1200DA0805 /* submitButton_nonActive@2x.png */,
+				07B6E6CF19884B1A00DA0805 /* submitButtonLargeActive_Active@2x.png */,
+				07B6E6D519884B2300DA0805 /* submitButtonLargeActive_nonActive@2x.png */,
+				07B6E6E719884B3B00DA0805 /* likeTimelineButton_Active@2x.png */,
+				07B6E6E119884B3300DA0805 /* likeTimelineButton_nonActive@2x.png */,
+			);
+			name = Buttons;
+			sourceTree = "<group>";
+		};
 		4C0CA3F5175151FA00DD0652 /* Search / Invite */ = {
 			isa = PBXGroup;
 			children = (
@@ -1975,13 +2007,10 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8F4E6213198ACD6500E8A171 /* cancelbuttonwhite_active@2x.png */,
-				8F4E6216198ACD6900E8A171 /* cancelbuttonwhite_nonactive@2x.png */,
-				8F4E6219198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png */,
-				8F4E621C198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png */,
-				8F4E621F198ACD7800E8A171 /* inviteOverlay@2x.png */,
+				4C0A4CF7198B419700450680 /* Buttons */,
 				4C0F3CC81988E61F00703D09 /* Tab Bar */,
 				07B6E72B1988548D00DA0805 /* lockedOverlay@2x.png */,
+				8F4E621F198ACD7800E8A171 /* inviteOverlay@2x.png */,
 				07B6E72E1988549100DA0805 /* newInviteOverlay@2x.png */,
 				07B6E7311988549400DA0805 /* suggestionOverlay@2x.png */,
 				07B6E719198851BD00DA0805 /* modalUnlockBackground@2x.png */,
@@ -1991,32 +2020,11 @@
 				07B6E6F71988514B00DA0805 /* accessContacts@2x.png */,
 				07B6E7001988515600DA0805 /* inviteFriends_nonActive@2x.png */,
 				07B6E7031988515B00DA0805 /* inviteFriends_Active@2x.png */,
-				07B6E645198849FC00DA0805 /* profileButton_Active@2x.png */,
-				07B6E64B19884A0500DA0805 /* profileButton_nonActive@2x.png */,
-				07B6E65119884A1200DA0805 /* backButton_Active@2x.png */,
-				07B6E65719884A2400DA0805 /* backButton_nonActive@2x.png */,
-				07B6E65D19884A2E00DA0805 /* backWhiteButton_Active@2x.png */,
-				07B6E66319884A3700DA0805 /* backWhiteButton_nonActive@2x.png */,
-				07B6E66919884A4100DA0805 /* cancelButtonBlue_Active@2x.png */,
-				07B6E66F19884A6C00DA0805 /* cancelButtonBlue_nonActive@2x.png */,
-				07B6E68119884A8600DA0805 /* doneButtonBlue_nonActive@2x.png */,
-				07B6E68719884A9100DA0805 /* nextButton_Active@2x.png */,
-				07B6E68D19884AB400DA0805 /* nextButton_nonActive@2x.png */,
 				07B6E69319884ABC00DA0805 /* noPostYet@2x.png */,
 				07B6E69919884AC600DA0805 /* pinText@2x.png */,
-				07B6E69F19884ACF00DA0805 /* replyTimelineButton_Active@2x.png */,
-				07B6E6A519884AD800DA0805 /* replyTimelineButton_nonActive@2x.png */,
 				07B6E6AB19884AE100DA0805 /* searchInputBG_users@2x.png */,
 				07B6E6B119884AE700DA0805 /* searchInputBG_clubs@2x.png */,
-				07B6E6B719884AF300DA0805 /* settingsButton_Active@2x.png */,
-				07B6E6BD19884B0100DA0805 /* settingsButton_nonActive@2x.png */,
-				07B6E6C319884B0A00DA0805 /* submitButton_Active@2x.png */,
-				07B6E6C919884B1200DA0805 /* submitButton_nonActive@2x.png */,
-				07B6E6CF19884B1A00DA0805 /* submitButtonLargeActive_Active@2x.png */,
-				07B6E6D519884B2300DA0805 /* submitButtonLargeActive_nonActive@2x.png */,
 				07B6E6DB19884B2A00DA0805 /* termsText@2x.png */,
-				07B6E6E719884B3B00DA0805 /* likeTimelineButton_Active@2x.png */,
-				07B6E6E119884B3300DA0805 /* likeTimelineButton_nonActive@2x.png */,
 				4CEF920719719495007D56BE /* Plists */,
 				4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */,
 				4C43224A18E37C960035FF06 /* Asset Calalogs */,

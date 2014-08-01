@@ -103,32 +103,30 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName {
-	BOOL isFound = NO;
-	
-	for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
-		for (NSDictionary *clubDict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]) {
-			HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:clubDict];
-			NSLog(@"MATCHING:[%@]<=-=>[%@]", [vo.clubName lowercaseString], [clubName lowercaseString]);
-			if ([[vo.clubName lowercaseString] isEqualToString:[clubName lowercaseString]]) {
-				isFound = YES;
-				break;
-			}
+	__block NSMutableArray *tot = [NSMutableArray array];
+	[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSLog(@"MATCHING:[%@]<=|%d|-=>[%@]", [clubName lowercaseString], ([[clubName lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]), [[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]);
+		if ([[clubName lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]) {
+			[tot addObject:@(idx)];
+			*stop = YES;
 		}
-	}
+	}];
 	
-	return (isFound);
+	[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"member"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSLog(@"MATCHING:[%@]<=|%d|-=>[%@]", [clubName lowercaseString], ([[clubName lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]), [[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]);
+		if ([[clubName lowercaseString] isEqualToString:[[(NSDictionary *)obj objectForKey:@"name"] lowercaseString]]) {
+			[tot addObject:@(idx)];
+			*stop = YES;
+		}
+	}];
+	
+	return ([tot count] > 0);
 }
 
 
 - (NSArray *)suggestedClubs {
 	NSMutableArray *clubs = [NSMutableArray array];
-	
-//	NSMutableArray *segmentedKeys = [[NSMutableArray alloc] init];
-//	NSMutableDictionary *segmentedDict = [[NSMutableDictionary alloc] init];
-//	NSArray *unsortedContacts = [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:NO];
-//	NSString *clubName = @"";
-	
-	
+
 	// family
 	HONUserClubVO *familyClubVO = [[HONClubAssistant sharedInstance] suggestedFamilyClubVO];
 	if (familyClubVO != nil)
