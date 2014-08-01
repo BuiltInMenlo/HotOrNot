@@ -39,19 +39,25 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
 
-- (void)dealloc {
-	
-}
+#pragma mark -
+static NSString * const kSelfie = @"selfie";
+static NSString * const kMMS = @"mms";
+static NSString * const kSelfPic = @"self pic";
+static NSString * const kPhoto = @"photo";
+static NSString * const kFast = @"fast";
+static NSString * const kTextFree = @"text free";
+static NSString * const kQuick = @"quick";
+static NSString * const kEmoticon = @"emoticon";
+static NSString * const kSnap = @"snap";
+static NSString * const kSelca = @"selca";
+static NSString * const kSelfiesticker = @"selfiesticker";
+static NSString * const kMMSFree = @"mmsfree";
+static NSString * const kEmoji = @"emoji";
+static NSString * const kSticker = @"sticker";
+static NSString * const kCamera = @"camera";
 
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
-
+#pragma mark -
 #pragma mark - Data Calls
 
 
@@ -73,37 +79,6 @@
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 #endif
 }
-
-- (void)viewDidLoad {
-	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
-	[super viewDidLoad];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidDisappear:animated];
-}
-
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
-}
-
 
 #pragma mark - Navigation
 - (void)_goRegistration {
@@ -214,7 +189,9 @@
 		[self presentViewController:navigationController animated:YES completion:^(void) {
 			[cell invertSelected];
 		}];
-	}
+	}	
 }
+
+
 
 @end

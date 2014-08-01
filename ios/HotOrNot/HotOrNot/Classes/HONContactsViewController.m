@@ -724,15 +724,15 @@
 		} else if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
 			[[_segmentedContacts valueForKey:sectionKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				if (indexPath != nil) {
-					HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
-					
-					if ([obj isKindOfClass:[HONContactUserVO class]]) {
-						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:(HONContactUserVO *)obj]];
-					}
-					
-					if ([obj isKindOfClass:[HONTrivialUserVO class]]) {
-						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:(HONTrivialUserVO *)obj]];
-					}
+//					HONUserToggleViewCell *cell = (HONUserToggleViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
+//					
+//					if ([obj isKindOfClass:[HONContactUserVO class]]) {
+//						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:(HONContactUserVO *)obj]];
+//					}
+//					
+//					if ([obj isKindOfClass:[HONTrivialUserVO class]]) {
+//						[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:(HONTrivialUserVO *)obj]];
+//					}
 				}
 				
 				indexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];

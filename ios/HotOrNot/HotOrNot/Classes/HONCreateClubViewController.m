@@ -264,6 +264,19 @@
 		[self _createAlbum];
 }
 
+- (void)_validateClubName {
+	if ([_clubName rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/'"]].location == NSNotFound)
+		[self _submitClub];
+	
+	else {
+		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
+									message:@"You cannot have / or ' in your club's name"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+	}
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -369,7 +382,6 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSED_CREATE_CLUB" object:nil];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -399,7 +411,7 @@
 						  otherButtonTitles:nil] show];
 	
 	} else
-		[self _submitClub];
+		[self _validateClubName];
 //		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:nil] animated:YES];
 }
 

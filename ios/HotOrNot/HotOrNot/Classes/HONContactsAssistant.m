@@ -117,7 +117,7 @@ static HONContactsAssistant *sharedInstance = nil;
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
 	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] mutableCopy];
-//	NSLog(@"CLUB INVITES:[%@]", invites);
+	NSLog(@"CLUB INVITES:[%@]", invites);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
@@ -144,8 +144,9 @@ static HONContactsAssistant *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
+	
 	NSMutableArray *invites = [[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] mutableCopy];
-//	NSLog(@"CLUB INVITES:[%@]", invites);
+	NSLog(@"CLUB INVITES:[%@]", invites);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in invites) {
@@ -195,15 +196,13 @@ static HONContactsAssistant *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
-//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
 	
 	BOOL isFound = NO;
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
 		for (NSString *key in @[@"owned", @"member"]) {
 			for (NSDictionary *clubDict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]) {
-				HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:clubDict];
-				
-				if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:vo.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:[@"" stringFromInt:trivialUserVO.userID]]) {
+				if ([[dict objectForKey:@"club_id"] intValue] == [[clubDict objectForKey:@"club_id"] intValue] && [[dict objectForKey:@"user_id"] intValue] == trivialUserVO.userID) {
 					isFound = YES;
 					break;
 				}
@@ -218,34 +217,59 @@ static HONContactsAssistant *sharedInstance = nil;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
-//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
 	
-	BOOL isFound = NO;
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
+	__block BOOL isFound = NO;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		
 		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
 			isFound = YES;
-			break;
+			*stop = YES;
 		}
-	}
+	}];
 	
 	return (isFound);
+	
+//	BOOL isFound = NO;
+//	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
+//		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"phone"] isEqualToString:contactUserVO.mobileNumber]) {
+//			isFound = YES;
+//			break;
+//		}
+//	}
+//	
+//	return (isFound);
 }
 
 - (BOOL)isTrivialUser:(HONTrivialUserVO *)trivialUserVO invitedToClub:(HONUserClubVO *)clubVO {
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] == nil)
 		[[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"club_invites"];
 	
-//	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
+	NSLog(@"CLUB INVITES:[%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]);
 	
-	BOOL isFound = NO;
-	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
+	__block BOOL isFound = NO;
+	[[[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		NSDictionary *dict = (NSDictionary *)obj;
+		
 		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:[@"" stringFromInt:trivialUserVO.userID]]) {
 			isFound = YES;
-			break;
+			*stop = YES;
 		}
-	}
+	}];
 	
 	return (isFound);
+
+	
+//	BOOL isFound = NO;
+//	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"club_invites"]) {
+//		if ([[dict objectForKey:@"club_id"] isEqualToString:[@"" stringFromInt:clubVO.clubID]] && [[dict objectForKey:@"user_id"] isEqualToString:[@"" stringFromInt:trivialUserVO.userID]]) {
+//			isFound = YES;
+//			break;
+//		}
+//	}
+//	
+//	return (isFound);
 }
 
 - (void)writeTrivialUserToDeviceContacts:(HONTrivialUserVO *)trivialUserVO {

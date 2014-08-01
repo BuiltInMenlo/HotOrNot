@@ -68,19 +68,24 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
+#pragma mark -
+static NSString * const kSelfie = @"selfie";
+static NSString * const kMMS = @"mms";
+static NSString * const kSelfPic = @"self pic";
+static NSString * const kPhoto = @"photo";
+static NSString * const kFast = @"fast";
+static NSString * const kTextFree = @"text free";
+static NSString * const kQuick = @"quick";
+static NSString * const kEmoticon = @"emoticon";
+static NSString * const kSnap = @"snap";
+static NSString * const kSelca = @"selca";
+static NSString * const kSelfiesticker = @"selfiesticker";
+static NSString * const kMMSFree = @"mmsfree";
+static NSString * const kEmoji = @"emoji";
+static NSString * const kSticker = @"sticker";
+static NSString * const kCamera = @"camera";
 
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
-
+#pragma mark -
 #pragma mark - Data Calls
 - (void)_retrieveTimeline {
 	if (_progressHUD == nil)
@@ -197,16 +202,6 @@
 	[self _retrieveTimeline];
 }
 
-- (void)viewDidLoad {
-	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
-	[super viewDidLoad];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillAppear:animated];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
@@ -222,28 +217,12 @@
 	
 	if (_isFromCreateClub) {
 		_isFromCreateClub = NO;
-		
 //		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_resume"];
 //		_inviteOverlayView.delegate = self;
 //		
 //		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
 //		[_inviteOverlayView introWithCompletion:nil];
 	}
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidDisappear:animated];
-}
-
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
 }
 
 

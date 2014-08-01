@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONViewController.h"
 
 typedef NS_OPTIONS(NSInteger, HONFeedContentType) {
 	HONFeedContentTypeEmpty				= 0 << 0,	// 000000 - 0  */*
@@ -23,5 +24,5 @@ typedef NS_ENUM(NSInteger, HONClubsNewsFeedAlertType) {
 	HONClubsNewsFeedAlertTypeCreateClub
 };
 
-@interface HONClubsNewsFeedViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONClubsNewsFeedViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

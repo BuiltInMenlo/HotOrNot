@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONViewController.h"
 
 typedef NS_ENUM(NSInteger, HONUserClubsViewControllerAppearedType) {
 	HONUserClubsViewControllerAppearedTypeClear	= 0,
@@ -31,5 +32,5 @@ typedef NS_ENUM(NSInteger, HONUserClubsAlertType) {
 	HONUserClubsAlertTypeInviteContacts
 };
 
-@interface HONUserClubsViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
+@interface HONUserClubsViewController : HONViewController <UIActionSheetDelegate, UIAlertViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 @end
