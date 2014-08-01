@@ -7,6 +7,7 @@
 //
 
 #import "CandyBox.h"
+#import "PCStore.h"
 #import "PicoManager.h"
 #import "PicoUser.h"
 #import "PicoSticker.h"
@@ -41,7 +42,7 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 - (NSDictionary *)fetchAllCandyBoxContents;
 - (BOOL)candyBoxContainsContentForContentID:(NSString *)contentID;
 - (BOOL)candyBoxContainsContentGroupForContentGroupID:(NSString *)contentGroupID;
-- (PicoSticker *)stickerImageFromCandyBoxWithContentID:(NSString *)contentID;
+- (PicoSticker *)stickerFromCandyBoxWithContentID:(NSString *)contentID;
 
 
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;

@@ -28,6 +28,7 @@
 #import "KeenClient.h"
 #import "KeychainItemWrapper.h"
 #import "KikAPI.h"
+#import "PicoSticker.h"
 #import "Reachability.h"
 #import "TSTapstream.h"
 //#import "UAConfig.h"
@@ -410,17 +411,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 + (NSString *)cleanImagePrefixURL:(NSString *)imageURL {
-//	NSMutableString *imagePrefix = [imageURL mutableCopy];
-//	
-//	[imagePrefix replaceOccurrencesOfString:[kSnapThumbSuffix substringToIndex:[kSnapThumbSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
-//	[imagePrefix replaceOccurrencesOfString:[kSnapMediumSuffix substringToIndex:[kSnapMediumSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
-//	[imagePrefix replaceOccurrencesOfString:[kSnapLargeSuffix substringToIndex:[kSnapLargeSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
-//	[imagePrefix replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
-//	[imagePrefix replaceOccurrencesOfString:@".jpg" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
-//	[imagePrefix replaceOccurrencesOfString:@".png" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
-//	
-//	return ([imagePrefix copy]);
-	
 	return ([[HONImageBroker sharedInstance] normalizedPrefixForImageURL:imageURL]);
 }
 
@@ -1077,7 +1067,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"device_token"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"] forKey:@"device_token"];
+//	[[NSUserDefaults standardUserDefaults] setObject:[[NSString stringWithFormat:@"%064d", 0] stringByReplacingOccurrencesOfString:@"0" withString:@"F"] forKey:@"device_token"];
+	[[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"device_token"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[HONAPICaller sharedInstance] updateDeviceTokenWithCompletion:^(NSDictionary *result) {
@@ -1886,7 +1877,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
 	NSLog(@"CandyBox:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchAllCandyBoxContents]);
 	
-	//[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
+	[self performSelector:@selector(_picoCandyTest2) withObject:nil afterDelay:4.0];
 }
 
 - (void)_picoCandyTest2 {

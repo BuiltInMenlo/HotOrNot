@@ -124,14 +124,41 @@ static NSString * const kCamera = @"camera";
 				}
 			}
 			
+			if ([key isEqualToString:@"member"]) {
+				[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]];
+			}
+			
 			[_clubIDs setValue:clubIDs forKey:key];
 		}
 		
 		
 		_timelineItems = nil;
 		_timelineItems = [NSMutableArray array];
-		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
+		
+		
+		for (NSDictionary *dict in _dictClubs)//[NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
+		
+		
+//		[_timelineItems sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//			HONUserClubVO *club1VO = ((HONUserClubVO *)obj1);
+//			HONUserClubVO *club2VO = ((HONUserClubVO *)obj2);
+//			
+//			if (club1VO.clubEnrollmentType == HONClubEnrollmentTypePending)
+//				return ((NSComparisonResult)NSOrderedAscending);
+//			
+//			else
+//				return ((NSComparisonResult)NSOrderedSame);
+//			
+//			if (club1VO.updatedDate < club2VO.updatedDate)
+//				return (NSComparisonResult)NSOrderedAscending;
+//			
+//			else if (club1VO.updatedDate > club2VO.updatedDate)
+//				return (NSComparisonResult)NSOrderedDescending;
+//				
+//			return (NSComparisonResult)NSOrderedSame;
+//		}];
+
 		
 		_suggestedClubs = nil;
 		_suggestedClubs = [[HONClubAssistant sharedInstance] suggestedClubs];
@@ -429,7 +456,7 @@ static NSString * const kCamera = @"camera";
 	
 	} else {
 		HONUserClubVO *vo = [_allClubs objectAtIndex:indexPath.row];
-		return ((vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? 50 : 74.0);
+		return ((vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? 50.0 : 74.0);
 	}
 }
 

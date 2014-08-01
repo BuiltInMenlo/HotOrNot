@@ -8,6 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -215,20 +216,19 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
 										withEmotion:emotionVO];
 	
-//	if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
-//		NSLog(@"ContentGroup in CandyBox");
-//		emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerImageFromCandyBoxWithContentID:emotionVO.emotionID];
-//	
-//	} else {
-//		NSLog(@"Purchasing ContentGroup");
-//		[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
-//	}
+	if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
+		NSLog(@"ContentGroup in CandyBox --(%@)", emotionVO.contentGroupID);
+		emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+		[emotionVO.picoSticker use];
+	
+	} else {
+		NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
+		[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
+	}
 	
 	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
-	
-//	[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:@"813" usingDelegate:self];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {

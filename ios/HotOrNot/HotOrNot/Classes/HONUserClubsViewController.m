@@ -241,19 +241,23 @@ static NSString * const kCamera = @"camera";
 	
 	NSLog(@"navigationController:[%@] presentedViewController.nameOfClass:[%@]", self.navigationController, viewController.nameOfClass);
 	
-	if ([viewController.nameOfClass isEqualToString:@"HONCreateClubViewController"])
-		_appearedType = HONUserClubsViewControllerAppearedTypeCreateClubCanceled;
+//	if ([viewController.nameOfClass isEqualToString:@"HONCreateClubViewController"])
+//		_appearedType = HONUserClubsViewControllerAppearedTypeCreateClubCanceled;
+//	
+//	else if ([viewController.nameOfClass isEqualToString:@"HONSelfieCameraViewController"])
+//		_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled;
+//
+//	else if ([viewController.nameOfClass isEqualToString:@"HONSelfieCameraSubmitViewController"])
+//		_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCompleted;
 	
-	else if ([viewController.nameOfClass isEqualToString:@"HONSelfieCameraViewController"])
-		_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled;
-
-	else if ([viewController.nameOfClass isEqualToString:@"HONSelfieCameraSubmitViewController"])
-		_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCompleted;
-	
-	else if ([viewController.nameOfClass isEqualToString:@"HONInviteContactsViewController"])
-		_appearedType = HONUserClubsViewControllerAppearedTypeCreateClubCompleted;
-	
-	else
+	if (_appearedType != HONUserClubsViewControllerAppearedTypeInviteFriends) {
+		if ([viewController.nameOfClass isEqualToString:@"HONInviteContactsViewController"])
+			_appearedType = (self.navigationController) ? HONUserClubsViewControllerAppearedTypeCreateClubCompleted : HONUserClubsViewControllerAppearedTypeClear;
+		
+		else
+			_appearedType = HONUserClubsViewControllerAppearedTypeClear;
+		
+	} else
 		_appearedType = HONUserClubsViewControllerAppearedTypeClear;
 }
 
@@ -576,6 +580,7 @@ static NSString * const kCamera = @"camera";
 	} else if (actionSheet.tag == HONUserClubsActionSheetTypePending) {
 	} else if (actionSheet.tag == HONUserClubsActionSheetTypeOwner) {
 		if (buttonIndex == 0) {
+			_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
@@ -592,6 +597,7 @@ static NSString * const kCamera = @"camera";
 		
 		} else if (actionSheet.tag == HONUserClubsActionSheetTypeMember) {
 			if (buttonIndex == 0) {
+				_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
@@ -658,6 +664,7 @@ static NSString * const kCamera = @"camera";
 		
 	} else if (alertView.tag == HONUserClubsAlertTypeInviteContacts) {
 		if (buttonIndex == 0) {
+			_appearedType = HONUserClubsViewControllerAppearedTypeInviteFriends;
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];

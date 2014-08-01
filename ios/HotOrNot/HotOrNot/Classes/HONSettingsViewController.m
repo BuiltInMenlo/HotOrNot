@@ -218,7 +218,7 @@
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
+			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
 			[mailComposeViewController setSubject:@"Report Abuse / Bug"];
 			[mailComposeViewController setMessageBody:@"" isHTML:NO];
 			

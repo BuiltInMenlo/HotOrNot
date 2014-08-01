@@ -343,7 +343,7 @@
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																 cachePolicy:kURLRequestCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
-							   placeholderImage:[UIImage imageNamed:@"avatarPlaceholder"]
+							   placeholderImage:nil
 										success:imageSuccessBlock
 										failure:imageFailureBlock];
 	}

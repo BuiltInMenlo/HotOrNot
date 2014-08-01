@@ -12,11 +12,13 @@
 #import "UIView+ReverseSubviews.h"
 
 #import "HONClubNewsFeedViewCell.h"
+#import "HONImageLoadingView.h"
 #import "HONClubPhotoVO.h"
 #import "HONEmotionVO.h"
 
 @interface HONClubNewsFeedViewCell ()
 @property (nonatomic, strong) HONClubPhotoVO *photoVO;
+@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
@@ -60,21 +62,31 @@
 	[self.contentView addSubview:titleLabel];
 	
 	if (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) {
+		_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(18.0, 16.0) asLargeLoader:NO];
+		[self.contentView addSubview:_imageLoadingView];
+		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 16.0, 44.0, 44.0)];
 		[self.contentView addSubview:imageView];
-		[[HONImageBroker sharedInstance] maskImageView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		
 		void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			[[HONImageBroker sharedInstance] maskImageView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
 			imageView.image = image;
+			[_imageLoadingView stopAnimating];
+			[_imageLoadingView removeFromSuperview];
 		};
 		
 		void (^avatarImageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 			[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? HONS3BucketTypeAvatars : HONS3BucketTypeClubs completion:nil];
 			
+			imageView.frame = CGRectMake(7.0, 6.0, 64.0, 64.0);
 			imageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+			[[HONImageBroker sharedInstance] maskImageView:imageView withMask:[UIImage imageNamed:@"contactMask"]];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				imageView.alpha = 1.0;
-			} completion:nil];
+			} completion:^(BOOL finished) {
+				[_imageLoadingView stopAnimating];
+				[_imageLoadingView removeFromSuperview];
+			}];
 		};
 		
 		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_photoVO.imagePrefix stringByAppendingString:kSnapThumbSuffix]]
@@ -106,9 +118,9 @@
 		
 		int cnt = 0;
 		for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_photoVO]) {
-			UIImageView *emotionImageView = [self _imageViewForEmotion:emotionVO];
-			emotionImageView.frame = CGRectOffset(emotionImageView.frame, 69.0 + (cnt * 30), 34.0);
-			[self.contentView addSubview:emotionImageView];
+			UIView *emotionView = [self _viewForEmotion:emotionVO];
+			emotionView.frame = CGRectOffset(emotionView.frame, 69.0 + (cnt * 30), 34.0);
+			[self.contentView addSubview:emotionView];
 			
 			if (++cnt == 7) {
 				UILabel *elipsisLabel = [[UILabel alloc] initWithFrame:CGRectMake(289.0, 46.0, 15.0, 14.0)];
@@ -160,7 +172,7 @@
 		createClubButton.frame = CGRectMake(253.0, 2.0, 64.0, 44.0);
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_nonActive"] forState:UIControlStateNormal];
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_Active"] forState:UIControlStateHighlighted];
-		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
+		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeCreate || _clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:createClubButton];
 	}
 }
@@ -194,9 +206,15 @@
 
 
 #pragma mark - UI Presentation
-- (UIImageView *)_imageViewForEmotion:(HONEmotionVO *)emotionVO {
+- (UIView *)_viewForEmotion:(HONEmotionVO *)emotionVO {
 	CGRect orgFrame = {0.0, 0.0, 150.0, 150.0};
 	CGRect adjFrame = {0.0, 0.0, 25.0, 25.0};
+	
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:view asLargeLoader:NO];
+	imageLoadingView.alpha = 0.5;
+	[view addSubview:imageLoadingView];
 	
 	CGSize scaleSize = CGSizeMake(adjFrame.size.width / orgFrame.size.width, adjFrame.size.height / orgFrame.size.height);
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(adjFrame) - CGRectGetMidX(orgFrame), CGRectGetMidY(adjFrame) - CGRectGetMidY(orgFrame));
@@ -206,6 +224,12 @@
 	imageView.transform = transform;
 	[imageView setTag:[emotionVO.emotionID intValue]];
 	imageView.alpha = 0.0;
+	[view addSubview:imageView];
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[imageLoadingView stopAnimating];
+		[imageLoadingView removeFromSuperview];
+	};
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
@@ -217,6 +241,8 @@
 						 animations:^(void) {
 							 imageView.alpha = 1.0;
 						 } completion:^(BOOL finished) {
+							 [imageLoadingView stopAnimating];
+							 [imageLoadingView removeFromSuperview];
 						 }];
 	};
 	
@@ -225,9 +251,9 @@
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
-							  failure:nil];
+							  failure:imageFailureBlock];
 	
-	return (imageView);
+	return (view);
 }
 
 @end

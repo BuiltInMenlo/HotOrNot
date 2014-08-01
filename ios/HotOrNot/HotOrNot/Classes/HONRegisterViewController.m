@@ -414,7 +414,7 @@
 		if ([MFMailComposeViewController canSendMail]) {
 			_mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			_mailComposeViewController.mailComposeDelegate = self;
-			[_mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
+			[_mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
 			[_mailComposeViewController setSubject:@"Selfieclub - Help! I need to log back in"];
 			[_mailComposeViewController setMessageBody:[NSString stringWithFormat:@"My name is %@ and I need to log back into my account. Please help, my email is %@. Thanks!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"email"]] isHTML:NO];
 			

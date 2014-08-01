@@ -23,7 +23,7 @@ const CGSize kImagePaddingSize = {0.0f, 0.0f};
 const CGRect kEmotionIntroFrame = {50.0f, 50.0f, 24.0f, 24.0f};
 const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
-@interface HONEmotionsPickerDisplayView ()
+@interface HONEmotionsPickerDisplayView () <PicoStickerDelegate>
 @property (nonatomic, strong) NSMutableArray *emotions;
 @property (nonatomic, strong) UILabel *label;
 @property (nonatomic, strong) UIView *loaderHolderView;
@@ -101,6 +101,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
 #pragma mark - Public APIs
 - (void)addEmotion:(HONEmotionVO *)emotionVO {
+	NSLog(@"STICKER:[%@]", emotionVO.picoSticker);
+	
 	[_emotions addObject:emotionVO];
 	[self _addImageEmotion:emotionVO];
 	
@@ -122,13 +124,21 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionIntroFrame) - CGRectGetMidX(kEmotionNormalFrame), CGRectGetMidY(kEmotionIntroFrame) - CGRectGetMidY(kEmotionNormalFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+//	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+//	holderView.alpha = 0.0;
+//	holderView.contentMode = UIViewContentModeScaleAspectFit;
+//	holderView.transform = transform;
+//	[_emotionHolderView addSubview:holderView];
+	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+	UIImageView *imageView = emotionVO.picoSticker;//[[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+	imageView.frame = CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
 	imageView.alpha = 0.0;
 	imageView.contentMode = UIViewContentModeScaleAspectFit;
 	imageView.transform = transform;
 	[_emotionHolderView addSubview:imageView];
 	
-	if (emotionVO.image == nil) {
+	if (emotionVO.picoSticker == nil) {
 		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
 		imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
 		imageLoadingView.alpha = 0.667;
@@ -160,7 +170,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 								  failure:nil];
 		
 	} else {
-		imageView.image = emotionVO.image;
+		
 		[UIView animateWithDuration:0.200 delay:0.125
 			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
 							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
@@ -232,5 +242,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 //	NSLog(@"[=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=|:|=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=]");
 }
 
+
+#pragma mark - PicoSticker Delegates
+- (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
+	NSLog(@"[*:*] sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
+}
 
 @end

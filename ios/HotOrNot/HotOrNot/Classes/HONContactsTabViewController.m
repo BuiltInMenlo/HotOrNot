@@ -75,9 +75,7 @@ static NSString * const kCamera = @"camera";
 		[self _goRegistration];
 	
 	else
-#if TARGET_OS_IPHONE
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-#endif
 }
 
 #pragma mark - Navigation
