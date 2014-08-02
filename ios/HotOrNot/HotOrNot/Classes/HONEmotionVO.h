@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "PCContent.h"
 #import "PicoSticker.h"
 
 @interface HONEmotionVO : NSObject
@@ -19,6 +20,7 @@
 @property (nonatomic, retain) NSString *largeImageURL;
 @property (nonatomic, retain) NSString *mediumImageURL;
 @property (nonatomic, retain) NSString *smallImageURL;
+@property (nonatomic, retain) PCContent *pcContent;
 @property (nonatomic, retain) PicoSticker *picoSticker;
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic) CGFloat price;

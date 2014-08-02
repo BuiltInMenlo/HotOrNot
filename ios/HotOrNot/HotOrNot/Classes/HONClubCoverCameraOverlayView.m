@@ -208,7 +208,7 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"Choosing a cover photo for your club"
 													   delegate:self
-											  cancelButtonTitle:@"Cancel"
+											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											  otherButtonTitles:@"Take Photo", nil];
 	[alertView setTag:0];
 	[alertView show];

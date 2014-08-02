@@ -225,7 +225,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
+			_progressHUD.labelText = (errorCode == 1) ? NSLocalizedString(@"hud_usernameTaken", nil) : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -255,7 +255,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
 									message:@"You cannot have / or ' in your club's name"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -422,7 +422,7 @@
 			[[[UIAlertView alloc] initWithTitle:@"Email Error"
 										message:@"Cannot send email from this device!"
 									   delegate:nil
-							  cancelButtonTitle:@"OK"
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
 		
@@ -430,7 +430,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"This device has never been logged in!"
 									message:@""
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -625,7 +625,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to use Selfieclub"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 		_username = @"";
@@ -640,7 +640,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
 									message:@"You need a phone # to use Selfieclub."
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 		_phone = @"";
@@ -657,7 +657,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone!"
 									message:@"You need to enter a username and phone # to use Selfieclub"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }

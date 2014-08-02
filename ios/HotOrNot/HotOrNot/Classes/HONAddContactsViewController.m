@@ -349,7 +349,7 @@
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We need your OK to access the the address book."
 																message:nil
 															   delegate:nil
-													  cancelButtonTitle:@"OK"
+													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 													  otherButtonTitles:nil];
 			[alertView show];
 		}

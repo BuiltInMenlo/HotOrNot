@@ -41,7 +41,7 @@
 #import "HONAppDelegate.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
-#import "HONInviteOverlayView.h"
+#import "HONInsetOverlayView.h"
 #import "HONTabBarController.h"
 #import "HONInviteContactsViewController.h"
 #import "HONClubPreviewViewController.h"
@@ -138,10 +138,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #if __APPSTORE_BUILD__ == 0
 //@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, UAPushNotificationDelegate, PicoStickerDelegate>
-@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInviteOverlayViewDelegate, PicoStickerDelegate>
+@interface HONAppDelegate() <BITHockeyManagerDelegate, ChartboostDelegate, HONInsetOverlayViewDelegate, PicoStickerDelegate>
 #else
 //@interface HONAppDelegate() <ChartboostDelegate, UAPushNotificationDelegate>
-@interface HONAppDelegate() <ChartboostDelegate, HONInviteOverlayViewDelegate>
+@interface HONAppDelegate() <ChartboostDelegate, HONInsetOverlayViewDelegate>
 #endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -153,7 +153,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 @property (nonatomic) int userID;
 @property (nonatomic) BOOL awsUploadCounter;
 @property (nonatomic, copy) NSString *currentConversationID;
-@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
+@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @end
 
 
@@ -181,8 +181,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAIHUQ42RE7R7CIMEA", @"key", @"XLFSr4XgGptznyEny3rw3BA//CrMWf7IJlqD7gAQ", @"secret", nil]);
 }
 
++ (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:(insetType == HONInsetOverlayViewTypeAppReview) ? @"review" : (insetType == HONInsetOverlayViewTypeSuggestions) ? @"contacts" : @"unlock"]);
+}
+
 + (NSTimeInterval)timeoutInterval {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeout_interval"] doubleValue]);
+}
+
++ (int)clubInvitesThreshold {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_threshold"] intValue]);
 }
 
 + (CGFloat)minSnapLuminosity {
@@ -458,10 +466,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeout_interval"] forKey:@"timeout_interval"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_templates"] forKey:@"share_templates"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"share_url"] forKey:@"share_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"invite_threshold"] forKey:@"invite_threshold"];
 		[[NSUserDefaults standardUserDefaults] setObject:[self _colorsFromJSON:[result objectForKey:@"overlay_tint_rbgas"]] forKey:@"overlay_tint_rbgas"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"sandhill_domains"] forKey:@"sandhill_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"pico_candy"] forKey:@"pico_candy"];
@@ -602,7 +612,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	NSLog(@"_showShareShelf:[%@]", _shareInfo);
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[[NSUserDefaults standardUserDefaults] objectForKey:@"share_title"]
 															 delegate:self
-													cancelButtonTitle:@"Cancel"
+													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Kik", @"Instagram", @"Twitter", @"Facebook", @"SMS", @"Email", @"Copy link", nil];
 	[actionSheet setTag:0];
@@ -640,7 +650,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[[[UIAlertView alloc] initWithTitle:title
 								message:message
 							   delegate:nil
-					  cancelButtonTitle:@"OK"
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 					  otherButtonTitles:nil] show];
 }
 
@@ -849,16 +859,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-//			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-//			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0) {
-//				if ([HONAppDelegate totalForCounter:@"background"] == 3) {
-//					_inviteOverlayView = [[HONInviteOverlayView alloc] initWithImageURL:@"tutorial_resume"];
-//					_inviteOverlayView.delegate = self;
-//					
-//					[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-//					[_inviteOverlayView introWithCompletion:nil];
-//				}
-//			}
+			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0 && [HONAppDelegate totalForCounter:@"background"] >= 3) {
+				if (_insetOverlayView == nil) {
+					_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeSuggestions];
+					_insetOverlayView.delegate = self;
+					
+					[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+					[_insetOverlayView introWithCompletion:nil];
+				}
+			}
 			
 			
 			if (![HONAppDelegate canPingConfigServer]) {
@@ -974,7 +984,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"alert_member", nil), _selectedClubVO.clubName] //@"You are already a member of"
 																							message:@""
 																						   delegate:nil
-																				  cancelButtonTitle:@"Ok"
+																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 																				  otherButtonTitles:nil] show];
 									
 									} else {
@@ -986,8 +996,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 										UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																							message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]//@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 																						   delegate:self
-																				  cancelButtonTitle:@"OK"
-																				  otherButtonTitles:@"Cancel", nil];
+																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 										
 										[alertView setTag:7];
 										[alertView show];
@@ -999,8 +1009,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Club Not Found!"
 																					message:@"Would you like to create it?"
 																				   delegate:self
-																		  cancelButtonTitle:@"Yes"
-																		  otherButtonTitles:@"No", nil];
+																		  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+																		  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
 								[alertView setTag:9];
 								[alertView show];
 							}
@@ -1010,7 +1020,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						[[[UIAlertView alloc] initWithTitle:@"Username Not Found!"
 													message:@""
 												   delegate:nil
-										  cancelButtonTitle:@"OK"
+										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 										  otherButtonTitles:nil] show];
 					}
 				}
@@ -1280,8 +1290,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
 														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 		[alertView setTag:1];
 		[alertView show];
 	
@@ -1291,8 +1301,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
 															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"OK", nil];
+													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 			[alertView setTag:6];
 			[alertView show];
 			
@@ -1309,8 +1319,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
 														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 		[alertView setTag:1];
 		[alertView show];
 		
@@ -1320,8 +1330,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																message:[[notification objectForKey:@"aps"] objectForKey:@"alert"]
 															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"OK", nil];
+													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 			[alertView setTag:6];
 			[alertView show];
 			
@@ -1352,8 +1362,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
 														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 		[alertView setTag:1];
 		[alertView show];
 		
@@ -1400,8 +1410,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:@"Awesome! You have been Selfieclub Verified! Would you like to share Selfieclub with your friends?"
 														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
 		[alertView setTag:1];
 		[alertView show];
 		
@@ -1481,36 +1491,25 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
-#pragma mark - InviteOverlay Delegates
-- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Close"];
+#pragma mark - InsetOverlay Delegates
+- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Close"];
 	
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
 }
 
-- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay CTA"];
+- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Acknowledge"];
 	
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
-}
-
-- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Skip"];
 	
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
-	}];
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 }
 
 
@@ -1614,7 +1613,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
-														  cancelButtonTitle:@"Yes"
+														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles:@"Not Now", nil];
 				
 				[alertView setTag:8];
@@ -1629,8 +1628,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
+													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
 			
 			[alertView setTag:8];
 			[alertView show];
@@ -1664,7 +1663,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[[UIAlertView alloc] initWithTitle:@"Not Available"
 											message:@"This device isn't allowed or doesn't recognize Instagram!"
 										   delegate:nil
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 			}
 		
@@ -1687,7 +1686,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[[UIAlertView alloc] initWithTitle:@""
 											message:@"Cannot use Twitter from this device!"
 										   delegate:nil
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 			}
 		
@@ -1740,7 +1739,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
 											message:@"Cannot send SMS from this device!"
 										   delegate:nil
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 			}
 		
@@ -1755,10 +1754,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"email_error", nil) //@"Email Error"
-											message: NSLocalizedString(@"email_errormsg", nil) //@"Cannot send email from this device!"
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", nil) //@"Email Error"
+											message:NSLocalizedString(@"email_errormsg", nil) //@"Cannot send email from this device!"
 										   delegate:nil
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 			}
 		

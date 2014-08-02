@@ -11,6 +11,8 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
+#import "PicoSticker.h"
+
 #import "HONClubPhotoViewCell.h"
 #import "HONEmotionVO.h"
 #import "HONImageLoadingView.h"
@@ -113,11 +115,11 @@
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	
-	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) : NSLocalizedString(@"ago_emotions", nil);
+	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
 	[self.contentView addSubview:timeLabel];
 	
-	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 312.0, 84.0)];
+	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 320.0, 84.0)];
 	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
 	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
 	emoticonsScrollView.showsVerticalScrollIndicator = NO;
@@ -187,14 +189,20 @@
 	[imageLoadingView startAnimating];
 	[holderView addSubview:imageLoadingView];
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
-	[imageView setTag:[emotionVO.emotionID intValue]];
-	imageView.alpha = 0.0;
-	[holderView addSubview:imageView];
+//	PicoSticker *picoSticker = [[PicoSticker alloc] initWithPCContent:emotionVO.pcContent];
+//	[holderView addSubview:picoSticker];
 	
-	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
-																	 @"image_view"		: imageView,
-																	 @"emotion"			: emotionVO} afterDelay:0.25];
+	PicoSticker *picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+	[holderView addSubview:picoSticker];
+	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
+//	[imageView setTag:[emotionVO.emotionID intValue]];
+//	imageView.alpha = 0.0;
+//	[holderView addSubview:imageView];
+//	
+//	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
+//																	 @"image_view"		: imageView,
+//																	 @"emotion"			: emotionVO} afterDelay:0.25];
 	
 	return (holderView);
 }

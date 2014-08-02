@@ -50,7 +50,7 @@
 	_clubNewsFeedCellType = (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeMember || (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner && [_clubVO.submissions count] > 0)) ? HONClubNewsFeedCellTypePhotoSubmission : HONClubNewsFeedCellTypeNonMember;
 	
 	_photoVO = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? (HONClubPhotoVO *)[_clubVO.submissions firstObject] : nil;
-	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat: NSLocalizedString(@"in_news", nil) /* @"%@ - in %@" */, _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
+	NSString *titleCaption = (_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? [NSString stringWithFormat:NSLocalizedString(@"in_news", nil) /* @"%@ - in %@" */, _photoVO.username, _clubVO.clubName] : [_clubVO.clubName stringByAppendingString:@" - Join Now!"];
 
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:(_clubNewsFeedCellType == HONClubNewsFeedCellTypePhotoSubmission) ? CGRectMake(69.0, 10.0, 210.0, 16.0) : CGRectMake(17.0, 7.0, 238.0, 16.0)];
 	titleLabel.backgroundColor = [UIColor clearColor];
@@ -172,7 +172,7 @@
 		createClubButton.frame = CGRectMake(253.0, 2.0, 64.0, 44.0);
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_nonActive"] forState:UIControlStateNormal];
 		[createClubButton setBackgroundImage:[UIImage imageNamed:@"plusClubButton_Active"] forState:UIControlStateHighlighted];
-		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeCreate || _clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @selector(_goCreateClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
+		[createClubButton addTarget:self action:(_clubVO.clubEnrollmentType == HONClubEnrollmentTypeCreate || _clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @selector(_goCreateClub) : (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @selector(_goThresholdClub) : @selector(_goJoinClub) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:createClubButton];
 	}
 }
@@ -194,9 +194,14 @@
 		[self.delegate clubNewsFeedViewCell:self joinClub:_clubVO];
 }
 
+- (void)_goThresholdClub {
+	if ([self.delegate respondsToSelector:@selector(clubNewsFeedViewCell:joinThreholdClub:)])
+		[self.delegate clubNewsFeedViewCell:self joinThreholdClub:_clubVO];
+}
+
 - (void)_goLike {
 	if ([self.delegate respondsToSelector:@selector(clubNewsFeedViewCell:upvoteClubPhoto:)])
-		[self.delegate clubNewsFeedViewCell:self upvoteClubPhoto:_clubVO];
+		[self.delegate clubNewsFeedViewCell:self upvoteClubPhoto:_photoVO];
 }
 
 - (void)_goReply {

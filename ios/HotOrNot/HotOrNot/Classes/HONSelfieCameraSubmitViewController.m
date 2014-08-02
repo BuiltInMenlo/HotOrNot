@@ -38,7 +38,6 @@
 		if (_clubID != 0) {
 			[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:[[_submitParams objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
 				_clubVO = [HONUserClubVO clubWithDictionary:result];
-				[_selectedClubs addObject:_clubVO];
 			}];
 		}
 	}
@@ -70,7 +69,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	[_headerView setTitle: NSLocalizedString(@"select_club", nil)]; //@"Select Club"];
+	[_headerView setTitle:NSLocalizedString(@"select_club", nil)]; //@"Select Club"];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
@@ -125,16 +124,16 @@
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
-	if (_clubVO != nil) {
-		if (![_selectedClubs containsObject:_clubVO])
-			[_selectedClubs addObject:_clubVO];
-	}
+//	if (_clubVO != nil) {
+//		if (![_selectedClubs containsObject:_clubVO])
+//			[_selectedClubs addObject:_clubVO];
+//	}
 	
 	if ([_selectedClubs count] == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
 															message:@"You have to choose at least one club to submit your photo into."
 														   delegate:self
-												  cancelButtonTitle:@"OK"
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 												  otherButtonTitles:nil];
 		[alertView setTag:0];
 		[alertView show];
@@ -177,12 +176,15 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell deselectedClub:userClubVO];
 	
-	if (_clubVO != nil && userClubVO.clubID == _clubVO.clubID)
+	if (userClubVO.clubID == _clubVO.clubID)
 		_clubVO = nil;
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell selectedClub:userClubVO];
+	
+//	if (_clubVO == nil && userClubVO.clubID == _clubVO.clubID)
+//		_clubVO = nil;
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {

@@ -497,7 +497,8 @@
 }
 
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_userClubVO viewControllerPushed:NO]];
+	HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"] firstObject]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:vo viewControllerPushed:NO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -595,14 +596,14 @@
 	_previewView.delegate = self;
     
 	
-	//[self dismissViewControllerAnimated:NO completion:^(void) {
-	//	[self.view addSubview:_previewView];
-	//}];
-
+//	[self dismissViewControllerAnimated:NO completion:^(void) {
+//		[self.view addSubview:_previewView];
+//	}];
 //	
 //	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
 //    emotionsViewConteroller.view = _previewView;
 //    [self.navigationController pushViewController:emotionsViewConteroller animated:YES];
+	
 	
 	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		[_cameraOverlayView submitStep:_previewView];

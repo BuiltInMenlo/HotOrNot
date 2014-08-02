@@ -13,7 +13,7 @@
 const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
 @interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
-@property (nonatomic, strong) NSMutableArray *availableEmotions;
+@property (nonatomic, strong) __block NSMutableArray *availableEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *bgImageView;
@@ -29,26 +29,142 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 @synthesize delegate = _delegate;
 
 
+- (void)_delayed {
+	NSLog(@"STICKERS:[%@]", _availableEmotions);
+}
+
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_availableEmotions = [NSMutableArray array];
 		_selectedEmotions = [NSMutableArray array];
 		
+		_prevPage = 0;
+		_totalPages = 0;
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
-			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
+		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
 		
-		if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= 3) {
-			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeInviteBonus])
-				[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
+		[self addSubview:_bgImageView];
+		
+		_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 272.0)];
+		_scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, _scrollView.frame.size.height);
+		_scrollView.showsHorizontalScrollIndicator = NO;
+		_scrollView.showsVerticalScrollIndicator = NO;
+		_scrollView.pagingEnabled = YES;
+		_scrollView.delegate = self;
+		[self addSubview:_scrollView];
+		
+		
+		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0);
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
+		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
+		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
+		[self addSubview:deleteButton];
+		
+		
+		__block int cnt = 0;
+		for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak]) {
+			[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+				[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					PCContent *content = (PCContent *)obj;
+					HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+																			 @"cg_id"	: contentGroupID,
+																			 @"name"	: content.name,
+																			 @"price"	: [content.price stringValue],
+																			 @"content"	: content,
+																			 @"img"		: @""}];
+					[_availableEmotions addObject:vo];
+					
+				}];
+				
+				if (++cnt >= free_tot) {
+					
+					cnt = 0;
+					if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
+						for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
+							[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+								[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+									PCContent *content = (PCContent *)obj;
+									HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+																							 @"cg_id"	: contentGroupID,
+																							 @"name"	: content.name,
+																							 @"price"	: [content.price stringValue],
+																							 @"content"	: content,
+																							 @"img"		: @""}];
+									[_availableEmotions addObject:vo];
+									
+								}];
+								
+								if (++cnt >= invite_tot) {
+									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+									
+									_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+									[_paginationView updateToPage:0];
+									[self addSubview:_paginationView];
+									
+									[self _buildGrid];
+								}
+							}];
+						}
+					
+					} else {
+						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+						
+						_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+						[_paginationView updateToPage:0];
+						[self addSubview:_paginationView];
+						
+						[self _buildGrid];
+					}
+				}
+			}];
+		}
+			
+//
+			
+//		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
+//			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
+//		
+		if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
+			for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
+				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+					[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+						PCContent *content = (PCContent *)obj;
+						HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+																				 @"cg_id"	: contentGroupID,
+																				 @"name"	: content.name,
+																				 @"price"	: [content.price stringValue],
+																				 @"content"	: content,
+																				 @"img"		: @""}];
+						[_availableEmotions addObject:vo];
+						
+					}];
+					
+					if (++cnt == [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count]) {
+						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+						
+						_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+						[_paginationView updateToPage:0];
+						[self addSubview:_paginationView];
+						
+						[self _buildGrid];
+					}
+				}];
+			}
+			
+			
+//			for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeInviteBonus])
+//				[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		}
 		
-		
-		NSLog(@"INVITES:[%d]", [[HONContactsAssistant sharedInstance] totalInvitedContacts]);
-		
-		_prevPage = 0;
+/*
 		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"emojiPanelBG"]];
@@ -79,6 +195,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[self addSubview:deleteButton];
 		
 		[self _buildGrid];
+*/
 	}
 	
 	return (self);
@@ -133,7 +250,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		emotionItemView.delegate = self;
-		[emotionItemView setTag:cnt];
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];
 		

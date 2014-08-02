@@ -1154,7 +1154,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONOpponentVO *)opponentVO completion:(void (^)(id result))completion {
+- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"			: [@"" stringFromInt:6],
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"challengeID"		: [@"" stringFromInt:challengeID],

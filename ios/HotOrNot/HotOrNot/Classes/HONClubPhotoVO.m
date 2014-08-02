@@ -21,7 +21,7 @@
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	
-//	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
+	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.challengeID = [[dictionary objectForKey:@"challenge_id"] intValue];
 	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];

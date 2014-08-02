@@ -54,7 +54,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"enter_pin", nil)]; //@"Enter Pin"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", nil)]; //@"Enter Pin"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -155,10 +155,10 @@
 		_pinTextField.text = @"";
 		[_pinTextField becomeFirstResponder];
 		
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_pin", nil) //@"Invalid Pin!"
-									message: NSLocalizedString(@"invalid_pin_msg", nil) //@"Pin numbers need to be 4 numbers"
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", nil) //@"Invalid Pin!"
+									message:NSLocalizedString(@"invalid_pin_msg", nil) //@"Pin numbers need to be 4 numbers"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	
 	} else {
@@ -184,10 +184,10 @@
 				_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				_pinCheckImageView.alpha = 1.0;
 				
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_pin", nil)  //@"Invalid Pin!"
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", nil)  //@"Invalid Pin!"
 											message:@"Please try again or press the resend button"
 										   delegate:nil
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 			
 			} else {
@@ -204,7 +204,7 @@
 					
 					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
 												message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]											   delegate:nil
-									  cancelButtonTitle:@"OK"
+									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 									  otherButtonTitles:nil] show];
 					
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
@@ -235,10 +235,10 @@
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_title", nil), [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]] //@"Your %@ has been copied to your device's clipboard!"
-									message:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_msg", nil)] //@"\nPaste this URL anywhere to have your friends join!"]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]] //@"Your %@ has been copied to your device's clipboard!"
+									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)] //@"\nPaste this URL anywhere to have your friends join!"]
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];

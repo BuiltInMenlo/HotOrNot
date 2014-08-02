@@ -19,7 +19,7 @@
 
 - (id)init {
 	if ((self = [super initWithURL:@"https://www.twitter.com/selfiec_status"
-							 title: NSLocalizedString(@"network_status", nil)])) { //@"Network Status"])) {
+							 title:NSLocalizedString(@"network_status", nil)])) { //@"Network Status"])) {
 	}
 	
 	return (self);

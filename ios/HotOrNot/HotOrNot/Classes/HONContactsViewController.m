@@ -219,62 +219,6 @@
 #pragma mark - Device Functions
 - (void)_retrieveDeviceContacts {
 	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
-//	NSMutableArray *unsortedContacts = [NSMutableArray array];
-//	
-//	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-//	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-//	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
-//	
-//	for (int i=0; i<nPeople; i++) {
-//		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
-//		
-//		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
-//		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
-//		
-//		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : fName;
-//		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
-//		
-//		if ([fName length] == 0 && [lName length] == 0)
-//			continue;
-//		
-//		
-//		NSData *imageData = nil;
-//		if (ABPersonHasImageData(ref))
-//			imageData = (__bridge NSData *)ABPersonCopyImageDataWithFormat(ref, kABPersonImageFormatThumbnail);
-//		imageData = (imageData == nil) ? UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"]) : imageData;
-//		
-//		
-//		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-//		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
-//		NSString *phoneNumber = (phoneCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0) : @"";
-//		CFRelease(phoneProperties);
-//		
-//		
-//		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
-//		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
-//		NSString *email = (emailCount > 0) ? (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0) : @"";
-//		CFRelease(emailProperties);
-//		
-//		if ([phoneNumber length] > 0 || [email length] > 0) {
-//			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:@{@"f_name"	: fName,
-//																			 @"l_name"	: lName,
-//																			 @"phone"	: phoneNumber,
-//																			 @"email"	: email,
-//																			 @"image"	: imageData}];
-//			[unsortedContacts addObject:vo.dictionary];
-//			
-//			
-//			if (vo.isSMSAvailable)
-//				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
-//			
-//			else
-//				_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
-//		}
-//	}
-//	
-//	_deviceContacts = [NSMutableArray array];
-//	for (NSDictionary *dict in [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
-//		[_deviceContacts addObject:[HONContactUserVO contactWithDictionary:dict]];
 	
 	_deviceContacts = [NSMutableArray array];
 	for (HONContactUserVO *vo in [[HONContactsAssistant sharedInstance] deviceContactsSortedByName:YES]) {
@@ -410,9 +354,9 @@
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
 	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
-								message: NSLocalizedString(@"grant_access", nil) //@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
+								message:NSLocalizedString(@"grant_access", nil) //@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
-					  cancelButtonTitle:@"OK"
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 					  otherButtonTitles:nil] show];
 }
 
@@ -420,7 +364,7 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Allow Access to your contacts?"
 														message:nil
 													   delegate:self
-											  cancelButtonTitle:@"No"
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:0];
 	[alertView show];
@@ -522,7 +466,8 @@
 		
 		if (cell.contactUserVO.contactType == HONContactTypeMatched)
 			cell.trivialUserVO = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-				
+		
+		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsCellBG_normal"]];
 //		[cell toggleSelected:[[HONContactsAssistant sharedInstance] isContactUserInvitedToClubs:cell.contactUserVO]];
 		
 	}

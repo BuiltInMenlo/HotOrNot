@@ -24,24 +24,24 @@
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONTimelineScrollDirection) {
 	HONTimelineScrollDirectionDown = 0,	/** Challenges using same hashtag */
 	HONTimelineScrollDirectionUp,			/** Challenges of a single user */
-} HONTimelineScrollDirection;
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONPushType) {
 	HONPushTypeShowChallengeDetails	= 1,			/** Brings up the challenge details modal **/
 	HONPushTypeUserVerified,						/** Shows alert **/
 	HONPushTypeShowUserProfile,						/** Brings up a user's profile **/
 	HONPushTypeShowAddContacts,						/** Brings up the invite contacts modal **/
 	HONPushTypeShowSettings,						/** Brings up the settings modal **/
 	HONPushTypeShowChallengeDetailsIgnoringPushes	/** Brings up the challenge details modal, ignoring next pushes **/
-} HONPushType;
+};
 
 
 
 // share sheet actions
-typedef enum {
+typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeKik = 0,
 	HONShareSheetActionTypeInstagram,
 	HONShareSheetActionTypeTwitter,
@@ -49,10 +49,10 @@ typedef enum {
 	HONShareSheetActionTypeSMS,
 	HONShareSheetActionTypeEmail,
 	HONShareSheetActionTypeClipboard
-} HONShareSheetActionType;
+};
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONAmazonS3BucketType) {
 	HONAmazonS3BucketTypeAvatarsSource = 0,
 	HONAmazonS3BucketTypeAvatarsCloudFront,
 	
@@ -64,7 +64,13 @@ typedef enum {
 	
 	HONAmazonS3BucketTypeEmotionsSource,
 	HONAmazonS3BucketTypeEmoticonsCloudFront
-} HONAmazonS3BucketType;
+};
+
+typedef NS_ENUM(NSUInteger, HONInsetOverlayViewType) {
+	HONInsetOverlayViewTypeAppReview = 0,
+	HONInsetOverlayViewTypeSuggestions,
+	HONInsetOverlayViewTypeUnlock
+};
 
 
 // api endpts
@@ -120,8 +126,11 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSDictionary *)s3Credentials;
 + (NSTimeInterval)timeoutInterval;
++ (int)clubInvitesThreshold;
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType;
+
++ (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
 + (int)incTotalForCounter:(NSString *)key;

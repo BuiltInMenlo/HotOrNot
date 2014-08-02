@@ -62,6 +62,7 @@
 "alert_no" = "No";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
+"alert_invite" = "Invite friends";
 "alert_connectionError_t" = "Connection Error";
 "alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
 "alert_instagramError_t" = "Not Available";
@@ -73,6 +74,9 @@
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
+
+"alert_lockedClub_t" = "Locked Club!";
+"alert_lockedClub_m" = "You must invite at least %d friends to join %@";
 
 "enter_username" = "Enter username";
 "enter_phone" = "Enter phone";

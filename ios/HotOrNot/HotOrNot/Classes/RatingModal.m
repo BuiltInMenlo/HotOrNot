@@ -16,7 +16,7 @@
 @end
 
 @implementation RatingModal
-@synthesize delegate = _delegate;
+//@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
@@ -141,18 +141,18 @@
 
 #pragma mark - Navigation
 - (void)_goClose {
-	if ([self.delegate respondsToSelector:@selector(inviteOverlayViewClose:)])
-		[self.delegate inviteOverlayViewClose:self];
+//	if ([self.delegate respondsToSelector:@selector(inviteOverlayViewClose:)])
+//		[self.delegate inviteOverlayViewClose:self];
 }
 
 - (void)_goInvite {
-	if ([self.delegate respondsToSelector:@selector(inviteOverlayViewInvite:)])
-		[self.delegate inviteOverlayViewInvite:self];
+//	if ([self.delegate respondsToSelector:@selector(inviteOverlayViewInvite:)])
+//		[self.delegate inviteOverlayViewInvite:self];
 }
 
 - (void)_goSkip {
-	if ([self.delegate respondsToSelector:@selector(inviteOverlayViewSkip:)])
-		[self.delegate inviteOverlayViewSkip:self];
+//	if ([self.delegate respondsToSelector:@selector(inviteOverlayViewSkip:)])
+//		[self.delegate inviteOverlayViewSkip:self];
 }
 
 

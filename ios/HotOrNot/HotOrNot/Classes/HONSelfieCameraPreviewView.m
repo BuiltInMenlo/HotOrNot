@@ -15,21 +15,22 @@
 #import "PCCandyStorePurchaseController.h"
 
 #import "HONSelfieCameraPreviewView.h"
-#import "HONInviteOverlayView.h"
+#import "HONInsetOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONEmotionsPickerDisplayView.h"
+#import "HONInviteContactsViewController.h"
 #import "HONEmotionsPickerView.h"
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInviteOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
+@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
@@ -71,7 +72,7 @@
 	[_overlayToggleButton addTarget:self action:@selector(_goToggleOverlay) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:_overlayToggleButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"select_feeling", nil)]; //@"Select Feeling"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"select_feeling", nil)]; //@"Select Feeling"];
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -129,8 +130,8 @@
 			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_noemotions_title", nil) //@"No Emotions Selected!"
-									message: NSLocalizedString(@"alert_noemotions_msg", nil) //@"You need to choose some emotions to make a status update."
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", nil) //@"No Emotions Selected!"
+									message:NSLocalizedString(@"alert_noemotions_msg", nil) //@"You need to choose some emotions to make a status update."
 								   delegate:nil
 						  cancelButtonTitle:  NSLocalizedString(@"alert_ok", nil) //@"OK"
 						  otherButtonTitles:nil] show];
@@ -216,12 +217,12 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
 										withEmotion:emotionVO];
 	
-	if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
-		NSLog(@"ContentGroup in CandyBox --(%@)", emotionVO.contentGroupID);
-		emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
-		[emotionVO.picoSticker use];
+	if (![[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
+//		NSLog(@"ContentGroup in CandyBox --(%@)", emotionVO.contentGroupID);
+//		emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//		[emotionVO.picoSticker use];
 	
-	} else {
+//	} else {
 		NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
 		[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
 	}
@@ -234,7 +235,6 @@
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 
-	
 	[_subjectNames removeObject:emotionVO.emotionName];
 	[_emotionsDisplayView removeEmotion:emotionVO];
 }
@@ -243,40 +243,35 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 3 && page == 1 && direction == 1) {
-//		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_camera"];
-//		_inviteOverlayView.delegate = self;
-//		
-//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-//		[_inviteOverlayView introWithCompletion:nil];
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 10 && page == 1 && direction == 1) {
+		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+		_insetOverlayView.delegate = self;
+		
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+		[_insetOverlayView introWithCompletion:nil];
 	}
 }
 
 
-#pragma mark - InviteOverlay Delegates
-- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+#pragma mark - InsetOverlay Delegates
+- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
 }
 
-- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+- (void)insetOverlayViewDidUnlock:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+
 		
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
 			[self.delegate cameraPreviewViewShowInviteContacts:self];
 	}];
 }
 
-- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
-	}];
-}
 
 
 @end

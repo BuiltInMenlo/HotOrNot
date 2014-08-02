@@ -18,7 +18,7 @@
 #import "HONCollectionView.h"
 #import "HONClubCollectionViewCell.h"
 #import "HONHeaderView.h"
-#import "HONInviteOverlayView.h"
+#import "HONInsetOverlayView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONActivityHeaderButtonView.h"
 #import "HONSelfieCameraViewController.h"
@@ -30,11 +30,9 @@
 #import "HONHighSchoolSearchViewController.h"
 #import "HONSearchBarView.h"
 #import "HONUserClubVO.h"
-#import "RatingModal.h"
-#import "SuggestionModal.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONCreateClubViewControllerDelegate, HONInviteOverlayViewDelegate, HONSearchBarViewDelegate, HONSelfieCameraViewControllerDelegate>
+@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONCreateClubViewControllerDelegate, HONInsetOverlayViewDelegate, HONSearchBarViewDelegate, HONSelfieCameraViewControllerDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -47,10 +45,7 @@
 @property (nonatomic, strong) NSArray *suggestedClubs;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) HONClubCollectionViewCell *selectedCell;
-@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
-@property (nonatomic, strong) SuggestionModal *suggestionOverlayView;
-@property (nonatomic, strong) RatingModal *ratingOverlayView;
-
+@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic) HONUserClubsViewControllerAppearedType appearedType;
 @end
 
@@ -99,10 +94,15 @@ static NSString * const kCamera = @"camera";
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	
+	for (UICollectionView *cell in _collectionView.visibleCells)
+		cell.alpha = 0.0;
+	
 	_dictClubs = [NSMutableArray array];
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
+	_suggestedClubs = [NSMutableArray array];
 	_clubs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												forKeys:@[@"create",
 														  @"suggested",
@@ -111,24 +111,34 @@ static NSString * const kCamera = @"camera";
 	
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
-	[dict setValue: NSLocalizedString(@"create_club", nil) forKey:@"name"]; //@"Create a club" forKey:@"name"];
+	[dict setValue:NSLocalizedString(@"create_club", nil) forKey:@"name"]; //@"Create a club" forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
-	
 	[_dictClubs addObject:[dict copy]];
 	[_clubs setObject:@[[HONUserClubVO clubWithDictionary:dict]] forKey:@"create"];
 	
+	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"LOCKED_CLUB"]) {
+		dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+		[dict setValue:@"111000111" forKey:@"id"];
+		[dict setValue:@"LOCKED_CLUB" forKey:@"name"];
+		[dict setValue:@"LOCKED" forKey:@"club_type"];
+		[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
+		[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
+		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[_dictClubs addObject:[dict copy]];
+		[_clubs setObject:[@[[HONUserClubVO clubWithDictionary:dict]] mutableCopy] forKey:@"pending"];
+	}
 	
 	_suggestedClubs = [[HONClubAssistant sharedInstance] suggestedClubs];
-	[_clubs setObject:_suggestedClubs forKey:@"suggested"];
-	
 	for (HONUserClubVO *vo in _suggestedClubs)
 		[_dictClubs addObject:vo.dictionary];
-	
+	[_clubs setObject:_suggestedClubs forKey:@"suggested"];
 	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		
+		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 		
 		for (NSString *key in [[HONClubAssistant sharedInstance] clubTypeKeys]) {
@@ -141,8 +151,27 @@ static NSString * const kCamera = @"camera";
 				[_dictClubs addObject:dict];
 			}
 			
-			[_clubIDs setValue:clubIDs forKey:key];
-			[_clubs setValue:clubVOs forKey:key];
+			if ([key isEqualToString:@"owned"] || [key isEqualToString:@"member"]) {
+				[_clubIDs setValue:clubIDs forKey:key];
+				[_clubs setValue:[clubVOs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+					HONUserClubVO *club1VO = (HONUserClubVO *)obj1;
+					HONUserClubVO *club2VO = (HONUserClubVO *)obj2;
+					
+//					NSLog(@"COMP:[%f][%f]", [club1VO.updatedDate timeIntervalSince1970], [club2VO.updatedDate timeIntervalSince1970]);
+					
+					if ([club1VO.updatedDate timeIntervalSince1970] < [club2VO.updatedDate timeIntervalSince1970])
+						return ((NSComparisonResult)NSOrderedDescending);
+					
+					if ([club1VO.updatedDate timeIntervalSince1970] > [club2VO.updatedDate timeIntervalSince1970])
+						return ((NSComparisonResult)NSOrderedAscending);
+					
+					return ((NSComparisonResult)NSOrderedSame);
+				}] forKey:key];
+			
+			} else {
+				[_clubIDs setValue:clubIDs forKey:key];
+				[_clubs setValue:clubVOs forKey:key];
+			}
 		}
 		
 		_allClubs = nil;
@@ -156,6 +185,7 @@ static NSString * const kCamera = @"camera";
 
 - (void)_deleteClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] deleteClubWithClubID:vo.clubID completion:^(NSObject *result) {
+		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[self _retrieveClubs];
 	}];
 }
@@ -166,12 +196,14 @@ static NSString * const kCamera = @"camera";
 
 - (void)_joinClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[self _retrieveClubs];
 	}];
 }
 
 - (void)_leaveClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] leaveClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
+		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[self _retrieveClubs];
 	}];
 }
@@ -179,7 +211,6 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - Data Handling
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
-	[[HONClubAssistant sharedInstance] wipeUserClubs];
 	[self _retrieveClubs];
 }
 
@@ -189,6 +220,7 @@ static NSString * const kCamera = @"camera";
 		_progressHUD = nil;
 	}
 	
+	_collectionView.hidden = NO;
 	[_collectionView reloadData];
 	[_refreshControl endRefreshing];
 }
@@ -205,7 +237,7 @@ static NSString * const kCamera = @"camera";
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"header_clubs", nil)]; //@"Clubs"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_clubs", nil)]; //@"Clubs"];
 	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
@@ -246,15 +278,6 @@ static NSString * const kCamera = @"camera";
 	
 	NSLog(@"navigationController:[%@] presentedViewController.nameOfClass:[%@]", self.navigationController, viewController.nameOfClass);
 	
-//	if ([viewController.nameOfClass isEqualToString:@"HONCreateClubViewController"])
-//		_appearedType = HONUserClubsViewControllerAppearedTypeCreateClubCanceled;
-//	
-//	else if ([viewController.nameOfClass isEqualToString:@"HONSelfieCameraViewController"])
-//		_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled;
-//
-//	else if ([viewController.nameOfClass isEqualToString:@"HONSelfieCameraSubmitViewController"])
-//		_appearedType = HONUserClubsViewControllerAppearedTypeSelfieCameraCompleted;
-	
 	if (_appearedType != HONUserClubsViewControllerAppearedTypeInviteFriends) {
 		if ([viewController.nameOfClass isEqualToString:@"HONInviteContactsViewController"])
 			_appearedType = (self.navigationController) ? HONUserClubsViewControllerAppearedTypeCreateClubCompleted : HONUserClubsViewControllerAppearedTypeClear;
@@ -270,18 +293,12 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
     
-	_ratingOverlayView = [[RatingModal alloc] init];
-   [[HONScreenManager sharedInstance] appWindowAdoptsView:_ratingOverlayView];
-    _ratingOverlayView.delegate = self;
-
-    [_ratingOverlayView introWithCompletion:nil];
-	
 	NSLog(@"_appearedType:[%d]", _appearedType);
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
 		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -351,26 +368,26 @@ static NSString * const kCamera = @"camera";
 		
 		if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
 															   delegate:self
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:@"Cancel", nil];
+													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 			[alertView setTag:HONUserClubsAlertTypeGenerateSuggested];
 			[alertView show];
 			
 		} else if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
 															   delegate:self
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:@"Cancel", nil];
+													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 			[alertView show];
 		
 		} else if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeOwner) {
 			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 																	 delegate:self
-															cancelButtonTitle:@"Cancel"
+															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
 															otherButtonTitles:@"Invite friends", @"Copy club URL", nil];
 			[actionSheet setTag:HONUserClubsActionSheetTypeOwner];
@@ -379,11 +396,31 @@ static NSString * const kCamera = @"camera";
 		} else if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeMember) {
 			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@""
 																	 delegate:self
-															cancelButtonTitle:@"Cancel"
+															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
 															otherButtonTitles:@"Invite friends", @"Copy club URL", @"Leave club", nil];
 			[actionSheet setTag:HONUserClubsActionSheetTypeMember];
 			[actionSheet showInView:self.view];
+		
+		} else if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
+			if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_lockedClub_t", nil)
+																	message:[NSString stringWithFormat:NSLocalizedString(@"alert_lockedClub_m", nil), [HONAppDelegate clubInvitesThreshold], _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_invite", nil)
+														  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
+				[alertView show];
+				
+			} else {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+														  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+				[alertView setTag:HONUserClubsAlertTypeJoin];
+				[alertView show];
+			}
 		}
 	}
 }
@@ -416,30 +453,37 @@ static NSString * const kCamera = @"camera";
 #pragma mark - ClubViewCell Delegates
 
 
-#pragma mark - InviteOverlayView Delegates
-- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+#pragma mark - InsetOverlayView Delegates
+- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
 }
 
-- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
 }
 
-- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+- (void)insetOverlayViewDidAccessContents:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
+}
+
+- (void)insetOverlayViewDidUnlock:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:nil viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -479,8 +523,10 @@ static NSString * const kCamera = @"camera";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 	HONClubCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[HONClubCollectionViewCell cellReuseIdentifier]
 																				forIndexPath:indexPath];
-	
 	[cell resetSubviews];
+	cell.alpha = 1.0;
+	
+	NSLog(@"INDEXPATH:[%d][%d]", indexPath.section, indexPath.row);
 //	HONUserClubVO *vo;
 //	if (indexPath.section == 0) {
 //		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
@@ -494,7 +540,22 @@ static NSString * const kCamera = @"camera";
 //	} else if (indexPath.section == 1)
 //		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row];
 	
-	cell.clubVO = [HONUserClubVO clubWithDictionary:[_dictClubs objectAtIndex:indexPath.row]];//vo;
+	
+	HONUserClubVO *vo;
+	if (indexPath.row == 0)
+		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
+		
+	else if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
+		vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
+		
+	else if (indexPath.row >= [[_clubs objectForKey:@"suggested"] count] && indexPath.row <= ([[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count]))
+		vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
+		
+	else
+		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count])];
+
+	
+	cell.clubVO = vo;//[HONUserClubVO clubWithDictionary:[_dictClubs objectAtIndex:indexPath.row]];//vo;
 	cell.delegate = self;
 	
 	return (cell);
@@ -518,11 +579,11 @@ static NSString * const kCamera = @"camera";
 		NSLog(@"/// SHOW CLUB TIMELINE:(%@ - %@)", [vo.dictionary objectForKey:@"id"], [vo.dictionary objectForKey:@""]);
 		
 		if ([vo.submissions count] == 0) {
-			UIAlertView * alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_status", nil) //@"This club does not have any status updates yet!"
-																 message: NSLocalizedString(@"alert_create", nil) //@"Would you like to create one?"
+			UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_status", nil) //@"This club does not have any status updates yet!"
+																 message:NSLocalizedString(@"alert_create", nil) //@"Would you like to create one?"
 																delegate:self
-													   cancelButtonTitle: NSLocalizedString(@"alert_no", nil) //@"No"
-													   otherButtonTitles: NSLocalizedString(@"alert_yes", nil), nil]; // @"Yes", nil];
+													   cancelButtonTitle:NSLocalizedString(@"alert_no", nil) //@"No"
+													   otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil]; // @"Yes", nil];
 			[alertView setTag:HONUserClubsAlertTypeSubmitPhoto];
 			[alertView show];
 			
@@ -539,21 +600,41 @@ static NSString * const kCamera = @"camera";
 		
 	} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[NSString stringWithFormat: NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]//@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+															message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]//@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:@"Cancel", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 		[alertView setTag:HONUserClubsAlertTypeGenerateSuggested];
 		[alertView show];
 				
 	} else if (vo.clubEnrollmentType == HONClubEnrollmentTypePending) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-															message:[NSString stringWithFormat: NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+															message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
 														   delegate:self
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:@"Cancel", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+												  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 		[alertView setTag:HONUserClubsAlertTypeJoin];
 		[alertView show];
+	
+	} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
+		if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_lockedClub_t", nil)
+																message:[NSString stringWithFormat:NSLocalizedString(@"alert_lockedClub_m", nil), [HONAppDelegate clubInvitesThreshold], _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_invite", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
+			[alertView show];
+			
+		} else {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+			[alertView setTag:HONUserClubsAlertTypeJoin];
+			[alertView show];
+		}
 	}
 }
 
@@ -578,7 +659,7 @@ static NSString * const kCamera = @"camera";
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
 									   delegate:nil
-							  cancelButtonTitle:@"OK"
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
 	
@@ -597,7 +678,7 @@ static NSString * const kCamera = @"camera";
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
 									   delegate:nil
-							  cancelButtonTitle:@"OK"
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		
 		} else if (actionSheet.tag == HONUserClubsActionSheetTypeMember) {
@@ -614,14 +695,14 @@ static NSString * const kCamera = @"camera";
 				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 											message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
 										   delegate:nil
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
 				
 			} else if (buttonIndex == 2) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Leave %@", _selectedClubVO.clubName]
 											message:[NSString stringWithFormat:@"Are you sure you want to leave %@?", _selectedClubVO.clubName]
 										   delegate:self
-								  cancelButtonTitle:@"OK"
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil];
 				[alertView setTag:HONUserClubsAlertTypeLeave];
 				[alertView show];
@@ -642,7 +723,7 @@ static NSString * const kCamera = @"camera";
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
-														  cancelButtonTitle:@"Yes"
+														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles:@"Not Now", nil];
 				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 				[alertView show];
@@ -656,7 +737,7 @@ static NSString * const kCamera = @"camera";
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
-													  cancelButtonTitle:@"Yes"
+													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:@"Not Now", nil];
 			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 			[alertView show];

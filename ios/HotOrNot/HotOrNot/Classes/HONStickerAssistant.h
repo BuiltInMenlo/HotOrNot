@@ -15,6 +15,11 @@
 #import "PCCandyStoreSearchController.h"
 #import "PCCandyStorePurchaseController.h"
 
+extern NSString * const kFreeStickerPak;
+extern NSString * const kInviteStickerPak;
+extern NSString * const kAvatarStickerPak;
+extern NSString * const kClubCoverStickerPak;
+extern NSString * const kPaidStickerPak;
 
 typedef NS_ENUM(NSInteger, HONStickerPakType) {
 	HONStickerPakTypeAll = 0,
@@ -46,4 +51,5 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 
 
 - (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
+- (void)retrieveContentsForContentGroup:(NSString *)contentGroupID completion:(void (^)(NSArray *contents))completion;
 @end

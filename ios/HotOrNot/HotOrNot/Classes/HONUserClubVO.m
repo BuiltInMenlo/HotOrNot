@@ -46,7 +46,7 @@
 	
 	NSMutableArray *members = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
-		[members addObject:[HONTrivialUserVO userWithDictionary:dict]];
+		[members addObject:([[dict objectForKey:@"id"] length] == 0) ? [HONTrivialUserVO userFromContactVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
 	vo.activeMembers = members;
 	
 	NSMutableArray *banned = [NSMutableArray array];
@@ -54,9 +54,11 @@
 		[banned addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	vo.bannedMembers = banned;
 	
-	NSMutableArray *submissions = [NSMutableArray array];
-	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
+	NSMutableArray *submissions = [NSMutableArray array]; //>>>>>
+	for (NSMutableDictionary *dict in [dictionary objectForKey:@"submissions"]) {
+		[dict setValue:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
 		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
+	}
 	
 	vo.submissions = [[[submissions copy] reverseObjectEnumerator] allObjects];
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
@@ -65,7 +67,7 @@
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"CREATE"]) ? HONClubEnrollmentTypeCreate : vo.clubEnrollmentType;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"]) ? HONClubEnrollmentTypeSuggested : vo.clubEnrollmentType;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"HIGH_SCHOOL"]) ? HONClubEnrollmentTypeHighSchool : vo.clubEnrollmentType;
-	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"LOCKED"]) ? HONClubEnrollmentTypeHighSchool : vo.clubEnrollmentType;
+	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"LOCKED"]) ? HONClubEnrollmentTypeThreshold : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (HONTrivialUserVO *trivialUserVO in vo.pendingMembers) {

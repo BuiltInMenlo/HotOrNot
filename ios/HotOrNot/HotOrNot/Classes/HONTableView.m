@@ -18,9 +18,20 @@
 - (id)initWithFrame:(CGRect)frame style:(UITableViewStyle)style {
 	if ((self = [super initWithFrame:frame style:style])) {
 		[self setBackgroundColor:[UIColor clearColor]];
-		self.separatorStyle = UITableViewCellSeparatorStyleNone;
-		self.showsHorizontalScrollIndicator = YES;
-		self.alwaysBounceVertical = YES;
+		[self setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+		[self setShowsHorizontalScrollIndicator:YES];
+		[self setAlwaysBounceVertical:YES];
+	}
+	
+	return (self);
+}
+
+- (id)initWithFrame:(CGRect)frame {
+	if ((self = [self initWithFrame:frame style:UITableViewStylePlain])) {
+		[self setBackgroundColor:[UIColor clearColor]];
+		[self setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+		[self setShowsHorizontalScrollIndicator:YES];
+		[self setAlwaysBounceVertical:YES];
 	}
 	
 	return (self);

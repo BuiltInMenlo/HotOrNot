@@ -20,10 +20,11 @@ typedef NS_ENUM(NSInteger, HONClubNewsFeedCellType) {
 @protocol HONClubNewsFeedViewCellDelegate <NSObject>
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell createClubWithProtoVO:(HONUserClubVO *)userClubVO;
 @optional
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinThreholdClub:(HONUserClubVO *)userClubVO;
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell enterTimelineForClub:(HONUserClubVO *)userClubVO;
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinClub:(HONUserClubVO *)userClubVO;
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyToClubPhoto:(HONUserClubVO *)userClubVO;
-- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONUserClubVO *)userClubVO;
+- (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell upvoteClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell showUserProfileForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 @end
 

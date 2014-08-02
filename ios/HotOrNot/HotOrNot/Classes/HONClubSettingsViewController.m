@@ -266,7 +266,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Club Name!"
 									message:@"You need to enter a name for your club!"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 	} else

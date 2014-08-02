@@ -93,7 +93,7 @@
 			_userVO = [HONUserVO userWithDictionary:result];
 			_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) ? HONUserProfileTypeUser : HONUserProfileTypeOpponent;
 	
-			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : NSLocalizedString(@"header_activity", nil)]; //@"Activity"];
+			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username :NSLocalizedString(@"header_activity", nil)]; //@"Activity"];
 			[self _makeProfile];
 			[self _retrieveActivityItems];
 			
@@ -252,7 +252,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
 									message:@"Check your Home timeline to like and reply."
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}];
 }
@@ -263,7 +263,7 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
 													   delegate:self
-											  cancelButtonTitle:@"No"
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
 											  otherButtonTitles:@"Yes, flag user", nil];
 	
 	[alertView setTag:HONUserProfileAlertTypeFlag];
@@ -403,7 +403,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle: NSLocalizedString(@"header_activity", nil)]); //@"ACTIVITY"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)]); //@"ACTIVITY"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -11,7 +11,7 @@
 @implementation HONEmotionVO
 
 @synthesize dictionary;
-@synthesize emotionID, contentGroupID, emotionName, largeImageURL, smallImageURL, image, price, isFree, picoSticker;
+@synthesize emotionID, contentGroupID, emotionName, largeImageURL, smallImageURL, image, price, isFree, pcContent, picoSticker;
 
 + (HONEmotionVO *)emotionWithDictionary:(NSDictionary *)dictionary {
 	HONEmotionVO *vo = [[HONEmotionVO alloc] init];
@@ -24,6 +24,7 @@
 	vo.mediumImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"medium.png"];
 	vo.smallImageURL = [[dictionary objectForKey:@"img"] stringByAppendingString:@"small.png"];
 	vo.price = [[dictionary objectForKey:@"price"] floatValue];
+	vo.pcContent = (PCContent *)[dictionary objectForKey:@"content"];
 	vo.isFree = (vo.price == 0.0);
 	
 	return (vo);
@@ -38,6 +39,7 @@
 	self.mediumImageURL = nil;
 	self.smallImageURL = nil;
 	self.image = nil;
+	self.pcContent = nil;
 	self.picoSticker = nil;
 }
 
