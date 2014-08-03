@@ -54,10 +54,11 @@
 		[banned addObject:[HONTrivialUserVO userWithDictionary:dict]];
 	vo.bannedMembers = banned;
 	
-	NSMutableArray *submissions = [NSMutableArray array]; //>>>>>
-	for (NSMutableDictionary *dict in [dictionary objectForKey:@"submissions"]) {
-		[dict setValue:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
-		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
+	NSMutableArray *submissions = [NSMutableArray array];
+	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"]) {
+		NSMutableDictionary *mDict = [dict mutableCopy];
+		[mDict setValue:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:[mDict copy]]];
 	}
 	
 	vo.submissions = [[[submissions copy] reverseObjectEnumerator] allObjects];

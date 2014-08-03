@@ -168,7 +168,7 @@ static NSString * const kCamera = @"camera";
 			[dict setValue:@"LOCKED" forKey:@"club_type"];
 			[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
 			[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+			[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
 			
 			_suggestedClubs = nil;
 			_suggestedClubs = [[[HONClubAssistant sharedInstance] suggestedClubs] arrayByAddingObject:[HONUserClubVO clubWithDictionary:dict]];

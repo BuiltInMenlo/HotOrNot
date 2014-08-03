@@ -136,14 +136,14 @@
 	}
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(0.0, 494.0, 149, 64.0);
+	likeButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:likeButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(170, 494.0, 149, 64.0);
+	replyButton.frame = CGRectMake(170, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
@@ -192,17 +192,17 @@
 //	PicoSticker *picoSticker = [[PicoSticker alloc] initWithPCContent:emotionVO.pcContent];
 //	[holderView addSubview:picoSticker];
 	
-	PicoSticker *picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
-	[holderView addSubview:picoSticker];
+//	PicoSticker *picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//	[holderView addSubview:picoSticker];
 	
-//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
-//	[imageView setTag:[emotionVO.emotionID intValue]];
-//	imageView.alpha = 0.0;
-//	[holderView addSubview:imageView];
-//	
-//	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
-//																	 @"image_view"		: imageView,
-//																	 @"emotion"			: emotionVO} afterDelay:0.25];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
+	[imageView setTag:[emotionVO.emotionID intValue]];
+	imageView.alpha = 0.0;
+	[holderView addSubview:imageView];
+	
+	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
+																	 @"image_view"		: imageView,
+																	 @"emotion"			: emotionVO} afterDelay:0.25];
 	
 	return (holderView);
 }

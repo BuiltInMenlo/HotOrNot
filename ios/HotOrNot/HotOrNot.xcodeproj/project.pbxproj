@@ -237,6 +237,8 @@
 		4C75502516D5699300833C18 /* HONCommentVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502416D5699200833C18 /* HONCommentVO.m */; };
 		4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502716D5718A00833C18 /* HONCommentsViewController.m */; };
 		4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502A16D5732000833C18 /* HONCommentViewCell.m */; };
+		4C783A94198E108B007A4045 /* inset2BG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C783A92198E108B007A4045 /* inset2BG@2x.png */; };
+		4C783A95198E108B007A4045 /* inset1BG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C783A93198E108B007A4045 /* inset1BG@2x.png */; };
 		4C7DBBB3194FEB9E00F7A487 /* HONCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DBBB2194FEB9E00F7A487 /* HONCollectionView.m */; };
 		4C7DBBBE194FF43D00F7A487 /* HONTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DBBBD194FF43D00F7A487 /* HONTableView.m */; };
 		4C7DBBC5194FF93900F7A487 /* HONTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DBBC4194FF93900F7A487 /* HONTableViewController.m */; };
@@ -939,6 +941,8 @@
 		4C75502716D5718A00833C18 /* HONCommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONCommentsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C75502916D5732000833C18 /* HONCommentViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentViewCell.h; sourceTree = "<group>"; };
 		4C75502A16D5732000833C18 /* HONCommentViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentViewCell.m; sourceTree = "<group>"; };
+		4C783A92198E108B007A4045 /* inset2BG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "inset2BG@2x.png"; sourceTree = "<group>"; };
+		4C783A93198E108B007A4045 /* inset1BG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "inset1BG@2x.png"; sourceTree = "<group>"; };
 		4C7DBBB1194FEB9E00F7A487 /* HONCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionView.h; sourceTree = "<group>"; };
 		4C7DBBB2194FEB9E00F7A487 /* HONCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionView.m; sourceTree = "<group>"; };
 		4C7DBBBC194FF43D00F7A487 /* HONTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTableView.h; sourceTree = "<group>"; };
@@ -2333,6 +2337,8 @@
 		4CC606DB198C58110042A951 /* Overlays */ = {
 			isa = PBXGroup;
 			children = (
+				4C783A93198E108B007A4045 /* inset1BG@2x.png */,
+				4C783A92198E108B007A4045 /* inset2BG@2x.png */,
 				4C0148BA198C77D10006BCBC /* largeRowOfferBackground@2x.png */,
 				4C0148BB198C77D10006BCBC /* smallRowOfferBackground@2x.png */,
 				07B25322198C176F00F6D8B1 /* dimBackground@2x.png */,
@@ -2593,6 +2599,7 @@
 				4C0F3CF01988E65700703D09 /* tabMenu_clubsButton_nonActive@2x.png in Resources */,
 				07B6E67F19884A8600DA0805 /* doneButtonBlue_nonActive@2x.png in Resources */,
 				4C0F3CB51988DDE300703D09 /* Localizable.strings in Resources */,
+				4C783A94198E108B007A4045 /* inset2BG@2x.png in Resources */,
 				07B6E69719884AC600DA0805 /* pinText@2x.png in Resources */,
 				07B6E643198849FC00DA0805 /* profileButton_Active@2x.png in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
@@ -2682,6 +2689,7 @@
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
 				07B6E6FE1988515600DA0805 /* inviteFriends_nonActive@2x.png in Resources */,
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
+				4C783A95198E108B007A4045 /* inset1BG@2x.png in Resources */,
 				4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */,
 				07B6E6F51988514B00DA0805 /* accessContacts@2x.png in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,

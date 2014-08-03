@@ -124,10 +124,9 @@
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
-//	if (_clubVO != nil) {
-//		if (![_selectedClubs containsObject:_clubVO])
-//			[_selectedClubs addObject:_clubVO];
-//	}
+	if (_clubVO != nil && ![_selectedClubs containsObject:_clubVO])
+		[_selectedClubs addObject:_clubVO];
+	
 	
 	if ([_selectedClubs count] == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
@@ -182,9 +181,6 @@
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	[super clubToggleViewCell:viewCell selectedClub:userClubVO];
-	
-//	if (_clubVO == nil && userClubVO.clubID == _clubVO.clubID)
-//		_clubVO = nil;
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {

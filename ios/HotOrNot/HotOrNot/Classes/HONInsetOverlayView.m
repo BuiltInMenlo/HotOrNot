@@ -45,7 +45,7 @@
 		[_framingImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[contents objectForKey:@"bg"] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
 																   cachePolicy:kURLRequestCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
-								 placeholderImage:nil
+								 placeholderImage:[UIImage imageNamed:(insetType == HONInsetOverlayViewTypeAppReview || insetType == HONInsetOverlayViewTypeSuggestions) ? @"inset1BG" : @"inset2BG"]
 										  success:framingSuccessBlock
 										  failure:framingFailureBlock];
 		

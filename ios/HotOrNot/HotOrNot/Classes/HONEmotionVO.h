@@ -15,6 +15,7 @@
 @property (nonatomic, retain) NSDictionary *dictionary;
 
 @property (nonatomic, retain) NSString *emotionID;
+
 @property (nonatomic, retain) NSString *contentGroupID;
 @property (nonatomic, retain) NSString *emotionName;
 @property (nonatomic, retain) NSString *largeImageURL;

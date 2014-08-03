@@ -164,7 +164,7 @@ static HONClubAssistant *sharedInstance = nil;
 			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 			[dict setValue:@"-1" forKey:@"id"];
 			[dict setValue:clubName forKey:@"name"];
-			[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+			[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"location"] forKey:@"img"];
 			[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 			
 			vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -195,7 +195,7 @@ static HONClubAssistant *sharedInstance = nil;
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"email"] forKey:@"img"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -246,7 +246,7 @@ static HONClubAssistant *sharedInstance = nil;
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"family"] forKey:@"img"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
@@ -303,7 +303,7 @@ static HONClubAssistant *sharedInstance = nil;
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-1" forKey:@"id"];
 		[dict setValue:clubName forKey:@"name"];
-		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
+		[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"email"] forKey:@"img"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		
 		vo = [HONUserClubVO clubWithDictionary:[dict copy]];
