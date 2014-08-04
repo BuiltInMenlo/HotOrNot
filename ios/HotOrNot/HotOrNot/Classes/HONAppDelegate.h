@@ -9,18 +9,20 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
-
-#define __DEV_BUILD__ 1
+/** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
-#define __FORCE_REGISTER__ 0
 
+#define __FORCE_REGISTER__ 0
 #define __FORCE_SUGGEST__ 0
+
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
-/** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __APPSTORE_BUILD__ 0
+/** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
+/** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -49,6 +51,20 @@ typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeSMS,
 	HONShareSheetActionTypeEmail,
 	HONShareSheetActionTypeClipboard
+};
+
+typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
+	HONAppDelegateAlertTypeExit = 0,
+	HONAppDelegateAlertTypeVerifiedNotification,
+	HONAppDelegateAlertTypeReviewApp,
+	HONAppDelegateAlertTypeInviteFriends,
+	HONAppDelegateAlertTypeShare,
+	HONAppDelegateAlertTypeRefreshTabs,
+	HONAppDelegateAlertTypeRemoteNotification,
+	HONAppDelegateAlertTypeJoinCLub,
+	HONAppDelegateAlertTypeInviteContacts,
+	HONAppDelegateAlertTypeCreateClub,
+	HONAppDelegateAlertTypeAllowContactsAccess
 };
 
 
@@ -169,7 +185,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (CGFloat)compressJPEGPercentage;
 
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;
 

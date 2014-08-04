@@ -41,6 +41,9 @@
 		_clubPhotos = _clubVO.submissions;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	}
 	
 	return (self);
@@ -225,7 +228,7 @@
 #pragma mark - Navigation
 -(void) _goShare {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", _clubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _clubVO.clubName];
+	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _clubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _clubVO.clubName];
 	
 	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _clubVO.clubName]
 								message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]

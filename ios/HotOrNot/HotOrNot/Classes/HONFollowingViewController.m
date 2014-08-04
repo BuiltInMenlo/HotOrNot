@@ -94,7 +94,7 @@
 //				for (NSDictionary *dict in following) {
 //					[_subscribees addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [@"" stringFromInt:[[dict objectForKey:@"id"] intValue]],
 //																				   @"username"	: [dict objectForKey:@"username"],
-//																				   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
+//																				   @"img_url"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dict objectForKey:@"avatar_url"]]}]];
 //				}
 //				
 //				[_tableView reloadData];

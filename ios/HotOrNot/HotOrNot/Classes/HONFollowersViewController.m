@@ -65,7 +65,7 @@
 			for (NSDictionary *dict in [NSArray arrayWithArray:[users sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]])
 				[_subscribers addObject:[HONTrivialUserVO userWithDictionary:@{@"id"		: [dict objectForKey:@"id"],
 																			   @"username"	: [dict objectForKey:@"username"],
-																			   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[dict objectForKey:@"avatar_url"]]}]];
+																			   @"img_url"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dict objectForKey:@"avatar_url"]]}]];
 			[_tableView reloadData];
 		}
 	}];

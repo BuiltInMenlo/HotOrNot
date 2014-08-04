@@ -231,7 +231,7 @@
 							  otherButtonTitles:nil] show];
 		}
 	} else if(indexPath.row == HONSettingsCellTypeCopyClub) {
-		NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"];
+		NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""];
 		NSString *clubDeeplink = [NSString stringWithFormat:@"%@/%@", [[HONAppDelegate infoForUser] objectForKey:@"username"], clubName];
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];

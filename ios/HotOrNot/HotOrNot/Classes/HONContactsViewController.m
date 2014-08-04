@@ -380,7 +380,7 @@
 }
 
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
-	_tableViewDataSource = HONContactsTableViewDataSourceAddressBook;
+	_tableViewDataSource = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? HONContactsTableViewDataSourceAddressBook : HONContactsTableViewDataSourceMatchedUsers;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView reloadData];
 	
@@ -458,6 +458,7 @@
 		
 		if (vo.userID != -1) {
 			cell.trivialUserVO = (HONTrivialUserVO *)[[_segmentedContacts valueForKey:[_segmentedKeys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+			[cell toggleSelected:NO];
 //			[cell toggleSelected:[[HONContactsAssistant sharedInstance] isTrivialUserInvitedToClubs:cell.trivialUserVO]];
 		}
 		
@@ -505,6 +506,9 @@
 	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers && (indexPath.section == 0 && indexPath.row == 0)) {
 		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 			[self _promptForAddressBookPermission];
+		
+		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+			[self _retrieveDeviceContacts];
 		
 		else
 			[self _promptForAddressBookAccess];

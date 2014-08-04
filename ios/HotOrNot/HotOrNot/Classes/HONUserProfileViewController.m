@@ -316,7 +316,7 @@
 	[avatarHolderView addSubview:imageLoadingView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
-	avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+	avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
@@ -331,9 +331,9 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+		avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];

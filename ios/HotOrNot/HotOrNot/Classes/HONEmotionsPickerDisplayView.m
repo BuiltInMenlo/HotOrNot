@@ -126,62 +126,69 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	CGPoint offsetPt = CGPointMake(CGRectGetMidX(kEmotionIntroFrame) - CGRectGetMidX(kEmotionNormalFrame), CGRectGetMidY(kEmotionIntroFrame) - CGRectGetMidY(kEmotionNormalFrame));
 	CGAffineTransform transform = CGAffineTransformMake(scaleSize.width, 0.0, 0.0, scaleSize.height, offsetPt.x, offsetPt.y);
 	
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+	imageView.alpha = 0.0;
+	imageView.contentMode = UIViewContentModeScaleAspectFit;
+	imageView.transform = transform;
+	[_emotionHolderView addSubview:imageView];
+	
+	
+	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+		
+//	if (emotionVO.picoSticker == nil) {
+		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
+		imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
+		imageLoadingView.alpha = 0.667;
+		[imageLoadingView startAnimating];
+		[_loaderHolderView addSubview:imageLoadingView];
+		
+		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+			imageView.image = image;
+			
+			[UIView animateWithDuration:0.200 delay:0.125
+				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+			 
+							 animations:^(void) {
+								 imageView.alpha = 1.0;
+								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+							 } completion:^(BOOL finished) {
+								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
+								 [loadingView stopAnimating];
+								 [loadingView removeFromSuperview];
+							 }];
+		};
+		
+		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
+														   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+													   timeoutInterval:[HONAppDelegate timeoutInterval]]
+						 placeholderImage:nil
+								  success:imageSuccessBlock
+								  failure:nil];
+//
+//	} else {
 //	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
 //	holderView.alpha = 0.0;
 //	holderView.contentMode = UIViewContentModeScaleAspectFit;
 //	holderView.transform = transform;
 //	[_emotionHolderView addSubview:holderView];
-	
-//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
-	
-	PicoSticker *picoSticker = [[PicoSticker alloc] initWithPCContent:emotionVO.pcContent];
-	picoSticker.frame = CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
-	picoSticker.alpha = 0.0;
-	picoSticker.contentMode = UIViewContentModeScaleAspectFit;
-	picoSticker.transform = transform;
-	[_emotionHolderView addSubview:picoSticker];
-	
-//	if (emotionVO.picoSticker == nil) {
-//		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:picoSticker asLargeLoader:NO];
-//		imageLoadingView.frame = CGRectMake(picoSticker.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
-//		imageLoadingView.alpha = 0.667;
-//		[imageLoadingView startAnimating];
-//		[_loaderHolderView addSubview:imageLoadingView];
-//		
-//		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//			imageView.image = image;
-//			
-//			[UIView animateWithDuration:0.200 delay:0.125
-//				 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
-//								options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-//			 
-//							 animations:^(void) {
-//								 imageView.alpha = 1.0;
-//								 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-//							 } completion:^(BOOL finished) {
-//								 HONImageLoadingView *loadingView = [[_loaderHolderView subviews] lastObject];
-//								 [loadingView stopAnimating];
-//								 [loadingView removeFromSuperview];
-//							 }];
-//		};
-//		
-//		[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.largeImageURL]
-//														   cachePolicy:NSURLRequestReturnCacheDataElseLoad
-//													   timeoutInterval:[HONAppDelegate timeoutInterval]]
-//						 placeholderImage:nil
-//								  success:imageSuccessBlock
-//								  failure:nil];
-//		
-//	} else {
+//	PicoSticker *picoSticker = [[PicoSticker alloc] initWithPCContent:emotionVO.pcContent];
+//	picoSticker.frame = CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
+//	picoSticker.alpha = 0.0;
+//	picoSticker.contentMode = UIViewContentModeScaleAspectFit;
+//	picoSticker.transform = transform;
+//	[_emotionHolderView addSubview:picoSticker];
+
 		
-		[UIView animateWithDuration:0.200 delay:0.125
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-		 
-						 animations:^(void) {
-							 picoSticker.alpha = 1.0;
-							 picoSticker.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-						 } completion:^(BOOL finished) {}];
+//		[UIView animateWithDuration:0.200 delay:0.125
+//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+//		 
+//						 animations:^(void) {
+//							 picoSticker.alpha = 1.0;
+//							 picoSticker.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+//						 } completion:^(BOOL finished) {}];
 //	}
 	
 	[self _updateDisplay];

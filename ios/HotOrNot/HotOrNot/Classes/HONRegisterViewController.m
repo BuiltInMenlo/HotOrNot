@@ -199,13 +199,13 @@
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
 				if ([[result objectForKey:@"owned"] count] == 0) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
 					}];
 				}
 			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+				[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 																						  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																						  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
@@ -667,7 +667,7 @@
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
-	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@ Club", _usernameTextField.text, _usernameTextField.text] : @"Getselfieclub.com/";
+	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@", _usernameTextField.text, _usernameTextField.text] : @"joinselfie.club/";
 	
 	NSString *phone1 = @"";
 	NSString *phone2 = @"";

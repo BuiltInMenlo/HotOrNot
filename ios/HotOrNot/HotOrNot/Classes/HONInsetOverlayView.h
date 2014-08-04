@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONUserClubVO.h"
 
 @class HONInsetOverlayView;
 @protocol HONInsetOverlayViewDelegate <NSObject>
@@ -14,6 +15,10 @@
 - (void)insetOverlayViewDidUnlock:(HONInsetOverlayView *)view;
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view;
 - (void)insetOverlayViewDidAccessContents:(HONInsetOverlayView *)view;
+
+- (void)insetOverlayViewCopyPersonalClub:(HONInsetOverlayView *)view;
+- (void)insetOverlayView:(HONInsetOverlayView *)view createSuggestedClub:(HONUserClubVO *)clubVO;
+- (void)insetOverlayView:(HONInsetOverlayView *)view thresholdClub:(HONUserClubVO *)clubVO;
 @end
 
 @interface HONInsetOverlayView : UIView {

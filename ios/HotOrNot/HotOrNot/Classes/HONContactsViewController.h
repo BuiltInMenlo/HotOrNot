@@ -46,6 +46,7 @@ typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 }
 
 - (void)_promptForAddressBookAccess;
+- (void)_promptForAddressBookPermission;
 
 - (void)_retreiveUserClubs;
 - (void)_sendEmailContacts;

@@ -49,7 +49,6 @@
 	_clubPhotoVO = clubPhotoVO;
 	
 	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
-	_imageLoadingView.frame = [UIScreen mainScreen].bounds;
 	[self.contentView addSubview:_imageLoadingView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
@@ -70,9 +69,9 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
-		imageView.image = [UIImage imageNamed:@"defaultClubCover"];
+//		imageView.image = [UIImage imageNamed:@"defaultClubCover"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {

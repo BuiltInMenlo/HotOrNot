@@ -19,5 +19,6 @@
 @end
 
 @interface HONEmotionsPickerView : UIView <UIScrollViewDelegate>
+- (void)scrollToPage:(int)page;
 @property (nonatomic, assign) id <HONEmotionsPickerViewDelegate> delegate;
 @end

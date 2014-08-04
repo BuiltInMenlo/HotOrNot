@@ -156,7 +156,7 @@
 		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
 	
 	else
-		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
+		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 	
 	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -305,9 +305,9 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		_avatarImageView.image = [UIImage imageNamed:@"defaultAvatarImage"];
+		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_avatarImageView.alpha = 1.0;
 		} completion:nil];

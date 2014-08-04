@@ -35,6 +35,8 @@
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
 @property (nonatomic, strong) UIButton *overlayToggleButton;
+
+@property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
 @end
 
 @implementation HONSelfieCameraPreviewView
@@ -48,6 +50,8 @@
 		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
+		
+		_purchase_content_request_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.content-request", 0);
 		
 		[self _adoptUI];
 	}
@@ -217,16 +221,20 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
 										withEmotion:emotionVO];
 	
-	if (![[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
-//		NSLog(@"ContentGroup in CandyBox --(%@)", emotionVO.contentGroupID);
-//		emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
-//		[emotionVO.picoSticker use];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
+			NSLog(@"Content in CandyBox --(%@)", emotionVO.contentGroupID);
+			
+//			PicoSticker *sticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//			[sticker use];
+//			emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//			[emotionVO.picoSticker use];
 	
-//	} else {
-		NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
-		[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
-	}
-	
+		} else {
+//			NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
+//			[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
+		}
+	});
 	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
@@ -243,12 +251,16 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 10 && page == 1 && direction == 1) {
-		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-		_insetOverlayView.delegate = self;
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 1 && direction == 1) {
+		[_emotionsPickerView scrollToPage:0];
 		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-		[_insetOverlayView introWithCompletion:nil];
+		if (_insetOverlayView == nil) {
+			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+			_insetOverlayView.delegate = self;
+			
+			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+			[_insetOverlayView introWithCompletion:nil];
+		}
 	}
 }
 

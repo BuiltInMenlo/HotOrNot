@@ -8,7 +8,7 @@
 
 // Push types
 typedef NS_ENUM(NSInteger, HONActivityItemType) {
-	HONActivityItemTypeVerify,
+	HONActivityItemTypeVerify = 0,
 	HONActivityItemTypeInviteRequest,
 	HONActivityItemTypeInviteAccepted,
 	HONActivityItemTypeLike,
@@ -21,12 +21,16 @@ typedef NS_ENUM(NSInteger, HONActivityItemType) {
 @property (nonatomic, retain) NSDictionary *dictionary;
 
 @property (nonatomic, retain) NSString *activityID;
-@property (nonatomic) int userID;
-@property (nonatomic) int challengeID;
 @property (nonatomic, assign) HONActivityItemType activityType;
+
+@property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) NSString *message;
 @property (nonatomic, retain) NSString *avatarPrefix;
+
+@property (nonatomic) int clubID;
+@property (nonatomic) int challengeID;
+@property (nonatomic, retain) NSString *clubName;
+@property (nonatomic, retain) NSString *message;
 @property (nonatomic, retain) NSDate *sentDate;
 
 @end

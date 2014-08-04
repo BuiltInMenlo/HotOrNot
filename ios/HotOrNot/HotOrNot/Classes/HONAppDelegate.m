@@ -68,7 +68,7 @@ typedef NS_OPTIONS(NSUInteger, HONAppDelegateBitTesting) {
 
 #if __DEV_BUILD__ == 0 || __APPSTORE_BUILD__ == 1
 NSString * const kConfigURL = @"http://api.letsvolley.com";
-NSString * const kConfigJSON = @"boot_sc0005.json";
+NSString * const kConfigJSON = @"boot_sc0006.json";
 NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
@@ -418,10 +418,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([emailTest evaluateWithObject:checkString]);
 }
 
-+ (NSString *)cleanImagePrefixURL:(NSString *)imageURL {
-	return ([[HONImageBroker sharedInstance] normalizedPrefixForImageURL:imageURL]);
-}
-
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
 	if ([phoneNumber length] > 0) {
 		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
@@ -616,7 +612,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
 													otherButtonTitles:@"Kik", @"Instagram", @"Twitter", @"Facebook", @"SMS", @"Email", @"Copy link", nil];
-	[actionSheet setTag:0];
+	[actionSheet setTag:HONAppDelegateAlertTypeExit];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
 }
 
@@ -804,9 +800,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		localNotification.fireDate = [[NSDate date] dateByAddingTimeInterval:180];
 		localNotification.timeZone = [NSTimeZone systemTimeZone];
 		localNotification.alertAction = @"View";
-		localNotification.alertBody = @"Create your Selfieclub profile!";
+		localNotification.alertBody = NSLocalizedString(@"alert_register_m", nil);
 		localNotification.soundName = @"selfie_notification.caf";
-		localNotification.userInfo = @{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"]};
+		localNotification.userInfo = @{};
 		
 		[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 		
@@ -836,6 +832,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[KeenClient enableLogging];
 #endif
 	
+	[[UIApplication sharedApplication] cancelAllLocalNotifications];
+	
 	//[[UAPush shared] resetBadge];
 	
 //	Chartboost *chartboost = [Chartboost sharedChartboost];
@@ -861,9 +859,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0 && [HONAppDelegate totalForCounter:@"background"] >= 3) {
+			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0 && [HONAppDelegate totalForCounter:@"background"] == 3) {
 				if (_insetOverlayView == nil) {
-					_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeSuggestions];
+					_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
 					_insetOverlayView.delegate = self;
 					
 					[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
@@ -1000,7 +998,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																				  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 																				  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 										
-										[alertView setTag:7];
+										[alertView setTag:HONAppDelegateAlertTypeJoinCLub];
 										[alertView show];
 									}
 								}];
@@ -1012,7 +1010,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																				   delegate:self
 																		  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 																		  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-								[alertView setTag:9];
+								[alertView setTag:HONAppDelegateAlertTypeCreateClub];
 								[alertView show];
 							}
 						}];
@@ -1044,7 +1042,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	notification.soundName = UILocalNotificationDefaultSoundName;
 	[HONAppDelegate cafPlaybackWithFilename:@"selfie_notification"];
 	
-	[self _showOKAlert:@"Local Notification" withMessage:notification.alertBody];
+	[self _showOKAlert:notification.alertBody withMessage:@"Local Notification"];
 }
 
 
@@ -1221,6 +1219,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	[[HONStickerAssistant sharedInstance] registerStickerStore];
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
+//
+//	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] objectForKey:kFreeStickerPak]) {
+//		[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:nil];
+//	}
 		
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -1293,7 +1295,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
 												  otherButtonTitles:NSLocalizedString(@"alert_yes", nil), nil];
-		[alertView setTag:1];
+		[alertView setTag:HONAppDelegateAlertTypeVerifiedNotification];
 		[alertView show];
 	
 	} else {
@@ -1304,7 +1306,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-			[alertView setTag:6];
+			[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
 			[alertView show];
 			
 		} else
@@ -1333,7 +1335,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
-			[alertView setTag:6];
+			[alertView setTag:HONAppDelegateAlertTypeRemoteNotification];
 			[alertView show];
 			
 		} else
@@ -1508,9 +1510,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
 		_insetOverlayView = nil;
+		
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 	}];
-	
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 }
 
 
@@ -1518,10 +1520,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON:[%d]", buttonIndex);
 	
-	if (alertView.tag == 0)
+	if (alertView.tag == HONAppDelegateAlertTypeExit)
 		NSLog(@"EXIT APP");//exit(0);
 	
-	else if (alertView.tag == 1) {
+	else if (alertView.tag == HONAppDelegateAlertTypeVerifiedNotification) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Notification - Verified Invite " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
@@ -1533,7 +1535,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	}
 	
-	else if (alertView.tag == 2) {
+	else if (alertView.tag == HONAppDelegateAlertTypeReviewApp) {
 		switch(buttonIndex) {
 			case 0:
 				break;
@@ -1548,7 +1550,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				break;
 		}
 		
-	} else if (alertView.tag == 3) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeInviteFriends) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Backgrounding - Invite Friends " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 		
 		if (buttonIndex == 1) {
@@ -1557,7 +1559,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
 		
-	} else if (alertView.tag == 4) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeShare) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Backgrounding - Share " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
@@ -1568,7 +1570,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																									@"view_controller"	: self.window.rootViewController}];
 		}
 		
-	} else if (alertView.tag == 5) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeRefreshTabs) {
 		switch (buttonIndex) {
 			case 0:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
@@ -1577,8 +1579,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			case 1:
 				break;
 		}
-	} else if (alertView.tag == 8) {
-//	} else if (buttonIndex == 8) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeInviteContacts) {
 		if (buttonIndex == 0) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
@@ -1589,7 +1590,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 6) {
+	if (alertView.tag == HONAppDelegateAlertTypeRemoteNotification) {
 		[[HONAnalyticsParams sharedInstance] trackEvent:[@"App Notification - " stringByAppendingString:(buttonIndex == 0) ? @"Cancel" : @"Confirm"]];
 				
 		if (buttonIndex == 1) {
@@ -1605,7 +1606,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 		}
 	
-	} else if (alertView.tag == 7) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeJoinCLub) {
 		if (buttonIndex == 0) {
 			[[HONAPICaller sharedInstance] joinClub:_selectedClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
 				[self.tabBarController setSelectedIndex:2];
@@ -1616,13 +1617,12 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles:@"Not Now", nil];
-				
-				[alertView setTag:8];
+				[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
 				[alertView show];
 			}];
 		}
 	
-	} else if (alertView.tag == 9) {
+	} else if (alertView.tag == HONAppDelegateAlertTypeCreateClub) {
 		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
 			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 			
@@ -1631,10 +1631,30 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-			
-			[alertView setTag:8];
+			[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
 			[alertView show];
 		}];
+	
+	} else if (alertView.tag == HONAppDelegateAlertTypeAllowContactsAccess) {
+		if (buttonIndex == 1) {
+			if (ABAddressBookRequestAccessWithCompletion) {
+				ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+				NSLog(@"ABAddressBookGetAuthorizationStatus() = [%@]", (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+				
+				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+					});
+					
+				} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+					ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+					});
+					
+				} else {
+				}
+			}
+		}
 	}
 }
 
@@ -1872,6 +1892,18 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+
+#if __APPSTORE_BUILD__ == 0
+#pragma mark - UpdateManager Delegates
+- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
+#ifndef CONFIGURATION_AppStore
+//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+#endif
+	return (nil);
+}
+
+
 - (void)_picoCandyTest {
 	NSLog(@"CandyStore:\n%@\n\n", [[HONStickerAssistant sharedInstance] fetchStickerStoreInfo]);
 	[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
@@ -1897,17 +1929,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 - (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
 	NSLog(@"sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
-}
-
-
-#if __APPSTORE_BUILD__ == 0
-#pragma mark - UpdateManager Delegates
-- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
-#ifndef CONFIGURATION_AppStore
-//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
-#endif
-	return (nil);
 }
 #endif
 @end

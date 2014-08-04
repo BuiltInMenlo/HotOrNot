@@ -77,6 +77,10 @@
 
 "alert_lockedClub_t" = "Locked Club!";
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
+"alert_register_m" = "Come back to register for Selfieclub";
+"title_copyURL" = " - copy your url";
+"title_joinNow" = " - Join Now!";
+
 
 "enter_username" = "Enter username";
 "enter_phone" = "Enter phone";

@@ -91,6 +91,7 @@ extern const CGFloat kNotifiyDelay;
 - (AFHTTPClient *)getHttpClientWithHMAC;
 - (NSMutableString *)hmacForKey:(NSString *)key withData:(NSString *)data;
 - (NSMutableString *)hmacToken;
+- (NSString *)normalizePrefixForImageURL:(NSString *)imageURL;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
