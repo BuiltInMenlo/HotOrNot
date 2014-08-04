@@ -57,6 +57,9 @@
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
+		
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	}
 	
 	return (self);
@@ -427,7 +430,7 @@
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && self.imagePickerController.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
 		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -480,24 +483,29 @@
 	NSLog(@"SUBMIT PARAMS:[%@]", _submitParams);
 	//[self _submitClubPhoto];
 	
+	_isFirstAppearance = YES;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
-		[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-			NSLog(@"---CLUB SELECT---CAMERA");
-			_isFirstAppearance = YES;
-			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
-		}];
-		
-	} else {
-		NSLog(@"---CLUB SELECT---LIB");
-		_isFirstAppearance = YES;
-		[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
-		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
-	}
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
+	[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
+	
+//	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
+//		[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
+//			NSLog(@"---CLUB SELECT---CAMERA");
+//			_isFirstAppearance = YES;
+//			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
+//		}];
+//		
+//	} else {
+//		NSLog(@"---CLUB SELECT---LIB");
+//		_isFirstAppearance = YES;
+//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
+//		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
+//	}
 }
 
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_userClubVO viewControllerPushed:NO]];
+	HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"] firstObject]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:vo viewControllerPushed:NO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -595,23 +603,23 @@
 	_previewView.delegate = self;
     
 	
-	//[self dismissViewControllerAnimated:NO completion:^(void) {
-	//	[self.view addSubview:_previewView];
-	//}];
-
-//	
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[self.view addSubview:_previewView];
+	}];
+//
 //	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
 //    emotionsViewConteroller.view = _previewView;
 //    [self.navigationController pushViewController:emotionsViewConteroller animated:YES];
 	
-	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-		[_cameraOverlayView submitStep:_previewView];
 	
-	} else {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[self.view addSubview:_previewView];
-		}];
-	}
+//	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+//		[_cameraOverlayView submitStep:_previewView];
+//	
+//	} else {
+//		[self dismissViewControllerAnimated:NO completion:^(void) {
+//			[self.view addSubview:_previewView];
+//		}];
+//	}
 	
 	[self _uploadPhotos];
 }

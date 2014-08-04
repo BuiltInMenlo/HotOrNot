@@ -11,6 +11,8 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
+#import "PicoSticker.h"
+
 #import "HONClubPhotoViewCell.h"
 #import "HONEmotionVO.h"
 #import "HONImageLoadingView.h"
@@ -47,7 +49,6 @@
 	_clubPhotoVO = clubPhotoVO;
 	
 	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:self.contentView asLargeLoader:NO];
-	_imageLoadingView.frame = [UIScreen mainScreen].bounds;
 	[self.contentView addSubview:_imageLoadingView];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.contentView.frame];
@@ -68,9 +69,9 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeClubs completion:nil];
 		
-		imageView.image = [UIImage imageNamed:@"defaultClubCover"];
+//		imageView.image = [UIImage imageNamed:@"defaultClubCover"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			imageView.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -113,11 +114,11 @@
 	timeLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	timeLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	
-	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) : NSLocalizedString(@"ago_emotions", nil);
+	NSString *format = ([_clubPhotoVO.subjectNames count] == 1) ? NSLocalizedString(@"ago_emotion", nil) :NSLocalizedString(@"ago_emotions", nil);
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
 	[self.contentView addSubview:timeLabel];
 	
-	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 312.0, 84.0)];
+	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 320.0, 84.0)];
 	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
 	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
 	emoticonsScrollView.showsVerticalScrollIndicator = NO;
@@ -134,14 +135,14 @@
 	}
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likeButton.frame = CGRectMake(0.0, 494.0, 149, 64.0);
+	likeButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[likeButton setBackgroundImage:[UIImage imageNamed:@"likeTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[likeButton addTarget:self action:@selector(_goLike) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:likeButton];
 	
 	UIButton *replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	replyButton.frame = CGRectMake(170, 494.0, 149, 64.0);
+	replyButton.frame = CGRectMake(170, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_nonActive"] forState:UIControlStateNormal];
 	[replyButton setBackgroundImage:[UIImage imageNamed:@"replyTimelineButton_Active"] forState:UIControlStateHighlighted];
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
@@ -186,6 +187,12 @@
 	imageLoadingView.alpha = 0.667;
 	[imageLoadingView startAnimating];
 	[holderView addSubview:imageLoadingView];
+	
+//	PicoSticker *picoSticker = [[PicoSticker alloc] initWithPCContent:emotionVO.pcContent];
+//	[holderView addSubview:picoSticker];
+	
+//	PicoSticker *picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//	[holderView addSubview:picoSticker];
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:holderView.frame];
 	[imageView setTag:[emotionVO.emotionID intValue]];

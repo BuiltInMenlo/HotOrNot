@@ -46,6 +46,65 @@
 
 
 #pragma mark - Data Calls
+- (void)_validatePinCode {
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		if ([[result objectForKey:@"result"] intValue] == 0) {
+			
+			_pin = @"";
+			_pinTextField.text = @"";
+			[_pinTextField becomeFirstResponder];
+			
+			_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+			_pinCheckImageView.alpha = 1.0;
+			
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
+										message:@"Please try again or press the resend button"
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else
+			[self _finishFirstRun];
+	}];
+}
+
+
+#pragma mark - Data Manip
+- (void)_finishFirstRun {
+	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+	_pinCheckImageView.alpha = 1.0;
+	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		
+		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
+		
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
+		
+//					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"s Club"]]
+//												message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]											   delegate:nil
+//									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//									  otherButtonTitles:nil] show];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTIONS_OVERLAY" object:nil];
+		
+		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+	}];
+}
 
 
 #pragma mark - View lifecycle
@@ -54,7 +113,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"enter_pin", nil)]; //@"Enter Pin"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", nil)]; //@"Enter Pin"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -92,6 +151,7 @@
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
+	[_pinTextField becomeFirstResponder];
 	
 	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
@@ -107,14 +167,13 @@
 	[resendButton addTarget:self action:@selector(_goResend) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:resendButton];
 	
+	
 #if __APPSTORE_BUILD__ == 0
 	UIButton *cheatButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cheatButton.frame = CGRectMake(152.0, 250.0, 16.0, 16.0);
+	cheatButton.frame = CGRectMake(152.0, kNavHeaderHeight - 8.0, 16.0, 16.0);
 	[cheatButton addTarget:self action:@selector(_goCheat) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:cheatButton];
-	cheatButton.backgroundColor = [UIColor orangeColor];
 #endif
-	[_pinTextField becomeFirstResponder];
 }
 
 - (void)viewDidLoad {
@@ -155,67 +214,18 @@
 		_pinTextField.text = @"";
 		[_pinTextField becomeFirstResponder];
 		
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_pin", nil) //@"Invalid Pin!"
-									message: NSLocalizedString(@"invalid_pin_msg", nil) //@"Pin numbers need to be 4 numbers"
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", nil) //@"Invalid Pin!"
+									message:NSLocalizedString(@"invalid_pin_msg", nil) //@"Pin numbers need to be 4 numbers"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.taskInProgress = YES;
-		
-		[[HONAPICaller sharedInstance] validatePhoneNumberForUser:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] usingPINCode:_pin completion:^(NSDictionary *result) {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-			if ([[result objectForKey:@"result"] intValue] == 0) {
-				
-				_pin = @"";
-				_pinTextField.text = @"";
-				[_pinTextField becomeFirstResponder];
-				
-				_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				_pinCheckImageView.alpha = 1.0;
-				
-				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_pin", nil)  //@"Invalid Pin!"
-											message:@"Please try again or press the resend button"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			
-			} else {
-				_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-				_pinCheckImageView.alpha = 1.0;
-				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						
-					KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-					[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
-					
-					UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-					pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club//%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
-					
-					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]]
-												message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]											   delegate:nil
-									  cancelButtonTitle:@"OK"
-									  otherButtonTitles:nil] show];
-					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-				}];
-			}
-		}];
+		[self _validatePinCode];
 	}
 }
 
 - (void)_goResend {
-	
 	[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
 		_pinTextField.text = @"";
 		[_pinTextField becomeFirstResponder];
@@ -223,26 +233,13 @@
 }
 
 - (void)_goCheat {
-	_pinTextField.text=@"0000";
+	_pinTextField.text = @"0000";
+	_pin = _pinTextField.text;
+	
 	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 	_pinCheckImageView.alpha = 1.0;
 	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-		
-		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
-		
-		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]];
-		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_title", nil), [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"]] //@"Your %@ has been copied to your device's clipboard!"
-									message:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_msg", nil)] //@"\nPaste this URL anywhere to have your friends join!"]
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-	}];
+	[self _finishFirstRun];
 }
 
 #pragma mark - Notifications

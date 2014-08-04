@@ -82,7 +82,7 @@
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
 	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -114,12 +114,11 @@
 }
 
 - (void)_goNotificationsSwitch:(UISwitch *)switchView {
-	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:[NSString stringWithFormat:@"Turn %@ notifications?", (switchView.on) ? @"ON" : @"OFF"]
 																  delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"OK", nil];
+													  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+													  otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
 	[alertView setTag:HONSettingsAlertTypeNotifications];
 	[alertView show];
 }
@@ -139,7 +138,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"SMS Error"
 									message:@"Cannot send SMS from this device!"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -218,30 +217,30 @@
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
+			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
 			[mailComposeViewController setSubject:@"Report Abuse / Bug"];
 			[mailComposeViewController setMessageBody:@"" isHTML:NO];
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
-			[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"email_error", nil) //@"Email Error"
-										message: NSLocalizedString(@"email_errormsg", msg) //@"Cannot send email from this device!"
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", nil) //@"Email Error"
+										message:NSLocalizedString(@"email_errormsg", msg) //@"Cannot send email from this device!"
 									   delegate:nil
-							  cancelButtonTitle:@"OK"
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
 	} else if(indexPath.row == HONSettingsCellTypeCopyClub) {
-		NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"];
+		NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""];
 		NSString *clubDeeplink = [NSString stringWithFormat:@"%@/%@", [[HONAppDelegate infoForUser] objectForKey:@"username"], clubName];
 		
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@", clubName, clubDeeplink];
 		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_title", nil), clubName] //@"Your %@ has been copied to your device's clipboard!", clubName]
-									message:[NSString stringWithFormat: NSLocalizedString(@"popup_clubcopied_msg", nil) ] //@"\nPaste this URL anywhere to have your friends join!"]
+		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), clubName] //@"Your %@ has been copied to your device's clipboard!", clubName]
+									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil) ] //@"\nPaste this URL anywhere to have your friends join!"]
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
@@ -253,11 +252,11 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 															message:@""
 														   delegate:self
-												  cancelButtonTitle: NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
-												  otherButtonTitles: NSLocalizedString(@"settings_logout", nil), nil]; //@"Log out", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
+												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil]; //@"Log out", nil];
 		
 		[alertView setTag:HONSettingsAlertTypeLogout];
 		[alertView show];

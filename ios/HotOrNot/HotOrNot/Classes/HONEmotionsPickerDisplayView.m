@@ -10,6 +10,8 @@
 #import "UILabel+BoundingRect.h"
 #import "UILabel+FormattedText.h"
 
+#import "PicoSticker.h"
+
 #import "HONEmotionsPickerDisplayView.h"
 #import "HONImageLoadingView.h"
 
@@ -23,7 +25,7 @@ const CGSize kImagePaddingSize = {0.0f, 0.0f};
 const CGRect kEmotionIntroFrame = {50.0f, 50.0f, 24.0f, 24.0f};
 const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
-@interface HONEmotionsPickerDisplayView ()
+@interface HONEmotionsPickerDisplayView () <PicoStickerDelegate>
 @property (nonatomic, strong) NSMutableArray *emotions;
 @property (nonatomic, strong) UILabel *label;
 @property (nonatomic, strong) UIView *loaderHolderView;
@@ -101,6 +103,8 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 
 #pragma mark - Public APIs
 - (void)addEmotion:(HONEmotionVO *)emotionVO {
+//	NSLog(@"STICKER:[%@]", emotionVO.pcContent);
+	
 	[_emotions addObject:emotionVO];
 	[self _addImageEmotion:emotionVO];
 	
@@ -128,7 +132,11 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 	imageView.transform = transform;
 	[_emotionHolderView addSubview:imageView];
 	
-	if (emotionVO.image == nil) {
+	
+	
+//	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+		
+//	if (emotionVO.picoSticker == nil) {
 		HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:imageView asLargeLoader:NO];
 		imageLoadingView.frame = CGRectMake(imageView.frame.origin.x - 11.0, 55.0, imageLoadingView.frame.size.width, imageLoadingView.frame.size.height);
 		imageLoadingView.alpha = 0.667;
@@ -158,18 +166,30 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 						 placeholderImage:nil
 								  success:imageSuccessBlock
 								  failure:nil];
+//
+//	} else {
+//	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height))];
+//	holderView.alpha = 0.0;
+//	holderView.contentMode = UIViewContentModeScaleAspectFit;
+//	holderView.transform = transform;
+//	[_emotionHolderView addSubview:holderView];
+//	PicoSticker *picoSticker = [[PicoSticker alloc] initWithPCContent:emotionVO.pcContent];
+//	picoSticker.frame = CGRectMake(([_emotions count] - 1) * (kImageSize.width + kImagePaddingSize.width), 0.0, (kImageSize.width + kImagePaddingSize.width), (kImageSize.height + kImagePaddingSize.height));
+//	picoSticker.alpha = 0.0;
+//	picoSticker.contentMode = UIViewContentModeScaleAspectFit;
+//	picoSticker.transform = transform;
+//	[_emotionHolderView addSubview:picoSticker];
+
 		
-	} else {
-		imageView.image = emotionVO.image;
-		[UIView animateWithDuration:0.200 delay:0.125
-			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-		 
-						 animations:^(void) {
-							 imageView.alpha = 1.0;
-							 imageView.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-						 } completion:^(BOOL finished) {}];
-	}
+//		[UIView animateWithDuration:0.200 delay:0.125
+//			 usingSpringWithDamping:0.750 initialSpringVelocity:0.000
+//							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+//		 
+//						 animations:^(void) {
+//							 picoSticker.alpha = 1.0;
+//							 picoSticker.transform = CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+//						 } completion:^(BOOL finished) {}];
+//	}
 	
 	[self _updateDisplay];
 }
@@ -232,5 +252,10 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 //	NSLog(@"[=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=|:|=-=-=-=-=-=-=-=-=|=-=-=-=-=-=-=-=-=]");
 }
 
+
+#pragma mark - PicoSticker Delegates
+- (void)picoSticker:(id)sticker tappedWithContentId:(NSString *)contentId {
+	NSLog(@"[*:*] sticker.tag:[%d] (%@)", ((PicoSticker *)sticker).tag, contentId);
+}
 
 @end

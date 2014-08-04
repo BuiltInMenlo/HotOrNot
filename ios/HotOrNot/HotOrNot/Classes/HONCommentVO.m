@@ -23,7 +23,7 @@
 	vo.userID = [[dictionary objectForKey:@"user_id"] intValue];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
+	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"img_url"]];
 	vo.userScore = [[dictionary objectForKey:@"score"] intValue];
 	vo.content = [dictionary objectForKey:@"text"];
 	

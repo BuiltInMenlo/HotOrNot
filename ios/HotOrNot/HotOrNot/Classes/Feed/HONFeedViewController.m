@@ -377,25 +377,25 @@
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController upvoteChallenge:(HONChallengeVO *)challengeVO forParticipant:(HONOpponentVO *)opponentVO {
 
 	
-	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSDictionary *result) {
-		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:result];
-		
+//	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:challengeVO.challengeID forOpponent:opponentVO completion:^(NSDictionary *result) {
+//		feedItemViewController.challenge = [HONChallengeVO challengeWithDictionary:result];
+//		
 //		NSMutableArray *mutableChallenges = [_challenges mutableCopy];<<
-		NSMutableArray *mutableChallenges = [_clubPhotos mutableCopy];
-		__block NSUInteger foundIndex = NSNotFound;
-		[mutableChallenges enumerateObjectsUsingBlock:^(HONChallengeVO *vo, NSUInteger idx, BOOL *stop) {
-			if (vo.challengeID == challengeVO.challengeID) {
-				foundIndex = idx;
-				*stop = YES;
-			}
-		}];
-		if (foundIndex != NSNotFound)
-			[mutableChallenges replaceObjectAtIndex:foundIndex withObject:challengeVO];
+//		NSMutableArray *mutableChallenges = [_clubPhotos mutableCopy];
+//		__block NSUInteger foundIndex = NSNotFound;
+//		[mutableChallenges enumerateObjectsUsingBlock:^(HONChallengeVO *vo, NSUInteger idx, BOOL *stop) {
+//			if (vo.challengeID == challengeVO.challengeID) {
+//				foundIndex = idx;
+//				*stop = YES;
+//			}
+//		}];
+//		if (foundIndex != NSNotFound)
+//			[mutableChallenges replaceObjectAtIndex:foundIndex withObject:challengeVO];
 //		_challenges = [mutableChallenges copy];
-		_clubPhotos = [mutableChallenges copy];
-	}];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+//		_clubPhotos = [mutableChallenges copy];
+//	}];
+//	
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 }
 
 - (void)feedItem:(HONFeedItemViewController *)feedItemViewController joinChallenge:(HONChallengeVO *)challengeVO

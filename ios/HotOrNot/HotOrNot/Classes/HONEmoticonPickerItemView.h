@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "PicoSticker.h"
+
 #import "HONEmotionVO.h"
 
 @class HONEmoticonPickerItemView;

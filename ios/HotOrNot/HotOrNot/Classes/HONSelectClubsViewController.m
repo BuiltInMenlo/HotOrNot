@@ -227,16 +227,12 @@
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] clubToggleViewCell:selectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
-
-	
 	if (![_selectedClubs containsObject:userClubVO])
 		[_selectedClubs addObject:userClubVO];
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*|*] clubToggleViewCell:deselectedClub(%d - %@)", userClubVO.clubID, userClubVO.clubName);
-	
-
 	
 	if ([_selectedClubs containsObject:userClubVO])
 		[_selectedClubs removeObject:userClubVO];

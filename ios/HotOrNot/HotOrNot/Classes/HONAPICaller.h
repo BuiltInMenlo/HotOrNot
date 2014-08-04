@@ -12,6 +12,7 @@
 #import "HONOpponentVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONUserClubVO.h"
+#import "HONClubPhotoVO.h"
 
 
 typedef NS_ENUM(NSInteger, HONS3BucketType) {
@@ -90,6 +91,7 @@ extern const CGFloat kNotifiyDelay;
 - (AFHTTPClient *)getHttpClientWithHMAC;
 - (NSMutableString *)hmacForKey:(NSString *)key withData:(NSString *)data;
 - (NSMutableString *)hmacToken;
+- (NSString *)normalizePrefixForImageURL:(NSString *)imageURL;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**
@@ -148,7 +150,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveChallengeForChallengeID:(int)challengeID igoringNextPushes:(BOOL)isIgnore completion:(void (^)(id result))completion;
 - (void)retrieveVerifyListForUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)submitChallengeWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
-- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONOpponentVO *)opponentVO completion:(void (^)(id result))completion;
+- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯
 
 /**

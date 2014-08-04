@@ -19,11 +19,11 @@
 	
 	vo.userID = [[dictionary objectForKey:@"user_id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
+	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"avatar"] != [NSNull null]) ? [dictionary objectForKey:@"avatar"] : vo.imagePrefix];
 	
-//	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
+	vo.clubID = [[dictionary objectForKey:@"club_id"] intValue];
 	vo.challengeID = [[dictionary objectForKey:@"challenge_id"] intValue];
-	vo.imagePrefix = [HONAppDelegate cleanImagePrefixURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
+	vo.imagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @""];
 	vo.subjectNames = [dictionary objectForKey:@"subjects"];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];

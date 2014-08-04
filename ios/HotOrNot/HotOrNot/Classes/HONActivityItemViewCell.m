@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UILabel+BoundingRect.h"
+#import "UILabel+FormattedText.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONActivityItemViewCell.h"
@@ -49,7 +51,6 @@
 	[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_avatarImageView.alpha = (int)((request.URL == nil));
 		_avatarImageView.image = image;
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
@@ -61,15 +62,24 @@
 	};
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+		_avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
 	};
 	
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
-															  cachePolicy:kURLRequestCachePolicy
-														  timeoutInterval:[HONAppDelegate timeoutInterval]]
-							placeholderImage:nil
-									 success:successBlock
-									 failure:failureBlock];
+	if ([_activityItemVO.avatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
+		_avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
+		[imageLoadingView stopAnimating];
+		[imageLoadingView removeFromSuperview];
+	}
+	
+	else {
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+																  cachePolicy:kURLRequestCachePolicy
+															  timeoutInterval:[HONAppDelegate timeoutInterval]]
+								placeholderImage:[UIImage imageNamed:@"activityAvatar"]
+										 success:successBlock
+										 failure:failureBlock];
+	}
 	
 	
 	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -77,25 +87,18 @@
 	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:avatarButton];
 	
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 200.0, 17.0)];
+	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
+	titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
+	titleLabel.backgroundColor = [UIColor clearColor];
+	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:_activityItemVO.message attributes:@{}];
+	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13] range:[_activityItemVO.message rangeOfString:_activityItemVO.username]];
+	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.username]];
+	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.clubName]];
+	[titleLabel resizeWidthUsingCaption:_activityItemVO.message boundedBySize:titleLabel.frame.size];
+	[self.contentView addSubview:titleLabel];
 	
-	NSString *caption = [NSString stringWithFormat:@"%@", _activityItemVO.username];
-	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 180.0, 17.0)];
-	nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13];
-	nameLabel.textColor = [UIColor blackColor];
-	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = _activityItemVO.username;
-	[self.contentView addSubview:nameLabel];
-	
-	
-	CGSize maxSize = CGSizeMake(nameLabel.frame.size.width, nameLabel.frame.size.height);
-	CGSize size = [caption boundingRectWithSize:maxSize
-											 options:NSStringDrawingTruncatesLastVisibleLine
-										  attributes:@{NSFontAttributeName:nameLabel.font}
-											 context:nil].size;
-	nameLabel.frame = CGRectMake(nameLabel.frame.origin.x, nameLabel.frame.origin.y, MIN(maxSize.width, size.width), nameLabel.frame.size.height);
-	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(nameLabel.frame.origin.x + nameLabel.frame.size.width + 4.0, nameLabel.frame.origin.y, 50.0, nameLabel.frame.size.height)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x + titleLabel.frame.size.width + 2.0, titleLabel.frame.origin.y, 50.0, titleLabel.frame.size.height)];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];

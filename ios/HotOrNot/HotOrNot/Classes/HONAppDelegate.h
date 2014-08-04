@@ -9,39 +9,41 @@
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
-
-#define __DEV_BUILD__ 1
+/** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
-#define __FORCE_REGISTER__ 0
 
+#define __FORCE_REGISTER__ 0
 #define __FORCE_SUGGEST__ 0
+
 #define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
-/** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __APPSTORE_BUILD__ 0
+/** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
+/** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONTimelineScrollDirection) {
 	HONTimelineScrollDirectionDown = 0,	/** Challenges using same hashtag */
 	HONTimelineScrollDirectionUp,			/** Challenges of a single user */
-} HONTimelineScrollDirection;
+};
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONPushType) {
 	HONPushTypeShowChallengeDetails	= 1,			/** Brings up the challenge details modal **/
 	HONPushTypeUserVerified,						/** Shows alert **/
 	HONPushTypeShowUserProfile,						/** Brings up a user's profile **/
 	HONPushTypeShowAddContacts,						/** Brings up the invite contacts modal **/
 	HONPushTypeShowSettings,						/** Brings up the settings modal **/
 	HONPushTypeShowChallengeDetailsIgnoringPushes	/** Brings up the challenge details modal, ignoring next pushes **/
-} HONPushType;
+};
 
 
 
 // share sheet actions
-typedef enum {
+typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeKik = 0,
 	HONShareSheetActionTypeInstagram,
 	HONShareSheetActionTypeTwitter,
@@ -49,10 +51,24 @@ typedef enum {
 	HONShareSheetActionTypeSMS,
 	HONShareSheetActionTypeEmail,
 	HONShareSheetActionTypeClipboard
-} HONShareSheetActionType;
+};
+
+typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
+	HONAppDelegateAlertTypeExit = 0,
+	HONAppDelegateAlertTypeVerifiedNotification,
+	HONAppDelegateAlertTypeReviewApp,
+	HONAppDelegateAlertTypeInviteFriends,
+	HONAppDelegateAlertTypeShare,
+	HONAppDelegateAlertTypeRefreshTabs,
+	HONAppDelegateAlertTypeRemoteNotification,
+	HONAppDelegateAlertTypeJoinCLub,
+	HONAppDelegateAlertTypeInviteContacts,
+	HONAppDelegateAlertTypeCreateClub,
+	HONAppDelegateAlertTypeAllowContactsAccess
+};
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, HONAmazonS3BucketType) {
 	HONAmazonS3BucketTypeAvatarsSource = 0,
 	HONAmazonS3BucketTypeAvatarsCloudFront,
 	
@@ -64,7 +80,13 @@ typedef enum {
 	
 	HONAmazonS3BucketTypeEmotionsSource,
 	HONAmazonS3BucketTypeEmoticonsCloudFront
-} HONAmazonS3BucketType;
+};
+
+typedef NS_ENUM(NSUInteger, HONInsetOverlayViewType) {
+	HONInsetOverlayViewTypeAppReview = 0,
+	HONInsetOverlayViewTypeSuggestions,
+	HONInsetOverlayViewTypeUnlock
+};
 
 
 // api endpts
@@ -120,8 +142,11 @@ extern NSString * const kNetErrorStatusCode404;
 
 + (NSDictionary *)s3Credentials;
 + (NSTimeInterval)timeoutInterval;
++ (int)clubInvitesThreshold;
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType;
+
++ (NSDictionary *)contentForInsetOverlay:(HONInsetOverlayViewType)insetType;
 
 + (BOOL)switchEnabledForKey:(NSString *)key;
 + (int)incTotalForCounter:(NSString *)key;
@@ -160,7 +185,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (CGFloat)compressJPEGPercentage;
 
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)cleanImagePrefixURL:(NSString *)imageURL;
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber;
 + (NSDictionary *)parseQueryString:(NSString *)queryString;
 

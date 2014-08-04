@@ -19,7 +19,7 @@
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.fullName = [dictionary objectForKey:@"full_name"];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"avatar_url"]];
+	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"avatar_url"]];
 	
 	return (vo);
 }

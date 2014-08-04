@@ -20,7 +20,7 @@
 	vo.dictionary = dictionary;
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.avatarPrefix = [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img_url"]];
+	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"img_url"]];
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? @"" : vo.avatarPrefix;
 	vo.altID = ([dictionary objectForKey:@"alt_id"] != [NSNull null]) ? [dictionary objectForKey:@"alt_id"] : @"";
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
@@ -32,7 +32,7 @@
 + (HONTrivialUserVO *)userFromActivityItemVO:(HONActivityItemVO *)activityItemVO {
 	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: [[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"id"],
 												   @"username"	: [[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"username"],
-												   @"img_url"	: [HONAppDelegate cleanImagePrefixURL:[[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]],
+												   @"img_url"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[activityItemVO.dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]],
 												   @"alt_id"	: [activityItemVO.dictionary objectForKey:@"id"]}]);
 }
 
@@ -47,7 +47,7 @@
 	return ([HONTrivialUserVO userWithDictionary:@{@"id"		: [opponentVO.dictionary objectForKey:@"id"],
 												  @"username"	: [opponentVO.dictionary objectForKey:@"username"],
 												  @"img_url"	: [opponentVO.dictionary objectForKey:@"avatar"],
-												  @"alt_id"		: [[[HONAppDelegate cleanImagePrefixURL:[opponentVO.dictionary objectForKey:@"avatar"]] componentsSeparatedByString:@"/"] lastObject]}]);
+												  @"alt_id"		: [[[[HONAPICaller sharedInstance] normalizePrefixForImageURL:[opponentVO.dictionary objectForKey:@"avatar"]] componentsSeparatedByString:@"/"] lastObject]}]);
 }
 
 + (HONTrivialUserVO *)userFromUserVO:(HONUserVO *)userVO {

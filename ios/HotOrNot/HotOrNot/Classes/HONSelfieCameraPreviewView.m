@@ -8,31 +8,35 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "NSString+DataTypes.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "PCCandyStorePurchaseController.h"
 
 #import "HONSelfieCameraPreviewView.h"
-#import "HONInviteOverlayView.h"
+#import "HONInsetOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONTrivialUserVO.h"
 #import "HONEmotionsPickerDisplayView.h"
+#import "HONInviteContactsViewController.h"
 #import "HONEmotionsPickerView.h"
 
 #define PREVIEW_SIZE 176.0f
 
-@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInviteOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
+@interface HONSelfieCameraPreviewView () <HONEmotionsPickerViewDelegate, HONInsetOverlayViewDelegate, PCCandyStorePurchaseControllerDelegate>
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSMutableArray *subjectNames;
 
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONInviteOverlayView *inviteOverlayView;
+@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONEmotionsPickerView *emotionsPickerView;
 @property (nonatomic, strong) HONEmotionsPickerDisplayView *emotionsDisplayView;
 
 @property (nonatomic, strong) UIButton *overlayToggleButton;
+
+@property (nonatomic, strong) dispatch_queue_t purchase_content_request_queue;
 @end
 
 @implementation HONSelfieCameraPreviewView
@@ -46,6 +50,8 @@
 		_previewImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(176.0, 224.0)] toRect:CGRectMake(0.0, 24.0, 176.0, 176.0)];
 		
 		NSLog(@"PREVIEW -- SRC IMAGE:[%@]\nZOOMED IMAGE:[%@]", NSStringFromCGSize(image.size), NSStringFromCGSize(_previewImage.size));
+		
+		_purchase_content_request_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.content-request", 0);
 		
 		[self _adoptUI];
 	}
@@ -70,7 +76,7 @@
 	[_overlayToggleButton addTarget:self action:@selector(_goToggleOverlay) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:_overlayToggleButton];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle: NSLocalizedString(@"select_feeling", nil)]; //@"Select Feeling"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"select_feeling", nil)]; //@"Select Feeling"];
 	[self addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -128,8 +134,8 @@
 			[self.delegate cameraPreviewViewSubmit:self withSubjects:_subjectNames];
 	
 	} else {
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_noemotions_title", nil) //@"No Emotions Selected!"
-									message: NSLocalizedString(@"alert_noemotions_msg", nil) //@"You need to choose some emotions to make a status update."
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noemotions_title", nil) //@"No Emotions Selected!"
+									message:NSLocalizedString(@"alert_noemotions_msg", nil) //@"You need to choose some emotions to make a status update."
 								   delegate:nil
 						  cancelButtonTitle:  NSLocalizedString(@"alert_ok", nil) //@"OK"
 						  otherButtonTitles:nil] show];
@@ -215,26 +221,28 @@
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Camera Step 2 - Sticker Selected"
 										withEmotion:emotionVO];
 	
-//	if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
-//		NSLog(@"ContentGroup in CandyBox");
-//		emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerImageFromCandyBoxWithContentID:emotionVO.emotionID];
-//	
-//	} else {
-//		NSLog(@"Purchasing ContentGroup");
-//		[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
-//	}
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if ([[HONStickerAssistant sharedInstance] candyBoxContainsContentGroupForContentGroupID:emotionVO.contentGroupID]) {
+			NSLog(@"Content in CandyBox --(%@)", emotionVO.contentGroupID);
+			
+//			PicoSticker *sticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//			[sticker use];
+//			emotionVO.picoSticker = [[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:emotionVO.emotionID];
+//			[emotionVO.picoSticker use];
 	
+		} else {
+//			NSLog(@"Purchasing ContentGroup --(%@)", emotionVO.contentGroupID);
+//			[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:emotionVO.contentGroupID usingDelegate:self];
+		}
+	});
 	
 	[_subjectNames addObject:[emotionVO.emotionName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 	[_emotionsDisplayView addEmotion:emotionVO];
-	
-//	[[HONStickerAssistant sharedInstance] purchaseStickerPakWithContentGroupID:@"813" usingDelegate:self];
 }
 
 - (void)emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView deselectedEmotion:(HONEmotionVO *)emotionVO {
 	//NSLog(@"[*:*] emotionItemView:(%@) deselectedEmotion:(%@) [*:*]", self.class, emotionVO.emotionName);
 
-	
 	[_subjectNames removeObject:emotionVO.emotionName];
 	[_emotionsDisplayView removeEmotion:emotionVO];
 }
@@ -243,40 +251,39 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < 3 && page == 1 && direction == 1) {
-//		_inviteOverlayView = [[HONInviteOverlayView alloc] initWithContentImage:@"tutorial_camera"];
-//		_inviteOverlayView.delegate = self;
-//		
-//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-//		[_inviteOverlayView introWithCompletion:nil];
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 1 && direction == 1) {
+		[_emotionsPickerView scrollToPage:0];
+		
+		if (_insetOverlayView == nil) {
+			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+			_insetOverlayView.delegate = self;
+			
+			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+			[_insetOverlayView introWithCompletion:nil];
+		}
 	}
 }
 
 
-#pragma mark - InviteOverlay Delegates
-- (void)inviteOverlayViewClose:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+#pragma mark - InsetOverlay Delegates
+- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
 	}];
 }
 
-- (void)inviteOverlayViewInvite:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
+- (void)insetOverlayViewDidUnlock:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+
 		
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
 			[self.delegate cameraPreviewViewShowInviteContacts:self];
 	}];
 }
 
-- (void)inviteOverlayViewSkip:(HONInviteOverlayView *)inviteOverlayView {
-	[_inviteOverlayView outroWithCompletion:^(BOOL finished) {
-		[_inviteOverlayView removeFromSuperview];
-		_inviteOverlayView = nil;
-	}];
-}
 
 
 @end

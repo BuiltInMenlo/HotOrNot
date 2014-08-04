@@ -16,7 +16,7 @@
 
 - (id)init {
 	if ((self = [super initWithURL:[HONAppDelegate customerServiceURLForKey:@"privacy"]
-							 title: NSLocalizedString(@"privacy_policy", nil)])) { //@"Privacy Policy"])) {
+							 title:NSLocalizedString(@"privacy_policy", nil)])) { //@"Privacy Policy"])) {
 	}
 	
 	return (self);

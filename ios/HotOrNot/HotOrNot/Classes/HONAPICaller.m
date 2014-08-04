@@ -162,6 +162,22 @@ static HONAPICaller *sharedInstance = nil;
 	return ([token copy]);
 }
 
+- (NSString *)normalizePrefixForImageURL:(NSString *)imageURL {
+	NSMutableString *imagePrefix = [imageURL mutableCopy];
+	
+	[imagePrefix replaceOccurrencesOfString:[kSnapThumbSuffix substringToIndex:[kSnapThumbSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:[kSnapMediumSuffix substringToIndex:[kSnapMediumSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:[kSnapLargeSuffix substringToIndex:[kSnapLargeSuffix length] - 4] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:@"_o" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:@".jpg" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	[imagePrefix replaceOccurrencesOfString:@".png" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imagePrefix length])];
+	
+	return ([imagePrefix copy]);
+}
+
+
+
+
 - (void)retreiveBootConfigWithCompletion:(void (^)(id result))completion {
 	NSString *configURLWithTimestamp = [NSString stringWithFormat:@"%@?epoch=%d", kConfigJSON, (int)[[NSDate date] timeIntervalSince1970]];
 	SelfieclubJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
@@ -201,7 +217,7 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)notifyToCreateImageSizesForPrefix:(NSString *)prefixURL forBucketType:(HONS3BucketType)bucketType preDelay:(int64_t)delay completion:(void (^)(id result))completion {
-	NSDictionary *params = @{@"imgURL"	: [HONAppDelegate cleanImagePrefixURL:prefixURL]};
+	NSDictionary *params = @{@"imgURL"	: [[HONAPICaller sharedInstance] normalizePrefixForImageURL:prefixURL]};
 	
 	dispatch_time_t dispatchTime = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
 	dispatch_after(dispatchTime, dispatch_get_main_queue(), ^(void){
@@ -1154,7 +1170,7 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONOpponentVO *)opponentVO completion:(void (^)(id result))completion {
+- (void)upvoteChallengeWithChallengeID:(int)challengeID forOpponent:(HONClubPhotoVO *)opponentVO completion:(void (^)(id result))completion {
 	NSDictionary *params = @{@"action"			: [@"" stringFromInt:6],
 							 @"userID"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"challengeID"		: [@"" stringFromInt:challengeID],

@@ -34,4 +34,14 @@
 //	NSLog(@"--ADDJ:[%@]--\n\n", NSStringFromCGRect(adjBounds));
 	return (adjBounds);
 }
+
+- (void)resizeWidthUsingCaption:(NSString *)caption boundedBySize:(CGSize)maxSize {
+	CGSize size = [caption boundingRectWithSize:maxSize
+														options:NSStringDrawingTruncatesLastVisibleLine
+													 attributes:@{NSFontAttributeName:self.font}
+														context:nil].size;
+	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, MIN(maxSize.width, size.width), self.frame.size.height);
+}
+
+
 @end

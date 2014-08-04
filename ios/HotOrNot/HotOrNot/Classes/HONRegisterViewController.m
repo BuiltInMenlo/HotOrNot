@@ -199,13 +199,13 @@
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
 				if ([[result objectForKey:@"owned"] count] == 0) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@" Club"] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
 					}];
 				}
 			}];
 			
 			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-			[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
+				[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
 																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
 																						  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																						  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
@@ -225,7 +225,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = (errorCode == 1) ? @"Username taken!" : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
+			_progressHUD.labelText = (errorCode == 1) ? NSLocalizedString(@"hud_usernameTaken", nil) : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -255,7 +255,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
 									message:@"You cannot have / or ' in your club's name"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -414,7 +414,7 @@
 		if ([MFMailComposeViewController canSendMail]) {
 			_mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			_mailComposeViewController.mailComposeDelegate = self;
-			[_mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@selfieclubapp.com"]];
+			[_mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
 			[_mailComposeViewController setSubject:@"Selfieclub - Help! I need to log back in"];
 			[_mailComposeViewController setMessageBody:[NSString stringWithFormat:@"My name is %@ and I need to log back into my account. Please help, my email is %@. Thanks!", [[HONAppDelegate infoForUser] objectForKey:@"username"], [[HONAppDelegate infoForUser] objectForKey:@"email"]] isHTML:NO];
 			
@@ -422,7 +422,7 @@
 			[[[UIAlertView alloc] initWithTitle:@"Email Error"
 										message:@"Cannot send email from this device!"
 									   delegate:nil
-							  cancelButtonTitle:@"OK"
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
 		
@@ -430,7 +430,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"This device has never been logged in!"
 									message:@""
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -625,7 +625,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to use Selfieclub"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 		_username = @"";
@@ -640,7 +640,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
 									message:@"You need a phone # to use Selfieclub."
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 		
 		_phone = @"";
@@ -657,7 +657,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone!"
 									message:@"You need to enter a username and phone # to use Selfieclub"
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}
 }
@@ -667,7 +667,7 @@
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
-	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@ Club", _usernameTextField.text, _usernameTextField.text] : @"Getselfieclub.com/";
+	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@", _usernameTextField.text, _usernameTextField.text] : @"joinselfie.club/";
 	
 	NSString *phone1 = @"";
 	NSString *phone2 = @"";

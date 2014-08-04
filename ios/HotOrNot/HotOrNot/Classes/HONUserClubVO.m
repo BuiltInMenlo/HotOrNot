@@ -29,14 +29,14 @@
 	vo.clubName = [dictionary objectForKey:@"name"];
 	vo.blurb = [dictionary objectForKey:@"description"];
 	
-	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [HONAppDelegate cleanImagePrefixURL:[dictionary objectForKey:@"img"]] : [[HONClubAssistant sharedInstance] defaultCoverImageURL];
+	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"img"]] : [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 	vo.coverImagePrefix = ([vo.coverImagePrefix rangeOfString:@"defaultClubCover"].location != NSNotFound) ? [[HONClubAssistant sharedInstance] defaultCoverImageURL] : vo.coverImagePrefix;
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	
 	vo.ownerID = [[[dictionary objectForKey:@"owner"] objectForKey:@"id"] intValue];
 	vo.ownerName = [[dictionary objectForKey:@"owner"] objectForKey:@"username"];
-	vo.ownerImagePrefix = [HONAppDelegate cleanImagePrefixURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
+	vo.ownerImagePrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:([[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] != nil) ? [[dictionary objectForKey:@"owner"] objectForKey:@"avatar"] : [[HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeAvatarsCloudFront] stringByAppendingString:@"/defaultAvatar"]];
 	
 	
 	NSMutableArray *pending = [NSMutableArray array];
@@ -46,7 +46,7 @@
 	
 	NSMutableArray *members = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"members"])
-		[members addObject:[HONTrivialUserVO userWithDictionary:dict]];
+		[members addObject:([[dict objectForKey:@"id"] length] == 0) ? [HONTrivialUserVO userFromContactVO:[HONContactUserVO contactWithDictionary:dict]] : [HONTrivialUserVO userWithDictionary:dict]];
 	vo.activeMembers = members;
 	
 	NSMutableArray *banned = [NSMutableArray array];
@@ -55,8 +55,11 @@
 	vo.bannedMembers = banned;
 	
 	NSMutableArray *submissions = [NSMutableArray array];
-	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"])
-		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:dict]];
+	for (NSDictionary *dict in [dictionary objectForKey:@"submissions"]) {
+		NSMutableDictionary *mDict = [dict mutableCopy];
+		[mDict setValue:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+		[submissions addObject:[HONClubPhotoVO clubPhotoWithDictionary:[mDict copy]]];
+	}
 	
 	vo.submissions = [[[submissions copy] reverseObjectEnumerator] allObjects];
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
@@ -65,7 +68,7 @@
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"CREATE"]) ? HONClubEnrollmentTypeCreate : vo.clubEnrollmentType;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"]) ? HONClubEnrollmentTypeSuggested : vo.clubEnrollmentType;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"HIGH_SCHOOL"]) ? HONClubEnrollmentTypeHighSchool : vo.clubEnrollmentType;
-	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"LOCKED"]) ? HONClubEnrollmentTypeHighSchool : vo.clubEnrollmentType;
+	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"LOCKED"]) ? HONClubEnrollmentTypeThreshold : vo.clubEnrollmentType;
 	
 	if (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) {
 		for (HONTrivialUserVO *trivialUserVO in vo.pendingMembers) {

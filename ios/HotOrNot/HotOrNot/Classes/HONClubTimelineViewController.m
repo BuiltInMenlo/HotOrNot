@@ -41,6 +41,9 @@
 		_clubPhotos = _clubVO.submissions;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	}
 	
 	return (self);
@@ -75,12 +78,6 @@
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
 		
-		
-		_emptySetImageView.hidden = [_clubPhotos count] > 0;
-		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
-		[self _didFinishDataRefresh];
-		
-		
 		_imageQueueLocation = 0;
 		if ([_clubPhotos count] > 0) {
 			NSRange queueRange = NSMakeRange(_imageQueueLocation, MIN([_clubPhotos count], _imageQueueLocation + [HONAppDelegate rangeForImageQueue].length));
@@ -100,6 +97,10 @@
 											fromURLs:imageQueue
 											 withTag:@"club"];
 		}
+		
+		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
+		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
+		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -144,12 +145,16 @@
 	
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
+	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[@"emptyTimeline" stringByAppendingString:([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? @"-568h" : @""]]];
+	_emptySetImageView.frame = [UIScreen mainScreen].bounds;
+	_emptySetImageView.hidden = ([_clubPhotos count] > 0);
+
+//	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
 	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
 	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
 	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
-	[_tableView setBackgroundColor:[UIColor blackColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.backgroundView = _emptySetImageView;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.pagingEnabled = YES;
@@ -157,14 +162,10 @@
 	_tableView.alwaysBounceVertical = YES;
 	[self.view addSubview:_tableView];
 	
+		
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-	
-	_emptySetImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifyEmpty"]];
-	_emptySetImageView.frame = CGRectOffset(_emptySetImageView.frame, 0.0, 58.0);
-	_emptySetImageView.hidden = YES;
-	[_tableView addSubview:_emptySetImageView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_clubVO.clubName];
 	[headerView toggleLightStyle:YES];
@@ -225,16 +226,16 @@
 
 
 #pragma mark - Navigation
--(void) _goShare{
+-(void) _goShare {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club//%@/%@", _clubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _clubVO.clubName];
+	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _clubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _clubVO.clubName];
 	
 	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _clubVO.clubName]
 								message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
 //	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _clubVO.clubName]
 //								message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
 							   delegate:nil
-					  cancelButtonTitle:@"OK"
+					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 					  otherButtonTitles:nil] show];
 }
 - (void)_goBack {
@@ -287,11 +288,14 @@
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell upvotePhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSLog(@"[*:*] clubPhotoViewCell:upvotePhoto:(%d - %@)", clubPhotoVO.userID, clubPhotoVO.username);
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
-	[self _advanceTimelineFromCell:cell byAmount:1];
 	
-	[[HONAPICaller sharedInstance] verifyUserWithUserID:clubPhotoVO.userID asLegit:YES completion:^(NSDictionary *result) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
+	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveUserByUserID:clubPhotoVO.userID completion:^(NSDictionary *result) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
+		}];
+		
+		[self _advanceTimelineFromCell:cell byAmount:1];
 	}];
 }
 

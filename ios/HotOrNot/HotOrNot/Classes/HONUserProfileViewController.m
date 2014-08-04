@@ -93,7 +93,7 @@
 			_userVO = [HONUserVO userWithDictionary:result];
 			_userProfileType = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) ? HONUserProfileTypeUser : HONUserProfileTypeOpponent;
 	
-			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username : NSLocalizedString(@"header_activity", nil)]; //@"Activity"];
+			[_headerView setTitle:(_userProfileType == HONUserProfileTypeOpponent) ? _userVO.username :NSLocalizedString(@"header_activity", nil)]; //@"Activity"];
 			[self _makeProfile];
 			[self _retrieveActivityItems];
 			
@@ -252,7 +252,7 @@
 		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
 									message:@"Check your Home timeline to like and reply."
 								   delegate:nil
-						  cancelButtonTitle:@"OK"
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
 	}];
 }
@@ -263,7 +263,7 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 														message:@"This person will be flagged for review"
 													   delegate:self
-											  cancelButtonTitle:@"No"
+											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
 											  otherButtonTitles:@"Yes, flag user", nil];
 	
 	[alertView setTag:HONUserProfileAlertTypeFlag];
@@ -316,7 +316,7 @@
 	[avatarHolderView addSubview:imageLoadingView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
-	avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+	avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
@@ -331,9 +331,9 @@
 	};
 	
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[HONAppDelegate cleanImagePrefixURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+		avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];
@@ -343,7 +343,7 @@
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																 cachePolicy:kURLRequestCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
-							   placeholderImage:[UIImage imageNamed:@"avatarPlaceholder"]
+							   placeholderImage:nil
 										success:imageSuccessBlock
 										failure:imageFailureBlock];
 	}
@@ -403,7 +403,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle: NSLocalizedString(@"header_activity", nil)]); //@"ACTIVITY"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)]); //@"ACTIVITY"]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -62,6 +62,7 @@
 "alert_no" = "いいえ";
 "alert_ok" = "OK";
 "alert_cancel" = "キャンセル";
+"alert_invite" = "Invite friends";
 "alert_connectionError_t" = "接続エラー";
 "alert_connectionError_m" = "初期化サーバーに接続できませんでした。再試行してください。";
 "alert_instagramError_t" = "利用不可";
@@ -73,6 +74,12 @@
 "alert_rateApp_store" = "Visit App Store";
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
+
+"alert_lockedClub_t" = "Locked Club!";
+"alert_lockedClub_m" = "You must invite at least %d friends to join %@";
+"alert_register_m" = "Come back to register for Selfieclub";
+"title_copyURL" = " - copy your url";
+"title_joinNow" = " - Join Now!";
 
 "enter_username" = "ユーザー名を入力する";
 "enter_phone" = "電話番号を入力する";

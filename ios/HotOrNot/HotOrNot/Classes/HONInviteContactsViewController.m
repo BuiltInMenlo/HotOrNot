@@ -91,7 +91,8 @@
 	_selectedInAppContacts = [NSMutableArray array];
 	_selectedNonAppContacts = [NSMutableArray array];
 	
-	[_headerView setTitle: NSLocalizedString(@"invite_club", nil)];  //@"Invite to Club"];
+	[_tableView setContentInset:UIEdgeInsetsZero];
+	[_headerView setTitle:NSLocalizedString(@"invite_club", nil)];  //@"Invite to Club"];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
@@ -149,8 +150,8 @@
 	
 	else
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 		}];
 }
 
@@ -195,6 +196,9 @@
 	if (![_selectedInAppContacts containsObject:trivialUserVO])
 		[_selectedInAppContacts addObject:trivialUserVO];
 }
+
+
+#pragma mark - TableView DataSources
 
 
 #pragma mark - TableView Delegates

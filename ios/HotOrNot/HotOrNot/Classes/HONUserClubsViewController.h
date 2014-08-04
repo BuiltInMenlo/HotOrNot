@@ -13,7 +13,8 @@ typedef NS_ENUM(NSInteger, HONUserClubsViewControllerAppearedType) {
 	HONUserClubsViewControllerAppearedTypeCreateClubCanceled,
 	HONUserClubsViewControllerAppearedTypeSelfieCameraCanceled,
 	HONUserClubsViewControllerAppearedTypeSelfieCameraCompleted,
-	HONUserClubsViewControllerAppearedTypeCreateClubCompleted
+	HONUserClubsViewControllerAppearedTypeCreateClubCompleted,
+	HONUserClubsViewControllerAppearedTypeInviteFriends
 };
 
 typedef NS_ENUM(NSInteger, HONUserClubsActionSheetType) {
