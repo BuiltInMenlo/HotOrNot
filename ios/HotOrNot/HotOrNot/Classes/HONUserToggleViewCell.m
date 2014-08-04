@@ -20,11 +20,11 @@
 
 
 @interface HONUserToggleViewCell ()
-@property (nonatomic, strong) UIImageView *avatarImageView;
+//@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIImageView *arrowImageView;
 @property (nonatomic, strong) UILabel *scoreLabel;
-@property (nonatomic, strong) UIButton *avatarButton;
+//@property (nonatomic, strong) UIButton *avatarButton;
 
 @property (nonatomic, strong) UIView *overlayTintView;
 @property (nonatomic, strong) NSTimer *tintTimer;
@@ -44,38 +44,38 @@
 		_isSelected = NO;
 		_isTintCycleFull = NO;
 		
-		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
-		[self.contentView addSubview:_avatarImageView];
+//		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
+//		[self.contentView addSubview:_avatarImageView];
 		
 //		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 		CALayer *maskLayer = [CALayer layer];
 		maskLayer.contents = (id)[[UIImage imageNamed:@"contactMask"] CGImage];
 		maskLayer.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
 		
-		_avatarImageView.layer.mask = maskLayer;
-		_avatarImageView.layer.masksToBounds = YES;
+		//_avatarImageView.layer.mask = maskLayer;
+		//_avatarImageView.layer.masksToBounds = YES;
 //		UIImageView *cheapMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"maskOverlay"]];
 //		cheapMaskImageView.frame = CGRectOffset(cheapMaskImageView.frame, -3.0, 0.0);
 //		[self.contentView addSubview:cheapMaskImageView];
 ////		cheapMaskImageView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
 
 		
-		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_avatarButton.frame = _avatarImageView.frame;
-		[self.contentView addSubview:_avatarButton];
+//		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_avatarButton.frame = _avatarImageView.frame;
+//		[self.contentView addSubview:_avatarButton];
 			
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 22.0, 180.0, 18.0)];
+		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 22.0, 180.0, 18.0)];
 		_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:14];
 		_nameLabel.textColor = [UIColor blackColor];
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
 		_arrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unverifiedUserArrow"]];
-		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0, 28.0);
+		_arrowImageView.frame = CGRectOffset(_arrowImageView.frame, 64.0 - 56, 28.0);
 		_arrowImageView.hidden = YES;
 		[self.contentView addSubview:_arrowImageView];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0, 33.0, 25.0, 15.0)];
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0 - 56, 33.0, 25.0, 15.0)];
 		_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 		_scoreLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
@@ -152,13 +152,13 @@
 	[_toggledOffButton addTarget:self action:@selector(_goSelectTrivalUser) forControlEvents:UIControlEventTouchUpInside];
 	
 	NSLog(@"AVATAR:[%@]", _trivialUserVO.avatarPrefix);
-	if ([_trivialUserVO.avatarPrefix rangeOfString:@"default"].location == NSNotFound)
-		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
-	
-	else
-		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-	
-	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+//	if ([_trivialUserVO.avatarPrefix rangeOfString:@"default"].location == NSNotFound)
+//		[self _loadAvatarImageFromPrefix:_trivialUserVO.avatarPrefix];
+//	
+//	else
+//		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+//	
+//	[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	
 	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 	_arrowImageView.hidden = NO;
@@ -193,9 +193,9 @@
 	
 	NSString *nameCaption = _contactUserVO.fullName;//(_contactUserVO.contactType == HONContactTypeUnmatched) ? _contactUserVO.fullName : _contactUserVO.username;
 	
-	_avatarImageView.image = _contactUserVO.avatarImage;
-	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])
-		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+//	_avatarImageView.image = _contactUserVO.avatarImage;
+//	if ([_contactUserVO.avatarData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"avatarPlaceholder"])])
+//		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
 	
 //	else
 //		[self _loadAvatarImageFromPrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL]];
@@ -210,22 +210,22 @@
 //		[self _loadAvatarImageFromPrefix:_contactUserVO.avatarPrefix];
 //		[_avatarButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 //		
-//		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
-//		
-//		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
-//		_arrowImageView.hidden = NO;
-//		
-//		
-//		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-//		_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
-//		_scoreLabel.hidden = NO;
+		_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
 		
-//		if (_trivialUserVO.isVerified) {
-//			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
-//			verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
-//			verifiedImageView.hidden = !_trivialUserVO.isVerified;
-//			[self.contentView addSubview:verifiedImageView];
-//		}
+		_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
+		_arrowImageView.hidden = NO;
+		
+		
+		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
+		_scoreLabel.hidden = NO;
+		
+		if (_trivialUserVO.isVerified) {
+			UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUserIcon"]];
+			verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 45.0, 33.0);
+			verifiedImageView.hidden = !_trivialUserVO.isVerified;
+			[self.contentView addSubview:verifiedImageView];
+		}
 //	}
 }
 
@@ -294,31 +294,31 @@
 
 
 #pragma mark - UI Presentation
-- (void)_loadAvatarImageFromPrefix:(NSString *)urlPrefix {
-	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_avatarImageView.image = image;
-		_contactUserVO.avatarImage = image;
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
-	
-	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
-		
-		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_avatarImageView.alpha = 1.0;
-		} completion:nil];
-	};
-	
-	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[urlPrefix stringByAppendingString:kSnapThumbSuffix]]
-															  cachePolicy:kURLRequestCachePolicy
-														  timeoutInterval:[HONAppDelegate timeoutInterval]]
-							placeholderImage:nil
-									 success:imageSuccessBlock
-									 failure:imageFailureBlock];
-}
+//- (void)_loadAvatarImageFromPrefix:(NSString *)urlPrefix {
+//	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//		_avatarImageView.image = image;
+//		_contactUserVO.avatarImage = image;
+//		
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_avatarImageView.alpha = 1.0;
+//		} completion:nil];
+//	};
+//	
+//	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+//		
+//		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			_avatarImageView.alpha = 1.0;
+//		} completion:nil];
+//	};
+//	
+//	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[urlPrefix stringByAppendingString:kSnapThumbSuffix]]
+//															  cachePolicy:kURLRequestCachePolicy
+//														  timeoutInterval:[HONAppDelegate timeoutInterval]]
+//							placeholderImage:nil
+//									 success:imageSuccessBlock
+//									 failure:imageFailureBlock];
+//}
 
 @end

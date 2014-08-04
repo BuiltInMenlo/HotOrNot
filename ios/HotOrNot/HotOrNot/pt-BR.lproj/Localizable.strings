@@ -24,7 +24,7 @@
 "hud_searchUsers" = "Pesquisando usuários...";
 "hud_searchHashtags" = "Pesquisando hashtags...";
 "hud_sent" = "   Enviado   ";
-
+"share" = "Share club";
 "header_restricted" = "acesso restrito";
 
 //"search_placeHolder" = "Search for people or tags";

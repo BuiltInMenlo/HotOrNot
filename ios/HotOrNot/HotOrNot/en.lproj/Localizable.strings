@@ -24,7 +24,7 @@
 "hud_searchUsers" = "Searching users…";
 "hud_searchHashtags" = "Searching hashtags…";
 "hud_sent" = "   Sent   ";
-
+"share" = "Share club";
 "header_restricted" = "restricted access";
 
 //"search_placeHolder" = "Search for people or tags";

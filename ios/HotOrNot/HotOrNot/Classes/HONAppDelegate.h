@@ -10,7 +10,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __DEV_BUILD__ 0
+#define __DEV_BUILD__ 1
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
@@ -22,7 +22,7 @@
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
-#define __APPSTORE_BUILD__ 1
+#define __APPSTORE_BUILD__ 0
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -44,8 +44,7 @@ typedef NS_ENUM(NSInteger, HONPushType) {
 
 // share sheet actions
 typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
-	HONShareSheetActionTypeKik = 0,
-	HONShareSheetActionTypeInstagram,
+	HONShareSheetActionTypeInstagram = 0,
 	HONShareSheetActionTypeTwitter,
 	HONShareSheetActionTypeFacebook,
 	HONShareSheetActionTypeSMS,

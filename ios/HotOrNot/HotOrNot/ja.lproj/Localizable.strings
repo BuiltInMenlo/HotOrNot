@@ -24,7 +24,7 @@
 "hud_searchUsers" = "ユーザーを検索中...";
 "hud_searchHashtags" = "ハッシュタグを検索中...";
 "hud_sent" = "  送信しました。  ";
-
+"share" = "Share club";
 "header_restricted" = "制限されたアクセス";
 
 //"search_placeHolder" = "Search for people or tags";

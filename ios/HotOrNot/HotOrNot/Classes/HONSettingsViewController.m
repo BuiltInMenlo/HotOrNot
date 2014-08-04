@@ -35,12 +35,14 @@
 	if ((self = [super init])) {
 		_captions = @[ NSLocalizedString(@"settings_notification", nil),  //@"Notifications",
 					  NSLocalizedString(@"copy_url", nil), //@"Copy my club URL",
+                       NSLocalizedString(@"share",@"sharing URL"),
 					  NSLocalizedString(@"terms_service", nil), //@"Terms of use",
 					  NSLocalizedString(@"privacy_policy", nil), //@"Privacy policy",
 					  NSLocalizedString(@"settings_support", nil), //@"Support",
 					  NSLocalizedString(@"rate_app", nil), //@"Rate this app",
 					  NSLocalizedString(@"network_status", nil), //@"Network status",
 					   NSLocalizedString(@"settings_logout", nil)]; //@"Logout"];
+        
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -261,7 +263,20 @@
 		[alertView setTag:HONSettingsAlertTypeLogout];
 		[alertView show];
 		
-	}
+	} else if (indexPath.row == HONSettingsCellTypeShare){
+            NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+            NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+            NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+            NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+            NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+                                                                                                    @"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+                                                                                                    @"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+                                                                                                    @"mp_event"			: @"User Profile - Share",
+                                                                                                    @"view_controller"	: self}];
+
+    }
 }
 
 

@@ -24,7 +24,7 @@
 "hud_searchUsers" = "사용자 검색 중...";
 "hud_searchHashtags" = "해시태그 검색 중...";
 "hud_sent" = "   전송   ";
-
+"share" = "Share club";
 "header_restricted" = "접근 제한";
 
 //"search_placeHolder" = "Search for people or tags";

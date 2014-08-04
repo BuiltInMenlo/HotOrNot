@@ -226,17 +226,18 @@
 
 
 #pragma mark - Navigation
--(void) _goShare {
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _clubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _clubVO.clubName];
+- (void)_goShare {
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
+	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
 	
-	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _clubVO.clubName]
-								message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
-//	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ has been copied!", _clubVO.clubName]
-//								message:[NSString stringWithFormat:@"\nPaste the club URL anywhere to share!"]
-							   delegate:nil
-					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-					  otherButtonTitles:nil] show];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																							@"mp_event"			: @"User Profile - Share",
+																							@"view_controller"	: self}];
 }
 - (void)_goBack {
 	
