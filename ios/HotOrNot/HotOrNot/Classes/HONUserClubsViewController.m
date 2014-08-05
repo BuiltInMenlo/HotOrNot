@@ -104,6 +104,7 @@ static NSString * const kCamera = @"camera";
 	_clubIDs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												  forKeys:[[HONClubAssistant sharedInstance] clubTypeKeys]];
 	
+	_suggestedClubs = nil;
 	_suggestedClubs = [NSMutableArray array];
 	_clubs = [NSMutableDictionary dictionaryWithObjects:@[[NSMutableArray array], [NSMutableArray array], [NSMutableArray array], [NSMutableArray array]]
 												forKeys:@[@"create",
@@ -115,31 +116,11 @@ static NSString * const kCamera = @"camera";
 	[dict setValue:@"0" forKey:@"id"];
 	[dict setValue:NSLocalizedString(@"create_club", @"Create a club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
-	[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
+	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
 	[_dictClubs addObject:[dict copy]];
 	[_clubs setObject:@[[HONUserClubVO clubWithDictionary:dict]] forKey:@"create"];
-	
-//	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) {
-//		dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
-//		[dict setValue:@"111000111" forKey:@"id"];
-//		[dict setValue:@"Locked Club" forKey:@"name"];
-//		[dict setValue:@"LOCKED" forKey:@"club_type"];
-//		[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
-//		[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-//		[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
-//		[_dictClubs addObject:[dict copy]];
-//		[_clubs setObject:[@[[HONUserClubVO clubWithDictionary:dict]] mutableCopy] forKey:@"pending"];
-//		
-//		_suggestedClubs	= [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:dict]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]];
-//		
-//	} else
-		_suggestedClubs = [[HONClubAssistant sharedInstance] suggestedClubs];
-	
-	for (HONUserClubVO *vo in _suggestedClubs)
-		[_dictClubs addObject:vo.dictionary];
-	[_clubs setObject:_suggestedClubs forKey:@"suggested"];
 	
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		
@@ -179,9 +160,16 @@ static NSString * const kCamera = @"camera";
 			}
 		}
 		
+		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
+		
+		for (HONUserClubVO *vo in [_suggestedClubs reverseObjectEnumerator])
+			[_dictClubs addObject:vo.dictionary];
+		[_clubs setObject:_suggestedClubs forKey:@"suggested"];
+		
+		
 		_allClubs = nil;
 		_allClubs = [NSMutableArray array];
-		for (NSDictionary *dict in _dictClubs)//[NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
+		for (NSDictionary *dict in _dictClubs)
 			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		[self _didFinishDataRefresh];
@@ -193,7 +181,6 @@ static NSString * const kCamera = @"camera";
 
 - (void)_deleteClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] deleteClubWithClubID:vo.clubID completion:^(NSObject *result) {
-		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[self _retrieveClubsWithCompletion:nil];
 	}];
 }
@@ -204,15 +191,15 @@ static NSString * const kCamera = @"camera";
 
 - (void)_joinClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] joinClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[self _retrieveClubsWithCompletion:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 	}];
 }
 
 - (void)_leaveClub:(HONUserClubVO *)vo {
 	[[HONAPICaller sharedInstance] leaveClub:vo withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSObject *result) {
-		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[self _retrieveClubsWithCompletion:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 	}];
 }
 
@@ -228,7 +215,6 @@ static NSString * const kCamera = @"camera";
 		_progressHUD = nil;
 	}
 	
-	_collectionView.hidden = NO;
 	[_collectionView reloadData];
 	[_refreshControl endRefreshing];
 }
@@ -391,7 +377,7 @@ static NSString * const kCamera = @"camera";
     NSIndexPath *indexPath = [_collectionView indexPathForItemAtPoint:[gestureRecognizer locationInView:_collectionView]];
 	
 	if (indexPath != nil) {
-		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath];
+		HONClubCollectionViewCell *cell = (HONClubCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
 		_selectedClubVO = cell.clubVO;
 		
 		if (_selectedClubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
@@ -572,7 +558,7 @@ static NSString * const kCamera = @"camera";
 	[cell resetSubviews];
 	cell.alpha = 1.0;
 	
-	NSLog(@"INDEXPATH:[%d][%d]", indexPath.section, indexPath.row);
+//	NSLog(@"INDEXPATH:[%d][%d]", indexPath.section, indexPath.row);
 //	HONUserClubVO *vo;
 //	if (indexPath.section == 0) {
 //		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
@@ -765,6 +751,7 @@ static NSString * const kCamera = @"camera";
 			[[HONAPICaller sharedInstance] createClubWithTitle:_selectedClubVO.clubName withDescription:_selectedClubVO.blurb withImagePrefix:_selectedClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] addClub:result forKey:@"owned"];
 				[self _retrieveClubsWithCompletion:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]

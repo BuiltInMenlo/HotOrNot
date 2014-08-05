@@ -136,34 +136,21 @@ static NSString * const kCamera = @"camera";
 		
 		_timelineItems = nil;
 		_timelineItems = [NSMutableArray array];
-		
-		
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
 		_suggestedClubs = nil;
-//		if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) {
-//			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: @"2394",
-//																										   @"username"	: @"Selfieclub",
-//																										   @"avatar"	: @""}] mutableCopy];
-//			[dict setValue:@"111000111" forKey:@"id"];
-//			[dict setValue:@"Locked Club" forKey:@"name"];
-//			[dict setValue:@"LOCKED" forKey:@"club_type"];
-//			[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
-//			[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-//			[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
-//			_suggestedClubs	= [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:dict]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]];
-//		
-//		} else
-			_suggestedClubs = [[HONClubAssistant sharedInstance] suggestedClubs];
+		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
 		
-		[self _didFinishDataRefresh];
+		[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.125];
 	}];
 }
 
 - (void)_joinClub:(HONUserClubVO *)userClubVO {
 	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+		[self _retrieveTimeline];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 	}];
 }
 
@@ -172,6 +159,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] createClubWithTitle:userClubVO.clubName withDescription:userClubVO.blurb withImagePrefix:userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 	}];
 }
 
@@ -328,7 +316,7 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinThreholdClub:(HONUserClubVO *)userClubVO {
-	NSLog(@"[*:*] clubNewsFeedViewCell:createClubWithProtoVO:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
+	NSLog(@"[*:*] clubNewsFeedViewCell:joinThreholdClub:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
 	_selectedClubVO = ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) ? userClubVO : [_ownedClubs firstObject];
 	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
@@ -346,7 +334,7 @@ static NSString * const kCamera = @"camera";
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 												  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-		[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
+		[alertView setTag:HONClubsNewsFeedAlertTypeJoinClub];
 		[alertView show];
 	}
 }
@@ -560,9 +548,7 @@ static NSString * const kCamera = @"camera";
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
-		
-		} else
-			[self _retrieveTimeline];
+		}
 	
 	} else if (alertView.tag == HONClubsNewsFeedAlertTypeCreateClub) {
 		if (buttonIndex == 0) {

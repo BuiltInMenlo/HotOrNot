@@ -88,6 +88,21 @@ static HONClubAssistant *sharedInstance = nil;
 			});
 }
 
+- (NSDictionary *)orthodoxThresholdClubDictionary {
+	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: @"2394",
+																								  @"username"	: @"Selfieclub",
+																								   @"avatar"	: @""}] mutableCopy];
+	
+	[dict setValue:@"111000111" forKey:@"id"];
+	[dict setValue:@"Locked Club" forKey:@"name"];
+	[dict setValue:@"LOCKED" forKey:@"club_type"];
+	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
+	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
+	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
+	
+	return ([dict copy]);
+}
+
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO {
 	NSMutableArray *emotions = [NSMutableArray array];
 	for (NSString *subject in clubPhotoVO.subjectNames) {
