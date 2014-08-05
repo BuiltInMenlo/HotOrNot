@@ -161,22 +161,8 @@
 			[createClubButton addTarget:self action:@selector(_goPersonalClub) forControlEvents:UIControlEventTouchUpInside];
 			[bgImageView addSubview:createClubButton];
 			
-			
-//			if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) {
-//				NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: @"2394",
-//																											   @"username"	: @"Selfieclub",
-//																											   @"avatar"	: @""}] mutableCopy];
-//				[dict setValue:@"111000111" forKey:@"id"];
-//				[dict setValue:@"Locked Club" forKey:@"name"];
-//				[dict setValue:@"LOCKED" forKey:@"club_type"];
-//				[dict setValue:@"9999-99-99 99:99:99" forKey:@"added"];
-//				[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
-//				[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
-//				
-//				_clubs = [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:dict]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]];
-//				
-//			} else
-				_clubs = [[HONClubAssistant sharedInstance] suggestedClubs];
+			_clubs = nil;
+			_clubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
 			
 			scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, kOrthodoxTableCellHeight * ([_clubs count] + 1));
 			

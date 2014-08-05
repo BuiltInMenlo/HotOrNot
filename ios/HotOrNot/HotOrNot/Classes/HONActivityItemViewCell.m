@@ -110,6 +110,7 @@
 	
 	_indicatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(295.0, 16.0, 13.0, 13.0)];
 	_indicatorImageView.image = [UIImage imageNamed:@"redDot"];
+	_indicatorImageView.hidden = ([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:_activityItemVO.sentDate] > 1800);
 	[self.contentView addSubview:_indicatorImageView];
 }
 

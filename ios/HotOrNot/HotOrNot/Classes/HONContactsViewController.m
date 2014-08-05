@@ -51,6 +51,7 @@
 #pragma mark - Data Calls
 - (void)_retreiveUserClubs {
 	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONClubAssistant sharedInstance] wipeUserClubs];
 		[[HONClubAssistant sharedInstance] writeUserClubs:result];
 	}];
 	
@@ -382,14 +383,10 @@
 - (void)searchBarViewCancel:(HONSearchBarView *)searchBarView {
 	_tableViewDataSource = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? HONContactsTableViewDataSourceAddressBook : HONContactsTableViewDataSourceMatchedUsers;
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	[_tableView reloadData];
-	
-//	[[HONClubAssistant sharedInstance] wipeUserClubs];
-//	
-//	[self _retreiveUserClubs];
-//	[self _submitPhoneNumberForMatching];
-//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-//		[self _retrieveDeviceContacts];
+
+	[self _submitPhoneNumberForMatching];
+	if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook)
+		[self _retrieveDeviceContacts];
 }
 
 - (void)searchBarView:(HONSearchBarView *)searchBarView enteredSearch:(NSString *)searchQuery {

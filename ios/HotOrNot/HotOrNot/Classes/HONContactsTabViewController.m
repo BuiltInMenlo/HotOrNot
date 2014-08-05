@@ -220,11 +220,14 @@ static NSString * const kCamera = @"camera";
 							  otherButtonTitles:nil] show];
 			
 		} else {
-			[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
-				[self _submitPhoneNumberForMatching];
-				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-					[self _retrieveDeviceContacts];
+			[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			}];
+			
+//			[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+//				[self _submitPhoneNumberForMatching];
+//				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//					[self _retrieveDeviceContacts];
+//			}];
 		}
 	}];
 }
