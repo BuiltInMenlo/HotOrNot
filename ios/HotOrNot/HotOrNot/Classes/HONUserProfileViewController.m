@@ -18,6 +18,7 @@
 #import "HONChangeAvatarViewController.h"
 #import "HONPrivacyPolicyViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONInviteClubsViewController.h"
 #import "HONImageLoadingView.h"
 #import "HONActivityItemViewCell.h"
 #import "HONTableView.h"
@@ -40,6 +41,8 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UILabel *nameLabel;
+@property (nonatomic, strong) NSMutableArray *ownedClubs;
+
 @end
 
 
@@ -195,41 +198,19 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:backButton];
-	
+    
 	if (_userID != 0)
 		[self _retrieveUser];
 }
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
 
 #pragma mark - Navigation
+- (void)_goInvite {
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO:_userVO]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
 - (void)_goBack {
-	
-	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -382,7 +363,16 @@
 		[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"changeAvatarButton_Active"] forState:UIControlStateHighlighted];
 		[changeAvatarButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
 		[_profileHolderView addSubview:changeAvatarButton];
-	}
+	
+    } else {
+        UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        inviteButton.frame = CGRectMake(227.0, 0.0, 93.0, 44.0);
+        [inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
+        [inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
+        [inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+        [_headerView addButton:inviteButton];
+
+    }
 }
 
 

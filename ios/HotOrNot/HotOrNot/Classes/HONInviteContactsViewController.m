@@ -61,6 +61,9 @@
 	
 	if ([_selectedNonAppContacts count] > 0)
 		[self _sendNonAppUserInvites];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_UPDATED" object:nil];
+
 }
 
 - (void)_sendInAppUserInvites {

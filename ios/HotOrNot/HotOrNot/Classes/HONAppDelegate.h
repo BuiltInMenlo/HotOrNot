@@ -160,8 +160,7 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)facebookShareCommentForIndex:(int)index;
 + (NSString *)smsShareCommentForIndex:(int)index;
 + (NSDictionary *)emailShareCommentForIndex:(int)index;
-
-
++ (NSString *)bannerURL;
 + (NSArray *)subjectFormats;
 
 + (NSRange)rangeForImageQueue;
