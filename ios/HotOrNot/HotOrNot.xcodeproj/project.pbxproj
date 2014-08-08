@@ -101,6 +101,7 @@
 		4C386BBF19844AA80023123A /* HONStoreAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BBE19844AA80023123A /* HONStoreAssistant.m */; };
 		4C386BC319844C090023123A /* HONStickerAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BC219844C090023123A /* HONStickerAssistant.m */; };
 		4C386BC6198482130023123A /* HONViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C386BC5198482130023123A /* HONViewController.m */; };
+		4C3A1D0B19920BA1007A85B8 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */; };
 		4C3D7E92176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */; };
 		4C3DA67F19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */; };
 		4C3DA71F197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA71E197F4FE300CCB1B1 /* HONHighSchoolSearchViewController.m */; };
@@ -193,7 +194,6 @@
 		4C56864F177CCF7B004E570F /* HONAddContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C56864E177CCF7B004E570F /* HONAddContactsViewController.m */; };
 		4C5F25111888C496000411A7 /* HONColorAuthority.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5F25101888C496000411A7 /* HONColorAuthority.m */; };
 		4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4C5FD4641917994C00B1BAFC /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5FD4631917994C00B1BAFC /* Base64.m */; };
 		4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */; };
 		4C5FECBA190F50CB0067F8A9 /* SharingElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */; };
 		4C5FECBC190F516F0067F8A9 /* GlobalElements.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */; };
@@ -703,6 +703,8 @@
 		4C386BC219844C090023123A /* HONStickerAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONStickerAssistant.m; sourceTree = "<group>"; };
 		4C386BC4198482130023123A /* HONViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONViewController.h; sourceTree = "<group>"; };
 		4C386BC5198482130023123A /* HONViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONViewController.m; sourceTree = "<group>"; };
+		4C3A1D0919920BA1007A85B8 /* NSString+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Base64.h"; sourceTree = "<group>"; };
+		4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Base64.m"; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONSelfieCameraPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSelfieCameraPreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONSelfieCameraPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONSelfieCameraPreviewView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C3DA67E19575F66006537D1 /* badminton_racket_fast_movement_swoosh_002.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = badminton_racket_fast_movement_swoosh_002.caf; sourceTree = "<group>"; };
@@ -875,8 +877,6 @@
 		4C5F25101888C496000411A7 /* HONColorAuthority.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONColorAuthority.m; sourceTree = "<group>"; };
 		4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
-		4C5FD4621917994C00B1BAFC /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
-		4C5FD4631917994C00B1BAFC /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		4C5FECB1190F4A820067F8A9 /* LoadingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = LoadingElements.xcassets; sourceTree = "<group>"; };
 		4C5FECB9190F50CB0067F8A9 /* SharingElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SharingElements.xcassets; sourceTree = "<group>"; };
 		4C5FECBB190F516F0067F8A9 /* GlobalElements.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = GlobalElements.xcassets; sourceTree = "<group>"; };
@@ -1631,7 +1631,6 @@
 				4C386BC019844ABA0023123A /* KeychainItemWrapper */,
 				4CD22C52195B8E0D00E6AD0B /* PicoCandy */,
 				4C6F71A519506A28009C4D53 /* CKRefreshControl */,
-				4C5FD4611917994C00B1BAFC /* Base64 */,
 				4C4325A618E3A9F80035FF06 /* AFNetworking */,
 				4C43274A18E3A9F90035FF06 /* Blowfish */,
 				4C43274F18E3A9F90035FF06 /* Chartboost */,
@@ -2032,15 +2031,6 @@
 				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
 			);
 			name = Voters;
-			sourceTree = "<group>";
-		};
-		4C5FD4611917994C00B1BAFC /* Base64 */ = {
-			isa = PBXGroup;
-			children = (
-				4C5FD4621917994C00B1BAFC /* Base64.h */,
-				4C5FD4631917994C00B1BAFC /* Base64.m */,
-			);
-			path = Base64;
 			sourceTree = "<group>";
 		};
 		4C62651A15F96C7100AA7FCE = {
@@ -2493,6 +2483,8 @@
 				4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */,
 				4CCED5D5181F7A8000D1D673 /* NSDictionary+NullReplacement.h */,
 				4CCED5D6181F7A8000D1D673 /* NSDictionary+NullReplacement.m */,
+				4C3A1D0919920BA1007A85B8 /* NSString+Base64.h */,
+				4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */,
 				4CA246C319083C8B00512295 /* NSString+DataTypes.h */,
 				4CA246C419083C8B00512295 /* NSString+DataTypes.m */,
 				4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */,
@@ -2832,6 +2824,7 @@
 				4C43280D18E3A9FA0035FF06 /* AFXMLRequestOperation.m in Sources */,
 				4C382FFC178B8AD700C7FA7C /* HONSearchUserViewCell.m in Sources */,
 				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
+				4C3A1D0B19920BA1007A85B8 /* NSString+Base64.m in Sources */,
 				4C70F9D91890825D00ED5C4E /* HONMessageRecipientViewCell.m in Sources */,
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
@@ -2896,7 +2889,6 @@
 				4C4328BC18E3A9FA0035FF06 /* UIView+HONSnapshot.m in Sources */,
 				4C4328EA18E3A9FA0035FF06 /* TSPlatformImpl.m in Sources */,
 				4C43280C18E3A9FA0035FF06 /* AFURLConnectionOperation.m in Sources */,
-				4C5FD4641917994C00B1BAFC /* Base64.m in Sources */,
 				4C1F19AC1915CBA200E9A9D4 /* HONScreenManager.m in Sources */,
 				4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
