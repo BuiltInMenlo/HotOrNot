@@ -37,6 +37,7 @@
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONActivityHeaderButtonView *profileHeaderButtonView;
+@property (nonatomic, strong) UIImageView *bannerImageView;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *dictClubs;
@@ -55,6 +56,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		_appearedType = HONUserClubsViewControllerAppearedTypeClear;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteUpdated:) name:@"INVITE_UPDATED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedClubsTab:) name:@"SELECTED_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUBS_TAB" object:nil];
@@ -228,7 +230,20 @@ static NSString * const kCamera = @"camera";
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	_allClubs = [NSMutableArray array];
-	
+    if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 100.0), 320.0, 50.0)];
+        _bannerImageView.userInteractionEnabled = YES;
+        [self.view addSubview:_bannerImageView];
+        
+        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            _bannerImageView.image = image;
+        };
+        
+        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+            
+        };
+    }
+
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_clubs", nil)]; //@"Clubs"];
 	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
@@ -426,6 +441,16 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Notifications
+-(void)_inviteUpdated:(NSNotification *)notification {
+    NSLog(@"::|> _inviteUpdated <|::");
+    
+    if (_bannerImageView != nil) {
+        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >=[HONAppDelegate clubInvitesThreshold]){
+            [_bannerImageView removeFromSuperview];
+            _bannerImageView = nil;
+        }
+    }
+}
 - (void)_selectedClubsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedClubsTab <|::");
 }

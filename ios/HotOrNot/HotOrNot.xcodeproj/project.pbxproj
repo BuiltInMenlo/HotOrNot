@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		072F53831991633000738827 /* inviteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53851991633000738827 /* inviteButton_Active@2x.png */; };
+		072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53881991633300738827 /* inviteButton_nonActive@2x.png */; };
+		072F5392199190B700738827 /* unlockBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F5394199190B700738827 /* unlockBanner.png */; };
 		07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */; };
 		07B25326198C177000F6D8B1 /* appStoreReview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */; };
 		07B25327198C177000F6D8B1 /* dimBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25322198C176F00F6D8B1 /* dimBackground@2x.png */; };
@@ -348,6 +351,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		072F53841991633000738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
+		072F53871991633300738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		072F53891991673F00738827 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
+		072F538A1991674000738827 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
+		072F538B1991674100738827 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
+		072F538C1991674200738827 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
+		072F538D1991674500738827 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		072F538E1991674700738827 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		072F538F1991674800738827 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		072F5393199190B700738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/unlockBanner.png; sourceTree = "<group>"; };
+		072F5395199190BC00738827 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/unlockBanner.png"; sourceTree = "<group>"; };
+		072F5396199190BD00738827 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/unlockBanner.png; sourceTree = "<group>"; };
+		072F5397199190BE00738827 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/unlockBanner.png; sourceTree = "<group>"; };
+		072F5398199190BF00738827 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = pt.lproj/unlockBanner.png; sourceTree = "<group>"; };
 		07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "modalCloseButton@2x.png"; sourceTree = "<group>"; };
 		07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appStoreReview@2x.png"; sourceTree = "<group>"; };
 		07B25322198C176F00F6D8B1 /* dimBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dimBackground@2x.png"; sourceTree = "<group>"; };
@@ -2115,6 +2132,9 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				072F5394199190B700738827 /* unlockBanner.png */,
+				072F53851991633000738827 /* inviteButton_Active@2x.png */,
+				072F53881991633300738827 /* inviteButton_nonActive@2x.png */,
 				4CC606DB198C58110042A951 /* Overlays */,
 				4C0A4CF7198B419700450680 /* Buttons */,
 				4C0F3CC81988E61F00703D09 /* Tab Bar */,
@@ -2615,6 +2635,7 @@
 				07B6E6DF19884B3300DA0805 /* likeTimelineButton_nonActive@2x.png in Resources */,
 				07B6E68519884A9100DA0805 /* nextButton_Active@2x.png in Resources */,
 				4C4328CB18E3A9FA0035FF06 /* MPArrowLeft@2x.png in Resources */,
+				072F53831991633000738827 /* inviteButton_Active@2x.png in Resources */,
 				07B6E6C119884B0A00DA0805 /* submitButton_Active@2x.png in Resources */,
 				4CA5AE1E1941DE4F007EF9EF /* ContactsElements.xcassets in Resources */,
 				07B6E6F81988515000DA0805 /* accessContacts_nonActive@2x.png in Resources */,
@@ -2651,6 +2672,7 @@
 				07B6E66119884A3700DA0805 /* backWhiteButton_nonActive@2x.png in Resources */,
 				4C0148BD198C77D10006BCBC /* smallRowOfferBackground@2x.png in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
+				072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */,
 				07B6E7011988515B00DA0805 /* inviteFriends_Active@2x.png in Resources */,
 				07B6E6D319884B2300DA0805 /* submitButtonLargeActive_nonActive@2x.png in Resources */,
 				4CF2040518F3647C00EB57B0 /* FPOElements.xcassets in Resources */,
@@ -2661,6 +2683,7 @@
 				07B2533B198C1FEE00F6D8B1 /* modalReviewBackground@2x.png in Resources */,
 				4C83FD88190F5FA200CAEABB /* TutorialElements.xcassets in Resources */,
 				4C41A09218F25686007C103D /* CameraElements.xcassets in Resources */,
+				072F5392199190B700738827 /* unlockBanner.png in Resources */,
 				4C4328D218E3A9FA0035FF06 /* MPLogo.png in Resources */,
 				4CEF9209197194A5007D56BE /* CountryCodes.plist in Resources */,
 				4C41A09618F25C78007C103D /* TableViewElements.xcassets in Resources */,
@@ -2885,6 +2908,41 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		072F53851991633000738827 /* inviteButton_Active@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				072F53841991633000738827 /* en */,
+				072F53891991673F00738827 /* pt-BR */,
+				072F538A1991674000738827 /* ja */,
+				072F538B1991674100738827 /* ko */,
+				072F538C1991674200738827 /* pt */,
+			);
+			name = "inviteButton_Active@2x.png";
+			sourceTree = "<group>";
+		};
+		072F53881991633300738827 /* inviteButton_nonActive@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				072F53871991633300738827 /* en */,
+				072F538D1991674500738827 /* pt-BR */,
+				072F538E1991674700738827 /* ja */,
+				072F538F1991674800738827 /* ko */,
+			);
+			name = "inviteButton_nonActive@2x.png";
+			sourceTree = "<group>";
+		};
+		072F5394199190B700738827 /* unlockBanner.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				072F5393199190B700738827 /* en */,
+				072F5395199190BC00738827 /* pt-BR */,
+				072F5396199190BD00738827 /* ja */,
+				072F5397199190BE00738827 /* ko */,
+				072F5398199190BF00738827 /* pt */,
+			);
+			name = unlockBanner.png;
+			sourceTree = "<group>";
+		};
 		07B2532A198C177B00F6D8B1 /* tapToReview_Active@2x.png */ = {
 			isa = PBXVariantGroup;
 			children = (

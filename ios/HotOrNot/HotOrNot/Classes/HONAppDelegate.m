@@ -223,6 +223,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 + (NSDictionary *)emailShareCommentForIndex:(int)index {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
+    
+}
++ (NSString *)bannerURL {
+    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_URL"]);
+
 }
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
@@ -456,6 +461,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_URL"] forKey:@"banner_URL"];
+
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];

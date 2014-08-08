@@ -33,6 +33,7 @@
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
+@property (nonatomic, strong) UIImageView *bannerImageView;
 
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *ownedClubs;
@@ -50,7 +51,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareNewsTab:) name:@"TARE_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteUpdated:) name:@"INVITE_UPDATED" object:nil];
+
 		_ownedClubs = [[NSMutableArray alloc] init];
 		_allClubs = [[NSMutableArray alloc] init];
 		_dictClubs = [[NSMutableArray alloc] init];
@@ -182,7 +184,20 @@ static NSString * const kCamera = @"camera";
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	
+    if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 100.0), 320.0, 50.0)];
+        _bannerImageView.userInteractionEnabled = YES;
+        [self.view addSubview:_bannerImageView];
+        
+        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            _bannerImageView.image = image;
+        };
+        
+        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+            
+        };
+    }
+
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	
@@ -255,6 +270,18 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Notifications
+
+-(void)_inviteUpdated:(NSNotification *)notification {
+    NSLog(@"::|> _inviteUpdated <|::");
+    
+    if (_bannerImageView != nil) {
+        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >=[HONAppDelegate clubInvitesThreshold]){
+            [_bannerImageView removeFromSuperview];
+            _bannerImageView = nil;
+        }
+    }
+}
+
 - (void)_selectedNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedNewsTab <|::");
 }
