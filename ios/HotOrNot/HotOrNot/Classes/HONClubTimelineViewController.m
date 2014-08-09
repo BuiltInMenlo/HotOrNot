@@ -150,7 +150,7 @@
 	_emptySetImageView.hidden = ([_clubPhotos count] > 0);
 
 //	NSLog(@"[UIScreen mainScreen].bounds:[%@]", NSStringFromCGRect([UIScreen mainScreen].bounds));
-	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
 	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 20.0 - (kNavHeaderHeight + 5.0), 0.0)];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;

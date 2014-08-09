@@ -311,7 +311,7 @@
 	_matchedUserIDs = [NSMutableArray array];
 	
 
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, (kNavHeaderHeight + kSearchHeaderHeight), 320.0, self.view.frame.size.height - (kNavHeaderHeight + kSearchHeaderHeight))];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.sectionIndexColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_tableView.sectionIndexBackgroundColor = [UIColor clearColor];

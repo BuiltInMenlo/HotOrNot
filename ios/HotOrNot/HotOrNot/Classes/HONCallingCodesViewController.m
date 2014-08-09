@@ -104,7 +104,7 @@
 	[headerView addButton:doneButton];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - kNavHeaderHeight)];
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;

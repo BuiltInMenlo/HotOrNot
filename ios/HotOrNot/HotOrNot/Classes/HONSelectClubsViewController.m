@@ -129,7 +129,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 87.0)) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 87.0))];
 	[_tableView setContentInset:UIEdgeInsetsMake(-20.0, 0.0, 0.0, 0.0)];
 	_tableView.delegate = self;
 	_tableView.dataSource = self;

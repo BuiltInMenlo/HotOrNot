@@ -94,7 +94,7 @@
 	[doneButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:doneButton];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, 64.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0)];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
