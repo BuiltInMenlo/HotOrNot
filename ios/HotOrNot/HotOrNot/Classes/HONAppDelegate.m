@@ -17,8 +17,8 @@
 #import <HockeySDK/HockeySDK.h>
 #import <Tapjoy/Tapjoy.h>
 
-//#import "NSData+Base64.h"
-#import "Base64.h"
+#import "NSData+Base64.h"
+#import "NSString+Base64.h"
 #import "NSString+DataTypes.h"
 
 #import "AFNetworking.h"
@@ -71,8 +71,8 @@ NSString * const kConfigURL = @"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_sc0006.json";
 NSString * const kAPIHost = @"data_api";
 #else
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
+NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
+NSString * const kConfigJSON = @"boot_ios.json";
 NSString * const kAPIHost = @"data_api-stage";
 #endif
 
@@ -109,6 +109,8 @@ const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
 const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
+// ui
+const CGSize kTabSize = {80.0, 50.0};
 const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
@@ -284,7 +286,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
 	
+#if SC_ACCT_BUILD == 0
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
+#else
+	NSMutableDictionary *dict = [userInfo mutableCopy];
+	[dict setObject:@"2394" forKey:@"id"];
+	[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_info"];
+#endif
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -472,6 +480,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"suggested_covers"] forKey:@"suggested_covers"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"schools"] forKey:@"schools"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
@@ -548,6 +557,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			if ([[result objectForKey:@"email"] length] == 0) {
 				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+			
+			} else {
+				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 			}
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];
@@ -556,6 +568,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
+			[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree];
 							
 #if __IGNORE_SUSPENDED__ == 1
 				if (self.tabBarController == nil)
@@ -711,12 +724,35 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 
+#import <CommonCrypto/CommonHMAC.h>
+
+
 
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
+	
+	
+	
+	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
+	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
+	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
+	CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+	
+	NSMutableString *result = [NSMutableString string];
+	for (int i=0; i<sizeof cHMAC; i++) {
+		NSLog(@"MD5-UTF16:[%@]", result);
+		[result appendFormat:@"%c", cHMAC[i]];
+	}
+	
+	
+	NSLog(@"ORG:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
+	NSLog(@"MD5-ASCII:[%@]", result);
+	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
+	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
+	
 	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -749,8 +785,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		[self _initUrbanAirship];
 		[self _retrieveConfigJSON];
 		[self _initThirdPartySDKs];
-		
-		
 		
 	} else {
 		[self _showOKAlert:@"No Network Connection"

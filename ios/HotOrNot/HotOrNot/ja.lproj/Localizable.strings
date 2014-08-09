@@ -79,7 +79,7 @@
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
 "alert_register_m" = "Come back to register for Selfieclub";
 "title_copyURL" = " - copy your url";
-"title_joinNow" = " - Join Now!";
+"title_joinNow" = " - 今すぐ参加!";
 
 "enter_username" = "ユーザー名を入力する";
 "enter_phone" = "電話番号を入力する";
@@ -92,7 +92,7 @@
 "header_clubs" = "クラブ";
 "alert_join" = "%@ セルフィークラブに参加しますか?";
 "header_addclub" = "クラブを追加する";
-"create_club" = "クラブを作る";
+"create_club" = "クラブを作る"; //-> update to 'Add Club'
 "invite_club" = "クラブに招待する";
 "select_allclubs" = "全てのクラブを選択する";
 "header_activity" = "アクティビティ";
@@ -129,3 +129,5 @@
 "enter_pin" = "Pinを入力する";
 "invalid_pin" = "Pinが無効です!";
 "invalid_pin_msg" = "Pin番号は4ケタにしてください";
+
+"club_covers" = "Selfieclub Club Covers";

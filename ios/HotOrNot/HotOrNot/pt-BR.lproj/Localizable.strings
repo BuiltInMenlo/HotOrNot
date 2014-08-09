@@ -79,7 +79,7 @@
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
 "alert_register_m" = "Come back to register for Selfieclub";
 "title_copyURL" = " - copy your url";
-"title_joinNow" = " - Join Now!";
+"title_joinNow" = " - Entre Agora!";
 
 "enter_username" = "Digite o nome de usuário";
 "enter_phone" = "Digite o telefone";
@@ -92,7 +92,7 @@
 "header_clubs" = "Clubes";
 "alert_join" = "Gostaria de participar do Selfieclub %@?";
 "header_addclub" = "Adicionar clube";
-"create_club" = "Criar um clube";
+"create_club" = "Criar um clube"; //-> update to 'Add Club'
 "invite_club" = "Convidar para clube";
 "select_allclubs" = "Selecionar todos os clubes";
 "header_activity" = "Atividade";
@@ -130,3 +130,4 @@
 "invalid_pin" = "PIN inválido!";
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
 
+"club_covers" = "Selfieclub Club Covers";

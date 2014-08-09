@@ -461,6 +461,7 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
         }
     }
     
+	//NSLog(@"AFHTTPClient.request.URL:[%@]", request.URL.absoluteString);
 	return request;
 }
 

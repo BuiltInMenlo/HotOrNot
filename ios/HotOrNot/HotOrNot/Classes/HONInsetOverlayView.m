@@ -174,7 +174,7 @@
 				bgImageView.userInteractionEnabled = YES;
 				[scrollView addSubview:bgImageView];
 				
-				NSString *titleCaption = [vo.clubName stringByAppendingString:NSLocalizedString(@"title_joinNow", @" - Join Now!")];
+				NSString *titleCaption = [vo.clubName stringByAppendingString:NSLocalizedString(@"title_joinNow", @" - Join Now!")]; //@" - Join Now!"
 				UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(31.0, 14.0, 238.0, 16.0)];
 				titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 				titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];

@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "countryCodeBg_Active.png"
+      "filename" : "smallAvatarMask@2x-1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "plusButton_Active@2xpng.png"
+      "filename" : "smallAvatarMask@2x.png"
     }
   ],
   "info" : {

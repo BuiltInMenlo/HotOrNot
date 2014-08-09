@@ -104,6 +104,8 @@ extern const CGFloat kOrthodoxTableHeaderHeight;
 extern const CGFloat kOrthodoxTableCellHeight;
 extern const CGFloat kDetailsHeroImageHeight;
 
+// ui
+extern const CGSize kTabSize;
 extern const UIEdgeInsets kOrthodoxTableViewEdgeInsets;
 
 // animation params

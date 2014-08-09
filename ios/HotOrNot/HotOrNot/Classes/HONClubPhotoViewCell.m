@@ -19,6 +19,7 @@
 
 @interface HONClubPhotoViewCell ()
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
+@property (nonatomic, strong) UILabel *scoreLabel;
 @end
 
 @implementation HONClubPhotoViewCell
@@ -148,13 +149,13 @@
 	[replyButton addTarget:self action:@selector(_goReply) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:replyButton];
 	
-	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 50.0, 50.0, 16.0)];
-	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
-	scoreLabel.textColor = [UIColor whiteColor];
-	scoreLabel.textAlignment = NSTextAlignmentCenter;
-	scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
-	[self.contentView addSubview:scoreLabel];
+	_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, [UIScreen mainScreen].bounds.size.height - 50.0, 50.0, 16.0)];
+	_scoreLabel.backgroundColor = [UIColor clearColor];
+	_scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
+	_scoreLabel.textColor = [UIColor whiteColor];
+	_scoreLabel.textAlignment = NSTextAlignmentCenter;
+	_scoreLabel.text = [@"" stringFromInt:_clubPhotoVO.score];
+	[self.contentView addSubview:_scoreLabel];
 }
 
 - (void)setIndexPath:(NSIndexPath *)indexPath {
@@ -169,6 +170,8 @@
 }
 
 - (void)_goLike {
+	_scoreLabel.text = [@"" stringFromInt:++_clubPhotoVO.score];
+	
 	if ([self.delegate respondsToSelector:@selector(clubPhotoViewCell:upvotePhoto:)])
 		[self.delegate clubPhotoViewCell:self upvotePhoto:_clubPhotoVO];
 }
