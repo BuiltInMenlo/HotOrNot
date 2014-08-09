@@ -24,7 +24,7 @@
 "hud_searchUsers" = "ユーザーを検索中...";
 "hud_searchHashtags" = "ハッシュタグを検索中...";
 "hud_sent" = "  送信しました。  ";
-"share" = "Share club";
+"share" = "クラブを共有する";
 "header_restricted" = "制限されたアクセス";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -131,3 +131,6 @@
 "invalid_pin_msg" = "Pin番号は4ケタにしてください";
 
 "club_covers" = "セルフィークラブ・クラブ・カバー";
+"sms_error" = "SMSエラー";
+
+"not_now" = "今はやめる";

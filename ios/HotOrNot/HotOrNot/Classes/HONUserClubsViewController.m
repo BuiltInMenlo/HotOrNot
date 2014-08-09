@@ -966,7 +966,7 @@ static NSString * const kCamera = @"camera";
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-														  otherButtonTitles:@"Not Now", nil];
+														  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 				[alertView show];
 			}];
@@ -980,7 +980,7 @@ static NSString * const kCamera = @"camera";
 																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:@"Not Now", nil];
+													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 			[alertView show];
 		}

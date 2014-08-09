@@ -24,7 +24,7 @@
 "hud_searchUsers" = "Pesquisando usuários...";
 "hud_searchHashtags" = "Pesquisando hashtags...";
 "hud_sent" = "   Enviado   ";
-"share" = "Share club";
+"share" = "Compartilhar clube";
 "header_restricted" = "acesso restrito";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -131,3 +131,6 @@
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
 
 "club_covers" = "Capas do Selfieclub";
+"sms_error" = "Erro no envio de SMS";
+
+"not_now" = "Agora não";

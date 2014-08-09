@@ -137,7 +137,7 @@
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
 	} else {
-		[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"sms_error", nil) // @"SMS Error"
 									message:@"Cannot send SMS from this device!"
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
