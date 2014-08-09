@@ -116,12 +116,9 @@ static HONStickerAssistant *sharedInstance = nil;
 	
 	NSMutableDictionary *allStickers = ([[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] != nil) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] mutableCopy] : [NSMutableDictionary dictionary];
 	
-	if ([allStickers objectForKey:key] != nil)
-		return;
+//	if ([allStickers objectForKey:key] != nil)
+//		return;
 	
-//		[allStickers removeObjectForKey:key];
-//	[allStickers setObject:@[] forKey:key];
-
 	NSArray *contentGroupIDs = [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:key];
 	
 	NSMutableArray *stickers = [NSMutableArray array];
@@ -133,7 +130,7 @@ static HONStickerAssistant *sharedInstance = nil;
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 					PCContent *content = (PCContent *)obj;
-//					NSLog(@"PCContent:\n[%@]/[%@] -=- (%@)", content.content_id, contentGroupID, content.name);
+					NSLog(@"PCContent:\n[%@]/[%@] -=- (%@)", content.content_id, contentGroupID, content.name);
 					
 					[stickers addObject:@{@"id"		: content.content_id,
 										  @"cg_id"	: contentGroupID,

@@ -24,4 +24,5 @@
 
 - (void)writePhoneNumber:(NSString *)phoneNumber;
 - (NSString *)phoneNumber;
+- (NSString *)areaCodeFromPhoneNumber;
 @end

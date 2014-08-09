@@ -92,7 +92,7 @@
 "header_clubs" = "클럽";
 "alert_join" = "%@ Selfieclub에 참가하실래요?";
 "header_addclub" = "클럽 추가하기";
-"create_club" = "클럽 만들기";
+"create_club" = "클럽 만들기"; //-> update to 'Add Club'
 "invite_club" = "클럽으로 초대하기";
 "select_allclubs" = "모든 클럽을 선택";
 "header_activity" = "활동";

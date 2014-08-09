@@ -59,9 +59,9 @@
 - (void)_retreiveCountries {
 	_countries = [NSMutableArray array];
 	_cells = [NSMutableArray array];
-	for (NSDictionary *dict in [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"CountryCodes" ofType:@"plist"]]) {
+	for (NSDictionary *dict in [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"CountryCodes" ofType:@"plist"]])
 		[_countries addObject:[HONCountryVO countryWithDictionary:dict]];
-	}
+
 	
 	_segmentedCountries = [self _populateSegmentedDictionary];
 	[_tableView reloadData];

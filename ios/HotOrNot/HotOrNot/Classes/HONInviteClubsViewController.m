@@ -125,7 +125,7 @@
 		for (HONUserClubVO *vo in _selectedClubs) {
 			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
 				[[HONContactsAssistant sharedInstance] writeContactUser:_contactUserVO toInvitedClub:vo];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_UPDATED" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 			}];
 
 		}
@@ -135,7 +135,7 @@
 		for (HONUserClubVO *vo in _selectedClubs) {
 			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
 				[[HONContactsAssistant sharedInstance] writeTrivialUser:_trivialUserVO toInvitedClub:vo];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_UPDATED" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 
 			}];
 		}

@@ -89,6 +89,7 @@ extern const CGFloat kNotifiyDelay;
  * Utility
  **///]~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~._
 - (AFHTTPClient *)getHttpClientWithHMAC;
+- (AFHTTPClient *)getHttpClientWithHMACUsingBasePath:(NSString *)basePath;
 - (NSMutableString *)hmacForKey:(NSString *)key withData:(NSString *)data;
 - (NSMutableString *)hmacToken;
 - (NSString *)normalizePrefixForImageURL:(NSString *)imageURL;
@@ -178,6 +179,7 @@ extern const CGFloat kNotifiyDelay;
 - (void)retrieveClubInvitesForUserWithUserID:(int)userID completion:(void (^)(id result))completion;
 - (void)retrieveFeaturedClubsWithCompletion:(void (^)(id result))completion;
 //- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion;
+- (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion;
 - (void)submitClubPhotoWithDictionary:(NSDictionary *)dict completion:(void (^)(id result))completion;
 //- (void)unblockUserFromClubWithClubID:(int)clubID withOwnerID:(int)ownerID withUserID:(int)userID completion:(void (^)(id result))completion;
 //**/]~*~~*~~*~~*~~*~~*~~*~~*~~·¯

@@ -221,7 +221,7 @@
 						  otherButtonTitles:nil] show];
 	
 	} else {
-		[self _validatePinCode];
+		[_pinTextField resignFirstResponder];
 	}
 }
 
@@ -245,7 +245,12 @@
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-	_pinCheckImageView.alpha = (int)([_pinTextField.text length] == 4);
+//	_pinCheckImageView.alpha = (int)([_pinTextField.text length] == 4);
+	
+	if ([_pinTextField.text length] == 4) {
+		_pin = _pinTextField.text;
+		[_pinTextField resignFirstResponder];
+	}
 }
 
 
@@ -272,10 +277,11 @@
 	[textField resignFirstResponder];
 	[_pinButton setSelected:NO];
 	
-	_pin = _pinTextField.text;
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
+	_pin = _pinTextField.text;
+	[self _validatePinCode];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {

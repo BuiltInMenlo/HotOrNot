@@ -93,7 +93,7 @@ static HONClubAssistant *sharedInstance = nil;
 																								  @"username"	: @"Selfieclub",
 																								   @"avatar"	: @""}] mutableCopy];
 	
-	[dict setValue:@"111000111" forKey:@"id"];
+	[dict setValue:@"100" forKey:@"id"];
 	[dict setValue:@"Locked Club" forKey:@"name"];
 	[dict setValue:@"LOCKED" forKey:@"club_type"];
 	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
@@ -138,6 +138,16 @@ static HONClubAssistant *sharedInstance = nil;
 	}
 	
 	return ([tot count] > 0);
+}
+
+
+- (int)labelIDForAreaCode:(NSString *)areaCode {
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {
+		if ([[dict objectForKey:@"area_code"] isEqualToString:areaCode])
+			return ([[dict objectForKey:@"label"] intValue]);
+	}
+	
+	return (0);
 }
 
 
