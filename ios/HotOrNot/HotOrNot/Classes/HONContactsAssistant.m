@@ -61,10 +61,10 @@ static HONContactsAssistant *sharedInstance = nil;
 		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
 		
 		// swap first and last names for sorting
-		if ([lName length] == 0 && [fName length] > 0) {
-			lName = fName;
-			fName = @"";
-		}
+//		if ([lName length] == 0 && [fName length] > 0) {
+//			lName = fName;
+//			fName = @"";
+//		}
 		
 		if ([fName length] == 0 && [lName length] == 0)
 			continue;
@@ -97,11 +97,24 @@ static HONContactsAssistant *sharedInstance = nil;
 		}
 	}
 	
+	if (isSorted) {
+        NSString *sortKey = (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? @"f_name" : @"l_name";
+        contactDicts = [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:sortKey ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy];
+    }
+    
+    [contactDicts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary *dict = (NSDictionary *)obj;
+        
+        NSLog(@"CONTACT:[%d]=- (%@)(%@)", idx, [dict objectForKey:@"f_name"], [dict objectForKey:@"l_name"]);
+        [contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
+    }];
 	
 	contactDicts = (isSorted) ? [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy] : contactDicts;
 	for (NSDictionary *dict in contactDicts)
 		[contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
 
+//	NSLog(@"CONTACTS ^_^ %d", ABPersonGetSortOrdering());
+		
 	
 	return ([contactVOs copy]);
 }

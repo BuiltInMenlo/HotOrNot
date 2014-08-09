@@ -8,6 +8,7 @@
 
 #import "NSString+DataTypes.h"
 #import "UILabel+FormattedText.h"
+#import <AddressBook/AddressBook.h>
 
 #import "HONUserToggleViewCell.h"
 
@@ -203,7 +204,10 @@
 	
 	_nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameCaption attributes:@{}];
 	if ([_contactUserVO.lastName length] > 0)
-		[_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.lastName]];
+        [_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? _contactUserVO.firstName : _contactUserVO.lastName]];
+    
+    else
+        [_nameLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14] range:[nameCaption rangeOfString:_contactUserVO.firstName]];
 	
 	
 //	if (_contactUserVO.contactType == HONContactTypeMatched) {
