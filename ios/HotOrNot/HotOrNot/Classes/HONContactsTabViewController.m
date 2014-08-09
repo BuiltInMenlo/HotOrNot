@@ -15,16 +15,15 @@
 #import "HONActivityHeaderButtonView.h"
 #import "HONUserToggleViewCell.h"
 #import "HONCreateSnapButtonView.h"
+#import "HONTabBannerView.h"
 #import "HONRegisterViewController.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONInviteClubsViewController.h"
-#import "HONInsetOverlayView.h"
 
-@interface HONContactsTabViewController () <HONInsetOverlayViewDelegate, HONUserToggleViewCellDelegate>
-@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
-@property (nonatomic, strong) UIImageView *bannerImageView;
+@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONUserToggleViewCellDelegate>
+@property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @end
 
 
@@ -37,8 +36,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshContactsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFirstRun:) name:@"SHOW_FIRST_RUN" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSuggestionsOverlay:) name:@"SHOW_SUGGESTIONS_OVERLAY" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteUpdated:) name:@"INVITE_UPDATED" object:nil];
 	}
 	
 	return (self);
@@ -83,27 +80,33 @@ static NSString * const kCamera = @"camera";
 	else
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     
-    if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
-        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 99.0), 320.0, 50.0)];
-        _bannerImageView.userInteractionEnabled = YES;
-        [self.view addSubview:_bannerImageView];
-    
-        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            _bannerImageView.image = image;
-        };
-        
-        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-           
-        };
-        
-        NSLog(@"BG:%@[%@] (%@)",[HONAppDelegate bannerURL],[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
-        [_bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
-                                                                   cachePolicy:kURLRequestCachePolicy
-                                                               timeoutInterval:[HONAppDelegate timeoutInterval]]
-                                 placeholderImage:nil
-                                          success:bannerSuccessBlock
-                                          failure:bannerFailureBlock];
-    }
+//    if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+//        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 99.0), 320.0, 50.0)];
+//        _bannerImageView.userInteractionEnabled = YES;
+//        [self.view addSubview:_bannerImageView];
+//    
+//        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//            _bannerImageView.image = image;
+//        };
+//        
+//        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//           
+//        };
+//        
+//        NSLog(@"BG:%@[%@] (%@)",[HONAppDelegate bannerURL],[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
+//        [_bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
+//                                                                   cachePolicy:kURLRequestCachePolicy
+//                                                               timeoutInterval:[HONAppDelegate timeoutInterval]]
+//                                 placeholderImage:nil
+//                                          success:bannerSuccessBlock
+//                                          failure:bannerFailureBlock];
+//    }
+	
+	
+	
+	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 81.0, _tableView.contentInset.right)];
+	_tabBannerView = [[HONTabBannerView alloc] init];
+	[self.view addSubview:_tabBannerView];
 }
 
 
@@ -112,8 +115,7 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 #if __FORCE_SUGGEST__ == 1
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0)
+	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0)
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTIONS_OVERLAY" object:nil];
 #endif
 }
@@ -138,33 +140,22 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Notifications
-
--(void)_inviteUpdated:(NSNotification *)notification {
-    NSLog(@"::|> _inviteUpdated <|::");
-    
-    if (_bannerImageView != nil) {
-        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >=[HONAppDelegate clubInvitesThreshold]){
-            [_bannerImageView removeFromSuperview];
-            _bannerImageView = nil;
-        }
-    }
-}
 - (void)_showFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _showFirstRun <|::");
 	
 	[self _goRegistration];
 }
 
-- (void)_showSuggestionsOverlay:(NSNotification *)notification {
-	NSLog(@"::|> _showSuggestionsOverlay <|::");
-	if (_insetOverlayView == nil) {
-		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeSuggestions];
-		_insetOverlayView.delegate = self;
-		
-		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-		[_insetOverlayView introWithCompletion:nil];
-	}
-}
+//- (void)_showSuggestionsOverlay:(NSNotification *)notification {
+//	NSLog(@"::|> _showSuggestionsOverlay <|::");
+//	if (_insetOverlayView == nil) {
+//		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeSuggestions];
+//		_insetOverlayView.delegate = self;
+//		
+//		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+//		[_insetOverlayView introWithCompletion:nil];
+//	}
+//}
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
@@ -195,103 +186,104 @@ static NSString * const kCamera = @"camera";
 }
 
 
-#pragma mark - InsetOverlayView Delegates
-- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
-	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Suggestions Overlay Close"];
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		[self _submitPhoneNumberForMatching];
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-			[self _retrieveDeviceContacts];
-	}];
-}
-
-- (void)insetOverlayViewDidAccessContents:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewDidAccessContents:(%ld)", ABAddressBookGetAuthorizationStatus());
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
-			[self _promptForAddressBookPermission];
-		
-		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-			[self _retrieveDeviceContacts];
-		
-		else
-			[self _promptForAddressBookAccess];
-	}];
-}
-
-- (void)insetOverlayView:(HONInsetOverlayView *)view createSuggestedClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[*:*] insetOverlayView:createSuggestedClub:(%@ - %@)", clubVO.clubName, clubVO.blurb);
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
-			[self _submitPhoneNumberForMatching];
-			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-				[self _retrieveDeviceContacts];
-		}];
-	}];
-}
-
-- (void)insetOverlayView:(HONInsetOverlayView *)view thresholdClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[*:*] insetOverlayView:createSuggestedClub:(%@ - %@)", clubVO.clubName, clubVO.blurb);
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_lockedClub_t", nil)
-										message:[NSString stringWithFormat:NSLocalizedString(@"alert_lockedClub_m", nil), [HONAppDelegate clubInvitesThreshold], clubVO.clubName]
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
-			
-		} else {
-			[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-			}];
-			
+//#pragma mark - InsetOverlayView Delegates
+//- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+//	[[HONAnalyticsParams sharedInstance] trackEvent:@"Friends Tab - Suggestions Overlay Close"];
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		[self _submitPhoneNumberForMatching];
+//		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//			[self _retrieveDeviceContacts];
+//	}];
+//}
+//
+//- (void)insetOverlayViewDidAccessContents:(HONInsetOverlayView *)view {
+//	NSLog(@"[*:*] insetOverlayViewDidAccessContents:(%ld)", ABAddressBookGetAuthorizationStatus());
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+//			[self _promptForAddressBookPermission];
+//		
+//		else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//			[self _retrieveDeviceContacts];
+//		
+//		else
+//			[self _promptForAddressBookAccess];
+//	}];
+//}
+//
+//- (void)insetOverlayView:(HONInsetOverlayView *)view createSuggestedClub:(HONUserClubVO *)clubVO {
+//	NSLog(@"[*:*] insetOverlayView:createSuggestedClub:(%@ - %@)", clubVO.clubName, clubVO.blurb);
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+//			[self _submitPhoneNumberForMatching];
+//			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//				[self _retrieveDeviceContacts];
+//		}];
+//	}];
+//}
+//
+//- (void)insetOverlayView:(HONInsetOverlayView *)view thresholdClub:(HONUserClubVO *)clubVO {
+//	NSLog(@"[*:*] insetOverlayView:createSuggestedClub:(%@ - %@)", clubVO.clubName, clubVO.blurb);
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+//			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_lockedClub_t", nil)
+//										message:[NSString stringWithFormat:NSLocalizedString(@"alert_lockedClub_m", nil), [HONAppDelegate clubInvitesThreshold], clubVO.clubName]
+//									   delegate:nil
+//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//							  otherButtonTitles:nil] show];
+//			
+//		} else {
+//			[[HONAPICaller sharedInstance] joinClub:clubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+//			}];
+//			
 //			[[HONAPICaller sharedInstance] createClubWithTitle:clubVO.clubName withDescription:clubVO.blurb withImagePrefix:clubVO.coverImagePrefix completion:^(NSDictionary *result) {
 //				[self _submitPhoneNumberForMatching];
 //				if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 //					[self _retrieveDeviceContacts];
 //			}];
-		}
-	}];
-}
-
-- (void)insetOverlayViewCopyPersonalClub:(HONInsetOverlayView *)view {
-	NSLog(@"[*:*] insetOverlayViewCopyPersonalClub");
-	
-	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
-		[_insetOverlayView removeFromSuperview];
-		_insetOverlayView = nil;
-		
-		[self _submitPhoneNumberForMatching];
-		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-			[self _retrieveDeviceContacts];
-	}];
-	
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
-	
+//		}
+//	}];
+//}
+//
+//- (void)insetOverlayViewCopyPersonalClub:(HONInsetOverlayView *)view {
+//	NSLog(@"[*:*] insetOverlayViewCopyPersonalClub");
+//	
+//	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+//		[_insetOverlayView removeFromSuperview];
+//		_insetOverlayView = nil;
+//		
+//		[self _submitPhoneNumberForMatching];
+//		if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+//			[self _retrieveDeviceContacts];
+//	}];
+//	
+//	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//	pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
+//	
 //	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]]
 //								message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]											   delegate:nil
 //					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 //					  otherButtonTitles:nil] show];
-}
+//}
+//
 
 
-
+#pragma mark - TabBannerView Delegates
 
 
 #pragma mark - UserToggleViewCell Delegates
