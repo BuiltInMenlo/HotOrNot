@@ -62,7 +62,7 @@
 "alert_no" = "Não";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancelar";
-"alert_invite" = "Invite friends";
+"alert_invite" = "Convidar amigos";
 "alert_connectionError_t" = "Connection Error";
 "alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
 "alert_instagramError_t" = "Não disponível";
@@ -132,5 +132,7 @@
 
 "club_covers" = "Capas do Selfieclub";
 "sms_error" = "Erro no envio de SMS";
-
 "not_now" = "Agora não";
+"cannot_send" = "Não é possível enviar SMS deste dispositivo!";
+
+

@@ -132,5 +132,5 @@
 
 "club_covers" = "Capas do Selfieclub";
 "sms_error" = "SMS Error";
-
 "not_now" = "Agora não";
+"cannot_send" = "Não é possível enviar SMS deste dispositivo!";

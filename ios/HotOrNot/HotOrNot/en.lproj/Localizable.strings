@@ -135,7 +135,7 @@
 "sms_error" = "SMS Error";
 "not_now" = "Not Now";
 
-"Cannot send SMS from this device!";
+"cannot_send" = "Cannot send SMS from this device!";
 "Want to invite friends to %@?";
 "Club Not Found!";
 "Would you like to create it?";

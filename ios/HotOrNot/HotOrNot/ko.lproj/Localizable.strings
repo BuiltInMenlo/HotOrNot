@@ -133,5 +133,5 @@
 "club_covers" = "셀카클럽 클럽커버";
 "sms_error" = "SMS 에러";
 "not_now" = "아직";
-
+"cannot_send" = "이 기기에서는 SMS를 전송할 수 없습니다!";
 
