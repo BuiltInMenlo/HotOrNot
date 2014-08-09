@@ -71,9 +71,9 @@ NSString * const kConfigURL = @"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_sc0006.json";
 NSString * const kAPIHost = @"data_api";
 #else
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
-NSString * const kAPIHost = @"data_api-dev";
+NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com"; //http://api-stage.letsvolley.com
+NSString * const kConfigJSON = @"boot_ios.json"; //boot_matt.json
+NSString * const kAPIHost = @"data_api-stage"; //data_api-dev
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";

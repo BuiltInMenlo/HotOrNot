@@ -279,9 +279,9 @@
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateHighlighted];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateNormal];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateSelected];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
@@ -290,14 +290,14 @@
 	
 	[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 	
-	_addAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_addAvatarButton.frame = _avatarImageView.frame;
-	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateNormal];
-	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateHighlighted];
-	[_addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_addAvatarButton];
+//	_addAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_addAvatarButton.frame = _avatarImageView.frame;
+//	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateNormal];
+//	[_addAvatarButton setBackgroundImage:[UIImage imageNamed:@"avatarPlaceholder"] forState:UIControlStateHighlighted];
+//	[_addAvatarButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:_addAvatarButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 76.0, 220.0, 22.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 76.0, 220.0, 22.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -313,7 +313,7 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	_clubNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71.0, 97.0, 220, 18.0)];
+	_clubNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 97.0, 220, 18.0)];
 	_clubNameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 	_clubNameLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	_clubNameLabel.backgroundColor = [UIColor clearColor];
@@ -340,7 +340,7 @@
 	
 	NSLog(@"SIZE:[%@]", NSStringFromCGSize(size));
 	_callCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_callCodeButton.frame = CGRectMake(3.0, 129.0, 64.0, 64.0);
+	_callCodeButton.frame = CGRectMake(13.0, 127.0, 51.0, 64.0);
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_nonActive"] forState:UIControlStateNormal];
 	[_callCodeButton setBackgroundImage:[UIImage imageNamed:@"callCodesButton_Active"] forState:UIControlStateHighlighted];
 	[_callCodeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -352,7 +352,7 @@
 	[_callCodeButton addTarget:self action:@selector(_goCallingCodes) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_callCodeButton];
 	
-	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(70.0, 150.0, 200.0, 22.0)];
+	_phoneTextField = [[UITextField alloc] initWithFrame:CGRectMake(72.0, 150.0, 200.0, 22.0)];
 	[_phoneTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_phoneTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_phoneTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
