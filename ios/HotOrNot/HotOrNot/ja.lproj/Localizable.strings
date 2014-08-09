@@ -134,3 +134,5 @@
 "sms_error" = "SMSエラー";
 
 "not_now" = "今はやめる";
+"cannot_send" = "この端末からSMSを送信できません!";
+

@@ -1799,7 +1799,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				
 			} else {
 				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"sms_error", nil) //@"SMS Error"
-											message:@"Cannot send SMS from this device!"
+											message: NSLocalizedString(@"cannot_send", nil)  //@"Cannot send SMS from this device!"
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
