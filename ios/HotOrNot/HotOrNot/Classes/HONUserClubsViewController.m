@@ -56,11 +56,11 @@
 - (id)init {
 	if ((self = [super init])) {
 		_appearedType = HONUserClubsViewControllerAppearedTypeClear;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteUpdated:) name:@"INVITE_UPDATED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedClubsTab:) name:@"SELECTED_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteTotalUpdated:) name:@"INVITE_TOTAL_UPDATED" object:nil];
 	}
 	
 	return (self);
@@ -160,11 +160,11 @@ static NSString * const kCamera = @"camera";
 			}
 		}
 		
-		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
-		
-		for (HONUserClubVO *vo in [_suggestedClubs reverseObjectEnumerator])
-			[_dictClubs addObject:vo.dictionary];
-		[_clubs setObject:_suggestedClubs forKey:@"suggested"];
+//		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
+//		
+//		for (HONUserClubVO *vo in [_suggestedClubs reverseObjectEnumerator])
+//			[_dictClubs addObject:vo.dictionary];
+//		[_clubs setObject:_suggestedClubs forKey:@"suggested"];
 		
 		
 		_allClubs = nil;
@@ -235,13 +235,12 @@ static NSString * const kCamera = @"camera";
         _bannerImageView.userInteractionEnabled = YES;
         [self.view addSubview:_bannerImageView];
         
-        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            _bannerImageView.image = image;
-        };
-        
-        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-            
-        };
+//        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//            _bannerImageView.image = image;
+//        };
+//        
+//        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+//        };
     }
 
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_clubs", nil)]; //@"Clubs"];
@@ -274,6 +273,33 @@ static NSString * const kCamera = @"camera";
 	[self.view addSubview:searchBarView];
 	
 	[self _retrieveClubsWithCompletion:nil];
+}
+
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+	
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
+        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - (kTabSize.height + 49.0)), 320.0, 50.0)];
+        _bannerImageView.userInteractionEnabled = YES;
+        [self.view addSubview:_bannerImageView];
+		
+        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            _bannerImageView.image = image;
+        };
+        
+        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+			_bannerImageView.image = [UIImage imageNamed:@"unlockBanner"];
+        };
+        
+        NSLog(@"BANNER:[%@] (%@)", [[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
+        [_bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
+																  cachePolicy:kURLRequestCachePolicy
+															  timeoutInterval:[HONAppDelegate timeoutInterval]]
+								placeholderImage:nil
+										 success:bannerSuccessBlock
+										 failure:bannerFailureBlock];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -441,16 +467,17 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Notifications
--(void)_inviteUpdated:(NSNotification *)notification {
-    NSLog(@"::|> _inviteUpdated <|::");
+-(void)_inviteTotalUpdated:(NSNotification *)notification {
+    NSLog(@"::|> _inviteTotalUpdated <|::");
     
     if (_bannerImageView != nil) {
-        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >=[HONAppDelegate clubInvitesThreshold]){
+        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]){
             [_bannerImageView removeFromSuperview];
             _bannerImageView = nil;
         }
     }
 }
+
 - (void)_selectedClubsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedClubsTab <|::");
 }
@@ -573,21 +600,21 @@ static NSString * const kCamera = @"camera";
 //		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row];
 	
 	
-	HONUserClubVO *vo;
-	if (indexPath.row == 0)
-		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
-		
-	else if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
-		vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
-		
-	else if (indexPath.row >= [[_clubs objectForKey:@"suggested"] count] && indexPath.row <= ([[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count]))
-		vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
-		
-	else
-		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count])];
-
+//	HONUserClubVO *vo;
+//	if (indexPath.row == 0)
+//		vo = [[_clubs objectForKey:@"create"] objectAtIndex:0];
+//		
+//	else if (indexPath.row >= 1 && indexPath.row <= [[_clubs objectForKey:@"suggested"] count])
+//		vo = [[_clubs objectForKey:@"suggested"] objectAtIndex:indexPath.row - 1];
+//		
+//	else if (indexPath.row >= [[_clubs objectForKey:@"suggested"] count] && indexPath.row <= ([[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count]))
+//		vo = [[_clubs objectForKey:@"pending"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count])];
+//		
+//	else
+//		vo = [[_clubs objectForKey:@"member"] objectAtIndex:indexPath.row - (1 + [[_clubs objectForKey:@"suggested"] count] + [[_clubs objectForKey:@"pending"] count])];
+//
 	
-	cell.clubVO = vo;//[HONUserClubVO clubWithDictionary:[_dictClubs objectAtIndex:indexPath.row]];//vo;
+	cell.clubVO = [HONUserClubVO clubWithDictionary:[_dictClubs objectAtIndex:indexPath.row]];//vo;
 	cell.delegate = self;
 	
 	return (cell);

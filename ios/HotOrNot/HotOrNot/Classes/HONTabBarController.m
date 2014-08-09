@@ -13,7 +13,6 @@
 #import "HONChallengeVO.h"
 #import "HONChangeAvatarViewController.h"
 
-const CGSize kTabSize = {80.0, 50.0};
 
 @interface HONTabBarController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;

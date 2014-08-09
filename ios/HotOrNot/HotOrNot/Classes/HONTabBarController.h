@@ -14,7 +14,5 @@ typedef NS_ENUM(NSInteger, HONTabBarButtonType) {
 };
 
 
-const CGSize kTabSize;
-
 @interface HONTabBarController : UITabBarController
 @end

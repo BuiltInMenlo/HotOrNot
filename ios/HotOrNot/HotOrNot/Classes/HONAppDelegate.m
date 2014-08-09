@@ -71,9 +71,9 @@ NSString * const kConfigURL = @"http://api.letsvolley.com";
 NSString * const kConfigJSON = @"boot_sc0006.json";
 NSString * const kAPIHost = @"data_api";
 #else
-NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
-NSString * const kConfigJSON = @"boot_matt.json";
-NSString * const kAPIHost = @"data_api-dev";
+NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
+NSString * const kConfigJSON = @"boot_ios.json";
+NSString * const kAPIHost = @"data_api-stage";
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
@@ -109,6 +109,8 @@ const CGFloat kOrthodoxTableHeaderHeight = 24.0f;
 const CGFloat kOrthodoxTableCellHeight = 64.0f;
 const CGFloat kDetailsHeroImageHeight = 324.0;
 
+// ui
+const CGSize kTabSize = {80.0, 50.0};
 const UIEdgeInsets kOrthodoxTableViewEdgeInsets = {0.0, 0.0, 48.0, 0.0};
 
 // animation params
@@ -226,7 +228,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
     
 }
 + (NSString *)bannerURL {
-    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_URL"]);
+    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_url"]);
 
 }
 
@@ -461,7 +463,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_URL"] forKey:@"banner_URL"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_url"] forKey:@"banner_url"];
 
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
