@@ -141,6 +141,16 @@ static HONClubAssistant *sharedInstance = nil;
 }
 
 
+- (int)labelIDForAreaCode:(NSString *)areaCode {
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {
+		if ([[dict objectForKey:@"area_code"] isEqualToString:areaCode])
+			return ([[dict objectForKey:@"label"] intValue]);
+	}
+	
+	return (0);
+}
+
+
 - (NSArray *)suggestedClubs {
 	NSMutableArray *clubs = [NSMutableArray array];
 

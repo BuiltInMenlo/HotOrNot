@@ -286,7 +286,13 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
 	
+#if SC_ACCT_BUILD == 0
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
+#else
+	NSMutableDictionary *dict = [userInfo mutableCopy];
+	[dict setObject:@"2394" forKey:@"id"];
+	[[NSUserDefaults standardUserDefaults] setObject:[dict copy] forKey:@"user_info"];
+#endif
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -474,6 +480,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"inset_modals"] forKey:@"inset_modals"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"suggested_covers"] forKey:@"suggested_covers"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[[result objectForKey:@"app_schemas"] objectForKey:@"kik"] objectForKey:@"ios"] forKey:@"kik_card"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"schools"] forKey:@"schools"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"excluded_domains"] forKey:@"excluded_domains"];
 		[[NSUserDefaults standardUserDefaults] setObject:NSStringFromRange(NSMakeRange([[[result objectForKey:@"image_queue"] objectAtIndex:0] intValue], [[[result objectForKey:@"image_queue"] objectAtIndex:1] intValue])) forKey:@"image_queue"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"jpeg_compress"] forKey:@"jpeg_compress"];
@@ -550,6 +557,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			if ([[result objectForKey:@"email"] length] == 0) {
 				KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 				[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+			
+			} else {
+				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:[result objectForKey:@"email"]];
 			}
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"token"] forKey:@"device_token"];

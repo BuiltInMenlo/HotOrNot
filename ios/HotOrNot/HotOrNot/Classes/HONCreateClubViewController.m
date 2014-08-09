@@ -113,11 +113,23 @@
 				_progressHUD = nil;
 			}
 			
+#if SC_ACCT_BUILD == 0
 			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
 				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
 			
 			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
+#else
+	[[[UIAlertView alloc] initWithTitle:@"WRITE THIS DOWN!"
+										message:[@"Club ID = " stringByAppendingString:[result objectForKey:@"id"]]
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
 			
+			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+			}];
+#endif
 		} else {
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

@@ -21,10 +21,20 @@
 @synthesize delegate = _delegate;
 @synthesize userClubVO = _userClubVO;
 
+- (id)init {
+	if ((self = [self initAsCellType:HONClubToggleViewCellTypeClub])) {
+	}
+	
+	return (self);
+}
+
 - (id)initAsCellType:(HONClubToggleViewCellType)viewCellType {
 	if ((self = [super init])) {
 		_viewCellType = viewCellType;
 		_isSelected = NO;
+		
+		if (viewCellType == HONClubToggleViewCellTypeClub)
+			self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"contactsCellBG_normal"]];
 
 		_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 11.0, 44.0, 44.0)];
 		_coverImageView.alpha = 0.0;
@@ -38,20 +48,20 @@
 		_nameLabel.backgroundColor = [UIColor clearColor];
 		[self.contentView addSubview:_nameLabel];
 		
-		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOnButton.frame = CGRectMake(269.0, 11.0, 44.0, 44.0);
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
-		[_toggledOnButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
-		_toggledOnButton.hidden = !_isSelected;
-		[self.contentView addSubview:_toggledOnButton];
-		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOffButton.frame = _toggledOnButton.frame;
+		_toggledOffButton.frame = CGRectMake(269.0, 11.0, 44.0, 44.0);
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[_toggledOffButton addTarget:self action:@selector(_goSelect) forControlEvents:UIControlEventTouchUpInside];
 		[self.contentView addSubview:_toggledOffButton];
+		
+		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_toggledOnButton.frame = _toggledOffButton.frame;
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
+		[_toggledOnButton addTarget:self action:@selector(_goDeselect) forControlEvents:UIControlEventTouchUpInside];
+		_toggledOnButton.alpha = (int)_isSelected;
+		[self.contentView addSubview:_toggledOnButton];
 		
 		if (_viewCellType == HONClubToggleViewCellTypeCreateClub) {
 			[_toggledOffButton removeFromSuperview];
@@ -83,6 +93,7 @@
 		} completion:nil];
 	};
 	
+	NSLog(@"CLUB COVER:[%@]", [_userClubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]);
 	[_coverImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userClubVO.coverImagePrefix stringByAppendingString:kSnapThumbSuffix]]
 															 cachePolicy:kURLRequestCachePolicy
 														 timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -99,26 +110,27 @@
 }
 
 - (void)toggleSelected:(BOOL)isSelected {
-//	if (isSelected != _isSelected) {
-		_isSelected = isSelected;
-		
-		if (_isSelected) {
-			_toggledOnButton.hidden = NO;
-			[UIView animateWithDuration:0.125 animations:^(void) {
-				_toggledOnButton.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				_toggledOffButton.hidden = YES;
-			}];
-			
-		} else {
-			_toggledOffButton.hidden = NO;
-			[UIView animateWithDuration:0.25 animations:^(void) {
-				_toggledOffButton.alpha = 1.0;
-			} completion:^(BOOL finished) {
-				_toggledOnButton.hidden = YES;
-			}];
-		}
-//	}
+	_isSelected = isSelected;
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_toggledOnButton.alpha = (int)_isSelected;
+	} completion:^(BOOL finished) {
+	}];
+}
+
+
+- (void)toggleIndicator:(BOOL)isEnabled {
+	_toggledOffButton.hidden = !isEnabled;
+	_toggledOnButton.hidden = !isEnabled;
+}
+
+- (void)toggleOnWithReset:(BOOL)isReset {
+	_isSelected = YES;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_toggledOnButton.alpha = (int)_isSelected;
+	} completion:^(BOOL finished) {
+		_toggledOnButton.alpha = 0.0;
+	}];
 }
 
 - (BOOL)isSelected {
@@ -128,13 +140,10 @@
 
 #pragma mark - Navigation
 - (void)_goDeselect {
-	_toggledOffButton.hidden = NO;
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_toggledOffButton.alpha = 1.0;
+	_isSelected = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_toggledOnButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_toggledOnButton.hidden = YES;
-		
-		
 		if (_viewCellType == HONClubToggleViewCellTypeSelectAll) {
 			if ([self.delegate respondsToSelector:@selector(clubToggleViewCell:selectAllToggled:)])
 				[self.delegate clubToggleViewCell:self selectAllToggled:NO];
@@ -148,12 +157,10 @@
 }
 
 - (void)_goSelect {
-	_toggledOnButton.hidden = NO;
+	_isSelected = YES;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
-		_toggledOffButton.hidden = YES;
-		
 		if (_viewCellType == HONClubToggleViewCellTypeSelectAll) {
 			if ([self.delegate respondsToSelector:@selector(clubToggleViewCell:selectAllToggled:)])
 				[self.delegate clubToggleViewCell:self selectAllToggled:YES];

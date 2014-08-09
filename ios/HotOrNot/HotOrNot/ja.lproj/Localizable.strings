@@ -92,7 +92,7 @@
 "header_clubs" = "クラブ";
 "alert_join" = "%@ セルフィークラブに参加しますか?";
 "header_addclub" = "クラブを追加する";
-"create_club" = "クラブを作る";
+"create_club" = "クラブを作る"; //-> update to 'Add Club'
 "invite_club" = "クラブに招待する";
 "select_allclubs" = "全てのクラブを選択する";
 "header_activity" = "アクティビティ";

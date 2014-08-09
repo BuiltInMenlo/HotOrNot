@@ -3657,6 +3657,7 @@
 					"VIEW_CONTROLLER_LOG=0",
 					"$(inherited)",
 					"DEBUGING_COLORS=1",
+					"SC_ACCT_BUILD=0",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
@@ -3697,6 +3698,7 @@
 					"SC_JSON_LOG=0",
 					"VIEW_CONTROLLER_LOG=0",
 					"ENDORSE_DEBUGING_COLORS=0",
+					"SC_ACCT_BUILD=0",
 				);
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;

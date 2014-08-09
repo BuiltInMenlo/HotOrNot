@@ -92,7 +92,7 @@
 "header_clubs" = "Clubes";
 "alert_join" = "Gostaria de participar do Selfieclub %@?";
 "header_addclub" = "Adicionar clube";
-"create_club" = "Criar um clube";
+"create_club" = "Criar um clube"; //-> update to 'Add Club'
 "invite_club" = "Convidar para clube";
 "select_allclubs" = "Selecionar todos os clubes";
 "header_activity" = "Atividade";

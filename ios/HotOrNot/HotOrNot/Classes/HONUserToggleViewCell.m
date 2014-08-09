@@ -21,11 +21,11 @@
 
 
 @interface HONUserToggleViewCell ()
-//@property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIImageView *arrowImageView;
 @property (nonatomic, strong) UILabel *scoreLabel;
-//@property (nonatomic, strong) UIButton *avatarButton;
+@property (nonatomic, strong) UIButton *avatarButton;
 
 @property (nonatomic, strong) UIView *overlayTintView;
 @property (nonatomic, strong) NSTimer *tintTimer;
@@ -48,18 +48,7 @@
 //		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 //		[self.contentView addSubview:_avatarImageView];
 		
-//		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
-		CALayer *maskLayer = [CALayer layer];
-		maskLayer.contents = (id)[[UIImage imageNamed:@"contactMask"] CGImage];
-		maskLayer.frame = CGRectMake(0.0, 0.0, 64.0, 64.0);
-		
-		//_avatarImageView.layer.mask = maskLayer;
-		//_avatarImageView.layer.masksToBounds = YES;
-//		UIImageView *cheapMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"maskOverlay"]];
-//		cheapMaskImageView.frame = CGRectOffset(cheapMaskImageView.frame, -3.0, 0.0);
-//		[self.contentView addSubview:cheapMaskImageView];
-////		cheapMaskImageView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
-
+//		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"contactMask"]];
 		
 //		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		_avatarButton.frame = _avatarImageView.frame;
@@ -90,18 +79,18 @@
 		//[self.contentView addSubview:_overlayTintView];
 		
 		
-		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOnButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
-		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
-		_toggledOnButton.hidden = !_isSelected;
-		[self.contentView addSubview:_toggledOnButton];
-		
 		_toggledOffButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_toggledOffButton.frame = _toggledOnButton.frame;
+		_toggledOffButton.frame = CGRectMake(257.0, 10.0, 44.0, 44.0);
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_nonActive"] forState:UIControlStateNormal];
 		[_toggledOffButton setBackgroundImage:[UIImage imageNamed:@"toggledOffButton_Active"] forState:UIControlStateHighlighted];
 		[self.contentView addSubview:_toggledOffButton];
+		
+		_toggledOnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_toggledOnButton.frame = _toggledOffButton.frame;
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_nonActive"] forState:UIControlStateNormal];
+		[_toggledOnButton setBackgroundImage:[UIImage imageNamed:@"toggledOnButton_Active"] forState:UIControlStateHighlighted];
+		_toggledOnButton.alpha = (int)_isSelected;
+		[self.contentView addSubview:_toggledOnButton];
 		
 		//[self _toggleTintCycle:_isSelected];
 	}
@@ -121,33 +110,30 @@
 - (void)toggleSelected:(BOOL)isSelected {
 	_isSelected = isSelected;
 	
-	if (_isSelected) {
-		_toggledOnButton.hidden = NO;
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			_toggledOnButton.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			_toggledOffButton.hidden = YES;
-		}];
-		
-	} else {
-		_toggledOffButton.hidden = NO;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_toggledOffButton.alpha = 1.0;
-		} completion:^(BOOL finished) {
-			_toggledOnButton.hidden = YES;
-		}];
-	}
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_toggledOnButton.alpha = (int)isSelected;
+	} completion:^(BOOL finished) {
+	}];
+}
+
+- (void)toggleOnWithReset:(BOOL)isReset {
+	_isSelected = YES;
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_toggledOnButton.alpha = _isSelected;
+	} completion:^(BOOL finished) {
+		if (isReset)
+			_toggledOnButton.alpha = 0.0;
+			
+	}];
 }
 
 - (void)setTrivialUserVO:(HONTrivialUserVO *)trivialUserVO {
 	_trivialUserVO = trivialUserVO;
 	NSLog(@":|: CELL >> TRIVIALUSER:[%@]", trivialUserVO.username);
 	
-//	if ([_toggledOnButton.allTargets count] > 0)
-		[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
-	
-//	if ([_toggledOffButton.allTargets count] > 0)
-		[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
+	[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
+	[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
 	
 	[_toggledOnButton addTarget:self action:@selector(_goDeselectTrivialUser) forControlEvents:UIControlEventTouchUpInside];
 	[_toggledOffButton addTarget:self action:@selector(_goSelectTrivalUser) forControlEvents:UIControlEventTouchUpInside];
@@ -182,11 +168,8 @@
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
-//	if ([_toggledOnButton.allTargets count] > 0)
-		[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
-	
-//	if ([_toggledOffButton.allTargets count] > 0)
-		[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
+	[_toggledOnButton removeTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventAllEvents];
+	[_toggledOffButton removeTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventAllEvents];
 	
 	[_toggledOnButton addTarget:self action:@selector(_goDeselectContactUser) forControlEvents:UIControlEventTouchUpInside];
 	[_toggledOffButton addTarget:self action:@selector(_goSelectContactUser) forControlEvents:UIControlEventTouchUpInside];
@@ -238,12 +221,9 @@
 - (void)_goDeselectContactUser {
 	_isSelected = NO;
 	
-	_toggledOffButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_toggledOffButton.alpha = 1.0;
+		_toggledOnButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_toggledOnButton.hidden = YES;
-		
 		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectContactUser:)])
 			[self.delegate userToggleViewCell:self didDeselectContactUser:_contactUserVO];
 	}];
@@ -252,12 +232,9 @@
 - (void)_goDeselectTrivialUser {
 	_isSelected = NO;
 	
-	_toggledOffButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_toggledOffButton.alpha = 1.0;
+		_toggledOnButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_toggledOnButton.hidden = YES;
-		
 		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
 			[self.delegate userToggleViewCell:self didDeselectTrivialUser:_trivialUserVO];
 	}];
@@ -267,12 +244,9 @@
 - (void)_goSelectContactUser {
 	_isSelected = YES;
 	
-	_toggledOnButton.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
-		_toggledOffButton.hidden = YES;
-		
 		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectContactUser:)])
 			[self.delegate userToggleViewCell:self didSelectContactUser:_contactUserVO];
 	}];
@@ -280,11 +254,9 @@
 - (void)_goSelectTrivalUser {
 	_isSelected = YES;
 	
-	_toggledOnButton.hidden = NO;
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = 1.0;
 	} completion:^(BOOL finished) {
-		_toggledOffButton.hidden = YES;
 		
 		if ([self.delegate respondsToSelector:@selector(userToggleViewCell:didDeselectTrivialUser:)])
 			[self.delegate userToggleViewCell:self didSelectTrivialUser:_trivialUserVO];
@@ -298,31 +270,31 @@
 
 
 #pragma mark - UI Presentation
-//- (void)_loadAvatarImageFromPrefix:(NSString *)urlPrefix {
-//	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//		_avatarImageView.image = image;
-//		_contactUserVO.avatarImage = image;
-//		
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_avatarImageView.alpha = 1.0;
-//		} completion:nil];
-//	};
-//	
-//	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
-//		
-//		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-//		[UIView animateWithDuration:0.25 animations:^(void) {
-//			_avatarImageView.alpha = 1.0;
-//		} completion:nil];
-//	};
-//	
-//	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[urlPrefix stringByAppendingString:kSnapThumbSuffix]]
-//															  cachePolicy:kURLRequestCachePolicy
-//														  timeoutInterval:[HONAppDelegate timeoutInterval]]
-//							placeholderImage:nil
-//									 success:imageSuccessBlock
-//									 failure:imageFailureBlock];
-//}
+- (void)_loadAvatarImageFromPrefix:(NSString *)urlPrefix {
+	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_avatarImageView.image = image;
+		_contactUserVO.avatarImage = image;
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
+		
+		_avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_avatarImageView.alpha = 1.0;
+		} completion:nil];
+	};
+	
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[urlPrefix stringByAppendingString:kSnapThumbSuffix]]
+															  cachePolicy:kURLRequestCachePolicy
+														  timeoutInterval:[HONAppDelegate timeoutInterval]]
+							placeholderImage:nil
+									 success:imageSuccessBlock
+									 failure:imageFailureBlock];
+}
 
 @end

@@ -19,13 +19,16 @@ typedef NS_ENUM(NSInteger, HONClubToggleViewCellType) {
 @protocol HONClubToggleViewCellDelegate <NSObject>
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectedClub:(HONUserClubVO *)userClubVO;
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO;
+@optional
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected;
 @end
 
 @interface HONClubToggleViewCell : HONTableViewCell
 - (id)initAsCellType:(HONClubToggleViewCellType)viewCellType;
 - (void)invertSelected;
+- (void)toggleOnWithReset:(BOOL)isReset;
 - (void)toggleSelected:(BOOL)isSelected;
+- (void)toggleIndicator:(BOOL)isEnabled;
 - (BOOL)isSelected;
 
 @property (nonatomic, retain) HONUserClubVO *userClubVO;

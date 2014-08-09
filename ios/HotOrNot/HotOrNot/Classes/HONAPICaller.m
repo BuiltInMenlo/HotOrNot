@@ -125,12 +125,21 @@ static HONAPICaller *sharedInstance = nil;
 
 
 #pragma mark - Utility
-- (AFHTTPClient *)getHttpClientWithHMAC {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+- (AFHTTPClient *)getHttpClientWithHMACUsingBasePath:(NSString *)basePath {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:basePath]];
 	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken]];
 	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
 	
 	return (httpClient);
+}
+
+- (AFHTTPClient *)getHttpClientWithHMAC {
+	return ([[HONAPICaller sharedInstance] getHttpClientWithHMACUsingBasePath:[HONAppDelegate apiServerPath]]);
+//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+//	[httpClient setDefaultHeader:@"HMAC" value:[[HONAPICaller sharedInstance] hmacToken]];
+//	[httpClient setDefaultHeader:@"X-DEVICE" value:[[HONDeviceIntrinsics sharedInstance] modelName]];
+//	
+//	return (httpClient);
 }
 
 - (NSString *)hmacForKey:(NSString *)key withData:(NSString *)data {
@@ -522,7 +531,11 @@ static HONAPICaller *sharedInstance = nil;
 }
 
 - (void)retrieveClubsForUserByUserID:(int)userID completion:(void (^)(id result))completion {
+#if SC_ACCT_BUILD == 0
 	NSDictionary *params = @{@"userID"	: [@"" stringFromInt:userID]};
+#else
+	NSDictionary *params = @{@"userID"	: @"2394"};
+#endif
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersGetClubs, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -1293,10 +1306,17 @@ static HONAPICaller *sharedInstance = nil;
 
 #pragma mark - Clubs
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion {
+#if SC_ACCT_BUILD == 0
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 							 @"name"		: title,
 							 @"description"	: blurb,
 							 @"imgURL"		: imagePrefix};
+#else
+	NSDictionary *params = @{@"userID"		: @"2394",
+							 @"name"		: title,
+							 @"description"	: blurb,
+							 @"imgURL"		: imagePrefix};
+#endif
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@) %@\n\n", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsCreate, params);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMAC];
@@ -1306,7 +1326,7 @@ static HONAPICaller *sharedInstance = nil;
 		
 		if (error != nil) {
 			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-//			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
 			
 		} else {
 			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
@@ -1555,6 +1575,34 @@ static HONAPICaller *sharedInstance = nil;
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIClubsFeatured, [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
+}
+
+- (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion {
+	NSString *apiEndPt = @"http://api.devint.selfieclubapp.com";
+	NSString *clubLabel = [@"" stringFromInt:[[HONClubAssistant sharedInstance] labelIDForAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber]]];
+	
+	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], apiEndPt, [NSString stringWithFormat:@"club/label/%@/", clubLabel]);
+	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingBasePath:apiEndPt];
+	[httpClient getPath:[NSString stringWithFormat:@"club/label/%@/", clubLabel] parameters:@{@"format"	: @"json"} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			[[HONAPICaller sharedInstance] showDataErrorHUD];
+			
+		} else {
+			SelfieclubJSONLog(@"//—> AFNetworking -{%@}- (%@) %@", [[self class] description], [[operation request] URL], result);
+			
+			if (completion)
+				completion(result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], apiEndPt, [NSString stringWithFormat:@"club/label/%@/", clubLabel], [error localizedDescription]);
+		[[HONAPICaller sharedInstance] showDataErrorHUD];
+	}];
+	
 }
 
 //- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion {
