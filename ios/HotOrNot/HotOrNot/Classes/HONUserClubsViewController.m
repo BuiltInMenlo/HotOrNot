@@ -119,7 +119,7 @@ static NSString * const kCamera = @"camera";
 	//#if SC_ACCT_BUILD == 0
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
-	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
+	[dict setValue:NSLocalizedString(@"header_addclub", @"Add Club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
