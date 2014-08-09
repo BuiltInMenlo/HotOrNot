@@ -119,7 +119,7 @@ static NSString * const kCamera = @"camera";
 	//#if SC_ACCT_BUILD == 0
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
-	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
+	[dict setValue:NSLocalizedString(@"header_addclub", @"Add Club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
@@ -967,7 +967,7 @@ static NSString * const kCamera = @"camera";
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-														  otherButtonTitles:@"Not Now", nil];
+														  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 				[alertView show];
 			}];
@@ -981,7 +981,7 @@ static NSString * const kCamera = @"camera";
 																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:@"Not Now", nil];
+													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 			[alertView show];
 		}

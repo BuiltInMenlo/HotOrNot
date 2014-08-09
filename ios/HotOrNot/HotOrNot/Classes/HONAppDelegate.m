@@ -1656,7 +1656,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-														  otherButtonTitles:@"Not Now", nil];
+														  otherButtonTitles: NSLocalizedString(@"not_now", nil), nil];
 				[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
 				[alertView show];
 			}];
@@ -1798,7 +1798,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[[_shareInfo objectForKey:@"view_controller"] presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"sms_error", nil) //@"SMS Error"
 											message:@"Cannot send SMS from this device!"
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
