@@ -62,7 +62,7 @@
 "alert_no" = "아니요";
 "alert_ok" = "OK";
 "alert_cancel" = "취소";
-"alert_invite" = "Invite friends";
+"alert_invite" = "Invite Friends";
 "alert_connectionError_t" = "연결 오류";
 "alert_connectionError_m" = "초기화 서버에 연결할 수 없습니다, ​​다시 시도해 주세요.";
 "alert_instagramError_t" = "사용할 수 없음";

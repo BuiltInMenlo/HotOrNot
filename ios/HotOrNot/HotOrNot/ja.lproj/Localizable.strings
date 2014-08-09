@@ -62,7 +62,7 @@
 "alert_no" = "いいえ";
 "alert_ok" = "OK";
 "alert_cancel" = "キャンセル";
-"alert_invite" = "Invite friends";
+"alert_invite" = "Invite Friends";
 "alert_connectionError_t" = "接続エラー";
 "alert_connectionError_m" = "初期化サーバーに接続できませんでした。再試行してください。";
 "alert_instagramError_t" = "利用不可";
