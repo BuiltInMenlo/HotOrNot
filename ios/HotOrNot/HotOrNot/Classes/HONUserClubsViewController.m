@@ -447,7 +447,7 @@ static NSString * const kCamera = @"camera";
 																	 delegate:self
 															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
-															otherButtonTitles:@"Invite friends", @"Copy club URL", nil];
+															otherButtonTitles:@"Invite Friends", @"Copy Club URL", nil];
 			[actionSheet setTag:HONUserClubsActionSheetTypeOwner];
 			[actionSheet showInView:self.view];
 			
@@ -456,7 +456,7 @@ static NSString * const kCamera = @"camera";
 																	 delegate:self
 															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
-															otherButtonTitles:@"Invite friends", @"Copy club URL", @"Leave club", nil];
+															otherButtonTitles:@"Invite Friends", @"Copy Club URL", @"Leave club", nil];
 			[actionSheet setTag:HONUserClubsActionSheetTypeMember];
 			[actionSheet showInView:self.view];
 			
