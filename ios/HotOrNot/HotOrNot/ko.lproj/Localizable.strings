@@ -79,7 +79,7 @@
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
 "alert_register_m" = "Come back to register for Selfieclub";
 "title_copyURL" = " - copy your url";
-"title_joinNow" = " - Join Now!";
+"title_joinNow" = " - 클럽명 - 지금 가입하세요!";
 
 "enter_username" = "사용자 이름";
 "enter_phone" = "전화번호";
@@ -130,3 +130,4 @@
 "invalid_pin" = "잘못된 PIN 번호입니다!";
 "invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";
 
+"club_covers" = "Selfieclub Club Covers";

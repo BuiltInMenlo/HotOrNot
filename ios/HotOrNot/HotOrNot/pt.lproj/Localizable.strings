@@ -79,7 +79,7 @@
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
 "alert_register_m" = "Come back to register for Selfieclub";
 "title_copyURL" = " - copy your url";
-"title_joinNow" = " - Join Now!";
+"title_joinNow" = " - Entre Agora!";
 
 "enter_username" = "Digite o nome de usuário";
 "enter_phone" = "Digite o telefone";
@@ -129,3 +129,5 @@
 "enter_pin" = "Digite o PIN";
 "invalid_pin" = "PIN inválido!";
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
+
+"club_covers" = "Selfieclub Club Covers";

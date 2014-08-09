@@ -73,7 +73,7 @@ NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://api-stage.letsvolley.com";
 NSString * const kConfigJSON = @"boot_matt.json";
-NSString * const kAPIHost = @"data_api-stage";
+NSString * const kAPIHost = @"data_api-dev";
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
@@ -426,10 +426,11 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
 	if ([phoneNumber length] > 0) {
 		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
-		
-		return ([@"+" stringByAppendingString:formattedNumber]);
+//		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
+//			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
+//		
+//		return ([@"+" stringByAppendingString:formattedNumber]);
+		return (formattedNumber);
 		
 	} else
 		return (@"");
