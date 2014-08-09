@@ -226,7 +226,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
     
 }
 + (NSString *)bannerURL {
-    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_URL"]);
+    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_url"]);
 
 }
 
@@ -461,7 +461,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_URL"] forKey:@"banner_URL"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_url"] forKey:@"banner_url"];
 
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
