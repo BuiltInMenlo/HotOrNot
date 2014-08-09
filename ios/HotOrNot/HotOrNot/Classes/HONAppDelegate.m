@@ -44,7 +44,6 @@
 #import "HONInsetOverlayView.h"
 #import "HONTabBarController.h"
 #import "HONInviteContactsViewController.h"
-#import "HONClubPreviewViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONVerifyViewController.h"
 #import "HONClubTimelineViewController.h"

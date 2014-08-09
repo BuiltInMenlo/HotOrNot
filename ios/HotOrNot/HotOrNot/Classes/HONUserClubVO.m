@@ -64,7 +64,7 @@
 	vo.submissions = [[[submissions copy] reverseObjectEnumerator] allObjects];
 	vo.totalScore = [[dictionary objectForKey:@"total_score"] intValue];
 	
-	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : vo.clubEnrollmentType;
+	
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"LOCKED"]) ? HONClubEnrollmentTypeThreshold : HONClubEnrollmentTypeUndetermined;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"CREATE"]) ? HONClubEnrollmentTypeCreate : vo.clubEnrollmentType;
 	vo.clubEnrollmentType = ([[[dictionary objectForKey:@"club_type"] uppercaseString] isEqualToString:@"SUGGESTED"]) ? HONClubEnrollmentTypeSuggested : vo.clubEnrollmentType;
@@ -101,8 +101,9 @@
 	}
 	
 	vo.clubEnrollmentType = (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? HONClubEnrollmentTypeUnknown : vo.clubEnrollmentType;
+	vo.clubEnrollmentType = (vo.ownerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? HONClubEnrollmentTypeOwner : vo.clubEnrollmentType;
 	
-//	NSLog(@"/-/-/--/--(%@) [%d - %@]--/-/-/-/", (vo.clubEnrollmentType == HONClubEnrollmentTypeUnknown) ? @"Unknown" : (vo.clubEnrollmentType == HONClubEnrollmentTypeAutoGen) ? @"AutoGen" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : @"Unknown", vo.clubID, vo.clubName);
+	NSLog(@"/-/-/--/--{%d}(%@) [%d - %@]--/-/-/-/", vo.ownerID, (vo.clubEnrollmentType == HONClubEnrollmentTypeBanned) ? @"Banned" : (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) ? @"Create" : (vo.clubEnrollmentType == HONClubEnrollmentTypeHighSchool) ? @"HighSchool" : (vo.clubEnrollmentType == HONClubEnrollmentTypeMember) ? @"Member" : (vo.clubEnrollmentType == HONClubEnrollmentTypeOwner) ? @"Owner" : (vo.clubEnrollmentType == HONClubEnrollmentTypePending) ? @"Pending" : (vo.clubEnrollmentType == HONClubEnrollmentTypeSuggested) ? @"Suggested" : (vo.clubEnrollmentType == HONClubEnrollmentTypeThreshold) ? @"Threshold" : (vo.clubEnrollmentType == HONClubEnrollmentTypeUndetermined) ? @"Undetermined" : @"Unknown", vo.clubID, vo.clubName);
 //	NSLog(@"DICTIONARY:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", dictionary);
 	return (vo);
 }

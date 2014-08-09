@@ -165,7 +165,7 @@
 	
 	_activityAlerts = [NSMutableArray array];
 	
-	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + kOrthodoxTableCellHeight - 20, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kOrthodoxTableCellHeight - 20)) style:UITableViewStylePlain];
+	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + kOrthodoxTableCellHeight - 20, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kOrthodoxTableCellHeight - 20))];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_tableView setContentInset:kOrthodoxTableViewEdgeInsets];
