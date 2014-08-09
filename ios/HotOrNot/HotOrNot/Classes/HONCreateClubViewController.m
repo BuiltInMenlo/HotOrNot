@@ -309,7 +309,7 @@
 	nextButton.frame = CGRectMake(227.0, 1.0, 93.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	[nextButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:nextButton];
 	
 	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -502,6 +502,8 @@
 	
 	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	[self _uploadPhotos:processedImage];
+    [self performSelector:@selector(_goNext) withObject:nil afterDelay:1.5];
+    
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

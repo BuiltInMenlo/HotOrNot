@@ -51,7 +51,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareNewsTab:) name:@"TARE_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteTotalUpdated:) name:@"INVITE_TOTAL_UPDATED" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteUpdated:) name:@"INVITE_UPDATED" object:nil];
 
 		_ownedClubs = [[NSMutableArray alloc] init];
 		_allClubs = [[NSMutableArray alloc] init];
@@ -139,8 +139,8 @@ static NSString * const kCamera = @"camera";
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-//		_suggestedClubs = nil;
-//		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
+		_suggestedClubs = nil;
+		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
 		
 		[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.125];
 	}];
@@ -150,8 +150,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 	}];
 }
 
@@ -160,8 +159,7 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] createClubWithTitle:userClubVO.clubName withDescription:userClubVO.blurb withImagePrefix:userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 	}];
 }
 
@@ -187,17 +185,25 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
     if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
-        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 100.0), 320.0, 50.0)];
+        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 99.0), 320.0, 50.0)];
         _bannerImageView.userInteractionEnabled = YES;
         [self.view addSubview:_bannerImageView];
         
-//        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//            _bannerImageView.image = image;
-//        };
-//        
-//        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-//            
-//        };
+        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            _bannerImageView.image = image;
+        };
+        
+        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+            
+        };
+        
+        NSLog(@"BG:[%@] (%@)",[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
+        [_bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
+                                                                  cachePolicy:kURLRequestCachePolicy
+                                                              timeoutInterval:[HONAppDelegate timeoutInterval]]
+                                placeholderImage:nil
+                                         success:bannerSuccessBlock
+                                         failure:bannerFailureBlock];
     }
 
 	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
@@ -221,33 +227,6 @@ static NSString * const kCamera = @"camera";
 	[_tableView addSubview: _refreshControl];
 	
 	[self _retrieveTimeline];
-}
-
-- (void)viewDidLoad {
-	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
-	[super viewDidLoad];
-	
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
-        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - (kTabSize.height + 49.0)), 320.0, 50.0)];
-        _bannerImageView.userInteractionEnabled = YES;
-        [self.view addSubview:_bannerImageView];
-		
-        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            _bannerImageView.image = image;
-        };
-        
-        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			_bannerImageView.image = [UIImage imageNamed:@"unlockBanner"];
-        };
-        
-        NSLog(@"BANNER:[%@] (%@)", [[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
-        [_bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
-																  cachePolicy:kURLRequestCachePolicy
-															  timeoutInterval:[HONAppDelegate timeoutInterval]]
-								placeholderImage:nil
-										 success:bannerSuccessBlock
-										 failure:bannerFailureBlock];
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -299,11 +278,12 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Notifications
--(void)_inviteTotalUpdated:(NSNotification *)notification {
-    NSLog(@"::|> _inviteTotalUpdated <|::");
+
+-(void)_inviteUpdated:(NSNotification *)notification {
+    NSLog(@"::|> _inviteUpdated <|::");
     
     if (_bannerImageView != nil) {
-        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]){
+        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >=[HONAppDelegate clubInvitesThreshold]){
             [_bannerImageView removeFromSuperview];
             _bannerImageView = nil;
         }
@@ -449,7 +429,7 @@ static NSString * const kCamera = @"camera";
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createPostNewsFeedBG"]];
 			
 	} else if (indexPath.section == 1) {
-//		cell.clubVO = (HONUserClubVO *)[_suggestedClubs objectAtIndex:indexPath.row];
+		cell.clubVO = (HONUserClubVO *)[_suggestedClubs objectAtIndex:indexPath.row];
 	
 	} else {
 		cell.clubVO = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];

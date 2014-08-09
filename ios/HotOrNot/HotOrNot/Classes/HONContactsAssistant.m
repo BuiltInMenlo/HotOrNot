@@ -109,9 +109,9 @@ static HONContactsAssistant *sharedInstance = nil;
         [contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
     }];
 	
-	contactDicts = (isSorted) ? [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy] : contactDicts;
-	for (NSDictionary *dict in contactDicts)
-		[contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
+//	contactDicts = (isSorted) ? [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy] : contactDicts;
+//	for (NSDictionary *dict in contactDicts)
+//		[contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
 
 //	NSLog(@"CONTACTS ^_^ %d", ABPersonGetSortOrdering());
 		
