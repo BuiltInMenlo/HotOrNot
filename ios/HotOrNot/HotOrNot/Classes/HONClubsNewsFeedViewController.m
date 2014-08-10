@@ -546,7 +546,7 @@ static NSString * const kCamera = @"camera";
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClubVO];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat:NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
@@ -565,7 +565,7 @@ static NSString * const kCamera = @"camera";
 		if (buttonIndex == 0) {
 			[self _createClubWithProtoVO:_selectedClubVO];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat: NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
