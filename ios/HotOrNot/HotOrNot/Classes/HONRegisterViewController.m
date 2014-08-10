@@ -96,7 +96,7 @@
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 			
 			if (checkErrorType == HONRegisterErrorTypeUsername) {
-				_progressHUD.labelText = @"Username taken!";
+				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);  //@"Username taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -109,7 +109,7 @@
 				[_usernameTextField becomeFirstResponder];
 				
 			} else if (checkErrorType == HONRegisterCheckErrorTypePhone) {
-				_progressHUD.labelText = @"Phone # taken!";
+				_progressHUD.labelText = NSLocalizedString(@"phone_taken", nil);  //@"Phone # taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -124,7 +124,7 @@
 				[_phoneTextField becomeFirstResponder];
 				
 			} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
-				_progressHUD.labelText = @"Username & phone # taken!";
+				_progressHUD.labelText = NSLocalizedString(@"user_phone", nil); //@"Username & phone # taken!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
@@ -213,7 +213,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = (errorCode == 1) ? NSLocalizedString(@"hud_usernameTaken", nil) : (errorCode == 2) ? @"Phone # taken!" : (errorCode == 3) ? @"Username & phone # taken!" : @"Unknown Error";
+			_progressHUD.labelText = (errorCode == 1) ? NSLocalizedString(@"hud_usernameTaken", nil) : (errorCode == 2) ? NSLocalizedString(@"phone_taken", nil) : (errorCode == 3) ? NSLocalizedString(@"user_phone", nil) : @"Unknown Error";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -241,7 +241,7 @@
 		
 	else {
 		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
-									message:@"You cannot have / or ' in your club's name"
+									message: NSLocalizedString(@"invalid_msg", nil) //@"You cannot have / or ' in your club's name"
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -614,8 +614,8 @@
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		_usernameCheckImageView.alpha = 1.0;
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-									message:@"You need to enter a username to use Selfieclub"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_user", nil) // @"No Username!"
+									message: NSLocalizedString(@"no_user_msg", nil) //@"You need to enter a username to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -629,8 +629,8 @@
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		_phoneCheckImageView.alpha = 1.0;
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Phone!"
-									message:@"You need a phone # to use Selfieclub."
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_phone", nil) //@"No Phone!"
+									message: NSLocalizedString(@"no_phone_msg", nil) //@"You need a phone # to use Selfieclub."
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -646,8 +646,8 @@
 		_phoneCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 		_phoneCheckImageView.alpha = 1.0;
 		
-		[[[UIAlertView alloc] initWithTitle:@"No Username & Phone!"
-									message:@"You need to enter a username and phone # to use Selfieclub"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_userphone", nil) //@"No Username & Phone!"
+									message: NSLocalizedString(@"no_userphone_msg", nil) //@"You need to enter a username and phone # to use Selfieclub"
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];

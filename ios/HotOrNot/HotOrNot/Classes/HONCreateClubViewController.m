@@ -269,7 +269,7 @@
 	
 	else {
 		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
-									message:@"You cannot have / or ' in your club's name"
+									message: NSLocalizedString(@"invalid_msg", nil) // @"You cannot have / or ' in your club's name"
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
