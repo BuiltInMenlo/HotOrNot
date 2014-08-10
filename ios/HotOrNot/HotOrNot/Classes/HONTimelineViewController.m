@@ -638,7 +638,7 @@
 	if (alertView.tag == HONTimelineAlertTypeInvite) {
 		
 		if (buttonIndex == 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 																message:@""
 															   delegate:self
 													  cancelButtonTitle:@"No"

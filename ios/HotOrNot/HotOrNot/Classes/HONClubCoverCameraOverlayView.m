@@ -205,7 +205,7 @@
 }
 
 - (void)_goCancel {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 														message:@"Choosing a cover photo for your club"
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)

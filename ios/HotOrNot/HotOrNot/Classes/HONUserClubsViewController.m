@@ -119,7 +119,7 @@ static NSString * const kCamera = @"camera";
 	//#if SC_ACCT_BUILD == 0
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 	[dict setValue:@"0" forKey:@"id"];
-	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
+	[dict setValue:NSLocalizedString(@"header_addclub", @"Add Club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
 	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
@@ -400,11 +400,12 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goShare {
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"]];
-	NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
-	NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
-	NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]];
-	NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
+    NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
+    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
+    NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]] ;
+    NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
+
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
 																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
@@ -446,7 +447,7 @@ static NSString * const kCamera = @"camera";
 																	 delegate:self
 															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
-															otherButtonTitles:@"Invite friends", @"Copy club URL", nil];
+															otherButtonTitles:@"Invite Friends", @"Copy Club URL", nil];
 			[actionSheet setTag:HONUserClubsActionSheetTypeOwner];
 			[actionSheet showInView:self.view];
 			
@@ -455,7 +456,7 @@ static NSString * const kCamera = @"camera";
 																	 delegate:self
 															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
-															otherButtonTitles:@"Invite friends", @"Copy club URL", @"Leave club", nil];
+															otherButtonTitles:@"Invite Friends", @"Copy Club URL", NSLocalizedString(@"leave_club", nil), nil]; //@"Leave club"
 			[actionSheet setTag:HONUserClubsActionSheetTypeMember];
 			[actionSheet showInView:self.view];
 			
@@ -940,8 +941,8 @@ static NSString * const kCamera = @"camera";
 								  otherButtonTitles:nil] show];
 				
 			} else if (buttonIndex == 2) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Leave %@", _selectedClubVO.clubName]
-																	message:[NSString stringWithFormat:@"Are you sure you want to leave %@?", _selectedClubVO.clubName]
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"lev", nil) , _selectedClubVO.clubName]
+																	message:[NSString stringWithFormat:NSLocalizedString(@"lev_sure", nil), _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 														  otherButtonTitles:nil];
@@ -966,7 +967,7 @@ static NSString * const kCamera = @"camera";
 																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-														  otherButtonTitles:@"Not Now", nil];
+														  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 				[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 				[alertView show];
 			}];
@@ -980,7 +981,7 @@ static NSString * const kCamera = @"camera";
 																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:@"Not Now", nil];
+													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
 			[alertView setTag:HONUserClubsAlertTypeInviteContacts];
 			[alertView show];
 		}

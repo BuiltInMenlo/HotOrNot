@@ -329,11 +329,11 @@
 - (void)_goFlag {
 
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged for review"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
+														message: NSLocalizedString(@"flag_person", nil) //@"This person will be flagged for review"
 													   delegate:self
 											  cancelButtonTitle:@"No"//@"Nevermind"
-											  otherButtonTitles:@"Yes, flag user", nil];
+											  otherButtonTitles: NSLocalizedString(@"yes_flag", nil) , nil];
 //											  otherButtonTitles:@"Yes, kick 'em out", nil];
 	
 	[alertView setTag:HONSnapPreviewAlertTypeFlag];

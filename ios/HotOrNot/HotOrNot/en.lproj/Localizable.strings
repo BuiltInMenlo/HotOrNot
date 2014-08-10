@@ -62,7 +62,7 @@
 "alert_no" = "No";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancel";
-"alert_invite" = "Invite friends";
+"alert_invite" = "Invite Friends";
 "alert_connectionError_t" = "Connection Error";
 "alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
 "alert_instagramError_t" = "Not Available";
@@ -114,7 +114,7 @@
 "header_settings" = "Settings";
 "alert_noemotions_title" = "No Emotions selected!";
 "alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
-"popup_clubcopied_title" = "Your %@ Club has been copied to your device's clipboard!";
+"popup_clubcopied_title" = "%@ Club has been copied to your clipboard.";
 "popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
 "email_error" = "Email Error";
 "email_errormsg" = "Cannot send email from this device!";
@@ -132,5 +132,20 @@
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";
 
 "club_covers" = "Selfieclub Club Covers";
+"sms_error" = "SMS Error";
+"not_now" = "Not Now";
+"cannot_send" = "Cannot send SMS from this device!";
+"report_abuse" = "Report Abuse / Bug";
+"liked_selfie" = " liked your selfie in %@";
+"submit_photo" = " submitted a photo into %@";
+"user_notfound" = "User not found!";
+"lev" = "Leave %@";
+"lev_sure" = "Are you sure you want to leave %@?";
+"flag_person" = "This person will be flagged for review";
+"yes_flag" = "Yes, flag user";
+
+
+
+
 
 

@@ -24,7 +24,7 @@
 "hud_searchUsers" = "ユーザーを検索中...";
 "hud_searchHashtags" = "ハッシュタグを検索中...";
 "hud_sent" = "  送信しました。  ";
-"share" = "Share club";
+"share" = "クラブを共有する";
 "header_restricted" = "制限されたアクセス";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -62,7 +62,7 @@
 "alert_no" = "いいえ";
 "alert_ok" = "OK";
 "alert_cancel" = "キャンセル";
-"alert_invite" = "Invite friends";
+"alert_invite" = "友人を招待する";
 "alert_connectionError_t" = "接続エラー";
 "alert_connectionError_m" = "初期化サーバーに接続できませんでした。再試行してください。";
 "alert_instagramError_t" = "利用不可";
@@ -75,10 +75,10 @@
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
 
-"alert_lockedClub_t" = "Locked Club!";
+"alert_lockedClub_t" = "仲間だけのクラブ!";
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
-"alert_register_m" = "Come back to register for Selfieclub";
-"title_copyURL" = " - copy your url";
+"alert_register_m" = "セルフィークラブの登録へ戻る";
+"title_copyURL" = " - URLをコピーしてください";
 "title_joinNow" = " - 今すぐ参加!";
 
 "enter_username" = "ユーザー名を入力する";
@@ -131,3 +131,17 @@
 "invalid_pin_msg" = "Pin番号は4ケタにしてください";
 
 "club_covers" = "セルフィークラブ・クラブ・カバー";
+"sms_error" = "SMSエラー";
+
+"not_now" = "今はやめる";
+"cannot_send" = "この端末からSMSを送信できません!";
+"report_abuse" = "不正利用 / バグを報告する";
+"leave_club" = "クラブを辞める";
+"liked_selfie" = " あなたのセルフィーを気に入りました %@";
+"submit_photo" = "写真を送りました %@";
+"user_notfound" = "ユーザーが見つかりません!";
+"lev" = "Leave %@";
+"lev_sure" = "本当に%@を辞めますか?";
+"flag_person" = "この人物はフラグが付けられレビューされます";
+"yes_flag" = "はい、ユーザーにフラグを付けます";
+

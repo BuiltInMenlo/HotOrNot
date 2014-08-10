@@ -24,7 +24,7 @@
 "hud_searchUsers" = "Pesquisando usuários...";
 "hud_searchHashtags" = "Pesquisando hashtags...";
 "hud_sent" = "   Enviado   ";
-"share" = "Share club";
+"share" = "Compartilhar clube";
 "header_restricted" = "acesso restrito";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -62,10 +62,10 @@
 "alert_no" = "Não";
 "alert_ok" = "OK";
 "alert_cancel" = "Cancelar";
-"alert_invite" = "Invite friends";
+"alert_invite" = "Convidar amigos";
 "alert_connectionError_t" = "Connection Error";
 "alert_connectionError_m" = "Could not connect to initialization servers, please try again.";
-"alert_instagramError_t" = "Not Available";
+"alert_instagramError_t" = "Não disponível";
 "alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
 "alert_networkError_t" = "No Network Connection";
 "alert_networkError_m" = "This app requires a network connection to work.";
@@ -75,10 +75,10 @@
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
 
-"alert_lockedClub_t" = "Locked Club!";
+"alert_lockedClub_t" = "Clube bloqueado!";
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
-"alert_register_m" = "Come back to register for Selfieclub";
-"title_copyURL" = " - copy your url";
+"alert_register_m" = "Volte para registrar-se no Selfieclub";
+"title_copyURL" = " - copie sua url";
 "title_joinNow" = " - Entre Agora!";
 
 "enter_username" = "Digite o nome de usuário";
@@ -131,3 +131,16 @@
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
 
 "club_covers" = "Capas do Selfieclub";
+"sms_error" = "SMS Error";
+"not_now" = "Agora não";
+"cannot_send" = "Não é possível enviar SMS deste dispositivo!";
+"report_abuse" = "Reportar abuso / erro";
+"liked_selfie" = " curtiu sua selfie em";
+"submit_photo" = "enviou uma foto para %@";
+"user_notfound" = "Usuário não encontrado!";
+"lev" = "Sair de %@";
+"lev_sure" = "Tem certeza de que quer sair de %@?";
+"flag_person" = "Esta pessoa será marcada para análise";
+"yes_flag" = "Sim, marcar usuário";
+
+

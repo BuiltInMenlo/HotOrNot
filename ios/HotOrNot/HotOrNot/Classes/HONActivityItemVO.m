@@ -38,10 +38,10 @@
 		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat:@" accepted your invite to %@", vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeLike) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat:@" liked your selfie in %@", vo.clubName]];
+		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"liked_selfie", nil), vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat:@" submitted a photo into %@", vo.clubName]];
+		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"submit_photo", nil) ]]; //@" submitted a photo into %@", vo.clubName]];
 	
 	} else {
 		vo.message = vo.username;
