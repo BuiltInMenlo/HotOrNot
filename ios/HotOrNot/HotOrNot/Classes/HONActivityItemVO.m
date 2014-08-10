@@ -32,10 +32,10 @@
 		vo.message = [vo.username stringByAppendingString:@" verified your selfie"];
 	
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat:@" sent you an invite to %@", vo.clubName]];
+		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"sent_invite", nil), vo.clubName]]; //@" sent you an invite to %@", vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeInviteAccepted) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat:@" accepted your invite to %@", vo.clubName]];
+		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"accept_invite", nil), vo.clubName ]];//  @" accepted your invite to %@", vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeLike) {
 		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"liked_selfie", nil), vo.clubName]];

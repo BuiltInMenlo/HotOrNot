@@ -142,5 +142,6 @@
 "lev_sure" = "Tem certeza de que quer sair de %@?";
 "flag_person" = "Esta pessoa será marcada para análise";
 "yes_flag" = "Sim, marcar usuário";
-
+"sent_invite" = " enviou a você um convite para %@";
+"accept_invite" = " aceitou seu convite para %@";
 
