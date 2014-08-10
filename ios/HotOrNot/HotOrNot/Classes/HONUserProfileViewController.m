@@ -69,18 +69,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_retrieveUser {
@@ -159,6 +147,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -215,7 +204,6 @@
 }
 
 - (void)_goChangeAvatar {
-	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];

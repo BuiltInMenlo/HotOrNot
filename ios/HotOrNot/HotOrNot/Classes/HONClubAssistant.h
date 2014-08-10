@@ -14,14 +14,17 @@
 + (HONClubAssistant *)sharedInstance;
 
 - (NSArray *)clubTypeKeys;
+- (NSDictionary *)createClubDictionary;
 - (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSDictionary *)orthodoxThresholdClubDictionary;
 - (NSArray *)defaultCoverImagePrefixes;
+- (NSString *)userSignupClubCoverImageURL;
 - (NSString *)defaultCoverImageURL;
 - (NSString *)defaultClubPhotoURL;
 - (NSArray *)clubCoverPhotoAlbumPrefixes;
 - (int)labelIDForAreaCode:(NSString *)areaCode;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
+- (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (NSArray *)suggestedClubs;
 

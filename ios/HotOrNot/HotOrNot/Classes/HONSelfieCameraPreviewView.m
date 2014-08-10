@@ -251,17 +251,17 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 1 && direction == 1) {
-		[_emotionsPickerView scrollToPage:0];
-		
-		if (_insetOverlayView == nil) {
-			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-			_insetOverlayView.delegate = self;
-			
-			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-			[_insetOverlayView introWithCompletion:nil];
-		}
-	}
+//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 1 && direction == 1) {
+//		[_emotionsPickerView scrollToPage:0];
+//		
+//		if (_insetOverlayView == nil) {
+//			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+//			_insetOverlayView.delegate = self;
+//			
+//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+//			[_insetOverlayView introWithCompletion:nil];
+//		}
+//	}
 }
 
 

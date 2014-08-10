@@ -137,7 +137,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		
 		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-		_scrollView.contentSize = CGSizeMake((_totalPages - ((_totalPages - 2) * ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]))) * _scrollView.frame.size.width, _scrollView.frame.size.height);
+//		_scrollView.contentSize = CGSizeMake((_totalPages - ((_totalPages - 2) * ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]))) * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
 		_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
 		[_paginationView updateToPage:0];

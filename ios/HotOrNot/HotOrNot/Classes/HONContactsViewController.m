@@ -298,6 +298,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -334,6 +335,7 @@
 }
 
 - (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -605,20 +607,17 @@
 				NSString *charKey = (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.firstName : vo.lastName;
                 charKey = ([charKey length] == 0) ? (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.lastName : vo.firstName : charKey;
                 charKey = [charKey substringToIndex:1];
-//				if ([vo.lastName length] > 0 || ([vo.firstName length] > 0 && [vo.lastName length] == 0)) {
-//					NSString *charKey = ([vo.lastName length] > 0) ? [vo.lastName substringToIndex:1] : [vo.firstName substringToIndex:1];
-					if (![_segmentedKeys containsObject:charKey]) {
-						[_segmentedKeys addObject:charKey];
-						
-						NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-						[dict setValue:newSegment forKey:charKey];
-						
-					} else {
-						NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
-						[prevSegment addObject:vo];
-						[dict setValue:prevSegment forKey:charKey];
-					}
-//				}
+				if (![_segmentedKeys containsObject:charKey]) {
+					[_segmentedKeys addObject:charKey];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[dict setValue:newSegment forKey:charKey];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+					[prevSegment addObject:vo];
+					[dict setValue:prevSegment forKey:charKey];
+				}
 			}
 		}
 	}

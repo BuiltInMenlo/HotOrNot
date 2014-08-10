@@ -72,18 +72,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
@@ -199,7 +187,7 @@
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
 				if ([[result objectForKey:@"owned"] count] == 0) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] userSignupClubCoverImageURL] completion:^(NSDictionary *result) {
 					}];
 				}
 			}];
@@ -263,17 +251,19 @@
 
 #pragma mark - View Lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-	self.view.backgroundColor = [UIColor whiteColor];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
+		
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	
 	_nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_nextButton.frame = CGRectMake(227.0, -1.0, 93.0, 44.0);
-	[_nextButton setBackgroundImage:[UIImage imageNamed: @"nextButton_nonActive"] forState:UIControlStateNormal]; //@"nextButton_nonActive"]
+	[_nextButton setBackgroundImage:[UIImage imageNamed: @"nextButton_nonActive"] forState:UIControlStateNormal];
 	[_nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"Register", nil)]; //@"Register"]; header_register
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"Register", nil)];
 	[headerView addButton:_nextButton];
 	[self.view addSubview:headerView];
 	
@@ -396,10 +386,12 @@
 }
 
 - (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
 	
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

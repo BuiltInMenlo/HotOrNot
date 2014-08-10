@@ -119,18 +119,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos {
@@ -282,11 +270,6 @@
 	[super viewDidLoad];
 }
 
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
@@ -295,21 +278,6 @@
 		_isFirstAppearance = NO;
 		[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 	}
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewDidDisappear:animated];
 }
 
 
