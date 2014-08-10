@@ -38,19 +38,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
-
 
 #pragma mark - Data Calls
 - (void)_sendClubInvites {
@@ -89,6 +76,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	_selectedInAppContacts = [NSMutableArray array];
@@ -114,27 +102,8 @@
 }
 
 - (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
 }
 
 

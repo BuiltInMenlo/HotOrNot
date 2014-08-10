@@ -49,18 +49,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
@@ -198,30 +186,10 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewWillAppear:animated];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewDidDisappear:animated];
-}
-
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
 }
 
 

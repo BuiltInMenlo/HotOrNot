@@ -2322,7 +2322,7 @@
 				4CF7504818989DFA009E39E4 /* News */,
 				4C00491819467EE6007FA9F5 /* Clubs */,
 				4C066204194A0D33001941D1 /* -Shared- */,
-				4CD16D1D199702760035A8D3 /* Banner */,
+				4CD16D1D199702760035A8D3 /* Tab Banner */,
 			);
 			name = Tabs;
 			sourceTree = "<group>";
@@ -2401,7 +2401,7 @@
 			name = Feed;
 			sourceTree = "<group>";
 		};
-		4CD16D1D199702760035A8D3 /* Banner */ = {
+		4CD16D1D199702760035A8D3 /* Tab Banner */ = {
 			isa = PBXGroup;
 			children = (
 				4C45A9431996AE0D00A2086E /* HONTabBannerView.h */,
@@ -2409,7 +2409,7 @@
 				4CD16D1E199702A70035A8D3 /* HONTabBannerPaginationView.h */,
 				4CD16D1F199702A70035A8D3 /* HONTabBannerPaginationView.m */,
 			);
-			name = Banner;
+			name = "Tab Banner";
 			sourceTree = "<group>";
 		};
 		4CD22C52195B8E0D00E6AD0B /* PicoCandy */ = {

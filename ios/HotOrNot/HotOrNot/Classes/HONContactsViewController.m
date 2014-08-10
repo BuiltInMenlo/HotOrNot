@@ -298,6 +298,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -334,6 +335,7 @@
 }
 
 - (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];

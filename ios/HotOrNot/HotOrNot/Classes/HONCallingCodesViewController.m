@@ -42,18 +42,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_retreiveCountries {

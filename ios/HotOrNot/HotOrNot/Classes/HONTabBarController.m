@@ -96,7 +96,9 @@
 
 #pragma mark - View Lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];

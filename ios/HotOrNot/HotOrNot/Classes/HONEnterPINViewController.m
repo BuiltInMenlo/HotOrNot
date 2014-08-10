@@ -32,18 +32,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_validatePinCode {
@@ -109,6 +97,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -174,30 +163,6 @@
 	[cheatButton addTarget:self action:@selector(_goCheat) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:cheatButton];
 #endif
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
 }
 
 

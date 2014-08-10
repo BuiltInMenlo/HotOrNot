@@ -320,7 +320,8 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBOOL:animated]);
 	[super viewDidAppear:animated];
     
-	NSLog(@"_appearedType:[%d]", _appearedType);
+	NSLog(@"clubsTab_total:[%d]", [HONAppDelegate totalForCounter:@"clubsTab"]);
+	
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
 		[self _retrieveClubsWithCompletion:^{
 			_selectedClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
