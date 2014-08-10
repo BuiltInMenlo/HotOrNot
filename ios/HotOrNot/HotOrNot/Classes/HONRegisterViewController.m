@@ -240,7 +240,7 @@
 		[self _checkUsername];
 		
 	else {
-		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
+		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_user", nil) //@"Invalid username"
 									message: NSLocalizedString(@"invalid_msg", nil) //@"You cannot have / or ' in your club's name"
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)

@@ -356,7 +356,7 @@
 
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
-	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
+	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", nil) //@"We need your OK to access the address book."
 								message:NSLocalizedString(@"grant_access", nil) //@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -364,7 +364,7 @@
 }
 
 - (void)_promptForAddressBookPermission {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Allow Access to your contacts?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", nil)  //@"Allow Access to your contacts?"
 														message:nil
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)

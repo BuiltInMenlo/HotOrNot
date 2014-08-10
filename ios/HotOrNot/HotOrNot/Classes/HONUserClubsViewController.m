@@ -327,7 +327,7 @@ static NSString * const kCamera = @"camera";
 			_selectedClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
+			pasteboard.string = [NSString stringWithFormat: NSLocalizedString(@"tap_join", nil) , _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
@@ -900,7 +900,7 @@ static NSString * const kCamera = @"camera";
 			
 		} else if (buttonIndex == 1) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
+			pasteboard.string = [NSString stringWithFormat: NSLocalizedString(@"tap_join", nil) , _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
@@ -919,7 +919,7 @@ static NSString * const kCamera = @"camera";
 			
 		} else if (buttonIndex == 1) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
+			pasteboard.string = [NSString stringWithFormat: NSLocalizedString(@"tap_join", nil) , _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
 			[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 										message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
@@ -936,7 +936,7 @@ static NSString * const kCamera = @"camera";
 				
 			} else if (buttonIndex == 1) {
 				UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-				pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
+				pasteboard.string = [NSString stringWithFormat: NSLocalizedString(@"tap_join", nil) , _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 				
 				[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), _selectedClubVO.clubName]
 											message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil)]
@@ -968,7 +968,7 @@ static NSString * const kCamera = @"camera";
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																	message:[NSString stringWithFormat: NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles:@"Not Now", nil];
@@ -982,7 +982,7 @@ static NSString * const kCamera = @"camera";
 			[self _joinClub:_selectedClubVO];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat: NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:@"Not Now", nil];

@@ -156,6 +156,14 @@
 "no_selectclub_msg" = "사진 정보를 보낼 클럽을 최소 1개 이상 선택해야 합니다.";
 "try_again" = "다시 시도하시거나 재전송 버튼을 눌러주세요";
 "invalid_msg" = "클럽의 이름에는 '나 /를 넣을 수 없습니다";
+"invalid_user" = "올바르지 않은 사용자명";
+"allow_access" = "연락처에 접근하는 것을 허용하시겠습니까?";
+"ok_access" = "연락처 접근 권한 수락이 필요합니다.";
+"tap_join" = "%@ 셀카클럽을 만들었어요! 다음 링크를 눌러 가입해 주세요: \nhttp://joinselfie.club/%@/%@";
+"alert_create_it" = "새로 만드시겠습니까?";
+"club_notfound" = "클럽을 찾을 수 없습니다!";
+"want_invite" = "%@에 친구를 초대하시겠습니까?";
+
 
 
 

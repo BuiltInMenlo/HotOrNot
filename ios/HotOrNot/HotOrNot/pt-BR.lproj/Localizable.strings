@@ -93,7 +93,7 @@
 "alert_join" = "Gostaria de participar do Selfieclub %@?";
 "header_addclub" = "Adicionar clube";
 "create_club" = "Criar um clube"; //-> update to 'Add Club'
-"invite_club" = "Convidar para clube";
+"invite_club" = "Convidar";
 "select_allclubs" = "Selecionar todos os clubes";
 "header_activity" = "Atividade";
 "alert_status" = "Este clube ainda não tem atualizações de status!";
@@ -105,7 +105,7 @@
 "settings_notification" = "Notificação";
 "copy_url" = "Copiar link do meu clube";
 "terms_service" = "Termos de serviço";
-"privacy_policy" = "Política de privacidade";
+"privacy_policy" = "Privacidade";
 "settings_support" = "Suporte";
 "rate_app" = "Avalie este aplicativo";
 "network_status" = "Status da rede";
@@ -145,3 +145,28 @@
 "sent_invite" = " enviou a você um convite para %@";
 "accept_invite" = " aceitou seu convite para %@";
 "no_phone" = "Não há telefone!";
+"phone_taken" = "Nº de telefone já existe!";
+"user_phone" = "Nome de usuário e nº de telefone já existem!";
+"no_user" = "Não há nome de usuário!";
+"no_user_msg" = "Você precisa digitar um nome de usuário para usar o Selfieclub";
+"no_phone_msg" = "Você precisa de um nº de telefone para usar o Selfieclub.";
+"no_userphone" = "Não há nome de usuário e telefone!";
+"no_userphone_msg" = "Você precisa digitar um nome de usuário e um nº de telefone para usar o Selfieclub";
+"no_selectclub" = "Nenhum clube selecionado!";
+"no_selectclub_msg" = "Você precisa escolher no mínimo um clube para enviar sua foto.";
+"try_again" = "Tente novamente ou aperte o botão reenviar";
+"invalid_msg" = "O nome do seu clube não pode conter / ou '";
+"invalid_user" = "Nome de usuário inválido";
+"allow_access" = "Permitir acesso aos seus contatos?";
+"ok_access" = "Precisamos do seu OK para acessar o catálogo de endereços.";
+"tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://joinselfie.club/%@/%@";
+"alert_create_it" = "Gostaria de criá-lo?";
+
+
+
+
+
+
+
+
+

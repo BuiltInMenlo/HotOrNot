@@ -156,6 +156,18 @@
 "no_selectclub_msg" = "Você precisa escolher no mínimo um clube para enviar sua foto.";
 "try_again" = "Tente novamente ou aperte o botão reenviar";
 "invalid_msg" = "O nome do seu clube não pode conter / ou '";
+"invalid_user" = "Nome de usuário inválido";
+"allow_access" = "Permitir acesso aos seus contatos?";
+"ok_access" = "Precisamos do seu OK para acessar o catálogo de endereços.";
+"tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://joinselfie.club/%@/%@";
+"alert_create_it" = "Gostaria de criá-lo?";
+"club_notfound" = "Clube não encontrado!";
+"want_invite" = "Quer convidar amigos para %@?";
+
+
+
+
+
 
 
 
