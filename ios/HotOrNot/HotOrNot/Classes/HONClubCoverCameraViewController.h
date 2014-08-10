@@ -6,12 +6,15 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONViewController.h"
+
 @class HONClubCoverCameraViewController;
 @protocol HONClubCoverCameraViewControllerDelegate
 - (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix;
-//- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didBeginUploadWithImagePrefix:(NSString *)imagePrefix;
+@optional
+- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didBeginUploadWithImagePrefix:(NSString *)imagePrefix;
 @end
 
-@interface HONClubCoverCameraViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface HONClubCoverCameraViewController : HONViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 @property (nonatomic, assign) id <HONClubCoverCameraViewControllerDelegate> delegate;
 @end

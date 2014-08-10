@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONViewController.h"
 
-@interface HONHighSchoolSearchViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONHighSchoolSearchViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
 @end

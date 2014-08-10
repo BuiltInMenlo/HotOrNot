@@ -88,10 +88,22 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 81.0, _tableView.contentInset.right)];
+	UIEdgeInsets edgeInsets = UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 81.0, _tableView.contentInset.right);
+	[_tableView setContentInset:edgeInsets];
+	
 	_tabBannerView = [[HONTabBannerView alloc] init];
+	_tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, _tabBannerView.frame.size.height);
 	_tabBannerView.delegate = self;
 	[self.view addSubview:_tabBannerView];
+	
+	[UIView animateWithDuration:0.250 delay:0.500
+		 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
+					 animations:^(void) {
+						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
+					 } completion:^(BOOL finished) {
+						 
+					 }];
 }
 
 

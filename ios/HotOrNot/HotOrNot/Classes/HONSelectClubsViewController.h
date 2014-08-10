@@ -9,11 +9,12 @@
 #import "CKRefreshControl.h"
 #import "MBProgressHUD.h"
 
+#import "HONViewController.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
 #import "HONClubToggleViewCell.h"
 
-@interface HONSelectClubsViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface HONSelectClubsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	NSMutableDictionary *_clubIDs;
 	NSMutableArray *_dictClubs;
 	NSMutableArray *_allClubs;
