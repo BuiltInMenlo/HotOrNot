@@ -35,7 +35,7 @@
 #import "HONUserClubVO.h"
 #import "HONTrivialUserVO.h"
 
-@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONClubToggleViewCellDelegate, HONCreateClubViewControllerDelegate, HONInsetOverlayViewDelegate, HONSearchBarViewDelegate, HONSelfieCameraViewControllerDelegate, HONTabBannerViewDelegate>
+@interface HONUserClubsViewController () <HONClubCollectionViewCellDelegate, HONClubToggleViewCellDelegate, HONInsetOverlayViewDelegate, HONSearchBarViewDelegate, HONSelfieCameraViewControllerDelegate, HONTabBannerViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONCollectionView *collectionView;
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
@@ -65,6 +65,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareClubsTab:) name:@"TARE_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_CLUBS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_createdNewClub:) name:@"CREATED_NEW_CLUB" object:nil];
 	}
 	
 	return (self);
@@ -324,7 +325,6 @@ static NSString * const kCamera = @"camera";
 	
 	if (_appearedType == HONUserClubsViewControllerAppearedTypeCreateClubCompleted) {
 		[self _retrieveClubsWithCompletion:^{
-			_selectedClubVO = [[HONClubAssistant sharedInstance] userSignupClub];
 			
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
@@ -478,10 +478,10 @@ static NSString * const kCamera = @"camera";
 		[_collectionView setContentOffset:CGPointZero animated:YES];
 }
 
-
-#pragma mark - CreateClubViewController Delegates
-- (void)createClubViewController:(HONCreateClubViewController *)viewController didCreateClub:(HONUserClubVO *)clubV0 {
-	_selectedClubVO = clubV0;
+- (void)_createdNewClub:(NSNotification *)notification {
+	NSLog(@"::|> _createdNewClub <|::");
+	_selectedClubVO = (HONUserClubVO *)[notification object];
+	NSLog(@"%@", ((HONUserClubVO *)[notification object]).dictionary);
 }
 
 
@@ -705,10 +705,7 @@ static NSString * const kCamera = @"camera";
 			[self.navigationController pushViewController:[[HONClubTimelineViewController alloc] initWithClub:vo atPhotoIndex:0] animated:YES];
 		
 	} else if (vo.clubEnrollmentType == HONClubEnrollmentTypeCreate) {
-		HONCreateClubViewController *createClubViewController = [[HONCreateClubViewController alloc] init];
-		createClubViewController.delegate = self;
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:createClubViewController];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		

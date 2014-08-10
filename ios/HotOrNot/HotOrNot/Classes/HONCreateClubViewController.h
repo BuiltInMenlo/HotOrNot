@@ -9,12 +9,5 @@
 #import "HONUserClubVO.h"
 #import "HONViewController.h"
 
-@class HONCreateClubViewController;
-@protocol HONCreateClubViewControllerDelegate <NSObject>
-@optional
-- (void)createClubViewController:(HONCreateClubViewController *)viewController didCreateClub:(HONUserClubVO*) clubV0;
-@end
-
 @interface HONCreateClubViewController : HONViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
-@property (nonatomic, assign) id <HONCreateClubViewControllerDelegate> delegate;
 @end

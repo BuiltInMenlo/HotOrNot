@@ -12,7 +12,7 @@
 
 @implementation HONTrivialUserVO
 @synthesize dictionary;
-@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, abuseCount;
+@synthesize userID, username, avatarPrefix, altID, phoneNumber, isVerified, totalUpvotes;
 
 + (HONTrivialUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONTrivialUserVO *vo = [[HONTrivialUserVO alloc] init];
@@ -24,7 +24,7 @@
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? @"" : vo.avatarPrefix;
 	vo.altID = ([dictionary objectForKey:@"alt_id"] != [NSNull null]) ? [dictionary objectForKey:@"alt_id"] : @"";
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
-	vo.abuseCount = [[dictionary objectForKey:@"abuse_ct"] intValue];
+	vo.totalUpvotes = [[dictionary objectForKey:@"total_votes"] intValue];
 	
 	return (vo);
 }
@@ -55,7 +55,7 @@
 												  @"username"		: [userVO.dictionary objectForKey:@"username"],
 												  @"img_url"		: [userVO.dictionary objectForKey:@"avatar_url"],
 												  @"alt_id"			: [userVO.dictionary objectForKey:@"device_token"],
-												  @"abuse_ct"		: [@"" stringFromInt:userVO.abuseCount],
+												  @"total_votes"	: [@"" stringFromInt:userVO.totalUpvotes],
 												  @"is_verified"	: [@"" stringFromBOOL:userVO.isVerified]}]);
 }
 

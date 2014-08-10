@@ -96,13 +96,12 @@ static NSString * const kCamera = @"camera";
 	_tabBannerView.delegate = self;
 	[self.view addSubview:_tabBannerView];
 	
-	[UIView animateWithDuration:0.250 delay:0.500
-		 usingSpringWithDamping:0.750 initialSpringVelocity:0.125
+	[UIView animateWithDuration:0.250 delay:0.667
+		 usingSpringWithDamping:0.750 initialSpringVelocity:0.333
 						options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
 					 animations:^(void) {
 						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
 					 } completion:^(BOOL finished) {
-						 
 					 }];
 }
 

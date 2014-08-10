@@ -25,6 +25,7 @@
 #import "HONHeaderView.h"
 #import "HONTableHeaderView.h"
 #import "HONInviteClubsViewController.h"
+#import "HONClubTimelineViewController.h"
 
 #import "HONUserVO.h"
 #import "HONUserClubVO.h"
@@ -285,7 +286,7 @@
 	[avatarHolderView addSubview:imageLoadingView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
-	avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
+	avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
@@ -302,7 +303,7 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
+		avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			avatarImageView.alpha = 1.0;
 		} completion:nil];
@@ -333,7 +334,7 @@
 	scoreLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 	scoreLabel.textColor = (_userVO.isVerified) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
 	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.text = [@"" stringFromInt:-_userVO.abuseCount];
+	scoreLabel.text = [@"" stringFromInt:_userVO.totalUpvotes];
 	[_profileHolderView addSubview:scoreLabel];
 	
 	if (_userProfileType == HONUserProfileTypeUser) {
@@ -366,7 +367,6 @@
 
 #pragma mark - ActivityItemView Delegates
 - (void)activityItemViewCell:(HONActivityItemViewCell *)cell showProfileForUser:(HONTrivialUserVO *)trivialUserVO {
-	NSLog(@"activityItemViewCell:[%@]", trivialUserVO.dictionary);
 	[self.navigationController pushViewController:[[HONUserProfileViewController alloc] initWithUserID:trivialUserVO.userID] animated:YES];
 }
 
@@ -432,14 +432,20 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
-	return ((vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? nil : indexPath);
+//	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
+//	return ((vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? nil : indexPath);
+	
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
+	
+	NSLog(@"vo:[%@]", vo.dictionary);
+	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : (vo.activityType == HONActivityItemTypeVerify) ? @"Verifiy" : @"UNKNOWN");
+	
 	
 	NSString *mpAlertType;
 	NSDictionary *mpParams;
@@ -474,8 +480,8 @@
 		mpAlertType = @"Like";
 		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
-		viewController = userPofileViewController;
+		HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:vo.challengeID];
+		viewController = clubTimelineViewControler;
 		
 	} else if (vo.activityType == HONActivityItemTypeShoutout) {
 		mpAlertType = @"Shoutout";

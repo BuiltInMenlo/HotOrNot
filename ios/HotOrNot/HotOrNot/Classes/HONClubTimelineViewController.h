@@ -11,4 +11,6 @@
 
 @interface HONClubTimelineViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index;
+- (id)initWithClubID:(int)clubID atPhotoIndex:(int)index;
+- (id)initWithClubID:(int)clubID withClubPhotoID:(int)photoID;
 @end

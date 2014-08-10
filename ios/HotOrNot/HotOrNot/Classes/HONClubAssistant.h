@@ -33,6 +33,9 @@
 - (HONUserClubVO *)suggestedFamilyClubVO;
 - (HONUserClubVO *)suggestedWorkplaceClubVO;
 
+- (void)writePreClubWithTitle:(NSString *)title andBlurb:(NSString *)blurb andCoverPrefixURL:(NSString *)coverPrefix;
+- (NSDictionary *)fetchPreClub;
+
 - (void)wipeUserClubs;
 - (NSDictionary *)fetchUserClubs;
 - (void)addClub:(NSDictionary *)club forKey:(NSString *)key;

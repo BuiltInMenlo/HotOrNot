@@ -9,6 +9,8 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "NSString+DataTypes.h"
+
 #import "MBProgressHUD.h"
 #import "EGORefreshTableHeaderView.h"
 
@@ -26,9 +28,35 @@
 
 @implementation HONInviteContactsViewController
 
-- (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed {
-	NSLog(@"%@ - initWithClub:[%d] (%@)", [self description], userClub.clubID, userClub.clubName);
+- (id)initAsViewControllerPushed:(BOOL)isPushed {
+	NSLog(@"%@ - initAsViewControllerPushed:[%@]", [self description], [@"" stringFromBOOL:isPushed]);
+	if ((self = [super init])) {
+		
+		_isPushed = isPushed;
+		
+		NSDictionary *preClub = [[HONClubAssistant sharedInstance] fetchPreClub];
+		if ([preClub count] > 0) {
+			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
+			[dict setValue:[preClub objectForKey:@"name"] forKey:@"name"];
+			[dict setValue:[preClub objectForKey:@"description"] forKey:@"description"];
+			[dict setValue:[preClub objectForKey:@"img"] forKey:@"img"];
+			
+			_userClubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
+			_clubVO = _userClubVO;
+		
+		} else {
+			_userClubVO = nil;
+			_clubVO = nil;
+		}
+		
+		NSLog(@"INVITECLUB:[%@]", _userClubVO.dictionary);
+	}
 	
+	return (self);
+}
+
+- (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed {
+	NSLog(@"%@ - initWithClub:[%d] viewControllerPushed:[%@]", [self description], userClub.clubID, [@"" stringFromBOOL:isPushed]);
 	if ((self = [super init])) {
 		_userClubVO = userClub;
 		_clubVO = userClub;
@@ -41,16 +69,32 @@
 
 #pragma mark - Data Calls
 - (void)_sendClubInvites {
-	NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
-	
-	if ([_selectedInAppContacts count] > 0)
-		[self _sendInAppUserInvites];
-	
-	if ([_selectedNonAppContacts count] > 0)
-		[self _sendNonAppUserInvites];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-
+	if (_clubVO != nil) {
+		if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
+			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+				_clubVO = [HONUserClubVO clubWithDictionary:result];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
+				
+				if ([_selectedInAppContacts count] > 0)
+					[self _sendInAppUserInvites];
+				
+				if ([_selectedNonAppContacts count] > 0)
+					[self _sendNonAppUserInvites];
+				
+				NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
+			}];
+		
+		} else {
+			if ([_selectedInAppContacts count] > 0)
+				[self _sendInAppUserInvites];
+			
+			if ([_selectedNonAppContacts count] > 0)
+				[self _sendNonAppUserInvites];
+			
+			NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
+		}
+	}
 }
 
 - (void)_sendInAppUserInvites {
@@ -59,6 +103,7 @@
 			[[HONContactsAssistant sharedInstance] writeTrivialUser:vo toInvitedClub:_clubVO];
 		
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 		}];
 	}];
 }
@@ -69,6 +114,7 @@
 			[[HONContactsAssistant sharedInstance] writeContactUser:vo toInvitedClub:_clubVO];
 		
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
 		}];
 	}];
 }
@@ -120,11 +166,21 @@
 	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
 		[self _sendClubInvites];
 	
-	else
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
-		}];
+	else {
+		if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
+			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+				_clubVO = [HONUserClubVO clubWithDictionary:result];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
+				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+				}];
+			}];
+		
+		} else {
+			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			}];
+		}
+	}
 }
 
 

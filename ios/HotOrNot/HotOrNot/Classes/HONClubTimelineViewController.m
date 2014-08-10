@@ -26,8 +26,10 @@
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
+@property (nonatomic) int clubPhotoID;
 @property (nonatomic) int imageQueueLocation;
 @end
 
@@ -35,9 +37,48 @@
 @implementation HONClubTimelineViewController
 
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
+	NSLog(@"%@ - initWithClub:[%d] atPhotoIndex:[%d]", [self description], clubVO.clubID, index);
 	if ((self = [super init])) {
 		_clubVO = clubVO;
+		_clubID = _clubVO.clubID;
+		_clubPhotoID = 0;
 		_index = index;
+		_clubPhotos = _clubVO.submissions;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+	}
+	
+	return (self);
+}
+
+- (id)initWithClubID:(int)clubID atPhotoIndex:(int)index {
+	NSLog(@"%@ - initWithClubID:[%d] atPhotoIndex:[%d]", [self description], clubID, index);
+	if ((self = [super init])) {
+		_clubVO = nil;
+		_clubID = clubID;
+		_index = index;
+		_clubPhotoID = 0;
+		_clubPhotos = _clubVO.submissions;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+	}
+	
+	return (self);
+}
+
+- (id)initWithClubID:(int)clubID withClubPhotoID:(int)photoID {
+	NSLog(@"%@ - initWithClubID:[%d] withClubPhotoID:[%d]", [self description], clubID, photoID);
+	if ((self = [super init])) {
+		_clubVO = nil;
+		_clubID = clubID;
+		_index = 0;
+		_clubPhotoID = photoID;
 		_clubPhotos = _clubVO.submissions;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
@@ -60,11 +101,14 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	
 	_clubPhotos = [NSArray array];
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:(_clubVO == nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : _clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
+		
+		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
+		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
+		[self _didFinishDataRefresh];
 		
 		_imageQueueLocation = 0;
 		if ([_clubPhotos count] > 0) {
@@ -85,10 +129,6 @@
 											fromURLs:imageQueue
 											 withTag:@"club"];
 		}
-		
-		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
-		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
-		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -112,6 +152,9 @@
 }
 
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
+	_index = 0;
+	_clubPhotoID = 0;
+	
 	[self _retrieveClub];
 }
 
@@ -123,6 +166,9 @@
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	if (_index != 0 || _clubPhotoID != 0)
+		[self _jumpToPhotoFromID];
 }
 
 
@@ -175,8 +221,13 @@
 	
 	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
-	if (_clubVO == nil)
+	if (_clubVO == nil && _clubID > 0)
 		[self _retrieveClub];
+	
+	if (_index > 0) {
+		_index = MIN(_index, [_clubPhotos count]);
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+	}
 }
 
 - (void)viewDidLoad {
@@ -208,19 +259,24 @@
 																							@"view_controller"	: self}];
 }
 - (void)_goBack {
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
+	_index = 0;
+	_clubPhotoID = 0;
+	
 	[self _retrieveClub];
 }
 
 
 #pragma mark - Notifications
 - (void)_refreshClubTimeline:(NSNotification *)notification {
+	_index = 0;
+	_clubPhotoID = 0;
+	
 	[self _retrieveClub];
 }
 
@@ -232,6 +288,23 @@
 	NSIndexPath *indexPath = [_tableView indexPathForCell:(UITableViewCell *)cell];
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:indexPath.section + rows] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
+
+- (void)_jumpToPhotoFromID {
+	[_clubPhotos enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
+		
+		if (vo.challengeID == _clubPhotoID) {
+			_index = idx;
+			*stop = YES;
+		}
+	}];
+	
+	_index = MIN(_index, [_clubPhotos count]);
+	
+	if (_index > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+}
+
 
 #pragma mark - ClubPhotoViewCell Delegates
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {

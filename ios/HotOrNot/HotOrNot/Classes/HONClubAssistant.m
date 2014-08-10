@@ -365,6 +365,22 @@ static HONClubAssistant *sharedInstance = nil;
 	return (vo);
 }
 
+- (void)writePreClubWithTitle:(NSString *)title andBlurb:(NSString *)blurb andCoverPrefixURL:(NSString *)coverPrefix {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"proto_club"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"proto_club"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@{@"name"			: title,
+													   @"description"	: blurb,
+													   @"img"			: coverPrefix} forKey:@"proto_club"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSDictionary *)fetchPreClub {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"proto_club"] == nil)
+		return (@{});
+	
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"proto_club"]);
+}
 
 - (void)wipeUserClubs {
 	[[HONClubAssistant sharedInstance] writeUserClubs:@{}];

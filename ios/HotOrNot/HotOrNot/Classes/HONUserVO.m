@@ -15,7 +15,7 @@
 @implementation HONUserVO
 
 @synthesize dictionary;
-@synthesize userID, username, points, votes, abuseCount, totalVolleys, isVerified, isSuspended, score, avatarPrefix, birthday, friends;
+@synthesize userID, username, totalUpvotes, totalVolleys, isVerified, isSuspended, avatarPrefix, birthday, friends;
 
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONUserVO *vo = [[HONUserVO alloc] init];
@@ -23,13 +23,10 @@
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.points = [[dictionary objectForKey:@"points"] intValue];
-	vo.votes = [[dictionary objectForKey:@"total_votes"] intValue];
+	vo.totalUpvotes = [[dictionary objectForKey:@"total_votes"] intValue];
 	vo.totalVolleys = [[dictionary objectForKey:@"total_challenges"] intValue];
-	vo.abuseCount = [[dictionary objectForKey:@"abuse_ct"] intValue];
 	vo.isVerified = ((BOOL)[[dictionary objectForKey:@"is_verified"] intValue]);
 	vo.isSuspended = ((BOOL)[[dictionary objectForKey:@"is_suspended"] intValue]);
-	vo.score = vo.points + vo.votes;
 	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"avatar_url"]];
 	vo.avatarPrefix = ([vo.avatarPrefix rangeOfString:@"default"].location != NSNotFound) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"avatar"] : vo.avatarPrefix;
 	vo.birthday = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"age"]];

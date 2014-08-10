@@ -25,6 +25,6 @@
 @property (nonatomic, retain) NSString *avatarPrefix;
 @property (nonatomic, retain) NSString *altID;
 @property (nonatomic, retain) NSString *phoneNumber;
-@property (nonatomic) int abuseCount;
+@property (nonatomic) int totalUpvotes;
 @property (nonatomic) BOOL isVerified;
 @end
