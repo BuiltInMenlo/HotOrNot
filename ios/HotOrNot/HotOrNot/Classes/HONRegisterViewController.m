@@ -192,14 +192,7 @@
 				}
 			}];
 			
-			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {
-				[[HONAnalyticsParams sharedInstance] identifyPersonEntityWithProperties:@{@"$email"			: [[HONAppDelegate infoForUser] objectForKey:@"email"],
-																						  @"$created"		: [[HONAppDelegate infoForUser] objectForKey:@"added"],
-																						  @"id"				: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-																						  @"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
-																						  @"deactivated"	: [[NSUserDefaults standardUserDefaults] objectForKey:@"is_deactivated"]}];
-				
-				
+			[[HONAPICaller sharedInstance] updatePhoneNumberForUserWithCompletion:^(NSDictionary *result) {				
 				[self.navigationController pushViewController:[[HONEnterPINViewController alloc] init] animated:YES];
 			}];
 						
@@ -269,9 +262,10 @@
 	
 	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_usernameButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateNormal];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateSelected];
-	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateSelected | UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateNormal];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateHighlighted];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateSelected];
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"usernameRowBG_normal"] forState:UIControlStateSelected | UIControlStateHighlighted];
 	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_usernameButton];
 	
@@ -317,9 +311,10 @@
 	
 	_phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_phoneButton.frame = CGRectMake(0.0, 128.0, 320.0, 64.0);
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected];
-	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected | UIControlStateHighlighted];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateNormal];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateHighlighted];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:UIControlStateSelected];
+	[_phoneButton setBackgroundImage:[UIImage imageNamed:@"phoneRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
 	[_phoneButton addTarget:self action:@selector(_goPhone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_phoneButton];
 	
@@ -380,9 +375,6 @@
 	termsButton.frame = CGRectMake(200.0, 238.0, 40.0, 20.0);
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
-	
-	[_usernameTextField becomeFirstResponder];
-	[_usernameButton setSelected:YES];
 }
 
 - (void)viewDidLoad {
@@ -393,6 +385,9 @@
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
+	
+	[_usernameTextField becomeFirstResponder];
+	[_usernameButton setSelected:YES];
 	
 	[_nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 }

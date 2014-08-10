@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "KeychainItemWrapper.h"
 #import "MBProgressHUD.h"
 
@@ -19,6 +21,7 @@
 @property (nonatomic, strong) UIImageView *pinCheckImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int validateCounter;
+@property (nonatomic) BOOL isPopping;
 @end
 
 
@@ -49,19 +52,17 @@
 		}
 		
 		if ([[result objectForKey:@"result"] intValue] == 0) {
-			
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
+										message: NSLocalizedString(@"try_again", @"Please try again or press the resend button")
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
 			_pin = @"";
 			_pinTextField.text = @"";
 			[_pinTextField becomeFirstResponder];
 			
-			_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-			_pinCheckImageView.alpha = 1.0;
-			
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-										message: NSLocalizedString(@"try_again", nil) //@"Please try again or press the resend button"
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-							  otherButtonTitles:nil] show];
+//			_pinCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+//			_pinCheckImageView.alpha = 1.0;
 			
 		} else
 			[self _finishFirstRun];
@@ -71,9 +72,6 @@
 
 #pragma mark - Data Manip
 - (void)_finishFirstRun {
-	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-	_pinCheckImageView.alpha = 1.0;
-	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -102,7 +100,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", nil)]; //@"Enter Pin"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"enter_pin", @"Enter Pin"])];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -122,9 +120,10 @@
 	 
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateNormal];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateHighlighted];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateSelected];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateNormal];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateHighlighted];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:UIControlStateSelected];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"pinRowBG_normal"] forState:(UIControlStateHighlighted|UIControlStateSelected)];
 	[self.view addSubview:_pinButton];
 	
 	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 81.0, 77.0, 30.0)];
@@ -140,7 +139,6 @@
 	_pinTextField.text = @"";
 	_pinTextField.delegate = self;
 	[self.view addSubview:_pinTextField];
-	[_pinTextField becomeFirstResponder];
 	
 	_pinCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
 	_pinCheckImageView.frame = CGRectOffset(_pinCheckImageView.frame, 258.0, 65.0);
@@ -165,22 +163,37 @@
 #endif
 }
 
+- (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
+	[super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	[super viewDidAppear:animated];
+	
+	_isPopping = NO;
+	[_pinTextField becomeFirstResponder];
+}
+
+
 
 #pragma mark - Navigation
 - (void)_goBack {
+	_pin = @"";
+	_isPopping = YES;
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goDone {
-	
 	_pin = _pinTextField.text;
 	if ([_pin length] < 4) {
 		_pin = @"";
 		_pinTextField.text = @"";
 		[_pinTextField becomeFirstResponder];
 		
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", nil) //@"Invalid Pin!"
-									message:NSLocalizedString(@"invalid_pin_msg", nil) //@"Pin numbers need to be 4 numbers"
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
+									message:NSLocalizedString(@"invalid_pin_msg", @"Pin numbers need to be 4 numbers")
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -213,7 +226,7 @@
 //	_pinCheckImageView.alpha = (int)([_pinTextField.text length] == 4);
 	
 	if ([_pinTextField.text length] == 4) {
-		_pin = _pinTextField.text;
+//		_pin = _pinTextField.text;
 		[_pinTextField resignFirstResponder];
 	}
 }
@@ -234,6 +247,7 @@
 	return (YES);
 }
 
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
 	return (!([textField.text length] > 3 && [string length] > range.length));
 }
@@ -246,7 +260,21 @@
 													name:@"UITextFieldTextDidChangeNotification"
 												  object:textField];
 	_pin = _pinTextField.text;
-	[self _validatePinCode];
+	
+	if (!_isPopping) {
+		if ([_pin length] < 4) {
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
+										message:NSLocalizedString(@"invalid_pin_msg", @"Pin numbers need to be 4 numbers")
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			_pin = @"";
+			_pinTextField.text = @"";
+			[_pinTextField becomeFirstResponder];
+			
+		} else
+			[self _validatePinCode];
+	}
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
