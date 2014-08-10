@@ -144,4 +144,4 @@
 "yes_flag" = "Sim, marcar usuário";
 "sent_invite" = " enviou a você um convite para %@";
 "accept_invite" = " aceitou seu convite para %@";
-
+"no_phone" = "Não há telefone!";

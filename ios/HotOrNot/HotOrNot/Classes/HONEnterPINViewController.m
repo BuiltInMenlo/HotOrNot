@@ -70,7 +70,7 @@
 			_pinCheckImageView.alpha = 1.0;
 			
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"invalid_pin", @"Invalid Pin!")
-										message:@"Please try again or press the resend button"
+										message: NSLocalizedString(@"try_again", nil) //@"Please try again or press the resend button"
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];

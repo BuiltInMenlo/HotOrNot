@@ -99,8 +99,8 @@
 	
 	
 	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
-															message:@"You have to choose at least one club to submit your photo into."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_selectclub", nil) //@"No Club Selected!"
+															message: NSLocalizedString(@"no_selectclub_msg", nil) //@"You have to choose at least one club to submit your photo into."
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 												  otherButtonTitles:nil];

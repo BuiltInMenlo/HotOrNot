@@ -144,3 +144,20 @@
 "yes_flag" = "Sim, marcar usuário";
 "sent_invite" = " enviou a você um convite para %@";
 "accept_invite" = " aceitou seu convite para %@";
+"no_phone" = "Não há telefone!";
+"phone_taken" = "Nº de telefone já existe!";
+"user_phone" = "Nome de usuário e nº de telefone já existem!";
+"no_user" = "Não há nome de usuário!";
+"no_user_msg" = "Você precisa digitar um nome de usuário para usar o Selfieclub";
+"no_phone_msg" = "Você precisa de um nº de telefone para usar o Selfieclub.";
+"no_userphone" = "Não há nome de usuário e telefone!";
+"no_userphone_msg" = "Você precisa digitar um nome de usuário e um nº de telefone para usar o Selfieclub";
+"no_selectclub" = "Nenhum clube selecionado!";
+"no_selectclub_msg" = "Você precisa escolher no mínimo um clube para enviar sua foto.";
+"try_again" = "Tente novamente ou aperte o botão reenviar";
+"invalid_msg" = "O nome do seu clube não pode conter / ou '";
+
+
+
+
+
