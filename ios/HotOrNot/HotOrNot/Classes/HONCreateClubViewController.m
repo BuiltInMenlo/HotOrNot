@@ -156,8 +156,7 @@
 	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
 		NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
 		
-		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Selfieclub Club Covers"]) {
-			NSLog(@"Found Album");
+		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) { NSLog(@"Found Album"); // @"Selfieclub Club Covers"])
 			assetsGroup = group;
 			*stop = YES;
 			
@@ -176,8 +175,8 @@
 - (void)_createAlbum {
 	__weak HONCreateClubViewController *weakSelf = self;
 	
-	[_library addAssetsGroupAlbumWithName:@"Selfieclub Club Covers" resultBlock:^(ALAssetsGroup *group) {
-		NSLog(@"added album: %@", @"Selfieclub Club Covers");
+	[_library addAssetsGroupAlbumWithName:NSLocalizedString(@"club_covers", nil) resultBlock:^(ALAssetsGroup *group) {
+		NSLog(@"added album: %@", NSLocalizedString(@"club_covers", nil));
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		
@@ -190,7 +189,7 @@
 			[weakSelf.library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
 				NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
 				
-				if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Selfieclub Club Covers"]) {
+				if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
 					NSLog(@"Found Album");
 					assetsGroup = group;
 					
@@ -243,7 +242,7 @@
 - (void)_addImageToAlbum:(UIImage *)image {
 	__block ALAssetsGroup *assetsGroup;
 	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:@"Selfieclub Club Covers"]) {
+		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
 			NSLog(@"Found Album");
 			assetsGroup = group;
 			

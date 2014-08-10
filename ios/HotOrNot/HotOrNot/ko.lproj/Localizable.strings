@@ -24,7 +24,7 @@
 "hud_searchUsers" = "사용자 검색 중...";
 "hud_searchHashtags" = "해시태그 검색 중...";
 "hud_sent" = "   전송   ";
-"share" = "Share club";
+"share" = "클럽 공유";
 "header_restricted" = "접근 제한";
 
 //"search_placeHolder" = "Search for people or tags";
@@ -62,7 +62,7 @@
 "alert_no" = "아니요";
 "alert_ok" = "OK";
 "alert_cancel" = "취소";
-"alert_invite" = "Invite friends";
+"alert_invite" = "친구 초대하기";
 "alert_connectionError_t" = "연결 오류";
 "alert_connectionError_m" = "초기화 서버에 연결할 수 없습니다, ​​다시 시도해 주세요.";
 "alert_instagramError_t" = "사용할 수 없음";
@@ -75,10 +75,10 @@
 "alert_noSelfie_t" = "A PROFILE PHOTO (SELFIE) IS REQUIRED";
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
 
-"alert_lockedClub_t" = "Locked Club!";
+"alert_lockedClub_t" = "잠긴 클럽입니다!";
 "alert_lockedClub_m" = "You must invite at least %d friends to join %@";
-"alert_register_m" = "Come back to register for Selfieclub";
-"title_copyURL" = " - copy your url";
+"alert_register_m" = "셀카클럽에 등록하기 위해 돌아오기";
+"title_copyURL" = " - URL을 복사하세요";
 "title_joinNow" = " - 클럽명 - 지금 가입하세요!";
 
 "enter_username" = "사용자 이름";
@@ -131,3 +131,17 @@
 "invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";
 
 "club_covers" = "셀카클럽 클럽커버";
+"sms_error" = "SMS 에러";
+"not_now" = "아직";
+"cannot_send" = "이 기기에서는 SMS를 전송할 수 없습니다!";
+"report_abuse" = "어뷰징 / 버그 신고";
+"leave_club" = "클럽 나가기";
+"liked_selfie" = " 님이 다음에 게시한 셀카를 좋아합니다:";
+"submit_photo" = "님이 다음에 사진을 게시했습니다: %@";
+"user_notfound" = "사용자를 찾을 수 없습니다!";
+"lev" = "%@ 나가기";
+"lev_sure" = "%@에서 정말로 나가시겠습니까?";
+"flag_person" = "이 사람을 리뷰를 위해 체크합니다";
+"yes_flag" = "예, 체크하겠습니다";
+"sent_invite" = "님에 다음에 초대했습니다: %@";
+

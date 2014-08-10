@@ -133,9 +133,9 @@
 	 
 	_pinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_pinButton.frame = CGRectMake(0.0, kNavHeaderHeight, 320.0, 64.0);
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateNormal];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateHighlighted];
-	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_normal"] forState:UIControlStateSelected];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateNormal];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateHighlighted];
+	[_pinButton setBackgroundImage:[UIImage imageNamed:@"firstRunRowBG_username"] forState:UIControlStateSelected];
 	[self.view addSubview:_pinButton];
 	
 	_pinTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 81.0, 77.0, 30.0)];
