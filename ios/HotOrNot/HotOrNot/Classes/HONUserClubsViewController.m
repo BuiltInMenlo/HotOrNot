@@ -941,8 +941,8 @@ static NSString * const kCamera = @"camera";
 								  otherButtonTitles:nil] show];
 				
 			} else if (buttonIndex == 2) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Leave %@", _selectedClubVO.clubName]
-																	message:[NSString stringWithFormat:@"Are you sure you want to leave %@?", _selectedClubVO.clubName]
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: NSLocalizedString(@"lev", nil) , _selectedClubVO.clubName]
+																	message:[NSString stringWithFormat:NSLocalizedString(@"lev_sure", nil), _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 														  otherButtonTitles:nil];

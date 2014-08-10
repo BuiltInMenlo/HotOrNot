@@ -105,7 +105,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = @"User not found!";
+			_progressHUD.labelText = NSLocalizedString(@"user_notfound", nil);  //@"User not found!";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
@@ -241,11 +241,11 @@
 - (void)_goFlag {
 
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged for review"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil)  //@"Are you sure?"
+														message: NSLocalizedString(@"flag_person", nil) //@"This person will be flagged for review"
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
-											  otherButtonTitles:@"Yes, flag user", nil];
+											  otherButtonTitles: NSLocalizedString(@"yes_flag", nil) , nil];
 	
 	[alertView setTag:HONUserProfileAlertTypeFlag];
 	[alertView show];

@@ -131,11 +131,16 @@
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
 
 "club_covers" = "Capas do Selfieclub";
-"sms_error" = "Erro no envio de SMS";
+"sms_error" = "SMS Error";
 "not_now" = "Agora não";
 "cannot_send" = "Não é possível enviar SMS deste dispositivo!";
 "report_abuse" = "Reportar abuso / erro";
-"leave_club" = "Sair do clube";
-"liked_selfie" = "curtiu sua selfie em %@";
+"liked_selfie" = " curtiu sua selfie em";
 "submit_photo" = "enviou uma foto para %@";
+"user_notfound" = "Usuário não encontrado!";
+"lev" = "Sair de %@";
+"lev_sure" = "Tem certeza de que quer sair de %@?";
+"flag_person" = "Esta pessoa será marcada para análise";
+"yes_flag" = "Sim, marcar usuário";
+
 

@@ -136,46 +136,13 @@
 "not_now" = "Not Now";
 "cannot_send" = "Cannot send SMS from this device!";
 "report_abuse" = "Report Abuse / Bug";
-"liked_selfie" = "liked your selfie in %@";
+"liked_selfie" = " liked your selfie in %@";
 "submit_photo" = " submitted a photo into %@";
-
-
-"Want to invite friends to %@?";
-"Club Not Found!";
-"Would you like to create it?";
-"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@";
-"We need your OK to access the address book.";
-"Allow Access to your contacts?";
-"Invalid username";
-"You cannot have / or ' in your club's name";
-"Please try again or press the resend button";
-"Username taken!";
-"Phone # taken!";
-"Username & phone # taken!;";
-"No Username!";
-"You need to enter a username to use Selfieclub";
-"No Phone!";
-"You need a phone # to use Selfieclub.";
-"No Username & Phone!";
-"You need to enter a username and phone # to use Selfieclub";
-"No Club Selected!";
-"You have to choose at least one club to submit your photo into.";
-"Invite friends";
-"Copy club URL";
-"Leave club";
-"Leave %@";
-"Are you sure you want to leave %@?";
-"Username taken!";
-"Invite to my club";
-"User not found!";
-"Are you sure?";
-"This person will be flagged for review";
-"Yes, flag user";
-"sent you an invite to";
-"accepted your invite to";
-"submitted a photo into";
-"Add Club";
-
+"user_notfound" = "User not found!";
+"lev" = "Leave %@";
+"lev_sure" = "Are you sure you want to leave %@?";
+"flag_person" = "This person will be flagged for review";
+"yes_flag" = "Yes, flag user";
 
 
 
