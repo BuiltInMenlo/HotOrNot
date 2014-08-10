@@ -9,5 +9,5 @@
 #import "HONContactsViewController.h"
 
 
-@interface HONContactsTabViewController : HONContactsViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONContactsTabViewController : HONContactsViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 @end

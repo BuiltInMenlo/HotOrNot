@@ -199,7 +199,7 @@
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
 				if ([[result objectForKey:@"owned"] count] == 0) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] userSignupClubCoverImageURL] completion:^(NSDictionary *result) {
 					}];
 				}
 			}];
@@ -265,6 +265,10 @@
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
+	
+	
+	NSLog(@"COVERS:[%@]", [[HONClubAssistant sharedInstance] defaultCoverImagePrefixes]);
+	
 	
 	UIFont *textFont = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	

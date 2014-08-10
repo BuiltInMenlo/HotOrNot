@@ -100,7 +100,7 @@
 //									  otherButtonTitles:nil] show];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTIONS_OVERLAY" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
 		
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	}];

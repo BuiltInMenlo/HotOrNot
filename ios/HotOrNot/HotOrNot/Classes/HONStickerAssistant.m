@@ -125,7 +125,7 @@ static HONStickerAssistant *sharedInstance = nil;
 	PCCandyStoreSearchController *candyStoreSearchController = [[PCCandyStoreSearchController alloc] init];
 	for (NSString *contentGroupID in contentGroupIDs) {
 		[candyStoreSearchController fetchStickerPackInfo:contentGroupID completion:^(BOOL success, PCContentGroup *contentGroup) {
-		NSLog(@"///// fetchStickerPackInfo:[%d][%@] /////", success, contentGroup);
+		NSLog(@"///// fetchStickerPackInfo:[%@]%@}--(%d) /////", contentGroupID, contentGroup, success);
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[contentGroup.contents enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

@@ -11,7 +11,6 @@
 		072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53881991633300738827 /* inviteButton_nonActive@2x.png */; };
 		072F5392199190B700738827 /* unlockBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F5394199190B700738827 /* unlockBanner.png */; };
 		07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */; };
-		07B25326198C177000F6D8B1 /* appStoreReview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */; };
 		07B25327198C177000F6D8B1 /* dimBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25322198C176F00F6D8B1 /* dimBackground@2x.png */; };
 		07B25328198C177B00F6D8B1 /* tapToReview_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B2532A198C177B00F6D8B1 /* tapToReview_Active@2x.png */; };
 		07B2532F198C178400F6D8B1 /* tapToReview_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 07B25331198C178400F6D8B1 /* tapToReview_nonActive@2x.png */; };
@@ -311,6 +310,8 @@
 		4CD071A819553039003894F4 /* UIView+ReverseSubviews.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A719553039003894F4 /* UIView+ReverseSubviews.m */; };
 		4CD071AA19554431003894F4 /* HONInviteContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071A919554431003894F4 /* HONInviteContactsViewController.m */; };
 		4CD071AD19554A87003894F4 /* HONInviteClubsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD071AC19554A87003894F4 /* HONInviteClubsViewController.m */; };
+		4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD16D181996ED390035A8D3 /* appStoreReview@2x.png */; };
+		4CD16D20199702A70035A8D3 /* HONTabBannerPaginationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD16D1F199702A70035A8D3 /* HONTabBannerPaginationView.m */; };
 		4CD22C90195BD5C800E6AD0B /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD22C8F195BD5C700E6AD0B /* CouchbaseLite.framework */; };
 		4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */; };
 		4CD42F28188B410E00264845 /* HONMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD42F27188B410E00264845 /* HONMessagesViewController.m */; };
@@ -366,7 +367,6 @@
 		072F5397199190BE00738827 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/unlockBanner.png; sourceTree = "<group>"; };
 		072F5398199190BF00738827 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = pt.lproj/unlockBanner.png; sourceTree = "<group>"; };
 		07B2531E198C176F00F6D8B1 /* modalCloseButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "modalCloseButton@2x.png"; sourceTree = "<group>"; };
-		07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appStoreReview@2x.png"; sourceTree = "<group>"; };
 		07B25322198C176F00F6D8B1 /* dimBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dimBackground@2x.png"; sourceTree = "<group>"; };
 		07B25329198C177B00F6D8B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
 		07B2532B198C177E00F6D8B1 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/tapToReview_Active@2x.png"; sourceTree = "<group>"; };
@@ -1077,6 +1077,13 @@
 		4CD071A919554431003894F4 /* HONInviteContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONInviteContactsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4CD071AB19554A87003894F4 /* HONInviteClubsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteClubsViewController.h; sourceTree = "<group>"; };
 		4CD071AC19554A87003894F4 /* HONInviteClubsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteClubsViewController.m; sourceTree = "<group>"; };
+		4CD16D171996ED390035A8D3 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
+		4CD16D191996ED3C0035A8D3 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
+		4CD16D1A1996ED3D0035A8D3 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
+		4CD16D1B1996ED3E0035A8D3 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
+		4CD16D1C1996ED3E0035A8D3 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/appStoreReview@2x.png"; sourceTree = "<group>"; };
+		4CD16D1E199702A70035A8D3 /* HONTabBannerPaginationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTabBannerPaginationView.h; sourceTree = "<group>"; };
+		4CD16D1F199702A70035A8D3 /* HONTabBannerPaginationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTabBannerPaginationView.m; sourceTree = "<group>"; };
 		4CD22C8F195BD5C700E6AD0B /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CouchbaseLite.framework; sourceTree = "<group>"; };
 		4CD22C9119633DD200E6AD0B /* PicoCandySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PicoCandySDKResources.bundle; sourceTree = "<group>"; };
 		4CD42F26188B410E00264845 /* HONMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONMessagesViewController.h; sourceTree = "<group>"; };
@@ -2238,8 +2245,6 @@
 				4CC606D9198C3E650042A951 /* HONInsetOverlayView.m */,
 				4C48745616BF0E36007D901B /* HONSearchBarView.h */,
 				4C48745716BF0E36007D901B /* HONSearchBarView.m */,
-				4C45A9431996AE0D00A2086E /* HONTabBannerView.h */,
-				4C45A9441996AE0D00A2086E /* HONTabBannerView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -2317,6 +2322,7 @@
 				4CF7504818989DFA009E39E4 /* News */,
 				4C00491819467EE6007FA9F5 /* Clubs */,
 				4C066204194A0D33001941D1 /* -Shared- */,
+				4CD16D1D199702760035A8D3 /* Banner */,
 			);
 			name = Tabs;
 			sourceTree = "<group>";
@@ -2347,7 +2353,7 @@
 				07B6E719198851BD00DA0805 /* modalUnlockBackground@2x.png */,
 				07B6E71C198851C300DA0805 /* modalSuggestionBackground@2x.png */,
 				07B2533D198C1FEE00F6D8B1 /* modalReviewBackground@2x.png */,
-				07B25321198C176F00F6D8B1 /* appStoreReview@2x.png */,
+				4CD16D181996ED390035A8D3 /* appStoreReview@2x.png */,
 				07B6E7001988515600DA0805 /* inviteFriends_nonActive@2x.png */,
 				07B6E7031988515B00DA0805 /* inviteFriends_Active@2x.png */,
 				07B6E6FA1988515000DA0805 /* accessContacts_nonActive@2x.png */,
@@ -2393,6 +2399,17 @@
 				4C19247F1948BDE8002439E3 /* HONFeedViewController.m */,
 			);
 			name = Feed;
+			sourceTree = "<group>";
+		};
+		4CD16D1D199702760035A8D3 /* Banner */ = {
+			isa = PBXGroup;
+			children = (
+				4C45A9431996AE0D00A2086E /* HONTabBannerView.h */,
+				4C45A9441996AE0D00A2086E /* HONTabBannerView.m */,
+				4CD16D1E199702A70035A8D3 /* HONTabBannerPaginationView.h */,
+				4CD16D1F199702A70035A8D3 /* HONTabBannerPaginationView.m */,
+			);
+			name = Banner;
 			sourceTree = "<group>";
 		};
 		4CD22C52195B8E0D00E6AD0B /* PicoCandy */ = {
@@ -2615,7 +2632,7 @@
 				4C0F3CE11988E64400703D09 /* tabMenu_newsButton_Active@2x.png in Resources */,
 				07B6E6A319884AD800DA0805 /* replyTimelineButton_nonActive@2x.png in Resources */,
 				4C4328D318E3A9FA0035FF06 /* MPLogo@2x.png in Resources */,
-				07B25326198C177000F6D8B1 /* appStoreReview@2x.png in Resources */,
+				4CD16D161996ED380035A8D3 /* appStoreReview@2x.png in Resources */,
 				07B6E6E519884B3B00DA0805 /* likeTimelineButton_Active@2x.png in Resources */,
 				4C0F3CEA1988E65000703D09 /* tabMenu_friendsButton_Active@2x.png in Resources */,
 				8F4E6217198ACD6C00E8A171 /* closeButtonBlue_Active@2x.png in Resources */,
@@ -2857,6 +2874,7 @@
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
 				4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */,
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
+				4CD16D20199702A70035A8D3 /* HONTabBannerPaginationView.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONSelfieCameraViewController.m in Sources */,
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
@@ -3559,6 +3577,18 @@
 				4C1E9D9D198AD8F100021156 /* pt */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		4CD16D181996ED390035A8D3 /* appStoreReview@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4CD16D171996ED390035A8D3 /* en */,
+				4CD16D191996ED3C0035A8D3 /* pt-BR */,
+				4CD16D1A1996ED3D0035A8D3 /* ja */,
+				4CD16D1B1996ED3E0035A8D3 /* pt */,
+				4CD16D1C1996ED3E0035A8D3 /* ko */,
+			);
+			name = "appStoreReview@2x.png";
 			sourceTree = "<group>";
 		};
 		575B3969198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png */ = {
