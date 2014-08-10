@@ -56,7 +56,7 @@
 												 selector:@selector(_refreshProfile:)
 													 name:@"REFRESH_PROFILE" object:nil];
 		
-		_cohortRows = @[@"Invite to my club"];
+		_cohortRows = @[NSLocalizedString(@"invite_myclub", nil)];   //@"Invite to my club"];
 	}
 	
 	return  (self);

@@ -134,4 +134,12 @@
 "sms_error" = "SMS 에러";
 "not_now" = "아직";
 "cannot_send" = "이 기기에서는 SMS를 전송할 수 없습니다!";
+"report_abuse" = "어뷰징 / 버그 신고";
+"leave_club" = "클럽 나가기";
+"liked_selfie" = "님이 다음에 게시한 셀카를 좋아합니다:";
+"submit_photo" = "님이 다음에 사진을 게시했습니다: %@";
+
+
+
+
 

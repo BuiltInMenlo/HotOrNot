@@ -135,4 +135,11 @@
 
 "not_now" = "今はやめる";
 "cannot_send" = "この端末からSMSを送信できません!";
+"report_abuse" = "不正利用 / バグを報告する";
+"leave_club" = "クラブを辞める";
+"liked_selfie" = "あなたのセルフィーを気に入りました %@";
+"submit_photo" = "写真を送りました %@";
+
+
+
 

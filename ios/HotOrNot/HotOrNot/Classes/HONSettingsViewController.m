@@ -220,7 +220,7 @@
 			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
 			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
-			[mailComposeViewController setSubject:@"Report Abuse / Bug"];
+			[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", nil)];  //@"Report Abuse / Bug"];
 			[mailComposeViewController setMessageBody:@"" isHTML:NO];
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
@@ -313,7 +313,7 @@
 		mpEvent = @"Change Email";
 		
 	} else if (controller.view.tag == HONSettingsMailComposerTypeReportAbuse) {
-		mpEvent = @"Report Abuse / Bug";
+		mpEvent = NSLocalizedString(@"report_abuse", nil); //@"Report Abuse / Bug";
 	}
 	
 	NSString *mpAction = @"";

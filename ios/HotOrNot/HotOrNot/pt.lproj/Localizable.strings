@@ -134,3 +134,8 @@
 "sms_error" = "SMS Error";
 "not_now" = "Agora não";
 "cannot_send" = "Não é possível enviar SMS deste dispositivo!";
+"report_abuse" = "Reportar abuso / erro";
+"liked_selfie" = "curtiu sua selfie em";
+"submit_photo" = "enviou uma foto para %@";
+
+
