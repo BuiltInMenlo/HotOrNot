@@ -17,7 +17,6 @@
 - (NSDictionary *)createClubDictionary;
 - (NSDictionary *)emptyClubDictionaryWithOwner:(NSDictionary *)owner;
 - (NSDictionary *)orthodoxThresholdClubDictionary;
-- (NSArray *)defaultCoverImagePrefixes;
 - (NSString *)userSignupClubCoverImageURL;
 - (NSString *)defaultCoverImageURL;
 - (NSString *)defaultClubPhotoURL;

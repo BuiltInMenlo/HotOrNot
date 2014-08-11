@@ -729,17 +729,17 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	
 	
 	
-//	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
-//	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
-//	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
-//	CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
-//	
-//	NSMutableString *result = [NSMutableString string];
-//	for (int i=0; i<sizeof cHMAC; i++) {
-//		NSLog(@"MD5-UTF16:[%@]", result);
-//		[result appendFormat:@"%c", cHMAC[i]];
-//	}
-//	
+	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
+	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
+	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
+	CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+	
+	NSMutableString *result = [NSMutableString string];
+	for (int i=0; i<sizeof cHMAC; i++) {
+		NSLog(@"MD5-UTF16:[%@]", result);
+		[result appendFormat:@"%c", cHMAC[i]];
+	}
+//
 //	NSLog(@"ORG:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
 //	NSLog(@"MD5-ASCII:[%@]", result);
 //	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
