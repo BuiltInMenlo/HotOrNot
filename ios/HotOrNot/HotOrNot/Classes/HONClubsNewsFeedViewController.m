@@ -33,6 +33,7 @@
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
@@ -188,13 +189,14 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
+	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_news", nil)];
-	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[headerView addButton:_activityHeaderView];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
@@ -207,15 +209,13 @@ static NSString * const kCamera = @"camera";
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-	
-	[self _retrieveTimeline];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 81.0, _tableView.contentInset.right)];
+	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
 	_tabBannerView = [[HONTabBannerView alloc] init];
 	_tabBannerView.delegate = self;
 	[self.view addSubview:_tabBannerView];
@@ -226,6 +226,9 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
+	[_activityHeaderView updateActivityBadge];
+	
+	[self _retrieveTimeline];
 }
 
 
@@ -259,10 +262,12 @@ static NSString * const kCamera = @"camera";
 #pragma mark - Notifications
 - (void)_selectedNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedNewsTab <|::");
+	[_activityHeaderView updateActivityBadge];
 }
 
 - (void)_refreshNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshNewsTab <|::");
+	[_activityHeaderView updateActivityBadge];
 	[self _goRefresh];
 }
 

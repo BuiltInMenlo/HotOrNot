@@ -25,6 +25,7 @@
 
 @interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONUserToggleViewCellDelegate>
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
+@property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
 @end
 
@@ -72,8 +73,9 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	[_headerView setTitle:NSLocalizedString(@"header_friends", nil)];  //@"Friends"];
-	[_headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[_headerView addButton:_activityHeaderView];
 	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -88,7 +90,7 @@ static NSString * const kCamera = @"camera";
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	UIEdgeInsets edgeInsets = UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 81.0, _tableView.contentInset.right);
+	UIEdgeInsets edgeInsets = UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right);
 	[_tableView setContentInset:edgeInsets];
 	
 	_tabBannerView = [[HONTabBannerView alloc] init];
@@ -111,11 +113,7 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 	NSLog(@"friendsTab_total:[%d]", [HONAppDelegate totalForCounter:@"friendsTab"]);
-	
-#if __FORCE_SUGGEST__ == 1
-	if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] != 0)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTIONS_OVERLAY" object:nil];
-#endif
+	[_activityHeaderView updateActivityBadge];
 }
 
 
@@ -159,10 +157,13 @@ static NSString * const kCamera = @"camera";
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedContactsTab <|::");
+	[_activityHeaderView updateActivityBadge];
 }
 
 - (void)_refreshContactsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshContactsTab <|::");
+	
+	[_activityHeaderView updateActivityBadge];
 	
 	if ([_cells count] > 0)
 		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
@@ -201,10 +202,9 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO {
-	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%@]", clubVO.clubName);
+	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
 	
 	_selectedClubVO = clubVO;
-	_selectedClubVO.clubName = @"19.54.27";
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
 													   delegate:self

@@ -172,6 +172,11 @@
 	
 	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
 		for (NSDictionary *dict in result) {
 			//NSLog(@"SEARCH USER:[%@]", dict);
 			BOOL isDuplicate = NO;
@@ -192,22 +197,19 @@
 			}
 		}
 		
-			if ([_searchUsers count] == 0) {
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-				
-			} else {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
 		
-		if ([_searchUsers count] > 0) {
+		if ([_searchUsers count] == 0) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:NSLocalizedString(@"hud_noResults", nil)
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else {
 			_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 			_tableView.separatorInset = UIEdgeInsetsZero;
 			

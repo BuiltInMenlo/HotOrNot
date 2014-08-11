@@ -77,13 +77,10 @@
 		KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 		[keychain setObject:@"YES" forKey:CFBridgingRelease(kSecAttrAccount)];
 		
-		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
+		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:NO];
 		
-//					[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Your %@ has been copied!", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"s Club"]]
-//												message:[NSString stringWithFormat:@"\nPaste this URL anywhere to have your friends join!"]											   delegate:nil
-//									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//									  otherButtonTitles:nil] show];
+//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@/%@", [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""], [[HONAppDelegate infoForUser] objectForKey:@"username"], [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""]];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CONTACTS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPLETED_FIRST_RUN" object:nil];
@@ -214,9 +211,7 @@
 	_pinTextField.text = @"0000";
 	_pin = _pinTextField.text;
 	
-	_pinCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
-	_pinCheckImageView.alpha = 1.0;
-	
+	_isPopping = YES;
 	[self _finishFirstRun];
 }
 

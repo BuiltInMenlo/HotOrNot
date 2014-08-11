@@ -31,6 +31,10 @@
 	
 	vo.coverImagePrefix = ([dictionary objectForKey:@"img"] != nil && [[dictionary objectForKey:@"img"] length] > 0) ? [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[dictionary objectForKey:@"img"]] : [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 	vo.coverImagePrefix = ([vo.coverImagePrefix rangeOfString:@"defaultClubCover"].location != NSNotFound) ? [[HONClubAssistant sharedInstance] defaultCoverImageURL] : vo.coverImagePrefix;
+	
+	NSMutableString *imgURL = [vo.coverImagePrefix mutableCopy];
+	[imgURL replaceOccurrencesOfString:@"http://d1fqnfrnudpaz6.cloudfront.net" withString:@"https://hotornot-challenges.s3.amazonaws.com" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [imgURL length])];
+	vo.coverImagePrefix = [imgURL copy];
 	vo.addedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"added"]];
 	vo.updatedDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"updated"]];
 	

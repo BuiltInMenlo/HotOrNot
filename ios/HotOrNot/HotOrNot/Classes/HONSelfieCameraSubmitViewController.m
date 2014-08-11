@@ -103,6 +103,7 @@
 		
 		for (HONUserClubVO *vo in _selectedClubs) {
 			[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+			NSLog(@"SUBMITTING:[%@]", _submitParams);
 			
 			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
 				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {

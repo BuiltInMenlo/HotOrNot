@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "createNewClub.png"
+      "filename" : "createClub_Active.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "createNewClub@2x.png"
+      "filename" : "createClub_Active@2x.png"
     }
   ],
   "info" : {

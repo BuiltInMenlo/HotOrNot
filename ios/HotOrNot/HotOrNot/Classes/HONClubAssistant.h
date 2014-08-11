@@ -28,6 +28,9 @@
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 - (NSArray *)suggestedClubs;
 
+- (void)copyUserSignupClubToClipboardWithAlert:(BOOL)showsAlert;
+- (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;
+
 - (HONUserClubVO *)suggestedAreaCodeClubVO;
 - (HONUserClubVO *)suggestedEmailClubVO:(NSArray *)domains;
 - (HONUserClubVO *)suggestedFamilyClubVO;

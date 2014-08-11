@@ -114,7 +114,7 @@
 "header_settings" = "Settings";
 "alert_noemotions_title" = "No Emotions selected!";
 "alert_noemotions_msg" = "You need to choose some emotions to make a status update.";
-"popup_clubcopied_title" = "%@ Club has been copied to your clipboard.";
+"popup_clubcopied_title" = "%@ has been copied to your clipboard.";
 "popup_clubcopied_msg" = "Paste this URL anywhere to have your friends join!";
 "email_error" = "Email Error";
 "email_errormsg" = "Cannot send email from this device!";
@@ -156,11 +156,11 @@
 "no_selectclub" = "No Club Selected!";
 "no_selectclub_msg" = "You have to choose at least one club to submit your photo into.";
 "try_again" = "Please try again or press the resend button";
-"invalid_msg" = "You cannot have / or ' in your club's name";
+"invalid_msg" = "You cannot have spaces or / or ' in your username";
 "invalid_user" = "Invalid username";
 "allow_access" = "Allow Access to your contacts?";
 "ok_access" = "We need your OK to access the address book.";
-"tap_join" = "I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@";
+"tap_join" = "Join my private club in @Selfieclub #selfieclub #appstore #googleplay\nhttp://joinselfie.club/%@/%@";
 "alert_create_it" = "Would you like to create it?";
 "club_notfound" = "Club Not Found!";
 "want_invite" = "Want to invite friends to %@?";

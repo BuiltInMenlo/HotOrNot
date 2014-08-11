@@ -48,7 +48,7 @@
 //		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 //		[self.contentView addSubview:_avatarImageView];
 		
-//		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"contactMask"]];
+//		[[HONImageBroker sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"contactMask"]];
 		
 //		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		_avatarButton.frame = _avatarImageView.frame;

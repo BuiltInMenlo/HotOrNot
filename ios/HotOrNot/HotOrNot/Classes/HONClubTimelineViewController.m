@@ -36,19 +36,25 @@
 
 @implementation HONClubTimelineViewController
 
+- (id)init {
+	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
+		
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
+	}
+	
+	return (self);
+}
+
 - (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
 	NSLog(@"%@ - initWithClub:[%d] atPhotoIndex:[%d]", [self description], clubVO.clubID, index);
-	if ((self = [super init])) {
+	if ((self = [self init])) {
 		_clubVO = clubVO;
 		_clubID = _clubVO.clubID;
 		_clubPhotoID = 0;
 		_index = index;
 		_clubPhotos = _clubVO.submissions;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
-		
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	}
 	
 	return (self);
@@ -56,17 +62,12 @@
 
 - (id)initWithClubID:(int)clubID atPhotoIndex:(int)index {
 	NSLog(@"%@ - initWithClubID:[%d] atPhotoIndex:[%d]", [self description], clubID, index);
-	if ((self = [super init])) {
+	if ((self = [self init])) {
 		_clubVO = nil;
 		_clubID = clubID;
 		_index = index;
 		_clubPhotoID = 0;
 		_clubPhotos = _clubVO.submissions;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
-		
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	}
 	
 	return (self);
@@ -74,17 +75,12 @@
 
 - (id)initWithClubID:(int)clubID withClubPhotoID:(int)photoID {
 	NSLog(@"%@ - initWithClubID:[%d] withClubPhotoID:[%d]", [self description], clubID, photoID);
-	if ((self = [super init])) {
+	if ((self = [self init])) {
 		_clubVO = nil;
 		_clubID = clubID;
 		_index = 0;
 		_clubPhotoID = photoID;
 		_clubPhotos = _clubVO.submissions;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
-		
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
 	}
 	
 	return (self);
@@ -93,7 +89,6 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
-	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
@@ -105,6 +100,8 @@
 	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:(_clubVO == nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : _clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
+		
+		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
 		
 		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
 		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
@@ -246,15 +243,16 @@
 
 #pragma mark - Navigation
 - (void)_goShare {
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]] ;
-    NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+    NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+//    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+    NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+    NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
+	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
 																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																							@"club"				: _clubVO.dictionary,
 																							@"mp_event"			: @"User Profile - Share",
 																							@"view_controller"	: self}];
 }

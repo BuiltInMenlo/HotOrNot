@@ -200,12 +200,14 @@ static HONAPICaller *sharedInstance = nil;
 		if (error != nil) {
 			SelfieclubJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
+
 			
 		} else {
 //			SelfieclubJSONLog(@"AFNetworking [-] %@ |[:]>> BOOT JSON [:]|>>\n%@", [[self class] description], result);
 			
-			if ([result isEqual:[NSNull null]])
+			if ([result isEqual:[NSNull null]]) {
 				[[HONAPICaller sharedInstance] showDataErrorHUD];
+			}
 			
 			else {
 				if (completion)
@@ -215,7 +217,16 @@ static HONAPICaller *sharedInstance = nil;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
-		[[HONAPICaller sharedInstance] showDataErrorHUD];
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+			_progressHUD.labelText = NSLocalizedString(@"alert_connectionError_t", @"Connection Error");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+
 	}];
 }
 

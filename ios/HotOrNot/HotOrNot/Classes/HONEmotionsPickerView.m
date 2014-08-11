@@ -8,7 +8,7 @@
 
 #import "HONEmotionsPickerView.h"
 #import "HONEmoticonPickerItemView.h"
-#import "HONEmotionPaginationView.h"
+#import "HONPaginationView.h"
 
 const CGSize kImageSpacingSize = {75.0f, 73.0f};
 
@@ -20,7 +20,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 //@property (nonatomic, strong) UIImageView *deleteButtonImageView;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 @property (nonatomic, strong) NSMutableArray *itemViews;
-@property (nonatomic, strong) HONEmotionPaginationView *paginationView;
+@property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic) int prevPage;
 @property (nonatomic) int totalPages;
 @end
@@ -104,7 +104,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 //									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 //									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 //									
-//									_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+//									_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
 //									[_paginationView updateToPage:0];
 //									[self addSubview:_paginationView];
 //									
@@ -117,7 +117,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 //						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 //						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
 //						
-//						_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+//						_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
 //						[_paginationView updateToPage:0];
 //						[self addSubview:_paginationView];
 //						
@@ -129,17 +129,16 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 			
 		
 		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
-		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeInviteBonus])
+		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree])
 			[_availableEmotions addObject:[HONEmotionVO emotionWithDictionary:dict]];
 		
 		_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
 		_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-//		_scrollView.contentSize = CGSizeMake((_totalPages - ((_totalPages - 2) * ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]))) * _scrollView.frame.size.width, _scrollView.frame.size.height);
 		
-		_paginationView = [[HONEmotionPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+		_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages usingDiameter:6.0 andPadding:8.0];
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
 		
@@ -217,8 +216,7 @@ static dispatch_queue_t sticker_request_operation_queue;
 		
 		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height) withEmotion:vo withDelay:cnt * 0.125];
 		emotionItemView.delegate = self;
-		emotionItemView.userInteractionEnabled = (cnt < 12 || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
-//		emotionItemView.alpha = (0.5 + (cnt < 12 || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) * 0.5));
+//		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];
 		

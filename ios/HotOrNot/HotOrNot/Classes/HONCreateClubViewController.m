@@ -90,7 +90,7 @@
 
 
 - (void)_submitClub {
-	[[HONClubAssistant sharedInstance] writePreClubWithTitle:_clubName andBlurb:_clubBlurb andCoverPrefixURL:_clubImagePrefix];
+	[[HONClubAssistant sharedInstance] writePreClubWithTitle:_clubName andBlurb:@"" andCoverPrefixURL:_clubImagePrefix];
 	[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initAsViewControllerPushed:YES] animated:YES];
 	
 //	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
@@ -216,7 +216,7 @@
 	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
 	[self.view addSubview:_clubCoverImageView];
 	
-	[[HONImageBroker sharedInstance] maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;
@@ -383,6 +383,8 @@
 	[self _uploadPhotos:processedImage];
 	
 	[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
+		if ([_clubName length] == 0)
+			[self _goClubName];
 	}];
 }
 

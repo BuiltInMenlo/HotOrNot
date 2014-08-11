@@ -105,6 +105,9 @@
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
+		
+		
+		
 		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
 		int badgeTotal = ABS([result count] - prevTotal);
 		
@@ -240,21 +243,6 @@
 	[alertView show];
 }
 
-- (void)_goShare {
-	
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]] ;
-    NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
-																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-																							@"mp_event"			: @"User Profile - Share",
-																							@"view_controller"	: self}];
-}
-
 - (void)_goFAQ {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyPolicyViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -290,7 +278,7 @@
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
-	[[HONImageBroker sharedInstance] maskImageView:avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
+	[[HONImageBroker sharedInstance] maskView:avatarImageView withMask:[UIImage imageNamed:@"thumbMask"]];
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		avatarImageView.image = image;

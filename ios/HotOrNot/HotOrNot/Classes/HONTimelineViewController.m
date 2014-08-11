@@ -231,9 +231,9 @@
 	
 	[HONAppDelegate incTotalForCounter:@"timeline"];
 	
-#if __FORCE_SUGGEST__ == 1
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-#endif
+//#if __FORCE_SUGGEST__ == 1
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+//#endif
 }
 
 - (void)viewWillAppear:(BOOL)animated {

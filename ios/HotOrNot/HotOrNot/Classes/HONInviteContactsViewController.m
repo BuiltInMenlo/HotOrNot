@@ -35,12 +35,11 @@
 		_isPushed = isPushed;
 		
 		NSDictionary *preClub = [[HONClubAssistant sharedInstance] fetchPreClub];
-		if ([preClub count] > 0) {
+		if (preClub != nil) {
 			NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 			[dict setValue:[preClub objectForKey:@"name"] forKey:@"name"];
 			[dict setValue:[preClub objectForKey:@"description"] forKey:@"description"];
 			[dict setValue:[preClub objectForKey:@"img"] forKey:@"img"];
-			
 			_userClubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 			_clubVO = _userClubVO;
 		
@@ -49,7 +48,8 @@
 			_clubVO = nil;
 		}
 		
-		NSLog(@"INVITECLUB:[%@]", _userClubVO.dictionary);
+		NSLog(@"INVITECLUB - _userClubVO:[%@]", _userClubVO.dictionary);
+		NSLog(@"INVITECLUB - _clubVO:[%@]", _clubVO.dictionary);
 	}
 	
 	return (self);
@@ -69,32 +69,13 @@
 
 #pragma mark - Data Calls
 - (void)_sendClubInvites {
-	if (_clubVO != nil) {
-		if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
-			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
-				_clubVO = [HONUserClubVO clubWithDictionary:result];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
-				
-				if ([_selectedInAppContacts count] > 0)
-					[self _sendInAppUserInvites];
-				
-				if ([_selectedNonAppContacts count] > 0)
-					[self _sendNonAppUserInvites];
-				
-				NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
-			}];
-		
-		} else {
-			if ([_selectedInAppContacts count] > 0)
-				[self _sendInAppUserInvites];
-			
-			if ([_selectedNonAppContacts count] > 0)
-				[self _sendNonAppUserInvites];
-			
-			NSLog(@"_sendClubInvites:[%d - %@]", _clubVO.clubID, _clubVO.clubName);
-		}
-	}
+	NSLog(@"_sendClubInvites:[%d - %@] -=- (%d)=-=(%d)", _clubVO.clubID, _clubVO.clubName, [_selectedInAppContacts count], [_selectedNonAppContacts count]);
+	
+	if ([_selectedInAppContacts count] > 0)
+		[self _sendInAppUserInvites];
+	
+	if ([_selectedNonAppContacts count] > 0)
+		[self _sendNonAppUserInvites];
 }
 
 - (void)_sendInAppUserInvites {
@@ -163,21 +144,28 @@
 }
 
 - (void)_goDone {
-	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
-		[self _sendClubInvites];
+	if (_clubVO == nil) {
+		NSLog(@"******* ERROR ******");
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+		}];
 	
-	else {
-		if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
-			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
-				_clubVO = [HONUserClubVO clubWithDictionary:result];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
-				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-				}];
-			}];
+	} else {
+		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
+			NSLog(@"******* EXISTING ******");
+			if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
+				[self _sendClubInvites];
 		
 		} else {
-			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			NSLog(@"******* CREATE ******");
+			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+				_clubVO = [HONUserClubVO clubWithDictionary:result];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
+				
+				if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
+					[self _sendClubInvites];
+				
+				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+				}];
 			}];
 		}
 	}

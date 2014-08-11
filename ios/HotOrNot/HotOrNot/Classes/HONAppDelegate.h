@@ -14,10 +14,8 @@
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
+#define __FORCE_NEW_USER__ 0
 #define __FORCE_REGISTER__ 0
-#define __FORCE_SUGGEST__ 0
-
-#define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
@@ -46,7 +44,7 @@ typedef NS_ENUM(NSInteger, HONPushType) {
 typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeInstagram = 0,
 	HONShareSheetActionTypeTwitter,
-	HONShareSheetActionTypeFacebook,
+//	HONShareSheetActionTypeFacebook,
 	HONShareSheetActionTypeSMS,
 	HONShareSheetActionTypeEmail,
 	HONShareSheetActionTypeClipboard

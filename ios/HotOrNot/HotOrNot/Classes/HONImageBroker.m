@@ -249,13 +249,13 @@ static HONImageBroker *sharedInstance = nil;
 	layer.transform = transform;
 }
 
-- (void)maskImageView:(UIImageView *)imageView withMask:(UIImage *)maskImage {
+- (void)maskView:(UIView *)view withMask:(UIImage *)maskImage {
 	CALayer *maskLayer = [CALayer layer];
 	maskLayer.contents = (id)[maskImage CGImage];
-	maskLayer.frame = CGRectMake(0.0, 0.0, imageView.frame.size.width, imageView.frame.size.height);
+	maskLayer.frame = CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height);
 	
-	imageView.layer.mask = maskLayer;
-	imageView.layer.masksToBounds = YES;
+	view.layer.mask = maskLayer;
+	view.layer.masksToBounds = YES;
 }
 
 - (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
