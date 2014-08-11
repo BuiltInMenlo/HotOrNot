@@ -71,7 +71,7 @@
 		[self.contentView addSubview:imageView];
 		
 		void (^avatarImageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			[[HONImageBroker sharedInstance] maskImageView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
+			[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"thumbMask"]];
 			imageView.image = image;
 			[_imageLoadingView stopAnimating];
 			[_imageLoadingView removeFromSuperview];
@@ -82,7 +82,7 @@
 			
 			imageView.frame = CGRectMake(7.0, 6.0, 64.0, 64.0);
 			imageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-			[[HONImageBroker sharedInstance] maskImageView:imageView withMask:[UIImage imageNamed:@"contactMask"]];
+			[[HONImageBroker sharedInstance] maskView:imageView withMask:[UIImage imageNamed:@"contactMask"]];
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				imageView.alpha = 1.0;
 			} completion:^(BOOL finished) {
@@ -118,21 +118,33 @@
 		_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate];
 		[self.contentView addSubview:_timeLabel];
 		
+		NSMutableArray *prev = [NSMutableArray array];
+		
 		int cnt = 0;
 		for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_photoVO]) {
-			UIView *emotionView = [self _viewForEmotion:emotionVO];
-			emotionView.frame = CGRectOffset(emotionView.frame, 69.0 + (cnt * 30), 34.0);
-			[self.contentView addSubview:emotionView];
+			BOOL isFound = NO;
+			for (NSString *name in prev) {
+				if ([name isEqualToString:emotionVO.emotionName]) {
+					isFound = YES;
+					break;
+				}
+			}
 			
-			if (++cnt == 7) {
-				UILabel *elipsisLabel = [[UILabel alloc] initWithFrame:CGRectMake(289.0, 46.0, 15.0, 14.0)];
-				elipsisLabel.backgroundColor = [UIColor clearColor];
-				elipsisLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
-				elipsisLabel.textColor = [UIColor blackColor];
-				elipsisLabel.text = @"…";
-				[self.contentView addSubview:elipsisLabel];
+			if (!isFound) {
+				UIView *emotionView = [self _viewForEmotion:emotionVO];
+				emotionView.frame = CGRectOffset(emotionView.frame, 69.0 + (cnt * 30), 34.0);
+				[self.contentView addSubview:emotionView];
 				
-				break;
+				if (++cnt == 7) {
+					UILabel *elipsisLabel = [[UILabel alloc] initWithFrame:CGRectMake(289.0, 46.0, 15.0, 14.0)];
+					elipsisLabel.backgroundColor = [UIColor clearColor];
+					elipsisLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontBold] fontWithSize:14];
+					elipsisLabel.textColor = [UIColor blackColor];
+					elipsisLabel.text = @"…";
+					[self.contentView addSubview:elipsisLabel];
+					
+					break;
+				}
 			}
 		}
 		
@@ -241,16 +253,12 @@
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
 		
-		[UIView animateWithDuration:0.33 delay:0.0
-			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-		 
-						 animations:^(void) {
-							 imageView.alpha = 1.0;
-						 } completion:^(BOOL finished) {
-							 [imageLoadingView stopAnimating];
-							 [imageLoadingView removeFromSuperview];
-						 }];
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			imageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[imageLoadingView stopAnimating];
+			[imageLoadingView removeFromSuperview];
+		}];
 	};
 	
 	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]

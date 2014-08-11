@@ -231,9 +231,9 @@
 	
 	[HONAppDelegate incTotalForCounter:@"timeline"];
 	
-#if __FORCE_SUGGEST__ == 1
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
-#endif
+//#if __FORCE_SUGGEST__ == 1
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUGGESTED_FOLLOWING" object:nil];
+//#endif
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -638,7 +638,7 @@
 	if (alertView.tag == HONTimelineAlertTypeInvite) {
 		
 		if (buttonIndex == 0) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
 																message:@""
 															   delegate:self
 													  cancelButtonTitle:@"No"

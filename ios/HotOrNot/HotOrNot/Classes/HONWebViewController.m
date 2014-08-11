@@ -53,6 +53,8 @@
 
 #pragma mark - View Lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
+	
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
@@ -92,10 +94,14 @@
 
 #pragma mark - WebView Delegates
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+	NSLog(@"[*:*] webView:shouldStartLoadWithRequest:[%@]", request.URL.absoluteString);
+	
 	return (YES);
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
+	NSLog(@"[*:*] webViewDidStartLoad");
+	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -104,11 +110,13 @@
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+	NSLog(@"[*:*] webViewDidFinishLoad");
+	
 	[self _removeHUD];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-	NSLog(@"didFailLoadWithError:[%@]", error);
+	NSLog(@"[*:*] didFailLoadWithError:[%@]", error);
 	
 	if ([error code] == NSURLErrorCancelled) {
 		[self _removeHUD];

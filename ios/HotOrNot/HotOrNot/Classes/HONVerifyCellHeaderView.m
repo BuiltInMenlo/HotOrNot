@@ -32,7 +32,7 @@ const CGSize kVerifyAvatarSize = {60.0f, 60.0f};
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			avatarImageView.alpha = 0.0;
 			avatarImageView.image = image;
-			[[HONImageBroker sharedInstance] maskImageView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+			[[HONImageBroker sharedInstance] maskView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 			
 			[UIView animateWithDuration:0.25 animations:^(void) {
 				avatarImageView.alpha = 1.0;

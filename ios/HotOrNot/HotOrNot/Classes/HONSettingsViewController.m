@@ -33,15 +33,15 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_captions = @[ NSLocalizedString(@"settings_notification", nil),  //@"Notifications",
-					  NSLocalizedString(@"copy_url", nil), //@"Copy my club URL",
-                       NSLocalizedString(@"share",@"sharing URL"),
-					  NSLocalizedString(@"terms_service", nil), //@"Terms of use",
-					  NSLocalizedString(@"privacy_policy", nil), //@"Privacy policy",
-					  NSLocalizedString(@"settings_support", nil), //@"Support",
-					  NSLocalizedString(@"rate_app", nil), //@"Rate this app",
-					  NSLocalizedString(@"network_status", nil), //@"Network status",
-					   NSLocalizedString(@"settings_logout", nil)]; //@"Logout"];
+		_captions = @[ NSLocalizedString(@"settings_notification", @"Notifications"),
+					   NSLocalizedString(@"copy_url", @"Copy Club URL"),
+                       NSLocalizedString(@"share", @"Share club"),
+					   NSLocalizedString(@"terms_service", @"Terms of use"),
+					   NSLocalizedString(@"privacy_policy", @"Privacy policy"),
+					   NSLocalizedString(@"settings_support", @"Support"),
+					   NSLocalizedString(@"rate_app", @"Rate this app"),
+					   NSLocalizedString(@"network_status", @"Network status"),
+					   NSLocalizedString(@"settings_logout", @"Logout")];
         
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
@@ -81,7 +81,9 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)]; //@"Settings"];
@@ -201,8 +203,24 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (indexPath.row == HONSettingsCellTypeTermsOfService) {
+	if(indexPath.row == HONSettingsCellTypeCopyClub) {
+		[[HONClubAssistant sharedInstance] copyUserSignupClubToClipboardWithAlert:YES];
 		
+	} else if (indexPath.row == HONSettingsCellTypeShareSignupClub) {
+		NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+//		NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName]];
+		NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONClubAssistant sharedInstance] userSignupClub].ownerName, [[HONClubAssistant sharedInstance] userSignupClub].clubName];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
+																								@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
+																								@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																								@"club"				: [[HONClubAssistant sharedInstance] userSignupClub].dictionary,
+																								@"mp_event"			: @"User Profile - Share",
+																								@"view_controller"	: self}];
+		
+	} else if (indexPath.row == HONSettingsCellTypeTermsOfService) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTermsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
@@ -220,31 +238,18 @@
 			mailComposeViewController.mailComposeDelegate = self;
 			[mailComposeViewController.view setTag:HONSettingsMailComposerTypeReportAbuse];
 			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"support@getselfieclub.com"]];
-			[mailComposeViewController setSubject:@"Report Abuse / Bug"];
+			[mailComposeViewController setSubject: NSLocalizedString(@"report_abuse", @"Report Abuse / Bug")];
 			[mailComposeViewController setMessageBody:@"" isHTML:NO];
 			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", nil) //@"Email Error"
-										message:NSLocalizedString(@"email_errormsg", msg) //@"Cannot send email from this device!"
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"email_error", @"Email Error")
+										message:NSLocalizedString(@"email_errormsg", @"Cannot send email from this device!")
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
-	} else if(indexPath.row == HONSettingsCellTypeCopyClub) {
-		NSString *clubName = [[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@""];
-		NSString *clubDeeplink = [NSString stringWithFormat:@"%@/%@", [[HONAppDelegate infoForUser] objectForKey:@"username"], clubName];
-		
-		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-		pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: http://joinselfie.club/%@", clubName, clubDeeplink];
-		
-		[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_title", nil), clubName] //@"Your %@ has been copied to your device's clipboard!", clubName]
-									message:[NSString stringWithFormat:NSLocalizedString(@"popup_clubcopied_msg", nil) ] //@"\nPaste this URL anywhere to have your friends join!"]
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-		
 	} else if (indexPath.row == HONSettingsCellTypeRateThisApp) {
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 		
@@ -254,29 +259,15 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	} else if (indexPath.row == HONSettingsCellTypeLogout) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", nil) //@"Are you sure?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"are_you_sure", @"Are you sure?")
 															message:@""
 														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil) //@"Cancel"
-												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil]; //@"Log out", nil];
+												  cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+												  otherButtonTitles:NSLocalizedString(@"settings_logout", nil), nil];
 		
 		[alertView setTag:HONSettingsAlertTypeLogout];
 		[alertView show];
-		
-	} else if (indexPath.row == HONSettingsCellTypeShare){
-            NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-        NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-            NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-            NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]] ;
-            NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
-                                                                                                    @"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
-                                                                                                    @"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
-                                                                                                    @"mp_event"			: @"User Profile - Share",
-                                                                                                    @"view_controller"	: self}];
-
-    }
+	}
 }
 
 
@@ -313,7 +304,7 @@
 		mpEvent = @"Change Email";
 		
 	} else if (controller.view.tag == HONSettingsMailComposerTypeReportAbuse) {
-		mpEvent = @"Report Abuse / Bug";
+		mpEvent = NSLocalizedString(@"report_abuse", @"Report Abuse / Bug");
 	}
 	
 	NSString *mpAction = @"";
@@ -395,37 +386,15 @@
 	} else if (alertView.tag == HONSettingsAlertTypeLogout){
 		if (buttonIndex == 1){
 			
-			NSDictionary *userDefaults = @{@"is_deactivated"	: [@"" stringFromBOOL:NO],
-										   @"votes"				: @[],
-										   @"local_challenges"	: @[],
-										   @"upvotes"			: @[],
-										   @"activity_total"	: @0,
-										   @"activity_updated"	: @"0000-00-00 00:00:00"};
-			
-			for (NSString *key in userDefaults) {
-				if ([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil)
-					[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-			}
-			
-			for (NSString *key in userDefaults) {
-				if ([[NSUserDefaults standardUserDefaults] objectForKey:key] != nil)
-					[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:[userDefaults objectForKey:key] forKey:key];
-			}
-			
 			[HONAppDelegate resetTotals];
-			
-			
 			[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
+//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
-			
+//
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 			[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
 			}];

@@ -201,19 +201,11 @@
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-	
-	//[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 		[self _goRegistration];
-//	else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"passed_registration"] && ([_challenges count] == 0))<<
 	else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"passed_registration"] && ([_clubPhotos count] == 0))
 		[self _refreshChallengesFromServer];
-	
-#if __FORCE_SUGGEST__ == 1
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
-		[self _goSuggested];
-#endif
 }
 
 #pragma mark - Actions

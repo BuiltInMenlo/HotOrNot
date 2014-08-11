@@ -16,4 +16,5 @@ typedef NS_ENUM(NSInteger, HONInviteContactType) {
 
 @interface HONInviteContactsViewController : HONContactsViewController
 - (id)initWithClub:(HONUserClubVO *)userClub viewControllerPushed:(BOOL)isPushed;
+- (id)initAsViewControllerPushed:(BOOL)isPushed;
 @end

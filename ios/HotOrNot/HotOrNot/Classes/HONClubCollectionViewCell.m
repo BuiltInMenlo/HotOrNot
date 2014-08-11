@@ -18,6 +18,7 @@
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @property (nonatomic, strong) UIImageView *coverImageView;
 @property (nonatomic, strong) UIImageView *badgeImageView;
+@property (nonatomic, strong) UIView *coverOverlayView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @end
 
@@ -37,22 +38,38 @@
 	return (self);
 }
 
+
+#pragma mark - Public APIs
 - (void)setClubVO:(HONUserClubVO *)clubVO {
 	_clubVO = clubVO;
 	
 	_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 120.0, 138.0)] asLargeLoader:NO];
 	[self.contentView addSubview:_imageLoadingView];
 	
-	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 18.0, 100.0, 100.0)];
+	_coverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 16.0, 105.0, 105.0)];
 	_coverImageView.image = [UIImage imageNamed:@"createClubButton_nonActive"];
 	[self.contentView addSubview:_coverImageView];
 	
-	[[HONImageBroker sharedInstance] maskImageView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+	[[HONImageBroker sharedInstance] maskView:_coverImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 	
-	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 80, 30.0)];
+//	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"clubCoverMask"]];
+//	overlayImageView.frame = _coverOverlayView.frame;
+//	[self.contentView addSubview:overlayImageView];
+	
+//	_coverOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)];
+	_coverOverlayView = [[UIView alloc] initWithFrame:_coverImageView.frame];
+	_coverOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
+//	_coverOverlayView.clipsToBounds = YES;
+	_coverOverlayView.alpha = 0.0;
+	[self.contentView addSubview:_coverOverlayView];
+	
+	[[HONImageBroker sharedInstance] maskView:_coverOverlayView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+	
+	_badgeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 55.0, 80, 30.0)];
 	[self.contentView addSubview:_badgeImageView];
 	
-	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 128.0, 120.0, 20.0)];
+	
+	_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 126.0, 120.0, 20.0)];
 	_nameLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:15];
 	_nameLabel.textColor = [UIColor blackColor];
 	_nameLabel.textAlignment = NSTextAlignmentCenter;
@@ -98,6 +115,7 @@
 	
 	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
 		_badgeImageView.image = [UIImage imageNamed:@"lockedOverlay"];
+		_badgeImageView.hidden = YES;
 	}
 }
 
@@ -111,6 +129,9 @@
 	if (_coverImageView != nil)
 		_coverImageView = nil;
 	
+	if (_coverOverlayView != nil)
+		_coverOverlayView = nil;
+	
 	if (_nameLabel != nil)
 		_nameLabel = nil;
 	
@@ -119,36 +140,21 @@
 }
 
 
--(void)applyTintThenReset:(BOOL)reset {
-	[UIView beginAnimations:nil context:nil];
-	[UIView setAnimationDuration:0.125];
-	
-	if (reset) {
-		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(animationFinished:finished:context:)];
-	}
-	
-	[_coverImageView setBackgroundColor:[[HONColorAuthority sharedInstance] honGreyTextColor]];
-	[UIView commitAnimations];
+-(void)applyTouchOverlayAndReset:(BOOL)reset {
+	[UIView animateWithDuration:0.025 animations:^(void) {
+		_coverOverlayView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		if (reset)
+			[self performSelector:@selector(removeTouchOverlay) withObject:nil afterDelay:0.125];
+	}];
 }
 
-- (void)removeTint {
-	[UIView beginAnimations:nil context:nil];
-	[UIView setAnimationBeginsFromCurrentState:YES];
-	[UIView setAnimationDuration:0.125];
-	[_coverImageView setBackgroundColor:[UIColor clearColor]];
-	[UIView commitAnimations];
-}
-
-- (void)animationFinished:(NSString *)animationID finished:(BOOL)finished context:(void *)context {
-	[self removeTint];
+- (void)removeTouchOverlay {
+	_coverOverlayView.alpha = 0.0;
 }
 
 
 #pragma mark - Navigation
-
-
-
 
 
 @end

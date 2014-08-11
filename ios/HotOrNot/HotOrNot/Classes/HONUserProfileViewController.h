@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONViewController.h"
+
 typedef NS_ENUM(NSInteger, HONUserProfileType) {
 	HONUserProfileTypeUser,
 	HONUserProfileTypeOpponent
@@ -28,7 +30,7 @@ typedef NS_ENUM(NSInteger, HONUserProfileAlertType) {
 };
 
 
-@interface HONUserProfileViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONUserProfileViewController : HONViewController <UITableViewDataSource, UITableViewDelegate>
 - (id)initWithUserID:(int)userID;
 
 @property (nonatomic) int userID;

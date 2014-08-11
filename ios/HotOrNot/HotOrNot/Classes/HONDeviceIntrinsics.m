@@ -43,13 +43,6 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (NSString *)uniqueIdentifierWithoutSeperators:(BOOL)noDashes {
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-//	NSLog(@"//////////KEYCHAIN:[%@]", [keychain objectForKey:CFBridgingRelease(kSecValueData)]);	
-//	[[[UIAlertView alloc] initWithTitle:@"VENDOR ID"
-//								message:[keychain objectForKey:CFBridgingRelease(kSecValueData)]
-//							   delegate:nil
-//					  cancelButtonTitle:@"OK"
-//					  otherButtonTitles:nil] show];
-
 	
 	if ([[keychain objectForKey:CFBridgingRelease(kSecValueData)] length] == 0) {
 		CFStringRef uuid = CFUUIDCreateString(NULL, CFUUIDCreate(NULL));
@@ -59,10 +52,6 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 	
 	NSString *strApplicationUUID = [keychain objectForKey:CFBridgingRelease(kSecValueData)];
 	return ((noDashes) ? [strApplicationUUID stringByReplacingOccurrencesOfString:@"-" withString:@""] : strApplicationUUID);
-	
-	
-//	CFStringRef uuid = CFUUIDCreateString(NULL, CFUUIDCreate(NULL));
-//	NSString * uuidString = (NSString *)CFBridgingRelease(uuid);
 }
 
 - (NSString *)advertisingIdentifierWithoutSeperators:(BOOL)noDashes {
@@ -106,10 +95,11 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 
 - (void)writePhoneNumber:(NSString *)phoneNumber {
-	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
+//	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
 	
+	phoneNumber = [[phoneNumber componentsSeparatedByString:@"@"] firstObject];
 	[[NSUserDefaults standardUserDefaults] setObject:phoneNumber forKey:@"phone_number"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
@@ -119,9 +109,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 - (NSString *)phoneNumber {
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-//	[keychain objectForKey:CFBridgingRelease(kSecAttrService)];
-	
-	NSLog(@"DeviceInstrinsics phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
+//	NSLog(@"DeviceInstrinsics phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 }
 

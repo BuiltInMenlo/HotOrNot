@@ -45,18 +45,6 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 
@@ -99,8 +87,8 @@
 	
 	
 	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Club Selected!"
-															message:@"You have to choose at least one club to submit your photo into."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_selectclub", nil) //@"No Club Selected!"
+															message: NSLocalizedString(@"no_selectclub_msg", nil) //@"You have to choose at least one club to submit your photo into."
 														   delegate:self
 												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 												  otherButtonTitles:nil];
@@ -115,6 +103,7 @@
 		
 		for (HONUserClubVO *vo in _selectedClubs) {
 			[_submitParams setObject:[@"" stringFromInt:vo.clubID] forKey:@"club_id"];
+			NSLog(@"SUBMITTING:[%@]", _submitParams);
 			
 			[[HONAPICaller sharedInstance] submitClubPhotoWithDictionary:_submitParams completion:^(NSDictionary *result) {
 				if ([[result objectForKey:@"result"] isEqualToString:@"fail"]) {

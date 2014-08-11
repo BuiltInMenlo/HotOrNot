@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONEnterPINViewController : UIViewController <UITextFieldDelegate>
+#import "HONViewController.h"
 
+@interface HONEnterPINViewController : HONViewController <UITextFieldDelegate>
 @end

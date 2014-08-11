@@ -26,45 +26,69 @@
 @property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONUserClubVO *clubVO;
+@property (nonatomic) int clubID;
 @property (nonatomic, strong) NSArray *clubPhotos;
 @property (nonatomic) int index;
+@property (nonatomic) int clubPhotoID;
 @property (nonatomic) int imageQueueLocation;
 @end
 
 
 @implementation HONClubTimelineViewController
 
-- (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
+- (id)init {
 	if ((self = [super init])) {
-		_clubVO = clubVO;
-		_index = index;
-		_clubPhotos = _clubVO.submissions;
-		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshClubTimeline:) name:@"REFRESH_CLUB_TIMELINE" object:nil];
 		
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
+//		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
 	}
 	
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
+- (id)initWithClub:(HONUserClubVO *)clubVO atPhotoIndex:(int)index {
+	NSLog(@"%@ - initWithClub:[%d] atPhotoIndex:[%d]", [self description], clubVO.clubID, index);
+	if ((self = [self init])) {
+		_clubVO = clubVO;
+		_clubID = _clubVO.clubID;
+		_clubPhotoID = 0;
+		_index = index;
+		_clubPhotos = _clubVO.submissions;
+	}
 	
+	return (self);
 }
 
-- (BOOL)shouldAutorotate {
-	return (NO);
+- (id)initWithClubID:(int)clubID atPhotoIndex:(int)index {
+	NSLog(@"%@ - initWithClubID:[%d] atPhotoIndex:[%d]", [self description], clubID, index);
+	if ((self = [self init])) {
+		_clubVO = nil;
+		_clubID = clubID;
+		_index = index;
+		_clubPhotoID = 0;
+		_clubPhotos = _clubVO.submissions;
+	}
+	
+	return (self);
+}
+
+- (id)initWithClubID:(int)clubID withClubPhotoID:(int)photoID {
+	NSLog(@"%@ - initWithClubID:[%d] withClubPhotoID:[%d]", [self description], clubID, photoID);
+	if ((self = [self init])) {
+		_clubVO = nil;
+		_clubID = clubID;
+		_index = 0;
+		_clubPhotoID = photoID;
+		_clubPhotos = _clubVO.submissions;
+	}
+	
+	return (self);
 }
 
 
 #pragma mark - Data Calls
 - (void)_retrieveClub {
-	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
@@ -72,11 +96,16 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	
 	_clubPhotos = [NSArray array];
-	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubVO.clubID withOwnerID:_clubVO.ownerID completion:^(NSDictionary *result) {
+	[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:(_clubVO == nil) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : _clubVO.ownerID completion:^(NSDictionary *result) {
 		_clubVO = [HONUserClubVO clubWithDictionary:result];
 		_clubPhotos = _clubVO.submissions;
+		
+		NSLog(@"TIMELINE FOR CLUB:[%@]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n[%@]", _clubVO.dictionary, _clubVO.coverImagePrefix);
+		
+		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
+		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
+		[self _didFinishDataRefresh];
 		
 		_imageQueueLocation = 0;
 		if ([_clubPhotos count] > 0) {
@@ -97,10 +126,6 @@
 											fromURLs:imageQueue
 											 withTag:@"club"];
 		}
-		
-		_emptySetImageView.hidden = ([_clubPhotos count] > 0);
-		_tableView.contentSize = CGSizeMake(_tableView.frame.size.width, _tableView.frame.size.height * [_clubPhotos count]);
-		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -124,6 +149,9 @@
 }
 
 - (void)_goDataRefresh:(CKRefreshControl *)sender {
+	_index = 0;
+	_clubPhotoID = 0;
+	
 	[self _retrieveClub];
 }
 
@@ -135,6 +163,9 @@
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	if (_index != 0 || _clubPhotoID != 0)
+		[self _jumpToPhotoFromID];
 }
 
 
@@ -187,8 +218,13 @@
 	
 	NSLog(@"CONTENT SIZE:[%@]", NSStringFromCGSize(_tableView.contentSize));
 	
-	if (_clubVO == nil)
+	if (_clubVO == nil && _clubID > 0)
 		[self _retrieveClub];
+	
+	if (_index > 0) {
+		_index = MIN(_index, [_clubPhotos count]);
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+	}
 }
 
 - (void)viewDidLoad {
@@ -198,61 +234,47 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"HIDE"];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewWillAppear:animated];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewDidAppear:animated];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
-	[super viewDidDisappear:animated];
-}
-
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
-}
-
 
 #pragma mark - Navigation
 - (void)_goShare {
-	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]];
-    NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], [[HONAppDelegate infoForUser] objectForKey:@"username"],[[HONAppDelegate infoForUser] objectForKey:@"username"]] ;
-    NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate shareURL]]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, fbCaption, smsCaption, emailCaption],
+	NSString *igCaption = [NSString stringWithFormat:[HONAppDelegate instagramShareMessageForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+    NSString *twCaption = [NSString stringWithFormat:[HONAppDelegate twitterShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+//    NSString *fbCaption = [NSString stringWithFormat:[HONAppDelegate facebookShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+    NSString *smsCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+    NSString *emailCaption = [[[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"subject"] stringByAppendingString:@"|"] stringByAppendingString:[NSString stringWithFormat:[[HONAppDelegate emailShareCommentForIndex:1] objectForKey:@"body"], _clubVO.ownerName, _clubVO.clubName]];
+	NSString *clipboardCaption = [NSString stringWithFormat:[HONAppDelegate smsShareCommentForIndex:1], _clubVO.ownerName, _clubVO.clubName];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE_SHELF" object:@{@"caption"			: @[igCaption, twCaption, @"", smsCaption, emailCaption, clipboardCaption],
 																							@"image"			: ([[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [HONAppDelegate avatarImage] : [[HONImageBroker sharedInstance] shareTemplateImageForType:HONImageBrokerShareTemplateTypeDefault],
 																							@"url"				: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"],
+																							@"club"				: _clubVO.dictionary,
 																							@"mp_event"			: @"User Profile - Share",
 																							@"view_controller"	: self}];
 }
 - (void)_goBack {
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_TABS" object:@"SHOW"];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
+	_index = 0;
+	_clubPhotoID = 0;
+	
 	[self _retrieveClub];
 }
 
 
 #pragma mark - Notifications
 - (void)_refreshClubTimeline:(NSNotification *)notification {
+	_index = 0;
+	_clubPhotoID = 0;
+	
 	[self _retrieveClub];
 }
 
@@ -264,6 +286,23 @@
 	NSIndexPath *indexPath = [_tableView indexPathForCell:(UITableViewCell *)cell];
 	[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:indexPath.section + rows] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
+
+- (void)_jumpToPhotoFromID {
+	[_clubPhotos enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubPhotoVO *vo = (HONClubPhotoVO *)obj;
+		
+		if (vo.challengeID == _clubPhotoID) {
+			_index = idx;
+			*stop = YES;
+		}
+	}];
+	
+	_index = MIN(_index, [_clubPhotos count]);
+	
+	if (_index > 0)
+		[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:_index] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+}
+
 
 #pragma mark - ClubPhotoViewCell Delegates
 - (void)clubPhotoViewCell:(HONClubPhotoViewCell *)cell advancePhoto:(HONClubPhotoVO *)clubPhotoVO {

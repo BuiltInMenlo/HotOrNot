@@ -48,7 +48,7 @@
 //		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 0.0, 64.0, 64.0)];
 //		[self.contentView addSubview:_avatarImageView];
 		
-//		[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"contactMask"]];
+//		[[HONImageBroker sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"contactMask"]];
 		
 //		_avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		_avatarButton.frame = _avatarImageView.frame;
@@ -150,8 +150,8 @@
 	_arrowImageView.image = [UIImage imageNamed:(_trivialUserVO.isVerified) ? @"verifiedUserArrow" : @"unverifiedUserArrow"];
 	_arrowImageView.hidden = NO;
 	
-	_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-	_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
+	_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+	_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
 	_scoreLabel.hidden = NO;
 	
 	_nameLabel.frame = CGRectOffset(_nameLabel.frame, 0.0, -9.0);
@@ -203,8 +203,8 @@
 		_arrowImageView.hidden = NO;
 		
 		
-		_scoreLabel.textColor = (_trivialUserVO.abuseCount < 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
-		_scoreLabel.text = [@"" stringFromInt:-_trivialUserVO.abuseCount];
+		_scoreLabel.textColor = (_trivialUserVO.totalUpvotes > 0) ? [[HONColorAuthority sharedInstance] honGreenTextColor] : [[HONColorAuthority sharedInstance] honGreyTextColor];
+		_scoreLabel.text = [@"" stringFromInt:_trivialUserVO.totalUpvotes];
 		_scoreLabel.hidden = NO;
 		
 		if (_trivialUserVO.isVerified) {

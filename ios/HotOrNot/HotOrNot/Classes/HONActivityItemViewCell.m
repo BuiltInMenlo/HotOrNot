@@ -48,7 +48,7 @@
 	_avatarImageView.userInteractionEnabled = YES;
 	[imageHolderView addSubview:_avatarImageView];
 	
-	[[HONImageBroker sharedInstance] maskImageView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskView:_avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		_avatarImageView.image = image;
@@ -63,11 +63,11 @@
 	
 	void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
-		_avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
+		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
 	};
 	
 	if ([_activityItemVO.avatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
-		_avatarImageView.image = [UIImage imageNamed:@"activityAvatar"];
+		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
 		[imageLoadingView stopAnimating];
 		[imageLoadingView removeFromSuperview];
 	}
@@ -76,14 +76,14 @@
 		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																  cachePolicy:kURLRequestCachePolicy
 															  timeoutInterval:[HONAppDelegate timeoutInterval]]
-								placeholderImage:[UIImage imageNamed:@"activityAvatar"]
+								placeholderImage:[UIImage imageNamed:@"activityAvatarPlaceholder"]
 										 success:successBlock
 										 failure:failureBlock];
 	}
 	
 	
 	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	avatarButton.frame = _avatarImageView.frame;
+	avatarButton.frame = imageHolderView.frame;
 	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:avatarButton];
 	
@@ -126,8 +126,10 @@
 
 #pragma mark - Navigation {
 - (void)_goProfile {
-	if ([self.delegate respondsToSelector:@selector(activityItemViewCell:showProfileForUser:)])
-		[self.delegate activityItemViewCell:self showProfileForUser:[HONTrivialUserVO userFromActivityItemVO:_activityItemVO]];
+	if (_activityItemVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		if ([self.delegate respondsToSelector:@selector(activityItemViewCell:showProfileForUser:)])
+			[self.delegate activityItemViewCell:self showProfileForUser:[HONTrivialUserVO userFromActivityItemVO:_activityItemVO]];
+	}
 }
 
 
