@@ -76,7 +76,7 @@
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
 
 "alert_lockedClub_t" = "Clube bloqueado!";
-"alert_lockedClub_m" = "You must invite at least %d friends to join %@";
+"alert_lockedClub_m" = "Você deve convidar no mínimo %d amigos para participar do clube dos óculos escuros";
 "alert_register_m" = "Volte para registrar-se no Selfieclub";
 "title_copyURL" = " - copie sua url";
 "title_joinNow" = " - Entre Agora!";
@@ -169,4 +169,5 @@
 
 
 
-
+"club_notfound" = "Clube não encontrado!";
+"want_invite" = "
