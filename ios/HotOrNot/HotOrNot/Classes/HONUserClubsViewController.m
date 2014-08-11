@@ -964,7 +964,7 @@ static NSString * const kCamera = @"camera";
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																	message:NSLocalizedString(@"want_invite", nil)
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
@@ -978,7 +978,7 @@ static NSString * const kCamera = @"camera";
 			[self _joinClub:_selectedClubVO];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:NSLocalizedString(@"want_invite", nil)
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];

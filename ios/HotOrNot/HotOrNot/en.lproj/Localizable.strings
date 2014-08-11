@@ -136,8 +136,8 @@
 "not_now" = "Not Now";
 
 "cannot_send" = "Cannot send SMS from this device!";
-"Want to invite friends to %@?";
-"Club Not Found!";
+"want_invite" = "Want to invite friends to %@?";
+"club_notfound" = "Club Not Found!";
 "Would you like to create it?";
 "I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@";
 "We need your OK to access the address book.";

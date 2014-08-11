@@ -6,6 +6,7 @@
  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
  */
 
+"club_notfound" = "Club Not Found!";
 
 //"hud_connectionError" = "No connection found!";
 "hud_loadError" = "Problema no Carregamento dos Dados";

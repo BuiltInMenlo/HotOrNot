@@ -6,6 +6,7 @@
  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
  */
 
+"club_notfound" = "クラブが見つかりません!";
 
 //"hud_connectionError" = "No connection found!";
 "hud_loadError" = "データの読み込みに問題があります";

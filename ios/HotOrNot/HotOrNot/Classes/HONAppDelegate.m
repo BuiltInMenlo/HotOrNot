@@ -1045,7 +1045,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							
 							} else {
 								_clubName = clubname;
-								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Club Not Found!"
+								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"club_notfound", nil)
 																					message:@"Would you like to create it?"
 																				   delegate:self
 																		  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
@@ -1056,7 +1056,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						}];
 					
 					} else {
-						[[[UIAlertView alloc] initWithTitle:@"Username Not Found!"
+						[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"hud_usernameNotFound", nil)
 													message:@""
 												   delegate:nil
 										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -1653,7 +1653,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																	message:NSLocalizedString(@"want_invite", nil)
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles: NSLocalizedString(@"not_now", nil), nil];
@@ -1667,7 +1667,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:NSLocalizedString(@"want_invite", nil)
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
@@ -1722,7 +1722,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_instagramError_t", nil)
 											message:@"This device isn't allowed or doesn't recognize Instagram!"
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
