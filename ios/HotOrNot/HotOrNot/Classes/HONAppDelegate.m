@@ -226,10 +226,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
     
 }
-+ (NSString *)bannerURL {
-    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_url"]);
-
-}
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
 	NSString *key = @"";
@@ -468,8 +464,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_url"] forKey:@"banner_url"];
-
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
@@ -727,8 +721,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
 	
-	
-	
 //	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
 //	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
 //	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
@@ -739,7 +731,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 //		NSLog(@"MD5-UTF16:[%@]", result);
 //		[result appendFormat:@"%c", cHMAC[i]];
 //	}
-//	
+//
 //	NSLog(@"ORG:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
 //	NSLog(@"MD5-ASCII:[%@]", result);
 //	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);

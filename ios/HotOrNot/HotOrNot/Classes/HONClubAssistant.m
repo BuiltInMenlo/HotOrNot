@@ -46,24 +46,23 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSString *)defaultCoverImageURL {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"club_cover"]);
-//	return ([[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] objectAtIndex:arc4random() % [[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] count]]);
 }
 
 - (NSString *)defaultClubPhotoURL {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_imgs"] objectForKey:@"club_photo"]);
 }
 
-- (NSArray *)defaultCoverImagePrefixes {
+- (NSArray *)clubCoverPhotoAlbumPrefixes {
 	return (@[[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-001"],
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-002"],
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-003"],
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-004"],
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-005"],
-			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"]]);
-}
-
-- (NSArray *)clubCoverPhotoAlbumPrefixes {
-	return ([[HONClubAssistant sharedInstance] defaultCoverImagePrefixes]);
+			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-006"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-007"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-008"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-009"],
+			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-010"]]);
 }
 
 
@@ -74,8 +73,8 @@ static HONClubAssistant *sharedInstance = nil;
 	[dict setValue:NSLocalizedString(@"create_club", @"Add Club") forKey:@"name"];
 	[dict setValue:@"CREATE" forKey:@"club_type"];
 	[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
-	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
-	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
 	
 	return ([dict copy]);
 }
@@ -110,13 +109,14 @@ static HONClubAssistant *sharedInstance = nil;
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: @"2394",
 																								  @"username"	: @"Selfieclub",
 																								   @"avatar"	: @""}] mutableCopy];
-	
 	[dict setValue:@"100" forKey:@"id"];
-	[dict setValue:@"26MGMT" forKey:@"name"];
+	[dict setValue:@"Locked Club" forKey:@"name"];
 	[dict setValue:@"LOCKED" forKey:@"club_type"];
-	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
-	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
-//	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
+	[dict setValue:@"0000-00-00 00:00:00" forKey:@"added"];
+	[dict setValue:@"9999-99-99 99:99:99" forKey:@"updated"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"added"];
+//	[dict setValue:[[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]] forKey:@"updated"];
+	[dict setValue:[[[NSUserDefaults standardUserDefaults] objectForKey:@"suggested_covers"] objectForKey:@"locked"] forKey:@"img"];
 	[dict setValue:@"https://hotornot-challenges.s3.amazonaws.com/26mgmt" forKey:@"img"];
 	
 	return ([dict copy]);

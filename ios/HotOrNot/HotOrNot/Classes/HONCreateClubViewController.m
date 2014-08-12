@@ -40,6 +40,7 @@
 
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
+@property (nonatomic) int totaAlbumAssets;
 @end
 
 
@@ -53,6 +54,7 @@
 		_clubBlurb = @"";
 		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 		
+		_totaAlbumAssets = 0;
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];
 	}
@@ -459,21 +461,22 @@
 	
 	_isAlbumFound = NO;
 	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-		NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
+		NSLog(@"Album -- SEARCH:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
 		
 		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) { NSLog(@"Found Album"); // @"Selfieclub Club Covers"])
 			assetsGroup = group;
 			*stop = YES;
 			
+			_totaAlbumAssets = group.numberOfAssets;
 			weakSelf.isAlbumFound = YES;
 		}
 		
 	} failureBlock:^(NSError* error) {
-		NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+		NSLog(@"--ALBUM ENUMBERATE FAILURE--\nError: %@", [error localizedDescription]);
 	}];
 	
-	[self performSelector:@selector(_delayedAlbumEnumeration)
-			   withObject:nil
+	[self performSelector:@selector(_delayedAlbumEnumeration:)
+			   withObject:[assetsGroup valueForProperty:ALAssetsGroupPropertyName]
 			   afterDelay:0.50];
 }
 
@@ -481,103 +484,106 @@
 	__weak HONCreateClubViewController *weakSelf = self;
 	
 	[_library addAssetsGroupAlbumWithName:NSLocalizedString(@"club_covers", nil) resultBlock:^(ALAssetsGroup *group) {
-		NSLog(@"added album: %@", NSLocalizedString(@"club_covers", nil));
-		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		
-		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			NSLog(@"LOADED:[%@]", request.URL.absoluteString);
-			
-			imageView.image = image;
-			
-			__block ALAssetsGroup *assetsGroup;
-			[weakSelf.library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-				NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
-				
-				if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
-					NSLog(@"Found Album");
-					assetsGroup = group;
-					
-					if ([assetsGroup numberOfAssets] != [[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] count]) {
-						[weakSelf.library writeImageToSavedPhotosAlbum:[image CGImage] metadata:@{} completionBlock:^(NSURL* assetURL, NSError* error) {
-							if (error.code == 0) {
-								NSLog(@"saved image completed:\nurl: %@", assetURL);
-								
-								// try to get the asset
-								[weakSelf.library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-									// assign the photo to the album
-									[assetsGroup addAsset:asset];
-									NSLog(@"Added %@ to Selfie Club Covers", [[asset defaultRepresentation] filename]);
-									
-								} failureBlock:^(NSError* error) {
-									NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
-								}];
-								
-							} else
-								NSLog(@"saved image failed.\nerror code %i\n%@", error.code, [error localizedDescription]);
-						}];
-					}
-				}
-				
-			} failureBlock:^(NSError* error) {
-				NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
-			}];
-			
-			[weakSelf _addImageToAlbum:image];
-		};
-		
-		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			NSLog(@"ERROR:(%@)\n[%@]", request.URL.absoluteString, error.description);
-		};
-		
-		for (NSString *imgURL in [[HONClubAssistant sharedInstance] defaultCoverImagePrefixes]) {
-			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[imgURL stringByAppendingString:kSnapMediumSuffix]]
-															   cachePolicy:kURLRequestCachePolicy
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							 placeholderImage:nil
-									  success:imageSuccessBlock
-									  failure:imageFailureBlock];
-		}
+		NSLog(@"ALBUM -- ADDED: %@", NSLocalizedString(@"club_covers", nil));
+		[weakSelf _searchForAlbum];
 		
 	} failureBlock:^(NSError *error) {
-		NSLog(@"error adding album");
+		NSLog(@"--ALBUM ADD FAILURE--");
 	}];
 }
 
-- (void)_addImageToAlbum:(UIImage *)image {
+- (void)_addImageToAlbum:(UIImage *)image withIdentifier:(NSString *)identifier {
 	__block ALAssetsGroup *assetsGroup;
 	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
 		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
-			NSLog(@"Found Album");
+			NSLog(@"Found Album -- ADDING");
 			assetsGroup = group;
 			
-			[_library writeImageToSavedPhotosAlbum:[image CGImage] metadata:@{} completionBlock:^(NSURL* assetURL, NSError* error) {
-				if (error.code == 0) {
-					NSLog(@"saved image completed:\nurl: %@", assetURL);
-					
-					// try to get the asset
-					[_library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-						// assign the photo to the album
-						[assetsGroup addAsset:asset];
-						NSLog(@"Added %@ to Selfie Club Covers", [[asset defaultRepresentation] filename]);
-						
-					} failureBlock:^(NSError* error) {
-						NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
-					}];
-					
-				} else
-					NSLog(@"saved image failed.\nerror code %i\n%@", error.code, [error localizedDescription]);
+			__block NSMutableDictionary *metadata;
+			__block BOOL isFound = NO;
+			[group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop){
+				ALAssetRepresentation *representation = [result defaultRepresentation];
+				metadata = [[representation metadata] mutableCopy];
+				NSMutableDictionary *exif = [[metadata objectForKey:@"{Exif}"] mutableCopy];
+				[exif setValue:identifier forKey:@"ImageUniqueID"];
+				[metadata setValue:exif forKey:@"{Exif}"];
+				
+				
+//				NSLog(@"ID:[%@]=-\n[%@]", [[[[[[[result valueForProperty:ALAssetPropertyAssetURL] absoluteString] componentsSeparatedByString:@"/"] lastObject] componentsSeparatedByString:@"?"] lastObject] substringWithRange:NSMakeRange(3, 36)], metadata);
+				if ([[[metadata objectForKey:@"{Exif}"] objectForKey:@"ImageUniqueID"] isEqualToString:identifier])
+					metadata = [NSMutableDictionary dictionaryWithObject:@"0000" forKey:@"PCID"];//isFound = YES;
+				
+//				*stop = isFound;
 			}];
+			
+			NSLog(@"FOUND:[%@]", [@"" stringFromBOOL:isFound]);
+			if (!isFound) {
+				[_library writeImageToSavedPhotosAlbum:[image CGImage] metadata:[metadata copy] completionBlock:^(NSURL* assetURL, NSError* error) {
+					if (error.code == 0) {
+						NSLog(@"Save Image -- COMPLETE:[%@]", assetURL);
+						
+						[_library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+							[assetsGroup addAsset:asset];
+							NSLog(@"Image -- ADDED:[%@] =-=\n%@", asset.defaultRepresentation.filename, asset.defaultRepresentation.metadata);
+						} failureBlock:^(NSError* error) {
+							NSLog(@"--ASSET FAILURE--\nError: %@ ", [error localizedDescription]);
+						}];
+						
+					} else
+						NSLog(@"--SAVE FAILURE--\nerror code %i\n%@", error.code, [error localizedDescription]);
+				}];
+			}
 		}
 		
 	} failureBlock:^(NSError* error) {
-		NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
+		NSLog(@"--ALBUM ENUMBERATE FAILURE--\nError: %@", [error localizedDescription]);
 	}];
 }
 
-- (void)_delayedAlbumEnumeration {
+- (void)_delayedAlbumEnumeration:(id)sender {
 	if (!_isAlbumFound)
 		[self _createAlbum];
+	
+	else {
+		if (_totaAlbumAssets < [[[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes] count]) {
+			__weak HONCreateClubViewController *weakSelf = self;
+			
+			[[[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSString *prefix = (NSString *)obj;
+				
+				UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+					NSLog(@"LOADED:[%@] -- EXISTING ALBUM ADD", request.URL.absoluteString);
+					
+					const char *cKey  = [[NSBundle mainBundle].bundleIdentifier cStringUsingEncoding:NSASCIIStringEncoding];
+					const char *cData = [[[[request.URL.absoluteString componentsSeparatedByString:@"/"] lastObject] substringToIndex:6] cStringUsingEncoding:NSUTF8StringEncoding];
+					unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
+					CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+					
+					NSMutableString *md5 = [NSMutableString string];
+					for (int i=0; i<sizeof cHMAC; i++)
+						[md5 appendFormat:@"%02hhxc", cHMAC[i]];
+					
+					NSLog(@"MD5:[%@]", md5);
+					
+					imageView.image = image;
+					[weakSelf _addImageToAlbum:image withIdentifier:md5];
+				};
+				
+				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+					NSLog(@"--IMAGE LOAD ERROR[%@]--\n[%@]", request.URL.absoluteString, error.description);
+				};
+				
+				NSLog(@"Image -- REMOTE LOAD:[%@]", [prefix stringByAppendingString:kSnapMediumSuffix]);
+				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[prefix stringByAppendingString:kSnapMediumSuffix]]
+																   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+								 placeholderImage:nil
+										  success:imageSuccessBlock
+										  failure:imageFailureBlock];
+			}];
+		}
+	}
 }
 
 @end

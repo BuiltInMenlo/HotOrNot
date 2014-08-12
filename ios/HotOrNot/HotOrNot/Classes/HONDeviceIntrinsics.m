@@ -95,7 +95,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 
 
 - (void)writePhoneNumber:(NSString *)phoneNumber {
-//	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
+	NSLog(@"writePhoneNumber:[%@]", phoneNumber);
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil)
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"phone_number"];
 	
@@ -110,7 +110,7 @@ static HONDeviceIntrinsics *sharedInstance = nil;
 - (NSString *)phoneNumber {
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 //	NSLog(@"DeviceInstrinsics phoneNumber:[%@][%@]", [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"], [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
-	return (([[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] != nil) ? [[NSUserDefaults standardUserDefaults] objectForKey:@"phone_number"] : [keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
+	return ([keychain objectForKey:CFBridgingRelease(kSecAttrService)]);
 }
 
 - (NSString *)areaCodeFromPhoneNumber {
