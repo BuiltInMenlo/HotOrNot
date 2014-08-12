@@ -228,7 +228,7 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
 	[_activityHeaderView updateActivityBadge];
 	
-	[self _retrieveTimeline];
+//	[self _retrieveTimeline];
 }
 
 

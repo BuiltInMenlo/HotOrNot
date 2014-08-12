@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../../VolleyBackend/classes/BIM/Utils.php</string>
+	<string>../../VolleyBackend/classes/BIM/Model/User.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -76,30 +76,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>46</integer>
+				<integer>60</integer>
 				<key>line</key>
-				<integer>235</integer>
+				<integer>231</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>220</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>38</integer>
-				<key>line</key>
-				<integer>235</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>46</integer>
-				<key>line</key>
-				<integer>235</integer>
-			</dict>
+			<integer>207</integer>
 		</dict>
 		<key>../../VolleyBackend/classes/BIM/App/Votes.php</key>
 		<dict>
@@ -196,29 +180,29 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>36</integer>
+				<integer>40</integer>
 				<key>line</key>
-				<integer>362</integer>
+				<integer>59</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>336</integer>
+			<integer>43</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
 				<integer>28</integer>
 				<key>line</key>
-				<integer>362</integer>
+				<integer>59</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>36</integer>
+				<integer>49</integer>
 				<key>line</key>
-				<integer>362</integer>
+				<integer>59</integer>
 			</dict>
 		</dict>
 		<key>../../VolleyBackend/classes/BIM/Controller/Votes.php</key>
@@ -284,30 +268,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>44</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>1170</integer>
+				<integer>903</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>1155</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>36</integer>
-				<key>line</key>
-				<integer>1170</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>44</integer>
-				<key>line</key>
-				<integer>1170</integer>
-			</dict>
+			<integer>898</integer>
 		</dict>
 		<key>../../VolleyBackend/classes/BIM/Model/Volley.php</key>
 		<dict>
@@ -344,9 +312,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>5</integer>
+				<integer>51</integer>
 				<key>line</key>
-				<integer>112</integer>
+				<integer>121</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>

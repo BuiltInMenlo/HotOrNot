@@ -63,7 +63,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_username = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+		_username = @"";
+		_phone = @"";
 		_imageFilename = @"";
 		_isFirstAppearance = YES;
 		_selfieAttempts = 0;
@@ -75,10 +76,17 @@
 
 #pragma mark - Data Calls
 - (void)_checkUsername {
-	if ([[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone])
+	NSLog(@"_checkUsername -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+	NSLog(@"_checkUsername -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"_checkUsername -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+	
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
+		NSLog(@"\n\n******** USER/PHONE BY-PASS **********\n");
 		[self _finalizeUser];
+	}
 	
 	else {
+		NSLog(@"\n\n******** USER/PHONE API CHECK **********\n");
 		[[HONAPICaller sharedInstance] checkForAvailableUsername:_username andPhone:[_phone stringByAppendingString:@"@selfieclub.com"] completion:^(NSDictionary *result) {
 			HONRegisterCheckErrorType checkErrorType = (HONRegisterCheckErrorType)[[result objectForKey:@"result"] intValue];
 			
@@ -88,6 +96,7 @@
 					_progressHUD = nil;
 				}
 				
+				NSLog(@"\n\n******** PASSED API NAME/PHONE CHECK **********");
 				[self _finalizeUser];
 				
 			} else {
@@ -100,7 +109,7 @@
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
 				
 				if (checkErrorType == HONRegisterErrorTypeUsername) {
-					_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);  //@"Username taken!";
+					_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", @"Username taken!");
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
@@ -113,7 +122,7 @@
 					[_usernameTextField becomeFirstResponder];
 					
 				} else if (checkErrorType == HONRegisterCheckErrorTypePhone) {
-					_progressHUD.labelText = NSLocalizedString(@"phone_taken", nil);  //@"Phone # taken!";
+					_progressHUD.labelText = NSLocalizedString(@"phone_taken", @"Phone # taken!");
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
@@ -128,7 +137,7 @@
 					[_phoneTextField becomeFirstResponder];
 					
 				} else if (checkErrorType == (HONRegisterCheckErrorTypeUsername|HONRegisterCheckErrorTypePhone)) {
-					_progressHUD.labelText = NSLocalizedString(@"user_phone", nil); //@"Username & phone # taken!";
+					_progressHUD.labelText = NSLocalizedString(@"user_phone", @"Username & phone # taken!");
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
@@ -176,7 +185,12 @@
 	[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
 	
-	if ([[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
+	NSLog(@"_finalizeUser -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+	NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
+	
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [[[HONDeviceIntrinsics sharedInstance] phoneNumber] isEqualToString:_phone]) {
+		NSLog(@"\n\n******** BY-PASS FINALIZE W/ API **********");
 		[[HONAPICaller sharedInstance] updateUsernameForUser:_username completion:^(NSDictionary *result) {
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -201,6 +215,7 @@
 		}];
 	
 	} else {
+		NSLog(@"\n\n******** FINALIZE W/ API **********");
 		[[HONAPICaller sharedInstance] finalizeUserWithDictionary:@{@"user_id"	: [[HONAppDelegate infoForUser] objectForKey:@"id"],
 																	@"username"	: _username,
 																	@"phone"	: _phone,
@@ -408,6 +423,10 @@
 	termsButton.frame = CGRectMake(200.0, 238.0, 40.0, 20.0);
 	[termsButton addTarget:self action:@selector(_goTerms) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:termsButton];
+	
+	NSLog(@"loadView -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+	NSLog(@"loadView -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
+	NSLog(@"loadView -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
 }
 
 - (void)viewDidLoad {

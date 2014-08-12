@@ -10,7 +10,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __DEV_BUILD__ 1
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
@@ -20,7 +20,7 @@
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
-#define __APPSTORE_BUILD__ 0
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -160,7 +160,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)facebookShareCommentForIndex:(int)index;
 + (NSString *)smsShareCommentForIndex:(int)index;
 + (NSDictionary *)emailShareCommentForIndex:(int)index;
-+ (NSString *)bannerURL;
 + (NSArray *)subjectFormats;
 
 + (NSRange)rangeForImageQueue;
