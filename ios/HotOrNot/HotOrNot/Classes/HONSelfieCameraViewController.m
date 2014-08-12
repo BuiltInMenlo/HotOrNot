@@ -390,6 +390,15 @@
 
 
 #pragma mark - CameraPreviewView Delegates
+-(void) cameraPreviewViewShowActionSheet:(HONSelfieCameraPreviewView *)previewView{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Unlock More Stickers"
+                                                        message:@""
+                                                       delegate:self
+                                              cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+                                              otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+    
+    [alertView show];
+}
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"cameraPreviewViewBackToCamera");
 	

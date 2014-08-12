@@ -263,7 +263,9 @@
 //		}
 //	}
 }
-
+-(void) emotionsPickerViewShowActionSheet:(HONEmotionsPickerView *)emotionsPickerView {
+    [self.delegate cameraPreviewViewShowActionSheet:self];
+}
 
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {

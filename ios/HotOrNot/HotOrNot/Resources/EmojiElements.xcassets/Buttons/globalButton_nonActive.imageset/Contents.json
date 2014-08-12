@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "keyboardDeleteButton_Active.png"
+      "filename" : "keyboardDeleteButton_nonActive.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "deleteButton_Active@2x.png"
+      "filename" : "globalStoreButton_nonActive@2x.png"
     }
   ],
   "info" : {

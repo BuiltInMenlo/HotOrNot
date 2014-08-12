@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0717818419994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817A19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png */; };
+		0717818519994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817B19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png */; };
+		0717818619994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817C19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png */; };
+		0717818719994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */; };
+		0717818819994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817E19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x 2.png */; };
+		0717818919994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */; };
+		0717818A19994CFC006CCB50 /* deleteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */; };
+		0717818B19994CFC006CCB50 /* deleteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */; };
+		0717818C19994CFC006CCB50 /* globalStoreButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */; };
+		0717818D19994CFC006CCB50 /* globalStoreButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */; };
 		072F53831991633000738827 /* inviteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53851991633000738827 /* inviteButton_Active@2x.png */; };
 		072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F53881991633300738827 /* inviteButton_nonActive@2x.png */; };
 		072F5392199190B700738827 /* unlockBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 072F5394199190B700738827 /* unlockBanner.png */; };
@@ -350,6 +360,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0717817A19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Free@2x 2.png"; sourceTree = "<group>"; };
+		0717817B19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Free@2x 3.png"; sourceTree = "<group>"; };
+		0717817C19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Free@2x copy.png"; sourceTree = "<group>"; };
+		0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Free@2x.png"; sourceTree = "<group>"; };
+		0717817E19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Paid@2x 2.png"; sourceTree = "<group>"; };
+		0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraEmojiBoardBackground_Paid@2x.png"; sourceTree = "<group>"; };
+		0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "deleteButton_Active@2x.png"; sourceTree = "<group>"; };
+		0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "deleteButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "globalStoreButton_Active@2x.png"; sourceTree = "<group>"; };
+		0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "globalStoreButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		072F53841991633000738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
 		072F53871991633300738827 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		072F53891991673F00738827 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -2138,6 +2158,16 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0717817A19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png */,
+				0717817B19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png */,
+				0717817C19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png */,
+				0717817D19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x.png */,
+				0717817E19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x 2.png */,
+				0717817F19994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png */,
+				0717818019994CFC006CCB50 /* deleteButton_Active@2x.png */,
+				0717818119994CFC006CCB50 /* deleteButton_nonActive@2x.png */,
+				0717818219994CFC006CCB50 /* globalStoreButton_Active@2x.png */,
+				0717818319994CFC006CCB50 /* globalStoreButton_nonActive@2x.png */,
 				072F5394199190B700738827 /* unlockBanner.png */,
 				072F53851991633000738827 /* inviteButton_Active@2x.png */,
 				072F53881991633300738827 /* inviteButton_nonActive@2x.png */,
@@ -2604,6 +2634,7 @@
 				8F4E621D198ACD7800E8A171 /* inviteOverlay@2x.png in Resources */,
 				4C4328D018E3A9FA0035FF06 /* MPDismissKeyboard.png in Resources */,
 				4C4328CE18E3A9FA0035FF06 /* MPCheckmark.png in Resources */,
+				0717818619994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x copy.png in Resources */,
 				4CF203FB18F3198600EB57B0 /* VerifiyElements.xcassets in Resources */,
 				07B6E66D19884A6C00DA0805 /* cancelButtonBlue_nonActive@2x.png in Resources */,
 				4C0F3CF01988E65700703D09 /* tabMenu_clubsButton_nonActive@2x.png in Resources */,
@@ -2613,6 +2644,7 @@
 				07B6E69719884AC600DA0805 /* pinText@2x.png in Resources */,
 				07B6E643198849FC00DA0805 /* profileButton_Active@2x.png in Resources */,
 				4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */,
+				0717818A19994CFC006CCB50 /* deleteButton_Active@2x.png in Resources */,
 				4C0F3CED1988E65300703D09 /* tabMenu_clubsButton_Tapped@2x.png in Resources */,
 				07B6E6BB19884B0100DA0805 /* settingsButton_nonActive@2x.png in Resources */,
 				8F2B187C197856870085AC03 /* selfie_notification.caf in Resources */,
@@ -2636,10 +2668,12 @@
 				4C0F3CDE1988E64000703D09 /* tabMenu_newsButton_nonActive@2x.png in Resources */,
 				4C5FECB2190F4A820067F8A9 /* LoadingElements.xcassets in Resources */,
 				07B6E69119884ABC00DA0805 /* noPostYet@2x.png in Resources */,
+				0717818519994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x 3.png in Resources */,
 				07B6E6C719884B1200DA0805 /* submitButton_nonActive@2x.png in Resources */,
 				4C0F3CE71988E64C00703D09 /* tabMenu_friendsButton_nonActive@2x.png in Resources */,
 				575B3967198998C200E5D7D6 /* tabMenu_friendsButton_Tapped@2x.png in Resources */,
 				4C83FD82190F594D00CAEABB /* MessagingElements.xcassets in Resources */,
+				0717818C19994CFC006CCB50 /* globalStoreButton_Active@2x.png in Resources */,
 				8F4E6211198ACD6500E8A171 /* cancelbuttonwhite_active@2x.png in Resources */,
 				07B6E65519884A2400DA0805 /* backButton_nonActive@2x.png in Resources */,
 				4C83FD9E190F62FB00CAEABB /* CartoGothicStd-Book.otf in Resources */,
@@ -2657,6 +2691,7 @@
 				07B6E71A198851C300DA0805 /* modalSuggestionBackground@2x.png in Resources */,
 				07B6E6B519884AF300DA0805 /* settingsButton_Active@2x.png in Resources */,
 				4C4328EF18E3A9FA0035FF06 /* release_notes.md in Resources */,
+				0717818919994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x.png in Resources */,
 				07B25323198C177000F6D8B1 /* modalCloseButton@2x.png in Resources */,
 				4C83FD95190F62E800CAEABB /* push_02.caf in Resources */,
 				07B6E64F19884A1200DA0805 /* backButton_Active@2x.png in Resources */,
@@ -2666,6 +2701,7 @@
 				4C83FD9D190F62FB00CAEABB /* CartoGothicStd-BoldItalic.otf in Resources */,
 				4C0148CD198C7A930006BCBC /* emptyTimeline@2x.png in Resources */,
 				4C4328D518E3A9FA0035FF06 /* MPSurvey.storyboard in Resources */,
+				0717818819994CFC006CCB50 /* cameraEmojiBoardBackground_Paid@2x 2.png in Resources */,
 				07B6E6D919884B2A00DA0805 /* termsText@2x.png in Resources */,
 				4CED977118E42FFF00482813 /* NavElements.xcassets in Resources */,
 				07B6E72F1988549400DA0805 /* suggestionOverlay@2x.png in Resources */,
@@ -2677,6 +2713,7 @@
 				4CD22C9219633DD200E6AD0B /* PicoCandySDKResources.bundle in Resources */,
 				4C4328CA18E3A9FA0035FF06 /* MPArrowLeft.png in Resources */,
 				07B6E69D19884ACF00DA0805 /* replyTimelineButton_Active@2x.png in Resources */,
+				0717818419994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png in Resources */,
 				8F4E621A198ACD6F00E8A171 /* closeButtonBlue_nonActive@2x.png in Resources */,
 				07B6E72C1988549100DA0805 /* newInviteOverlay@2x.png in Resources */,
 				07B6E717198851BD00DA0805 /* modalUnlockBackground@2x.png in Resources */,
@@ -2686,6 +2723,7 @@
 				07B6E66119884A3700DA0805 /* backWhiteButton_nonActive@2x.png in Resources */,
 				4C0148BD198C77D10006BCBC /* smallRowOfferBackground@2x.png in Resources */,
 				4C83FDA0190F62FB00CAEABB /* HelveticaNeue.dfont in Resources */,
+				0717818719994CFC006CCB50 /* cameraEmojiBoardBackground_Free@2x.png in Resources */,
 				072F53861991633300738827 /* inviteButton_nonActive@2x.png in Resources */,
 				07B6E7011988515B00DA0805 /* inviteFriends_Active@2x.png in Resources */,
 				07B6E6D319884B2300DA0805 /* submitButtonLargeActive_nonActive@2x.png in Resources */,
@@ -2705,9 +2743,11 @@
 				4C83FD84190F5A5000CAEABB /* BackupS3Elements.xcassets in Resources */,
 				4C783A95198E108B007A4045 /* inset1BG@2x.png in Resources */,
 				4C4328CD18E3A9FA0035FF06 /* MPArrowRight@2x.png in Resources */,
+				0717818D19994CFC006CCB50 /* globalStoreButton_nonActive@2x.png in Resources */,
 				07B6E6F51988514B00DA0805 /* accessContacts@2x.png in Resources */,
 				4C1E9D97198AD8D900021156 /* InfoPlist.strings in Resources */,
 				4C4328CC18E3A9FA0035FF06 /* MPArrowRight.png in Resources */,
+				0717818B19994CFC006CCB50 /* deleteButton_nonActive@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

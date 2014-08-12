@@ -23,6 +23,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 @property (nonatomic, strong) HONPaginationView *paginationView;
 @property (nonatomic) int prevPage;
 @property (nonatomic) int totalPages;
+@property (nonatomic) BOOL isGlobal;
 @end
 
 @implementation HONEmotionsPickerView
@@ -58,11 +59,19 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0);
+		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 50.0, 160.0, 50.0);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
+        
+        UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		globalButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
+		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
+		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
+		[self addSubview:globalButton];
+
 		
 		
 //		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
@@ -179,7 +188,24 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	
 	[_selectedEmotions removeLastObject];
 }
+-(void)_goGlobal {
+    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+    [self.delegate emotionsPickerViewShowActionSheet:self];
+    _isGlobal = !_isGlobal;
+    if(_isGlobal){
+        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
+        for(UIView *view in _pageViews){
+            view.hidden = YES;
+        }
+    } else {
+        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+        for(UIView *view in _pageViews){
+            view.hidden = NO;
+        }
+    }
+    
 
+}
 
 #pragma mark - UI Presentation
 static dispatch_queue_t sticker_request_operation_queue;
