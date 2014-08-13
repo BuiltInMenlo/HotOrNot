@@ -133,7 +133,7 @@ const CGSize kFeedItemAvatarSize = {55.0f, 55.0f};
 		
 		void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 			avatarImageView.image = image;
-			[[HONImageBroker sharedInstance] maskImageView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+			[[HONImageBroker sharedInstance] maskView:avatarImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 		};
 		
 		void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {

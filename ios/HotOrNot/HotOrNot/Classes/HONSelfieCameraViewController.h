@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONViewController.h"
 #import "HONChallengeVO.h"
 #import "HONUserClubVO.h"
 #import "HONMessageVO.h"
@@ -27,7 +28,7 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 - (void)selfieCameraViewController:(HONSelfieCameraViewController *)viewController didDismissByCanceling:(BOOL)isCanceled;
 @end
 
-@interface HONSelfieCameraViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface HONSelfieCameraViewController : HONViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 - (id)initWithClub:(HONUserClubVO *)clubVO;
 
 

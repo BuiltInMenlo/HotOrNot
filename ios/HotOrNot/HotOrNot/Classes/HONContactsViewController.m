@@ -172,6 +172,11 @@
 	
 	_searchUsers = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] searchForUsersByUsername:username completion:^(NSArray *result) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
 		for (NSDictionary *dict in result) {
 			//NSLog(@"SEARCH USER:[%@]", dict);
 			BOOL isDuplicate = NO;
@@ -192,22 +197,19 @@
 			}
 		}
 		
-			if ([_searchUsers count] == 0) {
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-				
-			} else {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
 		
-		if ([_searchUsers count] > 0) {
+		if ([_searchUsers count] == 0) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:NSLocalizedString(@"hud_noResults", nil)
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			
+		} else {
 			_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 			_tableView.separatorInset = UIEdgeInsetsZero;
 			
@@ -298,6 +300,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
@@ -334,6 +337,7 @@
 }
 
 - (void)viewDidLoad {
+	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
 	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
@@ -354,7 +358,7 @@
 
 #pragma mark - UI Presentation
 - (void)_promptForAddressBookAccess {
-	[[[UIAlertView alloc] initWithTitle:@"We need your OK to access the address book."
+	[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"ok_access", nil) //@"We need your OK to access the address book."
 								message:NSLocalizedString(@"grant_access", nil) //@"Flip the switch in Settings -> Privacy -> Contacts -> Selfieclub to grant access."
 							   delegate:nil
 					  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -362,7 +366,7 @@
 }
 
 - (void)_promptForAddressBookPermission {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Allow Access to your contacts?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"allow_access", nil)  //@"Allow Access to your contacts?"
 														message:nil
 													   delegate:self
 											  cancelButtonTitle:NSLocalizedString(@"alert_no", nil)
@@ -605,20 +609,17 @@
 				NSString *charKey = (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.firstName : vo.lastName;
                 charKey = ([charKey length] == 0) ? (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) ? vo.lastName : vo.firstName : charKey;
                 charKey = [charKey substringToIndex:1];
-//				if ([vo.lastName length] > 0 || ([vo.firstName length] > 0 && [vo.lastName length] == 0)) {
-//					NSString *charKey = ([vo.lastName length] > 0) ? [vo.lastName substringToIndex:1] : [vo.firstName substringToIndex:1];
-					if (![_segmentedKeys containsObject:charKey]) {
-						[_segmentedKeys addObject:charKey];
-						
-						NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
-						[dict setValue:newSegment forKey:charKey];
-						
-					} else {
-						NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
-						[prevSegment addObject:vo];
-						[dict setValue:prevSegment forKey:charKey];
-					}
-//				}
+				if (![_segmentedKeys containsObject:charKey]) {
+					[_segmentedKeys addObject:charKey];
+					
+					NSMutableArray *newSegment = [[NSMutableArray alloc] initWithObjects:vo, nil];
+					[dict setValue:newSegment forKey:charKey];
+					
+				} else {
+					NSMutableArray *prevSegment = (NSMutableArray *)[dict valueForKey:charKey];
+					[prevSegment addObject:vo];
+					[dict setValue:prevSegment forKey:charKey];
+				}
 			}
 		}
 	}

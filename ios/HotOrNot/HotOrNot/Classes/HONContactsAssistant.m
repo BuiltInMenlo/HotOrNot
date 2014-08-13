@@ -57,14 +57,8 @@ static HONContactsAssistant *sharedInstance = nil;
 		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
 		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
 		
-		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : fName;
-		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : lName;
-		
-		// swap first and last names for sorting
-//		if ([lName length] == 0 && [fName length] > 0) {
-//			lName = fName;
-//			fName = @"";
-//		}
+		fName = ([fName isEqual:[NSNull null]] || [fName length] == 0) ? @"" : [fName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+		lName = ([lName isEqual:[NSNull null]] || [lName length] == 0) ? @"" : [lName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		
 		if ([fName length] == 0 && [lName length] == 0)
 			continue;
@@ -105,16 +99,9 @@ static HONContactsAssistant *sharedInstance = nil;
     [contactDicts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary *dict = (NSDictionary *)obj;
         
-        NSLog(@"CONTACT:[%d]=- (%@)(%@)", idx, [dict objectForKey:@"f_name"], [dict objectForKey:@"l_name"]);
+//        NSLog(@"CONTACT:[%d]=- (%@)(%@)", idx, [dict objectForKey:@"f_name"], [dict objectForKey:@"l_name"]);
         [contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
     }];
-	
-//	contactDicts = (isSorted) ? [[NSArray arrayWithArray:[contactDicts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"l_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]] mutableCopy] : contactDicts;
-//	for (NSDictionary *dict in contactDicts)
-//		[contactVOs addObject:[HONContactUserVO contactWithDictionary:dict]];
-
-//	NSLog(@"CONTACTS ^_^ %d", ABPersonGetSortOrdering());
-		
 	
 	return ([contactVOs copy]);
 }
@@ -151,7 +138,7 @@ static HONContactsAssistant *sharedInstance = nil;
 	}
 	
 	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold])
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus ignoringCache:YES completion:nil];
 }
 
 - (void)writeTrivialUser:(HONTrivialUserVO *)trivialUserVO toInvitedClub:(HONUserClubVO *)clubVO {

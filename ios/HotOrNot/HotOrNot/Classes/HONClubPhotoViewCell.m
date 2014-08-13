@@ -127,13 +127,28 @@
 	emoticonsScrollView.contentInset = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0);
 	[self.contentView addSubview:emoticonsScrollView];
 	
+	NSMutableArray *prev = [NSMutableArray array];
+	
 	int cnt = 0;
 	for (HONEmotionVO *emotionVO in [[HONClubAssistant sharedInstance] emotionsForClubPhoto:_clubPhotoVO]) {
-		UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
-		emotionView.frame = CGRectOffset(emotionView.frame, cnt * 90.0, 0.0);
-		[emoticonsScrollView addSubview:emotionView];
-		cnt++;
+		BOOL isFound = NO;
+		for (NSString *name in prev) {
+			if ([name isEqualToString:emotionVO.emotionName]) {
+				isFound = YES;
+				break;
+			}
+		}
+		
+		if (!isFound) {
+			UIView *emotionView = [self _viewForEmotion:emotionVO atIndex:cnt];
+			emotionView.frame = CGRectOffset(emotionView.frame, cnt * 90.0, 0.0);
+			[emoticonsScrollView addSubview:emotionView];
+			
+			[prev addObject:emotionVO.emotionName];
+			cnt++;
+		}
 	}
+	
 	
 	UIButton *likeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	likeButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 74.0, 149, 64.0);
@@ -202,9 +217,10 @@
 	imageView.alpha = 0.0;
 	[holderView addSubview:imageView];
 	
+//	NSLog(@"_viewForEmotion:(%d) -=- [%d]", index, _clubPhotoVO.clubID);
 	[self performSelector:@selector(_delayedImageLoad:) withObject:@{@"loading_view"	: imageLoadingView,
 																	 @"image_view"		: imageView,
-																	 @"emotion"			: emotionVO} afterDelay:0.25];
+																	 @"emotion"			: emotionVO} afterDelay:0.125 * index];
 	
 	return (holderView);
 }
@@ -217,23 +233,26 @@
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		imageView.image = image;
 		
-		[UIView animateWithDuration:0.25 delay:0.0
-			 usingSpringWithDamping:0.875 initialSpringVelocity:0.5
-							options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent
-		 
-						 animations:^(void) {
-							 imageView.alpha = 1.0;
-						 } completion:^(BOOL finished) {
-							 [imageLoadingView stopAnimating];
-						 }];
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			imageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			[imageLoadingView stopAnimating];
+			[imageLoadingView removeFromSuperview];
+		}];
 	};
 	
-	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.mediumImageURL]
+	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+		[imageLoadingView stopAnimating];
+		[imageLoadingView removeFromSuperview];
+	};
+	
+//	NSLog(@"mediumImageURL:[%@]", emotionVO.mediumImageURL);
+	[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:emotionVO.smallImageURL]
 													   cachePolicy:NSURLRequestReturnCacheDataElseLoad
 												   timeoutInterval:[HONAppDelegate timeoutInterval]]
 					 placeholderImage:nil
 							  success:imageSuccessBlock
-							  failure:nil];
+							  failure:imageFailureBlock];
 }
 
 

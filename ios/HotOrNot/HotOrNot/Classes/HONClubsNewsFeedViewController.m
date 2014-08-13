@@ -20,6 +20,7 @@
 #import "HONCreateClubViewController.h"
 #import "HONUserClubsViewController.h"
 #import "HONInviteContactsViewController.h"
+#import "HONTabBannerView.h"
 #import "HONClubNewsFeedViewCell.h"
 #import "HONTableView.h"
 #import "HONHeaderView.h"
@@ -28,13 +29,13 @@
 #import "HONTableHeaderView.h"
 
 
-@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate>
+@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONTabBannerViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
+@property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
-@property (nonatomic, strong) UIImageView *bannerImageView;
-
 @property (nonatomic, strong) NSMutableDictionary *clubIDs;
 @property (nonatomic, strong) NSMutableArray *ownedClubs;
 @property (nonatomic, strong) NSMutableArray *allClubs;
@@ -51,7 +52,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tareNewsTab:) name:@"TARE_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshNewsTab:) name:@"REFRESH_ALL_TABS" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteTotalUpdated:) name:@"INVITE_TOTAL_UPDATED" object:nil];
 		
 		_ownedClubs = [[NSMutableArray alloc] init];
 		_allClubs = [[NSMutableArray alloc] init];
@@ -139,8 +139,8 @@ static NSString * const kCamera = @"camera";
 		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]])
 			[_timelineItems addObject:[HONUserClubVO clubWithDictionary:dict]];
 		
-		//		_suggestedClubs = nil;
-		//		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
+//		_suggestedClubs = nil;
+//		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
 		
 		[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.125];
 	}];
@@ -150,6 +150,8 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] joinClub:userClubVO withMemberID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 	}];
 }
@@ -159,6 +161,8 @@ static NSString * const kCamera = @"camera";
 	[[HONAPICaller sharedInstance] createClubWithTitle:userClubVO.clubName withDescription:userClubVO.blurb withImagePrefix:userClubVO.coverImagePrefix completion:^(NSDictionary *result) {
 		_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 		[self _retrieveTimeline];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 	}];
 }
@@ -184,27 +188,15 @@ static NSString * const kCamera = @"camera";
 - (void)loadView {
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
-    if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
-        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - 100.0), 320.0, 50.0)];
-        _bannerImageView.userInteractionEnabled = YES;
-        [self.view addSubview:_bannerImageView];
-        
-		//        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		//            _bannerImageView.image = image;
-		//        };
-		//
-		//        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-		//
-		//        };
-    }
-	
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
+	_activityHeaderView = [[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_news", nil)];
-	[headerView addButton:[[HONActivityHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)]];
+	[headerView addButton:_activityHeaderView];
 	[headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge) asLightStyle:NO]];
 	[self.view addSubview:headerView];
 	
@@ -217,35 +209,16 @@ static NSString * const kCamera = @"camera";
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
-	
-	[self _retrieveTimeline];
 }
 
 - (void)viewDidLoad {
 	ViewControllerLog(@"[:|:] [%@ viewDidLoad] [:|:]", self.class);
 	[super viewDidLoad];
 	
-	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
-        _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([[UIScreen mainScreen] bounds].size.height - (kTabSize.height + 49.0)), 320.0, 50.0)];
-        _bannerImageView.userInteractionEnabled = YES;
-        [self.view addSubview:_bannerImageView];
-		
-        void (^bannerSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            _bannerImageView.image = image;
-        };
-        
-        void (^bannerFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			_bannerImageView.image = [UIImage imageNamed:@"unlockBanner"];
-        };
-        
-        NSLog(@"BANNER:[%@] (%@)", [[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]], [[NSLocale preferredLanguages] firstObject]);
-        [_bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate bannerURL] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
-																  cachePolicy:kURLRequestCachePolicy
-															  timeoutInterval:[HONAppDelegate timeoutInterval]]
-								placeholderImage:nil
-										 success:bannerSuccessBlock
-										 failure:bannerFailureBlock];
-    }
+	[_tableView setContentInset:UIEdgeInsetsMake(_tableView.contentInset.top, _tableView.contentInset.left, _tableView.contentInset.bottom + 65.0, _tableView.contentInset.right)];
+	_tabBannerView = [[HONTabBannerView alloc] init];
+	_tabBannerView.delegate = self;
+	[self.view addSubview:_tabBannerView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -253,13 +226,9 @@ static NSString * const kCamera = @"camera";
 	[super viewDidAppear:animated];
 	
 	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
-	if ([HONAppDelegate incTotalForCounter:@"newsTab"] == 1) {
-		//		[[[UIAlertView alloc] initWithTitle:@"News Tip"
-		//									message:@"The more clubs you join the more your feed fills up!"
-		//								   delegate:nil
-		//						  cancelButtonTitle:@"OK"
-		//						  otherButtonTitles:nil] show];
-	}
+	[_activityHeaderView updateActivityBadge];
+	
+//	[self _retrieveTimeline];
 }
 
 
@@ -281,12 +250,6 @@ static NSString * const kCamera = @"camera";
 	[self _retrieveTimeline];
 }
 
-- (void)_goConfirmClubs {
-	//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] init]];
-	//	[navigationController setNavigationBarHidden:YES];
-	//	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_goCreateClub {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Club News - Create Club"];
 	
@@ -297,23 +260,14 @@ static NSString * const kCamera = @"camera";
 
 
 #pragma mark - Notifications
--(void)_inviteTotalUpdated:(NSNotification *)notification {
-    NSLog(@"::|> _inviteTotalUpdated <|::");
-    
-    if (_bannerImageView != nil) {
-        if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]){
-            [_bannerImageView removeFromSuperview];
-            _bannerImageView = nil;
-        }
-    }
-}
-
 - (void)_selectedNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _selectedNewsTab <|::");
+	[_activityHeaderView updateActivityBadge];
 }
 
 - (void)_refreshNewsTab:(NSNotification *)notification {
 	NSLog(@"::|> _refreshNewsTab <|::");
+	[_activityHeaderView updateActivityBadge];
 	[self _goRefresh];
 }
 
@@ -324,6 +278,44 @@ static NSString * const kCamera = @"camera";
 		_tableView.pagingEnabled = NO;
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	}
+}
+
+
+#pragma mark - TabBannerView Delegates
+- (void)tabBannerView:(HONTabBannerView *)bannerView joinAreaCodeClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[[*:*]] tabBannerView:joinAreaCodeClub:[%@]", clubVO.clubName);
+	
+	_selectedClubVO = clubVO;
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+	[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
+	[alertView show];
+}
+
+- (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%@]", clubVO.clubName);
+	
+	_selectedClubVO = clubVO;
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
+													   delegate:self
+											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+	[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
+	[alertView show];
+}
+
+- (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
+	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	
+	[self presentViewController:navigationController animated:YES completion:^(void) {
+	}];
 }
 
 
@@ -344,7 +336,7 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell joinThreholdClub:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:joinThreholdClub:(%@ - %@)", userClubVO.clubName, userClubVO.blurb);
 	
-	_selectedClubVO = ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) ? userClubVO : [_ownedClubs firstObject];
+	_selectedClubVO = ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) ? userClubVO : [[HONClubAssistant sharedInstance] userSignupClub];
 	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold]) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_lockedClub_t", nil)
 															message:[NSString stringWithFormat:NSLocalizedString(@"alert_lockedClub_m", nil), [HONAppDelegate clubInvitesThreshold], _selectedClubVO.clubName] //@"Would you like to join the %@ Selfieclub?", _selectedClubVO.clubName]
@@ -408,8 +400,6 @@ static NSString * const kCamera = @"camera";
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"PLAY_OVERLAY_ANIMATION" object:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"likeOverlay"]]];
 	[[HONAPICaller sharedInstance] upvoteChallengeWithChallengeID:clubPhotoVO.challengeID forOpponent:clubPhotoVO completion:^(NSDictionary *result) {
-		
-		//	[[HONAPICaller sharedInstance] verifyUserWithUserID:((HONClubPhotoVO *)[userClubVO.submissions lastObject]).userID asLegit:YES completion:^(NSDictionary *result) {
 		[[HONAPICaller sharedInstance] retrieveUserByUserID:clubPhotoVO.userID completion:^(NSDictionary *result) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIKE_COUNT" object:[HONChallengeVO challengeWithDictionary:result]];
 		}];
@@ -447,7 +437,7 @@ static NSString * const kCamera = @"camera";
 		cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"createPostNewsFeedBG"]];
 		
 	} else if (indexPath.section == 1) {
-		//		cell.clubVO = (HONUserClubVO *)[_suggestedClubs objectAtIndex:indexPath.row];
+//		cell.clubVO = (HONUserClubVO *)[_suggestedClubs objectAtIndex:indexPath.row];
 		
 	} else {
 		cell.clubVO = (HONUserClubVO *)[_timelineItems objectAtIndex:indexPath.row];
@@ -492,9 +482,9 @@ static NSString * const kCamera = @"camera";
 	HONClubNewsFeedViewCell *cell = (HONClubNewsFeedViewCell *)[_tableView cellForRowAtIndexPath:indexPath];
 	
 	if (indexPath.section == 0) {
-		NSLog(@"OWNED:[%@]", [_ownedClubs firstObject]);
+		NSLog(@"OWNED:[%@]", [[HONClubAssistant sharedInstance] userSignupClub].dictionary);
 		
-		[[HONAPICaller sharedInstance] retrieveClubByClubID:((HONUserClubVO *)[_ownedClubs firstObject]).clubID withOwnerID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONAPICaller sharedInstance] retrieveClubByClubID:[[HONClubAssistant sharedInstance] userSignupClub].clubID withOwnerID:[[HONClubAssistant sharedInstance] userSignupClub].ownerID completion:^(NSDictionary *result) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result]]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
@@ -561,7 +551,7 @@ static NSString * const kCamera = @"camera";
 		if (buttonIndex == 0) {
 			[self _joinClub:_selectedClubVO];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat:NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];
@@ -580,7 +570,7 @@ static NSString * const kCamera = @"camera";
 		if (buttonIndex == 0) {
 			[self _createClubWithProtoVO:_selectedClubVO];
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat: NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"not_now", nil), nil];

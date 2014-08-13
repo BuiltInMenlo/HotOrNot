@@ -10,6 +10,7 @@
 #import "HONPaginationView.h"
 
 @interface HONPaginationView ()
+@property (nonatomic, retain) NSMutableArray *dotImageViews;
 @property (nonatomic, retain) NSMutableArray *offImageViews;
 @property (nonatomic, retain) NSMutableArray *onImageViews;
 @property (nonatomic) BOOL isAnimating;
@@ -17,16 +18,20 @@
 
 @implementation HONPaginationView
 @synthesize diameter = _diameter;
-@synthesize spacing = _spacing;
+@synthesize padding = _padding;
 
-- (id)initAtPosition:(CGPoint)pos withTotalPages:(int)totalPages {
-	if ((self = [super initWithFrame:CGRectMake(pos.x, pos.y, totalPages * (DOT_DIAMETER + DOT_SPACING), DOT_DIAMETER)])) {
-		self.frame = CGRectOffset(self.frame, (-self.frame.size.width * 0.5) + (DOT_SPACING * 0.5), -DOT_DIAMETER * 0.5);
+- (id)initAtPosition:(CGPoint)pos withTotalPages:(int)totalPages usingDiameter:(CGFloat)diameter andPadding:(CGFloat)padding {
+	if ((self = [super initWithFrame:CGRectMake(pos.x, pos.y, totalPages * (diameter + padding), diameter)])) {
+		self.frame = CGRectOffset(self.frame, (-self.frame.size.width * 0.5) + (padding * 0.5), -diameter * 0.5);
+		
+		_diameter = diameter;
+		_padding = padding;
 		
 		_isAnimating = NO;
 		_currentPage = -1;
 		_totalPages = totalPages;
 		
+		_dotImageViews = [NSMutableArray arrayWithCapacity:_totalPages];
 		_offImageViews = [NSMutableArray arrayWithCapacity:_totalPages];
 		_onImageViews = [NSMutableArray arrayWithCapacity:_totalPages];
 		
@@ -35,7 +40,7 @@
 		
 		for (int i=0; i<_totalPages; i++) {
 			UIImageView *offImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"paginationLED_off"]];
-			offImageView.frame = CGRectMake(i * (DOT_DIAMETER + DOT_SPACING), 0.0, DOT_DIAMETER, DOT_DIAMETER);
+			offImageView.frame = CGRectMake(i * (_diameter + _padding), 0.0, _diameter, _diameter);
 			[offImageView setTag:i];
 			[_offImageViews addObject:offImageView];
 			[holderView addSubview:offImageView];
@@ -46,6 +51,8 @@
 			[offImageView setTag:i];
 			[_onImageViews addObject:onImageView];
 			[holderView addSubview:onImageView];
+			
+			[_dotImageViews addObject:@[offImageView, onImageView]];
 		}
 	}
 	
@@ -56,10 +63,12 @@
 #pragma mark - Public APIs
 - (void)setDiameter:(CGFloat)diameter {
 	_diameter = diameter;
+	[self _updateLayout];
 }
 
-- (void)setSpacing:(CGFloat)spacing {
-	_spacing = spacing;
+- (void)setPadding:(CGFloat)padding {
+	_padding = padding;
+	[self _updateLayout];
 }
 
 - (void)updateToPage:(int)page {
@@ -80,6 +89,19 @@
 						 } completion:^(BOOL finished) {
 						 }];
 	}
+}
+
+
+#pragma mark - UI Presentation
+- (void)_updateLayout {
+	self.frame = CGRectOffset(self.frame, (-self.frame.size.width * 0.5) + (_padding * 0.5), -_diameter * 0.5);
+	
+	[_dotImageViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		NSArray *dots = (NSArray *)obj;
+		
+		for (UIImageView *dotImageView in dots)
+			dotImageView.frame = CGRectMake(idx * (_diameter + _padding), 0.0, _diameter, _diameter);
+	}];
 }
 
 

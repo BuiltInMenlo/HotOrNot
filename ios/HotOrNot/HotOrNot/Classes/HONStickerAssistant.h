@@ -18,11 +18,13 @@
 extern NSString * const kFreeStickerPak;
 extern NSString * const kInviteStickerPak;
 extern NSString * const kAvatarStickerPak;
+extern NSString * const kSelfieclubStickerPak;
 extern NSString * const kClubCoverStickerPak;
 extern NSString * const kPaidStickerPak;
 
 typedef NS_ENUM(NSInteger, HONStickerPakType) {
 	HONStickerPakTypeAll = 0,
+	HONStickerPakTypeSelfieclub,
 	HONStickerPakTypeAvatars,
 	HONStickerPakTypeClubCovers,
 	HONStickerPakTypeInviteBonus,
@@ -37,7 +39,7 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 - (void)registerStickerStore;
 - (NSDictionary *)fetchStickerStoreInfo;
 - (NSArray *)retrieveStickerStoreProducts;
-- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType completion:(void (^)(id result))completion;
+- (void)retrieveStickersWithPakType:(HONStickerPakType)stickerPakType ignoringCache:(BOOL)ignoreCache completion:(void (^)(id result))completion;
 - (void)purchaseStickerWithContentID:(NSString *)contentID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate;
 - (void)purchaseStickerPakWithContentGroupID:(NSString *)contentGroupID usingDelegate:(id<PCCandyStorePurchaseControllerDelegate>)delegate;
 
@@ -50,6 +52,6 @@ typedef NS_ENUM(NSInteger, HONStickerPakType) {
 - (PicoSticker *)stickerFromCandyBoxWithContentID:(NSString *)contentID;
 
 
-- (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType;
-- (void)retrieveContentsForContentGroup:(NSString *)contentGroupID completion:(void (^)(NSArray *contents))completion;
+- (NSArray *)fetchStickersForPakType:(HONStickerPakType)stickerPakType ;
+- (void)retrieveContentsForContentGroup:(NSString *)contentGroupID ignoringCache:(BOOL)ignoreCache completion:(void (^)(NSArray *contents))completion;
 @end

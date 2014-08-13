@@ -7,12 +7,8 @@
 //
 
 
-#define DOT_DIAMETER 6.0f
-#define DOT_SPACING 8.0f
-
 #define OFF_DURATION 0.0625f
 #define ON_DURATION 0.125f
-
 
 @interface HONPaginationView : UIView {
 	int _currentPage;
@@ -20,9 +16,8 @@
 }
 
 @property (nonatomic) CGFloat diameter;
-@property (nonatomic) CGFloat spacing;
+@property (nonatomic) CGFloat padding;
 
-- (id)initAtPosition:(CGPoint)pos withTotalPages:(int)totalPages;
+- (id)initAtPosition:(CGPoint)pos withTotalPages:(int)totalPages usingDiameter:(CGFloat)diameter andPadding:(CGFloat)padding;
 - (void)updateToPage:(int)page;
-
 @end

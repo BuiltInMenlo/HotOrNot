@@ -33,7 +33,8 @@ const CGFloat kMaxActivityWidth = 44.0;
 		
 		_activityBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityDot"]];
 		[_activityBGImageView setCenter:kOrthodoxActivityCenterPt];
-		_activityBGImageView.hidden = YES;
+//		_activityBGImageView.hidden = YES;
+		_activityBGImageView.alpha = 0.0;
 		[self addSubview:_activityBGImageView];
 		
 		_activityTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, kMaxActivityWidth, 44.0)];
@@ -59,20 +60,12 @@ const CGFloat kMaxActivityWidth = 44.0;
 			newTot += (int)([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:vo.sentDate] < 1800);
 		}];
 		
-		_activityBGImageView.hidden = (newTot == 0);
 		NSLog(@"updateActivityBadge -[%@]- newTot:[%d]", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]], newTot);
+		[UIView animateWithDuration:0.25 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
+			_activityBGImageView.alpha = (newTot > 0);
+		} completion:^(BOOL finished) {}];
 		
-//		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
-//		int badgeTotal = ABS([result count] - prevTotal);
-//		
-//		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
-//		[[NSUserDefaults standardUserDefaults] setObject:([result count] > 0) ? [[result lastObject] objectForKey:@"time"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] forKey:@"activity_updated"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
-//		
-//		
-//		_activityBGImageView.hidden = (badgeTotal <= 0);
-//		
-//		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [result count], badgeTotal);
+//		_activityBGImageView.hidden = (newTot == 0);
 	}];
 }
 

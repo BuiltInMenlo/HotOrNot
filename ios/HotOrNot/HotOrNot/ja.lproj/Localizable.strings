@@ -6,6 +6,7 @@
  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
  */
 
+"club_notfound" = "クラブが見つかりません!";
 
 //"hud_connectionError" = "No connection found!";
 "hud_loadError" = "データの読み込みに問題があります";
@@ -76,7 +77,7 @@
 "alert_noSelfie_m" = "You need a profile photo to proceed.";
 
 "alert_lockedClub_t" = "仲間だけのクラブ!";
-"alert_lockedClub_m" = "You must invite at least %d friends to join %@";
+"alert_lockedClub_m" = "サングラス・クラブに参加には最低%dの友人の招待が必要です";
 "alert_register_m" = "セルフィークラブの登録へ戻る";
 "title_copyURL" = " - URLをコピーしてください";
 "title_joinNow" = " - 今すぐ参加!";
@@ -144,4 +145,41 @@
 "lev_sure" = "本当に%@を辞めますか?";
 "flag_person" = "この人物はフラグが付けられレビューされます";
 "yes_flag" = "はい、ユーザーにフラグを付けます";
+"sent_invite" = " あなたに招待を送りました %@";
+"accept_invite" = " あなたの招待を受け入れました %@";
+"no_phone" = "電話番号がありません!";
+"phone_taken" = "電話番号を取得しました!";
+"user_phone" = "ユーザー名と電話番号を取得しました!";
+"no_user" = "ユーザー名がありません!";
+"no_user_msg" = "セルフィークラブを使うにはユーザー名の入力が必要です";
+"no_phone_msg" = "セルフィークラブを使うには電話番号が必要です。";
+"no_userphone" = "ユーザー名と電話番号がありません!";
+"no_userphone_msg" = "セルフィークラブを使うにはユーザー名と電話番号の入力が必要です";
+"no_selectclub" = "クラブが選択されていません!";
+"no_selectclub_msg" = "写真を送るには最低1つのクラブの選択が必要です。";
+"try_again" = "もう一度やるか再送ボタンを押してください";
+"invalid_msg" = "クラブ名に「/」や「'」は使えません";
+"invalid_user" = "無効なユーザー名";
+"allow_access" = "コンタクト先へのアクセスを許可しますか?";
+"ok_access" = "アドレス帳のアクセスにあなたの許可が必要です。";
+"tap_join" = "セルフィークラブ %@を作成しました! タップして参加: \nhttp://joinselfie.club/%@/%@";
+"alert_create_it" = "それを作成しますか?";
+"club_notfound" = "クラブが見つかりません!";
+"want_invite" = "%@に友人を招待しますか?";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

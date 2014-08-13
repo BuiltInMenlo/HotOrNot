@@ -31,7 +31,7 @@
 @property (nonatomic, strong) UITextField *clubNameTextField;
 @property (nonatomic, strong) UIButton *clubNameButton;
 @property (nonatomic, strong) UIImageView *clubNameCheckImageView;
-//@property (nonatomic, strong) NSString *clubBlurb;
+@property (nonatomic, strong) NSString *clubBlurb;
 //@property (nonatomic, strong) UITextField *blurbTextField;
 //@property (nonatomic, strong) UIButton *blurbButton;
 //@property (nonatomic, strong) UIImageView *blurbCheckImageView;
@@ -39,22 +39,22 @@
 @property (nonatomic) BOOL isAlbumFound;
 
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic, strong) NSString *imagePrefix;
 @property (nonatomic) BOOL isFirstAppearance;
+@property (nonatomic) int totaAlbumAssets;
 @end
 
 
 @implementation HONCreateClubViewController
-@synthesize delegate = _delegate;
 
 - (id)init {
 	if ((self = [super init])) {
 		_isFirstAppearance = YES;
 		
 		_clubName = @"";
-//		_clubBlurb = @"";
+		_clubBlurb = @"";
 		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 		
+		_totaAlbumAssets = 0;
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];
 	}
@@ -62,32 +62,19 @@
 	return (self);
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
 
 #pragma mark - Data Calls
 - (void)_uploadPhotos:(UIImage *)image {
 	NSString *filename = [NSString stringWithFormat:@"%@_%d", [[[HONDeviceIntrinsics sharedInstance] identifierForVendorWithoutSeperators:YES] lowercaseString], (int)[[NSDate date] timeIntervalSince1970]];
-	_imagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
+	_clubImagePrefix = [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], filename];
 	
-	NSLog(@"FILE PREFIX: %@", _imagePrefix);
+	NSLog(@"FILE PREFIX: %@", _clubImagePrefix);
 	
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
 	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 	_clubCoverImageView.image = thumbImage;
-	_clubImagePrefix = _imagePrefix;
 	
 	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
 	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
@@ -99,199 +86,108 @@
 			_progressHUD = nil;
 		}
 		
-		[self dismissViewControllerAnimated:YES completion:^(void) {
-		}];
+		[self _validateClubNameWithAlerts:NO];
 	}];
 }
 
 
 - (void)_submitClub {
-	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
-		if (result != nil) {
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
+	[[HONClubAssistant sharedInstance] writePreClubWithTitle:_clubName andBlurb:@"" andCoverPrefixURL:_clubImagePrefix];
+	[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initAsViewControllerPushed:YES] animated:YES];
+	
+//	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
+//		if (result != nil) {
+//			if (_progressHUD != nil) {
+//				[_progressHUD hide:YES];
+//				_progressHUD = nil;
+//			}
+//			
+//#if SC_ACCT_BUILD == 0
+//			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
+//				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
+//			
+//			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
+//#else
+//	[[[UIAlertView alloc] initWithTitle:@"WRITE THIS DOWN!"
+//										message:[@"Club ID = " stringByAppendingString:[result objectForKey:@"id"]]
+//									   delegate:nil
+//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//							  otherButtonTitles:nil] show];
+//			
+//			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
+//			}];
+//#endif
+//		} else {
+//			if (_progressHUD == nil)
+//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//			[_progressHUD setYOffset:-80.0];
+//			_progressHUD.minShowTime = kHUDTime;
+//			_progressHUD.mode = MBProgressHUDModeCustomView;
+//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
+//			_progressHUD.labelText = @"Error!";
+//			[_progressHUD show:NO];
+//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+//			_progressHUD = nil;
+//		}
+//	}];
+}
+
+
+#pragma mark - Data Manip
+- (void)_validateClubNameWithAlerts:(BOOL)showAlerts {
+	if ([_clubNameTextField isFirstResponder])
+		[_clubNameTextField resignFirstResponder];
+	
+//	if ([_blurbTextField isFirstResponder])
+//		[_blurbTextField resignFirstResponder];
+	
+	
+	[_clubNameButton setSelected:NO];
+//	[_blurbButton setSelected:NO];
+	
+	
+	if ([_clubName length] == 0) {
+		if (showAlerts) {
+			_clubNameCheckImageView.alpha = 1.0;
+			_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 			
-#if SC_ACCT_BUILD == 0
-			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
-				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
-			
-			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
-#else
-	[[[UIAlertView alloc] initWithTitle:@"WRITE THIS DOWN!"
-										message:[@"Club ID = " stringByAppendingString:[result objectForKey:@"id"]]
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_club", @"No Club Name!")
+										message:NSLocalizedString(@"no_club_msg", @"You need to enter a name for your club!")
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
-			
-			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
-			}];
-#endif
-		} else {
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			
-			[_progressHUD setYOffset:-80.0];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-			_progressHUD.labelText = @"Error!";
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-			_progressHUD = nil;
 		}
-	}];
-}
-
-
-#pragma mark - Device functions
-- (void)_searchForAlbum {
-	__weak HONCreateClubViewController *weakSelf = self;
-	__block ALAssetsGroup *assetsGroup;
-	
-	_isAlbumFound = NO;
-	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-		NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
+		[self _goClubName];
 		
-		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) { NSLog(@"Found Album"); // @"Selfieclub Club Covers"])
-			assetsGroup = group;
-			*stop = YES;
-			
-			weakSelf.isAlbumFound = YES;
-		}
-		
-	} failureBlock:^(NSError* error) {
-		NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
-	}];
-	
-	[self performSelector:@selector(_delayedAlbumEnumeration)
-			   withObject:nil
-			   afterDelay:0.50];
-}
-
-- (void)_createAlbum {
-	__weak HONCreateClubViewController *weakSelf = self;
-	
-	[_library addAssetsGroupAlbumWithName:NSLocalizedString(@"club_covers", nil) resultBlock:^(ALAssetsGroup *group) {
-		NSLog(@"added album: %@", NSLocalizedString(@"club_covers", nil));
-		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-		
-		void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-			NSLog(@"LOADED:[%@]", request.URL.absoluteString);
-			
-			imageView.image = image;
-			
-			__block ALAssetsGroup *assetsGroup;
-			[weakSelf.library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-				NSLog(@"Album:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
+	} else {
+		if (showAlerts) {
+			if ([_clubName rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/'"]].location != NSNotFound) {
+				_clubNameCheckImageView.alpha = 1.0;
+				_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
 				
-				if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
-					NSLog(@"Found Album");
-					assetsGroup = group;
-					
-					if ([assetsGroup numberOfAssets] != [[[HONClubAssistant sharedInstance] defaultCoverImagePrefixes] count]) {
-						[weakSelf.library writeImageToSavedPhotosAlbum:[image CGImage] metadata:@{} completionBlock:^(NSURL* assetURL, NSError* error) {
-							if (error.code == 0) {
-								NSLog(@"saved image completed:\nurl: %@", assetURL);
-								
-								// try to get the asset
-								[weakSelf.library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-									// assign the photo to the album
-									[assetsGroup addAsset:asset];
-									NSLog(@"Added %@ to Selfie Club Covers", [[asset defaultRepresentation] filename]);
-									
-								} failureBlock:^(NSError* error) {
-									NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
-								}];
-								
-							} else
-								NSLog(@"saved image failed.\nerror code %i\n%@", error.code, [error localizedDescription]);
-						}];
-					}
-				}
-				
-			} failureBlock:^(NSError* error) {
-				NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
-			}];
+				[[[UIAlertView alloc] initWithTitle:@"Invalid club name!"
+											message: NSLocalizedString(@"invalid_msg", @"You cannot have / or ' in your club's name")
+										   delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+								  otherButtonTitles:nil] show];
+				[self _goClubName];
 			
-			[weakSelf _addImageToAlbum:image];
-		};
-		
-		void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
-			NSLog(@"ERROR:(%@)\n[%@]", request.URL.absoluteString, error.description);
-		};
-		
-		for (NSString *imgURL in [[HONClubAssistant sharedInstance] defaultCoverImagePrefixes]) {
-			[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[imgURL stringByAppendingString:kSnapMediumSuffix]]
-															   cachePolicy:kURLRequestCachePolicy
-														   timeoutInterval:[HONAppDelegate timeoutInterval]]
-							 placeholderImage:nil
-									  success:imageSuccessBlock
-									  failure:imageFailureBlock];
-		}
-		
-	} failureBlock:^(NSError *error) {
-		NSLog(@"error adding album");
-	}];
-}
-
-- (void)_addImageToAlbum:(UIImage *)image {
-	__block ALAssetsGroup *assetsGroup;
-	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
-			NSLog(@"Found Album");
-			assetsGroup = group;
+			} else
+				[self _submitClub];
 			
-			[_library writeImageToSavedPhotosAlbum:[image CGImage] metadata:@{} completionBlock:^(NSURL* assetURL, NSError* error) {
-				if (error.code == 0) {
-					NSLog(@"saved image completed:\nurl: %@", assetURL);
-					
-					// try to get the asset
-					[_library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-						// assign the photo to the album
-						[assetsGroup addAsset:asset];
-						NSLog(@"Added %@ to Selfie Club Covers", [[asset defaultRepresentation] filename]);
-						
-					} failureBlock:^(NSError* error) {
-						NSLog(@"failed to retrieve image asset:\nError: %@ ", [error localizedDescription]);
-					}];
-					
-				} else
-					NSLog(@"saved image failed.\nerror code %i\n%@", error.code, [error localizedDescription]);
-			}];
-		}
-		
-	} failureBlock:^(NSError* error) {
-		NSLog(@"failed to enumerate albums:\nError: %@", [error localizedDescription]);
-	}];
-}
-
-- (void)_delayedAlbumEnumeration {
-	if (!_isAlbumFound)
-		[self _createAlbum];
-}
-
-- (void)_validateClubName {
-	if ([_clubName rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/'"]].location == NSNotFound)
-		[self _submitClub];
-	
-	else {
-		[[[UIAlertView alloc] initWithTitle:@"Invalid username"
-									message:@"You cannot have / or ' in your club's name"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
+		} else
+			[self _submitClub];
 	}
 }
 
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];//@"Add Club"];
@@ -308,7 +204,7 @@
 	nextButton.frame = CGRectMake(227.0, 1.0, 93.0, 44.0);
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goCamera) forControlEvents:UIControlEventTouchUpInside];
+	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addButton:nextButton];
 	
 	_clubNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -322,7 +218,7 @@
 	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
 	[self.view addSubview:_clubCoverImageView];
 	
-	[[HONImageBroker sharedInstance] maskImageView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;
@@ -385,6 +281,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewWillAppear:animated];
 	
 	[_clubNameTextField becomeFirstResponder];
@@ -398,38 +295,13 @@
 }
 
 - (void)_goNext {
-	if ([_clubNameTextField isFirstResponder])
-		[_clubNameTextField resignFirstResponder];
+	NSLog(@"_clubName:[%@] _clubImagePrefix:[%@]", _clubName, _clubImagePrefix);
 	
-//	if ([_blurbTextField isFirstResponder])
-//		[_blurbTextField resignFirstResponder];
+	if ([_clubName length] == 0)
+		[self _goCamera];
 	
-	
-	[_clubNameButton setSelected:NO];
-//	[_blurbButton setSelected:NO];
-	
-	if ([_clubName length] == 0) {
-		[_clubNameButton setSelected:YES];
-		[_clubNameTextField becomeFirstResponder];
-		
-		_clubNameCheckImageView.alpha = 1.0;
-		_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-		
-		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_club", nil) //@"No Club Name!"
-									message:NSLocalizedString(@"no_club_msg", nil)  //@"You need to enter a name for your club!"
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
-	
-	} else
-		[self _validateClubName];
-//		[self.navigationController pushViewController:[[HONUserClubInviteViewController alloc] initWithClub:nil] animated:YES];
-}
-
-
-- (void)_goClubName {
-	[_clubNameButton setSelected:YES];
-//	[_blurbButton setSelected:NO];
+	else
+		[self _validateClubNameWithAlerts:YES];
 }
 
 - (void)_goCamera {
@@ -457,8 +329,16 @@
 //	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
+
+- (void)_goClubName {
+	[_clubNameButton setSelected:YES];
+	[_clubNameTextField becomeFirstResponder];
+//	[_blurbButton setSelected:NO];
+}
+
 - (void)_goBlurb {
 //	[_blurbButton setSelected:YES];
+//	[__blurbTextField becomeFirstResponder];
 	[_clubNameButton setSelected:NO];
 }
 
@@ -468,8 +348,10 @@
 //	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
 	
 	if ([_clubNameTextField isFirstResponder]) {
-		_clubNameCheckImageView.alpha = 1.0;
+		_clubNameCheckImageView.alpha = (int)([_clubNameTextField.text length] > 1);
 		_clubNameCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
+		
+		_clubName = _clubNameTextField.text;
 	
 //	} else if ([_blurbTextField isFirstResponder]) {
 //		_blurbCheckImageView.alpha = 1.0;
@@ -501,13 +383,19 @@
 	
 	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	[self _uploadPhotos:processedImage];
-    [self performSelector:@selector(_goNext) withObject:nil afterDelay:1.5];
-    
+	
+	[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
+		if ([_clubName length] == 0)
+			[self _goClubName];
+	}];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	[_imagePicker dismissViewControllerAnimated:YES completion:^(void){
 //		[self.navigationController dismissViewControllerAnimated:NO completion:^(void){}];
+		
+		if ([_clubName length] == 0)
+			[self _goClubName];
 	}];
 }
 
@@ -563,6 +451,139 @@
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
+}
+
+
+#pragma mark - Device Functions
+- (void)_searchForAlbum {
+	__weak HONCreateClubViewController *weakSelf = self;
+	__block ALAssetsGroup *assetsGroup;
+	
+	_isAlbumFound = NO;
+	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+		NSLog(@"Album -- SEARCH:[%@]", [group valueForProperty:ALAssetsGroupPropertyName]);
+		
+		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) { NSLog(@"Found Album"); // @"Selfieclub Club Covers"])
+			assetsGroup = group;
+			*stop = YES;
+			
+			_totaAlbumAssets = group.numberOfAssets;
+			weakSelf.isAlbumFound = YES;
+		}
+		
+	} failureBlock:^(NSError* error) {
+		NSLog(@"--ALBUM ENUMBERATE FAILURE--\nError: %@", [error localizedDescription]);
+	}];
+	
+	[self performSelector:@selector(_delayedAlbumEnumeration:)
+			   withObject:[assetsGroup valueForProperty:ALAssetsGroupPropertyName]
+			   afterDelay:0.50];
+}
+
+- (void)_createAlbum {
+	__weak HONCreateClubViewController *weakSelf = self;
+	
+	[_library addAssetsGroupAlbumWithName:NSLocalizedString(@"club_covers", nil) resultBlock:^(ALAssetsGroup *group) {
+		NSLog(@"ALBUM -- ADDED: %@", NSLocalizedString(@"club_covers", nil));
+		[weakSelf _searchForAlbum];
+		
+	} failureBlock:^(NSError *error) {
+		NSLog(@"--ALBUM ADD FAILURE--");
+	}];
+}
+
+- (void)_addImageToAlbum:(UIImage *)image withIdentifier:(NSString *)identifier {
+	__block ALAssetsGroup *assetsGroup;
+	[_library enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+		if ([[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:NSLocalizedString(@"club_covers", nil)]) {
+			NSLog(@"Found Album -- ADDING");
+			assetsGroup = group;
+			
+			__block NSMutableDictionary *metadata;
+			__block BOOL isFound = NO;
+			[group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop){
+				ALAssetRepresentation *representation = [result defaultRepresentation];
+				metadata = [[representation metadata] mutableCopy];
+				NSMutableDictionary *exif = [[metadata objectForKey:@"{Exif}"] mutableCopy];
+				[exif setValue:identifier forKey:@"ImageUniqueID"];
+				[metadata setValue:exif forKey:@"{Exif}"];
+				
+				
+//				NSLog(@"ID:[%@]=-\n[%@]", [[[[[[[result valueForProperty:ALAssetPropertyAssetURL] absoluteString] componentsSeparatedByString:@"/"] lastObject] componentsSeparatedByString:@"?"] lastObject] substringWithRange:NSMakeRange(3, 36)], metadata);
+				if ([[[metadata objectForKey:@"{Exif}"] objectForKey:@"ImageUniqueID"] isEqualToString:identifier])
+					metadata = [NSMutableDictionary dictionaryWithObject:@"0000" forKey:@"PCID"];//isFound = YES;
+				
+//				*stop = isFound;
+			}];
+			
+			NSLog(@"FOUND:[%@]", [@"" stringFromBOOL:isFound]);
+			if (!isFound) {
+				[_library writeImageToSavedPhotosAlbum:[image CGImage] metadata:[metadata copy] completionBlock:^(NSURL* assetURL, NSError* error) {
+					if (error.code == 0) {
+						NSLog(@"Save Image -- COMPLETE:[%@]", assetURL);
+						
+						[_library assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+							[assetsGroup addAsset:asset];
+							NSLog(@"Image -- ADDED:[%@] =-=\n%@", asset.defaultRepresentation.filename, asset.defaultRepresentation.metadata);
+						} failureBlock:^(NSError* error) {
+							NSLog(@"--ASSET FAILURE--\nError: %@ ", [error localizedDescription]);
+						}];
+						
+					} else
+						NSLog(@"--SAVE FAILURE--\nerror code %i\n%@", error.code, [error localizedDescription]);
+				}];
+			}
+		}
+		
+	} failureBlock:^(NSError* error) {
+		NSLog(@"--ALBUM ENUMBERATE FAILURE--\nError: %@", [error localizedDescription]);
+	}];
+}
+
+- (void)_delayedAlbumEnumeration:(id)sender {
+	if (!_isAlbumFound)
+		[self _createAlbum];
+	
+	else {
+		if (_totaAlbumAssets < [[[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes] count]) {
+			__weak HONCreateClubViewController *weakSelf = self;
+			
+			[[[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+				NSString *prefix = (NSString *)obj;
+				
+				UIImageView *imageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+				void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+					NSLog(@"LOADED:[%@] -- EXISTING ALBUM ADD", request.URL.absoluteString);
+					
+					const char *cKey  = [[NSBundle mainBundle].bundleIdentifier cStringUsingEncoding:NSASCIIStringEncoding];
+					const char *cData = [[[[request.URL.absoluteString componentsSeparatedByString:@"/"] lastObject] substringToIndex:6] cStringUsingEncoding:NSUTF8StringEncoding];
+					unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
+					CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+					
+					NSMutableString *md5 = [NSMutableString string];
+					for (int i=0; i<sizeof cHMAC; i++)
+						[md5 appendFormat:@"%02hhxc", cHMAC[i]];
+					
+					NSLog(@"MD5:[%@]", md5);
+					
+					imageView.image = image;
+					[weakSelf _addImageToAlbum:image withIdentifier:md5];
+				};
+				
+				void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
+					NSLog(@"--IMAGE LOAD ERROR[%@]--\n[%@]", request.URL.absoluteString, error.description);
+				};
+				
+				NSLog(@"Image -- REMOTE LOAD:[%@]", [prefix stringByAppendingString:kSnapMediumSuffix]);
+				[imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[prefix stringByAppendingString:kSnapMediumSuffix]]
+																   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+															   timeoutInterval:[HONAppDelegate timeoutInterval]]
+								 placeholderImage:nil
+										  success:imageSuccessBlock
+										  failure:imageFailureBlock];
+			}];
+		}
+	}
 }
 
 @end

@@ -86,17 +86,21 @@
 	[HONAppDelegate incTotalForCounter:totalKey];
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	
-//	[[UIApplication sharedApplication] setStatusBarStyle:(selectedIndex == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:[@"SELECTED_" stringByAppendingString:notificationName] object:nil];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:selectedIndex] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 
 #pragma mark - View Lifecycle
 - (void)loadView {
+	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
+	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
@@ -212,10 +216,9 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@_%@", (touch.tapCount == 1) ? @"SELECTED" : @"TARE", notificationName] object:nil];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//	[[UIApplication sharedApplication] setStatusBarStyle:(tabBarButtonType == HONTabBarButtonTypeVerify) ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault animated:YES];
 	
-//	UIStatusBarStyle statusBarStyle = [UIApplication sharedApplication].statusBarStyle;
-//	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+	if ([UIApplication sharedApplication].statusBarStyle == UIStatusBarStyleLightContent)
+		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 

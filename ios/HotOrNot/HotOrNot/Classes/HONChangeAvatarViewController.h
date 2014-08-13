@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-@interface HONChangeAvatarViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+#import "HONViewController.h"
+
+@interface HONChangeAvatarViewController : HONViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end

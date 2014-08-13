@@ -48,7 +48,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		[self addSubview:_previewImageView];
 		
 
-		[[HONImageBroker sharedInstance] maskImageView:_previewImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
+		[[HONImageBroker sharedInstance] maskView:_previewImageView withMask:[UIImage imageNamed:@"clubCoverMask"]];
 		
 		_emotions = [NSMutableArray array];
 		
@@ -56,7 +56,7 @@ const CGRect kEmotionNormalFrame = {0.0f, 0.0f, 128.0f, 128.0f};
 		_label.backgroundColor = [UIColor whiteColor];
 		_label.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:18];
 		_label.textColor = [UIColor blackColor];
-		_label.text = NSLocalizedString(@"is_feeling", nil); //kBaseCaption;
+		_label.text = NSLocalizedString(@"is_feeling", nil);
 		[self addSubview:_label];
 		
 		_cursorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(_label.frame.origin.x + _label.frame.size.width + 3.0, 22.0, 3.0, 144.0)];

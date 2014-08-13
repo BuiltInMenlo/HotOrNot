@@ -7,12 +7,13 @@
 //
 
 #import "HONCountryVO.h"
+#import "HONViewController.h"
 
 @class HONCallingCodesViewController;
 @protocol HONCallingCodesViewControllerDelegate <NSObject>
 - (void)callingCodesViewController:(HONCallingCodesViewController *)viewController didSelectCountry:(HONCountryVO *)countryVO;
 @end
 
-@interface HONCallingCodesViewController : UIViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONCallingCodesViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, assign) id <HONCallingCodesViewControllerDelegate> delegate;
 @end

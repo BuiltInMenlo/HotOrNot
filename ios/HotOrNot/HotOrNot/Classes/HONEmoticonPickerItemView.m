@@ -41,7 +41,7 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 		[_imageLoadingView startAnimating];
 		[_imageView addSubview:_imageLoadingView];
 		
-		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
+//		NSLog(@"EMOTION STICKER:[%@]", emotionVO.pcContent);
 		[self performSelector:@selector(_loadImage) withObject:nil afterDelay:delay];
 		
 		UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];

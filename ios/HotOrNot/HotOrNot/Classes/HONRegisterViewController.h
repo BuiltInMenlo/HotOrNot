@@ -8,6 +8,7 @@
 
 #import <MessageUI/MFMailComposeViewController.h>
 
+#import "HONViewController.h"
 
 typedef NS_ENUM(NSInteger, HONRegisterCheckErrorType) {
 	HONRegisterCheckErrorTypeNone		= 0,
@@ -21,5 +22,5 @@ typedef NS_ENUM(NSInteger, HONRegisterErrorType) {
 	HONRegisterErrorTypePhone		= 1 << 1
 };
 
-@interface HONRegisterViewController : UIViewController <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>
+@interface HONRegisterViewController : HONViewController <MFMailComposeViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate, UIAlertViewDelegate>
 @end

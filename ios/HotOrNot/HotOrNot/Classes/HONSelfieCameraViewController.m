@@ -58,8 +58,8 @@
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
 		
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeInviteBonus completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:NO completion:nil];
+		[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:NO completion:nil];
 	}
 	
 	return (self);
@@ -117,18 +117,6 @@
 	}
 	
 	return (self);
-}
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	
-}
-
-- (BOOL)shouldAutorotate {
-	return (NO);
 }
 
 
@@ -282,11 +270,6 @@
 	[super viewDidLoad];
 }
 
-- (void)viewDidUnload {
-	ViewControllerLog(@"[:|:] [%@ viewDidUnload] [:|:]", self.class);
-	[super viewDidUnload];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
 	[super viewWillAppear:animated];
@@ -295,21 +278,6 @@
 		_isFirstAppearance = NO;
 		[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 	}
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewWillDisappear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [[NSString string] stringFromBOOL:animated]);
-	[super viewDidDisappear:animated];
 }
 
 
@@ -422,6 +390,15 @@
 
 
 #pragma mark - CameraPreviewView Delegates
+-(void) cameraPreviewViewShowActionSheet:(HONSelfieCameraPreviewView *)previewView{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Unlock More Stickers"
+                                                        message:@""
+                                                       delegate:self
+                                              cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
+                                              otherButtonTitles:NSLocalizedString(@"alert_ok", nil), nil];
+    
+    [alertView show];
+}
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
 	NSLog(@"cameraPreviewViewBackToCamera");
 	

@@ -226,10 +226,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"share_formats"] objectForKey:@"email"] objectAtIndex:index]);
     
 }
-+ (NSString *)bannerURL {
-    return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_url"]);
-
-}
 
 + (NSString *)s3BucketForType:(HONAmazonS3BucketType)s3BucketType {
 	NSString *key = @"";
@@ -468,8 +464,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 - (void)_retrieveConfigJSON {
 	[[HONAPICaller sharedInstance] retreiveBootConfigWithCompletion:^(NSDictionary *result) {
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_url"] forKey:@"banner_url"];
-
 		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"support_urls"] forKey:@"support_urls"];
 		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"default_imgs"] forKey:@"default_imgs"];
@@ -567,22 +561,16 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			[[HONImageBroker sharedInstance] writeImageFromWeb:[(NSDictionary *)result objectForKey:@"avatar_url"] withDimensions:CGSizeMake(612.0, 1086.0) withUserDefaultsKey:@"avatar_image"];
 			
 			[[HONStickerAssistant sharedInstance] retrievePicoCandyUser];
-			[[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeFree];
-							
-#if __IGNORE_SUSPENDED__ == 1
+			
+			if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
+				
+			} else {
 				if (self.tabBarController == nil)
 					[self _initTabs];
-#else
-				if ((BOOL)[[[HONAppDelegate infoForUser] objectForKey:@"is_suspended"] intValue]) {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSuspendedViewController alloc] init]];
-					[navigationController setNavigationBarHidden:YES];
-					[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
-					
-				} else {
-					if (self.tabBarController == nil)
-						[self _initTabs];
-				}
-#endif
+			}
 		}
 	}];
 }
@@ -630,7 +618,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 															 delegate:self
 													cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Instagram", @"Twitter", @"Facebook", @"SMS", @"Email", @"Copy link", nil];
+													otherButtonTitles:@"Instagram", @"Twitter", @"SMS", @"Email", NSLocalizedString(@"copy_url", @"Copy Club URL"), nil];
 	[actionSheet setTag:HONAppDelegateAlertTypeExit];
 	[actionSheet showInView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view];
 }
@@ -733,35 +721,42 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//NSLog(@"[:|:] [application:didFinishLaunchingWithOptions] [:|:]");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"First App Boot"];
 	
-	
-	
-	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
-	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
-	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
-	CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
-	
-	NSMutableString *result = [NSMutableString string];
-	for (int i=0; i<sizeof cHMAC; i++) {
-		NSLog(@"MD5-UTF16:[%@]", result);
-		[result appendFormat:@"%c", cHMAC[i]];
-	}
-	
-	
-	NSLog(@"ORG:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
-	NSLog(@"MD5-ASCII:[%@]", result);
-	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
-	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
+//	const char *cKey  = [@"" cStringUsingEncoding:NSASCIIStringEncoding];
+//	const char *cData = [[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] cStringUsingEncoding:NSUTF8StringEncoding];
+//	unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
+//	CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+//	
+//	NSMutableString *result = [NSMutableString string];
+//	for (int i=0; i<sizeof cHMAC; i++) {
+//		NSLog(@"MD5-UTF16:[%@]", result);
+//		[result appendFormat:@"%c", cHMAC[i]];
+//	}
+//
+//	NSLog(@"ORG:[%@]", [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES]);
+//	NSLog(@"MD5-ASCII:[%@]", result);
+//	NSLog(@"Base64-UTF8:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString]);
+//	NSLog(@"Base64-UTF16:[%@]", [[[[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:YES] dataUsingEncoding:NSUTF16StringEncoding] base64EncodedString]);
 	
 	
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	_isFromBackground = NO;
 	
+#if __FORCE_NEW_USER__ == 1 || __FORCE_REGISTER__ == 1
+	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+#endif
+	
+#if __FORCE_NEW_USER__ == 1
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecValueData)]; // device id
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrService)]; // phone #
+	[HONAppDelegate resetTotals];
+#endif
 	
 #if __FORCE_REGISTER__ == 1
-	KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
+	[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)]; // 1st run
 #endif
+	
 	
 	[self _styleUIAppearance];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShareShelf:) name:@"SHOW_SHARE_SHELF" object:nil];
@@ -1045,8 +1040,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 							
 							} else {
 								_clubName = clubname;
-								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Club Not Found!"
-																					message:@"Would you like to create it?"
+								UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"club_notfound", nil) //@"Club Not Found!"
+																					message: NSLocalizedString(@"alert_create_it", nil) //@"Would you like to create it?"
 																				   delegate:self
 																		  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 																		  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
@@ -1056,7 +1051,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 						}];
 					
 					} else {
-						[[[UIAlertView alloc] initWithTitle:@"Username Not Found!"
+						[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"hud_usernameNotFound", nil) //@"Username Not Found!"
 													message:@""
 												   delegate:nil
 										  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -1148,6 +1143,10 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 #pragma mark - Startup Operations
 - (void)_initTabs {
 	NSLog(@"[|/._initTabs|/:_");
+	
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeSelfieclub ignoringCache:YES completion:nil];
+	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree ignoringCache:YES completion:nil];
+	
 	
 	NSArray *navigationControllers = @[[[UINavigationController alloc] initWithRootViewController:[[HONContactsTabViewController alloc] init]],
 									   [[UINavigationController alloc] initWithRootViewController:[[HONClubsNewsFeedViewController alloc] init]],
@@ -1258,8 +1257,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	//[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 	
 	[[HONStickerAssistant sharedInstance] registerStickerStore];
-	[[HONStickerAssistant sharedInstance] retrieveStickersWithPakType:HONStickerPakTypeFree completion:nil];
-//
 //	for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"sticker_paks"] objectForKey:kFreeStickerPak]) {
 //		[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:nil];
 //	}
@@ -1653,7 +1650,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:nil];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																	message:[NSString stringWithFormat: NSLocalizedString(@"want_invite", nil) , _selectedClubVO.clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles: NSLocalizedString(@"not_now", nil), nil];
@@ -1667,7 +1664,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
 			
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:@"Want to invite friends to %@?", _selectedClubVO.clubName]
+																message:[NSString stringWithFormat:NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
 															   delegate:self
 													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 													  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
@@ -1722,7 +1719,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 				[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:((UIViewController *)[_shareInfo objectForKey:@"view_controller"]).view animated:YES];
 				
 			} else {
-				[[[UIAlertView alloc] initWithTitle:@"Not Available"
+				[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"alert_instagramError_t", nil) //@"Not Available"
 											message:@"This device isn't allowed or doesn't recognize Instagram!"
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
@@ -1752,42 +1749,42 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 								  otherButtonTitles:nil] show];
 			}
 		
-		} else if (buttonIndex == HONShareSheetActionTypeFacebook) {
-			NSString *url = ([[_shareInfo objectForKey:@"url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [_shareInfo objectForKey:@"url"] : @"https://s3.amazonaws.com/hotornot-banners/shareTemplate_default.png";
-			NSDictionary *params = @{@"name"		: @"Selfieclub",
-									 @"caption"		: [[_shareInfo objectForKey:@"caption"] objectAtIndex:2],
-									 @"description"	: @"Welcome @Selfieclub members!\nPost your selfie and how you feel. Right now.\nGet \"Selfie famous\" by getting the most shoutouts!",
-									 @"link"		: [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]],
-									 @"picture"		: url};
-			
-			[FBWebDialogs presentFeedDialogModallyWithSession:nil parameters:params handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
-				NSString *mpAction = @"(UNKNOWN)";
-				
-				if (error) {
-					mpAction = @"Error";
-					NSLog(@"Error publishing story.");
-					
-				} else {
-					mpAction = @"Canceled";
-					if (result == FBWebDialogResultDialogNotCompleted) {
-						NSLog(@"User canceled story publishing.");
-						
-					} else {
-						NSDictionary *urlParams = [HONAppDelegate parseQueryString:[resultURL query]];
-						if (![urlParams valueForKey:@"post_id"]) {
-							mpAction = @"Canceled";
-							NSLog(@"User canceled story publishing.");
-							
-						} else {
-							mpAction = @"Posted";
-							NSLog(@"Posted:[%@]", [urlParams valueForKey:@"post_id"]);
-							[self _showOKAlert:@"" withMessage:@"Posted to your timeline!"];
-						}
-					}
-				}
-				
-				//[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share Facebook (%@)", mpAction]]];
-			 }];
+//		} else if (buttonIndex == HONShareSheetActionTypeFacebook) {
+//			NSString *url = ([[_shareInfo objectForKey:@"url"] rangeOfString:@"defaultAvatar"].location == NSNotFound) ? [_shareInfo objectForKey:@"url"] : @"https://s3.amazonaws.com/hotornot-banners/shareTemplate_default.png";
+//			NSDictionary *params = @{@"name"		: @"Selfieclub",
+//									 @"caption"		: [[_shareInfo objectForKey:@"caption"] objectAtIndex:2],
+//									 @"description"	: @"Welcome @Selfieclub members!\nPost your selfie and how you feel. Right now.\nGet \"Selfie famous\" by getting the most shoutouts!",
+//									 @"link"		: [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]],
+//									 @"picture"		: url};
+//			
+//			[FBWebDialogs presentFeedDialogModallyWithSession:nil parameters:params handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+//				NSString *mpAction = @"(UNKNOWN)";
+//				
+//				if (error) {
+//					mpAction = @"Error";
+//					NSLog(@"Error publishing story.");
+//					
+//				} else {
+//					mpAction = @"Canceled";
+//					if (result == FBWebDialogResultDialogNotCompleted) {
+//						NSLog(@"User canceled story publishing.");
+//						
+//					} else {
+//						NSDictionary *urlParams = [HONAppDelegate parseQueryString:[resultURL query]];
+//						if (![urlParams valueForKey:@"post_id"]) {
+//							mpAction = @"Canceled";
+//							NSLog(@"User canceled story publishing.");
+//							
+//						} else {
+//							mpAction = @"Posted";
+//							NSLog(@"Posted:[%@]", [urlParams valueForKey:@"post_id"]);
+//							[self _showOKAlert:@"" withMessage:@"Posted to your timeline!"];
+//						}
+//					}
+//				}
+//				
+//				//[[HONAnalyticsParams sharedInstance] trackEvent:[[_shareInfo objectForKey:@"mp_event"] stringByAppendingString:[NSString stringWithFormat:@" - Share Facebook (%@)", mpAction]]];
+//			 }];
 		
 		} else if (buttonIndex == HONShareSheetActionTypeSMS) {
 			if ([MFMessageComposeViewController canSendText]) {
@@ -1824,10 +1821,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 			}
 		
 		} else if (buttonIndex == HONShareSheetActionTypeClipboard) {
-			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-			pasteboard.string = [HONAppDelegate shareURL];
-			
-			[self _showOKAlert:@"Link Copied to Clipboard" withMessage:[HONAppDelegate shareURL]];
+			[[HONClubAssistant sharedInstance] copyClubToClipBoard:[HONUserClubVO clubWithDictionary:[_shareInfo objectForKey:@"club"]] withAlert:YES];
 		}
 		
 		_shareInfo = nil;

@@ -81,7 +81,7 @@
 		_lastCameraRollImageView.frame = CGRectOffset(_lastCameraRollImageView.frame, 257.0, [UIScreen mainScreen].bounds.size.height - 60.0);
 		[self addSubview:_lastCameraRollImageView];
 		
-		[[HONImageBroker sharedInstance] maskImageView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
+		[[HONImageBroker sharedInstance] maskView:_lastCameraRollImageView withMask:[UIImage imageNamed:@"cameraRollMask"]];
 		[self _retrieveLastImage];
 		
 		_cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];

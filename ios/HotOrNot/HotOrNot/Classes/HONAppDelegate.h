@@ -10,19 +10,17 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __DEV_BUILD__ 1
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
+#define __FORCE_NEW_USER__ 0
 #define __FORCE_REGISTER__ 0
-#define __FORCE_SUGGEST__ 0
-
-#define __IGNORE_SUSPENDED__ 0
 #define __RESET_TOTALS__ 0
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
-#define __APPSTORE_BUILD__ 0
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -46,7 +44,7 @@ typedef NS_ENUM(NSInteger, HONPushType) {
 typedef NS_ENUM(NSInteger, HONShareSheetActionType) {
 	HONShareSheetActionTypeInstagram = 0,
 	HONShareSheetActionTypeTwitter,
-	HONShareSheetActionTypeFacebook,
+//	HONShareSheetActionTypeFacebook,
 	HONShareSheetActionTypeSMS,
 	HONShareSheetActionTypeEmail,
 	HONShareSheetActionTypeClipboard
@@ -162,7 +160,6 @@ extern NSString * const kNetErrorStatusCode404;
 + (NSString *)facebookShareCommentForIndex:(int)index;
 + (NSString *)smsShareCommentForIndex:(int)index;
 + (NSDictionary *)emailShareCommentForIndex:(int)index;
-+ (NSString *)bannerURL;
 + (NSArray *)subjectFormats;
 
 + (NSRange)rangeForImageQueue;
