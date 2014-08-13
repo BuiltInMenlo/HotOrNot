@@ -447,7 +447,7 @@ static NSString * const kCamera = @"camera";
 																	 delegate:self
 															cancelButtonTitle:NSLocalizedString(@"alert_cancel", nil)
 													   destructiveButtonTitle:nil
-															otherButtonTitles:@"Invite Friends", @"Copy Club URL", nil];
+															otherButtonTitles:@"Invite Friends", @"Add Photo", @"Copy Club URL", nil];
 			[actionSheet setTag:HONUserClubsActionSheetTypeOwner];
 			[actionSheet showInView:self.view];
 			
@@ -894,7 +894,7 @@ static NSString * const kCamera = @"camera";
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			
-		} else if (buttonIndex == 1) {
+		} else if (buttonIndex == 2) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
@@ -913,7 +913,7 @@ static NSString * const kCamera = @"camera";
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			
-		} else if (buttonIndex == 1) {
+		} else if (buttonIndex == 2) {
 			UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 			pasteboard.string = [NSString stringWithFormat:@"I have created the Selfieclub %@! Tap to join: \nhttp://joinselfie.club/%@/%@", _selectedClubVO.clubName, [[HONAppDelegate infoForUser] objectForKey:@"username"], _selectedClubVO.clubName];
 			
