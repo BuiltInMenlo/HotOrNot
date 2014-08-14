@@ -78,12 +78,11 @@
 	UIImage *largeImage = [[HONImageBroker sharedInstance] cropImage:[[HONImageBroker sharedInstance] scaleImage:image toSize:CGSizeMake(852.0, kSnapLargeSize.height * 2.0)] toRect:CGRectMake(106.0, 0.0, kSnapLargeSize.width * 2.0, kSnapLargeSize.height * 2.0)];
 	UIImage *tabImage = [[HONImageBroker sharedInstance] cropImage:largeImage toRect:CGRectMake(0.0, 0.0, kSnapTabSize.width * 2.0, kSnapTabSize.height * 2.0)];
 	
-	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+	UIImage *thumbImage = [[HONImageBroker sharedInstance] cropImage:tabImage toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)];
 	_clubCoverImageView.image = thumbImage;
 	
 	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
 	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
-	
 	
 	[[HONAPICaller sharedInstance] uploadPhotosToS3:@[UIImageJPEGRepresentation(largeImage, [HONAppDelegate compressJPEGPercentage]), UIImageJPEGRepresentation(tabImage, [HONAppDelegate compressJPEGPercentage] * 0.85)] intoBucketType:HONS3BucketTypeClubs withFilename:filename completion:^(NSObject *result) {
 		if (_progressHUD != nil) {
@@ -198,7 +197,7 @@
 	_clubBlurb = @"";
 	_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];//@"Add Club"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];
 	[self.view addSubview:headerView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -224,9 +223,10 @@
 	[self.view addSubview:_clubNameButton];
 	
 	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
+	_clubCoverImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
 	[self.view addSubview:_clubCoverImageView];
 	
-	[[HONImageBroker sharedInstance] maskView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+//	[[HONImageBroker sharedInstance] maskView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;

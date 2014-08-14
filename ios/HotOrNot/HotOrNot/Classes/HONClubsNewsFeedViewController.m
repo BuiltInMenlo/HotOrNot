@@ -142,7 +142,7 @@ static NSString * const kCamera = @"camera";
 //		_suggestedClubs = nil;
 //		_suggestedClubs	= (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"Locked Club"]) ? [[NSArray arrayWithObject:[HONUserClubVO clubWithDictionary:[[HONClubAssistant sharedInstance] orthodoxThresholdClubDictionary]]] arrayByAddingObjectsFromArray:[[HONClubAssistant sharedInstance] suggestedClubs]] : [[HONClubAssistant sharedInstance] suggestedClubs];
 		
-		[self performSelector:@selector(_didFinishDataRefresh) withObject:nil afterDelay:0.125];
+		[self _didFinishDataRefresh];
 	}];
 }
 
@@ -181,6 +181,9 @@ static NSString * const kCamera = @"camera";
 	
 	[_tableView reloadData];
 	[_refreshControl endRefreshing];
+	
+	if ([_timelineItems count] == 0)
+		[_tableView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noPostsYetRow"]]];
 }
 
 

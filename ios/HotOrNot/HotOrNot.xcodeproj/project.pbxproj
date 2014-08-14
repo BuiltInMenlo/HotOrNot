@@ -65,7 +65,7 @@
 		300B1BE9199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BEB199C0EBC006BB048 /* modalInviteButton_nonActive@2x.png */; };
 		300B1BF8199C3E2C006BB048 /* addContacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BFA199C3E2C006BB048 /* addContacts@2x.png */; };
 		300B1BFB199C3E35006BB048 /* shareFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BFD199C3E35006BB048 /* shareFriends@2x.png */; };
-		303D5D80199C8F2100B9ED88 /* NSArray+Randomize.m in Sources */ = {isa = PBXBuildFile; fileRef = 303D5D7F199C8F2100B9ED88 /* NSArray+Randomize.m */; };
+		309F59AA199D3B4B00EC6C1C /* noPostsYetRow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59AC199D3B4B00EC6C1C /* noPostsYetRow@2x.png */; };
 		4C00491B1946A994007FA9F5 /* HONClubsViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */; };
 		4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491D1946AEAC007FA9F5 /* HONClubCollectionViewCell.m */; };
 		4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */; };
@@ -566,8 +566,11 @@
 		300B1C03199C3E44006BB048 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		300B1C04199C3E45006BB048 /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
 		300B1C05199C3E45006BB048 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/shareFriends@2x.png"; sourceTree = "<group>"; };
-		303D5D7E199C8F2100B9ED88 /* NSArray+Randomize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Randomize.h"; sourceTree = "<group>"; };
-		303D5D7F199C8F2100B9ED88 /* NSArray+Randomize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Randomize.m"; sourceTree = "<group>"; };
+		309F59AB199D3B4B00EC6C1C /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
+		309F59AD199D3B5200EC6C1C /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
+		309F59AE199D3B5300EC6C1C /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
+		309F59AF199D3B5300EC6C1C /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
+		309F59B0199D3B5400EC6C1C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCollectionViewCell.h; sourceTree = "<group>"; };
@@ -2173,6 +2176,7 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				309F59AC199D3B4B00EC6C1C /* noPostsYetRow@2x.png */,
 				300B1BFA199C3E2C006BB048 /* addContacts@2x.png */,
 				300B1BFD199C3E35006BB048 /* shareFriends@2x.png */,
 				0717817A19994CFB006CCB50 /* cameraEmojiBoardBackground_Free@2x 2.png */,
@@ -2541,8 +2545,6 @@
 			children = (
 				4CCED5D8181F7AE900D1D673 /* NSArray+NullReplacement.h */,
 				4CCED5D9181F7AE900D1D673 /* NSArray+NullReplacement.m */,
-				303D5D7E199C8F2100B9ED88 /* NSArray+Randomize.h */,
-				303D5D7F199C8F2100B9ED88 /* NSArray+Randomize.m */,
 				4C5FD45E19178D9200B1BAFC /* NSData+Base64.h */,
 				4C5FD45F19178D9200B1BAFC /* NSData+Base64.m */,
 				4CCED5D5181F7A8000D1D673 /* NSDictionary+NullReplacement.h */,
@@ -2644,6 +2646,7 @@
 				8F4E6214198ACD6900E8A171 /* cancelbuttonwhite_nonactive@2x.png in Resources */,
 				4C83FD94190F62E800CAEABB /* fpo_upvote.mp3 in Resources */,
 				4C83FD93190F62E800CAEABB /* BLASTWAVEFX_29648.caf in Resources */,
+				309F59AA199D3B4B00EC6C1C /* noPostsYetRow@2x.png in Resources */,
 				07B25327198C177000F6D8B1 /* dimBackground@2x.png in Resources */,
 				07B25328198C177B00F6D8B1 /* tapToReview_Active@2x.png in Resources */,
 				4C83FD9F190F62FB00CAEABB /* CartoGothicStd-Italic.otf in Resources */,
@@ -2924,7 +2927,6 @@
 				4C1F19B2191623D600E9A9D4 /* HONClubAssistant.m in Sources */,
 				4C4328B418E3A9FA0035FF06 /* QuadraticBezierCurve.m in Sources */,
 				4CAD07381948B9A10030E703 /* HONClubPhotoVO.m in Sources */,
-				303D5D80199C8F2100B9ED88 /* NSArray+Randomize.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONMatchContactsViewController.m in Sources */,
 				4CEC303D17DA5E270016AAE1 /* HONSelfieCameraViewController.m in Sources */,
 				4C4328B218E3A9FA0035FF06 /* LinearBezierCurve.m in Sources */,
@@ -3531,6 +3533,18 @@
 				300B1C05199C3E45006BB048 /* ko */,
 			);
 			name = "shareFriends@2x.png";
+			sourceTree = "<group>";
+		};
+		309F59AC199D3B4B00EC6C1C /* noPostsYetRow@2x.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				309F59AB199D3B4B00EC6C1C /* en */,
+				309F59AD199D3B5200EC6C1C /* ko */,
+				309F59AE199D3B5300EC6C1C /* pt */,
+				309F59AF199D3B5300EC6C1C /* ja */,
+				309F59B0199D3B5400EC6C1C /* pt-BR */,
+			);
+			name = "noPostsYetRow@2x.png";
 			sourceTree = "<group>";
 		};
 		4C0148C4198C7A870006BCBC /* emptyTimeline-568h@2x.png */ = {
