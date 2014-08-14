@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, HONSelfieSubmitType) {
 @class HONSelfieCameraViewController;
 @protocol HONSelfieCameraViewControllerDelegate <NSObject>
 @optional
+- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController;
 - (void)selfieCameraViewController:(HONSelfieCameraViewController *)viewController didDismissByCanceling:(BOOL)isCanceled;
 @end
 

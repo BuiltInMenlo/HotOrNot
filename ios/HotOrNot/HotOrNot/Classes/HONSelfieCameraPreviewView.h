@@ -11,7 +11,6 @@
 @class HONSelfieCameraPreviewView;
 @protocol HONSelfieCameraPreviewViewDelegate <NSObject>
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView;
-- (void)cameraPreviewViewShowActionSheet:(HONSelfieCameraPreviewView *)previewView;
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView;
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects;
 @end

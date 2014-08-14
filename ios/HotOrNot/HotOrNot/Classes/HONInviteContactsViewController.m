@@ -154,6 +154,9 @@
 			NSLog(@"******* EXISTING ******");
 			if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
 				[self _sendClubInvites];
+			
+			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			}];
 		
 		} else {
 			NSLog(@"******* CREATE ******");

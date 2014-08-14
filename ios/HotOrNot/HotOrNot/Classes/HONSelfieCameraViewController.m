@@ -400,7 +400,7 @@
     [alertView show];
 }
 - (void)cameraPreviewViewBackToCamera:(HONSelfieCameraPreviewView *)previewView {
-	NSLog(@"cameraPreviewViewBackToCamera");
+	NSLog(@"[*:*] cameraPreviewViewBackToCamera");
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Retake Photo"];
 	[self _cancelUpload];
@@ -481,10 +481,13 @@
 }
 
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView {
-	HONUserClubVO *vo = [HONUserClubVO clubWithDictionary:[[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:@"owned"] firstObject]];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:vo viewControllerPushed:NO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	NSLog(@"[*:*] cameraPreviewViewShowInviteContacts");
+	
+	if ([self.delegate respondsToSelector:@selector(selfieCameraViewControllerDidDismissByInviteOverlay:)]) {
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[self.delegate selfieCameraViewControllerDidDismissByInviteOverlay:self];
+		}];
+	}
 }
 
 

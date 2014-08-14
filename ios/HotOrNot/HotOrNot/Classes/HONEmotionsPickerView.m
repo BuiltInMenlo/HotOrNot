@@ -71,7 +71,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
-
+		
 		
 		
 //		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
@@ -135,7 +135,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 //				}
 //			}];
 //		}
-			
 		
 		
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
@@ -190,7 +189,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 }
 -(void)_goGlobal {
     //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-    [self.delegate emotionsPickerViewShowActionSheet:self];
+//    [self.delegate emotionsPickerViewShowActionSheet:self];
     _isGlobal = !_isGlobal;
     if(_isGlobal){
         _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
@@ -203,9 +202,8 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
             view.hidden = NO;
         }
     }
-    
-
 }
+
 
 #pragma mark - UI Presentation
 static dispatch_queue_t sticker_request_operation_queue;
@@ -213,7 +211,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 	//NSLog(@"\t—//]> [%@ _buildGrid] (%d)", self.class, _totalPages);
 	
 	sticker_request_operation_queue = dispatch_queue_create("com.builtinmenlo.selfieclub.sticker-request", 0);
-	
 	
 	int cnt = 0;
 	int row = 0;
@@ -281,8 +278,6 @@ static dispatch_queue_t sticker_request_operation_queue;
 		_prevPage = offsetPage;
 	}
 }
-
-
 
 
 @end

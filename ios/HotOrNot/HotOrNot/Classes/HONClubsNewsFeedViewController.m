@@ -29,7 +29,7 @@
 #import "HONTableHeaderView.h"
 
 
-@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONTabBannerViewDelegate>
+@interface HONClubsNewsFeedViewController () <HONClubNewsFeedViewCellDelegate, HONSelfieCameraViewControllerDelegate, HONTabBannerViewDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -241,7 +241,10 @@ static NSString * const kCamera = @"camera";
 - (void)_goCreateChallenge {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Clubs Timeline - Create Selfie"];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
+	selfieCameraViewController.delegate = self;
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -279,6 +282,17 @@ static NSString * const kCamera = @"camera";
 		[_tableView setContentOffset:CGPointZero animated:YES];
 	}
 }
+
+
+#pragma mark - SelfieCameraViewController Delegates
+- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
+	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 
 #pragma mark - TabBannerView Delegates
@@ -386,8 +400,10 @@ static NSString * const kCamera = @"camera";
 - (void)clubNewsFeedViewCell:(HONClubNewsFeedViewCell *)viewCell replyToClubPhoto:(HONUserClubVO *)userClubVO {
 	NSLog(@"[*:*] clubNewsFeedViewCell:replyToClubPhoto:(%d - %@)", userClubVO.clubID, userClubVO.clubName);
 	
+	HONSelfieCameraViewController *selfieCamerViewController = [[HONSelfieCameraViewController alloc] initWithClub:userClubVO];
+	selfieCamerViewController.delegate = self;
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initWithClub:userClubVO]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCamerViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }

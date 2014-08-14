@@ -28,7 +28,7 @@
 - (void)invertSelected;
 - (void)toggleOnWithReset:(BOOL)isReset;
 - (void)toggleSelected:(BOOL)isSelected;
-- (void)toggleIndicator:(BOOL)isEnabled;
+- (void)toggleUI:(BOOL)isEnabled;
 
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;
 @property (nonatomic, retain) HONTrivialUserVO *trivialUserVO;

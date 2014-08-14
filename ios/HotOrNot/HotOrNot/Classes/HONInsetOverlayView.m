@@ -22,7 +22,7 @@
 
 - (id)initAsType:(HONInsetOverlayViewType)insetType {
 	if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
-		NSDictionary *contents = [[[NSUserDefaults standardUserDefaults] objectForKey:@"inset_modals"] objectForKey:(insetType == HONInsetOverlayViewTypeAppReview) ? @"review" : (insetType == HONInsetOverlayViewTypeSuggestions) ? @"contacts" : @"unlock"];
+		NSDictionary *contents = [[[NSUserDefaults standardUserDefaults] objectForKey:@"inset_modals"] objectForKey:(insetType == HONInsetOverlayViewTypeAppReview) ? @"review" : (insetType == HONInsetOverlayViewTypeInvite) ? @"invite" : (insetType == HONInsetOverlayViewTypeSuggestions) ? @"contacts" : @"unlock"];
 		
 		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"dimBackground"]];
 		bgImageView.frame = [[UIScreen mainScreen] bounds];
@@ -47,10 +47,9 @@
 		[_framingImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[contents objectForKey:@"bg"] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]]]
 																   cachePolicy:kURLRequestCachePolicy
 															   timeoutInterval:[HONAppDelegate timeoutInterval]]
-								 placeholderImage:[UIImage imageNamed:(insetType == HONInsetOverlayViewTypeAppReview || insetType == HONInsetOverlayViewTypeSuggestions) ? @"inset1BG" : @"inset2BG"]
+								 placeholderImage:[UIImage imageNamed:(insetType == HONInsetOverlayViewTypeAppReview || insetType == HONInsetOverlayViewTypeInvite || insetType == HONInsetOverlayViewTypeSuggestions) ? @"inset1BG" : @"inset2BG"]
 										  success:framingSuccessBlock
 										  failure:framingFailureBlock];
-		
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = CGRectMake(257.0, 15.0, 44.0, 44.0);
@@ -90,7 +89,32 @@
 			[_acknowledgeButton setBackgroundImage:[UIImage imageNamed:@"tapToReview_nonActive"] forState:UIControlStateNormal];
 			[_acknowledgeButton setBackgroundImage:[UIImage imageNamed:@"tapToReview_Active"] forState:UIControlStateHighlighted];
 			[_acknowledgeButton addTarget:self action:@selector(_goReview) forControlEvents:UIControlEventTouchDown];
-		
+			
+		} else if (insetType == HONInsetOverlayViewTypeInvite) {
+			NSString *contentURL = [[contents objectForKey:@"img"] stringByReplacingOccurrencesOfString:@"png" withString:[[[NSLocale preferredLanguages] firstObject] stringByAppendingString:@".png"]];
+			NSLog(@"CONTENT:[%@] (%@)", contentURL, [[NSLocale preferredLanguages] firstObject]);
+			
+			UIImageView *contentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 61.0, 286.0, 350.0)];
+			[_framingImageView addSubview:contentImageView];
+			
+			void (^contentSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+				contentImageView.image = image;
+			};
+			
+			void (^contentFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {};
+			
+			
+			[contentImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:contentURL]
+																	  cachePolicy:kURLRequestCachePolicy
+																  timeoutInterval:[HONAppDelegate timeoutInterval]]
+									placeholderImage:nil
+											 success:contentSuccessBlock
+											 failure:contentFailureBlock];
+			
+			[_acknowledgeButton setBackgroundImage:[UIImage imageNamed:@"modalInviteButton_nonActive"] forState:UIControlStateNormal];
+			[_acknowledgeButton setBackgroundImage:[UIImage imageNamed:@"modalInviteButton_nonActive"] forState:UIControlStateHighlighted];
+			[_acknowledgeButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchDown];
+			
 		} else if (insetType == HONInsetOverlayViewTypeUnlock) {
 			NSArray *contentRows = [contents objectForKey:@"rows"];
 			UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(18.0, 146.0, 285.0, 265.0)];
@@ -134,7 +158,6 @@
 			scrollView.showsVerticalScrollIndicator = NO;
 			scrollView.alwaysBounceVertical = YES;
 			[_framingImageView addSubview:scrollView];
-			
 			
 			UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smallRowOfferBackground"]];
 			bgImageView.userInteractionEnabled = YES;
@@ -301,6 +324,11 @@
 	
 	if ([self.delegate respondsToSelector:@selector(insetOverlayView:thresholdClub:)])
 		[self.delegate insetOverlayView:self thresholdClub:[_clubs objectAtIndex:button.tag]];
+}
+
+- (void)_goInvite {
+	if ([self.delegate respondsToSelector:@selector(insetOverlayViewDidInvite:)])
+		[self.delegate insetOverlayViewDidInvite:self];
 }
 
 @end

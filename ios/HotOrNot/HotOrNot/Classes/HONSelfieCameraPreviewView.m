@@ -92,7 +92,7 @@
 	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addButton:nextButton];
-		
+	
 	//]~=~=~=~=~=~=~=~=~=~=~=~=~=~[]~=~=~=~=~=~=~=~=~=~=~=~=~=~[
 	
 	_emotionsDisplayView = [[HONEmotionsPickerDisplayView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.frame.size.height - (kNavHeaderHeight + 308.0)) withPreviewImage:_previewImage];
@@ -251,20 +251,14 @@
 	NSLog(@"[*:*] emotionItemView:(%@) didChangeToPage:(%d) withDirection:(%d) [*:*]", self.class, page, direction);
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
-//	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 1 && direction == 1) {
-//		[_emotionsPickerView scrollToPage:0];
-//		
-//		if (_insetOverlayView == nil) {
-//			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
-//			_insetOverlayView.delegate = self;
-//			
-//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-//			[_insetOverlayView introWithCompletion:nil];
-//		}
-//	}
+	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 3 && direction == 1) {
+		
+		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
+			[self.delegate cameraPreviewViewShowInviteContacts:self];
+	}
 }
--(void) emotionsPickerViewShowActionSheet:(HONEmotionsPickerView *)emotionsPickerView {
-    [self.delegate cameraPreviewViewShowActionSheet:self];
+-(void) emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView {
+    
 }
 
 #pragma mark - InsetOverlay Delegates
@@ -279,7 +273,6 @@
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
 		[_insetOverlayView removeFromSuperview];
 		_insetOverlayView = nil;
-
 		
 		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
 			[self.delegate cameraPreviewViewShowInviteContacts:self];

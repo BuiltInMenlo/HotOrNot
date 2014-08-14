@@ -893,17 +893,15 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 											 withProperties:@{@"duration"	: ([[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"] != nil) ? [[HONDateTimeAlloter sharedInstance] elapsedTimeSinceDate:[[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[[NSUserDefaults standardUserDefaults] objectForKey:@"active_date"]]] : @"00:00:00",
 															  @"total"		: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"background"]]}];
 			
-			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
-			if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0 && [HONAppDelegate totalForCounter:@"background"] == 3) {
+			if ([[[[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil] objectForKey:CFBridgingRelease(kSecAttrAccount)] length] > 0 && [HONAppDelegate totalForCounter:@"background"] == 3) {
 				if (_insetOverlayView == nil) {
-					_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeAppReview];
+					_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeInvite];
 					_insetOverlayView.delegate = self;
 					
 					[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
 					[_insetOverlayView introWithCompletion:nil];
 				}
 			}
-			
 			
 			if (![HONAppDelegate canPingConfigServer]) {
 				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
@@ -916,14 +914,6 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 	} else {
 		[[HONAnalyticsParams sharedInstance] trackEvent:@"App Boot"
 										 withProperties:@{@"boots"	: [@"" stringFromInt:[HONAppDelegate totalForCounter:@"boot"]]}];
-				
-//		if ([HONAppDelegate incTotalForCounter:@"boot"] == 3) {
-//			_inviteOverlayView = [[HONInviteOverlayView alloc] initWithBGImage:[UIImage imageNamed:@"tutorial_resume"]];
-//			_inviteOverlayView.delegate = self;
-//			
-//			[[HONScreenManager sharedInstance] appWindowAdoptsView:_inviteOverlayView];
-//			[_inviteOverlayView introWithCompletion:nil];
-//		}
 	}
 }
 
@@ -1533,6 +1523,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Close"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
@@ -1542,6 +1533,7 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 }
 
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Acknowledge"];
 	
 	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
@@ -1549,6 +1541,20 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		_insetOverlayView = nil;
 		
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+	}];
+}
+
+- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Acknowledge"];
+	
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 	}];
 }
 
@@ -1660,17 +1666,19 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeCreateClub) {
-		[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
-			_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
-			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:[NSString stringWithFormat:NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
-			[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
-			[alertView show];
-		}];
+		if (buttonIndex == 0) {
+			[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] defaultCoverImageURL] completion:^(NSDictionary *result) {
+				_selectedClubVO = [HONUserClubVO clubWithDictionary:result];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:[NSString stringWithFormat:NSLocalizedString(@"want_invite", nil), _selectedClubVO.clubName]
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+														  otherButtonTitles:NSLocalizedString(@"alert_no", nil), nil];
+				[alertView setTag:HONAppDelegateAlertTypeInviteContacts];
+				[alertView show];
+			}];
+		}
 	
 	} else if (alertView.tag == HONAppDelegateAlertTypeAllowContactsAccess) {
 		if (buttonIndex == 1) {

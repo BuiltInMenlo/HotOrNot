@@ -17,13 +17,15 @@
 #import "HONCreateSnapButtonView.h"
 #import "HONTabBannerView.h"
 #import "HONRegisterViewController.h"
+#import "HONInsetOverlayView.h"
 #import "HONSelfieCameraViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONInviteClubsViewController.h"
 #import "HONInviteContactsViewController.h"
 
-@interface HONContactsTabViewController () <HONTabBannerViewDelegate, HONUserToggleViewCellDelegate>
+@interface HONContactsTabViewController () <HONInsetOverlayViewDelegate, HONTabBannerViewDelegate, HONSelfieCameraViewControllerDelegate, HONUserToggleViewCellDelegate>
+@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @property (nonatomic, strong) HONTabBannerView *tabBannerView;
 @property (nonatomic, strong) HONActivityHeaderButtonView *activityHeaderView;
 @property (nonatomic, strong) HONUserClubVO *selectedClubVO;
@@ -66,10 +68,10 @@ static NSString * const kCamera = @"camera";
 #pragma mark -
 #pragma mark - Data Calls
 
+#pragma mark - Data Handling
 
 #pragma mark - View lifecycle
 - (void)loadView {
-    
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
@@ -129,7 +131,10 @@ static NSString * const kCamera = @"camera";
 }
 
 - (void)_goCreateChallenge {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSelfieCameraViewController alloc] initAsNewChallenge]];
+	HONSelfieCameraViewController *selfieCameraViewController = [[HONSelfieCameraViewController alloc] initAsNewChallenge];
+	selfieCameraViewController.delegate = self;
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:selfieCameraViewController];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
@@ -144,6 +149,23 @@ static NSString * const kCamera = @"camera";
 
 - (void)_completedFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _completedFirstRun <|::");
+	
+	NSLog(@"%@._completedFirstRun - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
+	
+	[self _retreiveUserClubs];
+	[self _submitPhoneNumberForMatching];
+	
+	if (_insetOverlayView == nil)
+		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeInvite];
+	_insetOverlayView.delegate = self;
+	
+	[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+	[_insetOverlayView introWithCompletion:nil];
+	
+	
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+		[self _retrieveDeviceContacts];
+	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 		[self _promptForAddressBookPermission];
 	
@@ -152,7 +174,6 @@ static NSString * const kCamera = @"camera";
 	
 	else
 		[self _promptForAddressBookAccess];
-
 }
 
 - (void)_selectedContactsTab:(NSNotification *)notification {
@@ -184,6 +205,58 @@ static NSString * const kCamera = @"camera";
 #pragma mark - UI Presentation
 - (void)_updateDeviceContactsWithMatchedUsers {
 	[super _updateDeviceContactsWithMatchedUsers];
+}
+
+- (void)_promptWithInviteInsetOverlay {
+	NSLog(@">>|<< _promptWithInviteInsetOverlay >>|<<");
+}
+
+
+#pragma mark - InsetOverlay Delegates
+- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidClose");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Close"];
+	
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+	}];
+}
+
+- (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidReview");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Review Overlay Acknowledge"];
+	
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+		
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/app/id%@?mt=8&uo=4", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+	}];
+}
+
+- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
+	NSLog(@"[*:*] insetOverlayViewDidInvite");
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"App Resume - Invite Overlay Acknowledge"];
+	
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}];
+}
+
+
+#pragma mark - SelfieCameraViewController Delegates
+- (void)selfieCameraViewControllerDidDismissByInviteOverlay:(HONSelfieCameraViewController *)viewController {
+	NSLog(@"[*:*] selfieCameraViewControllerDidDismissByInviteOverlay");
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:_selectedClubVO viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -266,16 +339,24 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[[- cell.contactUserVO.userID:[%d]", cell.contactUserVO.userID);
 	NSLog(@"[[- cell.trivialUserVO.userID:[%d]", cell.trivialUserVO.userID);
 	
-	
-	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers || _tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
+	if (_tableViewDataSource == HONContactsTableViewDataSourceMatchedUsers) {
+		if (indexPath.section != 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:^(void) {
+				[cell invertSelected];
+			}];
+		}
+		
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook && indexPath.section != 0) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:^(void) {
 			[cell invertSelected];
 		}];
 	
-	} else if (_tableViewDataSource == HONContactsTableViewDataSourceAddressBook) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithContactUser:cell.contactUserVO]];
+	} else if (_tableViewDataSource == HONContactsTableViewDataSourceSearchResults) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:cell.trivialUserVO]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:^(void) {
 			[cell invertSelected];

@@ -23,12 +23,23 @@ typedef NS_OPTIONS(NSInteger, HONContactsTableViewDataSource) {
 	HONContactsTableViewDataSourceEmpty			= 0 << 0,
 	HONContactsTableViewDataSourceMatchedUsers	= 1 << 0,
 	HONContactsTableViewDataSourceAddressBook	= 1 << 1,
-	HONContactsTableViewDataSourceSearchResults	= 1 << 2,
+	HONContactsTableViewDataSourceSearchResults	= 1 << 2
 };
 
+typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
+	HONContactsSendTypeNone		= 0 << 0,
+	HONContactsSendTypePhone	= 1 << 0,
+	HONContactsSendTypeEmail	= 1 << 1,
+	HONContactsSendTypeSMS		= 1 << 2
+};
 
-@interface HONContactsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
+typedef NS_ENUM(NSInteger, HONContactsActionSheetType) {
+	HONContactsActionSheetTypeShare = 0
+};
+
+@interface HONContactsViewController : HONViewController <UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
+	HONContactsSendType _contactsSendType;
 	
 	NSMutableArray *_cells;
 	NSMutableArray *_deviceContacts;

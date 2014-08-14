@@ -13,6 +13,7 @@
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view;
 @optional
 - (void)insetOverlayViewDidUnlock:(HONInsetOverlayView *)view;
+- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view;
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view;
 - (void)insetOverlayViewDidAccessContents:(HONInsetOverlayView *)view;
 
