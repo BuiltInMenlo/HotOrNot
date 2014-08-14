@@ -297,11 +297,32 @@
 - (void)_goNext {
 	NSLog(@"_clubName:[%@] _clubImagePrefix:[%@]", _clubName, _clubImagePrefix);
 	
-	if ([_clubName length] == 0)
-		[self _goCamera];
+	if ([_clubName length] == 0){
+		//[self _goCamera];
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"please_enter_club", nil)
+									message:@""
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+	}
 	
-	else
-		[self _validateClubNameWithAlerts:YES];
+	else{
+		if ([_clubImagePrefix length] == 0) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																message:NSLocalizedString(@"are_you_sure_create_club", nil)
+															   delegate:self
+													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+													  otherButtonTitles:NSLocalizedString(@"select_cover", nil), nil];
+			[alertView setTag:0];
+			[alertView show];
+
+		}
+		else{
+			[self _validateClubNameWithAlerts:YES];
+			_clubImagePrefix = @"";
+		}
+	}
+		
 }
 
 - (void)_goCamera {
@@ -403,6 +424,7 @@
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+	[viewController.navigationItem setTitle:NSLocalizedString(@"add_photo", nil)];
 }
 
 
@@ -583,6 +605,15 @@
 										  failure:imageFailureBlock];
 			}];
 		}
+	}
+}
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if(buttonIndex ==0)
+			[self _validateClubNameWithAlerts:YES];
+		else if(buttonIndex == 1)
+			[self _goCamera];
 	}
 }
 

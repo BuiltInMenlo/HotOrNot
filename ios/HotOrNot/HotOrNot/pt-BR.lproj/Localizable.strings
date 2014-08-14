@@ -126,6 +126,7 @@
 "real_profile" = "Sua foto do perfil ajuda a comunidade Selfieclub a conhecer sua verdadeira";
 "take_photo" = "Tirar Foto";
 "is_feeling" = "- está se sentindo…";
+"is_feeling2" = "está se sentindo...";
 "enter_pin" = "Digite o PIN";
 "invalid_pin" = "PIN inválido!";
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";
@@ -161,8 +162,10 @@
 "ok_access" = "Precisamos do seu OK para acessar o catálogo de endereços.";
 "tap_join" = "Eu criei o Selfieclub %@! Toque para participar: \nhttp://joinselfie.club/%@/%@";
 "alert_create_it" = "Gostaria de criá-lo?";
-
-
+"add_photo" = "Adicionar Foto";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
+"select_cover" = "Select cover";
 
 
 
