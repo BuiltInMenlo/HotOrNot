@@ -29,7 +29,7 @@
 @class HONSelfieCameraOverlayView;
 @protocol HONSelfieCameraOverlayViewDelegate <NSObject>
 - (void)cameraOverlayViewCloseCamera:(HONSelfieCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewSkipCamera:(HONSelfieCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewSkipPhoto:(HONSelfieCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONSelfieCameraOverlayView *)cameraOverlayView;

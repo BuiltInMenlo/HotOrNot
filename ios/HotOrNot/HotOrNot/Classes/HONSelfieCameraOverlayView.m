@@ -116,23 +116,28 @@
 
 #pragma mark - Navigation
 - (void)_goFlipCamera {
-	[self.delegate cameraOverlayViewChangeCamera:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewChangeCamera:)])
+		[self.delegate cameraOverlayViewChangeCamera:self];
 }
 
 - (void)_goToggleFlash {
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewChangeFlash:)])
 	[self.delegate cameraOverlayViewChangeFlash:self];
 }
 
 - (void)_goCameraRoll {
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewShowCameraRoll:)])
 	[self.delegate cameraOverlayViewShowCameraRoll:self];
 }
 
 - (void)_goCloseCamera {
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewCloseCamera:)])
 	[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
 - (void)_goSkipCamera {
-	[self.delegate cameraOverlayViewSkipCamera:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewSkipPhoto:)])
+	[self.delegate cameraOverlayViewSkipPhoto:self];
 }
 
 - (void)_goTakePhoto {
@@ -145,7 +150,8 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePhoto:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:)])
+		[self.delegate cameraOverlayViewTakePhoto:self];
 }
 
 - (void)_retrieveLastImage {

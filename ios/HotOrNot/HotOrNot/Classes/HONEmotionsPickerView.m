@@ -65,12 +65,12 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
         
-        UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		globalButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
-		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
-		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
-		[self addSubview:globalButton];
+//        UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		globalButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
+//		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
+//		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
+//		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
+//		[self addSubview:globalButton];
 		
 		
 		

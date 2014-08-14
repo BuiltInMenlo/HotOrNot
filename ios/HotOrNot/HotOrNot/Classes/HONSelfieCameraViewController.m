@@ -17,6 +17,7 @@
 
 #import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
+#import "UIImage+ImageEffects.h"
 
 #import "HONSelfieCameraViewController.h"
 #import "HONSelfieCameraOverlayView.h"
@@ -417,6 +418,7 @@
 	
 	NSLog(@"SOURCE:[%d]", self.imagePickerController.sourceType);
 	
+	_isBlurred = NO;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		float scale = ([[HONDeviceIntrinsics sharedInstance] isRetina4Inch]) ? 1.55f : 1.25f;
 		
@@ -440,11 +442,6 @@
 		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
 		}];
 	}
-	
-//	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-//		[self presentViewController:self.imagePickerController animated:NO completion:^(void) {
-//		}];
-//	}
 }
 
 - (void)cameraPreviewViewSubmit:(HONSelfieCameraPreviewView *)previewView withSubjects:(NSArray *)subjects {
@@ -474,20 +471,6 @@
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
 	[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
-	
-//	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
-//		[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-//			NSLog(@"---CLUB SELECT---CAMERA");
-//			_isFirstAppearance = YES;
-//			[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
-//		}];
-//		
-//	} else {
-//		NSLog(@"---CLUB SELECT---LIB");
-//		_isFirstAppearance = YES;
-//		[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 3 Club Selected"];
-//		[self.navigationController pushViewController:[[HONSelfieCameraSubmitViewController alloc] initWithSubmitParameters:_submitParams] animated:NO];
-//	}
 }
 
 - (void)cameraPreviewViewShowInviteContacts:(HONSelfieCameraPreviewView *)previewView {
@@ -581,8 +564,14 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	BOOL isSourceImageMirrored = (picker.sourceType == UIImagePickerControllerSourceTypeCamera && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront);
 	
+	_isBlurred = YES;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	_processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
+	_processedImage = (_isBlurred) ? [_processedImage applyBlurWithRadius:32.0
+																tintColor:[UIColor colorWithWhite:0.00 alpha:0.50]
+													saturationDeltaFactor:1.0
+																maskImage:nil] : _processedImage;
+	
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(_processedImage.size));
 	
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _processedImage.size.width, _processedImage.size.height)];
@@ -591,28 +580,13 @@
 	_processedImage = (isSourceImageMirrored) ? [[HONImageBroker sharedInstance] mirrorImage:[[HONImageBroker sharedInstance] createImageFromView:canvasView]] : [[HONImageBroker sharedInstance] createImageFromView:canvasView];
 	_previewView = [[HONSelfieCameraPreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withPreviewImage:_processedImage];
 	_previewView.delegate = self;
-    
+    _isBlurred = false;
 	
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[self.view addSubview:_previewView];
 	}];
-//
-//	HONViewController *emotionsViewConteroller = [[HONViewController alloc] init];
-//    emotionsViewConteroller.view = _previewView;
-//    [self.navigationController pushViewController:emotionsViewConteroller animated:YES];
-	
-	
-//	if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-//		[_cameraOverlayView submitStep:_previewView];
-//	
-//	} else {
-//		[self dismissViewControllerAnimated:NO completion:^(void) {
-//			[self.view addSubview:_previewView];
-//		}];
-//	}
 	
 	[self _uploadPhotos];
-	_isBlurred = false;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

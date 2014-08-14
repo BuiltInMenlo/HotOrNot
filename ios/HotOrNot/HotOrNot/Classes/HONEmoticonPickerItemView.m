@@ -6,14 +6,18 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 
 #import "UIImageView+AFNetworking.h"
 
 #import "HONEmoticonPickerItemView.h"
 #import "HONImageLoadingView.h"
 
-const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
-const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
+//const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
+//const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
+
+const CGRect kNormalFrame = {10.0f, 10.0f, 54.0f, 54.0f};
+const CGRect kActiveFrame = {5.0f, 5.0f, 64.0f, 64.0f};
 
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;
@@ -33,7 +37,11 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 		
 		_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		_imageView.image = [UIImage imageNamed:@"emojiButtonBG"];
-		_imageView.contentMode = UIViewContentModeScaleAspectFit;
+		_imageView.contentMode = UIViewContentModeRedraw;
+		_imageView.layer.borderColor = [UIColor clearColor].CGColor;
+		_imageView.layer.borderWidth = 2.5f;
+		_imageView.layer.shouldRasterize = YES;
+		_imageView.layer.rasterizationScale = 3.0f;
 		[self addSubview:_imageView];
 		
 		_imageLoadingView = [[HONImageLoadingView alloc] initInViewCenter:_imageView asLargeLoader:NO];
@@ -105,10 +113,9 @@ const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 //	}];
 	
 	
-	UIImageView *emojiImageView = [[UIImageView alloc] initWithFrame:kNormalFrame];
+	UIImageView *emojiImageView = [[UIImageView alloc] initWithFrame:CGRectInset(kNormalFrame, 5.0, 5.0)];
 	emojiImageView.alpha = 0.0;
 	[_imageView addSubview:emojiImageView];
-	
 	
 	void (^imageSuccessBlock)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) = ^void(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		emojiImageView.image = image;
