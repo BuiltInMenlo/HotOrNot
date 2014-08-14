@@ -649,8 +649,8 @@ static NSString * const kCamera = @"camera";
 			_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 			
 		} else {
-			[[[UIAlertView alloc] initWithTitle:@""
-										message:NSLocalizedString(@"hud_noResults", nil)
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"hud_noResults", nil)
+										message:@""
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];

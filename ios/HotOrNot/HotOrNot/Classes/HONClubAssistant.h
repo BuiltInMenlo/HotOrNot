@@ -25,7 +25,7 @@
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
-- (NSArray *)suggestedClubs;
+- (void)suggestedClubsWithCompletion:(void (^)(NSArray *clubs))completion;
 
 - (void)copyUserSignupClubToClipboardWithAlert:(BOOL)showsAlert;
 - (void)copyClubToClipBoard:(HONUserClubVO *)clubVO withAlert:(BOOL)showsAlert;
@@ -33,6 +33,8 @@
 - (HONUserClubVO *)suggestedAreaCodeClubVO;
 - (HONUserClubVO *)suggestedEmailClubVO:(NSArray *)domains;
 - (HONUserClubVO *)suggestedFamilyClubVO;
+- (void)suggestedSchoolClubVOWithCompletion:(void (^)(HONUserClubVO *schoolClubVO))completion;
+- (HONUserClubVO *)suggestedBaeClubVO;
 - (HONUserClubVO *)suggestedWorkplaceClubVO;
 
 - (void)writePreClubWithTitle:(NSString *)title andBlurb:(NSString *)blurb andCoverPrefixURL:(NSString *)coverPrefix;

@@ -48,15 +48,20 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_isFirstAppearance = YES;
-		
 		_clubName = @"";
-		_clubBlurb = @"";
-		_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
+		_isFirstAppearance = YES;
 		
 		_totaAlbumAssets = 0;
 		_library = [[ALAssetsLibrary alloc] init];
 		[self _searchForAlbum];
+	}
+	
+	return (self);
+}
+
+- (id)initWithClubTitle:(NSString *)title {
+	if ((self = [self init])) {
+		_clubName = title;
 	}
 	
 	return (self);
@@ -190,6 +195,9 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
+	_clubBlurb = @"";
+	_clubImagePrefix = [[HONClubAssistant sharedInstance] defaultCoverImageURL];
+	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_addclub", nil)];//@"Add Club"];
 	[self.view addSubview:headerView];
 	
@@ -239,7 +247,7 @@
 	_clubNameTextField.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 	_clubNameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_clubNameTextField.placeholder = NSLocalizedString(@"club_name", nil); //@"Club Name";
-	_clubNameTextField.text = @"";
+	_clubNameTextField.text = _clubName;
 	[_clubNameTextField setTag:0];
 	_clubNameTextField.delegate = self;
 	[self.view addSubview:_clubNameTextField];

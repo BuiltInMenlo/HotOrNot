@@ -59,7 +59,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		
 		
 		UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 50.0, 160.0, 50.0);
+		deleteButton.frame = CGRectMake(0.0, self.frame.size.height - 49.0, 320.0, 49.0);
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_nonActive"] forState:UIControlStateNormal];
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];

@@ -10,4 +10,5 @@
 #import "HONViewController.h"
 
 @interface HONCreateClubViewController : HONViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
+- (id)initWithClubTitle:(NSString *)title;
 @end

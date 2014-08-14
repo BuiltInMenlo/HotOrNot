@@ -1588,9 +1588,9 @@ static HONAPICaller *sharedInstance = nil;
 	}];
 }
 
-- (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion {
+- (void)retrieveLocalSchoolTypeClubsWithAreaCode:(NSString *)areaCode completion:(void (^)(id result))completion {
 	NSString *apiEndPt = @"http://api.devint.selfieclubapp.com";
-	NSString *clubLabel = [@"" stringFromInt:[[HONClubAssistant sharedInstance] labelIDForAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber]]];
+	NSString *clubLabel = [@"" stringFromInt:[[HONClubAssistant sharedInstance] labelIDForAreaCode:areaCode]];
 	
 	SelfieclubJSONLog(@"_/:[%@]—//> (%@/%@)\n\n", [[self class] description], apiEndPt, [NSString stringWithFormat:@"club/label/%@/", clubLabel]);
 	AFHTTPClient *httpClient = [[HONAPICaller sharedInstance] getHttpClientWithHMACUsingBasePath:apiEndPt];
@@ -1613,7 +1613,10 @@ static HONAPICaller *sharedInstance = nil;
 		SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], apiEndPt, [NSString stringWithFormat:@"club/label/%@/", clubLabel], [error localizedDescription]);
 		[[HONAPICaller sharedInstance] showDataErrorHUD];
 	}];
-	
+}
+
+- (void)searchForClubsByClubName:(NSString *)name completion:(void (^)(id result))completion {
+	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:completion];
 }
 
 //- (void)retrieveUserClubsWithUserID:(int)userID completion:(void (^)(id result))completion {

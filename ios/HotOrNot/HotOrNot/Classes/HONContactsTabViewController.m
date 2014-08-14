@@ -19,6 +19,7 @@
 #import "HONRegisterViewController.h"
 #import "HONInsetOverlayView.h"
 #import "HONSelfieCameraViewController.h"
+#import "HONCreateClubViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONUserProfileViewController.h"
 #import "HONInviteClubsViewController.h"
@@ -207,10 +208,6 @@ static NSString * const kCamera = @"camera";
 	[super _updateDeviceContactsWithMatchedUsers];
 }
 
-- (void)_promptWithInviteInsetOverlay {
-	NSLog(@">>|<< _promptWithInviteInsetOverlay >>|<<");
-}
-
 
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
@@ -265,17 +262,30 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[[*:*]] tabBannerView:joinAreaCodeClub:[%@]", clubVO.clubName);
 	
 	_selectedClubVO = clubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-	[alertView setTag:1];
-	[alertView show];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
+//	_selectedClubVO = clubVO;
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
+//													   delegate:self
+//											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
+//	[alertView setTag:1];
+//	[alertView show];
 }
 
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)tabBannerView:(HONTabBannerView *)bannerView joinSchoolClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[[*:*]] tabBannerView:joinSchoolClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
 	
 	_selectedClubVO = clubVO;
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
@@ -285,6 +295,14 @@ static NSString * const kCamera = @"camera";
 											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
 	[alertView setTag:1];
 	[alertView show];
+}
+
+- (void)tabBannerView:(HONTabBannerView *)bannerView createBaeClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[[*:*]] tabBannerView:createBaeClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
