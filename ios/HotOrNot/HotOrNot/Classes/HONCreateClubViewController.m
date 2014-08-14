@@ -315,7 +315,7 @@
 	}
 	
 	else{
-		if ([_clubImagePrefix length] == 0) {
+		if ( ([_clubImagePrefix length] == 0) || [_clubImagePrefix isEqualToString: [[HONClubAssistant sharedInstance] defaultCoverImageURL]] ) {
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 																message:NSLocalizedString(@"are_you_sure_create_club", nil)
 															   delegate:self
