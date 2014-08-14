@@ -54,9 +54,6 @@
 		[_headerBGView addSubview:_flipButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_cancelButton.frame = CGRectMake(0.0, 0.0, 114.0, 64.0);
-//		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_nonActive"] forState:UIControlStateNormal];
-//		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraCancelButton_Active"] forState:UIControlStateHighlighted];
 		_cancelButton.frame = CGRectMake(7.0, 7.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cameraX_Active"] forState:UIControlStateHighlighted];
@@ -64,11 +61,11 @@
 		[_headerBGView addSubview:_cancelButton];
 		
 		_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_skipButton.frame = CGRectMake(270, [UIScreen mainScreen].bounds.size.height - 51.0, 44.0, 44.0);
+		_skipButton.frame = CGRectMake(270.0, [UIScreen mainScreen].bounds.size.height - 51.0, 44.0, 44.0);
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_nonActive"] forState:UIControlStateNormal];
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipArrow_Active"] forState:UIControlStateHighlighted];
 		[_skipButton addTarget:self action:@selector(_goSkipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[_headerBGView addSubview:_skipButton];
+		[self addSubview:_skipButton];
 		
 		
 //		_changeTintButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -122,22 +119,24 @@
 
 - (void)_goToggleFlash {
 	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewChangeFlash:)])
-	[self.delegate cameraOverlayViewChangeFlash:self];
+		[self.delegate cameraOverlayViewChangeFlash:self];
 }
 
 - (void)_goCameraRoll {
 	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewShowCameraRoll:)])
-	[self.delegate cameraOverlayViewShowCameraRoll:self];
+		[self.delegate cameraOverlayViewShowCameraRoll:self];
 }
 
 - (void)_goCloseCamera {
 	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewCloseCamera:)])
-	[self.delegate cameraOverlayViewCloseCamera:self];
+		[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
 - (void)_goSkipCamera {
-	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewSkipPhoto:)])
-	[self.delegate cameraOverlayViewSkipPhoto:self];
+	NSLog(@"/:: _goSkipCamera ::/");
+	
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:includeFilter:)])
+		[self.delegate cameraOverlayViewTakePhoto:self includeFilter:YES];
 }
 
 - (void)_goTakePhoto {
@@ -150,8 +149,8 @@
 		}];
 	}];
 	
-	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:)])
-		[self.delegate cameraOverlayViewTakePhoto:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePhoto:includeFilter:)])
+		[self.delegate cameraOverlayViewTakePhoto:self includeFilter:NO];
 }
 
 - (void)_retrieveLastImage {

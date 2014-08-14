@@ -68,7 +68,6 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark -
 #pragma mark - Data Calls
-
 #pragma mark - Data Handling
 
 #pragma mark - View lifecycle
@@ -85,8 +84,12 @@ static NSString * const kCamera = @"camera";
 	if ([[keychain objectForKey:CFBridgingRelease(kSecAttrAccount)] length] == 0)
 		[self _goRegistration];
 	
-	else
+	else {
 		[[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+			[[HONClubAssistant sharedInstance] writeUserClubs:result];
+		}];
+	}
 }
 
 - (void)viewDidLoad {
@@ -108,6 +111,10 @@ static NSString * const kCamera = @"camera";
 						 _tabBannerView.frame = CGRectOffset(_tabBannerView.frame, 0.0, -_tabBannerView.frame.size.height);
 					 } completion:^(BOOL finished) {
 					 }];
+	
+	[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
+		[[HONClubAssistant sharedInstance] writeUserClubs:result];
+	}];
 }
 
 
@@ -151,9 +158,7 @@ static NSString * const kCamera = @"camera";
 - (void)_completedFirstRun:(NSNotification *)notification {
 	NSLog(@"::|> _completedFirstRun <|::");
 	
-	NSLog(@"%@._completedFirstRun - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"kABAuthorizationStatusNotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"kABAuthorizationStatusDenied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"kABAuthorizationStatusAuthorized" : @"OTHER");
-	
-	[self _retreiveUserClubs];
+	NSLog(@"%@._completedFirstRun - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"Denied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 	[self _submitPhoneNumberForMatching];
 	
 	if (_insetOverlayView == nil)
@@ -167,11 +172,8 @@ static NSString * const kCamera = @"camera";
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
 	
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
+	else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined)
 		[self _promptForAddressBookPermission];
-	
-	else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[self _retrieveDeviceContacts];
 	
 	else
 		[self _promptForAddressBookAccess];
@@ -310,7 +312,6 @@ static NSString * const kCamera = @"camera";
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
 	[navigationController setNavigationBarHidden:YES];
-	
 	[self presentViewController:navigationController animated:YES completion:^(void) {
 	}];
 }

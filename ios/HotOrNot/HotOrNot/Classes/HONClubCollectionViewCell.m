@@ -110,12 +110,12 @@
 	if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypePending) {
 		_badgeImageView.image = [UIImage imageNamed:@"inviteOverlay"];
 	
-	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
-		_badgeImageView.image = [UIImage imageNamed:@"suggestionOverlay"];
-	
-	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
-		_badgeImageView.image = [UIImage imageNamed:@"lockedOverlay"];
-		_badgeImageView.hidden = YES;
+//	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeSuggested) {
+//		_badgeImageView.image = [UIImage imageNamed:@"suggestionOverlay"];
+//	
+//	} else if (_clubVO.clubEnrollmentType == HONClubEnrollmentTypeThreshold) {
+//		_badgeImageView.image = [UIImage imageNamed:@"lockedOverlay"];
+//		_badgeImageView.hidden = YES;
 	}
 }
 

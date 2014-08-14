@@ -65,15 +65,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
         
-//        UIButton *globalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		globalButton.frame = CGRectMake(160.0, self.frame.size.height - 50.0, 160.0, 50.0);
-//		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_nonActive"] forState:UIControlStateNormal];
-//		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
-//		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
-//		[self addSubview:globalButton];
-		
-		
-		
 //		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
 //		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
 //		__block int cnt = 0;
@@ -186,22 +177,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[self.delegate emotionsPickerView:self deselectedEmotion:(HONEmotionVO *)[_selectedEmotions lastObject]];
 	
 	[_selectedEmotions removeLastObject];
-}
--(void)_goGlobal {
-    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-//    [self.delegate emotionsPickerViewShowActionSheet:self];
-    _isGlobal = !_isGlobal;
-    if(_isGlobal){
-        _bgImageView.image = [UIImage imageNamed:@"cameraEmojiBoardBackground_Paid"];
-        for(UIView *view in _pageViews){
-            view.hidden = YES;
-        }
-    } else {
-        _bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
-        for(UIView *view in _pageViews){
-            view.hidden = NO;
-        }
-    }
 }
 
 

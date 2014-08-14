@@ -209,6 +209,9 @@ static NSString * const kCamera = @"camera";
 	_refreshControl = [[UIRefreshControl alloc] init];
 	[_refreshControl addTarget:self action:@selector(_goDataRefresh:) forControlEvents:UIControlEventValueChanged];
 	[_tableView addSubview: _refreshControl];
+	
+	if ([_timelineItems count] == 0)
+		[self _retrieveTimeline];
 }
 
 - (void)viewDidLoad {
@@ -227,8 +230,6 @@ static NSString * const kCamera = @"camera";
 	
 	NSLog(@"newsTab_total:[%d]", [HONAppDelegate totalForCounter:@"newsTab"]);
 	[_activityHeaderView updateActivityBadge];
-	
-//	[self _retrieveTimeline];
 }
 
 
@@ -292,7 +293,6 @@ static NSString * const kCamera = @"camera";
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
-
 
 
 #pragma mark - TabBannerView Delegates

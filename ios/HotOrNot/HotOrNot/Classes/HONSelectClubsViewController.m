@@ -42,7 +42,6 @@
 	
 	if ([[[HONClubAssistant sharedInstance] fetchUserClubs] count] == 0) {
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
-			[[HONClubAssistant sharedInstance] writeUserClubs:result];
 			
 			for (NSString *key in @[@"owned", @"member"]) {
 				NSMutableArray *clubIDs = [_clubIDs objectForKey:key];

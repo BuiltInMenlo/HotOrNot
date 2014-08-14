@@ -33,11 +33,7 @@ typedef NS_OPTIONS(NSUInteger, HONContactsSendType) {
 	HONContactsSendTypeSMS		= 1 << 2
 };
 
-typedef NS_ENUM(NSInteger, HONContactsActionSheetType) {
-	HONContactsActionSheetTypeShare = 0
-};
-
-@interface HONContactsViewController : HONViewController <UIActionSheetDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface HONContactsViewController : HONViewController <UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate> {
 	HONContactsTableViewDataSource _tableViewDataSource;
 	HONContactsSendType _contactsSendType;
 	
@@ -59,12 +55,11 @@ typedef NS_ENUM(NSInteger, HONContactsActionSheetType) {
 - (void)_promptForAddressBookAccess;
 - (void)_promptForAddressBookPermission;
 
-- (void)_retreiveUserClubs;
+- (void)_submitPhoneNumberForMatching;
+- (void)_retrieveDeviceContacts;
 - (void)_sendEmailContacts;
 - (void)_sendPhoneContacts;
 - (void)_searchUsersWithUsername:(NSString *)username;
-- (void)_retrieveDeviceContacts;
-- (void)_submitPhoneNumberForMatching;
 
 - (void)_updateDeviceContactsWithMatchedUsers;
 -(NSDictionary *)_populateSegmentedDictionary;
