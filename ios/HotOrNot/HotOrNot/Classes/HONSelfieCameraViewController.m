@@ -45,6 +45,7 @@
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL isUploadComplete;
+@property (nonatomic) BOOL isBlurred;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) int selfieAttempts;
 @end
@@ -377,6 +378,7 @@
 }
 
 - (void)cameraOverlayViewTakePhoto:(HONSelfieCameraOverlayView *)cameraOverlayView {
+	_isBlurred = false;
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 2 Take Photo"];
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -386,6 +388,14 @@
 //	_progressHUD.taskInProgress = YES;
 	
 	[self.imagePickerController takePicture];
+}
+
+
+- (void)cameraOverlayViewSkipPhoto:(HONSelfieCameraOverlayView *)cameraOverlayView {
+	_isBlurred = true;
+	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Camera Step 2 Take Photo"];
+	[self.imagePickerController takePicture];
+
 }
 
 
@@ -602,6 +612,7 @@
 //	}
 	
 	[self _uploadPhotos];
+	_isBlurred = false;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

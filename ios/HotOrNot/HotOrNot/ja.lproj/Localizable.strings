@@ -127,6 +127,7 @@
 "real_profile" = "プロフィール写真があればSelfieclubコミュニティーがあなたをもっとよく知ることができます";
 "take_photo" = "写真を撮る";
 "is_feeling" = "- 感じていること...";
+"is_feeling2" = "感じていること...";
 "enter_pin" = "Pinを入力する";
 "invalid_pin" = "Pinが無効です!";
 "invalid_pin_msg" = "Pin番号は4ケタにしてください";
@@ -166,7 +167,10 @@
 "alert_create_it" = "それを作成しますか?";
 "club_notfound" = "クラブが見つかりません!";
 "want_invite" = "%@に友人を招待しますか?";
-
+"add_photo" = "写真追加";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
+"select_cover" = "Select cover";
 
 
 

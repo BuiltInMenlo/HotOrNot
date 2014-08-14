@@ -127,6 +127,7 @@
 "real_profile" = "Your profile photo helps the Selfieclub community know your real.";
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
+"is_feeling2" = "is feeling...";
 "enter_pin" = "Enter Pin";
 "invalid_pin" = "Invalid Pin!";
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";
@@ -164,8 +165,10 @@
 "alert_create_it" = "Would you like to create it?";
 "club_notfound" = "Club Not Found!";
 "want_invite" = "Want to invite friends to %@?";
-
-
+"add_photo" = "Add Photo";
+"please_enter_club" = "Please enter a club name!";
+"are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
+"select_cover" = "Select cover";
 
 
 

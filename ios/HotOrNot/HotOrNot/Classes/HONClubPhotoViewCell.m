@@ -119,6 +119,17 @@
 	timeLabel.text = [[[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate] stringByAppendingFormat:format, [_clubPhotoVO.subjectNames count]];
 	[self.contentView addSubview:timeLabel];
 	
+	UILabel *feelingLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, [UIScreen mainScreen].bounds.size.height - 208.0, 200.0, 26.0)];
+	feelingLabel.backgroundColor = [UIColor clearColor];
+	feelingLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:19];
+	feelingLabel.textColor = [UIColor whiteColor];
+	feelingLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+	//feelingLabel.backgroundColor = [UIColor redColor];
+	feelingLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	
+	feelingLabel.text = NSLocalizedString(@"is_feeling2", nil);
+	[self.contentView addSubview:feelingLabel];
+	
 	UIScrollView *emoticonsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 168.0, 320.0, 84.0)];
 	emoticonsScrollView.contentSize = CGSizeMake([_clubPhotoVO.subjectNames count] * 90.0, emoticonsScrollView.frame.size.height);
 	emoticonsScrollView.showsHorizontalScrollIndicator = NO;
