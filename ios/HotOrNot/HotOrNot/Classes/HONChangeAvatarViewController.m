@@ -12,6 +12,7 @@
 
 #import "NSString+DataTypes.h"
 #import "UIImage+fixOrientation.h"
+#import "UIImage+ImageEffects.h"
 
 #import "ImageFilter.h"
 #import "MBProgressHUD.h"
@@ -27,6 +28,7 @@
 @property (nonatomic, strong) NSString *imagePrefix;
 @property (nonatomic) int selfieAttempts;
 @property (nonatomic) BOOL isFirstAppearance;
+@property (nonatomic) BOOL isFiltered;
 @end
 
 @implementation HONChangeAvatarViewController
@@ -35,6 +37,7 @@
 	if ((self = [super init])) {
 		_selfieAttempts = 0;
 		_isFirstAppearance = YES;
+		_isFiltered = NO;
 	}
 	
 	return (self);
@@ -127,12 +130,20 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
-	
+	processedImage = (_isFiltered) ? [processedImage applyBlurWithRadius:32.0
+															   tintColor:[UIColor colorWithWhite:0.00 alpha:0.50]
+												   saturationDeltaFactor:1.0
+															   maskImage:nil] : processedImage;
 	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
 	
 	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 	
 	[self _uploadPhotos:processedImage];
 	[self dismissViewControllerAnimated:NO completion:^(void) {}];
@@ -167,7 +178,6 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
@@ -191,14 +201,16 @@
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Loading…";
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
+	_isFiltered = isFiltered;
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;

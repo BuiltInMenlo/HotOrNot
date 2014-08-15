@@ -173,5 +173,10 @@
 
 
 "activity_you" = "You";
-
+"no_selectclub_msg2" = "You have to choose at least one club to invite %@ to.";
+"alert_noClubs" = "No clubs found in your area code!";
+"alert_nofriends_t" = "No Friend Selected!";
+"alert_nofriends_m" = "You need to choose some friends to invite to %@";
+"alert_dupclub_t" = "Duplicate Club!";
+"alert_dupclub_m" = "You've already made a %@ club! Choose another name.";
 

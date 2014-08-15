@@ -347,7 +347,7 @@
 	[self.view addSubview:_clubNameLabel];
 	
 	_usernameCheckImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
-	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 65.0);
+	_usernameCheckImageView.frame = CGRectOffset(_usernameCheckImageView.frame, 258.0, 51.0);
 	_usernameCheckImageView.alpha = 0.0;
 	[self.view addSubview:_usernameCheckImageView];
 	
@@ -810,8 +810,11 @@
 	
 	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
 	
+	_usernameCheckImageView.alpha = (int)([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound || range.location == 25);
+	_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
+	
 	if ([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound)
-		return (false);
+		return (NO);
 	
 	return ([textField.text length] < 25 || [string isEqualToString:@""]);
 }
@@ -825,7 +828,7 @@
 //	if (textField.tag == 0) {
 //		_usernameCheckImageView.alpha = 1.0;
 //		_usernameCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];
-//	
+//
 //	} else if (textField.tag == 1) {
 //		_phoneCheckImageView.alpha = 1.0;
 //		_phoneCheckImageView.image = [UIImage imageNamed:([textField.text length] == 0) ? @"xIcon" : @"checkmarkIcon"];

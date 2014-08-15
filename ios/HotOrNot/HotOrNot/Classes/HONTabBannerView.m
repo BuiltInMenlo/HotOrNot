@@ -57,14 +57,13 @@
 				UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(_scrollView.frame.size.width * tot, 0.0, 320.0, 65.0)];
 				[_scrollView addSubview:imageView];
 				
-				UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 190.0, 20.0)];
+				UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 205.0, 20.0)];
 				titleLabel.backgroundColor = [UIColor clearColor];
 				titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 				titleLabel.textColor = [UIColor blackColor];
-				titleLabel.text = vo.clubName;
 				[imageView addSubview:titleLabel];
 				
-				UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 190.0, 14.0)];
+				UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 205.0, 14.0)];
 				subtitleLabel.backgroundColor = [UIColor clearColor];
 				subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 				subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
@@ -77,15 +76,25 @@
 				if (vo.clubID == -1) {
 					_areaCodeClubVO = vo;
 					imageView.image = [UIImage imageNamed:@"locationBanner"];
-					subtitleLabel.text = @"Stay connected. Join now!";
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", [[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber]];
+					subtitleLabel.text = @"Represent your area code.";
 					[button addTarget:self action:@selector(_goAreaCode) forControlEvents:UIControlEventTouchUpInside];
 					
 				} else if (vo.clubID == -2) {
 					_familyClubVO = vo;
 					imageView.image = [UIImage imageNamed:@"familyBanner"];
-					subtitleLabel.text = @"Stay connected. Join now!";
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@!", _familyClubVO.clubName];
+					subtitleLabel.text = @"Stay connected.";
 					[button addTarget:self action:@selector(_goFamily) forControlEvents:UIControlEventTouchUpInside];
+				
+				} else if (vo.clubID == -5) {
+					_baeClubVO = vo;
+					imageView.image = [UIImage imageNamed:@"baeBanner"];
+					titleLabel.text = [NSString stringWithFormat:@"Join the %@ Club!", _baeClubVO.clubName];
+					subtitleLabel.text = @"A private club.";
+					[button addTarget:self action:@selector(_goBae) forControlEvents:UIControlEventTouchUpInside];
 				}
+
 				
 				tot++;
 			}
@@ -95,16 +104,16 @@
 		imageView.frame = CGRectOffset(imageView.frame, _scrollView.frame.size.width * [_clubs count], 0.0);
 		[_scrollView addSubview:imageView];
 		
-		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 190.0, 20.0)];
+		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 17.0, 205.0, 20.0)];
 		titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		titleLabel.textColor = [UIColor blackColor];
-		titleLabel.text = @"1000's of Stickers!";
+		titleLabel.text = @"Over 1M stickers!";
 		[imageView addSubview:titleLabel];
 		
-		UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 190.0, 14.0)];
+		UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x, 39.0, 205.0, 14.0)];
 		subtitleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:11];
 		subtitleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
-		subtitleLabel.text = @"Invite now!";
+		subtitleLabel.text = @"Invite friends to unlock.";
 		[imageView addSubview:subtitleLabel];
 		
 		UIButton *unlockButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -179,7 +188,7 @@
 //						subtitleLabel.text = @"Invite only your BAEs!!";
 //						[button addTarget:self action:@selector(_goBae) forControlEvents:UIControlEventTouchUpInside];
 //					}
-//					
+//
 //					tot++;
 //				}
 //			}];

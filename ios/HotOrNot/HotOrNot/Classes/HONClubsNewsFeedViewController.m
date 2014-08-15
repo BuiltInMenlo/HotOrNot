@@ -144,9 +144,6 @@ static NSString * const kCamera = @"camera";
 		for (NSDictionary *dict in _dictClubs) {
 			[[dict objectForKey:@"submissions"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				NSDictionary *photoDict = (NSDictionary *)obj;
-				
-				NSLog(@"DICT:[%@] PHOTO:[%@]", dict, photoDict);
-				
 				[_dictClubPhotos addObject:photoDict];
 				[_clubVOPhotoIDs setValue:dict forKey:[photoDict objectForKey:@"challenge_id"]];
 			}];
@@ -450,8 +447,6 @@ static NSString * const kCamera = @"camera";
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	
-	NSLog(@"TOTAL PHOTOS:[%d]", [_timelineItems count]);
 	return ((section == 0) ? 1 : [_timelineItems count]);
 }
 
@@ -479,6 +474,9 @@ static NSString * const kCamera = @"camera";
 		cell.clubVO = clubVO;
 		cell.clubPhotoVO = clubPhotoVO;
 		
+		if (!tableView.decelerating)
+			[cell toggleImageLoading:YES];
+		
 //		[cell setClubPhotoIndex:[cell.clubVO.submissions count] - 1];
 	}
 	
@@ -486,6 +484,11 @@ static NSString * const kCamera = @"camera";
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONClubNewsFeedViewCell *viewCell = (HONClubNewsFeedViewCell *)cell;
+	[viewCell toggleImageLoading:NO];
 }
 
 
@@ -563,6 +566,16 @@ static NSString * const kCamera = @"camera";
 			[alertView show];
 		}
 	}
+}
+
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	NSArray *visibleCells = [_tableView visibleCells];
+	[visibleCells enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		HONClubNewsFeedViewCell *cell = (HONClubNewsFeedViewCell *)obj;
+		[cell toggleImageLoading:YES];
+	}];
 }
 
 

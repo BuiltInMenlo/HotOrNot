@@ -76,7 +76,8 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+	
+		[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goRefresh {
@@ -84,28 +85,36 @@
 }
 
 - (void)_goSubmit {
-	if (_contactUserVO != nil) {
-		for (HONUserClubVO *vo in _selectedClubs) {
-			[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
-				[[HONContactsAssistant sharedInstance] writeContactUser:_contactUserVO toInvitedClub:vo];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-			}];
+	if ([_selectedClubs count] == 0) {
+		NSLog(@"******* NON SELECTED ******");
+		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_nofriends_t", nil)
+									message:[NSString stringWithFormat:NSLocalizedString(@"alert_nofriends_m", nil), (_trivialUserVO != nil) ? _trivialUserVO.username : _contactUserVO.fullName]
+								   delegate:nil
+						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+						  otherButtonTitles:nil] show];
+		
+	} else {
+		if (_contactUserVO != nil) {
+			for (HONUserClubVO *vo in _selectedClubs) {
+				[[HONAPICaller sharedInstance] inviteNonAppUsers:@[_contactUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+					[[HONContactsAssistant sharedInstance] writeContactUser:_contactUserVO toInvitedClub:vo];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+				}];
 
+			}
 		}
-	}
-	
-	if (_trivialUserVO != nil) {
-		for (HONUserClubVO *vo in _selectedClubs) {
-			[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
-				[[HONContactsAssistant sharedInstance] writeTrivialUser:_trivialUserVO toInvitedClub:vo];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
-
-			}];
+		
+		if (_trivialUserVO != nil) {
+			for (HONUserClubVO *vo in _selectedClubs) {
+				[[HONAPICaller sharedInstance] inviteInAppUsers:@[_trivialUserVO] toClubWithID:vo.clubID withClubOwnerID:vo.ownerID completion:^(NSDictionary *result) {
+					[[HONContactsAssistant sharedInstance] writeTrivialUser:_trivialUserVO toInvitedClub:vo];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_TOTAL_UPDATED" object:nil];
+				}];
+			}
 		}
+		
+		[super _goSubmit];
 	}
-	
-	
-	[super _goSubmit];
 }
 
 - (void)_goSelectAllToggle {

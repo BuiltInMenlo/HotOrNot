@@ -1614,6 +1614,10 @@ static HONAPICaller *sharedInstance = nil;
 			SelfieclubJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], apiEndPt, [NSString stringWithFormat:@"club/label/%@/", clubLabel], [error localizedDescription]);
 			[[HONAPICaller sharedInstance] showDataErrorHUD];
 		}];
+	
+	} else {
+		if (completion)
+			completion(@{@"clubs"	: @[]});
 	}
 }
 

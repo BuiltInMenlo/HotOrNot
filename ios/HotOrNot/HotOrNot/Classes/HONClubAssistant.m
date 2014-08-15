@@ -67,7 +67,7 @@ static HONClubAssistant *sharedInstance = nil;
 
 - (NSString *)rndCoverImageURL {
 	NSArray *rndCovers = [[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes];
-	return ([rndCovers objectAtIndex:(arc4random() % [rndCovers count] - 1)]);
+	return ([rndCovers objectAtIndex:(arc4random() % ([rndCovers count] - 1))]);
 }
 
 
@@ -225,7 +225,7 @@ static HONClubAssistant *sharedInstance = nil;
 		[clubs addObject:schoolClubVO];
 	
 	// bae
-	HONUserClubVO *baeClubVO = [[HONClubAssistant sharedInstance] suggestedBaeClubVO];
+	HONUserClubVO *baeClubVO = [[HONClubAssistant sharedInstance] suggestedBAEClubVO];
 	if (baeClubVO != nil)
 		[clubs addObject:baeClubVO];
 	
@@ -332,14 +332,13 @@ static HONClubAssistant *sharedInstance = nil;
 		for (NSString *key in segmentedDict) {
 			NSLog(@"KEY:[%@]-=-(%d)", key, [[segmentedDict objectForKey:key] count]);
 			if ([key length] > 0 && [[segmentedDict objectForKey:key] count] >= 3) {
-				clubName = [NSString stringWithFormat:@"%@ Family", key];
+				clubName = [NSString stringWithFormat:@"%@ Club", key];
 				break;
 			}
 		}
 	}
 	
 	clubName = ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) ? @"" : clubName;
-	
 	if ([clubName length] > 1) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-5" forKey:@"id"];
@@ -353,13 +352,13 @@ static HONClubAssistant *sharedInstance = nil;
 	return (vo);
 }
 
-- (HONUserClubVO *)suggestedBaeClubVO {
+- (HONUserClubVO *)suggestedBAEClubVO {
 	HONUserClubVO *vo = nil;
 	
-	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"My Bae"]) {
+	if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:@"My BAE"]) {
 		NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{}] mutableCopy];
 		[dict setValue:@"-5" forKey:@"id"];
-		[dict setValue:@"My Bae" forKey:@"name"];
+		[dict setValue:@"My BAE" forKey:@"name"];
 		[dict setValue:[[HONClubAssistant sharedInstance] defaultCoverImageURL] forKey:@"img"];
 		[dict setValue:@"SUGGESTED" forKey:@"club_type"];
 		vo = [HONUserClubVO clubWithDictionary:dict];

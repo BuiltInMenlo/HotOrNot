@@ -40,7 +40,6 @@
 												  forKeys:@[@"owned",
 															@"member"]];
 	
-	if ([[[HONClubAssistant sharedInstance] fetchUserClubs] count] == 0) {
 		[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 			
 			for (NSString *key in @[@"owned", @"member"]) {
@@ -57,34 +56,32 @@
 				[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
 			
 			_segmentedClubs = [self _populateSegmentedDictionary];
-			
-			_selectedClubs = [NSMutableArray array];
 			_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
 			
 			[self _didFinishDataRefresh];
 		}];
 	
-	} else {
-		for (NSString *key in @[@"owned", @"member"]) {
-			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
-			
-			for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key])
-				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
-			
-			[_dictClubs addObjectsFromArray:[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]];
-			[_clubIDs setValue:clubIDs forKey:key];
-		}
-		
-		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
-			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
-		
-		_segmentedClubs = [self _populateSegmentedDictionary];
-		
-		_selectedClubs = [NSMutableArray array];
-		_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
-		
-		[self _didFinishDataRefresh];
-	}
+//	} else {
+//		for (NSString *key in @[@"owned", @"member"]) {
+//			NSMutableArray *clubIDs = [_clubIDs objectForKey:key];
+//			
+//			for (NSDictionary *dict in [[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key])
+//				[clubIDs addObject:[NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]]];
+//			
+//			[_dictClubs addObjectsFromArray:[[[HONClubAssistant sharedInstance] fetchUserClubs] objectForKey:key]];
+//			[_clubIDs setValue:clubIDs forKey:key];
+//		}
+//		
+//		for (NSDictionary *dict in [NSMutableArray arrayWithArray:[_dictClubs sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO]]]])
+//			[_allClubs addObject:[HONUserClubVO clubWithDictionary:dict]];
+//		
+//		_segmentedClubs = [self _populateSegmentedDictionary];
+//		
+//		_selectedClubs = [NSMutableArray array];
+//		_viewCells = [NSMutableArray arrayWithCapacity:[_allClubs count]];
+//		
+//		[self _didFinishDataRefresh];
+//	}
 }
 
 
@@ -114,6 +111,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
+	_selectedClubs = [NSMutableArray array];
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_tableView = [[HONTableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, self.view.frame.size.height - (kNavHeaderHeight + 87.0))];
@@ -196,6 +194,8 @@
 	
 	if (![_selectedClubs containsObject:userClubVO])
 		[_selectedClubs addObject:userClubVO];
+	
+	[(HONClubToggleViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]] toggleSelected:([_selectedClubs count] == [_allClubs count])];
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell deselectedClub:(HONUserClubVO *)userClubVO {
@@ -204,8 +204,9 @@
 	if ([_selectedClubs containsObject:userClubVO])
 		[_selectedClubs removeObject:userClubVO];
 	
-	HONClubToggleViewCell *toggleAllCell = (HONClubToggleViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
-	[toggleAllCell toggleSelected:NO];
+	[(HONClubToggleViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]] toggleSelected:([_selectedClubs count] == [_allClubs count])];
+	//HONClubToggleViewCell *toggleAllCell = (HONClubToggleViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+	//[toggleAllCell toggleSelected:NO];
 }
 
 - (void)clubToggleViewCell:(HONClubToggleViewCell *)viewCell selectAllToggled:(BOOL)isSelected {
@@ -237,13 +238,14 @@
 	if (indexPath.section == 0) {
 		cell.userClubVO = (HONUserClubVO *)[_allClubs objectAtIndex:indexPath.row];
 		
-		if (_clubID == cell.userClubVO.clubID)
-			[cell toggleSelected:YES];
+		[_selectedClubs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			HONUserClubVO *vo = (HONUserClubVO *)obj;
+			NSLog(@"CELL:[%d] -=- [%d]VO", cell.userClubVO.clubID, vo.clubID);
+			[cell toggleSelected:(vo.clubID == cell.userClubVO.clubID)];
+			*stop = cell.isSelected;
+		}];
 		
-		if ([_viewCells containsObject:cell])
-			[_viewCells replaceObjectAtIndex:indexPath.row withObject:cell];
-		
-		else
+		if (![_viewCells containsObject:cell])
 			[_viewCells addObject:cell];
 	
 	} else {
@@ -251,7 +253,7 @@
 		captionLabel.backgroundColor = [UIColor clearColor];
 		captionLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:16];
 		captionLabel.textColor = [UIColor blackColor];
-		captionLabel.text = NSLocalizedString(@"select_allclubs", nil);//@"Select all clubs";
+		captionLabel.text = NSLocalizedString(@"select_allclubs", @"Select all clubs");
 		[cell.contentView addSubview:captionLabel];
 	}
 	
@@ -260,6 +262,13 @@
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONClubToggleViewCell *viewCell = (HONClubToggleViewCell *)cell;
+	
+	if ([_viewCells containsObject:viewCell])
+		[_viewCells removeObject:viewCell];
 }
 
 
@@ -292,6 +301,8 @@
 			if ([_selectedClubs containsObject:cell.userClubVO])
 				[_selectedClubs removeObject:cell.userClubVO];
 		}
+	
+		[(HONClubToggleViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]] toggleSelected:([_selectedClubs count] == [_allClubs count])];
 		
 	} else
 		[self _goSelectAllToggle];

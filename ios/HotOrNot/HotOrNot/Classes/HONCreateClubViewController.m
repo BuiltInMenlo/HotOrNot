@@ -163,24 +163,21 @@
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
 		}
+		
 		[self _goClubName];
 		
 	} else {
-		if (showAlerts) {
-			if ([_clubName rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/'"]].location != NSNotFound) {
-				_clubNameCheckImageView.alpha = 1.0;
-				_clubNameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
-				
-				[[[UIAlertView alloc] initWithTitle:@"Invalid club name!"
-											message: NSLocalizedString(@"invalid_msg", @"You cannot have / or ' in your club's name")
+		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubName]) {
+			if (showAlerts) {
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_dupclub_t", nil)
+											message:[NSString stringWithFormat:NSLocalizedString(@"alert_dupclub_m", nil), _clubName]
 										   delegate:nil
 								  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 								  otherButtonTitles:nil] show];
-				[self _goClubName];
-			
+				
 			} else
-				[self _submitClub];
-			
+				[self _goClubName];
+		
 		} else
 			[self _submitClub];
 	}
@@ -290,6 +287,7 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewWillAppear:animated];
 	
+	_clubImagePrefix = @"";
 	[_clubNameTextField becomeFirstResponder];
 }
 
@@ -303,29 +301,33 @@
 - (void)_goNext {
 	NSLog(@"_clubName:[%@] _clubImagePrefix:[%@]", _clubName, _clubImagePrefix);
 	
-	if ([_clubName length] == 0){
-		//[self _goCamera];
+	if ([_clubName length] == 0) {
 		[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"please_enter_club", nil)
 									message:@""
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
-	}
-	
-	else{
-		if ( ([_clubImagePrefix length] == 0) || [_clubImagePrefix isEqualToString: [[HONClubAssistant sharedInstance] defaultCoverImageURL]] ) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																message:NSLocalizedString(@"are_you_sure_create_club", nil)
-															   delegate:self
-													  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
-													  otherButtonTitles:NSLocalizedString(@"select_cover", nil), nil];
-			[alertView setTag:0];
-			[alertView show];
+	} else {
+		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubName]) {
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_dupclub_t", nil)
+										message:[NSString stringWithFormat:NSLocalizedString(@"alert_dupclub_m", nil), _clubName]
+									   delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+							  otherButtonTitles:nil] show];
+			[self _goClubName];
+			
+		} else {
+			if (([_clubImagePrefix length] == 0) || [_clubImagePrefix isEqualToString:[[HONClubAssistant sharedInstance] defaultCoverImageURL]] ) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																	message:NSLocalizedString(@"are_you_sure_create_club", nil)
+																   delegate:self
+														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
+														  otherButtonTitles:NSLocalizedString(@"select_cover", nil), nil];
+				[alertView setTag:0];
+				[alertView show];
 
-		}
-		else{
-			[self _validateClubNameWithAlerts:YES];
-			_clubImagePrefix = @"";
+			} else
+				[self _validateClubNameWithAlerts:YES];
 		}
 	}
 		
@@ -459,7 +461,11 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	return (YES);
+	NSCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
+	
+	_clubNameCheckImageView.image = [UIImage imageNamed:([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) ? @"xIcon" : @"checkmarkIcon"];
+	return (([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound) ? NO : YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {

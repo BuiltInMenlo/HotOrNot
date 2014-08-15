@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "NSString+DataTypes.h"
+
 #import "HONClubToggleViewCell.h"
 
 @interface HONClubToggleViewCell ()
@@ -14,12 +16,12 @@
 @property (nonatomic, strong) UIButton *toggledOnButton;
 @property (nonatomic, strong) UIButton *toggledOffButton;
 @property (nonatomic) HONClubToggleViewCellType viewCellType;
-@property (nonatomic) BOOL isSelected;
 @end
 
 @implementation HONClubToggleViewCell
 @synthesize delegate = _delegate;
 @synthesize userClubVO = _userClubVO;
+@synthesize isSelected = _isSelected;
 
 - (id)init {
 	if ((self = [self initAsCellType:HONClubToggleViewCellTypeClub])) {
@@ -111,13 +113,13 @@
 
 - (void)toggleSelected:(BOOL)isSelected {
 	_isSelected = isSelected;
+	NSLog(@"toggleSelected:[%@]", [@"" stringFromBOOL:_isSelected]);
 	
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = (int)_isSelected;
 	} completion:^(BOOL finished) {
 	}];
 }
-
 
 - (void)toggleIndicator:(BOOL)isEnabled {
 	_toggledOffButton.hidden = !isEnabled;
@@ -129,8 +131,12 @@
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_toggledOnButton.alpha = (int)_isSelected;
 	} completion:^(BOOL finished) {
-		_toggledOnButton.alpha = 0.0;
+		_toggledOnButton.alpha = (int)!isReset;
 	}];
+}
+
+- (void)setIsSelected:(BOOL)isSelected {
+	[self toggleSelected:isSelected];
 }
 
 - (BOOL)isSelected {

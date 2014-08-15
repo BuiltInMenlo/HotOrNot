@@ -38,6 +38,7 @@
 		if (_clubID != 0) {
 			[[HONAPICaller sharedInstance] retrieveClubByClubID:_clubID withOwnerID:[[_submitParams objectForKey:@"owner_id"] intValue] completion:^(NSDictionary *result) {
 				_clubVO = [HONUserClubVO clubWithDictionary:result];
+				[_selectedClubs addObject:_clubVO];
 			}];
 		}
 	}
@@ -47,8 +48,6 @@
 
 
 #pragma mark - Data Calls
-
-
 #pragma mark - Data Handling
 
 
@@ -57,7 +56,7 @@
 	ViewControllerLog(@"[:|:] [%@ loadView] [:|:]", self.class);
 	[super loadView];
 	
-	[_headerView setTitle:NSLocalizedString(@"select_club", nil)]; //@"Select Club"];
+	[_headerView setTitle:NSLocalizedString(@"select_club", @"Select Club")];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
@@ -82,14 +81,10 @@
 - (void)_goSubmit {
 	[[HONAnalyticsParams sharedInstance] trackEvent:@"Create Selfie - Submit"];
 	
-	if (_clubVO != nil && ![_selectedClubs containsObject:_clubVO])
-		[_selectedClubs addObject:_clubVO];
-	
-	
 	if ([_selectedClubs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_selectclub", nil) //@"No Club Selected!"
-															message: NSLocalizedString(@"no_selectclub_msg", nil) //@"You have to choose at least one club to submit your photo into."
-														   delegate:self
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"no_selectclub", @"No Club Selected!")
+															message:NSLocalizedString(@"no_selectclub_msg", @"You have to choose at least one club to submit your photo into.")
+														   delegate:nil
 												  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 												  otherButtonTitles:nil];
 		[alertView setTag:0];
@@ -176,12 +171,6 @@
 	} else
 		[self _goSelectAllToggle];
 }
-
-#pragma mark - AlertView Delegates
-
-
-#pragma mark - Data Manip
-
 
 
 @end

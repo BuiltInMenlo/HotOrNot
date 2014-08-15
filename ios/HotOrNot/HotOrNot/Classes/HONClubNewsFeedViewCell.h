@@ -31,6 +31,8 @@ typedef NS_ENUM(NSInteger, HONClubNewsFeedCellType) {
 @interface HONClubNewsFeedViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+- (void)toggleImageLoading:(BOOL)isLoading;
+
 @property (nonatomic, retain) HONUserClubVO *clubVO;
 @property (nonatomic, retain) HONClubPhotoVO *clubPhotoVO;
 @property (nonatomic) int clubPhotoIndex;

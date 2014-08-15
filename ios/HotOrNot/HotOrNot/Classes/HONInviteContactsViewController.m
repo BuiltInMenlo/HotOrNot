@@ -40,8 +40,8 @@
 			[dict setValue:[preClub objectForKey:@"name"] forKey:@"name"];
 			[dict setValue:[preClub objectForKey:@"description"] forKey:@"description"];
 			[dict setValue:[preClub objectForKey:@"img"] forKey:@"img"];
-			_userClubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
-			_clubVO = _userClubVO;
+			_userClubVO = nil;
+			_clubVO = [HONUserClubVO clubWithDictionary:[dict copy]];
 		
 		} else {
 			_userClubVO = nil;
@@ -110,7 +110,7 @@
 	_selectedNonAppContacts = [NSMutableArray array];
 	
 	[_tableView setContentInset:UIEdgeInsetsZero];
-	[_headerView setTitle:NSLocalizedString(@"invite_club", nil)];  //@"Invite to Club"];
+	[_headerView setTitle:NSLocalizedString(@"invite_club", @"Invite to Club")];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 1.0, 93.0, 44.0);
@@ -144,20 +144,13 @@
 }
 
 - (void)_goDone {
-	if (_clubVO == nil) {
-		NSLog(@"******* ERROR ******");
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-		}];
+	NSLog(@"******* DISMISSING ******");
 	
-	} else {
+	if (_isPushed) {
+		NSLog(@"******* FROM CREATE CLUB ******");
 		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
-			NSLog(@"******* EXISTING ******");
-			if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
-				[self _sendClubInvites];
+			NSLog(@"******* EXISTING (%d, %d) ******", [_selectedInAppContacts count], [_selectedNonAppContacts count]);
 			
-			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			}];
-		
 		} else {
 			NSLog(@"******* CREATE ******");
 			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
@@ -170,6 +163,43 @@
 				[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
 				}];
 			}];
+		}
+	
+	} else {
+		if (_userClubVO == nil || _clubVO == nil) {
+			NSLog(@"******* NO CLUB ******");
+			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+		
+		} else {
+			NSLog(@"******* HAS CLUB ******");
+			if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubVO.clubName]) {
+				NSLog(@"******* EXISTING (%d, %d) ******", [_selectedInAppContacts count], [_selectedNonAppContacts count]);
+				if (([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0)) {
+					NSLog(@"******* NON SELECTED ******");
+					[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noclubs_t", nil)
+												message:[NSString stringWithFormat:NSLocalizedString(@"alert_noclubs_m", nil), _clubVO.clubName]
+											   delegate:nil
+									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+									  otherButtonTitles:nil] show];
+				} else {
+					NSLog(@"******* SEND INVITES ******");
+					[self _sendClubInvites];
+					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+				}
+			
+			} else {
+				NSLog(@"******* CREATE ******");
+				[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+					_clubVO = [HONUserClubVO clubWithDictionary:result];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
+					
+					if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
+						[self _sendClubInvites];
+					
+					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+					}];
+				}];
+			}
 		}
 	}
 }
@@ -256,16 +286,6 @@
 		
 	NSLog(@"::POST:: IN-APP:[%@]", _selectedInAppContacts);
 	NSLog(@"::POST:: NON-APP:[%@]", _selectedNonAppContacts);
-}
-
-
-#pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		
-		if (buttonIndex == 1)
-			[self.navigationController dismissViewControllerAnimated:YES completion:nil];
-	}
 }
 
 @end
