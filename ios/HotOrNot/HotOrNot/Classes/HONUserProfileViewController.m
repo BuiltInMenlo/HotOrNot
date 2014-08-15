@@ -105,9 +105,6 @@
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
-		
-		
-		
 		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
 		int badgeTotal = ABS([result count] - prevTotal);
 		
@@ -117,8 +114,13 @@
 		
 		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [result count], badgeTotal);
 		
-		for (NSDictionary *dict in result)
-			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:dict]];
+		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			NSMutableDictionary *dict = (NSMutableDictionary *)[obj mutableCopy];
+			[dict setValue:@{@"id"	:		[@""stringFromInt:_userVO.userID],
+							 @"username"	: _userVO.username} forKey:@"recip"];
+			
+			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:[dict copy]]];
+		}];
 		
 		[self _didFinishDataRefresh];
 	}];
@@ -369,33 +371,21 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return ([[HONTableHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)]); //@"ACTIVITY"]);
+	return ([[HONTableHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", @"ACTIVITY")]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
 		HONActivityItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
-		if (_userProfileType == HONUserProfileTypeUser) {
-			if (cell == nil) {
-				cell = [[HONActivityItemViewCell alloc] init];
-				cell.activityItemVO = (HONActivityItemVO *)[_activityAlerts objectAtIndex:indexPath.row];
-			}
-		
-		} else {
-			if (cell == nil) {
-				cell = [[HONActivityItemViewCell alloc] init];
-				
-				cell.textLabel.frame = CGRectOffset(cell.textLabel.frame, 0.0, -2.0);
-				cell.textLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:16];
-				cell.textLabel.text = [_cohortRows objectAtIndex:indexPath.row];
-				cell.textLabel.textColor = [[HONColorAuthority sharedInstance] honBlueTextColor];
-				cell.textLabel.textAlignment = NSTextAlignmentCenter;
-			}
+		if (cell == nil) {
+			cell = [[HONActivityItemViewCell alloc] init];
 		}
 		
+		cell.activityItemVO = (HONActivityItemVO *)[_activityAlerts objectAtIndex:indexPath.row];
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+		
 		return (cell);
 		
 	} else {
@@ -416,13 +406,10 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);//kOrthodoxTableHeaderHeight
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
-//	return ((vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? nil : indexPath);
-	
 	return (indexPath);
 }
 
@@ -434,25 +421,24 @@
 	NSLog(@"vo:[%@]", vo.dictionary);
 	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : (vo.activityType == HONActivityItemTypeVerify) ? @"Verifiy" : @"UNKNOWN");
 	
-	
 	NSString *mpAlertType;
 	NSDictionary *mpParams;
 	
 	UIViewController *viewController;
 	if (vo.activityType == HONActivityItemTypeVerify) {
 		mpAlertType = @"Verify";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
 		viewController = userPofileViewController;
 		
 	} else if (vo.activityType == HONActivityItemTypeInviteAccepted) {
 		mpAlertType = @"Accepted Invite";
-		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
 		mpAlertType = @"Club Invite";
-		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
 		if (_userProfileType == HONUserProfileTypeOpponent) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteClubsViewController alloc] initWithTrivialUser:[HONTrivialUserVO userFromUserVO: _userVO]]];
@@ -460,38 +446,34 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 		else{
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
 			viewController = userPofileViewController;
 		}
 		
 	} else if (vo.activityType == HONActivityItemTypeLike) {
 		mpAlertType = @"Like";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
 		HONClubTimelineViewController *clubTimelineViewControler = [[HONClubTimelineViewController alloc] initWithClubID:vo.clubID withClubPhotoID:vo.challengeID];
 		viewController = clubTimelineViewControler;
 		
 	} else if (vo.activityType == HONActivityItemTypeShoutout) {
 		mpAlertType = @"Shoutout";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
 		viewController = userPofileViewController;
 		
 	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {
 		mpAlertType = @"Reply";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username]};
+		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.userID];
+		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
 		viewController = userPofileViewController;
-		
 	}
 	
-	
-	
-	if (viewController != nil) {
+	if (viewController != nil)
 		[self.navigationController pushViewController:viewController animated:YES];
-	}
 }
 
 

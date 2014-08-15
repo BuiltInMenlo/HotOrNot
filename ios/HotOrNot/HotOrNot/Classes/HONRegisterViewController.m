@@ -184,7 +184,6 @@
 	
 	[_nextButton removeTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	
-	
 	NSLog(@"_finalizeUser -- ID:[%d]", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	NSLog(@"_finalizeUser -- USERNAME_TXT:[%@] -=- PREV:[%@]", _username, [[HONAppDelegate infoForUser] objectForKey:@"username"]);
 	NSLog(@"_finalizeUser -- PHONE_TXT:[%@] -=- PREV[%@]", _phone, [[HONDeviceIntrinsics sharedInstance] phoneNumber]);
@@ -203,8 +202,12 @@
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
-				if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) {
-					[[HONAPICaller sharedInstance] createClubWithTitle:[[HONAppDelegate infoForUser] objectForKey:@"username"] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] userSignupClubCoverImageURL] completion:^(NSDictionary *result) {
+				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
+				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
+					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+				
+				if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
+					[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
 					}];
 				}
 			}];
@@ -230,11 +233,15 @@
 				[HONAppDelegate writeUserInfo:result];
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
 				
+				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
+				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
+					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+				
 				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 					[[HONClubAssistant sharedInstance] writeUserClubs:result];
 					
-					if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) {
-						[[HONAPICaller sharedInstance] createClubWithTitle:[[HONAppDelegate infoForUser] objectForKey:@"username"] withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] userSignupClubCoverImageURL] completion:^(NSDictionary *result) {
+					if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
+						[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
 						}];
 					}
 				}];
@@ -273,19 +280,6 @@
 				_phoneCheckImageView.alpha = 1.0;
 			}
 		}];
-	}
-}
-
-- (void)_validateUsername {
-	if ([_username rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@" /'"]].location == NSNotFound)
-		[self _checkUsername];
-		
-	else {
-		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"invalid_user", @"Invalid username")
-									message: NSLocalizedString(@"invalid_msg", @"You cannot have / or ' in your club's name")
-								   delegate:nil
-						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-						  otherButtonTitles:nil] show];
 	}
 }
 
@@ -655,7 +649,7 @@
 		_username = _usernameTextField.text;
 		_phone = [_callCodeButton.titleLabel.text stringByAppendingString:_phoneTextField.text];
 		
-		[self _validateUsername];
+		[self _checkUsername];
 	
 	} else if (registerErrorType == HONRegisterErrorTypeUsername) {
 		_usernameCheckImageView.image = [UIImage imageNamed:@"xIcon"];
@@ -812,6 +806,13 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	NSCharacterSet *invalidCharSet = [NSCharacterSet characterSetWithCharactersInString:[[[[NSUserDefaults standardUserDefaults] objectForKey:@"invalid_chars"] componentsJoinedByString:@""] stringByAppendingString:@"\\"]];
+	
+	NSLog(@"textField:[%@] shouldChangeCharactersInRange:[%@] replacementString:[%@] -- (%@)", textField.text, NSStringFromRange(range), string, NSStringFromRange([string rangeOfCharacterFromSet:invalidCharSet]));
+	
+	if ([string rangeOfCharacterFromSet:invalidCharSet].location != NSNotFound)
+		return (false);
+	
 	return ([textField.text length] < 25 || [string isEqualToString:@""]);
 }
 
@@ -865,7 +866,7 @@
 		}
 	
 	} else if (alertView.tag == 2) {
-		[self _validateUsername];
+		[self _checkUsername];
 	}
 }
 

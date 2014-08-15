@@ -223,10 +223,9 @@
 	[self.view addSubview:_clubNameButton];
 	
 	_clubCoverImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 72.0, 48.0, 48.0)];
-	_clubCoverImageView.backgroundColor = [[HONColorAuthority sharedInstance] honDebugColor:HONDebugRedColor];
 	[self.view addSubview:_clubCoverImageView];
 	
-//	[[HONImageBroker sharedInstance] maskView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
+	[[HONImageBroker sharedInstance] maskView:_clubCoverImageView withMask:[UIImage imageNamed:@"avatarMask"]];
 	
 	_addImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addImageButton.frame = _clubCoverImageView.frame;
@@ -236,7 +235,6 @@
 	[self.view addSubview:_addImageButton];
 	
 	_clubNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(72.0, 87.0, 220.0, 22.0)];
-	//[_clubNameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_clubNameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_clubNameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_clubNameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;

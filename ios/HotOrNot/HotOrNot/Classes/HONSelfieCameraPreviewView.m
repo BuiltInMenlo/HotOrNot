@@ -252,14 +252,14 @@
 	
 	[[HONAnalyticsParams sharedInstance] trackEvent:[@"Camera Step 2 - Stickerboard Swipe " stringByAppendingString:(direction == 1) ? @"Right" : @"Left"]];
 	if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] < [HONAppDelegate clubInvitesThreshold] && page == 3 && direction == 1) {
+		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeUnlock];
+		_insetOverlayView.delegate = self;
 		
-		if ([self.delegate respondsToSelector:@selector(cameraPreviewViewShowInviteContacts:)])
-			[self.delegate cameraPreviewViewShowInviteContacts:self];
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+		[_insetOverlayView introWithCompletion:nil];
 	}
 }
--(void) emotionsPickerView:(HONEmotionsPickerView *)emotionsPickerView {
-    
-}
+
 
 #pragma mark - InsetOverlay Delegates
 - (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {

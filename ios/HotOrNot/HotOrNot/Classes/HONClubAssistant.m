@@ -65,6 +65,11 @@ static HONClubAssistant *sharedInstance = nil;
 			  [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:HONAmazonS3BucketTypeClubsSource], @"pc-010"]]);
 }
 
+- (NSString *)rndCoverImageURL {
+	NSArray *rndCovers = [[HONClubAssistant sharedInstance] clubCoverPhotoAlbumPrefixes];
+	return ([rndCovers objectAtIndex:(arc4random() % [rndCovers count] - 1)]);
+}
+
 
 - (NSDictionary *)createClubDictionary {
 	NSMutableDictionary *dict = [[[HONClubAssistant sharedInstance] emptyClubDictionaryWithOwner:@{@"id"		: @"2394",
@@ -368,7 +373,7 @@ static HONClubAssistant *sharedInstance = nil;
 	[[HONAPICaller sharedInstance] retrieveLocalSchoolTypeClubsWithAreaCode:[[HONDeviceIntrinsics sharedInstance] areaCodeFromPhoneNumber] completion:^(NSDictionary *result) {
 		[[result objectForKey:@"clubs"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSMutableDictionary *dict = [(NSDictionary *)obj mutableCopy];//[[[result objectForKey:@"clubs"] objectAtIndex:(rand() % [[result objectForKey:@"clubs"] count]) - 1] mutableCopy];
-			[dict setValue:@"3" forKey:@"club_type"];
+			[dict setValue:@"HIGH_SCHOOL" forKey:@"club_type"];
 			
 			vo = [HONUserClubVO clubWithDictionary:dict];
 			NSLog(@"vo:[%@]-=-(%d)", vo.clubName, idx);

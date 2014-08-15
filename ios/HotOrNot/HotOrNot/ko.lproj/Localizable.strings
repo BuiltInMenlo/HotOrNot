@@ -138,14 +138,14 @@
 "cannot_send" = "이 기기에서는 SMS를 전송할 수 없습니다!";
 "report_abuse" = "어뷰징 / 버그 신고";
 "leave_club" = "클럽 나가기";
-"liked_selfie" = " 님이 다음에 게시한 셀카를 좋아합니다:";
+"liked_selfie" = " 님이 다음에 %@ 게시한 셀카를 좋아합니다:";
 "submit_photo" = "님이 다음에 사진을 게시했습니다: %@";
 "user_notfound" = "사용자를 찾을 수 없습니다!";
 "lev" = "%@ 나가기";
 "lev_sure" = "%@에서 정말로 나가시겠습니까?";
 "flag_person" = "이 사람을 리뷰를 위해 체크합니다";
 "yes_flag" = "예, 체크하겠습니다";
-"sent_invite" = "님에 다음에 초대했습니다: %@";
+"sent_invite" = "님에 %@ 에 초대했습니다: %@";
 "no_phone" = "휴대폰 번호가 없습니다!";
 "phone_taken" = "이 전화번호는 이미 사용 중입니다!";
 "user_phone" = "이 사용자명 및 전화번호는 이미 사용 중입니다!";
@@ -169,8 +169,9 @@
 "please_enter_club" = "Please enter a club name!";
 "are_you_sure_create_club" = "Are you sure you want to create the club without a cover image?";
 "select_cover" = "Select cover";
+"accept_invite" = "%@ 이 다음 초대를 수락하셨습 %@:";
 
-
+"activity_you" = "당신";
 
 
 

@@ -66,6 +66,7 @@
 		300B1BF8199C3E2C006BB048 /* addContacts@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BFA199C3E2C006BB048 /* addContacts@2x.png */; };
 		300B1BFB199C3E35006BB048 /* shareFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 300B1BFD199C3E35006BB048 /* shareFriends@2x.png */; };
 		309F59AA199D3B4B00EC6C1C /* noPostsYetRow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 309F59AC199D3B4B00EC6C1C /* noPostsYetRow@2x.png */; };
+		309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 309F59B2199D7FE400EC6C1C /* NSString+Random.m */; };
 		4C00491B1946A994007FA9F5 /* HONClubsViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */; };
 		4C00491E1946AEAC007FA9F5 /* HONClubCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C00491D1946AEAC007FA9F5 /* HONClubCollectionViewCell.m */; };
 		4C0049201946C635007FA9F5 /* ActivityAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C00491F1946C635007FA9F5 /* ActivityAssets.xcassets */; };
@@ -571,6 +572,8 @@
 		309F59AE199D3B5300EC6C1C /* pt */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pt; path = "pt.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
 		309F59AF199D3B5300EC6C1C /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
 		309F59B0199D3B5400EC6C1C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pt-BR"; path = "pt-BR.lproj/noPostsYetRow@2x.png"; sourceTree = "<group>"; };
+		309F59B1199D7FE400EC6C1C /* NSString+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Random.h"; sourceTree = "<group>"; };
+		309F59B2199D7FE400EC6C1C /* NSString+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Random.m"; sourceTree = "<group>"; };
 		4C0049191946A994007FA9F5 /* HONClubsViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubsViewFlowLayout.h; sourceTree = "<group>"; };
 		4C00491A1946A994007FA9F5 /* HONClubsViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONClubsViewFlowLayout.m; sourceTree = "<group>"; };
 		4C00491C1946AEAC007FA9F5 /* HONClubCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONClubCollectionViewCell.h; sourceTree = "<group>"; };
@@ -2553,6 +2556,8 @@
 				4C3A1D0A19920BA1007A85B8 /* NSString+Base64.m */,
 				4CA246C319083C8B00512295 /* NSString+DataTypes.h */,
 				4CA246C419083C8B00512295 /* NSString+DataTypes.m */,
+				309F59B1199D7FE400EC6C1C /* NSString+Random.h */,
+				309F59B2199D7FE400EC6C1C /* NSString+Random.m */,
 				4CDB1544180C9F6600FD93CB /* UIImage+Pixels.h */,
 				4CDB1545180C9F6600FD93CB /* UIImage+Pixels.m */,
 				4C81A013163337C100AB188B /* UIImage+fixOrientation.h */,
@@ -2914,6 +2919,7 @@
 				4CCA4165181C19D400FC9863 /* HONBasicParticipantGridView.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
+				309F59B3199D7FE400EC6C1C /* NSString+Random.m in Sources */,
 				4C4328BB18E3A9FA0035FF06 /* JLBPopSlideTransition.m in Sources */,
 				4C86C43917FFA909007DC458 /* HONFollowUserViewCell.m in Sources */,
 				4C5FD46019178D9200B1BAFC /* NSData+Base64.m in Sources */,

@@ -14,9 +14,9 @@
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
-#define __FORCE_NEW_USER__ 0
-//]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[//
 #define __FORCE_REGISTER__ 0
+//]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[//
+#define __FORCE_NEW_USER__ 0
 #define __RESET_TOTALS__ 0
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
@@ -38,8 +38,6 @@ typedef NS_ENUM(NSInteger, HONPushType) {
 	HONPushTypeShowSettings,						/** Brings up the settings modal **/
 	HONPushTypeShowChallengeDetailsIgnoringPushes	/** Brings up the challenge details modal, ignoring next pushes **/
 };
-
-
 
 // share sheet actions
 typedef NS_ENUM(NSInteger, HONShareSheetActionType) {

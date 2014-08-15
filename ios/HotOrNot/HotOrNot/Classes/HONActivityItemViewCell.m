@@ -66,14 +66,14 @@
 		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
 	};
 	
-	if ([_activityItemVO.avatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
+	if ([_activityItemVO.originAvatarPrefix rangeOfString:@"defaultAvatar"].location != NSNotFound) {
 		_avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
 		[imageLoadingView stopAnimating];
 		[imageLoadingView removeFromSuperview];
 	}
 	
 	else {
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_activityItemVO.originAvatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																  cachePolicy:kURLRequestCachePolicy
 															  timeoutInterval:[HONAppDelegate timeoutInterval]]
 								placeholderImage:[UIImage imageNamed:@"activityAvatarPlaceholder"]
@@ -92,8 +92,8 @@
 	titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.attributedText = [[NSAttributedString alloc] initWithString:_activityItemVO.message attributes:@{}];
-	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13] range:[_activityItemVO.message rangeOfString:_activityItemVO.username]];
-	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.username]];
+	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13] range:[_activityItemVO.message rangeOfString:_activityItemVO.originUsername]];
+	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.recipientUsername]];
 	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.clubName]];
 	[titleLabel resizeWidthUsingCaption:_activityItemVO.message boundedBySize:titleLabel.frame.size];
 	[self.contentView addSubview:titleLabel];
@@ -126,7 +126,7 @@
 
 #pragma mark - Navigation {
 - (void)_goProfile {
-	if (_activityItemVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+	if (_activityItemVO.originUserID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 		if ([self.delegate respondsToSelector:@selector(activityItemViewCell:showProfileForUser:)])
 			[self.delegate activityItemViewCell:self showProfileForUser:[HONTrivialUserVO userFromActivityItemVO:_activityItemVO]];
 	}

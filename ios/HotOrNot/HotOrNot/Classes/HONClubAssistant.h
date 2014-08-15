@@ -19,6 +19,7 @@
 - (NSDictionary *)orthodoxThresholdClubDictionary;
 - (NSString *)userSignupClubCoverImageURL;
 - (NSString *)defaultCoverImageURL;
+- (NSString *)rndCoverImageURL;
 - (NSString *)defaultClubPhotoURL;
 - (NSArray *)clubCoverPhotoAlbumPrefixes;
 - (int)labelIDForAreaCode:(NSString *)areaCode;

@@ -10,7 +10,7 @@
 
 @implementation HONActivityItemVO
 @synthesize dictionary;
-@synthesize activityID, activityType, userID, username, avatarPrefix, message, challengeID, clubID, clubName, sentDate;
+@synthesize activityID, activityType, originUserID, originUsername, originAvatarPrefix, message, challengeID, clubID, clubName, sentDate, recipientUserID, recipientUsername;
 
 + (HONActivityItemVO *)activityWithDictionary:(NSDictionary *)dictionary {
 	HONActivityItemVO *vo = [[HONActivityItemVO alloc] init];
@@ -23,30 +23,31 @@
 	vo.clubName = [dictionary objectForKey:@"club_name"];
 	vo.sentDate = [[HONDateTimeAlloter sharedInstance] dateFromOrthodoxFormattedString:[dictionary objectForKey:@"time"]];
 	
-	vo.userID = [[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
-	vo.username = (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? @"You" : [[dictionary objectForKey:@"user"] objectForKey:@"username"];
-	vo.avatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]];
+	vo.originUserID = [[[dictionary objectForKey:@"user"] objectForKey:@"id"] intValue];
+	vo.originUsername = (vo.originUserID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"user"] objectForKey:@"username"];
+	vo.originAvatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]];
 	
+	vo.recipientUserID = ([dictionary objectForKey:@"recip"]) ? [[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] : 0;
+	vo.recipientUsername = ([dictionary objectForKey:@"recip"]) ? [[dictionary objectForKey:@"recip"] objectForKey:@"username"] : @"";
 	
 	if (vo.activityType == HONActivityItemTypeVerify) {
-		vo.message = [vo.username stringByAppendingString:@" verified your selfie"];
+		vo.message = [vo.originUsername stringByAppendingString:@" verified your selfie"];
 	
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"sent_invite", nil), vo.clubName]]; //@" sent you an invite to %@", vo.clubName]];
+		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"sent_invite", @" sent %@ an invite to %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeInviteAccepted) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"accept_invite", nil), vo.clubName ]];//  @" accepted your invite to %@", vo.clubName]];
+		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"accept_invite", @" accepted %@ invite to %@"), vo.recipientUsername, vo.clubName ]];
 	
 	} else if (vo.activityType == HONActivityItemTypeLike) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"liked_selfie", nil), vo.clubName]];
+		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"liked_selfie", @" liked %@ selfie in %@"), vo.recipientUsername, vo.clubName]];
 	
 	} else if (vo.activityType == HONActivityItemTypeClubSubmission) {
-		vo.message = [vo.username stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"submit_photo", nil) ]]; //@" submitted a photo into %@", vo.clubName]];
+		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"submit_photo", @" submitted a photo into %@") ]];
 	
 	} else {
-		vo.message = vo.username;
+		vo.message = vo.originUsername;
 	}
-	
 	
 	return (vo);
 }
@@ -54,8 +55,9 @@
 
 - (void)dealloc {
 	self.dictionary = nil;
-	self.username = nil;
-	self.avatarPrefix = nil;
+	self.originUsername = nil;
+	self.originAvatarPrefix = nil;
+	self.recipientUsername = nil;
 	self.clubName = nil;
 	self.message = nil;
 	self.sentDate = nil;
