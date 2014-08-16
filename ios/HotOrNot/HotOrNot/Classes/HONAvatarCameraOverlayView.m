@@ -203,7 +203,8 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePicture:self includeFilter:YES];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePicture:includeFilter:)])
+		[self.delegate cameraOverlayViewTakePicture:self includeFilter:NO];
 }
 
 - (void)_goCancel {
@@ -228,31 +229,26 @@
 		}];
 	}];
 	
-	[self.delegate cameraOverlayViewTakePicture:self includeFilter:YES];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewTakePicture:includeFilter:)])
+		[self.delegate cameraOverlayViewTakePicture:self includeFilter:YES];
 }
 
-//- (void)_goSubmit {
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		_blackMatteView.alpha = 0.65;
-//	} completion:^(BOOL finished) {
-//		_submitHolderView.hidden = YES;
-//		[self.delegate cameraOverlayViewSubmit:self];
-//	}];
-//}
-
 - (void)_goFlipCamera {
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewChangeCamera:)])
 	[self.delegate cameraOverlayViewChangeCamera:self];
 }
 
 - (void)_goCameraRoll {
-	[self.delegate cameraOverlayViewShowCameraRoll:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewShowCameraRoll:)])
+		[self.delegate cameraOverlayViewShowCameraRoll:self];
 }
 
 - (void)_goCameraBack {
 	[self removePreview];
 	
 	_captureButton.hidden = NO;
-	[self.delegate cameraOverlayViewRetake:self];
+	if ([self.delegate respondsToSelector:@selector(cameraOverlayViewRetake:)])
+		[self.delegate cameraOverlayViewRetake:self];
 }
 
 
@@ -298,7 +294,8 @@
 		
 		switch(buttonIndex) {
 			case 0:
-				[self.delegate cameraOverlayViewCloseCamera:self];
+				if ([self.delegate respondsToSelector:@selector(cameraOverlayViewCloseCamera:)])
+					[self.delegate cameraOverlayViewCloseCamera:self];
 				break;
 				
 			case 1:

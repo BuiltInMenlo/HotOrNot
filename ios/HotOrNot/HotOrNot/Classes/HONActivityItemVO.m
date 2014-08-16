@@ -27,11 +27,11 @@
 	vo.originUsername = (vo.originUserID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? NSLocalizedString(@"activity_you", @"You") : [[dictionary objectForKey:@"user"] objectForKey:@"username"];
 	vo.originAvatarPrefix = [[HONAPICaller sharedInstance] normalizePrefixForImageURL:[[dictionary objectForKey:@"user"] objectForKey:@"avatar_url"]];
 	
-	vo.recipientUserID = ([dictionary objectForKey:@"recip"]) ? [[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] : 0;
-	vo.recipientUsername = ([dictionary objectForKey:@"recip"]) ? [[dictionary objectForKey:@"recip"] objectForKey:@"username"] : @"";
+	vo.recipientUserID = ([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] : [[[dictionary objectForKey:@"recip"] objectForKey:@"id"] intValue] : 0;
+	vo.recipientUsername = ([dictionary objectForKey:@"recip"]) ? ([[[dictionary objectForKey:@"recip"] objectForKey:@"username"] isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"username"]]) ? [[HONAppDelegate infoForUser] objectForKey:@"username"] : [[dictionary objectForKey:@"recip"] objectForKey:@"username"] : @"";
 	
-	if (vo.activityType == HONActivityItemTypeVerify) {
-		vo.message = [vo.originUsername stringByAppendingString:@" verified your selfie"];
+	if (vo.activityType == HONActivityItemTypeSignup) {
+		vo.message = NSLocalizedString(@"activity_signup", @"You have just joined Selfieclub!");;
 	
 	} else if (vo.activityType == HONActivityItemTypeInviteRequest) {
 		vo.message = [vo.originUsername stringByAppendingString:[NSString stringWithFormat: NSLocalizedString(@"sent_invite", @" sent %@ an invite to %@"), vo.recipientUsername, vo.clubName]];

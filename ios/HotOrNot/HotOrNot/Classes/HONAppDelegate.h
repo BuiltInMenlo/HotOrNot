@@ -10,7 +10,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
-#define __DEV_BUILD__ 1
+#define __DEV_BUILD__ 0
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 
@@ -21,7 +21,7 @@
 
 /** =+-+-+-+-+-+-+-+-+-+-+-+--+= **/
 /** =+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+= **/
-#define __APPSTORE_BUILD__ 0
+#define __APPSTORE_BUILD__ 1
 /** *~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*~~*· **/
 
 
@@ -60,6 +60,7 @@ typedef NS_ENUM(NSInteger, HONAppDelegateAlertType) {
 	HONAppDelegateAlertTypeJoinCLub,
 	HONAppDelegateAlertTypeInviteContacts,
 	HONAppDelegateAlertTypeCreateClub,
+	HONAppDelegateAlertTypeEnterClub,
 	HONAppDelegateAlertTypeAllowContactsAccess
 };
 
@@ -79,10 +80,10 @@ typedef NS_ENUM(NSInteger, HONAmazonS3BucketType) {
 };
 
 typedef NS_ENUM(NSUInteger, HONInsetOverlayViewType) {
-	HONInsetOverlayViewTypeAppReview = 0,
-	HONInsetOverlayViewTypeInvite,
+	HONInsetOverlayViewTypeUnlock = 0,
 	HONInsetOverlayViewTypeSuggestions,
-	HONInsetOverlayViewTypeUnlock
+	HONInsetOverlayViewTypeAppReview,
+	HONInsetOverlayViewTypeInvite
 };
 
 

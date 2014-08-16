@@ -166,6 +166,10 @@ static HONClubAssistant *sharedInstance = nil;
 	return ([tot count] > 0);
 }
 
+- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace {
+	return ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:[clubName stringByReplacingOccurrencesOfString:@" " withString:@""]]);
+}
+
 
 - (int)labelIDForAreaCode:(NSString *)areaCode {
 	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"schools"]) {

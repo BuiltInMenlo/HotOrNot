@@ -19,10 +19,9 @@
 
 #import "HONCreateClubViewController.h"
 #import "HONHeaderView.h"
-#import "HONClubCoverCameraViewController.h"
 #import "HONInviteContactsViewController.h"
 
-@interface HONCreateClubViewController () //<HONClubCoverCameraViewControllerDelegate>
+@interface HONCreateClubViewController ()
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *clubCoverImageView;
 @property (nonatomic, strong) UIButton *addImageButton;
@@ -90,7 +89,7 @@
 			_progressHUD = nil;
 		}
 		
-		[self _validateClubNameWithAlerts:NO];
+		[_clubNameButton setSelected:NO];
 	}];
 }
 
@@ -98,44 +97,6 @@
 - (void)_submitClub {
 	[[HONClubAssistant sharedInstance] writePreClubWithTitle:_clubName andBlurb:@"" andCoverPrefixURL:_clubImagePrefix];
 	[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initAsViewControllerPushed:YES] animated:YES];
-	
-//	[[HONAPICaller sharedInstance] createClubWithTitle:_clubName withDescription:@"" withImagePrefix:_clubImagePrefix completion:^(NSDictionary *result) {
-//		if (result != nil) {
-//			if (_progressHUD != nil) {
-//				[_progressHUD hide:YES];
-//				_progressHUD = nil;
-//			}
-//			
-//#if SC_ACCT_BUILD == 0
-//			if ([self.delegate respondsToSelector:@selector(createClubViewController:didCreateClub:)])
-//				[self.delegate createClubViewController:self didCreateClub:[HONUserClubVO clubWithDictionary:result]];
-//			
-//			[self.navigationController pushViewController:[[HONInviteContactsViewController alloc] initWithClub:[HONUserClubVO clubWithDictionary:result] viewControllerPushed:YES] animated:YES];
-//#else
-//	[[[UIAlertView alloc] initWithTitle:@"WRITE THIS DOWN!"
-//										message:[@"Club ID = " stringByAppendingString:[result objectForKey:@"id"]]
-//									   delegate:nil
-//							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-//							  otherButtonTitles:nil] show];
-//			
-//			[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_NEWS_TAB" object:@"Y"];
-//				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CLUBS_TAB" object:@"Y"];
-//			}];
-//#endif
-//		} else {
-//			if (_progressHUD == nil)
-//				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//			[_progressHUD setYOffset:-80.0];
-//			_progressHUD.minShowTime = kHUDTime;
-//			_progressHUD.mode = MBProgressHUDModeCustomView;
-//			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hudLoad_fail"]];
-//			_progressHUD.labelText = @"Error!";
-//			[_progressHUD show:NO];
-//			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-//			_progressHUD = nil;
-//		}
-//	}];
 }
 
 
@@ -287,7 +248,6 @@
 	ViewControllerLog(@"[:|:] [%@ viewWillAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
 	[super viewWillAppear:animated];
 	
-	_clubImagePrefix = @"";
 	[_clubNameTextField becomeFirstResponder];
 }
 
@@ -309,8 +269,8 @@
 						  otherButtonTitles:nil] show];
 	} else {
 		if ([[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:_clubName]) {
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_dupclub_t", nil)
-										message:[NSString stringWithFormat:NSLocalizedString(@"alert_dupclub_m", nil), _clubName]
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:NSLocalizedString(@"alert_member", @"You are already a member of %@!"), _clubName]
 									   delegate:nil
 							  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 							  otherButtonTitles:nil] show];
@@ -319,7 +279,7 @@
 		} else {
 			if (([_clubImagePrefix length] == 0) || [_clubImagePrefix isEqualToString:[[HONClubAssistant sharedInstance] defaultCoverImageURL]] ) {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																	message:NSLocalizedString(@"are_you_sure_create_club", nil)
+																	message:[NSString stringWithFormat:NSLocalizedString(@"are_you_sure_create_club", @"Are you sure you want to create %@ without a cover image?"), _clubName]
 																   delegate:self
 														  cancelButtonTitle:NSLocalizedString(@"alert_yes", nil)
 														  otherButtonTitles:NSLocalizedString(@"select_cover", nil), nil];
@@ -349,13 +309,6 @@
 		[self.navigationController presentViewController:_imagePicker animated:YES completion:^(void) {
 		}];
 	}
-	
-//	HONClubCoverCameraViewController *clubCoverCameraViewController = [[HONClubCoverCameraViewController alloc] init];
-//	clubCoverCameraViewController.delegate = self;
-//	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:clubCoverCameraViewController];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 
@@ -387,19 +340,6 @@
 //		_blurbCheckImageView.image = [UIImage imageNamed:@"checkmarkIcon"];
 	}
 }
-
-
-//#pragma mark - ClubCoverCameraViewController Delegates
-//- (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix {
-//	NSLog(@"\n**_[clubCoverCameraViewController:didFinishProcessingImage:(%@)withPrefix:(%@)]_**\n", NSStringFromCGSize(image.size), imagePrefix);
-//	
-//	UIImage *thumbImage = [[HONImageBroker sharedInstance] scaleImage:[[HONImageBroker sharedInstance] cropImage:image toRect:CGRectMake(0.0, (image.size.height - image.size.width) * 0.5, image.size.width, image.size.width)] toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
-//	_clubCoverImageView.image = thumbImage;
-//	_clubImagePrefix = imagePrefix;
-//	
-//	[_addImageButton setBackgroundImage:nil forState:UIControlStateNormal];
-//	[_addImageButton setBackgroundImage:nil forState:UIControlStateHighlighted];
-//}
 
 
 #pragma mark - ImagePickerViewController Delegates

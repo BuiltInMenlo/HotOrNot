@@ -25,13 +25,6 @@
 #import "HONHeaderView.h"
 
 
-#define SPLASH_BLUE_TINT_COLOR		[UIColor colorWithRed:0.008 green:0.373 blue:0.914 alpha:0.667]
-#define SPLASH_MAGENTA_TINT_COLOR	[UIColor colorWithRed:0.910 green:0.009 blue:0.520 alpha:0.667]
-#define SPLASH_GREEN_TINT_COLOR		[UIColor colorWithRed:0.009 green:0.910 blue:0.178 alpha:0.667]
-#define SPLASH_TINT_FADE_DURATION	2.50f
-#define SPLASH_TINT_TIMER_DURATION	3.33f
-
-
 @interface HONRegisterViewController () <HONCallingCodesViewControllerDelegate>
 @property (nonatomic, strong) MFMailComposeViewController *mailComposeViewController;
 @property (nonatomic, strong) UIImagePickerController *profileImagePickerController;
@@ -202,9 +195,10 @@
 			[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 				[[HONClubAssistant sharedInstance] writeUserClubs:result];
 				
-				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
-				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
-					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+				NSString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+//				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
+//				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
+//					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
 				
 				if (![[HONClubAssistant sharedInstance] isClubNameMatchedForUserClubs:clubName]) {
 					[[HONAPICaller sharedInstance] createClubWithTitle:clubName withDescription:@"" withImagePrefix:[[HONClubAssistant sharedInstance] rndCoverImageURL] completion:^(NSDictionary *result) {
@@ -233,9 +227,9 @@
 				[HONAppDelegate writeUserInfo:result];
 				[[HONDeviceIntrinsics sharedInstance] writePhoneNumber:_phone];
 				
-				NSMutableString *clubName = [[[[HONAppDelegate infoForUser] objectForKey:@"username"] stringByAppendingString:@"_"] mutableCopy];
-				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
-					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+				NSMutableString *clubName = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+//				for (int i=0; i<(arc4random_uniform(7) + 4); i++)
+//					[clubName appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
 				
 				[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary *result) {
 					[[HONClubAssistant sharedInstance] writeUserClubs:result];
@@ -688,7 +682,7 @@
 		_phoneCheckImageView.alpha = 1.0;
 		
 		[[[UIAlertView alloc] initWithTitle: NSLocalizedString(@"no_userphone", @"No Username & Phone!")
-									message: NSLocalizedString(@"no_userphone_msg", nil) //@"You need to enter a username and phone # to use Selfieclub"
+									message: NSLocalizedString(@"no_userphone_msg", @"You need to enter a username and phone # to use Selfieclub")
 								   delegate:nil
 						  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
 						  otherButtonTitles:nil] show];
@@ -698,7 +692,14 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	//	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	NSLog(@"UITextFieldTextDidChangeNotification:[%@]", [notification object]);
+	
+#if __APPSTORE_BUILD__ == 0
+	if ([_usernameTextField.text isEqualToString:@"¡"]) {
+		_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+		_phoneTextField.text = [[[HONDeviceIntrinsics sharedInstance] phoneNumber] substringFromIndex:2];
+	}
+#endif
 	
 	_clubNameLabel.text = ([_usernameTextField.text length] > 0) ? [NSString stringWithFormat:@"joinselfie.club/%@/%@", _usernameTextField.text, _usernameTextField.text] : @"joinselfie.club/";
 	

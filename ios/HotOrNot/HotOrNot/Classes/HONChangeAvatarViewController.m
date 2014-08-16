@@ -127,6 +127,49 @@
 }
 
 
+#pragma mark - CameraOverlayView Delegates
+- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+			_cameraOverlayView = nil;
+			_imagePicker.cameraOverlayView = nil;
+			_imagePicker = nil;
+		}];
+	}];
+}
+
+- (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
+		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		//overlay.flashButton.hidden = NO;
+		
+	} else {
+		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+		//overlay.flashButton.hidden = YES;
+	}
+}
+
+- (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+}
+
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
+	_isFiltered = isFiltered;
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	[_imagePicker takePicture];
+}
+
+
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
@@ -176,64 +219,6 @@
 }
 
 
-#pragma mark - CameraOverlayView Delegates
-- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
-			_cameraOverlayView = nil;
-			_imagePicker.cameraOverlayView = nil;
-			_imagePicker = nil;
-		}];
-	}];
-}
 
-- (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		//overlay.flashButton.hidden = NO;
-		
-	} else {
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-		//overlay.flashButton.hidden = YES;
-	}
-}
-
-- (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-}
-
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered {
-	_isFiltered = isFiltered;
-	
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", @"Loading…");
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[_imagePicker takePicture];
-}
-
-- (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
-}
-
-- (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {
-//	UIImage *processedImage = [[HONImageBroker sharedInstance] prepForUploading:[info objectForKey:UIImagePickerControllerOriginalImage]];
-//	
-//	NSLog(@"PROCESSED IMAGE:[%@]", NSStringFromCGSize(processedImage.size));
-//	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, processedImage.size.width, processedImage.size.height)];
-//	[canvasView addSubview:[[UIImageView alloc] initWithImage:processedImage]];
-//	
-//	UIView *overlayTintView = [[UIView alloc] initWithFrame:canvasView.frame];
-//	overlayTintView.backgroundColor = [[HONAppDelegate colorsForOverlayTints] objectAtIndex:_tintIndex];
-//	[canvasView addSubview:overlayTintView];
-//	
-//	processedImage = [[HONImageBroker sharedInstance] createImageFromView:canvasView];
-//	[self _uploadPhotos:processedImage];
-}
 
 @end

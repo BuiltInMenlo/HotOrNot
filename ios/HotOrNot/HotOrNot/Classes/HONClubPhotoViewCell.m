@@ -247,7 +247,7 @@ const CGRect kEmotionLoadedFrame = {0.0f, 0.0f, 84.0f, 84.0f};
 		[imageView setTintColor:[UIColor clearColor]];
 		[UIView commitAnimations];
 		
-		[UIView animateWithDuration:0.250 delay:(0.125 * index)
+		[UIView animateWithDuration:0.250 delay:0.50 + (0.125 * index)
 			 usingSpringWithDamping:0.750 initialSpringVelocity:0.250
 							options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationCurveEaseInOut)
 		 

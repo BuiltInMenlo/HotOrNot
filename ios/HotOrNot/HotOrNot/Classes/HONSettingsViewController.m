@@ -40,8 +40,8 @@
 					   NSLocalizedString(@"privacy_policy", @"Privacy policy"),
 					   NSLocalizedString(@"settings_support", @"Support"),
 					   NSLocalizedString(@"rate_app", @"Rate this app"),
-					   NSLocalizedString(@"network_status", @"Network status"),
-					   NSLocalizedString(@"settings_logout", @"Logout")];
+					   NSLocalizedString(@"network_status", @"Network status")];//,
+//					   NSLocalizedString(@"settings_logout", @"Logout")];
         
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
@@ -377,29 +377,28 @@
 		}
 	
 	} else if (alertView.tag == HONSettingsAlertTypeDeleteChallenges) {
-		
 		if (buttonIndex == 1) {
 			[[HONAPICaller sharedInstance] removeAllChallengesForUserWithCompletion:^(NSObject *result){
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE" object:nil];
 			}];
 		}
-	} else if (alertView.tag == HONSettingsAlertTypeLogout){
+	} else if (alertView.tag == HONSettingsAlertTypeLogout) {
 		if (buttonIndex == 1){
 			
-			[HONAppDelegate resetTotals];
-			[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-//			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-//
 			KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
 			[keychain setObject:@"" forKey:CFBridgingRelease(kSecAttrAccount)];
 			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+			[self dismissViewControllerAnimated:NO completion:^(void) {
+				[[[UIApplication sharedApplication] delegate].window.rootViewController.navigationController popToRootViewControllerAnimated:NO];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
+				[HONAppDelegate resetTotals];
 			}];
-		  
-
+			
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHANGE_TAB" object:[NSNumber numberWithInt:0]];
+//				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIRST_RUN" object:nil];
+//			}];
 		}
 	}
 }

@@ -24,6 +24,7 @@
 - (NSArray *)clubCoverPhotoAlbumPrefixes;
 - (int)labelIDForAreaCode:(NSString *)areaCode;
 - (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName;
+- (BOOL)isClubNameMatchedForUserClubs:(NSString *)clubName considerWhitespace:(BOOL)isWhitespace;
 - (HONUserClubVO *)userSignupClub;
 - (NSArray *)emotionsForClubPhoto:(HONClubPhotoVO *)clubPhotoVO;
 

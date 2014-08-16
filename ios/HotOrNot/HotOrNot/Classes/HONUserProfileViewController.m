@@ -19,6 +19,8 @@
 #import "HONPrivacyPolicyViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONInviteClubsViewController.h"
+#import "HONInviteContactsViewController.h"
+#import "HONInsetOverlayView.h"
 #import "HONImageLoadingView.h"
 #import "HONActivityItemViewCell.h"
 #import "HONTableView.h"
@@ -31,7 +33,7 @@
 #import "HONUserClubVO.h"
 #import "HONActivityItemVO.h"
 
-@interface HONUserProfileViewController () <HONActivityItemViewCellDelegate>
+@interface HONUserProfileViewController () <HONActivityItemViewCellDelegate, HONInsetOverlayViewDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONTableView *tableView;
 @property (nonatomic, assign, readonly) HONUserProfileType userProfileType;
@@ -43,7 +45,7 @@
 @property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) NSMutableArray *ownedClubs;
-
+@property (nonatomic, strong) HONInsetOverlayView *insetOverlayView;
 @end
 
 
@@ -56,8 +58,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(_refreshProfile:)
 													 name:@"REFRESH_PROFILE" object:nil];
-		
-		_cohortRows = @[NSLocalizedString(@"invite_myclub", nil)];   //@"Invite to my club"];
 	}
 	
 	return  (self);
@@ -105,22 +105,25 @@
 - (void)_retrieveActivityItems {
 	_activityAlerts = [NSMutableArray array];
 	[[HONAPICaller sharedInstance] retrieveNewActivityForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSArray *result) {
-		int prevTotal = ([[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] == nil) ? [result count] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_total"] intValue];
-		int badgeTotal = ABS([result count] - prevTotal);
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:badgeTotal] forKey:@"activity_total"];
-		[[NSUserDefaults standardUserDefaults] setObject:([result count] > 0) ? [[result lastObject] objectForKey:@"time"] : [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"] forKey:@"activity_updated"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		NSLog(@"updateActivityBadge -[%@]- prevTotal:[%d] newTotal:[%d] badgeTotal:[%d]", [[NSUserDefaults standardUserDefaults] objectForKey:@"activity_updated"], prevTotal, [result count], badgeTotal);
-		
 		[result enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			NSMutableDictionary *dict = (NSMutableDictionary *)[obj mutableCopy];
-			[dict setValue:@{@"id"	:		[@""stringFromInt:_userVO.userID],
+			[dict setValue:@{@"id"			: [@""stringFromInt:_userVO.userID],
 							 @"username"	: _userVO.username} forKey:@"recip"];
 			
 			[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:[dict copy]]];
 		}];
+		
+		[_activityAlerts addObject:[HONActivityItemVO activityWithDictionary:@{@"id"			: [NSString stringWithFormat:@"0_2394_%d", (int)[[NSDate date] timeIntervalSince1970]],
+																			   @"activity_type"	: @"0",
+																			   @"challengeID"	: @"0",
+																			   @"club_id"		: @"0",
+																			   @"club_name"		: @"",
+																			   @"time"			: [[HONAppDelegate infoForUser] objectForKey:@"added"],
+																			   @"user"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"],
+																									@"avatar_url"	: [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]},
+																			   @"recip"			: @{@"id"			: [[HONAppDelegate infoForUser] objectForKey:@"id"],
+																									@"username"		: [[HONAppDelegate infoForUser] objectForKey:@"username"]}}]];
 		
 		[self _didFinishDataRefresh];
 	}];
@@ -198,6 +201,29 @@
 		[self _retrieveUser];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidAppear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	[super viewDidAppear:animated];
+	
+	NSLog(@"%@ -TOT- (%d)", self.class, [HONAppDelegate totalForCounter:@"activity"]);
+	NSLog(@"%@ -INC- (%d)", self.class, [HONAppDelegate incTotalForCounter:@"activity"]);
+	NSLog(@"%@ -TOT- (%d)", self.class, [HONAppDelegate totalForCounter:@"activity"]);
+	
+	if ([HONAppDelegate totalForCounter:@"activity"] == 1) {
+		if (_insetOverlayView == nil)
+			_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeInvite];
+		_insetOverlayView.delegate = self;
+		
+		[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
+		[_insetOverlayView introWithCompletion:nil];
+	}
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+	ViewControllerLog(@"[:|:] [%@ viewDidDisappear:%@] [:|:]", self.class, [@"" stringFromBool:animated]);
+	[super viewDidDisappear:animated];
+}
+
 
 #pragma mark - Navigation
 - (void)_goInvite {
@@ -221,8 +247,6 @@
 }
 
 - (void)_goShoutout {
-
-	
 	[[HONAPICaller sharedInstance] createShoutoutChallengeWithUserID:_userVO.userID completion:^(NSObject *result) {
 		[[[UIAlertView alloc] initWithTitle:@"Shoutout Sent!"
 									message:@"Check your Home timeline to like and reply."
@@ -275,8 +299,8 @@
 	[imageLoadingView startAnimating];
 	[avatarHolderView addSubview:imageLoadingView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
-	avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"activityAvatarBG"]];
+	avatarImageView.frame = CGRectOffset(avatarImageView.frame, 10.0, 10.0);
 	avatarImageView.alpha = 0.0;
 	[avatarHolderView addSubview:avatarImageView];
 	
@@ -293,13 +317,14 @@
 	void (^imageFailureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) = ^void((NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)) {
 		[[HONAPICaller sharedInstance] notifyToCreateImageSizesForPrefix:[[HONAPICaller sharedInstance] normalizePrefixForImageURL:request.URL.absoluteString] forBucketType:HONS3BucketTypeAvatars completion:nil];
 		
-		avatarImageView.image = [UIImage imageNamed:@"activityAvatarPlaceholder"];
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			avatarImageView.alpha = 1.0;
-		} completion:nil];
+//		avatarImageView.image = [UIImage imageNamed:@"activityAvatarBG"];
+//		[UIView animateWithDuration:0.25 animations:^(void) {
+//			avatarImageView.alpha = 1.0;
+//		} completion:nil];
 	};
 	
 	if ([_userVO.avatarPrefix rangeOfString:@"defaultAvatar"].location == NSNotFound) {
+		NSLog(@"avatarPrefix:[%@]", [_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]);
 		[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_userVO.avatarPrefix stringByAppendingString:kSnapThumbSuffix]]
 																 cachePolicy:kURLRequestCachePolicy
 															 timeoutInterval:[HONAppDelegate timeoutInterval]]
@@ -335,7 +360,6 @@
 		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addButton:settingsButton];
 		
-		
 		UIButton *changeAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		changeAvatarButton.frame = CGRectMake(257.0, 0.0, 64.0, 64.0);
 		[changeAvatarButton setBackgroundImage:[UIImage imageNamed:@"changeAvatarButton_nonActive"] forState:UIControlStateNormal];
@@ -352,6 +376,25 @@
         [_headerView addButton:inviteButton];
 
     }
+}
+
+#pragma mark - InsetOverlay Delegates
+- (void)insetOverlayViewDidClose:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+	}];
+}
+
+- (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view {
+	[_insetOverlayView outroWithCompletion:^(BOOL finished) {
+		[_insetOverlayView removeFromSuperview];
+		_insetOverlayView = nil;
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteContactsViewController alloc] initWithClub:[[HONClubAssistant sharedInstance] userSignupClub] viewControllerPushed:NO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -410,7 +453,8 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
+	return ((vo.activityType == HONActivityItemTypeSignup) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -419,20 +463,13 @@
 	HONActivityItemVO *vo = [_activityAlerts objectAtIndex:indexPath.row];
 	
 	NSLog(@"vo:[%@]", vo.dictionary);
-	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : (vo.activityType == HONActivityItemTypeVerify) ? @"Verifiy" : @"UNKNOWN");
+	NSLog(@"vo.activityType:[%@]", (vo.activityType == HONActivityItemTypeClubSubmission) ? @"ClubSubmission" : (vo.activityType == HONActivityItemTypeInviteAccepted) ? @"InviteAccepted" : (vo.activityType == HONActivityItemTypeInviteRequest) ? @"InviteRequest" : (vo.activityType == HONActivityItemTypeLike) ? @"Like" : (vo.activityType == HONActivityItemTypeShoutout) ? @"Shoutout" : @"UNKNOWN");
 	
 	NSString *mpAlertType;
 	NSDictionary *mpParams;
 	
 	UIViewController *viewController;
-	if (vo.activityType == HONActivityItemTypeVerify) {
-		mpAlertType = @"Verify";
-		mpParams = @{@"participant"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
-		
-		HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithUserID:vo.originUserID];
-		viewController = userPofileViewController;
-		
-	} else if (vo.activityType == HONActivityItemTypeInviteAccepted) {
+	if (vo.activityType == HONActivityItemTypeInviteAccepted) {
 		mpAlertType = @"Accepted Invite";
 		mpParams = @{@"club"	: [NSString stringWithFormat:@"%d - %@", vo.originUserID, vo.originUsername]};
 		

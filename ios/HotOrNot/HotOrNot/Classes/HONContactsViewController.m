@@ -220,7 +220,7 @@
 
 #pragma mark - Device Functions
 - (void)_retrieveDeviceContacts {
-	NSLog(@":/: _sendEmailContacts :/:");
+	NSLog(@":/: _retrieveDeviceContacts :/:");
 	
 	_deviceContacts = [NSMutableArray arrayWithObject:[HONContactUserVO contactWithDictionary:@{@"id"			: @"-1", // share shelf
 																								@"f_name"		: @".",

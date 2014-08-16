@@ -298,8 +298,8 @@
 }
 
 - (void)_goSuggestions {
-	if ([self.delegate respondsToSelector:@selector(insetOverlayViewDidAccessContents:)])
-		[self.delegate insetOverlayViewDidAccessContents:self];
+	if ([self.delegate respondsToSelector:@selector(insetOverlayViewDidAskForSuggestions:)])
+		[self.delegate insetOverlayViewDidAskForSuggestions:self];
 }
 
 - (void)_goUnlock {

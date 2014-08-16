@@ -153,7 +153,7 @@
 			
 		} else {
 			NSLog(@"******* CREATE ******");
-			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+			[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.blurb withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
 				_clubVO = [HONUserClubVO clubWithDictionary:result];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
 				
@@ -176,11 +176,12 @@
 				NSLog(@"******* EXISTING (%d, %d) ******", [_selectedInAppContacts count], [_selectedNonAppContacts count]);
 				if (([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0)) {
 					NSLog(@"******* NON SELECTED ******");
-					[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noclubs_t", nil)
-												message:[NSString stringWithFormat:NSLocalizedString(@"alert_noclubs_m", nil), _clubVO.clubName]
-											   delegate:nil
-									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-									  otherButtonTitles:nil] show];
+					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
+//					[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"alert_noclubs_t", nil)
+//												message:[NSString stringWithFormat:NSLocalizedString(@"alert_noclubs_m", nil), _clubVO.clubName]
+//											   delegate:nil
+//									  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
+//									  otherButtonTitles:nil] show];
 				} else {
 					NSLog(@"******* SEND INVITES ******");
 					[self _sendClubInvites];
@@ -189,14 +190,16 @@
 			
 			} else {
 				NSLog(@"******* CREATE ******");
-				[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.description withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
+				[[HONAPICaller sharedInstance] createClubWithTitle:_clubVO.clubName withDescription:_clubVO.blurb withImagePrefix:_clubVO.coverImagePrefix completion:^(NSDictionary *result) {
 					_clubVO = [HONUserClubVO clubWithDictionary:result];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATED_NEW_CLUB" object:_clubVO];
 					
 					if (([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0))
 						[self _sendClubInvites];
 					
-					[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {
+					[[HONAPICaller sharedInstance] retrieveClubsForUserByUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] completion:^(NSDictionary * result) {
+						[[HONClubAssistant sharedInstance] writeUserClubs:result];	
+						[self.navigationController dismissViewControllerAnimated:YES completion:^(void) {}];
 					}];
 				}];
 			}

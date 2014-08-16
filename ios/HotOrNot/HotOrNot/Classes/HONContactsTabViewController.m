@@ -161,14 +161,6 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"%@._completedFirstRun - ABAddressBookGetAuthorizationStatus() = [%@]", self.class, (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) ? @"NotDetermined" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) ? @"Denied" : (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) ? @"Authorized" : @"UNKNOWN");
 	[self _submitPhoneNumberForMatching];
 	
-	if (_insetOverlayView == nil)
-		_insetOverlayView = [[HONInsetOverlayView alloc] initAsType:HONInsetOverlayViewTypeInvite];
-	_insetOverlayView.delegate = self;
-	
-	[[HONScreenManager sharedInstance] appWindowAdoptsView:_insetOverlayView];
-	[_insetOverlayView introWithCompletion:nil];
-	
-	
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
 		[self _retrieveDeviceContacts];
 	

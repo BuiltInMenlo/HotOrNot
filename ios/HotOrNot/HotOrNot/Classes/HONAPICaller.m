@@ -1319,7 +1319,7 @@ static HONAPICaller *sharedInstance = nil;
 - (void)createClubWithTitle:(NSString *)title withDescription:(NSString *)blurb withImagePrefix:(NSString *)imagePrefix completion:(void (^)(id result))completion {
 #if SC_ACCT_BUILD == 0
 	NSDictionary *params = @{@"userID"		: [[HONAppDelegate infoForUser] objectForKey:@"id"],
-							 @"name"		: title,
+							 @"name"		: [title stringByReplacingOccurrencesOfString:@" " withString:@""],
 							 @"description"	: blurb,
 							 @"imgURL"		: imagePrefix};
 #else

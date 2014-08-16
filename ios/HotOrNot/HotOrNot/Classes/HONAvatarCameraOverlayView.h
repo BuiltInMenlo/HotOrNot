@@ -9,10 +9,9 @@
 @class HONAvatarCameraOverlayView;
 @protocol HONAvatarCameraOverlayDelegate <NSObject>
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView includeFilter:(BOOL)isFiltered;
-- (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView;
 @optional
+- (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeFlash:(HONAvatarCameraOverlayView *)previewView;
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)previewView;
 - (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)previewView;

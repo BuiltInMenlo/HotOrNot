@@ -9,7 +9,7 @@
 #import "HONViewController.h"
 
 @class HONClubCoverCameraViewController;
-@protocol HONClubCoverCameraViewControllerDelegate
+@protocol HONClubCoverCameraViewControllerDelegate <NSObject>
 - (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didFinishProcessingImage:(UIImage *)image withPrefix:(NSString *)imagePrefix;
 @optional
 - (void)clubCoverCameraViewController:(HONClubCoverCameraViewController *)viewController didBeginUploadWithImagePrefix:(NSString *)imagePrefix;

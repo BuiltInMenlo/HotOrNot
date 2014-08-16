@@ -219,7 +219,7 @@
 		_timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:12];
 		_timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 		_timeLabel.textAlignment = NSTextAlignmentRight;
-		_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubVO.updatedDate];
+		_timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_clubPhotoVO.addedDate];
 		[self.contentView addSubview:_timeLabel];
 		
 		_emotionsImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointZero asLargeLoader:NO];
@@ -364,6 +364,10 @@
 	
 	UIView *view = [[UIView alloc] initWithFrame:adjFrame];
 	view.alpha = 0.0;
+	view.layer.borderColor = [UIColor clearColor].CGColor;
+	view.layer.borderWidth = 2.5f;
+	view.layer.shouldRasterize = YES;
+	view.layer.rasterizationScale = 3.0f;
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:orgFrame];
 	[imageView setTag:[emotionVO.emotionID intValue]];

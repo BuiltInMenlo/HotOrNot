@@ -8,7 +8,7 @@
 
 // Push types
 typedef NS_ENUM(NSInteger, HONActivityItemType) {
-	HONActivityItemTypeVerify = 0,
+	HONActivityItemTypeSignup = 0,
 	HONActivityItemTypeInviteRequest,
 	HONActivityItemTypeInviteAccepted,
 	HONActivityItemTypeLike,

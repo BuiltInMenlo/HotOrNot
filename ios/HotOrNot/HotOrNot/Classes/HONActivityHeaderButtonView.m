@@ -17,12 +17,16 @@ const CGFloat kMaxActivityWidth = 44.0;
 @property (nonatomic, strong) UIButton *button;
 @property (nonatomic, strong) UIImageView *activityBGImageView;
 @property (nonatomic, strong) UILabel *activityTotalLabel;
+@property (nonatomic) BOOL isFirstRun;
 @end
 
 @implementation HONActivityHeaderButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 1.0, 93.0, 44.0)])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_completedFirstRun:) name:@"COMPLETED_FIRST_RUN" object:nil];
+		
+		
 		_button = [UIButton buttonWithType:UIButtonTypeCustom];
 		_button.frame = CGRectMake(0.0, 0.0, 93.0, 44.0);
 		[_button setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
@@ -60,13 +64,30 @@ const CGFloat kMaxActivityWidth = 44.0;
 			newTot += (int)([[[HONDateTimeAlloter sharedInstance] utcNowDate] timeIntervalSinceDate:vo.sentDate] < 1800);
 		}];
 		
+		float delay = 0.125;
+		if (_isFirstRun) {
+			newTot++;
+			delay += 0.50;
+			_isFirstRun = NO;
+		}
+	
 		NSLog(@"updateActivityBadge -[%@]- newTot:[%d]", [[HONDateTimeAlloter sharedInstance] orthodoxFormattedStringFromDate:[[HONDateTimeAlloter sharedInstance] utcNowDate]], newTot);
-		[UIView animateWithDuration:0.25 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
+		[UIView animateWithDuration:0.25 delay:delay options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
 			_activityBGImageView.alpha = (newTot > 0);
 		} completion:^(BOOL finished) {}];
-		
-//		_activityBGImageView.hidden = (newTot == 0);
 	}];
+}
+
+
+- (void)_completedFirstRun:(NSNotification *)notification {
+	NSLog(@"::|> _completedFirstRun <|::");
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"COMPLETED_FIRST_RUN" object:nil];
+	
+	_isFirstRun = YES;
+	[UIView animateWithDuration:0.25 delay:0.125 options:(UIViewAnimationOptionAllowAnimatedContent|UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut) animations:^(void) {
+		_activityBGImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {}];
 }
 
 

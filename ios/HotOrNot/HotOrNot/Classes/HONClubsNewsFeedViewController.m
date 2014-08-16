@@ -316,26 +316,18 @@ static NSString * const kCamera = @"camera";
 	NSLog(@"[[*:*]] tabBannerView:joinAreaCodeClub:[%@]", clubVO.clubName);
 	
 	_selectedClubVO = clubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-	[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
-	[alertView show];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)tabBannerView:(HONTabBannerView *)bannerView joinFamilyClub:(HONUserClubVO *)clubVO {
 	NSLog(@"[[*:*]] tabBannerView:joinFamilyClub:[%@]", clubVO.clubName);
 	
 	_selectedClubVO = clubVO;
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-														message:[NSString stringWithFormat:NSLocalizedString(@"alert_join", nil), _selectedClubVO.clubName]
-													   delegate:self
-											  cancelButtonTitle:NSLocalizedString(@"alert_ok", nil)
-											  otherButtonTitles:NSLocalizedString(@"alert_cancel", nil), nil];
-	[alertView setTag:HONClubsNewsFeedAlertTypeCreateClub];
-	[alertView show];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {

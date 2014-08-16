@@ -87,7 +87,7 @@
 	[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self.contentView addSubview:avatarButton];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 200.0, 17.0)];
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(53.0, 13.0, 202.0, 17.0)];
 	titleLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	titleLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	titleLabel.backgroundColor = [UIColor clearColor];
@@ -95,13 +95,13 @@
 	[titleLabel setFont:[[[HONFontAllocator sharedInstance] helveticaNeueFontMedium] fontWithSize:13] range:[_activityItemVO.message rangeOfString:_activityItemVO.originUsername]];
 	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.recipientUsername]];
 	[titleLabel setTextColor:[UIColor blackColor] range:[_activityItemVO.message rangeOfString:_activityItemVO.clubName]];
-	[titleLabel resizeWidthUsingCaption:_activityItemVO.message boundedBySize:titleLabel.frame.size];
 	[self.contentView addSubview:titleLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.frame.origin.x + titleLabel.frame.size.width + 2.0, titleLabel.frame.origin.y, 50.0, titleLabel.frame.size.height)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, titleLabel.frame.origin.y, 50.0, titleLabel.frame.size.height)];
 	timeLabel.font = [[[HONFontAllocator sharedInstance] helveticaNeueFontRegular] fontWithSize:13];
 	timeLabel.textColor = [[HONColorAuthority sharedInstance] honGreyTextColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [[HONDateTimeAlloter sharedInstance] intervalSinceDate:_activityItemVO.sentDate minSeconds:0 usingIndicators:@{@"seconds"	: @[@"sec", @"s"],
 																																	@"minutes"	: @[@"min", @"s"],
 																																	@"hours"	: @[@"hr", @"s"],

@@ -64,68 +64,6 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[deleteButton setBackgroundImage:[UIImage imageNamed:@"emojiDeleteButton_Active"] forState:UIControlStateHighlighted];
 		[deleteButton addTarget:self action:@selector(_goDelete) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:deleteButton];
-        
-//		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
-//		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
-//		__block int cnt = 0;
-//		for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak]) {
-//			[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
-//				[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//					PCContent *content = (PCContent *)obj;
-//					HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
-//																			 @"cg_id"	: contentGroupID,
-//																			 @"name"	: content.name,
-//																			 @"price"	: [content.price stringValue],
-//																			 @"content"	: content,
-//																			 @"img"		: @""}];
-//					[_availableEmotions addObject:vo];
-//					
-//				}];
-//				
-//				if (++cnt >= free_tot) {
-//					
-//					cnt = 0;
-//					if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
-//						for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
-//							[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
-//								[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//									PCContent *content = (PCContent *)obj;
-//									HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
-//																							 @"cg_id"	: contentGroupID,
-//																							 @"name"	: content.name,
-//																							 @"price"	: [content.price stringValue],
-//																							 @"content"	: content,
-//																							 @"img"		: @""}];
-//									[_availableEmotions addObject:vo];
-//									
-//								}];
-//								
-//								if (++cnt >= invite_tot) {
-//									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-//									
-//									_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
-//									[_paginationView updateToPage:0];
-//									[self addSubview:_paginationView];
-//									
-//									[self _buildGrid];
-//								}
-//							}];
-//						}
-//					
-//					} else {
-//						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-//						
-//						_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
-//						[_paginationView updateToPage:0];
-//						[self addSubview:_paginationView];
-//						
-//						[self _buildGrid];
-//					}
-//				}
-//			}];
-//		}
 		
 		
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
@@ -147,27 +85,18 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 	return (self);
 }
 
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//	
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//	
-//	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
-//		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
-//		[self _goDelete];
-//	}
-//}
-
 
 #pragma mark - Public APIs
 - (void)scrollToPage:(int)page {
 	[_scrollView scrollRectToVisible:CGRectMake(page * _scrollView.frame.size.width, 0.0, _scrollView.frame.size.width, _scrollView.frame.size.height) animated:NO];
 	[_paginationView updateToPage:page];
+}
+
+- (void)disablePagesStartingAt:(int)page {
+	for (int i=page; i<[_pageViews count]; i++) {
+		UIView *pageView = (UIView *)[_pageViews objectAtIndex:i];
+		pageView.userInteractionEnabled = NO;
+	}
 }
 
 

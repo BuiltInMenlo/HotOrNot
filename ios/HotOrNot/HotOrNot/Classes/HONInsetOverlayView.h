@@ -15,7 +15,7 @@
 - (void)insetOverlayViewDidUnlock:(HONInsetOverlayView *)view;
 - (void)insetOverlayViewDidInvite:(HONInsetOverlayView *)view;
 - (void)insetOverlayViewDidReview:(HONInsetOverlayView *)view;
-- (void)insetOverlayViewDidAccessContents:(HONInsetOverlayView *)view;
+- (void)insetOverlayViewDidAskForSuggestions:(HONInsetOverlayView *)view;
 
 - (void)insetOverlayViewCopyPersonalClub:(HONInsetOverlayView *)view;
 - (void)insetOverlayView:(HONInsetOverlayView *)view createSuggestedClub:(HONUserClubVO *)clubVO;
