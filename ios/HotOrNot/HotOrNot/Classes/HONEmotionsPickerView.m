@@ -40,7 +40,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		_selectedEmotions = [NSMutableArray array];
 		
 		_prevPage = 0;
-		_totalPages = 0;
+		_totalPages = 10;
 		_pageViews = [NSMutableArray array];
 		_itemViews = [NSMutableArray array];
 		
@@ -151,7 +151,7 @@ const CGSize kImageSpacingSize = {75.0f, 73.0f};
 		[_paginationView updateToPage:0];
 		[self addSubview:_paginationView];
 		
-		[self _buildGrid];
+		//[self _buildGrid];
 	}
 	
 	return (self);
