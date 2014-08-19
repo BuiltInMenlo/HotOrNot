@@ -73,7 +73,7 @@ NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_ios.json";
-NSString * const kAPIHost = @"data_api-stage";
+NSString * const kAPIHost = @"data_api-dev";
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
