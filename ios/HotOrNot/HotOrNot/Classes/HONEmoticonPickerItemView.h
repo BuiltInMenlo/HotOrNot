@@ -19,6 +19,6 @@
 
 @interface HONEmoticonPickerItemView : UIView
 - (id)initAtPosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay;
-
+-(id) initAtLargePosition:(CGPoint)position withEmotion:(HONEmotionVO *)emotionVO withDelay:(CGFloat)delay;
 @property (nonatomic, assign) id<HONEmotionItemViewDelegate> delegate;
 @end

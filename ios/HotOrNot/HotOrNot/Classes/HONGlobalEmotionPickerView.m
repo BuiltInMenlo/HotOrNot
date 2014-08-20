@@ -6,13 +6,13 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONEmotionsPickerView.h"
+#import "HONGlobalEmotionPickerView.h"
 #import "HONEmoticonPickerItemView.h"
 #import "HONPaginationView.h"
 
-const CGSize kImageSpacing2Size = {75.0f, 73.0f};
+const CGSize kImageSpacingSize = {194.0f, 194.0f};
 
-@interface HONEmotionsPickerView () <HONEmotionItemViewDelegate>
+@interface HONGlobalEmotionPickerView () <HONEmotionItemViewDelegate>
 @property (nonatomic, strong) __block NSMutableArray *availableEmotions;
 @property (nonatomic, strong) NSMutableArray *selectedEmotions;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -26,7 +26,7 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 @property (nonatomic) BOOL isGlobal;
 @end
 
-@implementation HONEmotionsPickerView
+@implementation HONGlobalEmotionPickerView
 @synthesize delegate = _delegate;
 
 
@@ -71,71 +71,71 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 		[globalButton setBackgroundImage:[UIImage imageNamed:@"globalButton_Active"] forState:UIControlStateHighlighted];
 		[globalButton addTarget:self action:@selector(_goGlobal) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:globalButton];
-
+        
 		
 		
-//		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
-//		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
-//		__block int cnt = 0;
-//		for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak]) {
-//			[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
-//				[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//					PCContent *content = (PCContent *)obj;
-//					HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
-//																			 @"cg_id"	: contentGroupID,
-//																			 @"name"	: content.name,
-//																			 @"price"	: [content.price stringValue],
-//																			 @"content"	: content,
-//																			 @"img"		: @""}];
-//					[_availableEmotions addObject:vo];
-//					
-//				}];
-//				
-//				if (++cnt >= free_tot) {
-//					
-//					cnt = 0;
-//					if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
-//						for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
-//							[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
-//								[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//									PCContent *content = (PCContent *)obj;
-//									HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
-//																							 @"cg_id"	: contentGroupID,
-//																							 @"name"	: content.name,
-//																							 @"price"	: [content.price stringValue],
-//																							 @"content"	: content,
-//																							 @"img"		: @""}];
-//									[_availableEmotions addObject:vo];
-//									
-//								}];
-//								
-//								if (++cnt >= invite_tot) {
-//									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-//									
-//									_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
-//									[_paginationView updateToPage:0];
-//									[self addSubview:_paginationView];
-//									
-//									[self _buildGrid];
-//								}
-//							}];
-//						}
-//					
-//					} else {
-//						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
-//						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
-//						
-//						_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
-//						[_paginationView updateToPage:0];
-//						[self addSubview:_paginationView];
-//						
-//						[self _buildGrid];
-//					}
-//				}
-//			}];
-//		}
-			
+        //		int free_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak] count];
+        //		int invite_tot = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak] count];
+        //		__block int cnt = 0;
+        //		for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kFreeStickerPak]) {
+        //			[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+        //				[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        //					PCContent *content = (PCContent *)obj;
+        //					HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+        //																			 @"cg_id"	: contentGroupID,
+        //																			 @"name"	: content.name,
+        //																			 @"price"	: [content.price stringValue],
+        //																			 @"content"	: content,
+        //																			 @"img"		: @""}];
+        //					[_availableEmotions addObject:vo];
+        //
+        //				}];
+        //
+        //				if (++cnt >= free_tot) {
+        //
+        //					cnt = 0;
+        //					if ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]) {
+        //						for (NSString *contentGroupID in [[[NSUserDefaults standardUserDefaults] objectForKey:@"pico_candy"] objectForKey:kInviteStickerPak]) {
+        //							[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:contentGroupID completion:^(NSArray *result) {
+        //								[result enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        //									PCContent *content = (PCContent *)obj;
+        //									HONEmotionVO *vo = [HONEmotionVO emotionWithDictionary:@{@"id"		: content.content_id,
+        //																							 @"cg_id"	: contentGroupID,
+        //																							 @"name"	: content.name,
+        //																							 @"price"	: [content.price stringValue],
+        //																							 @"content"	: content,
+        //																							 @"img"		: @""}];
+        //									[_availableEmotions addObject:vo];
+        //
+        //								}];
+        //
+        //								if (++cnt >= invite_tot) {
+        //									_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+        //									_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+        //
+        //									_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+        //									[_paginationView updateToPage:0];
+        //									[self addSubview:_paginationView];
+        //
+        //									[self _buildGrid];
+        //								}
+        //							}];
+        //						}
+        //
+        //					} else {
+        //						_totalPages = ((int)([_availableEmotions count] / (COLS_PER_ROW * ROWS_PER_PAGE))) + 1;
+        //						_scrollView.contentSize = CGSizeMake(_totalPages * _scrollView.frame.size.width, _scrollView.frame.size.height);
+        //
+        //						_paginationView = [[HONPaginationView alloc] initAtPosition:CGPointMake(160.0, 242.0) withTotalPages:_totalPages];
+        //						[_paginationView updateToPage:0];
+        //						[self addSubview:_paginationView];
+        //
+        //						[self _buildGrid];
+        //					}
+        //				}
+        //			}];
+        //		}
+        
 		
 		
 		for (NSDictionary *dict in [[HONStickerAssistant sharedInstance] fetchStickersForPakType:HONStickerPakTypeSelfieclub])
@@ -159,14 +159,14 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 
 //- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 //	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//	
+//
 //	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation))
 //		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_Active"];
 //}
 //
 //- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 //	CGPoint touchLocation = [[touches anyObject] locationInView:self];
-//	
+//
 //	if (CGRectContainsPoint(_deleteButtonImageView.frame, touchLocation)) {
 //		_deleteButtonImageView.image = [UIImage imageNamed:@"emojiDeleteButton_nonActive"];
 //		[self _goDelete];
@@ -189,9 +189,8 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 	[_selectedEmotions removeLastObject];
 }
 -(void)_goGlobal {
-    [self.delegate emotionsPickerView:self globalButton:YES];
-
-//    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
+    [self.delegate globalEmotionsPickerView:self globalButton:YES];
+    //_bgImageView.image = [UIImage imageNamed:@"emojiPanelBG"];
 //    [self.delegate emotionsPickerViewShowActionSheet:self];
 //    _isGlobal = !_isGlobal;
 //    if(_isGlobal){
@@ -206,7 +205,7 @@ const CGSize kImageSpacing2Size = {75.0f, 73.0f};
 //        }
 //    }
     
-
+    
 }
 
 #pragma mark - UI Presentation
@@ -223,18 +222,18 @@ static dispatch_queue_t sticker_request_operation_queue;
 	int page = 0;
 	
 	for (int i=0; i<_totalPages; i++) {
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacing2Size.width, ROWS_PER_PAGE * kImageSpacing2Size.height)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(63.0 + (i * _scrollView.frame.size.width), 14.0, COLS_PER_ROW * kImageSpacingSize.width, ROWS_PER_PAGE * kImageSpacingSize.height)];
 		[holderView setTag:i];
 		[_pageViews addObject:holderView];
 		[_scrollView addSubview:holderView];
 	}
 	
 	for (HONEmotionVO *vo in _availableEmotions) {
-		 dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
 			if ([[HONStickerAssistant sharedInstance] stickerFromCandyBoxWithContentID:vo.contentGroupID] != nil) {
 				
 			} else {
-//				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
+                //				[[HONStickerAssistant sharedInstance] retrieveContentsForContentGroup:vo.contentGroupID completion:nil];
 			}
 		});
 		
@@ -242,11 +241,10 @@ static dispatch_queue_t sticker_request_operation_queue;
 		row = (int)floor(cnt / COLS_PER_ROW) % ROWS_PER_PAGE;
 		page = (int)floor(cnt / (COLS_PER_ROW * ROWS_PER_PAGE));
 		
-		HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtPosition:CGPointMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height) withEmotion:vo withDelay:cnt * 0.125];
-       // HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacing2Size.width, row * kImageSpacing2Size.height, 75.0,73.0) withEmotion:vo withDelay:cnt * 0.125];
-
+//        HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initWithFrame:CGRectMake(col * kImageSpacingSize.width, row * kImageSpacingSize.height, 194.0,194.0) withEmotion:vo withDelay:cnt * 0.125];
+        HONEmoticonPickerItemView *emotionItemView = [[HONEmoticonPickerItemView alloc] initAtLargePosition:CGPointMake(col*kImageSpacingSize.width, row*kImageSpacingSize.height) withEmotion:vo withDelay:cnt * .125];
 		emotionItemView.delegate = self;
-//		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
+        //		emotionItemView.userInteractionEnabled = (cnt < (COLS_PER_ROW * ROWS_PER_PAGE) || ([[HONContactsAssistant sharedInstance] totalInvitedContacts] >= [HONAppDelegate clubInvitesThreshold]));
 		[_itemViews addObject:emotionItemView];
 		[(UIView *)[_pageViews objectAtIndex:page] addSubview:emotionItemView];
 		
