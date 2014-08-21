@@ -86,10 +86,10 @@
 "enter_username" = "사용자 이름";
 "enter_phone" = "전화번호";
 "Register" = "등록하기";
-//"firstrun_next" = "Avançar";
-//"Search for friends" = "Procurar amigos";
+"firstrun_next" = "Avançar";
+"Search for friends" = "Procurar amigos";
 "header_friends" = "친구";
-//"alert_member" = "PT >> You are already a member of %@!"
+"alert_member" = "You are already a member of %@!";
 "header_news" = "친구";
 "header_clubs" = "클럽";
 "alert_join" = "%@ Selfieclub에 참가하실래요?";
@@ -128,6 +128,7 @@
 "real_profile" = "프로필 사진은 셀카 클럽 커뮤니티가 여러분의 진짜 얼굴을 알 수 있도록 도와줍니다";
 "take_photo" = "사진 촬영";
 "is_feeling" = "- 기분이...";
+"is_feeling2" = "기분이...";
 "enter_pin" = "PIN 번호 입력";
 "invalid_pin" = "잘못된 PIN 번호입니다!";
 "invalid_pin_msg" = "PIN 번호는 4자리 숫자입니다";

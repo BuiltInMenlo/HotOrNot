@@ -19,8 +19,8 @@ const CGRect kLargeActiveFrame = {15.0f, 10.0f, 160.0f, 160.0f};
 //const CGRect kNormalFrame = {15.0f, 15.0f, 44.0f, 44.0f};
 //const CGRect kActiveFrame = {10.0f, 10.0f, 54.0f, 54.0f};
 
-const CGRect kNormalFrame = {10.0f, 10.0f, 54.0f, 54.0f};
-const CGRect kActiveFrame = {5.0f, 5.0f, 64.0f, 64.0f};
+const CGRect kNormalFrame = {-1.0f, -1.0f, 76.0f, 76.0f};
+const CGRect kActiveFrame = {-6.0f, -6.0f, 86.0f, 86.0f};
 
 @interface HONEmoticonPickerItemView ()
 @property (nonatomic, strong) HONEmotionVO *emotionVO;

@@ -85,10 +85,10 @@
 "enter_username" = "Digite o nome de usuário";
 "enter_phone" = "Digite o telefone";
 "Register" = "Cadastrar";
-//"firstrun_next" = "Avançar";
-//"Search for friends" = "Procurar amigos";
+"firstrun_next" = "Avançar";
+"Search for friends" = "Procurar amigos";
 "header_friends" = "Amigos";
-//"alert_member" = "PT >> You are already a member of %@!"
+"alert_member" = "You are already a member of %@!";
 "header_news" = "Novidades";
 "header_clubs" = "Clubes";
 "alert_join" = "Gostaria de participar do Selfieclub %@?";
@@ -127,6 +127,7 @@
 "real_profile" = "Sua foto do perfil ajuda a comunidade Selfieclub a conhecer sua verdadeira";
 "take_photo" = "Tirar Foto";
 "is_feeling" = "- está se sentindo…";
+"is_feeling2" = "está se sentindo...";
 "enter_pin" = "Digite o PIN";
 "invalid_pin" = "PIN inválido!";
 "invalid_pin_msg" = "Os códigos PIN devem ter 4 dígitos";

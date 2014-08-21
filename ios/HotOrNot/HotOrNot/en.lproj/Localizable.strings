@@ -88,7 +88,7 @@
 //"firstrun_next" = "Avançar";
 //"Search for friends" = "Procurar amigos";
 "header_friends" = "Friends";
-//"alert_member" = "PT >> You are already a member of %@!"
+"alert_member" = "You are already a member of %@!";
 "header_news" = "News";
 "header_clubs" = "Clubs";
 "alert_join" = "Would you like to join the %@ Selfieclub?";
@@ -127,6 +127,7 @@
 "real_profile" = "Your profile photo helps the Selfieclub community know your real.";
 "take_photo" = "Take Photo";
 "is_feeling" = "- is feeling…";
+"is_feeling2" = "is feeling...";
 "enter_pin" = "Enter Pin";
 "invalid_pin" = "Invalid Pin!";
 "invalid_pin_msg" = "Pin numbers need to be 4 numbers";

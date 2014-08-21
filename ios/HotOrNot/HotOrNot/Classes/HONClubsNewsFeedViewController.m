@@ -330,6 +330,14 @@ static NSString * const kCamera = @"camera";
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)tabBannerView:(HONTabBannerView *)bannerView createBaeClub:(HONUserClubVO *)clubVO {
+	NSLog(@"[[*:*]] tabBannerView:createBaeClub:[%d - %@]", clubVO.clubID, clubVO.clubName);
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateClubViewController alloc] initWithClubTitle:clubVO.clubName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)tabBannerViewInviteContacts:(HONTabBannerView *)bannerView {
 	NSLog(@"[[*:*]] tabBannerViewInviteContacts");
 	

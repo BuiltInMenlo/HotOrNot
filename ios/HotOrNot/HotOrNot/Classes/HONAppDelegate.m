@@ -7,6 +7,7 @@
 //
 
 #import <AddressBook/AddressBook.h>
+#import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Social/SLComposeViewController.h>
@@ -73,7 +74,7 @@ NSString * const kAPIHost = @"data_api";
 #else
 NSString * const kConfigURL = @"http://volley-api.devint.selfieclubapp.com";
 NSString * const kConfigJSON = @"boot_ios.json";
-NSString * const kAPIHost = @"data_api-dev";
+NSString * const kAPIHost = @"data_api-stage";
 #endif
 
 NSString * const kBlowfishKey = @"KJkljP9898kljbm675865blkjghoiubdrsw3ye4jifgnRDVER8JND997";
@@ -421,8 +422,8 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 + (NSString *)normalizedPhoneNumber:(NSString *)phoneNumber {
 	if ([phoneNumber length] > 0) {
 		NSString *formattedNumber = [[phoneNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().-  "]] componentsJoinedByString:@""];
-		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
-			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
+//		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
+//			formattedNumber = [@"1" stringByAppendingString:formattedNumber];
 		
 		return ([@"+" stringByAppendingString:formattedNumber]);
 		
@@ -1224,8 +1225,9 @@ NSString * const kNetErrorStatusCode404 = @"Expected status code in (200-299), g
 		
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
+//	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
 	config.idfa = [[HONDeviceIntrinsics sharedInstance] uniqueIdentifierWithoutSeperators:NO];
-	config.odin1 = @"<ODIN-1 value goes here>";
+//	config.odin1 = @"<ODIN-1 value goes here>";
 	//config.openUdid = @"<OpenUDID value goes here>";
 	//config.secureUdid = @"<SecureUDID value goes here>";
 	[TSTapstream createWithAccountName:@"selfieclub"
